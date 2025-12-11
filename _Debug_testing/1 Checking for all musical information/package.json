@@ -1,0 +1,13 @@
+{
+  "name": "extraction-completeness-test",
+  "version": "1.0.0",
+  "description": "Test script to verify extraction completeness",
+  "main": "test_extraction_completeness.js",
+  "scripts": {
+    "test": "node test_extraction_completeness.js"
+  },
+  "dependencies": {
+    "puppeteer": "^21.5.0"
+  }
+}
+
