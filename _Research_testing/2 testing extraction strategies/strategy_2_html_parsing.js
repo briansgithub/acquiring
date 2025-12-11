@@ -48,11 +48,24 @@ async function strategy2_HTMLParsing() {
   console.log('='.repeat(60));
   console.log('\nApproach: Parse HTML to find section links and hookpad IDs');
   console.log('then fetch data for each discovered section\n');
+  console.log('Timeout: 60 seconds\n');
+  
+  const timeout = 60000; // 1 minute
+  const startTime = Date.now();
   
   const browser = await puppeteer.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
+  
+  // Timeout handler
+  const timeoutId = setTimeout(async () => {
+    if (Date.now() - startTime >= timeout) {
+      console.log('\n⚠ Timeout reached (60s). Ending strategy execution...');
+      await browser.close();
+      process.exit(0);
+    }
+  }, timeout);
   
   try {
     const page = await browser.newPage();
@@ -225,11 +238,13 @@ async function strategy2_HTMLParsing() {
       }
     };
     
+    clearTimeout(timeoutId);
     fs.writeFileSync(RESULTS_FILE, JSON.stringify(results, null, 2));
     console.log(`\n✓ Results saved to: ${RESULTS_FILE}`);
     
     return results;
   } catch (error) {
+    clearTimeout(timeoutId);
     await browser.close();
     throw error;
   }

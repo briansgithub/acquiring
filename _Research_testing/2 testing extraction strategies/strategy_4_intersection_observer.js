@@ -48,11 +48,24 @@ async function strategy4_IntersectionObserver() {
   console.log('='.repeat(60));
   console.log('\nApproach: Scroll each section into viewport to trigger');
   console.log('intersection observer-based lazy loading\n');
+  console.log('Timeout: 60 seconds\n');
+  
+  const timeout = 60000; // 1 minute
+  const startTime = Date.now();
   
   const browser = await puppeteer.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
+  
+  // Timeout handler
+  const timeoutId = setTimeout(async () => {
+    if (Date.now() - startTime >= timeout) {
+      console.log('\n⚠ Timeout reached (60s). Ending strategy execution...');
+      await browser.close();
+      process.exit(0);
+    }
+  }, timeout);
   
   const capturedSongIds = new Set();
   const sectionVisibility = {};
@@ -243,11 +256,13 @@ async function strategy4_IntersectionObserver() {
       }
     };
     
+    clearTimeout(timeoutId);
     fs.writeFileSync(RESULTS_FILE, JSON.stringify(results, null, 2));
     console.log(`\n✓ Results saved to: ${RESULTS_FILE}`);
     
     return results;
   } catch (error) {
+    clearTimeout(timeoutId);
     await browser.close();
     throw error;
   }

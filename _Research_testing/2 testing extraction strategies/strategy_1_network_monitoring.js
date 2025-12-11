@@ -48,11 +48,22 @@ async function strategy1_NetworkMonitoring() {
   console.log('='.repeat(60));
   console.log('\nApproach: Monitor all network requests to capture song IDs');
   console.log('as sections are lazy-loaded\n');
+  console.log('Timeout: 60 seconds\n');
+  
+  const timeout = 60000; // 1 minute
+  const startTime = Date.now();
+  let timedOut = false;
   
   const browser = await puppeteer.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
+  
+  // Timeout handler
+  const timeoutId = setTimeout(() => {
+    timedOut = true;
+    console.log('\n⚠ Timeout reached (60s). Ending strategy execution...');
+  }, timeout);
   
   const capturedSongIds = new Set();
   const songIdTimestamps = {};
@@ -123,63 +134,77 @@ async function strategy1_NetworkMonitoring() {
       });
     });
     
-    // Wait for any final requests
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    // Wait for any final requests (check timeout)
+    if (!timedOut) {
+      await new Promise(resolve => setTimeout(resolve, 3000));
+    }
     
-    await browser.close();
+    if (!timedOut) {
+      await browser.close();
+    } else {
+      try { await browser.close(); } catch (e) {}
+    }
     
     console.log(`\n✓ Captured ${capturedSongIds.size} unique song IDs`);
     
-    // Fetch full data for each song ID
-    console.log('\nFetching full data for each section...');
+    // Fetch full data for each song ID (only if not timed out)
     const fullSectionData = {};
-    
-    for (const songId of capturedSongIds) {
-      console.log(`  Fetching ${songId}...`);
-      try {
-        const apiData = await fetchSongData(songId);
-        const jsonData = parseJsonData(apiData.jsonData);
-        
-        fullSectionData[songId] = {
-          songId,
-          songInfo: apiData.song,
-          chords: jsonData.chords || [],
-          notes: jsonData.notes || null,
-          metadata: {
-            version: jsonData.version,
-            keys: jsonData.keys,
-            tempos: jsonData.tempos,
-            meters: jsonData.meters,
-            sections: jsonData.sections,
-            endBeat: jsonData.endBeat
-          }
-        };
-        console.log(`    ✓ ${fullSectionData[songId].chords.length} chords, ${Array.isArray(fullSectionData[songId].notes) ? fullSectionData[songId].notes.length : 'multiple'} notes`);
-      } catch (e) {
-        console.log(`    ✗ Error: ${e.message}`);
+    if (!timedOut) {
+      console.log('\nFetching full data for each section...');
+      
+      for (const songId of capturedSongIds) {
+        if (timedOut) break;
+        console.log(`  Fetching ${songId}...`);
+        try {
+          const apiData = await fetchSongData(songId);
+          const jsonData = parseJsonData(apiData.jsonData);
+          
+          fullSectionData[songId] = {
+            songId,
+            songInfo: apiData.song,
+            chords: jsonData.chords || [],
+            notes: jsonData.notes || null,
+            metadata: {
+              version: jsonData.version,
+              keys: jsonData.keys,
+              tempos: jsonData.tempos,
+              meters: jsonData.meters,
+              sections: jsonData.sections,
+              endBeat: jsonData.endBeat
+            }
+          };
+          console.log(`    ✓ ${fullSectionData[songId].chords.length} chords, ${Array.isArray(fullSectionData[songId].notes) ? fullSectionData[songId].notes.length : 'multiple'} notes`);
+        } catch (e) {
+          console.log(`    ✗ Error: ${e.message}`);
+        }
       }
+    } else {
+      console.log('\n⚠ Timeout reached - skipping full data fetch');
     }
     
     const results = {
       strategy: 'Network Request Monitoring',
       timestamp: new Date().toISOString(),
       url: TEST_URL,
+      timedOut: timedOut,
       capturedSongIds: Array.from(capturedSongIds),
       songIdTimestamps,
       sectionData,
       fullSectionData,
       summary: {
         totalSections: capturedSongIds.size,
-        sectionsWithChords: Object.values(fullSectionData).filter(s => s.chords.length > 0).length,
+        sectionsWithChords: Object.values(fullSectionData).filter(s => s.chords && s.chords.length > 0).length,
         sectionsWithNotes: Object.values(fullSectionData).filter(s => s.notes).length
       }
     };
     
+    clearTimeout(timeoutId);
     fs.writeFileSync(RESULTS_FILE, JSON.stringify(results, null, 2));
     console.log(`\n✓ Results saved to: ${RESULTS_FILE}`);
     
     return results;
   } catch (error) {
+    clearTimeout(timeoutId);
     await browser.close();
     throw error;
   }

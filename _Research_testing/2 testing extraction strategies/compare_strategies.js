@@ -19,7 +19,7 @@ async function runStrategy(scriptName) {
   try {
     const { stdout, stderr } = await execAsync(`node ${scriptName}`, {
       cwd: OUTPUT_DIR,
-      timeout: 120000 // 2 minute timeout
+      timeout: 70000 // 70 second timeout (slightly longer than strategy timeout)
     });
     
     if (stdout) console.log(stdout);
