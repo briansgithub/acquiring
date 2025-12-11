@@ -1,0 +1,58 @@
+{
+  "strategy": "Network Request Monitoring",
+  "timestamp": "2025-12-11T22:09:39.335Z",
+  "url": "https://www.hooktheory.com/theorytab/view/scott-joplin/maple-leaf-rag",
+  "timedOut": true,
+  "capturedSongIds": [
+    "nvgy-kVrgkA",
+    "ZbgOR-qQmnY",
+    "yvgPqBwKxYq",
+    "RPxenBQAob_"
+  ],
+  "songIdTimestamps": {
+    "nvgy-kVrgkA": 1765490840524,
+    "ZbgOR-qQmnY": 1765490850023,
+    "yvgPqBwKxYq": 1765490854011,
+    "RPxenBQAob_": 1765490858011
+  },
+  "sectionData": {
+    "nvgy-kVrgkA": {
+      "songId": "nvgy-kVrgkA",
+      "timestamp": 1765490840524,
+      "chordCount": 28,
+      "noteCount": 94,
+      "hasChords": true,
+      "hasNotes": true
+    },
+    "ZbgOR-qQmnY": {
+      "songId": "ZbgOR-qQmnY",
+      "timestamp": 1765490850023,
+      "chordCount": 35,
+      "noteCount": 92,
+      "hasChords": true,
+      "hasNotes": true
+    },
+    "yvgPqBwKxYq": {
+      "songId": "yvgPqBwKxYq",
+      "timestamp": 1765490854011,
+      "chordCount": 35,
+      "noteCount": 92,
+      "hasChords": true,
+      "hasNotes": true
+    },
+    "RPxenBQAob_": {
+      "songId": "RPxenBQAob_",
+      "timestamp": 1765490858011,
+      "chordCount": 38,
+      "noteCount": 81,
+      "hasChords": true,
+      "hasNotes": true
+    }
+  },
+  "fullSectionData": {},
+  "summary": {
+    "totalSections": 4,
+    "sectionsWithChords": 0,
+    "sectionsWithNotes": 0
+  }
+}
