@@ -1,0 +1,96 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/scott-joplin/maple-leaf-rag",
+  "timestamp": "2025-12-11T23:22:17.209Z",
+  "findings": {
+    "h2Sections": [
+      {
+        "index": 0,
+        "text": "Intro",
+        "textLower": "intro",
+        "y": 361.640625,
+        "height": 26.390625,
+        "element": "<h2 class=\"margin-0\">Intro</h2>"
+      },
+      {
+        "index": 1,
+        "text": "Chorus",
+        "textLower": "chorus",
+        "y": 1332.109375,
+        "height": 26.390625,
+        "element": "<h2 class=\"margin-0\">Chorus</h2>"
+      },
+      {
+        "index": 2,
+        "text": "Bridge",
+        "textLower": "bridge",
+        "y": 1761.25,
+        "height": 26.390625,
+        "element": "<h2 class=\"margin-0\">Bridge</h2>"
+      },
+      {
+        "index": 3,
+        "text": "Outro",
+        "textLower": "outro",
+        "y": 2190.390625,
+        "height": 26.390625,
+        "element": "<h2 class=\"margin-0\">Outro</h2>"
+      }
+    ],
+    "sectionToSongIdMapping": [
+      {
+        "sectionName": "Intro",
+        "h2Text": "Intro",
+        "h2Index": 0,
+        "yPosition": 361.640625,
+        "songIds": [],
+        "songIdCount": 0
+      },
+      {
+        "sectionName": "Chorus",
+        "h2Text": "Chorus",
+        "h2Index": 1,
+        "yPosition": 1332.109375,
+        "songIds": [
+          "ZbgOR-qQmnY"
+        ],
+        "songIdCount": 1
+      },
+      {
+        "sectionName": "Bridge",
+        "h2Text": "Bridge",
+        "h2Index": 2,
+        "yPosition": 1761.25,
+        "songIds": [],
+        "songIdCount": 0
+      },
+      {
+        "sectionName": "Outro",
+        "h2Text": "Outro",
+        "h2Index": 3,
+        "yPosition": 2190.390625,
+        "songIds": [
+          "yvgPqBwKxYq"
+        ],
+        "songIdCount": 1
+      }
+    ],
+    "unmappedSongIds": [
+      "nvgy-kVrgkA"
+    ],
+    "mappingAnalysis": {
+      "totalH2Sections": 4,
+      "totalSongIds": 3,
+      "mappedSongIds": 2,
+      "unmappedSongIds": 1,
+      "sectionMappings": {},
+      "songIdToSection": {
+        "ZbgOR-qQmnY": [
+          "Chorus"
+        ],
+        "yvgPqBwKxYq": [
+          "Outro"
+        ]
+      }
+    }
+  }
+}

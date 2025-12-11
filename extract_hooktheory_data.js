@@ -17,41 +17,145 @@ if (!fs.existsSync(CACHE_DIR)) {
   fs.mkdirSync(CACHE_DIR, { recursive: true });
 }
 
-function getCacheKey(url) {
-  return crypto.createHash('md5').update(url).digest('hex');
+function extractArtistAndSongFromUrl(url) {
+  const match = url.match(/theorytab\/view\/([^\/]+)\/([^\/\?]+)/);
+  if (!match) {
+    throw new Error('Invalid Hooktheory URL format');
+  }
+  return { artist: match[1], songSlug: match[2] };
 }
 
-function getCachePath(url) {
-  const key = getCacheKey(url);
-  return path.join(CACHE_DIR, `${key}.json`);
+function getSongCacheDir(artist, songTitle) {
+  // Sanitize for filesystem: replace spaces with underscores, remove special chars
+  const safeArtist = artist.replace(/[^a-zA-Z0-9_-]/g, '_');
+  const safeTitle = songTitle.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/\s+/g, '_');
+  return path.join(CACHE_DIR, `${safeArtist}-${safeTitle}`);
 }
 
-function loadFromCache(url) {
-  const cachePath = getCachePath(url);
-  if (fs.existsSync(cachePath)) {
-    try {
-      const data = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
-      console.log('✓ Loaded from cache');
-      return data;
-    } catch (e) {
-      console.log('✗ Cache file corrupted, fetching fresh data');
+function getSectionCachePath(songDir, sectionName, numericId, stringSongId) {
+  const safeSectionName = sectionName.charAt(0).toUpperCase() + sectionName.slice(1).toLowerCase();
+  const filename = `${safeSectionName}_${numericId}_${stringSongId}.json`;
+  return path.join(songDir, filename);
+}
+
+function loadFromCache(url, songTitle) {
+  try {
+    const { artist } = extractArtistAndSongFromUrl(url);
+    const songDir = getSongCacheDir(artist, songTitle);
+    
+    if (!fs.existsSync(songDir)) {
       return null;
     }
+    
+    // Load all section files
+    const sectionFiles = fs.readdirSync(songDir).filter(f => f.endsWith('.json'));
+    if (sectionFiles.length === 0) {
+      return null;
+    }
+    
+    const sections = {};
+    const songIds = [];
+    
+    for (const file of sectionFiles) {
+      try {
+        const filePath = path.join(songDir, file);
+        const sectionData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        const stringSongId = sectionData.songId || sectionData.stringSongId;
+        if (stringSongId) {
+          sections[stringSongId] = sectionData;
+          songIds.push(stringSongId);
+        }
+      } catch (e) {
+        console.log(`  ⚠ Skipping corrupted cache file: ${file}`);
+      }
+    }
+    
+    if (Object.keys(sections).length === 0) {
+      return null;
+    }
+    
+    // Reconstruct summary
+    let totalChords = 0;
+    let totalNotes = 0;
+    for (const section of Object.values(sections)) {
+      totalChords += (section.chords || []).length;
+      if (Array.isArray(section.notes)) {
+        totalNotes += section.notes.length;
+      } else if (typeof section.notes === 'object' && section.notes !== null) {
+        const noteCount = Object.values(section.notes).reduce((sum, melody) => 
+          sum + (Array.isArray(melody) ? melody.length : 0), 0
+        );
+        totalNotes += noteCount;
+      }
+    }
+    
+    const result = {
+      url: url,
+      timestamp: new Date().toISOString(),
+      sections: sections,
+      summary: {
+        totalSections: Object.keys(sections).length,
+        totalChords: totalChords,
+        totalNotes: totalNotes,
+        songIds: songIds
+      }
+    };
+    
+    console.log('✓ Loaded from cache');
+    return result;
+  } catch (e) {
+    console.log('✗ Cache load error:', e.message);
+    return null;
   }
-  return null;
 }
 
-function saveToCache(url, data) {
-  const cachePath = getCachePath(url);
-  fs.writeFileSync(cachePath, JSON.stringify(data, null, 2));
-  console.log('✓ Saved to cache');
+function saveToCache(url, songTitle, sectionsData) {
+  try {
+    const { artist } = extractArtistAndSongFromUrl(url);
+    const songDir = getSongCacheDir(artist, songTitle);
+    
+    // Ensure song directory exists
+    if (!fs.existsSync(songDir)) {
+      fs.mkdirSync(songDir, { recursive: true });
+    }
+    
+    // Save each section as a separate file
+    let savedCount = 0;
+    for (const [stringSongId, sectionData] of Object.entries(sectionsData)) {
+      const numericId = sectionData.numericId || sectionData.metadata?.numericId || 'unknown';
+      const sectionName = sectionData.sectionName || 'Unknown';
+      const cachePath = getSectionCachePath(songDir, sectionName, numericId, stringSongId);
+      
+      // Prepare section data for saving
+      const sectionToSave = {
+        ...sectionData,
+        stringSongId: stringSongId,
+        numericId: numericId,
+        sectionName: sectionName,
+        cachedAt: new Date().toISOString()
+      };
+      
+      fs.writeFileSync(cachePath, JSON.stringify(sectionToSave, null, 2));
+      savedCount++;
+    }
+    
+    console.log(`✓ Saved ${savedCount} section(s) to cache`);
+  } catch (e) {
+    console.log('✗ Cache save error:', e.message);
+  }
 }
 
-function clearCache(url) {
-  const cachePath = getCachePath(url);
-  if (fs.existsSync(cachePath)) {
-    fs.unlinkSync(cachePath);
-    console.log('✓ Cache cleared');
+function clearCache(url, songTitle) {
+  try {
+    const { artist } = extractArtistAndSongFromUrl(url);
+    const songDir = getSongCacheDir(artist, songTitle);
+    
+    if (fs.existsSync(songDir)) {
+      fs.rmSync(songDir, { recursive: true, force: true });
+      console.log('✓ Cache cleared');
+    }
+  } catch (e) {
+    console.log('✗ Cache clear error:', e.message);
   }
 }
 
@@ -66,6 +170,16 @@ function extractSongIdFromUrl(url) {
   return { artist: match[1], song: match[2] };
 }
 
+function normalizeSectionName(name) {
+  const lower = name.toLowerCase();
+  if (lower.includes('intro')) return 'Intro';
+  if (lower.includes('verse')) return 'Verse';
+  if (lower.includes('chorus')) return 'Chorus';
+  if (lower.includes('bridge')) return 'Bridge';
+  if (lower.includes('outro')) return 'Outro';
+  return 'Unknown';
+}
+
 async function findAllSongIdsFromPage(url) {
   console.log('Launching browser to extract all section song IDs...');
   const browser = await puppeteer.launch({
@@ -75,7 +189,7 @@ async function findAllSongIdsFromPage(url) {
   
   try {
     const page = await browser.newPage();
-    const capturedSongIds = new Set();
+    const allCapturedSongIds = [];
     
     // Monitor network requests to capture ALL song IDs from API calls
     page.on('response', async (response) => {
@@ -83,130 +197,183 @@ async function findAllSongIdsFromPage(url) {
       if (responseUrl.includes('api.hooktheory.com/v1/songs/public/')) {
         const match = responseUrl.match(/\/songs\/public\/([a-zA-Z0-9_-]+)/);
         if (match) {
-          capturedSongIds.add(match[1]);
+          const songId = match[1];
+          if (!allCapturedSongIds.includes(songId)) {
+            allCapturedSongIds.push(songId);
+          }
         }
       }
     });
     
-    // Navigate to the page
+    // Navigate to the page and wait for initial load
     await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 3000));
     
-    // Find all section elements (anchors, h2s, tab divs)
-    console.log('Finding section elements...');
-    const sectionElements = await page.evaluate(() => {
+    const initialSongIds = [...allCapturedSongIds];
+    console.log(`Initial page load captured ${initialSongIds.length} song ID(s): ${initialSongIds.join(', ')}`);
+    
+    // Find H2 section elements (authoritative source for section names)
+    console.log('Finding H2 section elements...');
+    const h2Sections = await page.evaluate(() => {
+      const h2s = Array.from(document.querySelectorAll('h2'));
       const sections = [];
       
-      // Find section anchors
-      const anchors = Array.from(document.querySelectorAll('a[name]'));
-      anchors.forEach(anchor => {
-        const name = anchor.getAttribute('name');
+      h2s.forEach((h2, index) => {
+        const text = h2.textContent.trim();
+        const textLower = text.toLowerCase();
         const sectionNames = ['intro', 'verse', 'chorus', 'bridge', 'outro'];
         
-        if (sectionNames.some(s => name.toLowerCase().includes(s))) {
-          const rect = anchor.getBoundingClientRect();
-          sections.push({
-            name: name,
-            type: 'anchor',
-            y: rect.y,
-            height: rect.height
-          });
-        }
-      });
-      
-      // Find h2 section titles
-      const h2s = Array.from(document.querySelectorAll('h2'));
-      h2s.forEach(h2 => {
-        const text = h2.textContent.trim().toLowerCase();
-        const sectionNames = ['intro', 'verse', 'chorus', 'bridge', 'outro'];
-        
-        if (sectionNames.some(s => text.includes(s))) {
+        if (sectionNames.some(s => textLower.includes(s))) {
           const rect = h2.getBoundingClientRect();
           sections.push({
-            name: text,
-            type: 'h2',
+            index: index,
+            text: text,
+            textLower: textLower,
             y: rect.y,
             height: rect.height
           });
         }
-      });
-      
-      // Find tab divs
-      const tabDivs = Array.from(document.querySelectorAll('div[id^="tab-"]'));
-      tabDivs.forEach(div => {
-        const rect = div.getBoundingClientRect();
-        sections.push({
-          name: div.id,
-          type: 'tab',
-          y: rect.y,
-          height: rect.height
-        });
       });
       
       return sections.sort((a, b) => a.y - b.y);
     });
     
-    console.log(`Found ${sectionElements.length} section elements`);
+    console.log(`Found ${h2Sections.length} H2 section elements:`);
+    h2Sections.forEach((sec, i) => {
+      console.log(`  ${i + 1}. "${sec.text}"`);
+    });
     
-    // Scroll each section into viewport one at a time to trigger lazy loading
-    console.log('Scrolling sections into viewport to trigger lazy loading...');
-    const viewportHeight = await page.evaluate(() => window.innerHeight);
-    
-    for (let i = 0; i < sectionElements.length; i++) {
-      const section = sectionElements[i];
-      const beforeCount = capturedSongIds.size;
-      
-      // Scroll to center the section in viewport
-      await page.evaluate((targetY, vh) => {
-        const scrollY = targetY - (vh / 2) + (targetY / 2);
-        window.scrollTo({
-          top: scrollY,
-          behavior: 'smooth'
-        });
-      }, section.y, viewportHeight);
-      
-      // Wait for intersection observer to trigger
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Check if new song IDs were captured
-      const afterCount = capturedSongIds.size;
-      if (afterCount > beforeCount) {
-        console.log(`  ✓ Section ${i + 1}/${sectionElements.length} triggered ${afterCount - beforeCount} new section(s)`);
-      }
+    if (h2Sections.length === 0) {
+      throw new Error('No H2 section elements found on page');
     }
     
-    // Also scroll back to top slowly to catch any remaining sections
-    await page.evaluate(() => {
-      return new Promise((resolve) => {
-        let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-        const scrollStep = 200;
-        const delay = 300;
-        
-        const timer = setInterval(() => {
-          currentScroll = Math.max(0, currentScroll - scrollStep);
-          window.scrollTo(0, currentScroll);
-          
-          if (currentScroll <= 0) {
-            clearInterval(timer);
-            setTimeout(resolve, 1000);
-          }
-        }, delay);
+    // Scroll to each H2 section and track which song IDs are loaded
+    console.log('\nScrolling to each H2 section to trigger lazy loading...');
+    const viewportHeight = await page.evaluate(() => window.innerHeight);
+    const sectionToSongIdMap = []; // Track which song IDs load for each H2 section
+    
+    for (let i = 0; i < h2Sections.length; i++) {
+      const h2Section = h2Sections[i];
+      const sectionName = normalizeSectionName(h2Section.text);
+      
+      if (!sectionName) {
+        console.log(`  ⚠ Skipping H2 "${h2Section.text}" - not a recognized section`);
+        continue;
+      }
+      
+      const beforeCount = allCapturedSongIds.length;
+      
+      // Scroll to center the H2 in viewport
+      await page.evaluate((targetY, vh) => {
+        const scrollY = targetY - (vh / 2);
+        window.scrollTo({
+          top: Math.max(0, scrollY),
+          behavior: 'smooth'
+        });
+      }, h2Section.y, viewportHeight);
+      
+      // Wait for intersection observer to trigger and API calls to complete
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      // Check which new song IDs were captured
+      const newSongIds = allCapturedSongIds.slice(beforeCount);
+      
+      sectionToSongIdMap.push({
+        sectionName: sectionName,
+        h2Text: h2Section.text,
+        h2Index: h2Section.index,
+        newSongIds: newSongIds
       });
-    });
+      
+      if (newSongIds.length > 0) {
+        console.log(`  ✓ ${sectionName}: Loaded ${newSongIds.length} new song ID(s): ${newSongIds.join(', ')}`);
+      } else {
+        console.log(`  - ${sectionName}: No new song IDs (already loaded)`);
+      }
+    }
     
     // Final wait for any remaining requests
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     await browser.close();
     
-    const songIds = Array.from(capturedSongIds);
-    console.log(`✓ Captured ${songIds.length} unique song IDs: ${songIds.join(', ')}`);
+    const songIds = [...new Set(allCapturedSongIds)];
+    console.log(`\n✓ Captured ${songIds.length} unique song IDs: ${songIds.join(', ')}`);
     
     if (songIds.length === 0) {
       throw new Error('Could not find any song IDs in page');
     }
     
-    return songIds;
+    // Build section mapping: assign song IDs to H2 sections
+    const sectionMapping = {};
+    const mappedSongIds = new Set();
+    
+    // First pass: Map song IDs that were triggered by specific H2 sections
+    for (const mapping of sectionToSongIdMap) {
+      for (const songId of mapping.newSongIds) {
+        if (!sectionMapping[songId]) {
+          sectionMapping[songId] = mapping.sectionName;
+          mappedSongIds.add(songId);
+        }
+      }
+    }
+    
+    // Second pass: Assign unmapped song IDs (from initial load) to H2 sections in order
+    const unmappedIds = songIds.filter(id => !mappedSongIds.has(id));
+    if (unmappedIds.length > 0) {
+      // Get H2 section names in order
+      const h2SectionNames = h2Sections
+        .map(sec => normalizeSectionName(sec.text))
+        .filter(name => name !== null);
+      
+      // Get already used section names
+      const usedSections = new Set(Object.values(sectionMapping));
+      
+      // Assign unmapped IDs to unused H2 sections in order
+      let sectionIndex = 0;
+      for (const id of unmappedIds) {
+        // Find next unused H2 section
+        while (sectionIndex < h2SectionNames.length && 
+               usedSections.has(h2SectionNames[sectionIndex])) {
+          sectionIndex++;
+        }
+        
+        if (sectionIndex < h2SectionNames.length) {
+          sectionMapping[id] = h2SectionNames[sectionIndex];
+          mappedSongIds.add(id);
+          usedSections.add(h2SectionNames[sectionIndex]);
+          sectionIndex++;
+        } else {
+          // If we run out of H2 sections, assign to the last one
+          // This should never happen, but ensures we never use "Unknown"
+          sectionMapping[id] = h2SectionNames[h2SectionNames.length - 1];
+          mappedSongIds.add(id);
+        }
+      }
+    }
+    
+    // Verify all song IDs are mapped
+    const stillUnmapped = songIds.filter(id => !sectionMapping[id]);
+    if (stillUnmapped.length > 0) {
+      // Fallback: assign to H2 sections in round-robin fashion
+      const h2SectionNames = h2Sections
+        .map(sec => normalizeSectionName(sec.text))
+        .filter(name => name !== null);
+      
+      for (let i = 0; i < stillUnmapped.length; i++) {
+        sectionMapping[stillUnmapped[i]] = h2SectionNames[i % h2SectionNames.length];
+      }
+    }
+    
+    console.log('\nSection Mapping:');
+    Object.entries(sectionMapping).forEach(([songId, section]) => {
+      console.log(`  ${songId} -> ${section}`);
+    });
+    
+    return {
+      songIds: songIds,
+      sectionMapping: sectionMapping
+    };
   } catch (e) {
     await browser.close();
     throw new Error(`Failed to extract song IDs: ${e.message}`);
@@ -265,21 +432,38 @@ function extractChordAndMelodyObjects(apiResponse) {
 }
 
 async function extractFromUrl(url, useNewCache = false) {
-  // Check cache first (unless --newcache flag)
-  if (!useNewCache) {
-    const cached = loadFromCache(url);
-    if (cached) {
-      return cached;
-    }
-  } else {
-    clearCache(url);
-  }
-  
   console.log(`Fetching data from: ${url}`);
   
   // Extract all song IDs from page using Strategy 4 (Intersection Observer)
   console.log('\nExtracting all section song IDs from page...');
-  const songIds = await findAllSongIdsFromPage(url);
+  const { songIds, sectionMapping } = await findAllSongIdsFromPage(url);
+  
+  // Fetch first section to get song title
+  let songTitle = null;
+  if (songIds.length > 0) {
+    try {
+      const firstApiResponse = await fetchSongData(songIds[0]);
+      songTitle = firstApiResponse.song;
+      console.log(`\nSong title: "${songTitle}"`);
+    } catch (e) {
+      console.log(`  ⚠ Could not fetch song title: ${e.message}`);
+    }
+  }
+  
+  // If we don't have song title, we can't use the new cache structure
+  if (!songTitle) {
+    throw new Error('Could not determine song title from API response');
+  }
+  
+  // Check cache first (unless --newcache flag)
+  if (!useNewCache) {
+    const cached = loadFromCache(url, songTitle);
+    if (cached) {
+      return cached;
+    }
+  } else {
+    clearCache(url, songTitle);
+  }
   
   // Fetch song data for each section
   console.log(`\nFetching data for ${songIds.length} section(s)...`);
@@ -288,19 +472,28 @@ async function extractFromUrl(url, useNewCache = false) {
   let totalNotes = 0;
   
   for (let i = 0; i < songIds.length; i++) {
-    const songId = songIds[i];
-    console.log(`  [${i + 1}/${songIds.length}] Fetching ${songId}...`);
+    const stringSongId = songIds[i];
+    const sectionName = sectionMapping[stringSongId] || 'Unknown';
+    console.log(`  [${i + 1}/${songIds.length}] Fetching ${stringSongId} (${sectionName})...`);
     
     try {
-      const apiResponse = await fetchSongData(songId);
+      const apiResponse = await fetchSongData(stringSongId);
       const extracted = extractChordAndMelodyObjects(apiResponse);
       
-      sections[songId] = {
-        songId: extracted.songId,
+      // Get numeric ID from API response
+      const numericId = apiResponse.ID;
+      
+      sections[stringSongId] = {
+        songId: stringSongId,
+        numericId: numericId,
+        sectionName: sectionName,
         songInfo: extracted.songInfo,
         chords: extracted.chords,
         notes: extracted.notes,
-        metadata: extracted.metadata
+        metadata: {
+          ...extracted.metadata,
+          numericId: numericId
+        }
       };
       
       totalChords += extracted.chords.length;
@@ -323,6 +516,7 @@ async function extractFromUrl(url, useNewCache = false) {
   const result = {
     url: url,
     timestamp: new Date().toISOString(),
+    songTitle: songTitle,
     sections: sections,
     summary: {
       totalSections: Object.keys(sections).length,
@@ -334,8 +528,8 @@ async function extractFromUrl(url, useNewCache = false) {
   
   console.log(`\n✓ Extracted ${result.summary.totalSections} section(s) with ${totalChords} total chords and ${totalNotes} total notes`);
   
-  // Save to cache
-  saveToCache(url, result);
+  // Save to cache using new structure
+  saveToCache(url, songTitle, sections);
   
   return result;
 }

@@ -1,0 +1,104 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/scott-joplin/maple-leaf-rag",
+  "timestamp": "2025-12-11T23:23:21.274Z",
+  "findings": {
+    "h2Sections": [
+      {
+        "index": 0,
+        "text": "Intro",
+        "textLower": "intro",
+        "y": 361.640625,
+        "height": 26.390625
+      },
+      {
+        "index": 1,
+        "text": "Chorus",
+        "textLower": "chorus",
+        "y": 1332.109375,
+        "height": 26.390625
+      },
+      {
+        "index": 2,
+        "text": "Bridge",
+        "textLower": "bridge",
+        "y": 1761.25,
+        "height": 26.390625
+      },
+      {
+        "index": 3,
+        "text": "Outro",
+        "textLower": "outro",
+        "y": 2190.390625,
+        "height": 26.390625
+      }
+    ],
+    "initialSongIds": [
+      "nvgy-kVrgkA"
+    ],
+    "sectionMappings": [
+      {
+        "sectionName": "Intro",
+        "h2Text": "Intro",
+        "h2Index": 0,
+        "yPosition": 361.640625,
+        "newSongIds": [],
+        "newSongIdCount": 0
+      },
+      {
+        "sectionName": "Chorus",
+        "h2Text": "Chorus",
+        "h2Index": 1,
+        "yPosition": 1332.109375,
+        "newSongIds": [
+          "ZbgOR-qQmnY"
+        ],
+        "newSongIdCount": 1
+      },
+      {
+        "sectionName": "Bridge",
+        "h2Text": "Bridge",
+        "h2Index": 2,
+        "yPosition": 1761.25,
+        "newSongIds": [],
+        "newSongIdCount": 0
+      },
+      {
+        "sectionName": "Outro",
+        "h2Text": "Outro",
+        "h2Index": 3,
+        "yPosition": 2190.390625,
+        "newSongIds": [
+          "yvgPqBwKxYq"
+        ],
+        "newSongIdCount": 1
+      }
+    ],
+    "finalMapping": {
+      "nvgy-kVrgkA": "Intro",
+      "ZbgOR-qQmnY": "Chorus",
+      "yvgPqBwKxYq": "Bridge"
+    },
+    "allSongIds": [
+      "nvgy-kVrgkA",
+      "ZbgOR-qQmnY",
+      "yvgPqBwKxYq"
+    ],
+    "songIdCaptureOrder": [
+      {
+        "songId": "nvgy-kVrgkA",
+        "timestamp": "2025-12-11T23:23:27.106Z",
+        "url": "https://api.hooktheory.com/v1/songs/public/nvgy-kVrgkA?fields=ID,xmlData,song,jsonData"
+      },
+      {
+        "songId": "ZbgOR-qQmnY",
+        "timestamp": "2025-12-11T23:23:36.368Z",
+        "url": "https://api.hooktheory.com/v1/songs/public/ZbgOR-qQmnY?fields=ID,xmlData,song,jsonData"
+      },
+      {
+        "songId": "yvgPqBwKxYq",
+        "timestamp": "2025-12-11T23:23:42.006Z",
+        "url": "https://api.hooktheory.com/v1/songs/public/yvgPqBwKxYq?fields=ID,xmlData,song,jsonData"
+      }
+    ]
+  }
+}
