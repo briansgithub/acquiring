@@ -1,0 +1,17 @@
+{
+  "name": "extraction-strategies-test",
+  "version": "1.0.0",
+  "description": "Test different strategies for extracting all sections from Hooktheory",
+  "main": "compare_strategies.js",
+  "scripts": {
+    "test": "node compare_strategies.js",
+    "strategy1": "node strategy_1_network_monitoring.js",
+    "strategy2": "node strategy_2_html_parsing.js",
+    "strategy3": "node strategy_3_section_clicking.js",
+    "strategy4": "node strategy_4_intersection_observer.js"
+  },
+  "dependencies": {
+    "puppeteer": "^21.5.0"
+  }
+}
+
