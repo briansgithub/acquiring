@@ -1,0 +1,13 @@
+{
+  "name": "melody-chord-analyzer",
+  "version": "1.0.0",
+  "description": "Script to analyze website for melody and chord data structures",
+  "main": "analyze_melody_chord_structure.js",
+  "scripts": {
+    "analyze": "node analyze_melody_chord_structure.js"
+  },
+  "dependencies": {
+    "puppeteer": "^21.5.0"
+  }
+}
+
