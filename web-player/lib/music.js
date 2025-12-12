@@ -20,7 +20,7 @@ export function scaleDegreeToSemitone(sd, key) {
   return (tonicOffset + step + 12) % 12;
 }
 
-export function chordRootToNotes(root, key) {
+export function chordRootToNotes(root, key, octave = 3) {
   const { scale } = key;
   const scaleSteps = scale === "minor" ? MINOR_SCALE : MAJOR_SCALE;
   const rootIndex = ((root - 1) % 7 + 7) % 7;
@@ -32,9 +32,9 @@ export function chordRootToNotes(root, key) {
   const fifth = scaleSteps[(rootIndex + 4) % 7];
 
   return [
-    NOTE_NAMES[rootSemitone % 12],
-    NOTE_NAMES[(tonicOffset + third) % 12],
-    NOTE_NAMES[(tonicOffset + fifth) % 12],
+    `${NOTE_NAMES[rootSemitone % 12]}${octave}`,
+    `${NOTE_NAMES[(tonicOffset + third) % 12]}${octave}`,
+    `${NOTE_NAMES[(tonicOffset + fifth) % 12]}${octave}`,
   ];
 }
 

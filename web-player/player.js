@@ -12,7 +12,13 @@ const indicatorPane = document.getElementById("indicator-pane");
 
 const engine = new AudioEngine();
 const controls = renderControls(controlsPane, {
-  onPlayPause: (shouldPlay) => (shouldPlay ? engine.play() : engine.pause()),
+  onPlayPause: async (shouldPlay) => {
+    if (shouldPlay) {
+      await engine.play();
+    } else {
+      engine.pause();
+    }
+  },
   onSeek: handleSeek,
   onSongChange: handleSongChange,
   onSectionChange: handleSectionChange,
@@ -91,25 +97,40 @@ async function loadSection(songIndex, sectionIndex) {
       ? data.notes.melody1
       : [];
 
-  const melodyEvents = notesArray.map((note) => ({
-    time: (note.beat - 1) * currentSecondsPerBeat,
-    duration: note.duration * currentSecondsPerBeat,
-    name: sdToNoteName(note.sd, note.octave, key),
-    isRest: note.isRest,
-    onTrigger: () => noteIndicator.updateMelody(sdToNoteName(note.sd, note.octave, key)),
-  }));
+  const melodyEvents = notesArray
+    .filter((note) => !note.isRest)
+    .map((note) => ({
+      time: (note.beat - 1) * currentSecondsPerBeat,
+      duration: note.duration * currentSecondsPerBeat,
+      name: sdToNoteName(note.sd, note.octave, key),
+      isRest: false,
+      onTrigger: () => noteIndicator.updateMelody(sdToNoteName(note.sd, note.octave, key)),
+    }));
 
-  const chordEvents = (data.chords || []).map((chord) => ({
-    time: (chord.beat - 1) * currentSecondsPerBeat,
-    duration: chord.duration * currentSecondsPerBeat,
-    notes: chordRootToNotes(chord.root, key),
-    name: chord.root,
-    onTrigger: () => {
-      const notes = chordRootToNotes(chord.root, key);
-      noteIndicator.updateChord(notes);
-      chordRing.update(notes.join("-"));
-    },
-  }));
+  const chordEvents = (data.chords || [])
+    .filter((chord) => !chord.isRest)
+    .map((chord) => ({
+      time: (chord.beat - 1) * currentSecondsPerBeat,
+      duration: chord.duration * currentSecondsPerBeat,
+      notes: chordRootToNotes(chord.root, key),
+      name: chord.root,
+      onTrigger: () => {
+        const notes = chordRootToNotes(chord.root, key);
+        noteIndicator.updateChord(notes);
+        chordRing.update(notes.join("-"));
+      },
+    }));
+
+  // Calculate actual section length from events
+  const allEventEnds = [
+    ...melodyEvents.map((e) => e.time + e.duration),
+    ...chordEvents.map((e) => e.time + e.duration),
+  ];
+  if (allEventEnds.length > 0) {
+    const actualSectionLength = Math.max(...allEventEnds) / currentSecondsPerBeat;
+    songLength = actualSectionLength;
+  }
+  // If no events, keep songLength from metadata
 
   engine.stop();
   await engine.setupTransport(bpm);
@@ -128,8 +149,14 @@ async function loadSection(songIndex, sectionIndex) {
   noteIndicator.reset();
 
   engine.onTick(() => {
-    const ratio = Math.min(1, Tone.Transport.seconds / (songLength * currentSecondsPerBeat));
+    const totalSeconds = songLength * currentSecondsPerBeat;
+    const ratio = Math.min(1, Tone.Transport.seconds / totalSeconds);
     controls.updateProgress(ratio);
+    // Stop playback when section ends
+    if (ratio >= 1 && Tone.Transport.state === "started") {
+      engine.stop();
+      controls.resetPlayState();
+    }
   });
 }
 
