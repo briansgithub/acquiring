@@ -7,18 +7,12 @@ export class AudioEngine {
       envelope: { attack: 0.05, decay: 0.2, sustain: 0.7, release: 0.5 },
     }).toDestination();
 
-    // Create a gain node to control chord volume and prevent clipping
-    this.chordGain = new Tone.Gain(0.5).toDestination(); // 50% volume to prevent clipping
-    
-    // Use individual synths for chords instead of PolySynth (better control, prevents clipping)
-    // We'll create synths on-demand for each chord
-    this.chordSynths = []; // Pool of synths for chords
-    
-    // Keep PolySynth for backwards compatibility but we won't use it
+    // Use single persistent PolySynth instance (matches reference implementation)
+    // Triangle oscillator for chords (smoother than sine for chordal textures)
+    // Volume set to -10dB to prevent clipping (matches reference default)
     this.chordSynth = new Tone.PolySynth(Tone.Synth, {
-      oscillator: { type: "sine" },
-      envelope: { attack: 0.08, decay: 0.25, sustain: 0.6, release: 0.6 },
-      maxPolyphony: 6,
+      oscillator: { type: "triangle" },
+      volume: -10,
     }).toDestination();
 
     this.parts = [];
@@ -60,22 +54,10 @@ export class AudioEngine {
     const part = new Tone.Part((time, chord) => {
       if (!chord.notes?.length) return;
       
-      // Use individual synths with reduced volume to prevent clipping
-      // Create synths on-demand and connect to gain node
-      chord.notes.forEach((note, idx) => {
-        const synth = new Tone.Synth({
-          oscillator: { type: "sine" },
-          envelope: { attack: 0.08, decay: 0.25, sustain: 0.6, release: 0.6 },
-          volume: -12, // Reduce volume by 12dB to prevent clipping
-        }).connect(this.chordGain);
-        
-        synth.triggerAttackRelease(note, chord.duration, time);
-        
-        // Clean up synth after note finishes
-        Tone.Transport.scheduleOnce(() => {
-          synth.dispose();
-        }, `+${chord.duration}`);
-      });
+      // Use single PolySynth instance with triggerAttackRelease (matches reference)
+      // This plays all notes simultaneously with proper timing
+      // PolySynth handles voice management automatically
+      this.chordSynth.triggerAttackRelease(chord.notes, chord.duration, time);
       
       this.currentChordNotes = chord.notes;
       chord.onTrigger?.();
@@ -104,39 +86,19 @@ export class AudioEngine {
       part.dispose();
     }
     this.parts = [];
-    // Release all notes before disposing
+    // Release all notes (don't dispose synths - keep them for next playback)
     try {
       if (this.melodySynth && typeof this.melodySynth.triggerRelease === "function") {
         this.melodySynth.triggerRelease();
       }
-      if (this.chordSynth && typeof this.chordSynth.triggerRelease === "function") {
+      if (this.chordSynth && typeof this.chordSynth.releaseAll === "function") {
         // Release all currently playing chord notes
-        if (this.currentChordNotes) {
-          this.chordSynth.triggerRelease(this.currentChordNotes);
-        }
-        this.chordSynth.triggerRelease(); // Release all voices
+        this.chordSynth.releaseAll();
       }
     } catch (e) {
       // Ignore errors if synths are already disposed
     }
     this.currentChordNotes = null;
-    // Dispose and recreate synths to ensure clean state
-    try {
-      this.melodySynth.dispose();
-      this.chordSynth.dispose();
-    } catch (e) {
-      // Ignore disposal errors
-    }
-    const Tone2 = window.Tone;
-    // Recreate with same smooth envelope settings
-    this.melodySynth = new Tone2.Synth({
-      oscillator: { type: "sine" },
-      envelope: { attack: 0.05, decay: 0.2, sustain: 0.7, release: 0.5 },
-    }).toDestination();
-    this.chordSynth = new Tone2.PolySynth(Tone2.Synth, {
-      oscillator: { type: "sine" },
-      envelope: { attack: 0.08, decay: 0.25, sustain: 0.6, release: 0.6 },
-    }).toDestination();
   }
 
   onTick(callback) {
