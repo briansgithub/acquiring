@@ -297,7 +297,8 @@ async function findAllSongIdsFromPage(url) {
         console.log(`  - ${sectionName}: No new song IDs (already loaded)`);
       }
     }
-    
+   
+    /* // Removed full page scroll as it is not needed
     // Do a full page scroll to catch any remaining sections that might load
     console.log('\nDoing full page scroll to catch remaining sections...');
     const pageHeight = await page.evaluate(() => document.documentElement.scrollHeight);
@@ -307,6 +308,7 @@ async function findAllSongIdsFromPage(url) {
       }, y);
       await new Promise(resolve => setTimeout(resolve, 500));
     }
+      */
     
     // Scroll back to top
     await page.evaluate(() => {
