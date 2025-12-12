@@ -104,6 +104,18 @@ async function extractFromUrl(url, useNewCache = false) {
   // Save to cache using new structure
   CacheManager.saveToCache(url, songTitle, sections);
   
+  // Save song metadata including section order
+  CacheManager.saveSongMetadata(url, songTitle, {
+    songIds: songIds, // Array preserving the order sections appear on webpage
+    sectionMapping: sectionMapping, // Maps songId to section name
+    sections: songIds.map((songId, index) => ({
+      index: index,
+      songId: songId,
+      sectionName: sectionMapping[songId] || 'Unknown',
+      numericId: sections[songId]?.numericId || null
+    }))
+  });
+  
   return result;
 }
 

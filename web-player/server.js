@@ -19,20 +19,64 @@ async function loadLibrary() {
     if (!artistEntry.isDirectory()) continue;
     const artistPath = path.join(CACHE_ROOT, artistEntry.name);
     const files = await fs.promises.readdir(artistPath);
+    
+    // Try to load metadata file for section ordering
+    let metadata = null;
+    const metadataPath = path.join(artistPath, "_metadata.json");
+    try {
+      if (fs.existsSync(metadataPath)) {
+        metadata = JSON.parse(await fs.promises.readFile(metadataPath, "utf8"));
+      }
+    } catch (e) {
+      // Ignore metadata load errors, fall back to numericId sorting
+    }
+    
     const sections = files
-      .filter((f) => f.endsWith(".json"))
+      .filter((f) => f.endsWith(".json") && f !== "_metadata.json")
       .map((file) => {
-        const [sectionName = "Unknown"] = file.split(" - ");
+        const parts = file.split(" - ");
+        const sectionName = parts[0] || "Unknown";
+        const numericId = parts[1] ? parseInt(parts[1], 10) : 0;
+        // Extract songId from filename (format: "SectionName - numericId - songId.json")
+        const songId = parts.length >= 3 ? parts[2].replace(".json", "") : null;
         const absolutePath = path.join(artistPath, file);
         const relPath = path.relative(CACHE_ROOT, absolutePath).split(path.sep).join("/");
-        return { sectionName, file, path: absolutePath, relPath };
+        return { sectionName, file, path: absolutePath, relPath, numericId, songId };
       });
+    
+    // Sort sections by webpage order (top to bottom) if metadata exists
+    if (metadata && metadata.sections && Array.isArray(metadata.sections)) {
+      // Create a map of songId to index (order from top to bottom on webpage)
+      const orderMap = new Map();
+      metadata.sections.forEach((section) => {
+        if (section.songId && section.index !== undefined) {
+          orderMap.set(section.songId, section.index);
+        }
+      });
+      
+      sections.sort((a, b) => {
+        const aOrder = a.songId ? (orderMap.get(a.songId) ?? 999999) : 999999;
+        const bOrder = b.songId ? (orderMap.get(b.songId) ?? 999999) : 999999;
+        // Sort by webpage order (index), not by songId value
+        return aOrder - bOrder;
+      });
+    } else {
+      // Fall back to numericId sorting if no metadata
+      sections.sort((a, b) => (a.numericId || 0) - (b.numericId || 0));
+    }
+    
     library.push({
       artist: artistEntry.name,
       title: artistEntry.name.split(" - ").slice(1).join(" ").trim() || artistEntry.name,
       sections,
     });
   }
+  // Sort songs alphabetically by title (or artist if title is empty)
+  library.sort((a, b) => {
+    const aTitle = a.title || a.artist || "";
+    const bTitle = b.title || b.artist || "";
+    return aTitle.localeCompare(bTitle, undefined, { sensitivity: "base" });
+  });
   if (!library.length) {
     console.warn("No artists found in cache at", CACHE_ROOT);
   }
