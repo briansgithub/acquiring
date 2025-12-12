@@ -75,9 +75,10 @@ export function scaleDegreeToSemitone(sd, key) {
   }
   const degree = parseInt(sd.replace(/[^0-9]/g, ""), 10) || 1; //extracts the unmodified scale degree 
   const accidental = sd.startsWith("b") ? -1 : sd.startsWith("#") ? 1 : 0;
-  const scaleSteps = scale === "minor" ? MINOR_SCALE : MAJOR_SCALE;
-  const step = scaleSteps[(degree - 1) % 7] + accidental;
-  return (tonicOffset + step + 12) % 12; // java mod can return negative values, so we add 12 to ensure it returns a positive value
+  const scaleSteps = scale === "major" ? MAJOR_SCALE : MINOR_SCALE;
+  const step = scaleSteps[((degree - 1) + 7) % 7] + accidental;
+  const retval = (tonicOffset + step + 12) % 12; // java mod can return negative values, so we add 12 to ensure it returns a positive value
+  return retval;
 }
 
 export function sdToNoteName(sd, octave, key) {
@@ -85,8 +86,25 @@ export function sdToNoteName(sd, octave, key) {
   // Get the appropriate note name set based on the tonic
   const noteNames = TONIC_TO_NOTE_NAMES[key.tonic] || DEFAULT_NOTE_NAMES;
   const noteName = noteNames[semitone];
-  const targetOctave = 4 + (octave || 0);
-  return `${noteName}${targetOctave}`;
+
+  // Calculate absolute octave using the HTML approach:
+  // Base octave 4 + relative octave + octave wraparound based on semitone position
+  const tonicSemitone = TONIC_TO_SEMITONE[key.tonic] || 0;
+  const noteSemitone = semitone; // 0-11, the note name within an octave
+
+  // Calculate semitone offset from tonic (0-11)
+  // This is the offset used in the HTML file's calculation
+  let offset = noteSemitone - tonicSemitone;
+  if (offset < 0) {
+    offset += 12; // Normalize to 0-11 range
+  }
+
+  // Use the HTML approach: 4 + octaveOffset + Math.floor((tonicIndex + offset) / 12)
+  const relativeOctave = octave || 0;
+  const absoluteOctave = 4 + relativeOctave + Math.floor((tonicSemitone + offset) / 12);
+
+  const retval = `${noteName}${absoluteOctave}`;
+  return retval;
 }
 
 export function chordRootToNotes(root, key, octave = 4, chordType = 5) {
