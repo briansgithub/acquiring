@@ -2,13 +2,14 @@ export class AudioEngine {
   constructor() {
     const Tone = window.Tone;
     // Smoother envelope settings to prevent clicks/pops and jagged sound
+    // Square oscillator for melody (clear and distinct)
     this.melodySynth = new Tone.Synth({
-      oscillator: { type: "sine" },
+      oscillator: { type: "square" },
       envelope: { attack: 0.05, decay: 0.2, sustain: 0.7, release: 0.5 },
     }).toDestination();
 
     // Use single persistent PolySynth instance (matches reference implementation)
-    // Triangle oscillator for chords (smoother than sine for chordal textures)
+    // Triangle oscillator for chords (smoother than square for chordal textures)
     // Volume set to -10dB to prevent clipping (matches reference default)
     this.chordSynth = new Tone.PolySynth(Tone.Synth, {
       oscillator: { type: "triangle" },
