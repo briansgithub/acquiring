@@ -1,0 +1,491 @@
+{
+  "timestamp": "2025-12-11T23:34:16.694Z",
+  "testResults": [
+    {
+      "url": "https://www.hooktheory.com/theorytab/view/scott-joplin/maple-leaf-rag",
+      "expectedSections": [
+        "Intro",
+        "Chorus",
+        "Bridge",
+        "Outro"
+      ],
+      "timestamp": "2025-12-11T23:34:16.997Z",
+      "findings": {
+        "h2Elements": [
+          {
+            "index": 0,
+            "text": "Intro",
+            "y": 361.640625,
+            "height": 26.390625,
+            "visible": true
+          },
+          {
+            "index": 1,
+            "text": "Chorus",
+            "y": 1332.109375,
+            "height": 26.390625,
+            "visible": true
+          },
+          {
+            "index": 2,
+            "text": "Bridge",
+            "y": 1761.25,
+            "height": 26.390625,
+            "visible": true
+          },
+          {
+            "index": 3,
+            "text": "Outro",
+            "y": 2190.390625,
+            "height": 26.390625,
+            "visible": true
+          }
+        ],
+        "initialSongIds": [
+          "nvgy-kVrgkA"
+        ],
+        "sectionH2s": [
+          {
+            "index": 0,
+            "text": "Intro",
+            "y": 361.640625,
+            "height": 26.390625
+          },
+          {
+            "index": 1,
+            "text": "Chorus",
+            "y": 1332.109375,
+            "height": 26.390625
+          },
+          {
+            "index": 2,
+            "text": "Bridge",
+            "y": 1761.25,
+            "height": 26.390625
+          },
+          {
+            "index": 3,
+            "text": "Outro",
+            "y": 2190.390625,
+            "height": 26.390625
+          }
+        ],
+        "sectionMappings": [
+          {
+            "sectionName": "Intro",
+            "h2Text": "Intro",
+            "h2Index": 0,
+            "newSongIds": [],
+            "newSongIdCount": 0
+          },
+          {
+            "sectionName": "Chorus",
+            "h2Text": "Chorus",
+            "h2Index": 1,
+            "newSongIds": [
+              "ZbgOR-qQmnY"
+            ],
+            "newSongIdCount": 1
+          },
+          {
+            "sectionName": "Bridge",
+            "h2Text": "Bridge",
+            "h2Index": 2,
+            "newSongIds": [],
+            "newSongIdCount": 0
+          },
+          {
+            "sectionName": "Outro",
+            "h2Text": "Outro",
+            "h2Index": 3,
+            "newSongIds": [
+              "yvgPqBwKxYq"
+            ],
+            "newSongIdCount": 1
+          }
+        ],
+        "allSongIds": [
+          "nvgy-kVrgkA",
+          "ZbgOR-qQmnY",
+          "yvgPqBwKxYq",
+          "RPxenBQAob_"
+        ],
+        "songIdCaptureTimes": [
+          {
+            "songId": "nvgy-kVrgkA",
+            "timestamp": "2025-12-11T23:34:26.132Z",
+            "url": "https://api.hooktheory.com/v1/songs/public/nvgy-kVrgkA?fields=ID,xmlData,song,jsonData"
+          },
+          {
+            "songId": "ZbgOR-qQmnY",
+            "timestamp": "2025-12-11T23:34:34.780Z",
+            "url": "https://api.hooktheory.com/v1/songs/public/ZbgOR-qQmnY?fields=ID,xmlData,song,jsonData"
+          },
+          {
+            "songId": "yvgPqBwKxYq",
+            "timestamp": "2025-12-11T23:34:40.600Z",
+            "url": "https://api.hooktheory.com/v1/songs/public/yvgPqBwKxYq?fields=ID,xmlData,song,jsonData"
+          },
+          {
+            "songId": "RPxenBQAob_",
+            "timestamp": "2025-12-11T23:34:47.580Z",
+            "url": "https://api.hooktheory.com/v1/songs/public/RPxenBQAob_?fields=ID,xmlData,song,jsonData"
+          }
+        ]
+      },
+      "analysis": {
+        "extractedSectionNames": [
+          "Intro",
+          "Chorus",
+          "Bridge",
+          "Outro"
+        ],
+        "expectedSections": [
+          "Intro",
+          "Chorus",
+          "Bridge",
+          "Outro"
+        ],
+        "missingSections": [],
+        "extraSections": [],
+        "totalSongIds": 4,
+        "sectionsWithSongIds": 2
+      }
+    },
+    {
+      "url": "https://www.hooktheory.com/theorytab/view/the-proclaimers/500-miles",
+      "expectedSections": [
+        "Verse",
+        "Chorus"
+      ],
+      "timestamp": "2025-12-11T23:36:09.120Z",
+      "findings": {
+        "h2Elements": [
+          {
+            "index": 0,
+            "text": "Verse",
+            "y": 361.640625,
+            "height": 26.390625,
+            "visible": true
+          },
+          {
+            "index": 1,
+            "text": "Chorus",
+            "y": 982.828125,
+            "height": 26.390625,
+            "visible": true
+          }
+        ],
+        "initialSongIds": [
+          "nLgaKbMEoYp"
+        ],
+        "sectionH2s": [
+          {
+            "index": 0,
+            "text": "Verse",
+            "y": 361.640625,
+            "height": 26.390625
+          },
+          {
+            "index": 1,
+            "text": "Chorus",
+            "y": 982.828125,
+            "height": 26.390625
+          }
+        ],
+        "sectionMappings": [
+          {
+            "sectionName": "Verse",
+            "h2Text": "Verse",
+            "h2Index": 0,
+            "newSongIds": [],
+            "newSongIdCount": 0
+          },
+          {
+            "sectionName": "Chorus",
+            "h2Text": "Chorus",
+            "h2Index": 1,
+            "newSongIds": [
+              "yvmrbYkzmOW"
+            ],
+            "newSongIdCount": 1
+          }
+        ],
+        "allSongIds": [
+          "nLgaKbMEoYp",
+          "yvmrbYkzmOW"
+        ],
+        "songIdCaptureTimes": [
+          {
+            "songId": "nLgaKbMEoYp",
+            "timestamp": "2025-12-11T23:36:14.112Z",
+            "url": "https://api.hooktheory.com/v1/songs/public/nLgaKbMEoYp?fields=ID,xmlData,song,jsonData"
+          },
+          {
+            "songId": "yvmrbYkzmOW",
+            "timestamp": "2025-12-11T23:36:22.608Z",
+            "url": "https://api.hooktheory.com/v1/songs/public/yvmrbYkzmOW?fields=ID,xmlData,song,jsonData"
+          }
+        ]
+      },
+      "analysis": {
+        "extractedSectionNames": [
+          "Verse",
+          "Chorus"
+        ],
+        "expectedSections": [
+          "Verse",
+          "Chorus"
+        ],
+        "missingSections": [],
+        "extraSections": [],
+        "totalSongIds": 2,
+        "sectionsWithSongIds": 1
+      }
+    },
+    {
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/let-it-be",
+      "expectedSections": [
+        "Verse",
+        "Chorus",
+        "Bridge"
+      ],
+      "timestamp": "2025-12-11T23:37:35.063Z",
+      "findings": {
+        "h2Elements": [
+          {
+            "index": 0,
+            "text": "Verse",
+            "y": 326.453125,
+            "height": 26.390625,
+            "visible": true
+          },
+          {
+            "index": 1,
+            "text": "Chorus",
+            "y": 1009.28125,
+            "height": 26.390625,
+            "visible": true
+          },
+          {
+            "index": 2,
+            "text": "Bridge",
+            "y": 1414.78125,
+            "height": 26.390625,
+            "visible": true
+          }
+        ],
+        "initialSongIds": [
+          "_NgbRXeYgQA"
+        ],
+        "sectionH2s": [
+          {
+            "index": 0,
+            "text": "Verse",
+            "y": 326.453125,
+            "height": 26.390625
+          },
+          {
+            "index": 1,
+            "text": "Chorus",
+            "y": 1009.28125,
+            "height": 26.390625
+          },
+          {
+            "index": 2,
+            "text": "Bridge",
+            "y": 1414.78125,
+            "height": 26.390625
+          }
+        ],
+        "sectionMappings": [
+          {
+            "sectionName": "Verse",
+            "h2Text": "Verse",
+            "h2Index": 0,
+            "newSongIds": [],
+            "newSongIdCount": 0
+          },
+          {
+            "sectionName": "Chorus",
+            "h2Text": "Chorus",
+            "h2Index": 1,
+            "newSongIds": [
+              "nvgyBpArxkA"
+            ],
+            "newSongIdCount": 1
+          },
+          {
+            "sectionName": "Bridge",
+            "h2Text": "Bridge",
+            "h2Index": 2,
+            "newSongIds": [
+              "yvgPv-kKoYq"
+            ],
+            "newSongIdCount": 1
+          }
+        ],
+        "allSongIds": [
+          "_NgbRXeYgQA",
+          "nvgyBpArxkA",
+          "yvgPv-kKoYq"
+        ],
+        "songIdCaptureTimes": [
+          {
+            "songId": "_NgbRXeYgQA",
+            "timestamp": "2025-12-11T23:37:42.277Z",
+            "url": "https://api.hooktheory.com/v1/songs/public/_NgbRXeYgQA?fields=ID,xmlData,song,jsonData"
+          },
+          {
+            "songId": "nvgyBpArxkA",
+            "timestamp": "2025-12-11T23:37:50.972Z",
+            "url": "https://api.hooktheory.com/v1/songs/public/nvgyBpArxkA?fields=ID,xmlData,song,jsonData"
+          },
+          {
+            "songId": "yvgPv-kKoYq",
+            "timestamp": "2025-12-11T23:37:54.037Z",
+            "url": "https://api.hooktheory.com/v1/songs/public/yvgPv-kKoYq?fields=ID,xmlData,song,jsonData"
+          }
+        ]
+      },
+      "analysis": {
+        "extractedSectionNames": [
+          "Verse",
+          "Chorus",
+          "Bridge"
+        ],
+        "expectedSections": [
+          "Verse",
+          "Chorus",
+          "Bridge"
+        ],
+        "missingSections": [],
+        "extraSections": [],
+        "totalSongIds": 3,
+        "sectionsWithSongIds": 2
+      }
+    },
+    {
+      "url": "https://www.hooktheory.com/theorytab/view/fun/we-are-young",
+      "expectedSections": [
+        "Verse",
+        "Pre-chorus",
+        "Chorus"
+      ],
+      "timestamp": "2025-12-11T23:41:29.622Z",
+      "findings": {
+        "h2Elements": [
+          {
+            "index": 0,
+            "text": "Verse",
+            "y": 326.453125,
+            "height": 26.390625,
+            "visible": true
+          },
+          {
+            "index": 1,
+            "text": "Pre-Chorus",
+            "y": 903.640625,
+            "height": 26.390625,
+            "visible": true
+          },
+          {
+            "index": 2,
+            "text": "Chorus",
+            "y": 1225.5,
+            "height": 26.390625,
+            "visible": true
+          }
+        ],
+        "initialSongIds": [
+          "nLgalZE_mYp"
+        ],
+        "sectionH2s": [
+          {
+            "index": 0,
+            "text": "Verse",
+            "y": 326.453125,
+            "height": 26.390625
+          },
+          {
+            "index": 1,
+            "text": "Pre-Chorus",
+            "y": 903.640625,
+            "height": 26.390625
+          },
+          {
+            "index": 2,
+            "text": "Chorus",
+            "y": 1225.5,
+            "height": 26.390625
+          }
+        ],
+        "sectionMappings": [
+          {
+            "sectionName": "Verse",
+            "h2Text": "Verse",
+            "h2Index": 0,
+            "newSongIds": [],
+            "newSongIdCount": 0
+          },
+          {
+            "sectionName": "Pre-Chorus",
+            "h2Text": "Pre-Chorus",
+            "h2Index": 1,
+            "newSongIds": [
+              "veoYrYykmdn"
+            ],
+            "newSongIdCount": 1
+          },
+          {
+            "sectionName": "Chorus",
+            "h2Text": "Chorus",
+            "h2Index": 2,
+            "newSongIds": [
+              "KexEjKRKo_B"
+            ],
+            "newSongIdCount": 1
+          }
+        ],
+        "allSongIds": [
+          "nLgalZE_mYp",
+          "veoYrYykmdn",
+          "KexEjKRKo_B"
+        ],
+        "songIdCaptureTimes": [
+          {
+            "songId": "nLgalZE_mYp",
+            "timestamp": "2025-12-11T23:41:36.131Z",
+            "url": "https://api.hooktheory.com/v1/songs/public/nLgalZE_mYp?fields=ID,xmlData,song,jsonData"
+          },
+          {
+            "songId": "veoYrYykmdn",
+            "timestamp": "2025-12-11T23:41:48.188Z",
+            "url": "https://api.hooktheory.com/v1/songs/public/veoYrYykmdn?fields=ID,xmlData,song,jsonData"
+          },
+          {
+            "songId": "KexEjKRKo_B",
+            "timestamp": "2025-12-11T23:41:51.329Z",
+            "url": "https://api.hooktheory.com/v1/songs/public/KexEjKRKo_B?fields=ID,xmlData,song,jsonData"
+          }
+        ]
+      },
+      "analysis": {
+        "extractedSectionNames": [
+          "Verse",
+          "Pre-Chorus",
+          "Chorus"
+        ],
+        "expectedSections": [
+          "Verse",
+          "Pre-chorus",
+          "Chorus"
+        ],
+        "missingSections": [],
+        "extraSections": [],
+        "totalSongIds": 3,
+        "sectionsWithSongIds": 2
+      }
+    }
+  ]
+}

@@ -170,14 +170,21 @@ function extractSongIdFromUrl(url) {
   return { artist: match[1], song: match[2] };
 }
 
-function normalizeSectionName(name) {
-  const lower = name.toLowerCase();
-  if (lower.includes('intro')) return 'Intro';
-  if (lower.includes('verse')) return 'Verse';
-  if (lower.includes('chorus')) return 'Chorus';
-  if (lower.includes('bridge')) return 'Bridge';
-  if (lower.includes('outro')) return 'Outro';
-  return 'Unknown';
+function extractSectionNameFromH2(h2Text) {
+  // Extract the actual section name from H2 text
+  // Use the H2 text as-is (preserves case, hyphens, etc.)
+  // H2 text is the authoritative section name
+  return h2Text.trim();
+}
+
+function isSectionH2(h2Text) {
+  // Check if an H2 is likely a section title
+  // Section titles are usually short and not page headings
+  const text = h2Text.trim();
+  return text.length > 0 && 
+         text.length < 50 && 
+         !text.includes('by ') && 
+         !text.toLowerCase().includes('chords and melody');
 }
 
 async function findAllSongIdsFromPage(url) {
@@ -220,18 +227,22 @@ async function findAllSongIdsFromPage(url) {
       
       h2s.forEach((h2, index) => {
         const text = h2.textContent.trim();
-        const textLower = text.toLowerCase();
-        const sectionNames = ['intro', 'verse', 'chorus', 'bridge', 'outro'];
+        const rect = h2.getBoundingClientRect();
         
-        if (sectionNames.some(s => textLower.includes(s))) {
-          const rect = h2.getBoundingClientRect();
-          sections.push({
-            index: index,
-            text: text,
-            textLower: textLower,
-            y: rect.y,
-            height: rect.height
-          });
+        // Include all visible H2s that look like section titles
+        if (rect.height > 0 && text.length > 0 && text.length < 50) {
+          // Filter out page headings
+          const isPageHeading = text.includes('by ') || 
+                                text.toLowerCase().includes('chords and melody');
+          
+          if (!isPageHeading) {
+            sections.push({
+              index: index,
+              text: text,
+              y: rect.y,
+              height: rect.height
+            });
+          }
         }
       });
       
@@ -254,12 +265,7 @@ async function findAllSongIdsFromPage(url) {
     
     for (let i = 0; i < h2Sections.length; i++) {
       const h2Section = h2Sections[i];
-      const sectionName = normalizeSectionName(h2Section.text);
-      
-      if (!sectionName) {
-        console.log(`  ⚠ Skipping H2 "${h2Section.text}" - not a recognized section`);
-        continue;
-      }
+      const sectionName = extractSectionNameFromH2(h2Section.text);
       
       const beforeCount = allCapturedSongIds.length;
       
@@ -292,6 +298,35 @@ async function findAllSongIdsFromPage(url) {
       }
     }
     
+    // Do a full page scroll to catch any remaining sections that might load
+    console.log('\nDoing full page scroll to catch remaining sections...');
+    const pageHeight = await page.evaluate(() => document.documentElement.scrollHeight);
+    for (let y = 0; y < pageHeight; y += viewportHeight / 2) {
+      await page.evaluate((scrollY) => {
+        window.scrollTo(0, scrollY);
+      }, y);
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+    
+    // Scroll back to top
+    await page.evaluate(() => {
+      return new Promise((resolve) => {
+        let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollStep = 200;
+        const delay = 300;
+        
+        const timer = setInterval(() => {
+          currentScroll = Math.max(0, currentScroll - scrollStep);
+          window.scrollTo(0, currentScroll);
+          
+          if (currentScroll <= 0) {
+            clearInterval(timer);
+            setTimeout(resolve, 1000);
+          }
+        }, delay);
+      });
+    });
+    
     // Final wait for any remaining requests
     await new Promise(resolve => setTimeout(resolve, 2000));
     
@@ -308,6 +343,9 @@ async function findAllSongIdsFromPage(url) {
     const sectionMapping = {};
     const mappedSongIds = new Set();
     
+    // Get H2 section names in order (use actual H2 text)
+    const h2SectionNames = h2Sections.map(sec => extractSectionNameFromH2(sec.text));
+    
     // First pass: Map song IDs that were triggered by specific H2 sections
     for (const mapping of sectionToSongIdMap) {
       for (const songId of mapping.newSongIds) {
@@ -318,14 +356,10 @@ async function findAllSongIdsFromPage(url) {
       }
     }
     
-    // Second pass: Assign unmapped song IDs (from initial load) to H2 sections in order
+    // Second pass: Assign unmapped song IDs to H2 sections in order
+    // This handles initial load IDs and IDs that loaded during full scroll
     const unmappedIds = songIds.filter(id => !mappedSongIds.has(id));
     if (unmappedIds.length > 0) {
-      // Get H2 section names in order
-      const h2SectionNames = h2Sections
-        .map(sec => normalizeSectionName(sec.text))
-        .filter(name => name !== null);
-      
       // Get already used section names
       const usedSections = new Set(Object.values(sectionMapping));
       
@@ -345,7 +379,7 @@ async function findAllSongIdsFromPage(url) {
           sectionIndex++;
         } else {
           // If we run out of H2 sections, assign to the last one
-          // This should never happen, but ensures we never use "Unknown"
+          // This ensures we never use "Unknown"
           sectionMapping[id] = h2SectionNames[h2SectionNames.length - 1];
           mappedSongIds.add(id);
         }
@@ -356,10 +390,6 @@ async function findAllSongIdsFromPage(url) {
     const stillUnmapped = songIds.filter(id => !sectionMapping[id]);
     if (stillUnmapped.length > 0) {
       // Fallback: assign to H2 sections in round-robin fashion
-      const h2SectionNames = h2Sections
-        .map(sec => normalizeSectionName(sec.text))
-        .filter(name => name !== null);
-      
       for (let i = 0; i < stillUnmapped.length; i++) {
         sectionMapping[stillUnmapped[i]] = h2SectionNames[i % h2SectionNames.length];
       }
