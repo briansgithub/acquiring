@@ -29,12 +29,12 @@ function getSongCacheDir(artist, songTitle) {
   // Sanitize for filesystem: replace spaces with underscores, remove special chars
   const safeArtist = artist.replace(/[^a-zA-Z0-9_-]/g, '_');
   const safeTitle = songTitle.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/\s+/g, '_');
-  return path.join(CACHE_DIR, `${safeArtist}-${safeTitle}`);
+  return path.join(CACHE_DIR, `${safeArtist} - ${safeTitle}`);
 }
 
 function getSectionCachePath(songDir, sectionName, numericId, stringSongId) {
   const safeSectionName = sectionName.charAt(0).toUpperCase() + sectionName.slice(1).toLowerCase();
-  const filename = `${safeSectionName}_${numericId}_${stringSongId}.json`;
+  const filename = `${safeSectionName} - ${numericId} - ${stringSongId}.json`;
   return path.join(songDir, filename);
 }
 
@@ -258,16 +258,17 @@ async function findAllSongIdsFromPage(url) {
       throw new Error('No H2 section elements found on page');
     }
     
-    // Scroll to each H2 section and track which song IDs are loaded
+    // Scroll to each H2 section and track which song IDs appear at each section
     console.log('\nScrolling to each H2 section to trigger lazy loading...');
     const viewportHeight = await page.evaluate(() => window.innerHeight);
-    const sectionToSongIdMap = []; // Track which song IDs load for each H2 section
+    const sectionToFirstSeenIds = []; // Track order of first appearance of IDs per section
+    const seenIds = new Set(); // Track which IDs we've seen before
     
     for (let i = 0; i < h2Sections.length; i++) {
       const h2Section = h2Sections[i];
       const sectionName = extractSectionNameFromH2(h2Section.text);
       
-      const beforeCount = allCapturedSongIds.length;
+      const beforeIds = new Set(allCapturedSongIds);
       
       // Scroll to center the H2 in viewport
       await page.evaluate((targetY, vh) => {
@@ -281,26 +282,24 @@ async function findAllSongIdsFromPage(url) {
       // Wait for intersection observer to trigger and API calls to complete
       await new Promise(resolve => setTimeout(resolve, 3000));
       
-      // Check which new song IDs were captured
-      const newSongIds = allCapturedSongIds.slice(beforeCount);
+      // Find IDs that are new (first time we see them)
+      const newIds = allCapturedSongIds.filter(id => !beforeIds.has(id) && !seenIds.has(id));
+      newIds.forEach(id => seenIds.add(id));
       
-      sectionToSongIdMap.push({
+      sectionToFirstSeenIds.push({
         sectionName: sectionName,
-        h2Text: h2Section.text,
-        h2Index: h2Section.index,
-        newSongIds: newSongIds
+        newIds: newIds
       });
       
-      if (newSongIds.length > 0) {
-        console.log(`  ✓ ${sectionName}: Loaded ${newSongIds.length} new song ID(s): ${newSongIds.join(', ')}`);
+      if (newIds.length > 0) {
+        console.log(`  ✓ ${sectionName}: First seen ${newIds.length} song ID(s): ${newIds.join(', ')}`);
       } else {
-        console.log(`  - ${sectionName}: No new song IDs (already loaded)`);
+        console.log(`  - ${sectionName}: No new song IDs`);
       }
     }
-   
-    /* // Removed full page scroll as it is not needed
-    // Do a full page scroll to catch any remaining sections that might load
-    console.log('\nDoing full page scroll to catch remaining sections...');
+    
+    // Do a full page scroll to ensure all sections are loaded
+    console.log('\nDoing full page scroll to ensure all sections are loaded...');
     const pageHeight = await page.evaluate(() => document.documentElement.scrollHeight);
     for (let y = 0; y < pageHeight; y += viewportHeight / 2) {
       await page.evaluate((scrollY) => {
@@ -308,7 +307,6 @@ async function findAllSongIdsFromPage(url) {
       }, y);
       await new Promise(resolve => setTimeout(resolve, 500));
     }
-      */
     
     // Scroll back to top
     await page.evaluate(() => {
@@ -341,59 +339,29 @@ async function findAllSongIdsFromPage(url) {
       throw new Error('Could not find any song IDs in page');
     }
     
-    // Build section mapping: assign song IDs to H2 sections
+    // Build section mapping: map IDs to sections based on order of first appearance
     const sectionMapping = {};
-    const mappedSongIds = new Set();
-    
-    // Get H2 section names in order (use actual H2 text)
     const h2SectionNames = h2Sections.map(sec => extractSectionNameFromH2(sec.text));
     
-    // First pass: Map song IDs that were triggered by specific H2 sections
-    for (const mapping of sectionToSongIdMap) {
-      for (const songId of mapping.newSongIds) {
-        if (!sectionMapping[songId]) {
-          sectionMapping[songId] = mapping.sectionName;
-          mappedSongIds.add(songId);
-        }
+    // Track order of first appearance: use the order in allCapturedSongIds (maintains insertion order)
+    const firstAppearanceOrder = [];
+    const seenInOrder = new Set();
+    for (const id of allCapturedSongIds) {
+      if (!seenInOrder.has(id)) {
+        firstAppearanceOrder.push(id);
+        seenInOrder.add(id);
       }
     }
     
-    // Second pass: Assign unmapped song IDs to H2 sections in order
-    // This handles initial load IDs and IDs that loaded during full scroll
-    const unmappedIds = songIds.filter(id => !mappedSongIds.has(id));
-    if (unmappedIds.length > 0) {
-      // Get already used section names
-      const usedSections = new Set(Object.values(sectionMapping));
-      
-      // Assign unmapped IDs to unused H2 sections in order
-      let sectionIndex = 0;
-      for (const id of unmappedIds) {
-        // Find next unused H2 section
-        while (sectionIndex < h2SectionNames.length && 
-               usedSections.has(h2SectionNames[sectionIndex])) {
-          sectionIndex++;
-        }
-        
-        if (sectionIndex < h2SectionNames.length) {
-          sectionMapping[id] = h2SectionNames[sectionIndex];
-          mappedSongIds.add(id);
-          usedSections.add(h2SectionNames[sectionIndex]);
-          sectionIndex++;
-        } else {
-          // If we run out of H2 sections, assign to the last one
-          // This ensures we never use "Unknown"
-          sectionMapping[id] = h2SectionNames[h2SectionNames.length - 1];
-          mappedSongIds.add(id);
-        }
-      }
+    // Map IDs to H2 sections in order of first appearance (1:1 mapping)
+    for (let i = 0; i < Math.min(firstAppearanceOrder.length, h2SectionNames.length); i++) {
+      sectionMapping[firstAppearanceOrder[i]] = h2SectionNames[i];
     }
     
-    // Verify all song IDs are mapped
-    const stillUnmapped = songIds.filter(id => !sectionMapping[id]);
-    if (stillUnmapped.length > 0) {
-      // Fallback: assign to H2 sections in round-robin fashion
-      for (let i = 0; i < stillUnmapped.length; i++) {
-        sectionMapping[stillUnmapped[i]] = h2SectionNames[i % h2SectionNames.length];
+    // If we have more IDs than sections, assign remaining to last section
+    if (firstAppearanceOrder.length > h2SectionNames.length) {
+      for (let i = h2SectionNames.length; i < firstAppearanceOrder.length; i++) {
+        sectionMapping[firstAppearanceOrder[i]] = h2SectionNames[h2SectionNames.length - 1];
       }
     }
     
