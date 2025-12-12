@@ -20,22 +20,36 @@ export function scaleDegreeToSemitone(sd, key) {
   return (tonicOffset + step + 12) % 12;
 }
 
-export function chordRootToNotes(root, key, octave = 3) {
-  const { scale } = key;
-  const scaleSteps = scale === "minor" ? MINOR_SCALE : MAJOR_SCALE;
-  const rootIndex = ((root - 1) % 7 + 7) % 7;
-  const tonic = key.tonic ?? DEFAULT_KEY.tonic;
-  const tonicOffset = TONIC_TO_SEMITONE[tonic] ?? 0;
+export function chordRootToNotes(root, key, octave = 4, chordType = 5) {
+  // Root is already a chromatic note (0-11: 0=C, 1=C#, 2=D, etc.)
+  // Build triad based on root and chord type
+  const rootSemitone = root % 12;
+  
+  // Determine if chord is major or minor based on type
+  // type 5 = major triad, other values might indicate minor
+  // For now, assume major triad (type 5)
+  // Major triad: root, major third (+4 semitones), perfect fifth (+7 semitones)
+  const thirdInterval = 4;
+  const fifthInterval = 7;
+  
+  const thirdSemitone = (rootSemitone + thirdInterval) % 12;
+  const fifthSemitone = (rootSemitone + fifthInterval) % 12;
 
-  const rootSemitone = (tonicOffset + scaleSteps[rootIndex]) % 12;
-  const third = scaleSteps[(rootIndex + 2) % 7];
-  const fifth = scaleSteps[(rootIndex + 4) % 7];
-
-  return [
-    `${NOTE_NAMES[rootSemitone % 12]}${octave}`,
-    `${NOTE_NAMES[(tonicOffset + third) % 12]}${octave}`,
-    `${NOTE_NAMES[(tonicOffset + fifth) % 12]}${octave}`,
+  const notes = [
+    `${NOTE_NAMES[rootSemitone]}${octave}`,
+    `${NOTE_NAMES[thirdSemitone]}${octave}`,
+    `${NOTE_NAMES[fifthSemitone]}${octave}`,
   ];
+  
+  console.log("CHORD DEBUG: chordRootToNotes", {
+    root,
+    rootSemitone: NOTE_NAMES[rootSemitone],
+    thirdSemitone: NOTE_NAMES[thirdSemitone],
+    fifthSemitone: NOTE_NAMES[fifthSemitone],
+    notes,
+  });
+  
+  return notes;
 }
 
 export function sdToNoteName(sd, octave, key) {

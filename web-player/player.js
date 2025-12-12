@@ -112,10 +112,10 @@ async function loadSection(songIndex, sectionIndex) {
     .map((chord) => ({
       time: (chord.beat - 1) * currentSecondsPerBeat,
       duration: chord.duration * currentSecondsPerBeat,
-      notes: chordRootToNotes(chord.root, key),
+      notes: chordRootToNotes(chord.root, key, 4, chord.type),
       name: chord.root,
       onTrigger: () => {
-        const notes = chordRootToNotes(chord.root, key);
+        const notes = chordRootToNotes(chord.root, key, 4, chord.type);
         noteIndicator.updateChord(notes);
         chordRing.update(notes.join("-"));
       },
