@@ -43,6 +43,15 @@ const controls = renderControls(controlsPane, {
   onChordVolumeChange: (volume) => {
     engine.setChordVolume(volume);
   },
+  onTempoChange: (tempo) => {
+    currentBpm = tempo;
+    currentSecondsPerBeat = 60 / tempo;
+    engine.setTempo(tempo);
+    // Recalculate progress based on new tempo
+    const totalSeconds = songLength * currentSecondsPerBeat;
+    const ratio = Math.min(1, Tone.Transport.seconds / totalSeconds);
+    controls.updateProgress(ratio);
+  },
 });
 const chordRing = renderChordRing(ringPane);
 const noteIndicator = renderNoteIndicator(indicatorPane);
@@ -56,6 +65,7 @@ let currentSecondsPerBeat = 0;
 let currentMelodyEvents = [];
 let currentChordEvents = [];
 let currentBpm = 120;
+let originalBpm = 120; // Store the original tempo from the loaded section
 
 init();
 
@@ -112,6 +122,7 @@ async function loadSection(songIndex, sectionIndex) {
 
   const key = parseKey(data.metadata);
   const bpm = data.metadata?.tempos?.[0]?.bpm ?? 120;
+  originalBpm = bpm;
   currentBpm = bpm;
   currentSecondsPerBeat = 60 / bpm;
   songLength = getSongLength(data.metadata) || 1;
@@ -172,6 +183,8 @@ async function loadSection(songIndex, sectionIndex) {
   const sectionSelect = document.getElementById("section-select");
   if (songSelect) songSelect.value = songIndex;
   if (sectionSelect) sectionSelect.value = sectionIndex;
+  // Update tempo slider to match loaded section's tempo (100% = original tempo)
+  controls.setTempo(bpm, originalBpm);
   controls.updateProgress(0);
   controls.resetPlayState();
   chordRing.update("Ready");

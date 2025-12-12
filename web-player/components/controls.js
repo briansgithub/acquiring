@@ -1,4 +1,4 @@
-export function renderControls(container, { onPlayPause, onSeek, onSongChange, onSectionChange, onMelodyVolumeChange, onChordVolumeChange }) {
+export function renderControls(container, { onPlayPause, onSeek, onSongChange, onSectionChange, onMelodyVolumeChange, onChordVolumeChange, onTempoChange }) {
   container.innerHTML = `
     <h2>Controls</h2>
     <div class="row">
@@ -15,6 +15,11 @@ export function renderControls(container, { onPlayPause, onSeek, onSongChange, o
         <div class="fill" id="progress-fill"></div>
       </div>
       <span id="progress-label" style="font-size:12px;color:#9ca3af;width:42px;text-align:right;">0%</span>
+    </div>
+    <div class="row">
+      <label for="tempo-slider" style="font-size:12px;color:#9ca3af;width:60px;">Tempo:</label>
+      <input type="range" id="tempo-slider" min="1" max="100" value="100" step="1" class="volume-slider">
+      <span id="tempo-label" style="font-size:12px;color:#9ca3af;width:35px;text-align:right;">100%</span>
     </div>
     <div class="row">
       <label for="melody-volume" style="font-size:12px;color:#9ca3af;width:60px;">Melody:</label>
@@ -34,6 +39,8 @@ export function renderControls(container, { onPlayPause, onSeek, onSongChange, o
   const label = container.querySelector("#progress-label");
   const songSelect = container.querySelector("#song-select");
   const sectionSelect = container.querySelector("#section-select");
+  const tempoSlider = container.querySelector("#tempo-slider");
+  const tempoLabel = container.querySelector("#tempo-label");
   const melodyVolumeSlider = container.querySelector("#melody-volume");
   const melodyVolumeLabel = container.querySelector("#melody-volume-label");
   const chordVolumeSlider = container.querySelector("#chord-volume");
@@ -72,7 +79,24 @@ export function renderControls(container, { onPlayPause, onSeek, onSongChange, o
     onChordVolumeChange?.(volume);
   });
 
+  let baseTempo = 120; // Store the original tempo for percentage calculation
+
+  tempoSlider.addEventListener("input", (e) => {
+    const percentage = Number(e.target.value);
+    tempoLabel.textContent = `${percentage}%`;
+    // Convert percentage to BPM: actualBPM = (percentage / 100) * baseTempo
+    const actualBpm = (percentage / 100) * baseTempo;
+    onTempoChange?.(actualBpm);
+  });
+
   return {
+    setTempo(bpm, originalBpm) {
+      baseTempo = originalBpm || bpm;
+      // Convert BPM to percentage: percentage = (currentBPM / originalBPM) * 100
+      const percentage = Math.round((bpm / baseTempo) * 100);
+      tempoSlider.value = Math.max(1, Math.min(100, percentage));
+      tempoLabel.textContent = `${tempoSlider.value}%`;
+    },
     setSongs(songs) {
       console.log("setSongs called with:", songs);
       if (!Array.isArray(songs) || !songs.length) {

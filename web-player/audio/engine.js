@@ -124,5 +124,10 @@ export class AudioEngine {
       this.chordSynth.volume.value = volume;
     }
   }
+
+  setTempo(bpm) {
+    const Tone = window.Tone;
+    Tone.Transport.bpm.value = bpm;
+  }
 }
 
