@@ -1,8 +1,9 @@
-export function renderControls(container, { onPlayPause, onSeek, onSongChange, onSectionChange, onMelodyVolumeChange, onChordVolumeChange, onTempoChange }) {
+export function renderControls(container, { onPlayPause, onRestart, onSeek, onSongChange, onSectionChange, onMelodyVolumeChange, onChordVolumeChange, onTempoChange }) {
   container.innerHTML = `
     <h2>Controls</h2>
     <div class="row">
       <button id="play-toggle">Play</button>
+      <button id="restart-btn">Restart</button>
     </div>
     <div class="row">
       <select id="song-select" class="select"></select>
@@ -34,6 +35,7 @@ export function renderControls(container, { onPlayPause, onSeek, onSongChange, o
   `;
 
   const playBtn = container.querySelector("#play-toggle");
+  const restartBtn = container.querySelector("#restart-btn");
   const progress = container.querySelector("#progress-bar");
   const fill = container.querySelector("#progress-fill");
   const label = container.querySelector("#progress-label");
@@ -51,6 +53,10 @@ export function renderControls(container, { onPlayPause, onSeek, onSongChange, o
     playBtn.dataset.state = isPlaying ? "paused" : "playing";
     playBtn.textContent = isPlaying ? "Play" : "Pause";
     onPlayPause?.(!isPlaying);
+  });
+
+  restartBtn.addEventListener("click", () => {
+    onRestart?.();
   });
 
   progress.addEventListener("click", (e) => {

@@ -18,11 +18,16 @@ const controls = renderControls(controlsPane, {
       // If parts are empty (song ended and stop() was called) or transport is at/past the end
       const totalSeconds = songLength * currentSecondsPerBeat;
       if (engine.parts.length === 0 || Tone.Transport.seconds >= totalSeconds) {
-        // Reset transport position and reschedule parts
+        // Reset transport position and reschedule parts with current tempo
         engine.stop();
+        currentSecondsPerBeat = 60 / currentBpm;
+        const melodyEvents = createMelodyEvents(currentRawNotes, currentKey, currentSecondsPerBeat);
+        const chordEvents = createChordEvents(currentRawChords, currentKey, currentSecondsPerBeat);
+        currentMelodyEvents = melodyEvents;
+        currentChordEvents = chordEvents;
         await engine.setupTransport(currentBpm);
-        engine.scheduleMelody(currentMelodyEvents);
-        engine.scheduleChords(currentChordEvents);
+        engine.scheduleMelody(melodyEvents);
+        engine.scheduleChords(chordEvents);
         controls.updateProgress(0);
         chordRing.update("Ready");
         noteIndicator.reset();
@@ -33,6 +38,23 @@ const controls = renderControls(controlsPane, {
     } else {
       engine.pause();
     }
+  },
+  onRestart: async () => {
+    engine.stop();
+    // Recalculate events with current tempo
+    currentSecondsPerBeat = 60 / currentBpm;
+    const melodyEvents = createMelodyEvents(currentRawNotes, currentKey, currentSecondsPerBeat);
+    const chordEvents = createChordEvents(currentRawChords, currentKey, currentSecondsPerBeat);
+    currentMelodyEvents = melodyEvents;
+    currentChordEvents = chordEvents;
+    await engine.setupTransport(currentBpm);
+    engine.scheduleMelody(melodyEvents);
+    engine.scheduleChords(chordEvents);
+    controls.updateProgress(0);
+    controls.resetPlayState();
+    chordRing.update("Ready");
+    noteIndicator.reset();
+    setupProgressTracking();
   },
   onSeek: handleSeek,
   onSongChange: handleSongChange,
@@ -66,6 +88,9 @@ let currentMelodyEvents = [];
 let currentChordEvents = [];
 let currentBpm = 120;
 let originalBpm = 120; // Store the original tempo from the loaded section
+let currentRawNotes = []; // Store raw note data for tempo recalculation
+let currentRawChords = []; // Store raw chord data for tempo recalculation
+let currentKey = null; // Store current key for event recalculation
 
 init();
 
@@ -121,6 +146,7 @@ async function loadSection(songIndex, sectionIndex) {
   currentSectionIdx = sectionIndex;
 
   const key = parseKey(data.metadata);
+  currentKey = key;
   const bpm = data.metadata?.tempos?.[0]?.bpm ?? 120;
   originalBpm = bpm;
   currentBpm = bpm;
@@ -133,29 +159,12 @@ async function loadSection(songIndex, sectionIndex) {
       ? data.notes.melody1
       : [];
 
-  const melodyEvents = notesArray
-    .filter((note) => !note.isRest)
-    .map((note) => ({
-      time: (note.beat - 1) * currentSecondsPerBeat,
-      duration: note.duration * currentSecondsPerBeat,
-      name: sdToNoteName(note.sd, note.octave, key),
-      isRest: false,
-      onTrigger: () => noteIndicator.updateMelody(sdToNoteName(note.sd, note.octave, key)),
-    }));
+  // Store raw data for tempo recalculation
+  currentRawNotes = notesArray;
+  currentRawChords = data.chords || [];
 
-  const chordEvents = (data.chords || [])
-    .filter((chord) => !chord.isRest)
-    .map((chord) => ({
-      time: (chord.beat - 1) * currentSecondsPerBeat,
-      duration: chord.duration * currentSecondsPerBeat,
-      notes: chordRootToNotes(chord.root, key, 4, chord.type),
-      name: chord.root,
-      onTrigger: () => {
-        const notes = chordRootToNotes(chord.root, key, 4, chord.type);
-        noteIndicator.updateChord(notes);
-        chordRing.update(notes.join("-"));
-      },
-    }));
+  const melodyEvents = createMelodyEvents(notesArray, key, currentSecondsPerBeat);
+  const chordEvents = createChordEvents(currentRawChords, key, currentSecondsPerBeat);
 
   // Calculate actual section length from events
   const allEventEnds = [
@@ -225,5 +234,33 @@ function handleSongChange(songIdx) {
 
 function handleSectionChange(idx) {
   loadSection(currentSongIdx, Number(idx));
+}
+
+function createMelodyEvents(notesArray, key, secondsPerBeat) {
+  return notesArray
+    .filter((note) => !note.isRest)
+    .map((note) => ({
+      time: (note.beat - 1) * secondsPerBeat,
+      duration: note.duration * secondsPerBeat,
+      name: sdToNoteName(note.sd, note.octave, key),
+      isRest: false,
+      onTrigger: () => noteIndicator.updateMelody(sdToNoteName(note.sd, note.octave, key)),
+    }));
+}
+
+function createChordEvents(chordsArray, key, secondsPerBeat) {
+  return chordsArray
+    .filter((chord) => !chord.isRest)
+    .map((chord) => ({
+      time: (chord.beat - 1) * secondsPerBeat,
+      duration: chord.duration * secondsPerBeat,
+      notes: chordRootToNotes(chord.root, key, 4, chord.type),
+      name: chord.root,
+      onTrigger: () => {
+        const notes = chordRootToNotes(chord.root, key, 4, chord.type);
+        noteIndicator.updateChord(notes);
+        chordRing.update(notes.join("-"));
+      },
+    }));
 }
 
