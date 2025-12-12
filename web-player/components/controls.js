@@ -1,4 +1,4 @@
-export function renderControls(container, { onPlayPause, onSeek, onSongChange, onSectionChange }) {
+export function renderControls(container, { onPlayPause, onSeek, onSongChange, onSectionChange, onMelodyVolumeChange, onChordVolumeChange }) {
   container.innerHTML = `
     <h2>Controls</h2>
     <div class="row">
@@ -16,6 +16,16 @@ export function renderControls(container, { onPlayPause, onSeek, onSongChange, o
       </div>
       <span id="progress-label" style="font-size:12px;color:#9ca3af;width:42px;text-align:right;">0%</span>
     </div>
+    <div class="row">
+      <label for="melody-volume" style="font-size:12px;color:#9ca3af;width:60px;">Melody:</label>
+      <input type="range" id="melody-volume" min="-60" max="0" value="0" step="1" class="volume-slider">
+      <span id="melody-volume-label" style="font-size:12px;color:#9ca3af;width:35px;text-align:right;">0dB</span>
+    </div>
+    <div class="row">
+      <label for="chord-volume" style="font-size:12px;color:#9ca3af;width:60px;">Chords:</label>
+      <input type="range" id="chord-volume" min="-60" max="0" value="-10" step="1" class="volume-slider">
+      <span id="chord-volume-label" style="font-size:12px;color:#9ca3af;width:35px;text-align:right;">-10dB</span>
+    </div>
   `;
 
   const playBtn = container.querySelector("#play-toggle");
@@ -24,6 +34,10 @@ export function renderControls(container, { onPlayPause, onSeek, onSongChange, o
   const label = container.querySelector("#progress-label");
   const songSelect = container.querySelector("#song-select");
   const sectionSelect = container.querySelector("#section-select");
+  const melodyVolumeSlider = container.querySelector("#melody-volume");
+  const melodyVolumeLabel = container.querySelector("#melody-volume-label");
+  const chordVolumeSlider = container.querySelector("#chord-volume");
+  const chordVolumeLabel = container.querySelector("#chord-volume-label");
 
   playBtn.addEventListener("click", () => {
     const isPlaying = playBtn.dataset.state === "playing";
@@ -44,6 +58,18 @@ export function renderControls(container, { onPlayPause, onSeek, onSongChange, o
 
   sectionSelect.addEventListener("change", (e) => {
     onSectionChange?.(e.target.value);
+  });
+
+  melodyVolumeSlider.addEventListener("input", (e) => {
+    const volume = Number(e.target.value);
+    melodyVolumeLabel.textContent = `${volume}dB`;
+    onMelodyVolumeChange?.(volume);
+  });
+
+  chordVolumeSlider.addEventListener("input", (e) => {
+    const volume = Number(e.target.value);
+    chordVolumeLabel.textContent = `${volume}dB`;
+    onChordVolumeChange?.(volume);
   });
 
   return {

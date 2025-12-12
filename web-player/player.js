@@ -37,6 +37,12 @@ const controls = renderControls(controlsPane, {
   onSeek: handleSeek,
   onSongChange: handleSongChange,
   onSectionChange: handleSectionChange,
+  onMelodyVolumeChange: (volume) => {
+    engine.setMelodyVolume(volume);
+  },
+  onChordVolumeChange: (volume) => {
+    engine.setChordVolume(volume);
+  },
 });
 const chordRing = renderChordRing(ringPane);
 const noteIndicator = renderNoteIndicator(indicatorPane);

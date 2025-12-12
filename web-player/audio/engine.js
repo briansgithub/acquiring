@@ -110,5 +110,19 @@ export class AudioEngine {
       callback(Tone.Transport.ticks, time);
     }, "16n");
   }
+
+  setMelodyVolume(volume) {
+    // Volume in dB, range typically -60 to 0
+    if (this.melodySynth) {
+      this.melodySynth.volume.value = volume;
+    }
+  }
+
+  setChordVolume(volume) {
+    // Volume in dB, range typically -60 to 0
+    if (this.chordSynth) {
+      this.chordSynth.volume.value = volume;
+    }
+  }
 }
 
