@@ -14,6 +14,21 @@ const engine = new AudioEngine();
 const controls = renderControls(controlsPane, {
   onPlayPause: async (shouldPlay) => {
     if (shouldPlay) {
+      // Check if song has ended and needs to be restarted
+      // If parts are empty (song ended and stop() was called) or transport is at/past the end
+      const totalSeconds = songLength * currentSecondsPerBeat;
+      if (engine.parts.length === 0 || Tone.Transport.seconds >= totalSeconds) {
+        // Reset transport position and reschedule parts
+        engine.stop();
+        await engine.setupTransport(currentBpm);
+        engine.scheduleMelody(currentMelodyEvents);
+        engine.scheduleChords(currentChordEvents);
+        controls.updateProgress(0);
+        chordRing.update("Ready");
+        noteIndicator.reset();
+        // Re-establish progress tracking to ensure progress bar updates
+        setupProgressTracking();
+      }
       await engine.play();
     } else {
       engine.pause();
@@ -32,6 +47,9 @@ let currentSong = null;
 let currentSectionIdx = 0;
 let songLength = 0;
 let currentSecondsPerBeat = 0;
+let currentMelodyEvents = [];
+let currentChordEvents = [];
+let currentBpm = 120;
 
 init();
 
@@ -88,6 +106,7 @@ async function loadSection(songIndex, sectionIndex) {
 
   const key = parseKey(data.metadata);
   const bpm = data.metadata?.tempos?.[0]?.bpm ?? 120;
+  currentBpm = bpm;
   currentSecondsPerBeat = 60 / bpm;
   songLength = getSongLength(data.metadata) || 1;
 
@@ -132,6 +151,10 @@ async function loadSection(songIndex, sectionIndex) {
   }
   // If no events, keep songLength from metadata
 
+  // Store events for potential restart
+  currentMelodyEvents = melodyEvents;
+  currentChordEvents = chordEvents;
+
   engine.stop();
   await engine.setupTransport(bpm);
   engine.scheduleMelody(melodyEvents);
@@ -148,6 +171,10 @@ async function loadSection(songIndex, sectionIndex) {
   chordRing.update("Ready");
   noteIndicator.reset();
 
+  setupProgressTracking();
+}
+
+function setupProgressTracking() {
   engine.onTick(() => {
     const totalSeconds = songLength * currentSecondsPerBeat;
     const ratio = Math.min(1, Tone.Transport.seconds / totalSeconds);
