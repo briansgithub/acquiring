@@ -48,6 +48,12 @@ function modifierValue(sd) {
   sd = sd.toString()
   return sd.startsWith("b") ? -1 : sd.startsWith("#") ? 1 : 0;
 }
+function modifierString(sd) {
+  sd = sd.toString()
+  if (sd.startsWith("b")) return "b";
+  if (sd.startsWith("#")) return "#";
+  return "";
+}
 
 // Scale degree 1-7 may be modified with #/b, so processing is more than just a lookup table
 // may return negative if flats or above 12 if sharps
@@ -234,23 +240,37 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave) {
     throw new Error(`Unsupported scale type: ${key.scale}`);
   }
 
-  const rootNoteName = getNoteLabel(chordRootSD, key);
+  const chordRootNoteName = getNoteLabel(chordRootSD, key);
+
   const chordQuality = scaleChordQualities[chordRootSD - 1];
+
+  // triad degrees are used instead of directly referencing 
+  // the scale's labels so that sdToToneJSNoteName() can be used
   const chordDegrees = TRIAD_DEGREES[chordQuality];
 
-  // triad degrees are an int 1-7 and include hooktheory-format modifiers 
-  const sd1 = chordDegrees[0];
-  const sd2 = chordDegrees[1];
-  const sd3 = chordDegrees[2];
+  // triad interval degrees are an int 1-7 and include hooktheory-format modifiers 
+  const chordDegree1 = chordDegrees[0];
+  const chordDegree2 = chordDegrees[1];
+  const chordDegree3 = chordDegrees[2];
+
+  // compute chord scale degrees relative to the ORIGINAL key
+  // interval modifiers not used in scale degree arithmetic
+  // mathematically, INTERVAL space and SCALE space are not the same
+  const baseKeyDegrees = chordDegrees.map(degree => {
+    const rawNumber = rawDegree(degree);
+    // XXX -  const modifier = modifierString(degree);
+    const calculatedDegree = ((((chordRootSD - 1) + (rawNumber - 1)) % 7) + 1); // last +1 to make up for first -1. second -1 since that's how to add generic intervals 
+    return calculatedDegree;
+  });
 
   const relativeOctave = 0;
-  const rootKey = { tonic: rootNoteName, scale: "major"};
+  const rootKey = { tonic: chordRootNoteName, scale: "major"};
 
   // since scale degrees contain modifiers (relative to the major key's notes),
   // the key passed is always the root note's major key
-  const firstName = sdToToneJSNoteName(sd1, relativeOctave, rootKey, baseOctave);
-  const thirdName = sdToToneJSNoteName(sd2, relativeOctave, rootKey, baseOctave);
-  const fifthName = sdToToneJSNoteName(sd3, relativeOctave, rootKey, baseOctave);
+  const firstName = sdToToneJSNoteName(chordDegree1, relativeOctave, rootKey, baseOctave);
+  const thirdName = sdToToneJSNoteName(chordDegree2, relativeOctave, rootKey, baseOctave);
+  const fifthName = sdToToneJSNoteName(chordDegree3, relativeOctave, rootKey, baseOctave);
 
   const toneJSNames = [firstName, thirdName, fifthName];
   
@@ -262,7 +282,7 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave) {
     toneJSNames,
   });
   
-  return { notes: toneJSNames, chordDegrees };
+  return { notes: toneJSNames, chordDegrees: baseKeyDegrees };
 }
 
 export function chordInterpreter(chord, key) {
