@@ -102,7 +102,16 @@ function applyAccidental(label, shift) {
 function getNoteLabel(sd, key) {
   const rawDegreeNumber = rawDegree(sd);
   const accidentalShift = modifierValue(sd);
-  const diatonicNames = MAJOR_SCALE_LABELS[key.tonic];
+
+
+  let diatonicNames;
+  if(key.scale === "major") {
+    diatonicNames = MAJOR_SCALE_LABELS[key.tonic];
+  } else if (key.scale === "minor") {
+    diatonicNames = MINOR_SCALE_LABELS[key.tonic];
+  } else {
+    throw new Error(`Unsupported scale type: ${key.scale}`);
+  }
 
   const baseLabel = diatonicNames[rawDegreeNumber - 1];
   const retval = applyAccidental(baseLabel, accidentalShift);
