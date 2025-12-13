@@ -27,7 +27,7 @@ const controls = renderControls(controlsPane, {
         currentChordEvents = chordEvents;
         await engine.setupTransport(currentBpm);
         engine.scheduleMelody(melodyEvents);
-        // engine.scheduleChords(chordEvents); // Temporarily disabled
+        engine.scheduleChords(chordEvents);
         controls.updateProgress(0);
         chordRing.update("Ready");
         noteIndicator.reset();
@@ -49,7 +49,7 @@ const controls = renderControls(controlsPane, {
     currentChordEvents = chordEvents;
     await engine.setupTransport(currentBpm);
     engine.scheduleMelody(melodyEvents);
-    // engine.scheduleChords(chordEvents); // Temporarily disabled
+    engine.scheduleChords(chordEvents);
     controls.updateProgress(0);
     controls.resetPlayState();
     chordRing.update("Ready");
@@ -184,7 +184,7 @@ async function loadSection(songIndex, sectionIndex) {
   engine.stop();
   await engine.setupTransport(bpm);
   engine.scheduleMelody(melodyEvents);
-  // engine.scheduleChords(chordEvents); // Temporarily disabled
+  engine.scheduleChords(chordEvents);
   // Ensure dropdowns are set
   controls.setSections(song.sections);
   // Set the selected values
