@@ -29,7 +29,7 @@ const controls = renderControls(controlsPane, {
         engine.scheduleMelody(melodyEvents);
         engine.scheduleChords(chordEvents);
         controls.updateProgress(0);
-        chordRing.update("Ready");
+        chordRing.update(null, null, null);
         noteIndicator.reset();
         // Re-establish progress tracking to ensure progress bar updates
         setupProgressTracking();
@@ -52,7 +52,7 @@ const controls = renderControls(controlsPane, {
     engine.scheduleChords(chordEvents);
     controls.updateProgress(0);
     controls.resetPlayState();
-    chordRing.update("Ready");
+    chordRing.update(null, null, null);
     noteIndicator.reset();
     setupProgressTracking();
   },
@@ -196,7 +196,7 @@ async function loadSection(songIndex, sectionIndex) {
   controls.setTempo(bpm, originalBpm);
   controls.updateProgress(0);
   controls.resetPlayState();
-  chordRing.update("Ready");
+  chordRing.update(null, null, null);
   noteIndicator.reset();
 
   setupProgressTracking();
@@ -240,7 +240,7 @@ function createMelodyEvents(notesArray, key, secondsPerBeat) {
   return notesArray
     .filter((note) => !note.isRest)
     .map((note) => {
-      const absoluteLabel = sdToToneJSNoteName(note.sd, note.octave, key);
+      const absoluteLabel = sdToToneJSNoteName(note.sd, note.octave, key, 4);
       const relativeLabel = note.sd;
       return {
         time: (note.beat - 1) * secondsPerBeat,
@@ -258,12 +258,12 @@ function createChordEvents(chordsArray, key, secondsPerBeat) {
     .map((chord) => ({
       time: (chord.beat - 1) * secondsPerBeat,
       duration: chord.duration * secondsPerBeat,
-      notes: chordInterpreter(chord, key),
+      notes: chordInterpreter(chord, key).notes,
       name: chord.root,
       onTrigger: () => {
-        const notes = chordInterpreter(chord, key);
-        noteIndicator.updateChord(notes);
-        chordRing.update(notes.join("-"));
+        const chordData = chordInterpreter(chord, key);
+        noteIndicator.updateChord(chordData.notes, chord.root, chordData.chordDegrees);
+        chordRing.update(chordData.notes, chord.root, chordData.chordDegrees);
       },
     }));
 }

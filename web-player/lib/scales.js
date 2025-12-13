@@ -87,3 +87,32 @@ export const MINOR_SCALE_LABELS = {
   Ab: ["Ab", "Bb", "Cb", "Db", "Eb", "Fb", "Gb"],
   Bb: ["Bb", "C", "Db", "Eb", "F", "Gb", "Ab"],
 };
+
+export const CHORD_QUALITIES_BY_SCALE = {
+  major: [
+    "major",      // I
+    "minor",      // ii
+    "minor",      // iii
+    "major",      // IV
+    "major",      // V
+    "minor",      // vi
+    "diminished"  // vii°
+  ],
+  minor: [
+    "minor",      // i
+    "diminished", // ii°
+    "major",      // III
+    "minor",      // iv
+    "minor",      // v
+    "major",      // VI
+    "major"       // VII
+  ]
+};
+
+
+// Triad degree patterns
+export const TRIAD_DEGREES = {
+  major: [1, 3, 5],           // Root, Major 3rd, Perfect 5th
+  minor: [1, "b3", 5],        // Root, minor 3rd, Perfect 5th
+  diminished: [1, "b3", "b5"] // Root, minor 3rd, diminished 5th
+};

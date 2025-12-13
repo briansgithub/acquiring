@@ -6,6 +6,8 @@ import {
   DEFAULT_KEY,
   MAJOR_SCALE_LABELS,
   MINOR_SCALE_LABELS,
+  TRIAD_DEGREES,
+  CHORD_QUALITIES_BY_SCALE,
 } from "./scales.js";
 
 
@@ -122,8 +124,7 @@ function getNoteLabel(sd, key) {
   return retval;
 }
 
-function getAbsoluteOctave(sd, relativeOctave, key) {
-  const baseOctave = 4;
+function getAbsoluteOctave(sd, relativeOctave, key, baseOctave) {
 
   // accidental modifier and specific interval of the (modified) scale degree are not needed to compute the absolute octave number
   //const accidentalShift = modifierValue(sd);
@@ -151,9 +152,9 @@ function getAbsoluteOctave(sd, relativeOctave, key) {
   return retval;
 }
 
-export function sdToToneJSNoteName(sd, octave, key) {
+export function sdToToneJSNoteName(sd, relOctave, key, baseOctave) {
   const noteLabel = getNoteLabel(sd, key);
-  const absoluteOctave = getAbsoluteOctave(sd, octave, key);
+  const absoluteOctave = getAbsoluteOctave(sd, relOctave, key, baseOctave);
   return `${noteLabel}${absoluteOctave}`;
 }
 
@@ -209,7 +210,9 @@ function semitoneToNoteName(semitone, key) {
   return appendAccidental(baseLabel, accidentalShift);
 }
 
-export function rootToDiatonicTriad(root, key, octave = 4, chordType = 5) {
+//chordRootSD is explicitely an int from 1-7 (no modifiers). 
+// it indicates the tonal basis of the chord
+export function rootToDiatonicTriad(chordRootSD, key, baseOctave) {
   let scaleIntervals;
   if(key.scale === "major") {
     scaleIntervals = MAJOR_SCALE_SPECIFIC_INTERVALS;
@@ -219,40 +222,32 @@ export function rootToDiatonicTriad(root, key, octave = 4, chordType = 5) {
     throw new Error(`Unsupported scale type: ${key.scale}`);
   }
 
-  const rootSemitone = scaleIntervals[root - 1];
-  const tonicOffset = NOTE_NAME_TO_INTEGER_NOTATION[key.tonic] || 0;
-  
-  const thirdInterval = 4;
-  const fifthInterval = 7;
-  
-  const rootAbsoluteSemitone = (tonicOffset + rootSemitone) % 12;
-  const thirdAbsoluteSemitone = (rootAbsoluteSemitone + thirdInterval) % 12;
-  const fifthAbsoluteSemitone = (rootAbsoluteSemitone + fifthInterval) % 12;
+  const chordQuality = CHORD_QUALITIES_BY_SCALE[key.scale][chordRootSD - 1];
 
-  // will fix semitoneToNoteName function later
-  const rootName = semitoneToNoteName(rootAbsoluteSemitone, key);
-  const thirdName = semitoneToNoteName(thirdAbsoluteSemitone, key);
-  const fifthName = semitoneToNoteName(fifthAbsoluteSemitone, key);
+  // triad degrees include hooktheory-format modifications
+  const chordDegrees = TRIAD_DEGREES[chordQuality];
+  const relativeOctave = 0;
 
-  const notes = [
-    `${rootName}${octave}`,
-    `${thirdName}${octave}`,
-    `${fifthName}${octave}`,
-  ];
+  const rootName = sdToToneJSNoteName(chordDegrees[0], relativeOctave, key, baseOctave);
+  const thirdName = sdToToneJSNoteName(chordDegrees[1], relativeOctave, key, baseOctave);
+  const fifthName = sdToToneJSNoteName(chordDegrees[2], relativeOctave, key, baseOctave);
+
+  const notes = [rootName, thirdName, fifthName];
   
   console.log("CHORD DEBUG: chordRootToNotes", {
-    root,
+    root: chordRootSD,
     rootSemitone: rootName,
     thirdSemitone: thirdName,
     fifthSemitone: fifthName,
     notes,
   });
   
-  return notes;
+  return { notes, chordDegrees };
 }
 
 export function chordInterpreter(chord, key) {
-  return rootToDiatonicTriad(chord.root, key, 4, chord.type);
+  const defaultChordOctave = 3;
+  return rootToDiatonicTriad(chord.root, key, defaultChordOctave);
 }
 
 
