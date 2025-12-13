@@ -13,6 +13,12 @@ export function renderControls(container, { onPlayPause, onRestart, onSeek, onSo
       <label for="section-select" style="font-size:18px;color:#9ca3af;width:60px;">Section:</label>
       <select id="section-select" class="select"></select>
     </div>
+    <div class="row" style="justify-content:center;margin:10px 0;">
+      <div id="song-title" style="font-size:24px;font-weight:bold;color:#ffffff;text-align:center;">-</div>
+    </div>
+    <div class="row" style="justify-content:center;margin:0 0 10px 0;">
+      <div id="song-key" style="font-size:20px;color:#9ca3af;text-align:center;">-</div>
+    </div>
     <div class="row">
       <div class="progress" id="progress-bar">
         <div class="fill" id="progress-fill"></div>
@@ -31,8 +37,8 @@ export function renderControls(container, { onPlayPause, onRestart, onSeek, onSo
     </div>
     <div class="row">
       <label for="chord-volume" style="font-size:12px;color:#9ca3af;width:60px;">Chords:</label>
-      <input type="range" id="chord-volume" min="-60" max="0" value="-10" step="1" class="volume-slider">
-      <span id="chord-volume-label" style="font-size:12px;color:#9ca3af;width:35px;text-align:right;">-10dB</span>
+      <input type="range" id="chord-volume" min="-60" max="0" value="0" step="1" class="volume-slider">
+      <span id="chord-volume-label" style="font-size:12px;color:#9ca3af;width:35px;text-align:right;">0dB</span>
     </div>
   `;
 
@@ -49,6 +55,8 @@ export function renderControls(container, { onPlayPause, onRestart, onSeek, onSo
   const melodyVolumeLabel = container.querySelector("#melody-volume-label");
   const chordVolumeSlider = container.querySelector("#chord-volume");
   const chordVolumeLabel = container.querySelector("#chord-volume-label");
+  const songTitle = container.querySelector("#song-title");
+  const songKey = container.querySelector("#song-key");
 
   playBtn.addEventListener("click", () => {
     const isPlaying = playBtn.dataset.state === "playing";
@@ -137,6 +145,21 @@ export function renderControls(container, { onPlayPause, onRestart, onSeek, onSo
     resetPlayState() {
       playBtn.dataset.state = "paused";
       playBtn.textContent = "Play";
+    },
+    setSongTitle(title) {
+      if (songTitle) {
+        songTitle.textContent = title || "-";
+      }
+    },
+    setSongKey(key) {
+      if (songKey) {
+        if (key && key.tonic && key.scale) {
+          const scaleName = key.scale.charAt(0).toUpperCase() + key.scale.slice(1);
+          songKey.textContent = `${key.tonic} ${scaleName}`;
+        } else {
+          songKey.textContent = "-";
+        }
+      }
     },
   };
 }

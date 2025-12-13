@@ -9,11 +9,11 @@ export class AudioEngine {
     }).toDestination();
 
     // Use single persistent PolySynth instance (matches reference implementation)
-    // Triangle oscillator for chords (smoother than square for chordal textures)
-    // Volume set to -10dB to prevent clipping (matches reference default)
+    // Square oscillator for chords (matches melody for consistent timbre)
+    // Volume set to 0dB to match melody volume
     this.chordSynth = new Tone.PolySynth(Tone.Synth, {
-      oscillator: { type: "triangle" },
-      volume: -10,
+      oscillator: { type: "square" },
+      volume: 0,
     }).toDestination();
 
     this.parts = [];

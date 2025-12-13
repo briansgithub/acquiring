@@ -192,6 +192,9 @@ async function loadSection(songIndex, sectionIndex) {
   const sectionSelect = document.getElementById("section-select");
   if (songSelect) songSelect.value = songIndex;
   if (sectionSelect) sectionSelect.value = sectionIndex;
+  // Update song title and key display
+  controls.setSongTitle(song.title || song.artist || "Unknown Song");
+  controls.setSongKey(key);
   // Update tempo slider to match loaded section's tempo (100% = original tempo)
   controls.setTempo(bpm, originalBpm);
   controls.updateProgress(0);
