@@ -6,9 +6,11 @@ export function renderControls(container, { onPlayPause, onRestart, onSeek, onSo
       <button id="restart-btn">Restart</button>
     </div>
     <div class="row">
+      <label for="song-select" style="font-size:18px;color:#9ca3af;width:60px;">Song:</label>
       <select id="song-select" class="select"></select>
     </div>
     <div class="row">
+      <label for="section-select" style="font-size:18px;color:#9ca3af;width:60px;">Section:</label>
       <select id="section-select" class="select"></select>
     </div>
     <div class="row">

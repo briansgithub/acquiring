@@ -2,7 +2,7 @@ import { AudioEngine } from "./audio/engine.js";
 import { renderControls } from "./components/controls.js";
 import { renderChordRing } from "./components/chordRing.js";
 import { renderNoteIndicator } from "./components/noteIndicator.js";
-import { chordRootToNotes, getSongLength, parseKey, sdToNoteName } from "./lib/music.js";
+import { chordInterpreter, getSongLength, parseKey, sdToToneJSNoteName } from "./lib/music.js";
 
 const Tone = window.Tone;
 
@@ -242,9 +242,9 @@ function createMelodyEvents(notesArray, key, secondsPerBeat) {
     .map((note) => ({
       time: (note.beat - 1) * secondsPerBeat,
       duration: note.duration * secondsPerBeat,
-      name: sdToNoteName(note.sd, note.octave, key),
+      name: sdToToneJSNoteName(note.sd, note.octave, key),
       isRest: false,
-      onTrigger: () => noteIndicator.updateMelody(sdToNoteName(note.sd, note.octave, key)),
+      onTrigger: () => noteIndicator.updateMelody(sdToToneJSNoteName(note.sd, note.octave, key)),
     }));
 }
 
@@ -254,10 +254,10 @@ function createChordEvents(chordsArray, key, secondsPerBeat) {
     .map((chord) => ({
       time: (chord.beat - 1) * secondsPerBeat,
       duration: chord.duration * secondsPerBeat,
-      notes: chordRootToNotes(chord.root, key, 4, chord.type),
+      notes: chordInterpreter(chord, key),
       name: chord.root,
       onTrigger: () => {
-        const notes = chordRootToNotes(chord.root, key, 4, chord.type);
+        const notes = chordInterpreter(chord, key);
         noteIndicator.updateChord(notes);
         chordRing.update(notes.join("-"));
       },
