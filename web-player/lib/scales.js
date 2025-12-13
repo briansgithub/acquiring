@@ -88,26 +88,25 @@ export const MINOR_SCALE_LABELS = {
   Bb: ["Bb", "C", "Db", "Eb", "F", "Gb", "Ab"],
 };
 
-export const CHORD_QUALITIES_BY_SCALE = {
-  major: [
-    "major",      // I
-    "minor",      // ii
-    "minor",      // iii
-    "major",      // IV
-    "major",      // V
-    "minor",      // vi
-    "diminished"  // vii°
-  ],
-  minor: [
-    "minor",      // i
-    "diminished", // ii°
-    "major",      // III
-    "minor",      // iv
-    "minor",      // v
-    "major",      // VI
-    "major"       // VII
-  ]
-};
+export const MAJOR_SCALE_CHORD_QUALITIES = [
+  "major",      // I
+  "minor",      // ii
+  "minor",      // iii
+  "major",      // IV
+  "major",      // V
+  "minor",      // vi
+  "diminished"  // vii°
+];
+
+export const MINOR_SCALE_CHORD_QUALITIES = [
+  "minor",      // i
+  "diminished", // ii°
+  "major",      // III
+  "minor",      // iv
+  "minor",      // v
+  "major",      // VI
+  "major"       // VII
+];
 
 
 // Triad degree patterns

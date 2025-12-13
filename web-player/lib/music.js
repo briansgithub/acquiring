@@ -7,7 +7,8 @@ import {
   MAJOR_SCALE_LABELS,
   MINOR_SCALE_LABELS,
   TRIAD_DEGREES,
-  CHORD_QUALITIES_BY_SCALE,
+  MAJOR_SCALE_CHORD_QUALITIES,
+  MINOR_SCALE_CHORD_QUALITIES,
 } from "./scales.js";
 
 
@@ -213,36 +214,55 @@ function semitoneToNoteName(semitone, key) {
 //chordRootSD is explicitely an int from 1-7 (no modifiers). 
 // it indicates the tonal basis of the chord
 export function rootToDiatonicTriad(chordRootSD, key, baseOctave) {
-  let scaleIntervals;
+  /*
+  let noteNamesInKey;
   if(key.scale === "major") {
-    scaleIntervals = MAJOR_SCALE_SPECIFIC_INTERVALS;
+    noteNamesInKey = MAJOR_SCALE_LABELS[key.tonic];
   } else if (key.scale === "minor") {
-    scaleIntervals = MINOR_SCALE_SPECIFIC_INTERVALS;
+    noteNamesInKey = MINOR_SCALE_LABELS[key.tonic];
+  } else {
+    throw new Error(`Unsupported scale type: ${key.scale}`);
+  }
+    */
+   let scaleChordQualities
+
+  if (key.scale === "major") {
+    scaleChordQualities = MAJOR_SCALE_CHORD_QUALITIES;
+  } else if (key.scale === "minor") {
+    scaleChordQualities = MINOR_SCALE_CHORD_QUALITIES;
   } else {
     throw new Error(`Unsupported scale type: ${key.scale}`);
   }
 
-  const chordQuality = CHORD_QUALITIES_BY_SCALE[key.scale][chordRootSD - 1];
-
-  // triad degrees include hooktheory-format modifications
+  const rootNoteName = getNoteLabel(chordRootSD, key);
+  const chordQuality = scaleChordQualities[chordRootSD - 1];
   const chordDegrees = TRIAD_DEGREES[chordQuality];
+
+  // triad degrees are an int 1-7 and include hooktheory-format modifiers 
+  const sd1 = chordDegrees[0];
+  const sd2 = chordDegrees[1];
+  const sd3 = chordDegrees[2];
+
   const relativeOctave = 0;
+  const rootKey = { tonic: rootNoteName, scale: "major"};
 
-  const rootName = sdToToneJSNoteName(chordDegrees[0], relativeOctave, key, baseOctave);
-  const thirdName = sdToToneJSNoteName(chordDegrees[1], relativeOctave, key, baseOctave);
-  const fifthName = sdToToneJSNoteName(chordDegrees[2], relativeOctave, key, baseOctave);
+  // since scale degrees contain modifiers (relative to the major key's notes),
+  // the key passed is always the root note's major key
+  const firstName = sdToToneJSNoteName(sd1, relativeOctave, rootKey, baseOctave);
+  const thirdName = sdToToneJSNoteName(sd2, relativeOctave, rootKey, baseOctave);
+  const fifthName = sdToToneJSNoteName(sd3, relativeOctave, rootKey, baseOctave);
 
-  const notes = [rootName, thirdName, fifthName];
+  const toneJSNames = [firstName, thirdName, fifthName];
   
   console.log("CHORD DEBUG: chordRootToNotes", {
     root: chordRootSD,
-    rootSemitone: rootName,
-    thirdSemitone: thirdName,
-    fifthSemitone: fifthName,
-    notes,
+    rootLabel: firstName,
+    thirdLabel: thirdName,
+    fifthLabel: fifthName,
+    toneJSNames,
   });
   
-  return { notes, chordDegrees };
+  return { toneJSNames, chordDegrees };
 }
 
 export function chordInterpreter(chord, key) {
