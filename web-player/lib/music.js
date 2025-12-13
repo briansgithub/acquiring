@@ -36,20 +36,25 @@ export function parseKey(metadata) {
   return key;
 }
 
+//takes in an int or string and returns an integer (via parseInt)
 function rawDegree(sd) {
+  sd = sd.toString()
   return parseInt(sd.replace(/[^0-9]/g, ""), 10) || 1;
 }
 function modifierValue(sd) {
+  sd = sd.toString()
   return sd.startsWith("b") ? -1 : sd.startsWith("#") ? 1 : 0;
 }
 
 // Scale degree 1-7 may be modified with #/b, so processing is more than just a lookup table
-export function scaleDegreeToSpecificInterval(sd, key) {
-  const { tonic, scale } = key;
-  const tonicOffset = NOTE_NAME_TO_INTEGER_NOTATION[tonic];
+// may return negative if flats or above 12 if sharps
+export function scaleDegreeToSpecificInterval(sd, scale) {
+/*
+  const tonicOffset = NOTE_NAME_TO_INTEGER_NOTATION[key.tonic];
   if (tonicOffset === undefined) {
-    console.error(`Invalid tonic "${tonic}" not found in NOTE_NAME_TO_INTEGER_NOTATION`);
+    console.error(`Invalid tonic "${key.tonic}" not found in NOTE_NAME_TO_INTEGER_NOTATION`);
   }
+    */
 
   const rawDegreeNumber = rawDegree(sd);
   const accidentalShift = modifierValue(sd);
@@ -64,11 +69,10 @@ export function scaleDegreeToSpecificInterval(sd, key) {
   }
 
   const specficInterval = scaleSpecificIntervals[(rawDegreeNumber - 1)] + accidentalShift;
-  const retval = (tonicOffset + specficInterval + 12) % 12; // javascript mod can return negative values, so we add 12 to ensure it returns a positive value
-  return retval;
+  return specficInterval;
 }
 
-function applyAccidental(label, shift) {
+function appendAccidental(label, shift) {
   // label: e.g., F, F#, Bb, etc.
   // Returns Tone.js format: note name with accidental after the letter (e.g., "F#", "Bb")
   if (shift === 0) return label;
@@ -86,7 +90,7 @@ function applyAccidental(label, shift) {
   } else if (label.includes("#") || label.includes("x")) {
     if (shift === 1) {
       // sharp → double sharp (Tone.js uses "##" for double sharp)
-      return label.includes("##") || label.includes("x") ? label : `${base}##`;
+      return label.includes("##") || label.includes("x") ? label : `${base}x`;
     } else if (shift === -1) {
       // sharp to natural
       return base;
@@ -114,21 +118,37 @@ function getNoteLabel(sd, key) {
   }
 
   const baseLabel = diatonicNames[rawDegreeNumber - 1];
-  const retval = applyAccidental(baseLabel, accidentalShift);
+  const retval = appendAccidental(baseLabel, accidentalShift);
   return retval;
 }
 
-function getAbsoluteOctave(sd, octave, key) {
-  const specificInterval = scaleDegreeToSpecificInterval(sd, key);
-  const tonicSemitone = NOTE_NAME_TO_INTEGER_NOTATION[key.tonic];
+function getAbsoluteOctave(sd, relativeOctave, key) {
+  const baseOctave = 4;
 
-  // Calculate semitone offset from tonic (0-11)
-  let offset = specificInterval - tonicSemitone;
-  if (offset < 0) {
-    offset += 12; // Normalize to 0-11 range
-  }
-  const relativeOctave = octave || 0;
-  return 4 + relativeOctave + Math.floor((tonicSemitone + offset) / 12);
+  // accidental modifier and specific interval of the (modified) scale degree are not needed to compute the absolute octave number
+  //const accidentalShift = modifierValue(sd);
+  //const sdSpecificInterval = scaleDegreeToSpecificInterval(sd, key);
+
+
+  const tonicSemitone = NOTE_NAME_TO_INTEGER_NOTATION[key.tonic];
+  const rawSD_SpecificInterval = scaleDegreeToSpecificInterval(rawDegree(sd), key.scale);
+  /* Raw degree specific interval is needed to properly track if the resulting note name 
+   of the note after applying the musical interval to the tonic 
+   is above a B--C boundary (since standard octave numbering and
+   tone.js labeling changes octave at the B--C boundary). 
+   For example, Ab4 + 'b3' = Cb5 (C5 flat), but the 
+   calculation of 8 + 3 = 11 is below a one-octave threshold, so it's floor 
+   ,+0, is added to the absoluteo ctave nuber, when in fact the accidental modification
+   of the SD should be applied after the octave number addend is calculated.
+   Ab + b(3) = 8 + b(4) = 12 ==> +1 octave. 
+   The modifier gets factored into the note label, which is what produces the tone, 
+   but must be ignored for calculating the octave shift number. 
+   The note letter&&octave number take precedence over the accidental modifier 
+   when in producing the pitch of the tone 
+   */
+
+  const retval = baseOctave + relativeOctave + Math.floor((tonicSemitone + rawSD_SpecificInterval) / 12);
+  return retval;
 }
 
 export function sdToToneJSNoteName(sd, octave, key) {
@@ -186,7 +206,7 @@ function semitoneToNoteName(semitone, key) {
     accidentalShift += 12;
   }
   
-  return applyAccidental(baseLabel, accidentalShift);
+  return appendAccidental(baseLabel, accidentalShift);
 }
 
 export function rootToDiatonicTriad(root, key, octave = 4, chordType = 5) {
