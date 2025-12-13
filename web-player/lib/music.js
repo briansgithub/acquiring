@@ -262,7 +262,7 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave) {
     toneJSNames,
   });
   
-  return { toneJSNames, chordDegrees };
+  return { notes: toneJSNames, chordDegrees };
 }
 
 export function chordInterpreter(chord, key) {
