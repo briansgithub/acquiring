@@ -27,7 +27,7 @@ const controls = renderControls(controlsPane, {
         currentChordEvents = chordEvents;
         await engine.setupTransport(currentBpm);
         engine.scheduleMelody(melodyEvents);
-        engine.scheduleChords(chordEvents);
+        // engine.scheduleChords(chordEvents); // Temporarily disabled
         controls.updateProgress(0);
         chordRing.update("Ready");
         noteIndicator.reset();
@@ -49,7 +49,7 @@ const controls = renderControls(controlsPane, {
     currentChordEvents = chordEvents;
     await engine.setupTransport(currentBpm);
     engine.scheduleMelody(melodyEvents);
-    engine.scheduleChords(chordEvents);
+    // engine.scheduleChords(chordEvents); // Temporarily disabled
     controls.updateProgress(0);
     controls.resetPlayState();
     chordRing.update("Ready");
@@ -184,7 +184,7 @@ async function loadSection(songIndex, sectionIndex) {
   engine.stop();
   await engine.setupTransport(bpm);
   engine.scheduleMelody(melodyEvents);
-  engine.scheduleChords(chordEvents);
+  // engine.scheduleChords(chordEvents); // Temporarily disabled
   // Ensure dropdowns are set
   controls.setSections(song.sections);
   // Set the selected values
@@ -239,13 +239,17 @@ function handleSectionChange(idx) {
 function createMelodyEvents(notesArray, key, secondsPerBeat) {
   return notesArray
     .filter((note) => !note.isRest)
-    .map((note) => ({
-      time: (note.beat - 1) * secondsPerBeat,
-      duration: note.duration * secondsPerBeat,
-      name: sdToToneJSNoteName(note.sd, note.octave, key),
-      isRest: false,
-      onTrigger: () => noteIndicator.updateMelody(sdToToneJSNoteName(note.sd, note.octave, key)),
-    }));
+    .map((note) => {
+      const absoluteLabel = sdToToneJSNoteName(note.sd, note.octave, key);
+      const relativeLabel = note.sd;
+      return {
+        time: (note.beat - 1) * secondsPerBeat,
+        duration: note.duration * secondsPerBeat,
+        name: absoluteLabel,
+        isRest: false,
+        onTrigger: () => noteIndicator.updateMelody(absoluteLabel, relativeLabel),
+      };
+    });
 }
 
 function createChordEvents(chordsArray, key, secondsPerBeat) {
