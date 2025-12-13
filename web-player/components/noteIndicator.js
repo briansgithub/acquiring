@@ -15,8 +15,16 @@ export function renderNoteIndicator(container) {
   const chordList = container.querySelector("#chord-notes");
 
   return {
-    updateMelody(noteName) {
-      melodyEl.textContent = noteName || "--";
+    updateMelody(absoluteLabel, relativeLabel) {
+      if (!absoluteLabel && !relativeLabel) {
+        melodyEl.textContent = "--";
+        return;
+      }
+      if (absoluteLabel && relativeLabel) {
+        melodyEl.textContent = `${absoluteLabel} (${relativeLabel})`;
+      } else {
+        melodyEl.textContent = absoluteLabel || relativeLabel || "--";
+      }
     },
     updateChord(notes) {
       chordList.innerHTML = (notes || [])
