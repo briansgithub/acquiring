@@ -135,6 +135,11 @@ function serveStatic(reqPath, res) {
 
 const server = http.createServer((req, res) => {
   const reqUrl = new url.URL(req.url, `http://localhost:${PORT}`);
+  if (reqUrl.pathname === "/api/health") {
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("ok");
+    return;
+  }
   if (reqUrl.pathname === "/api/songs") return handleApiSongs(res);
   if (reqUrl.pathname === "/api/song") return handleApiSong(reqUrl, res);
   const staticPath = reqUrl.pathname === "/" ? "/index.html" : reqUrl.pathname;

@@ -14,6 +14,59 @@
     <div id="indicator-pane" class="pane indicator"></div>
   </div>
   <script type="module" src="./player.js"></script>
+  <script>
+    // Poll server health and close tab when server stops
+    (function() {
+      const POLL_INTERVAL = 3000; // Check every 3 seconds
+      let pollTimer = null;
+      let abortController = null;
+      
+      function checkServerHealth() {
+        // Cancel any in-flight request
+        if (abortController) {
+          abortController.abort();
+        }
+        abortController = new AbortController();
+        
+        // Use lightweight health endpoint to avoid interfering with playback
+        fetch('/api/health', { 
+          cache: 'no-cache',
+          signal: abortController.signal 
+        })
+          .then((res) => {
+            if (res.ok) {
+              // Server is alive, schedule next check using requestIdleCallback if available
+              const scheduleNext = () => {
+                pollTimer = setTimeout(checkServerHealth, POLL_INTERVAL);
+              };
+              if (window.requestIdleCallback) {
+                requestIdleCallback(scheduleNext, { timeout: POLL_INTERVAL });
+              } else {
+                scheduleNext();
+              }
+            } else {
+              // Server error, close the tab
+              window.close();
+            }
+          })
+          .catch((err) => {
+            // Ignore abort errors
+            if (err.name === 'AbortError') return;
+            // Server is down, close the tab
+            window.close();
+          });
+      }
+      
+      // Start polling after a short delay to let page load
+      setTimeout(checkServerHealth, 2000);
+      
+      // Clean up on page unload
+      window.addEventListener('beforeunload', () => {
+        if (pollTimer) clearTimeout(pollTimer);
+        if (abortController) abortController.abort();
+      });
+    })();
+  </script>
 </body>
 </html>
 
