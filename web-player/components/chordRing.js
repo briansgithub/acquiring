@@ -85,7 +85,7 @@ export function renderChordRing(container, options = {}) {
       drawNode(dx, dy, nodeRadius, color, exactDiatonic.symbol, 1.0, isActive);
     } else {
       // Placeholder
-      drawNode(dx, dy, nodeRadius, color, expectedDiatonicLabel, 0.3, false);
+      drawNode(dx, dy, nodeRadius, color, expectedDiatonicLabel, 0.3, false, true);
     }
 
     // 2. Draw Variants (Outer Rings)
@@ -98,7 +98,7 @@ export function renderChordRing(container, options = {}) {
     });
   }
 
-  function drawNode(x, y, r, color, label, opacity, isActive = false) {
+  function drawNode(x, y, r, color, label, opacity, isActive = false, isPlaceholder = false) {
     const effectiveRadius = isActive ? r * 1.3 : r;
 
     ctx.beginPath();
@@ -124,8 +124,16 @@ export function renderChordRing(container, options = {}) {
     // Border
     ctx.save();
     ctx.globalAlpha = isActive ? 1.0 : Math.min(1, opacity + 0.2); // Border slightly more visible
-    ctx.strokeStyle = isActive ? "#ffffff" : "#fff";
     ctx.lineWidth = isActive ? 4 * zoom : 2 * zoom;
+
+    if (isPlaceholder) {
+      ctx.strokeStyle = "#000";
+      ctx.setLineDash([5 * zoom, 3 * zoom]);
+    } else {
+      ctx.strokeStyle = isActive ? "#ffffff" : "#fff";
+      ctx.setLineDash([]);
+    }
+
     ctx.stroke();
     ctx.restore();
 
@@ -137,7 +145,7 @@ export function renderChordRing(container, options = {}) {
     ctx.fillStyle = isActive ? "#000" : "#000"; // Can change text color if needed, but black is readable on these cols
     // Scale text with node size
     const fontSize = isActive ? Math.max(16, 22 * zoom) : Math.max(12, 16 * zoom);
-    ctx.font = `\${fontSize}px "Times New Roman", Times, serif`;
+    ctx.font = `${fontSize}px "Times New Roman", Times, serif`;
     ctx.fillText(label, x, y);
     ctx.restore();
   }
