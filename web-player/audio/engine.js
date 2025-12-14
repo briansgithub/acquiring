@@ -54,12 +54,12 @@ export class AudioEngine {
     const Tone = window.Tone;
     const part = new Tone.Part((time, chord) => {
       if (!chord.notes?.length) return;
-      
+
       // Use single PolySynth instance with triggerAttackRelease (matches reference)
       // This plays all notes simultaneously with proper timing
       // PolySynth handles voice management automatically
       this.chordSynth.triggerAttackRelease(chord.notes, chord.duration, time);
-      
+
       this.currentChordNotes = chord.notes;
       chord.onTrigger?.();
     }, chords).start(0);
@@ -130,5 +130,14 @@ export class AudioEngine {
     const Tone = window.Tone;
     Tone.Transport.bpm.value = bpm;
   }
+
+  previewChord(notes, duration = "8n") {
+    const Tone = window.Tone;
+    if (Tone.context.state !== "running") {
+      Tone.start();
+    }
+    this.chordSynth.triggerAttackRelease(notes, duration);
+  }
 }
+
 

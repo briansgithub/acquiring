@@ -2,6 +2,7 @@ import { AudioEngine } from "./audio/engine.js";
 import { renderControls } from "./components/controls.js";
 import { renderChordRing } from "./components/chordRing.js";
 import { renderNoteIndicator } from "./components/noteIndicator.js";
+import { renderTimeline } from "./components/timeline.js";
 import { chordInterpreter, getSongLength, parseKey, sdToToneJSNoteName } from "./lib/music.js";
 
 const Tone = window.Tone;
@@ -9,36 +10,42 @@ const Tone = window.Tone;
 const controlsPane = document.getElementById("controls-pane");
 const ringPane = document.getElementById("ring-pane");
 const indicatorPane = document.getElementById("indicator-pane");
+const timelinePane = document.getElementById("timeline-pane");
 
 const engine = new AudioEngine();
-const controls = renderControls(controlsPane, {
-  onPlayPause: async (shouldPlay) => {
-    if (shouldPlay) {
-      // Check if song has ended and needs to be restarted
-      // If parts are empty (song ended and stop() was called) or transport is at/past the end
-      const totalSeconds = songLength * currentSecondsPerBeat;
-      if (engine.parts.length === 0 || Tone.Transport.seconds >= totalSeconds) {
-        // Reset transport position and reschedule parts with current tempo
-        engine.stop();
-        currentSecondsPerBeat = 60 / currentBpm;
-        const melodyEvents = createMelodyEvents(currentRawNotes, currentKey, currentSecondsPerBeat);
-        const chordEvents = createChordEvents(currentRawChords, currentKey, currentSecondsPerBeat);
-        currentMelodyEvents = melodyEvents;
-        currentChordEvents = chordEvents;
-        await engine.setupTransport(currentBpm);
-        engine.scheduleMelody(melodyEvents);
-        engine.scheduleChords(chordEvents);
-        controls.updateProgress(0);
-        chordRing.update(null, null, null);
-        noteIndicator.reset();
-        // Re-establish progress tracking to ensure progress bar updates
-        setupProgressTracking();
-      }
-      await engine.play();
-    } else {
-      engine.pause();
+
+// Handler function for play/pause
+async function handlePlayPause(shouldPlay) {
+  if (shouldPlay) {
+    // Check if song has ended and needs to be restarted
+    // If parts are empty (song ended and stop() was called) or transport is at/past the end
+    const totalSeconds = songLength * currentSecondsPerBeat;
+    if (engine.parts.length === 0 || Tone.Transport.seconds >= totalSeconds) {
+      // Reset transport position and reschedule parts with current tempo
+      engine.stop();
+      currentSecondsPerBeat = 60 / currentBpm;
+      const melodyEvents = createMelodyEvents(currentRawNotes, currentKey, currentSecondsPerBeat);
+      const chordEvents = createChordEvents(currentRawChords, currentKey, currentSecondsPerBeat);
+      currentMelodyEvents = melodyEvents;
+      currentChordEvents = chordEvents;
+      await engine.setupTransport(currentBpm);
+      engine.scheduleMelody(melodyEvents);
+      engine.scheduleChords(chordEvents);
+      controls.updateProgress(0);
+      chordRing.update(null, null, null);
+      noteIndicator.reset();
+      timeline.updateProgress(0);
+      // Re-establish progress tracking to ensure progress bar updates
+      setupProgressTracking();
     }
-  },
+    await engine.play();
+  } else {
+    engine.pause();
+  }
+}
+
+const controls = renderControls(controlsPane, {
+  onPlayPause: handlePlayPause,
   onRestart: async () => {
     engine.stop();
     // Recalculate events with current tempo
@@ -54,6 +61,7 @@ const controls = renderControls(controlsPane, {
     controls.resetPlayState();
     chordRing.update(null, null, null);
     noteIndicator.reset();
+    timeline.updateProgress(0);
     setupProgressTracking();
   },
   onSeek: handleSeek,
@@ -73,10 +81,28 @@ const controls = renderControls(controlsPane, {
     const totalSeconds = songLength * currentSecondsPerBeat;
     const ratio = Math.min(1, Tone.Transport.seconds / totalSeconds);
     controls.updateProgress(ratio);
+    timeline.updateProgress(ratio);
   },
 });
-const chordRing = renderChordRing(ringPane);
+const chordRing = renderChordRing(ringPane, {
+  onChordClick: (notes) => {
+    engine.previewChord(notes, "4n");
+  }
+});
 const noteIndicator = renderNoteIndicator(indicatorPane);
+const timeline = renderTimeline(timelinePane, {
+  onSeek: handleSeek
+});
+
+// Add keyboard support for spacebar to toggle play/pause
+document.addEventListener("keydown", (event) => {
+  // Only handle spacebar, and ignore if user is typing in an input field
+  if (event.code === "Space" && event.target.tagName !== "INPUT" && event.target.tagName !== "TEXTAREA") {
+    event.preventDefault();
+    const isPlaying = Tone.Transport.state === "started";
+    handlePlayPause(!isPlaying);
+  }
+});
 
 let library = [];
 let currentSongIdx = 0;
@@ -199,7 +225,9 @@ async function loadSection(songIndex, sectionIndex) {
   controls.setTempo(bpm, originalBpm);
   controls.updateProgress(0);
   controls.resetPlayState();
-  chordRing.update(null, null, null);
+  chordRing.setSongData(currentRawChords, currentKey); // Update Ring Structure
+  chordRing.update(null, null, null); // Maintain existing interface calls if needed
+  timeline.setSongData(currentRawChords, currentKey, songLength);
   noteIndicator.reset();
 
   setupProgressTracking();
@@ -210,6 +238,7 @@ function setupProgressTracking() {
     const totalSeconds = songLength * currentSecondsPerBeat;
     const ratio = Math.min(1, Tone.Transport.seconds / totalSeconds);
     controls.updateProgress(ratio);
+    timeline.updateProgress(ratio);
     // Stop playback when section ends
     if (ratio >= 1 && Tone.Transport.state === "started") {
       engine.stop();
@@ -221,6 +250,7 @@ function setupProgressTracking() {
 function handleSeek(ratio) {
   const seconds = songLength * currentSecondsPerBeat * ratio;
   Tone.Transport.seconds = seconds;
+  timeline.updateProgress(ratio);
 }
 
 function handleSongChange(songIdx) {
@@ -266,7 +296,7 @@ function createChordEvents(chordsArray, key, secondsPerBeat) {
       onTrigger: () => {
         const chordData = chordInterpreter(chord, key);
         noteIndicator.updateChord(chordData.notes, chord.root, chordData.chordDegrees);
-        chordRing.update(chordData.notes, chord.root, chordData.chordDegrees);
+        chordRing.update(chord);
       },
     }));
 }

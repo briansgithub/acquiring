@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,8 +8,10 @@
   <link rel="stylesheet" href="./style.css" />
   <script src="https://unpkg.com/tone@14.7.77/build/Tone.js"></script>
 </head>
+
 <body>
   <div id="app">
+    <div id="timeline-pane" class="pane timeline"></div>
     <div id="controls-pane" class="pane controls"></div>
     <div id="ring-pane" class="pane ring"></div>
     <div id="indicator-pane" class="pane indicator"></div>
@@ -16,22 +19,22 @@
   <script type="module" src="./player.js"></script>
   <script>
     // Poll server health and close tab when server stops
-    (function() {
+    (function () {
       const POLL_INTERVAL = 1000; // Check every 3 seconds
       let pollTimer = null;
       let abortController = null;
-      
+
       function checkServerHealth() {
         // Cancel any in-flight request
         if (abortController) {
           abortController.abort();
         }
         abortController = new AbortController();
-        
+
         // Use lightweight health endpoint to avoid interfering with playback
-        fetch('/api/health', { 
+        fetch('/api/health', {
           cache: 'no-cache',
-          signal: abortController.signal 
+          signal: abortController.signal
         })
           .then((res) => {
             if (res.ok) {
@@ -56,10 +59,10 @@
             window.close();
           });
       }
-      
+
       // Start polling after a short delay to let page load
       setTimeout(checkServerHealth, 2000);
-      
+
       // Clean up on page unload
       window.addEventListener('beforeunload', () => {
         if (pollTimer) clearTimeout(pollTimer);
@@ -68,5 +71,5 @@
     })();
   </script>
 </body>
-</html>
 
+</html>
