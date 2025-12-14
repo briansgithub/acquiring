@@ -24,8 +24,8 @@ async function handlePlayPause(shouldPlay) {
       // Reset transport position and reschedule parts with current tempo
       engine.stop();
       currentSecondsPerBeat = 60 / currentBpm;
-      const melodyEvents = createMelodyEvents(currentRawNotes, currentKey, currentSecondsPerBeat);
-      const chordEvents = createChordEvents(currentRawChords, currentKey, currentSecondsPerBeat);
+      const melodyEvents = createMelodyEvents(currentRawNotes, currentKey);
+      const chordEvents = createChordEvents(currentRawChords, currentKey);
       currentMelodyEvents = melodyEvents;
       currentChordEvents = chordEvents;
       await engine.setupTransport(currentBpm);
@@ -50,8 +50,10 @@ const controls = renderControls(controlsPane, {
     engine.stop();
     // Recalculate events with current tempo
     currentSecondsPerBeat = 60 / currentBpm;
-    const melodyEvents = createMelodyEvents(currentRawNotes, currentKey, currentSecondsPerBeat);
-    const chordEvents = createChordEvents(currentRawChords, currentKey, currentSecondsPerBeat);
+    // Events are now Tick-based, so no need to recreate them on restart unless data changed?
+    // Actually, createMelodyEvents is cheap, so keeping it is fine, but we remove the secondsPerBeat arg.
+    const melodyEvents = createMelodyEvents(currentRawNotes, currentKey);
+    const chordEvents = createChordEvents(currentRawChords, currentKey);
     currentMelodyEvents = melodyEvents;
     currentChordEvents = chordEvents;
     await engine.setupTransport(currentBpm);
@@ -77,11 +79,11 @@ const controls = renderControls(controlsPane, {
     currentBpm = tempo;
     currentSecondsPerBeat = 60 / tempo;
     engine.setTempo(tempo);
-    // Recalculate progress based on new tempo
-    const totalSeconds = songLength * currentSecondsPerBeat;
-    const ratio = Math.min(1, Tone.Transport.seconds / totalSeconds);
-    controls.updateProgress(ratio);
-    timeline.updateProgress(ratio);
+    currentBpm = tempo;
+    currentSecondsPerBeat = 60 / tempo;
+    engine.setTempo(tempo);
+    // No need to manually update progress here; audio engine tick will handle it naturally
+    // Tone.js maintains musical position (Ticks) when BPM changes.
   },
 });
 const chordRing = renderChordRing(ringPane, {
@@ -189,19 +191,20 @@ async function loadSection(songIndex, sectionIndex) {
   currentRawNotes = notesArray;
   currentRawChords = data.chords || [];
 
-  const melodyEvents = createMelodyEvents(notesArray, key, currentSecondsPerBeat);
-  const chordEvents = createChordEvents(currentRawChords, key, currentSecondsPerBeat);
+  const melodyEvents = createMelodyEvents(notesArray, key);
+  const chordEvents = createChordEvents(currentRawChords, key);
 
-  // Calculate actual section length from events
+  // Calculate actual section length in BEATS from raw data
+  // (metadata length is often just an estimate or in bars)
   const allEventEnds = [
-    ...melodyEvents.map((e) => e.time + e.duration),
-    ...chordEvents.map((e) => e.time + e.duration),
+    ...notesArray.map((n) => (n.beat - 1) + n.duration),
+    ...currentRawChords.map((c) => (c.beat - 1) + c.duration),
   ];
   if (allEventEnds.length > 0) {
-    const actualSectionLength = Math.max(...allEventEnds) / currentSecondsPerBeat;
+    const actualSectionLength = Math.max(...allEventEnds);
     songLength = actualSectionLength;
   }
-  // If no events, keep songLength from metadata
+  // If no events, keep songLength from metadata (ensure it's treated as beats)
 
   // Store events for potential restart
   currentMelodyEvents = melodyEvents;
@@ -235,8 +238,15 @@ async function loadSection(songIndex, sectionIndex) {
 
 function setupProgressTracking() {
   engine.onTick(() => {
-    const totalSeconds = songLength * currentSecondsPerBeat;
-    const ratio = Math.min(1, Tone.Transport.seconds / totalSeconds);
+    // songLength is in Beats.
+    // Progress calculation based on TICKS (192 PPQ) to ensure stability during tempo changes.
+    // Tone.Transport.seconds is unstable/approximated during aggressive tempo ramps.
+    const totalTicks = songLength * 192;
+    const currentTicks = Tone.Transport.ticks;
+
+    // Use currentTicks directly for a smooth, locked-to-music progress bar
+    const ratio = totalTicks > 0 ? Math.min(1, currentTicks / totalTicks) : 0;
+
     controls.updateProgress(ratio);
     timeline.updateProgress(ratio);
     // Stop playback when section ends
@@ -269,35 +279,64 @@ function handleSectionChange(idx) {
   loadSection(currentSongIdx, Number(idx));
 }
 
-function createMelodyEvents(notesArray, key, secondsPerBeat) {
-  return notesArray
-    .filter((note) => !note.isRest)
-    .map((note) => {
-      const absoluteLabel = sdToToneJSNoteName(note.sd, note.octave, key, 4);
-      const relativeLabel = note.sd;
-      return {
-        time: (note.beat - 1) * secondsPerBeat,
-        duration: note.duration * secondsPerBeat,
-        name: absoluteLabel,
-        isRest: false,
-        onTrigger: () => noteIndicator.updateMelody(absoluteLabel, relativeLabel),
-      };
+function createMelodyEvents(notesArray, key) {
+  const events = [];
+  notesArray.forEach((note) => {
+    if (note.isRest) return;
+    const absoluteLabel = sdToToneJSNoteName(note.sd, note.octave, key, 4);
+    const relativeLabel = note.sd;
+
+    const startTick = (note.beat - 1) * 192;
+    const endTick = startTick + (note.duration * 192);
+
+    // Note On
+    events.push({
+      time: startTick + "i",
+      type: "attack",
+      name: absoluteLabel,
+      onTrigger: () => noteIndicator.updateMelody(absoluteLabel, relativeLabel),
     });
+
+    // Note Off
+    events.push({
+      time: endTick + "i",
+      type: "release",
+      name: absoluteLabel,
+    });
+  });
+  return events;
 }
 
-function createChordEvents(chordsArray, key, secondsPerBeat) {
-  return chordsArray
-    .filter((chord) => !chord.isRest)
-    .map((chord) => ({
-      time: (chord.beat - 1) * secondsPerBeat,
-      duration: chord.duration * secondsPerBeat,
-      notes: chordInterpreter(chord, key).notes,
-      name: chord.root,
+function createChordEvents(chordsArray, key) {
+  const events = [];
+  chordsArray.forEach((chord) => {
+    if (chord.isRest) return;
+    const chordNotes = chordInterpreter(chord, key).notes;
+    if (!chordNotes.length) return;
+
+    const startTick = (chord.beat - 1) * 192;
+    const endTick = startTick + (chord.duration * 192);
+
+    // Note On
+    events.push({
+      time: startTick + "i",
+      type: "attack",
+      notes: chordNotes,
+      name: chord.root, // Original prop kept for ref
       onTrigger: () => {
         const chordData = chordInterpreter(chord, key);
         noteIndicator.updateChord(chordData.notes, chord.root, chordData.chordDegrees);
         chordRing.update(chord);
       },
-    }));
+    });
+
+    // Note Off
+    events.push({
+      time: endTick + "i",
+      type: "release",
+      notes: chordNotes,
+    });
+  });
+  return events;
 }
 
