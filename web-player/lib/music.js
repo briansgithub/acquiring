@@ -221,6 +221,10 @@ function semitoneToNoteName(semitone, key) {
 // it indicates the tonal basis of the chord
 export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = null) {
 
+  // 1. SAVE THE ORIGINAL KEY
+  // We need to keep a reference to the original key to calculate 
+  // the final scale degrees relative to it.
+  const originalKey = { ...key };
 
   // swap out the scale for the borrowed scale
   let {tonic, scale} = key;
@@ -245,49 +249,81 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
     throw new Error(`Unsupported scale type: ${key.scale}`);
   }
 
+  // This gets the note name based on the NEW (borrowed) key
   const chordRootNoteName = getNoteLabel(chordRootSD, key);
 
   const chordQuality = scaleChordQualities[chordRootSD - 1];
 
-  // triad degrees are used instead of directly referencing 
-  // the scale's labels so that sdToToneJSNoteName() can be used
   const chordDegrees = TRIAD_DEGREES[chordQuality];
-
-  // triad interval degrees are an int 1-7 and include hooktheory-format modifiers 
   const chordDegree1 = chordDegrees[0];
   const chordDegree2 = chordDegrees[1];
   const chordDegree3 = chordDegrees[2];
-
-  // compute chord scale degrees relative to the ORIGINAL key
-  // interval modifiers not used in scale degree arithmetic
-  // mathematically, INTERVAL space and SCALE space are not the same
-  const baseKeyDegrees = chordDegrees.map(degree => {
-    const rawNumber = rawDegree(degree);
-    // XXX -  const modifier = modifierString(degree);
-    const calculatedDegree = ((((chordRootSD - 1) + (rawNumber - 1)) % 7) + 1); // last +1 to make up for first -1. second -1 since that's how to add generic intervals 
-    return calculatedDegree;
-  });
-
+  
+  // Prepare Note Names
   const relativeOctave = 0;
+  // The local key for the chord construction is always Major based on the root note
   const rootKey = { tonic: chordRootNoteName, scale: "major"};
 
-  // since scale degrees contain modifiers (relative to the major key's notes),
-  // the key passed is always the root note's major key
   const firstName = sdToToneJSNoteName(chordDegree1, relativeOctave, rootKey, baseOctave);
   const thirdName = sdToToneJSNoteName(chordDegree2, relativeOctave, rootKey, baseOctave);
   const fifthName = sdToToneJSNoteName(chordDegree3, relativeOctave, rootKey, baseOctave);
-
-  const toneJSNames = [firstName, thirdName, fifthName];
   
+  const toneJSNames = [firstName, thirdName, fifthName];
+
+  // 2. REVISED SCALE DEGREE CALCULATION
+  // We iterate through the generated notes and compare them to the ORIGINAL key
+  const baseKeyDegrees = chordDegrees.map((degree, index) => {
+    const rawNumber = rawDegree(degree);
+    
+    // Calculate the generic scale degree integer (1-7)
+    const calculatedDegree = ((((chordRootSD - 1) + (rawNumber - 1)) % 7) + 1);
+    
+    // A. Get the ACTUAL note name (strip octave, e.g., "Ab4" -> "Ab")
+    const actualNote = toneJSNames[index].replace(/[0-9]/g, '');
+
+    // B. Get the EXPECTED diatonic note for this degree in the ORIGINAL key
+    // (This assumes getNoteLabel returns the standard diatonic note, e.g., "A" for degree 6 in C Maj)
+    const diatonicNote = getNoteLabel(calculatedDegree, originalKey);
+
+    // C. Calculate the modifier by comparing the actual vs diatonic note
+    const modifier = getModifierDifference(actualNote, diatonicNote);
+
+    return `${modifier}${calculatedDegree}`;
+  });
+
   console.log("CHORD DEBUG: chordRootToNotes", {
     root: chordRootSD,
     rootLabel: firstName,
-    thirdLabel: thirdName,
-    fifthLabel: fifthName,
     toneJSNames,
+    baseKeyDegrees // Now contains correct modifiers (e.g., "b6", "#4")
   });
   
   return { notes: toneJSNames, chordDegrees: baseKeyDegrees };
+}
+
+// --- HELPER FUNCTION ---
+// Calculates the accidental difference between two notes of the same letter
+// e.g., actual="Ab", diatonic="A" -> returns "b"
+// e.g., actual="F#", diatonic="F" -> returns "#"
+function getModifierDifference(actual, diatonic) {
+  const getAccidentalValue = (note) => {
+    if (note.includes('bb')) return -2;
+    if (note.includes('b')) return -1;
+    if (note.includes('##') || note.includes('x')) return 2;
+    if (note.includes('#')) return 1;
+    return 0;
+  };
+
+  const actualVal = getAccidentalValue(actual);
+  const diatonicVal = getAccidentalValue(diatonic);
+  const diff = actualVal - diatonicVal;
+
+  if (diff === 0) return "";
+  if (diff === -1) return "b";
+  if (diff === -2) return "bb";
+  if (diff === 1) return "#";
+  if (diff === 2) return "##"; // or x
+  return "";
 }
 
 export function chordInterpreter(chord, key) {
