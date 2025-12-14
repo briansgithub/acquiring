@@ -81,10 +81,11 @@ export function renderChordRing(container, options = {}) {
     const color = getScaleDegreeColor(degree, currentKey.scale);
 
     if (exactDiatonic) {
-      drawNode(dx, dy, nodeRadius, color, exactDiatonic.symbol, 1.0);
+      const isActive = activeChordSymbol === exactDiatonic.symbol;
+      drawNode(dx, dy, nodeRadius, color, exactDiatonic.symbol, 1.0, isActive);
     } else {
       // Placeholder
-      drawNode(dx, dy, nodeRadius, color, expectedDiatonicLabel, 0.3);
+      drawNode(dx, dy, nodeRadius, color, expectedDiatonicLabel, 0.3, false);
     }
 
     // 2. Draw Variants (Outer Rings)
@@ -92,31 +93,39 @@ export function renderChordRing(container, options = {}) {
       const dist = (DIATONIC_RING_RADIUS + VARIANT_SPACING * (idx + 1)) * zoom;
       const vx = centerX + dist * Math.cos(angle);
       const vy = centerY + dist * Math.sin(angle);
-      drawNode(vx, vy, nodeRadius, color, v.symbol, 0.9);
+      const isActive = activeChordSymbol === v.symbol;
+      drawNode(vx, vy, nodeRadius, color, v.symbol, 0.9, isActive);
     });
   }
 
-  function drawNode(x, y, r, color, label, opacity) {
+  function drawNode(x, y, r, color, label, opacity, isActive = false) {
+    const effectiveRadius = isActive ? r * 1.3 : r;
+
     ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.arc(x, y, effectiveRadius, 0, Math.PI * 2);
 
     // Parse hex to rgba for opacity?
     // Or just setting globalAlpha works if we reset.
     ctx.save();
     ctx.globalAlpha = opacity;
     ctx.fillStyle = color;
-    if (opacity > 0.8) {
+
+    if (isActive) {
+      ctx.shadowBlur = 30 * zoom;
+      ctx.shadowColor = "#ffffff"; // Bright glow
+    } else if (opacity > 0.8) {
       ctx.shadowBlur = 10 * zoom;
       ctx.shadowColor = color;
     }
+
     ctx.fill();
     ctx.restore();
 
     // Border
     ctx.save();
-    ctx.globalAlpha = Math.min(1, opacity + 0.2); // Border slightly more visible
-    ctx.strokeStyle = "#fff";
-    ctx.lineWidth = 2 * zoom;
+    ctx.globalAlpha = isActive ? 1.0 : Math.min(1, opacity + 0.2); // Border slightly more visible
+    ctx.strokeStyle = isActive ? "#ffffff" : "#fff";
+    ctx.lineWidth = isActive ? 4 * zoom : 2 * zoom;
     ctx.stroke();
     ctx.restore();
 
@@ -125,8 +134,10 @@ export function renderChordRing(container, options = {}) {
     ctx.globalAlpha = Math.min(1, opacity + 0.4);
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillStyle = "#000";
-    ctx.font = `${Math.max(12, 16 * zoom)}px "Times New Roman", Times, serif`;
+    ctx.fillStyle = isActive ? "#000" : "#000"; // Can change text color if needed, but black is readable on these cols
+    // Scale text with node size
+    const fontSize = isActive ? Math.max(16, 22 * zoom) : Math.max(12, 16 * zoom);
+    ctx.font = `\${fontSize}px "Times New Roman", Times, serif`;
     ctx.fillText(label, x, y);
     ctx.restore();
   }
