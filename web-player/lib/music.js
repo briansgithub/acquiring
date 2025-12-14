@@ -219,19 +219,24 @@ function semitoneToNoteName(semitone, key) {
 
 //chordRootSD is explicitely an int from 1-7 (no modifiers). 
 // it indicates the tonal basis of the chord
-export function rootToDiatonicTriad(chordRootSD, key, baseOctave) {
-  /*
-  let noteNamesInKey;
-  if(key.scale === "major") {
-    noteNamesInKey = MAJOR_SCALE_LABELS[key.tonic];
-  } else if (key.scale === "minor") {
-    noteNamesInKey = MINOR_SCALE_LABELS[key.tonic];
-  } else {
-    throw new Error(`Unsupported scale type: ${key.scale}`);
-  }
-    */
-   let scaleChordQualities
+export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = null) {
 
+
+  // swap out the scale for the borrowed scale
+  let {tonic, scale} = key;
+
+  if(borrowed === null) {
+    scale = key.scale;
+  } else if (borrowed === "major") {
+    scale = "major";
+  } else if (borrowed === "minor") {
+    scale = "minor";
+  } else {
+    throw new Error(`Unsupported borrowed type: ${borrowed}`);
+  }
+  key = { tonic, scale };
+
+  let scaleChordQualities
   if (key.scale === "major") {
     scaleChordQualities = MAJOR_SCALE_CHORD_QUALITIES;
   } else if (key.scale === "minor") {
@@ -287,7 +292,8 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave) {
 
 export function chordInterpreter(chord, key) {
   const defaultChordOctave = 3;
-  return rootToDiatonicTriad(chord.root, key, defaultChordOctave);
+  const borrowed = chord.borrowed || null;
+  return rootToDiatonicTriad(chord.root, key, defaultChordOctave, borrowed);
 }
 
 
