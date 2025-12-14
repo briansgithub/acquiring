@@ -1,0 +1,44 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/lady-gaga/bad-romance",
+  "songTitle": "Bad Romance",
+  "artist": "lady-gaga",
+  "timestamp": "2025-12-14T23:22:02.337Z",
+  "songIds": [
+    "lamkrayYoDM",
+    "ANmpNLDqxyM",
+    "AQodjMZKgDl",
+    "zngRGW-VxJj"
+  ],
+  "sectionMapping": {
+    "lamkrayYoDM": "Verse",
+    "ANmpNLDqxyM": "Chorus",
+    "AQodjMZKgDl": "Chorus Lead-Out",
+    "zngRGW-VxJj": "Bridge"
+  },
+  "sections": [
+    {
+      "index": 0,
+      "songId": "lamkrayYoDM",
+      "sectionName": "Verse",
+      "numericId": 1469809
+    },
+    {
+      "index": 1,
+      "songId": "ANmpNLDqxyM",
+      "sectionName": "Chorus",
+      "numericId": 1567568
+    },
+    {
+      "index": 2,
+      "songId": "AQodjMZKgDl",
+      "sectionName": "Chorus Lead-Out",
+      "numericId": 1355331
+    },
+    {
+      "index": 3,
+      "songId": "zngRGW-VxJj",
+      "sectionName": "Bridge",
+      "numericId": 1355339
+    }
+  ]
+}

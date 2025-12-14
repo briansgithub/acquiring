@@ -1,0 +1,28 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/the-proclaimers/500-miles",
+  "songTitle": "500 Miles",
+  "artist": "the-proclaimers",
+  "timestamp": "2025-12-14T23:21:38.927Z",
+  "songIds": [
+    "nLgaKbMEoYp",
+    "yvmrbYkzmOW"
+  ],
+  "sectionMapping": {
+    "nLgaKbMEoYp": "Verse",
+    "yvmrbYkzmOW": "Chorus"
+  },
+  "sections": [
+    {
+      "index": 0,
+      "songId": "nLgaKbMEoYp",
+      "sectionName": "Verse",
+      "numericId": 1027544
+    },
+    {
+      "index": 1,
+      "songId": "yvmrbYkzmOW",
+      "sectionName": "Chorus",
+      "numericId": 1269902
+    }
+  ]
+}
