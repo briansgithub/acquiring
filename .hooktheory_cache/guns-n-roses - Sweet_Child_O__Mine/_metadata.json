@@ -1,0 +1,52 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/guns-n-roses/sweet-child-o-mine",
+  "songTitle": "Sweet Child O' Mine",
+  "artist": "guns-n-roses",
+  "timestamp": "2025-12-15T05:59:08.460Z",
+  "songIds": [
+    "RPxek_wemb_",
+    "ZwxKKqYwxed",
+    "ZOxVBPlMxdq",
+    "DpgvndEOgad",
+    "ZwxKJE_Zged"
+  ],
+  "sectionMapping": {
+    "RPxek_wemb_": "Intro",
+    "ZwxKKqYwxed": "Verse",
+    "ZOxVBPlMxdq": "Chorus",
+    "DpgvndEOgad": "Bridge",
+    "ZwxKJE_Zged": "Solo"
+  },
+  "sections": [
+    {
+      "index": 0,
+      "songId": "RPxek_wemb_",
+      "sectionName": "Intro",
+      "numericId": 1512385
+    },
+    {
+      "index": 1,
+      "songId": "ZwxKKqYwxed",
+      "sectionName": "Verse",
+      "numericId": 1512387
+    },
+    {
+      "index": 2,
+      "songId": "ZOxVBPlMxdq",
+      "sectionName": "Chorus",
+      "numericId": 1512388
+    },
+    {
+      "index": 3,
+      "songId": "DpgvndEOgad",
+      "sectionName": "Bridge",
+      "numericId": 1591119
+    },
+    {
+      "index": 4,
+      "songId": "ZwxKJE_Zged",
+      "sectionName": "Solo",
+      "numericId": null
+    }
+  ]
+}
