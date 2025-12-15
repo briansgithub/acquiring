@@ -358,40 +358,48 @@ function createChordEvents(chordsArray, key) {
       const ticksPerSecond = currentBpm * 3.2;
       const offsetTicks = (arpeggiationSpeed / 1000) * ticksPerSecond;
 
-      chordNotes.forEach((note, idx) => {
-        // Stagger start times
-        let noteStartTick = startTick + (idx * offsetTicks);
-        if (noteStartTick >= endTick) noteStartTick = endTick - 1; // Clamp to chord duration?
+      let currentTick = startTick;
+      let noteIdx = 0;
 
-        // Logic for highlighting:
-        // First note triggers the "Chord" update (showing all notes) AND highlights itself.
-        // Subsequent notes just highlight themselves.
+      // Loop until we run out of time in the chord (with a small buffer to avoid zero-length notes at the end)
+      while (currentTick + 2 < endTick) {
+        const note = chordNotes[noteIdx % chordNotes.length];
+        const noteStart = currentTick;
+
+        let noteEnd = currentTick + offsetTicks;
+        // Ensure we don't play past the chord's end
+        if (noteEnd > endTick) noteEnd = endTick;
+
+        // Capture closure values
+        const isFirstNote = (noteIdx === 0);
+        const thisNote = note;
 
         const noteEvent = {
-          time: Math.round(noteStartTick) + "i",
+          time: Math.round(noteStart) + "i",
           type: "attack",
-          notes: [note], // Engine expects array
+          notes: [thisNote], // Engine expects array
           name: chord.root,
           onTrigger: () => {
-            if (idx === 0) {
-              // On first note, update the main chord display
+            if (isFirstNote) {
+              // On very first note, update the main chord display
               noteIndicator.updateChord(chordNotes, chord.root, chordData.chordDegrees, chord.borrowed);
               chordRing.update(chord);
             }
             // Highlight this specific note
-            noteIndicator.highlightNote(note);
+            noteIndicator.highlightNote(thisNote);
           }
         };
         events.push(noteEvent);
 
-        // Individual Release? Or release all at end?
-        // Let's release all at endTick to let them ring out together.
         events.push({
-          time: Math.round(endTick) + "i",
+          time: Math.round(noteEnd) + "i",
           type: "release",
-          notes: [note],
+          notes: [thisNote],
         });
-      });
+
+        currentTick += offsetTicks;
+        noteIdx++;
+      }
 
     } else {
       // Block Chord (Original Logic)
