@@ -14,9 +14,35 @@ import { getChordSymbol, getChordLetterName } from "../lib/jsonToSymbol.js";
 import { rootToDiatonicTriad, getNoteLabel } from "../lib/music.js";
 
 export function renderChordRing(container, options = {}) {
+  // Create wrapper for canvas and overlay controls
+  const wrapper = document.createElement("div");
+  wrapper.style.position = "relative";
+  wrapper.style.width = "100%";
+  wrapper.style.height = "100%";
+  container.appendChild(wrapper);
+  
   const canvas = document.createElement("canvas");
-  container.appendChild(canvas);
+  wrapper.appendChild(canvas);
   const ctx = canvas.getContext("2d");
+  
+  // Create overlay div for checkbox at bottom
+  const overlay = document.createElement("div");
+  overlay.style.position = "absolute";
+  overlay.style.bottom = "10px";
+  overlay.style.left = "50%";
+  overlay.style.transform = "translateX(-50%)"; // Center horizontally
+  overlay.style.pointerEvents = "auto";
+  overlay.style.zIndex = "10";
+  overlay.style.textAlign = "center";
+  overlay.innerHTML = `
+    <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;color:#ffffff;font-size:12px;white-space:nowrap;">
+      <input type="checkbox" id="roman-numeral-toggle-ring" checked style="cursor:pointer;">
+      <span>Roman Numerals</span>
+    </label>
+  `;
+  wrapper.appendChild(overlay);
+  
+  const romanNumeralToggle = overlay.querySelector("#roman-numeral-toggle-ring");
 
 
   // Interaction State
@@ -31,6 +57,18 @@ export function renderChordRing(container, options = {}) {
   // External Data
   let currentKey = { tonic: "C", scale: "major" };
   let useRomanNumerals = options.labelMode !== false; // Default to true (roman numerals)
+  
+  // Set initial checkbox state
+  romanNumeralToggle.checked = useRomanNumerals;
+  
+  // Checkbox change handler
+  romanNumeralToggle.addEventListener("change", (e) => {
+    useRomanNumerals = e.target.checked;
+    if (options.onLabelModeChange) {
+      options.onLabelModeChange(useRomanNumerals);
+    }
+    draw();
+  });
 
   let currentGroupedChords = {}; // Map of root (1-7) -> Array of {symbol, chordObj}
 
@@ -233,8 +271,8 @@ export function renderChordRing(container, options = {}) {
     ctx.lineWidth = 2 * zoom;
     ctx.stroke();
 
-    // Center Label
-    ctx.fillStyle = "#000";
+    // Center Label (white text)
+    ctx.fillStyle = "#ffffff";
     ctx.font = `${Math.max(14, 18 * zoom)}px "Times New Roman", Times, serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -393,6 +431,7 @@ export function renderChordRing(container, options = {}) {
 
     setLabelMode(useRoman, key) {
       useRomanNumerals = useRoman;
+      romanNumeralToggle.checked = useRoman;
       if (key) {
         currentKey = key;
       }

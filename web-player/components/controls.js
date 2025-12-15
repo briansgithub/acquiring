@@ -1,4 +1,4 @@
-export function renderControls(container, { onPlayPause, onRestart, onSeek, onSongChange, onSectionChange, onMelodyVolumeChange, onChordVolumeChange, onTempoChange, onArpeggiateToggle, onArpeggiateSpeedChange, onLabelModeChange }) {
+export function renderControls(container, { onPlayPause, onRestart, onSeek, onSongChange, onSectionChange, onMelodyVolumeChange, onChordVolumeChange, onTempoChange, onArpeggiateToggle, onArpeggiateSpeedChange }) {
   container.innerHTML = `
     <h2>Controls</h2>
     <div class="row">
@@ -44,10 +44,6 @@ export function renderControls(container, { onPlayPause, onRestart, onSeek, onSo
       <input type="checkbox" id="arpeggiate-toggle" checked style="cursor:pointer;">
       <label for="arpeggiate-toggle" style="font-size:12px;color:#9ca3af;cursor:pointer;user-select:none;">Arpeggiate Chords</label>
     </div>
-    <div class="row" style="margin-top:10px;">
-      <input type="checkbox" id="roman-numeral-toggle" checked style="cursor:pointer;">
-      <label for="roman-numeral-toggle" style="font-size:12px;color:#9ca3af;cursor:pointer;user-select:none;">Roman Numerals</label>
-    </div>
     <div class="row" id="arp-speed-row">
       <label for="arp-speed" style="font-size:12px;color:#9ca3af;width:60px;">Arp Spd:</label>
       <input type="range" id="arp-speed" min="10" max="1000" value="100" step="10" class="volume-slider">
@@ -74,7 +70,6 @@ export function renderControls(container, { onPlayPause, onRestart, onSeek, onSo
   const arpSpeedSlider = container.querySelector("#arp-speed");
   const arpSpeedLabel = container.querySelector("#arp-speed-label");
   const arpSpeedRow = container.querySelector("#arp-speed-row");
-  const romanNumeralToggle = container.querySelector("#roman-numeral-toggle");
 
   playBtn.addEventListener("click", () => {
     const isPlaying = playBtn.dataset.state === "playing";
@@ -138,11 +133,6 @@ export function renderControls(container, { onPlayPause, onRestart, onSeek, onSo
       arpSpeedLabel.textContent = `${ms}ms`;
     }
     onArpeggiateSpeedChange?.(ms);
-  });
-
-  romanNumeralToggle.addEventListener("change", (e) => {
-    const useRomanNumerals = e.target.checked;
-    onLabelModeChange?.(useRomanNumerals);
   });
 
   return {

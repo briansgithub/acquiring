@@ -137,6 +137,14 @@ const controls = renderControls(controlsPane, {
       updatePlaybackSettings();
     }, 150);
   },
+});
+const chordRing = renderChordRing(ringPane, {
+  onChordClick: (chordData) => {
+    isManualChordPreview = true;
+    engine.previewChord(chordData.notes, "4n");
+    noteIndicator.updateChord(chordData.notes, chordData.root, chordData.chordDegrees, chordData.borrowed, currentKey, chordData.chord);
+  },
+  labelMode: useRomanNumerals,
   onLabelModeChange: (useRoman) => {
     useRomanNumerals = useRoman;
     // Update chord ring with new label mode
@@ -152,15 +160,7 @@ const controls = renderControls(controlsPane, {
         }
       }
     }
-  },
-});
-const chordRing = renderChordRing(ringPane, {
-  onChordClick: (chordData) => {
-    isManualChordPreview = true;
-    engine.previewChord(chordData.notes, "4n");
-    noteIndicator.updateChord(chordData.notes, chordData.root, chordData.chordDegrees, chordData.borrowed, currentKey, chordData.chord);
-  },
-  labelMode: useRomanNumerals
+  }
 });
 const noteIndicator = renderNoteIndicator(indicatorPane, {
   onNoteClick: (note) => {
@@ -352,6 +352,24 @@ async function loadSection(songIndex, sectionIndex) {
     timeline.setSongData(currentRawChords, currentKey, songLength);
     noteIndicator.reset();
 
+    // Update indicator immediately with the first chord if it starts at beat 0 or 1
+    // This fixes the issue where the first chord plays but indicator doesn't show until second chord
+    if (currentRawChords && currentRawChords.length > 0) {
+      const firstChord = currentRawChords.find(c => !c.isRest);
+      if (firstChord && (firstChord.beat === 0 || firstChord.beat === 1)) {
+        const chordData = chordInterpreter(firstChord, currentKey);
+        noteIndicator.updateChord(
+          chordData.notes,
+          firstChord.root,
+          chordData.chordDegrees,
+          firstChord.borrowed,
+          currentKey,
+          firstChord
+        );
+        chordRing.update(firstChord);
+      }
+    }
+
     setupProgressTracking();
     console.log("Section loaded successfully.");
   } catch (err) {
@@ -458,7 +476,10 @@ function createMelodyEvents(notesArray, key) {
     const absoluteLabel = sdToToneJSNoteName(note.sd, note.octave, key, 4);
     const relativeLabel = note.sd;
 
-    const startTick = (note.beat - 1) * 192;
+    // Handle beat 0 by treating it as beat 1 (normalize to 1-based indexing)
+    // XML format can have beat 0, but player expects 1-based beats
+    const normalizedBeat = note.beat === 0 ? 1 : note.beat;
+    const startTick = (normalizedBeat - 1) * 192;
     const endTick = startTick + (note.duration * 192);
 
     // Note On
@@ -487,7 +508,10 @@ function createChordEvents(chordsArray, key) {
     const chordNotes = chordData.notes;
     if (!chordNotes.length) return;
 
-    const startTick = (chord.beat - 1) * 192;
+    // Handle beat 0 by treating it as beat 1 (normalize to 1-based indexing)
+    // XML format can have beat 0, but player expects 1-based beats
+    const normalizedBeat = chord.beat === 0 ? 1 : chord.beat;
+    const startTick = (normalizedBeat - 1) * 192;
     const endTick = startTick + (chord.duration * 192);
 
     if (isArpeggiated) {
@@ -605,9 +629,10 @@ function findCurrentChordAtTick(tickPosition) {
   
   // Find the chord that should be playing at this beat
   // A chord is active if currentBeat is >= chord.beat and < chord.beat + chord.duration
+  // Normalize beat 0 to beat 1 for comparison
   for (const chord of currentRawChords) {
     if (chord.isRest) continue;
-    const chordStartBeat = chord.beat;
+    const chordStartBeat = chord.beat === 0 ? 1 : chord.beat;
     const chordEndBeat = chordStartBeat + chord.duration;
     
     if (currentBeat >= chordStartBeat && currentBeat < chordEndBeat) {
