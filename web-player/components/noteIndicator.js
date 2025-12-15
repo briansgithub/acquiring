@@ -7,7 +7,8 @@ export function renderNoteIndicator(container, options = {}) {
     <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 4px;">
       <div class="card">
         <div class="label" style="text-align:center;">Melody</div>
-        <div class="value" id="melody-note" style="text-align:center;">--</div>
+        <div class="notes-list" id="melody-note-label" style="min-height:32px;margin-top:2px;justify-content:center;"></div>
+        <div class="notes-list" id="melody-scale-degree" style="min-height:32px;margin-top:4px;justify-content:center;"></div>
       </div>
       <div class="card" style="position:relative;">
         <div class="label">Chord</div>
@@ -19,7 +20,8 @@ export function renderNoteIndicator(container, options = {}) {
     </div>
   `;
 
-  const melodyEl = container.querySelector("#melody-note");
+  const melodyNoteLabelEl = container.querySelector("#melody-note-label");
+  const melodyScaleDegreeEl = container.querySelector("#melody-scale-degree");
   const chordRootEl = container.querySelector("#chord-root");
   const chordList = container.querySelector("#chord-notes");
   const chordDegreesPillsList = container.querySelector("#chord-degrees-pills");
@@ -33,15 +35,70 @@ export function renderNoteIndicator(container, options = {}) {
   
   function updateMelodyDisplay() {
     const { absoluteLabel, relativeLabel } = currentMelodyData;
+    
+    // Clear existing pills
+    melodyNoteLabelEl.innerHTML = "";
+    melodyScaleDegreeEl.innerHTML = "";
+    
     if (!absoluteLabel && !relativeLabel) {
-      melodyEl.textContent = "--";
+      // Show empty gray pills for rest/no melody
+      const notePill = document.createElement("span");
+      notePill.className = "pill";
+      notePill.textContent = "";
+      notePill.style.background = "rgba(107, 114, 128, 0.12)";
+      notePill.style.borderColor = "rgba(107, 114, 128, 0.4)";
+      notePill.style.color = "#6b7280";
+      notePill.style.cursor = "default";
+      melodyNoteLabelEl.appendChild(notePill);
+      
+      const degreePill = document.createElement("span");
+      degreePill.className = "pill";
+      degreePill.textContent = "";
+      degreePill.style.background = "rgba(107, 114, 128, 0.12)";
+      degreePill.style.borderColor = "rgba(107, 114, 128, 0.4)";
+      degreePill.style.color = "#6b7280";
+      degreePill.style.cursor = "default";
+      melodyScaleDegreeEl.appendChild(degreePill);
       return;
     }
-    // Always show note name with scale degree
-    if (absoluteLabel && relativeLabel) {
-      melodyEl.textContent = `${absoluteLabel} (${relativeLabel})`;
-    } else {
-      melodyEl.textContent = absoluteLabel || relativeLabel || "--";
+    
+    // Create note label pill
+    if (absoluteLabel) {
+      const notePill = document.createElement("span");
+      notePill.className = "pill";
+      notePill.textContent = absoluteLabel;
+      notePill.style.cursor = "pointer";
+      
+      // Add click handler to play the note
+      notePill.addEventListener("click", () => {
+        if (options.onNoteClick) {
+          options.onNoteClick(absoluteLabel);
+        }
+      });
+      
+      melodyNoteLabelEl.appendChild(notePill);
+    }
+    
+    // Create scale degree pill
+    if (relativeLabel) {
+      const degreePill = document.createElement("span");
+      degreePill.className = "pill";
+      degreePill.textContent = relativeLabel;
+      degreePill.style.cursor = "pointer";
+      
+      // Store the corresponding note name for click handler
+      if (absoluteLabel) {
+        degreePill.dataset.noteName = absoluteLabel;
+      }
+      
+      // Add click handler to play the corresponding note
+      degreePill.addEventListener("click", () => {
+        if (options.onNoteClick && absoluteLabel) {
+          options.onNoteClick(absoluteLabel);
+        }
+      });
+      
+      melodyScaleDegreeEl.appendChild(degreePill);
     }
   }
   
@@ -212,7 +269,7 @@ export function renderNoteIndicator(container, options = {}) {
     reset() {
       currentMelodyData = { absoluteLabel: null, relativeLabel: null };
       currentChordData = { notes: null, chordDegrees: null, root: null, borrowed: null, key: null, chordObj: null };
-      melodyEl.textContent = "--";
+      updateMelodyDisplay(); // This will show empty gray pills
       chordRootEl.textContent = "";
       chordRootEl.style.visibility = "hidden";
       chordList.innerHTML = '<span style="color:#6b7280;line-height:32px;">--</span>';
