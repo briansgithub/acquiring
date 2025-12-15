@@ -14,10 +14,14 @@ export function getChordSymbol(chord, key) {
 
     // Handle Borrowed Chords (simple mode mixture)
     if (chord.borrowed) {
-        // If we are in Major and borrow from Minor, use Minor scale qualities
-        if (scale === 'major' && chord.borrowed === 'minor') scale = 'minor';
-        // If we are in Minor and borrow from Major (Picardy 3rd etc), use Major
-        else if (scale === 'minor' && chord.borrowed === 'major') scale = 'major';
+        // If borrowed is an array (custom scale), we'll add a prefix later
+        // For standard mode borrowing, adjust scale for chord quality calculation
+        if (typeof chord.borrowed === 'string') {
+            // If we are in Major and borrow from Minor, use Minor scale qualities
+            if (scale === 'major' && chord.borrowed === 'minor') scale = 'minor';
+            // If we are in Minor and borrow from Major (Picardy 3rd etc), use Major
+            else if (scale === 'minor' && chord.borrowed === 'major') scale = 'major';
+        }
     }
 
     let qualities = (scale === 'minor') ? MINOR_SCALE_CHORD_QUALITIES : MAJOR_SCALE_CHORD_QUALITIES;
@@ -82,10 +86,15 @@ export function getChordSymbol(chord, key) {
     // E.g. inversion 1 of 7th chord is "65", we don't add "7".
 
     // Prefix for borrowed roots in Major (e.g. bIII, bVI, bVII)
+    // Only add flat for standard mode borrowing where root is actually lowered
+    // Custom borrowed scales will use the same symbol but appear as separate nodes with "(borrowed)" label
     let prefix = "";
-    if (key.scale === 'major' && chord.borrowed === 'minor') {
-        if ([3, 6, 7].includes(root)) {
-            prefix = "♭";
+    if (chord.borrowed && typeof chord.borrowed === 'string') {
+        if (key.scale === 'major' && chord.borrowed === 'minor') {
+            // Standard mode borrowing - only add flat for roots that are lowered (3, 6, 7)
+            if ([3, 6, 7].includes(root)) {
+                prefix = "♭";
+            }
         }
     }
 

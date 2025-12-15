@@ -67,10 +67,17 @@ export function renderChordRing(container, options = {}) {
 
     const chords = currentGroupedChords[degree] || [];
 
-    // Sort logic? Diatonic first?
-    // Actually, we want to separate Exact Diatonic Match vs Variants.
-    const exactDiatonic = chords.find(c => c.symbol === expectedDiatonicLabel);
-    const variants = chords.filter(c => c.symbol !== expectedDiatonicLabel);
+    // Separate Exact Diatonic Match vs Variants
+    // For exactDiatonic, prioritize non-borrowed chords (borrowed chords should be variants)
+    const exactDiatonic = chords.find(c => 
+      c.symbol === expectedDiatonicLabel && 
+      (!c.chord.borrowed || c.chord.borrowed === "" || c.chord.borrowed === null)
+    ) || chords.find(c => c.symbol === expectedDiatonicLabel); // Fallback to any match if no non-borrowed found
+    
+    const variants = chords.filter(c => 
+      c.symbol !== expectedDiatonicLabel || 
+      (c.chord.borrowed && c.chord.borrowed !== "" && c.chord.borrowed !== null)
+    );
 
     // 1. Draw Diatonic Slot (Inner Ring)
     const diatonicDist = DIATONIC_RING_RADIUS * zoom;
@@ -83,8 +90,16 @@ export function renderChordRing(container, options = {}) {
     if (exactDiatonic) {
       const isActive = activeChordSymbol === exactDiatonic.symbol;
       let subLabel = null;
-      if (exactDiatonic.chord && exactDiatonic.chord.borrowed) {
-        subLabel = `(${exactDiatonic.chord.borrowed})`;
+      const chord = exactDiatonic.chord;
+      if (chord && chord.borrowed !== undefined && chord.borrowed !== null && chord.borrowed !== "") {
+        // If borrowed is an array (custom scale), show "(borrowed)"
+        // Otherwise show the mode name
+        const borrowed = chord.borrowed;
+        if (Array.isArray(borrowed) && borrowed.length > 0) {
+          subLabel = "(borrowed)";
+        } else if (typeof borrowed === 'string' && borrowed.length > 0) {
+          subLabel = `(${borrowed})`;
+        }
       }
       drawNode(dx, dy, nodeRadius, color, exactDiatonic.symbol, 1.0, isActive, false, subLabel);
     } else {
@@ -100,8 +115,16 @@ export function renderChordRing(container, options = {}) {
       const isActive = activeChordSymbol === v.symbol;
 
       let subLabel = null;
-      if (v.chord && v.chord.borrowed) {
-        subLabel = `(${v.chord.borrowed})`;
+      const chord = v.chord;
+      if (chord && chord.borrowed !== undefined && chord.borrowed !== null && chord.borrowed !== "") {
+        // If borrowed is an array (custom scale), show "(borrowed)"
+        // Otherwise show the mode name
+        const borrowed = chord.borrowed;
+        if (Array.isArray(borrowed) && borrowed.length > 0) {
+          subLabel = "(borrowed)";
+        } else if (typeof borrowed === 'string' && borrowed.length > 0) {
+          subLabel = `(${borrowed})`;
+        }
       }
 
       drawNode(vx, vy, nodeRadius, color, v.symbol, 0.9, isActive, false, subLabel);
@@ -358,7 +381,9 @@ export function renderChordRing(container, options = {}) {
           if (r < 1 || r > 7) return; // Ignore chromatic roots for now if not scale degrees
 
           const sym = getChordSymbol(c, key);
-          const uniqueKey = `${r}-${sym}`; // Dedupe by Root+Symbol
+          // Include borrowed in unique key to preserve borrowed chords even if symbol is same
+          const borrowedKey = c.borrowed ? (Array.isArray(c.borrowed) ? 'borrowed' : String(c.borrowed)) : '';
+          const uniqueKey = `${r}-${sym}-${borrowedKey}`; // Dedupe by Root+Symbol+Borrowed
 
           if (!seen.has(uniqueKey)) {
             seen.add(uniqueKey);

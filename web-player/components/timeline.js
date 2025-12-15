@@ -69,7 +69,10 @@ export function renderTimeline(container, options = {}) {
                         ctx.fillText(symbol, x + w / 2, y + blockHeight / 2 - 8);
                         // Draw borrowed text lower (smaller)
                         ctx.font = "italic 12px 'Times New Roman', serif";
-                        ctx.fillText(`(${chord.borrowed})`, x + w / 2, y + blockHeight / 2 + 10);
+                        // If borrowed is an array (custom scale), show "(borrowed)"
+                        // Otherwise show the mode name
+                        const borrowedLabel = Array.isArray(chord.borrowed) ? "(borrowed)" : `(${chord.borrowed})`;
+                        ctx.fillText(borrowedLabel, x + w / 2, y + blockHeight / 2 + 10);
                     } else {
                         ctx.fillText(symbol, x + w / 2, y + blockHeight / 2);
                     }

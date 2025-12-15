@@ -91,7 +91,10 @@ export function renderNoteIndicator(container, options = {}) {
 
       // Update borrowed
       if (borrowed) {
-        chordBorrowedEl.textContent = `(${borrowed})`;
+        // If borrowed is an array (custom scale), show "(borrowed)"
+        // Otherwise show the mode name
+        const borrowedLabel = Array.isArray(borrowed) ? `(borrowed: ${borrowed})` : `(${borrowed})`;
+        chordBorrowedEl.textContent = borrowedLabel;
         chordBorrowedEl.style.display = "block";
       } else {
         chordBorrowedEl.style.display = "none";
