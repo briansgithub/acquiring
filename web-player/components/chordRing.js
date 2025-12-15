@@ -328,11 +328,11 @@ export function renderChordRing(container, options = {}) {
   }
 
   function playChord(chordObj) {
-    // Use chordInterpreter from music.js which handles chord types (including 7th chords)
-    // Import chordInterpreter at the top of the file
+    // Use chordInterpreter from music.js which handles chord types (including 7th chords) and inversions
     const borrowed = chordObj.borrowed || null;
     const chordType = chordObj.type || 5; // Default to triad if type not specified
-    const chordData = rootToDiatonicTriad(chordObj.root, currentKey, 3, borrowed, chordType);
+    const inversion = chordObj.inversion || 0; // Default to root position if inversion not specified
+    const chordData = rootToDiatonicTriad(chordObj.root, currentKey, 3, borrowed, chordType, inversion);
     if (options.onChordClick) {
       options.onChordClick({
         notes: chordData.notes,

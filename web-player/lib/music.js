@@ -323,7 +323,8 @@ function getCustomScaleIntervals(borrowedArray) {
 //chordRootSD is explicitely an int from 1-7 (no modifiers). 
 // it indicates the tonal basis of the chord
 // chordType: 5 = triad, 7 = dominant 7th (4-note chord)
-export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = null, chordType = 5) {
+// inversion: 0 = root position, 1 = first inversion, 2 = second inversion, 3 = third inversion (7th chords only)
+export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = null, chordType = 5, inversion = 0) {
 
   // 1. SAVE THE ORIGINAL KEY
   // We need to keep a reference to the original key to calculate 
@@ -408,6 +409,7 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
   const fifthName = sdToToneJSNoteName(chordDegree3, relativeOctave, rootKey, baseOctave);
   
   let toneJSNames = [firstName, thirdName, fifthName];
+  let degreeIndices = [0, 1, 2]; // Track which degree each note represents
 
   // Add 7th note if chord type is 7 (dominant 7th)
   if (chordType === 7) {
@@ -417,16 +419,71 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
     const seventhDegree = "b7";
     const seventhName = sdToToneJSNoteName(seventhDegree, relativeOctave, rootKey, baseOctave);
     toneJSNames.push(seventhName);
+    degreeIndices.push(3); // 7th is index 3
+  }
+
+  // Apply inversion by reordering notes and adjusting octaves
+  if (inversion > 0) {
+    const numNotes = toneJSNames.length;
+    
+    // Create reordered arrays
+    const reorderedNotes = [];
+    const reorderedDegreeIndices = [];
+    
+    // For inversions, move the bass note down an octave and upper notes up an octave
+    // Triad inversions:
+    //   Inv 0: [1, 3, 5] -> [1, 3, 5]
+    //   Inv 1: [3, 5, 1] -> [3↓, 5, 1↑]
+    //   Inv 2: [5, 1, 3] -> [5↓, 1↑, 3↑]
+    // 7th chord inversions:
+    //   Inv 0: [1, 3, 5, 7] -> [1, 3, 5, 7]
+    //   Inv 1: [3, 5, 7, 1] -> [3↓, 5, 7, 1↑]
+    //   Inv 2: [5, 7, 1, 3] -> [5↓, 7, 1↑, 3↑]
+    //   Inv 3: [7, 1, 3, 5] -> [7↓, 1↑, 3↑, 5↑]
+    
+    for (let i = 0; i < numNotes; i++) {
+      const sourceIndex = (inversion + i) % numNotes;
+      const noteName = toneJSNames[sourceIndex];
+      const degreeIdx = degreeIndices[sourceIndex];
+      
+      // Extract note name and octave
+      // Tone.js format: "C4", "C#4", "Bb4", "F##4", "Bbb4", etc.
+      const noteMatch = noteName.match(/^([A-G](?:[#bx]+|[b]+)?)(\d+)$/);
+      if (!noteMatch) {
+        // Fallback if parsing fails
+        reorderedNotes.push(noteName);
+        reorderedDegreeIndices.push(degreeIdx);
+        continue;
+      }
+      
+      const [, noteBase, octaveStr] = noteMatch;
+      let octave = parseInt(octaveStr, 10);
+      
+      // Bass note (i === 0) moves down an octave, upper notes move up
+      if (i === 0) {
+        octave = Math.max(1, octave - 1); // Lower bass note, but not below octave 1
+      } else {
+        octave = octave + 1; // Raise upper notes
+      }
+      
+      reorderedNotes.push(`${noteBase}${octave}`);
+      reorderedDegreeIndices.push(degreeIdx);
+    }
+    
+    toneJSNames = reorderedNotes;
+    degreeIndices = reorderedDegreeIndices;
   }
 
   // 2. REVISED SCALE DEGREE CALCULATION
   // We iterate through the generated notes and compare them to the ORIGINAL key
   const baseKeyDegrees = toneJSNames.map((noteName, index) => {
+    const degreeIdx = degreeIndices[index];
     let degree;
-    if (index < 3) {
+    
+    if (degreeIdx < 3) {
       // Triad notes use chordDegrees
-      degree = chordDegrees[index];
-    } else if (index === 3 && chordType === 7) {
+      degree = chordDegrees[degreeIdx];
+    } else if (degreeIdx === 3 && chordType === 7) {
       // 7th note uses b7
       degree = "b7";
     } else {
@@ -454,6 +511,7 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
 
   console.log("CHORD DEBUG: chordRootToNotes", {
     root: chordRootSD,
+    inversion,
     rootLabel: firstName,
     toneJSNames,
     baseKeyDegrees // Now contains correct modifiers (e.g., "b6", "#4")
@@ -491,7 +549,8 @@ export function chordInterpreter(chord, key) {
   const defaultChordOctave = 3;
   const borrowed = chord.borrowed || null;
   const chordType = chord.type || 5; // Default to triad (5) if type not specified
-  return rootToDiatonicTriad(chord.root, key, defaultChordOctave, borrowed, chordType);
+  const inversion = chord.inversion || 0; // Default to root position (0) if inversion not specified
+  return rootToDiatonicTriad(chord.root, key, defaultChordOctave, borrowed, chordType, inversion);
 }
 
 
