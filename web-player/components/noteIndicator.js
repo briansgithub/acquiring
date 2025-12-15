@@ -46,15 +46,40 @@ export function renderNoteIndicator(container, options = {}) {
   }
   
   function updateChordNotesDisplay() {
-    const { notes, chordDegrees, root, key } = currentChordData;
+    const { notes, chordDegrees, root, key, chordObj } = currentChordData;
     const chordColor = root && key ? getScaleDegreeColor(root, key.scale) : null;
     
     // Clear existing pills
     chordList.innerHTML = "";
     chordDegreesPillsList.innerHTML = "";
     
-    if (!notes?.length) {
-      chordList.innerHTML = '<span style="color:#6b7280;line-height:32px;">--</span>';
+    // Check if it's a rest or no chord
+    const isRest = chordObj?.isRest || !notes?.length;
+    
+    if (isRest) {
+      // Show empty gray pills for rest
+      const numPills = 3; // Show 3 empty pills
+      for (let i = 0; i < numPills; i++) {
+        const pill = document.createElement("span");
+        pill.className = "pill";
+        pill.textContent = "";
+        pill.style.background = "rgba(107, 114, 128, 0.12)";
+        pill.style.borderColor = "rgba(107, 114, 128, 0.4)";
+        pill.style.color = "#6b7280";
+        pill.style.cursor = "default";
+        chordList.appendChild(pill);
+      }
+      // Also show empty pills for scale degrees
+      for (let i = 0; i < numPills; i++) {
+        const pill = document.createElement("span");
+        pill.className = "pill";
+        pill.textContent = "";
+        pill.style.background = "rgba(107, 114, 128, 0.12)";
+        pill.style.borderColor = "rgba(107, 114, 128, 0.4)";
+        pill.style.color = "#6b7280";
+        pill.style.cursor = "default";
+        chordDegreesPillsList.appendChild(pill);
+      }
       return;
     }
     
@@ -136,7 +161,11 @@ export function renderNoteIndicator(container, options = {}) {
       }
       
       // Update chord symbol (always use roman numeral) with "Chord: " prefix
-      if (chordObj && key) {
+      if (chordObj?.isRest || !notes?.length) {
+        // Show "Chord: Rest" for rests or empty chords
+        chordRootEl.textContent = "Chord: Rest";
+        chordRootEl.style.visibility = "visible";
+      } else if (chordObj && key) {
         const symbol = getChordSymbol(chordObj, key);
         chordRootEl.textContent = `Chord: ${symbol}`;
         chordRootEl.style.visibility = "visible";

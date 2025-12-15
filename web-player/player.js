@@ -380,6 +380,9 @@ async function loadSection(songIndex, sectionIndex) {
 }
 
 function setupProgressTracking() {
+  let lastChordId = null; // Track last chord to avoid redundant updates
+  let lastMelodyId = null; // Track last melody to avoid redundant updates
+  
   engine.onTick(() => {
     // songLength is in Beats.
     // Progress calculation based on TICKS (192 PPQ) to ensure stability during tempo changes.
@@ -392,6 +395,52 @@ function setupProgressTracking() {
 
     controls.updateProgress(ratio);
     timeline.updateProgress(ratio);
+    
+    // Update melody display (including rests) based on current position
+    const currentMelodyInfo = findCurrentMelodyAtTick(currentTicks);
+    const currentMelodyId = currentMelodyInfo ? 
+      `${currentMelodyInfo.note?.beat || 'none'}-${currentMelodyInfo.note?.duration || 'none'}-${currentMelodyInfo.isRest || false}` : 
+      'none';
+    
+    if (currentMelodyId !== lastMelodyId) {
+      lastMelodyId = currentMelodyId;
+      if (currentMelodyInfo) {
+        if (currentMelodyInfo.isRest) {
+          noteIndicator.updateMelody(null, null);
+        } else {
+          noteIndicator.updateMelody(currentMelodyInfo.absoluteLabel, currentMelodyInfo.relativeLabel);
+        }
+      } else {
+        // No melody at this position
+        noteIndicator.updateMelody(null, null);
+      }
+    }
+    
+    // Update chord display (including rests) based on current position
+    const currentChordInfo = findCurrentChordAtTick(currentTicks);
+    const currentChordId = currentChordInfo ? 
+      `${currentChordInfo.chord?.beat || 'none'}-${currentChordInfo.chord?.duration || 'none'}-${currentChordInfo.chord?.isRest || false}` : 
+      'none';
+    
+    if (currentChordId !== lastChordId) {
+      lastChordId = currentChordId;
+      if (currentChordInfo) {
+        noteIndicator.updateChord(
+          currentChordInfo.notes,
+          currentChordInfo.root,
+          currentChordInfo.degrees,
+          currentChordInfo.borrowed,
+          currentKey,
+          currentChordInfo.chord
+        );
+        chordRing.update(currentChordInfo.chord);
+      } else {
+        // No chord at this position (shouldn't happen if chords cover the whole song, but handle it)
+        noteIndicator.reset();
+        chordRing.update(null);
+      }
+    }
+    
     // Stop playback when section ends
     if (ratio >= 1 && Tone.Transport.state === "started") {
       engine.stop();
@@ -416,8 +465,22 @@ function handleSeek(ratio) {
   const seconds = songLength * currentSecondsPerBeat * ratio;
   Tone.Transport.seconds = seconds;
   
-  // Update note indicator with chord at this position
+  // Update note indicator with melody and chord at this position
   const currentTicks = Tone.Transport.ticks;
+  
+  // Update melody display
+  const currentMelodyInfo = findCurrentMelodyAtTick(currentTicks);
+  if (currentMelodyInfo) {
+    if (currentMelodyInfo.isRest) {
+      noteIndicator.updateMelody(null, null);
+    } else {
+      noteIndicator.updateMelody(currentMelodyInfo.absoluteLabel, currentMelodyInfo.relativeLabel);
+    }
+  } else {
+    noteIndicator.updateMelody(null, null);
+  }
+  
+  // Update chord display
   const currentChordInfo = findCurrentChordAtTick(currentTicks);
   if (currentChordInfo) {
     noteIndicator.updateChord(
@@ -622,6 +685,45 @@ function createChordEvents(chordsArray, key) {
   return events;
 }
 
+// Helper function to find the current melody note at a given tick position
+function findCurrentMelodyAtTick(tickPosition) {
+  if (!currentRawNotes || !currentRawNotes.length || !currentKey) return null;
+  
+  // Convert tick position to beat (1 tick = 1/192 beat)
+  const currentBeat = (tickPosition / 192) + 1;
+  
+  // Find the note that should be playing at this beat
+  // A note is active if currentBeat is >= note.beat and < note.beat + note.duration
+  // Normalize beat 0 to beat 1 for comparison
+  for (const note of currentRawNotes) {
+    const noteStartBeat = note.beat === 0 ? 1 : note.beat;
+    const noteEndBeat = noteStartBeat + note.duration;
+    
+    if (currentBeat >= noteStartBeat && currentBeat < noteEndBeat) {
+      // If it's a rest, return rest information
+      if (note.isRest) {
+        return {
+          note,
+          isRest: true,
+          absoluteLabel: null,
+          relativeLabel: null
+        };
+      }
+      
+      const absoluteLabel = sdToToneJSNoteName(note.sd, note.octave, currentKey, 4);
+      const relativeLabel = note.sd;
+      return {
+        note,
+        isRest: false,
+        absoluteLabel,
+        relativeLabel
+      };
+    }
+  }
+  
+  return null;
+}
+
 // Helper function to find the current chord at a given tick position
 function findCurrentChordAtTick(tickPosition) {
   if (!currentRawChords || !currentRawChords.length || !currentKey) return null;
@@ -633,11 +735,22 @@ function findCurrentChordAtTick(tickPosition) {
   // A chord is active if currentBeat is >= chord.beat and < chord.beat + chord.duration
   // Normalize beat 0 to beat 1 for comparison
   for (const chord of currentRawChords) {
-    if (chord.isRest) continue;
     const chordStartBeat = chord.beat === 0 ? 1 : chord.beat;
     const chordEndBeat = chordStartBeat + chord.duration;
     
     if (currentBeat >= chordStartBeat && currentBeat < chordEndBeat) {
+      // If it's a rest, return rest information
+      if (chord.isRest) {
+        return {
+          chord,
+          chordData: null,
+          notes: null,
+          root: null,
+          degrees: null,
+          borrowed: null
+        };
+      }
+      
       const chordData = chordInterpreter(chord, currentKey);
       return {
         chord,
@@ -680,9 +793,22 @@ async function updatePlaybackSettings() {
   // Restore position
   Tone.Transport.ticks = currentTicks;
 
-  // Update note indicator immediately with current chord (fixes display issue when tempo changes)
+  // Update note indicator immediately with current melody and chord (fixes display issue when tempo changes)
   // This is especially important for arpeggiated chords where the first note might not trigger immediately
-  if (isArpeggiated && currentTicks > 0) {
+  if (currentTicks > 0) {
+    // Update melody display
+    const currentMelodyInfo = findCurrentMelodyAtTick(currentTicks);
+    if (currentMelodyInfo) {
+      if (currentMelodyInfo.isRest) {
+        noteIndicator.updateMelody(null, null);
+      } else {
+        noteIndicator.updateMelody(currentMelodyInfo.absoluteLabel, currentMelodyInfo.relativeLabel);
+      }
+    } else {
+      noteIndicator.updateMelody(null, null);
+    }
+    
+    // Update chord display
     const currentChordInfo = findCurrentChordAtTick(currentTicks);
     if (currentChordInfo) {
       noteIndicator.updateChord(
