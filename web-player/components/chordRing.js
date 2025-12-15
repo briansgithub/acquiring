@@ -82,7 +82,11 @@ export function renderChordRing(container, options = {}) {
 
     if (exactDiatonic) {
       const isActive = activeChordSymbol === exactDiatonic.symbol;
-      drawNode(dx, dy, nodeRadius, color, exactDiatonic.symbol, 1.0, isActive);
+      let subLabel = null;
+      if (exactDiatonic.chord && exactDiatonic.chord.borrowed) {
+        subLabel = `(${exactDiatonic.chord.borrowed})`;
+      }
+      drawNode(dx, dy, nodeRadius, color, exactDiatonic.symbol, 1.0, isActive, false, subLabel);
     } else {
       // Placeholder
       drawNode(dx, dy, nodeRadius, color, expectedDiatonicLabel, 0.3, false, true);
