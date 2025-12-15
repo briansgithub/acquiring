@@ -54,7 +54,7 @@ async function extractFromUrl(url, useNewCache = false) {
     
     try {
       const apiResponse = await fetchSongData(stringSongId);
-      const extracted = extractChordAndMelodyObjects(apiResponse);
+      const extracted = await extractChordAndMelodyObjects(apiResponse);
       
       // Get numeric ID from API response
       const numericId = apiResponse.ID;
