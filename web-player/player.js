@@ -393,15 +393,19 @@ function createChordEvents(chordsArray, key) {
       // Convert arpeggio speed (ms) to seconds, then to ticks at current tempo
       const offsetSeconds = arpeggiationSpeed / 1000;
       const ticksPerSecond = currentBpm * 3.2;
-      const offsetTicks = Math.round(offsetSeconds * ticksPerSecond);
+      let offsetTicks = Math.round(offsetSeconds * ticksPerSecond);
+      
+      // Ensure offsetTicks is at least 1 to prevent division by zero and ensure notes play
+      // At very low tempos with fast arpeggio speeds, offsetTicks can round to 0
+      offsetTicks = Math.max(1, offsetTicks);
 
       let currentTick = Math.round(startTick);
       let noteIdx = 0;
 
-      // Loop until we run out of time in the chord.
-      // We require a minimum duration (e.g. 10 ticks or ~25ms) to start a new note
-      // to avoid playing extremely short/glitchy "stub" notes at the very end of a chord.
-      const MIN_NOTE_DURATION_TICKS = 10;
+      // Use a dynamic minimum based on offsetTicks, but ensure it's at least 1
+      // For very fast arpeggios at low tempos, we allow shorter notes
+      // For normal cases, we use a minimum to avoid glitchy stub notes at chord end
+      const MIN_NOTE_DURATION_TICKS = Math.max(1, Math.min(offsetTicks, 10));
 
       while (currentTick + MIN_NOTE_DURATION_TICKS < endTick) {
         const note = chordNotes[noteIdx % chordNotes.length];
