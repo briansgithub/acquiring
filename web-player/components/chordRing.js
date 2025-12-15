@@ -328,25 +328,16 @@ export function renderChordRing(container, options = {}) {
   }
 
   function playChord(chordObj) {
-    // Can we use the raw chord object to generate notes?
-    // music.js chordInterpreter does exactly that.
-    // We need to import it or rely on helper.
-    // But we passed onChordClick which expects NOTE NAMES array?
-
-    // Let's use the same `rootToDiatonicTriad` but with modification if possible?
-    // `jsonToSymbol` gets the symbol, but `music.js` generates notes.
-    // `music.js` currently only exports `chordInterpreter` which calls `rootToDiatonicTriad`.
-    // It doesn't seem to support Extensions (7ths) yet fully?
-    // "Do this for triads only right now" - Requirements.
-
-    // If it's a variant (borrowed), `rootToDiatonicTriad` accepts `borrowed` param!
+    // Use chordInterpreter from music.js which handles chord types (including 7th chords)
+    // Import chordInterpreter at the top of the file
     const borrowed = chordObj.borrowed || null;
-    const triadData = rootToDiatonicTriad(chordObj.root, currentKey, 3, borrowed);
+    const chordType = chordObj.type || 5; // Default to triad if type not specified
+    const chordData = rootToDiatonicTriad(chordObj.root, currentKey, 3, borrowed, chordType);
     if (options.onChordClick) {
       options.onChordClick({
-        notes: triadData.notes,
+        notes: chordData.notes,
         root: chordObj.root,
-        chordDegrees: triadData.chordDegrees,
+        chordDegrees: chordData.chordDegrees,
         borrowed: borrowed
       });
     }

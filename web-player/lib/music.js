@@ -322,7 +322,8 @@ function getCustomScaleIntervals(borrowedArray) {
 
 //chordRootSD is explicitely an int from 1-7 (no modifiers). 
 // it indicates the tonal basis of the chord
-export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = null) {
+// chordType: 5 = triad, 7 = dominant 7th (4-note chord)
+export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = null, chordType = 5) {
 
   // 1. SAVE THE ORIGINAL KEY
   // We need to keep a reference to the original key to calculate 
@@ -406,18 +407,40 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
   const thirdName = sdToToneJSNoteName(chordDegree2, relativeOctave, rootKey, baseOctave);
   const fifthName = sdToToneJSNoteName(chordDegree3, relativeOctave, rootKey, baseOctave);
   
-  const toneJSNames = [firstName, thirdName, fifthName];
+  let toneJSNames = [firstName, thirdName, fifthName];
+
+  // Add 7th note if chord type is 7 (dominant 7th)
+  if (chordType === 7) {
+    // Dominant 7th = minor 7th interval above root (b7)
+    // In the root key (major scale), degree 7 is the leading tone (major 7th)
+    // For dominant 7th, we need b7 (minor 7th), which is one semitone lower
+    const seventhDegree = "b7";
+    const seventhName = sdToToneJSNoteName(seventhDegree, relativeOctave, rootKey, baseOctave);
+    toneJSNames.push(seventhName);
+  }
 
   // 2. REVISED SCALE DEGREE CALCULATION
   // We iterate through the generated notes and compare them to the ORIGINAL key
-  const baseKeyDegrees = chordDegrees.map((degree, index) => {
+  const baseKeyDegrees = toneJSNames.map((noteName, index) => {
+    let degree;
+    if (index < 3) {
+      // Triad notes use chordDegrees
+      degree = chordDegrees[index];
+    } else if (index === 3 && chordType === 7) {
+      // 7th note uses b7
+      degree = "b7";
+    } else {
+      // Fallback (shouldn't happen)
+      degree = "1";
+    }
+    
     const rawNumber = rawDegree(degree);
     
     // Calculate the generic scale degree integer (1-7)
     const calculatedDegree = ((((chordRootSD - 1) + (rawNumber - 1)) % 7) + 1);
     
     // A. Get the ACTUAL note name (strip octave, e.g., "Ab4" -> "Ab")
-    const actualNote = toneJSNames[index].replace(/[0-9]/g, '');
+    const actualNote = noteName.replace(/[0-9]/g, '');
 
     // B. Get the EXPECTED diatonic note for this degree in the ORIGINAL key
     // (This assumes getNoteLabel returns the standard diatonic note, e.g., "A" for degree 6 in C Maj)
@@ -467,7 +490,8 @@ function getModifierDifference(actual, diatonic) {
 export function chordInterpreter(chord, key) {
   const defaultChordOctave = 3;
   const borrowed = chord.borrowed || null;
-  return rootToDiatonicTriad(chord.root, key, defaultChordOctave, borrowed);
+  const chordType = chord.type || 5; // Default to triad (5) if type not specified
+  return rootToDiatonicTriad(chord.root, key, defaultChordOctave, borrowed, chordType);
 }
 
 
