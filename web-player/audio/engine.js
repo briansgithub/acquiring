@@ -28,6 +28,8 @@ export class AudioEngine {
     Tone.Transport.position = 0;
     if (this.isSetup) {
       Tone.Transport.cancel(0);
+      // Reset tickId since the scheduled event is now gone
+      this.tickId = null;
     } else {
       this.isSetup = true;
     }

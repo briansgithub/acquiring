@@ -16,11 +16,18 @@ const engine = new AudioEngine();
 
 // Handler function for play/pause
 async function handlePlayPause(shouldPlay) {
+  if (isLoading) {
+    console.warn("Cannot toggle playback while loading...");
+    return;
+  }
   if (shouldPlay) {
     // Check if song has ended and needs to be restarted
     // If parts are empty (song ended and stop() was called) or transport is at/past the end
-    const totalSeconds = songLength * currentSecondsPerBeat;
-    if (engine.parts.length === 0 || Tone.Transport.seconds >= totalSeconds) {
+    // If parts are empty (song ended and stop() was called) or transport is at/past the end
+    // Use Ticks for reliable end-of-song check
+    const totalTicks = songLength * 192;
+    if (engine.parts.length === 0 || Tone.Transport.ticks >= totalTicks) {
+      console.log("Restarting song from beginning...");
       // Reset transport position and reschedule parts with current tempo
       engine.stop();
       currentSecondsPerBeat = 60 / currentBpm;
@@ -35,7 +42,6 @@ async function handlePlayPause(shouldPlay) {
       chordRing.update(null, null, null);
       noteIndicator.reset();
       timeline.updateProgress(0);
-      // Re-establish progress tracking to ensure progress bar updates
       setupProgressTracking();
     }
     await engine.play();
@@ -119,6 +125,7 @@ let originalBpm = 120; // Store the original tempo from the loaded section
 let currentRawNotes = []; // Store raw note data for tempo recalculation
 let currentRawChords = []; // Store raw chord data for tempo recalculation
 let currentKey = null; // Store current key for event recalculation
+let isLoading = false;
 
 init();
 
@@ -150,90 +157,106 @@ async function init() {
 }
 
 async function loadSection(songIndex, sectionIndex) {
+  if (isLoading) return;
+  isLoading = true;
+  engine.stop();
+
   const song = library[songIndex];
   if (!song) {
     console.warn("No song at index", songIndex);
+    isLoading = false;
     return;
   }
   const section = song?.sections?.[sectionIndex];
   if (!section) {
     console.warn("No section at index", sectionIndex, "for song", song);
     controls.setSections([]);
+    isLoading = false;
     return;
   }
 
-  const data = await fetch(`/api/song?file=${encodeURIComponent(section.relPath)}`).then(async (r) => {
-    if (!r.ok) {
-      const text = await r.text();
-      throw new Error(`HTTP ${r.status} ${text}`);
+  try {
+    const data = await fetch(`/api/song?file=${encodeURIComponent(section.relPath)}`).then(async (r) => {
+      if (!r.ok) {
+        const text = await r.text();
+        throw new Error(`HTTP ${r.status} ${text}`);
+      }
+      return r.json();
+    });
+    currentSong = data;
+    currentSongIdx = songIndex;
+    currentSectionIdx = sectionIndex;
+
+    const key = parseKey(data.metadata);
+    currentKey = key;
+    const bpm = data.metadata?.tempos?.[0]?.bpm ?? 120;
+    originalBpm = bpm;
+    currentBpm = bpm;
+    currentSecondsPerBeat = 60 / bpm;
+    songLength = getSongLength(data.metadata) || 1;
+
+    const notesArray = Array.isArray(data.notes)
+      ? data.notes
+      : Array.isArray(data.notes?.melody1)
+        ? data.notes.melody1
+        : [];
+
+    // Store raw data for tempo recalculation
+    currentRawNotes = notesArray;
+    currentRawChords = data.chords || [];
+
+    const melodyEvents = createMelodyEvents(notesArray, key);
+    const chordEvents = createChordEvents(currentRawChords, key);
+
+    // Calculate actual section length in BEATS from raw data
+    // (metadata length is often just an estimate or in bars)
+    const allEventEnds = [
+      ...notesArray.map((n) => (n.beat - 1) + n.duration),
+      ...currentRawChords.map((c) => (c.beat - 1) + c.duration),
+    ];
+    if (allEventEnds.length > 0) {
+      const actualSectionLength = Math.max(...allEventEnds);
+      songLength = actualSectionLength;
     }
-    return r.json();
-  });
-  currentSong = data;
-  currentSongIdx = songIndex;
-  currentSectionIdx = sectionIndex;
+    // If no events, keep songLength from metadata (ensure it's treated as beats)
 
-  const key = parseKey(data.metadata);
-  currentKey = key;
-  const bpm = data.metadata?.tempos?.[0]?.bpm ?? 120;
-  originalBpm = bpm;
-  currentBpm = bpm;
-  currentSecondsPerBeat = 60 / bpm;
-  songLength = getSongLength(data.metadata) || 1;
+    // Store events for potential restart
+    currentMelodyEvents = melodyEvents;
+    currentChordEvents = chordEvents;
 
-  const notesArray = Array.isArray(data.notes)
-    ? data.notes
-    : Array.isArray(data.notes?.melody1)
-      ? data.notes.melody1
-      : [];
+    console.log("Scheduling events for new section...");
+    engine.stop();
+    await engine.setupTransport(bpm);
+    engine.scheduleMelody(melodyEvents);
+    engine.scheduleChords(chordEvents);
 
-  // Store raw data for tempo recalculation
-  currentRawNotes = notesArray;
-  currentRawChords = data.chords || [];
+    // Ensure dropdowns are set
+    controls.setSections(song.sections);
+    // Set the selected values
+    const songSelect = document.getElementById("song-select");
+    const sectionSelect = document.getElementById("section-select");
+    if (songSelect) songSelect.value = songIndex;
+    if (sectionSelect) sectionSelect.value = sectionIndex;
 
-  const melodyEvents = createMelodyEvents(notesArray, key);
-  const chordEvents = createChordEvents(currentRawChords, key);
+    // Update song title and key display
+    controls.setSongTitle(song.title || song.artist || "Unknown Song");
+    controls.setSongKey(key);
+    // Update tempo slider to match loaded section's tempo (100% = original tempo)
+    controls.setTempo(bpm, originalBpm);
+    controls.updateProgress(0);
+    controls.resetPlayState();
+    chordRing.setSongData(currentRawChords, currentKey);
+    chordRing.update(null, null, null);
+    timeline.setSongData(currentRawChords, currentKey, songLength);
+    noteIndicator.reset();
 
-  // Calculate actual section length in BEATS from raw data
-  // (metadata length is often just an estimate or in bars)
-  const allEventEnds = [
-    ...notesArray.map((n) => (n.beat - 1) + n.duration),
-    ...currentRawChords.map((c) => (c.beat - 1) + c.duration),
-  ];
-  if (allEventEnds.length > 0) {
-    const actualSectionLength = Math.max(...allEventEnds);
-    songLength = actualSectionLength;
+    setupProgressTracking();
+    console.log("Section loaded successfully.");
+  } catch (err) {
+    console.error("Error during playback setup in loadSection:", err);
+  } finally {
+    isLoading = false;
   }
-  // If no events, keep songLength from metadata (ensure it's treated as beats)
-
-  // Store events for potential restart
-  currentMelodyEvents = melodyEvents;
-  currentChordEvents = chordEvents;
-
-  engine.stop();
-  await engine.setupTransport(bpm);
-  engine.scheduleMelody(melodyEvents);
-  engine.scheduleChords(chordEvents);
-  // Ensure dropdowns are set
-  controls.setSections(song.sections);
-  // Set the selected values
-  const songSelect = document.getElementById("song-select");
-  const sectionSelect = document.getElementById("section-select");
-  if (songSelect) songSelect.value = songIndex;
-  if (sectionSelect) sectionSelect.value = sectionIndex;
-  // Update song title and key display
-  controls.setSongTitle(song.title || song.artist || "Unknown Song");
-  controls.setSongKey(key);
-  // Update tempo slider to match loaded section's tempo (100% = original tempo)
-  controls.setTempo(bpm, originalBpm);
-  controls.updateProgress(0);
-  controls.resetPlayState();
-  chordRing.setSongData(currentRawChords, currentKey); // Update Ring Structure
-  chordRing.update(null, null, null); // Maintain existing interface calls if needed
-  timeline.setSongData(currentRawChords, currentKey, songLength);
-  noteIndicator.reset();
-
-  setupProgressTracking();
 }
 
 function setupProgressTracking() {
@@ -264,19 +287,23 @@ function handleSeek(ratio) {
 }
 
 function handleSongChange(songIdx) {
-  const idx = Number(songIdx);
-  const song = library[idx];
-  if (!song?.sections?.length) {
-    console.warn("Song has no sections:", song);
-    controls.setSections([]);
-    return;
+  try {
+    const idx = Number(songIdx);
+    const song = library[idx];
+    if (!song?.sections?.length) {
+      console.warn("Song has no sections:", song);
+      controls.setSections([]);
+      return;
+    }
+    controls.setSections(song.sections);
+    loadSection(idx, 0).catch(err => console.error("LoadSection failed inside song change:", err));
+  } catch (e) {
+    console.error("HandleSongChange failed:", e);
   }
-  controls.setSections(song.sections);
-  loadSection(idx, 0);
 }
 
 function handleSectionChange(idx) {
-  loadSection(currentSongIdx, Number(idx));
+  loadSection(currentSongIdx, Number(idx)).catch(err => console.error("LoadSection failed inside section change:", err));
 }
 
 function createMelodyEvents(notesArray, key) {
