@@ -183,9 +183,21 @@ async function init() {
 async function loadSection(songIndex, sectionIndex) {
   if (isLoading) return;
   isLoading = true;
-  // Release all notes first to prevent stuck notes when switching songs/sections during playback
+  // Cancel parts first to prevent any scheduled release events from firing
+  // This is critical for arpeggiated chords which have many scheduled release events
+  engine.cancelAllParts();
+  // Release all notes multiple times with small delays to ensure all arpeggiated notes are caught
+  // This prevents stuck notes when switching songs/sections during playback
   engine.releaseAllNotes();
+  // Use setTimeout to release notes again after a brief delay to catch notes in attack phase
+  setTimeout(() => {
+    engine.releaseAllNotes();
+  }, 5);
   engine.stop();
+  // Release notes again after stop to catch any that might have been triggered
+  setTimeout(() => {
+    engine.releaseAllNotes();
+  }, 10);
 
   const song = library[songIndex];
   if (!song) {

@@ -172,29 +172,55 @@ export class AudioEngine {
       if (this.melodySynth && typeof this.melodySynth.triggerRelease === "function") {
         this.melodySynth.triggerRelease();
       }
-      // Release all chord notes
+      // Release all chord notes - use multiple strategies to ensure all notes are released
       if (this.chordSynth) {
-        // First try releaseAll() as the primary method
+        // Strategy 1: Capture tracked notes before clearing
+        const trackedNotes = this.activeChordNotes.size > 0 ? Array.from(this.activeChordNotes) : null;
+        
+        // Strategy 2: Use releaseAll() as the primary method
         if (typeof this.chordSynth.releaseAll === "function") {
           this.chordSynth.releaseAll();
         }
-        // Also explicitly release all tracked notes (critical for arpeggiated chords)
-        // This ensures we catch all notes that were individually triggered
-        if (this.activeChordNotes.size > 0) {
-          const notesArray = Array.from(this.activeChordNotes);
+        
+        // Strategy 3: Explicitly release all tracked notes (critical for arpeggiated chords)
+        if (trackedNotes && trackedNotes.length > 0) {
           try {
-            this.chordSynth.triggerRelease(notesArray);
-            // Clear the tracking set after releasing
-            this.activeChordNotes.clear();
+            this.chordSynth.triggerRelease(trackedNotes);
           } catch (e) {
-            // If release fails, still clear the tracking
-            this.activeChordNotes.clear();
+            // Ignore if release fails
           }
         }
+        
+        // Strategy 4: Call releaseAll() again to catch any notes that might have been missed
+        // Sometimes notes are in a transitional state and need a second call
+        if (typeof this.chordSynth.releaseAll === "function") {
+          this.chordSynth.releaseAll();
+        }
+        
+        // Strategy 5: Temporarily mute to force silence, then restore
+        // This is a last resort to ensure no notes are playing
+        const originalVolume = this.chordSynth.volume.value;
+        try {
+          this.chordSynth.volume.value = -Infinity;
+          // Immediately restore volume
+          this.chordSynth.volume.value = originalVolume;
+        } catch (e) {
+          // If volume manipulation fails, try to restore
+          try {
+            this.chordSynth.volume.value = originalVolume;
+          } catch (e2) {
+            // Ignore
+          }
+        }
+        
+        // Clear tracking set after releasing
+        this.activeChordNotes.clear();
       }
     } catch (e) {
       // Ignore errors if synths are already disposed or in invalid state
       console.warn("Error releasing notes:", e);
+      // Still clear tracking even if there was an error
+      this.activeChordNotes.clear();
     }
   }
 
