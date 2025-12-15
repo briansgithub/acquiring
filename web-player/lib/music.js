@@ -133,29 +133,52 @@ function getNoteLabel(sd, key) {
 
 function getAbsoluteOctave(sd, relativeOctave, key, baseOctave) {
 
-  // accidental modifier and specific interval of the (modified) scale degree are not needed to compute the absolute octave number
-  //const accidentalShift = modifierValue(sd);
-  //const sdSpecificInterval = scaleDegreeToSpecificInterval(sd, key);
-
-
+  // We need to use the MODIFIED interval (accounting for accidentals) for accurate semitone calculation
+  // The modifier affects both the note label AND the actual pitch/semitone distance
+  // For example, "b3" means minor third (3 semitones), not major third (4 semitones)
   const tonicSemitone = NOTE_NAME_TO_INTEGER_NOTATION[key.tonic];
-  const rawSD_SpecificInterval = scaleDegreeToSpecificInterval(rawDegree(sd), key.scale);
-  /* Raw degree specific interval is needed to properly track if the resulting note name 
-   of the note after applying the musical interval to the tonic 
-   is above a B--C boundary (since standard octave numbering and
-   tone.js labeling changes octave at the B--C boundary). 
-   For example, Ab4 + 'b3' = Cb5 (C5 flat), but the 
-   calculation of 8 + 3 = 11 is below a one-octave threshold, so it's floor 
-   ,+0, is added to the absoluteo ctave nuber, when in fact the accidental modification
-   of the SD should be applied after the octave number addend is calculated.
-   Ab + b(3) = 8 + b(4) = 12 ==> +1 octave. 
-   The modifier gets factored into the note label, which is what produces the tone, 
-   but must be ignored for calculating the octave shift number. 
-   The note letter&&octave number take precedence over the accidental modifier 
-   when in producing the pitch of the tone 
+  const modifiedSD_SpecificInterval = scaleDegreeToSpecificInterval(sd, key.scale);
+  
+  /* The note name and octave must be calculated together to properly handle the B--C boundary.
+   The B--C boundary is where octaves change in standard notation and Tone.js.
+   We need to check if the resulting note name crosses this boundary upward.
+   
+   For example:
+   - G#3 + minor third (b3) = B3 (not B4), because B comes before C in the same octave
+   - G#3 + major third (3) = B#3, which is enharmonically C4, so we've crossed the boundary
    */
 
-  const retval = baseOctave + relativeOctave + Math.floor((tonicSemitone + rawSD_SpecificInterval) / 12);
+  // Calculate base octave from semitone math using the MODIFIED interval
+  let octaveOffset = Math.floor((tonicSemitone + modifiedSD_SpecificInterval) / 12);
+  
+  // Get the note name that will be generated to check for B--C boundary crossing
+  const noteLabel = getNoteLabel(sd, key);
+  const noteLetter = noteLabel.replace(/[#bx]+/g, "").replace(/b+/g, ""); // Extract base letter (C, D, E, etc.)
+  
+  // Extract tonic base letter
+  const tonicBase = key.tonic.replace(/[#bx]+/g, "").replace(/b+/g, "");
+  const noteOrder = ["C", "D", "E", "F", "G", "A", "B"];
+  const tonicIndex = noteOrder.indexOf(tonicBase);
+  const noteIndex = noteOrder.indexOf(noteLetter);
+  
+  // Check if we've crossed the B--C boundary upward based on note letter names
+  // This happens when the note letter wraps around from B back to C (or later)
+  // If the note letter index is less than the tonic index, we've wrapped around
+  const hasLetterWrappedAround = noteIndex < tonicIndex;
+  const totalSemitones = tonicSemitone + modifiedSD_SpecificInterval;
+  
+  // If the letter has wrapped around (e.g., B -> C), we've crossed the boundary upward
+  // But we need to make sure we're actually going forward (not backward with negative intervals)
+  if (hasLetterWrappedAround && totalSemitones >= 0) {
+    // We've crossed the B--C boundary upward
+    // Math.floor should have already added the octave if totalSemitones >= 12
+    // But if totalSemitones < 12 and we've wrapped around, we need to add an octave
+    if (totalSemitones < 12 && octaveOffset === 0) {
+      octaveOffset = 1;
+    }
+  }
+
+  const retval = baseOctave + relativeOctave + octaveOffset;
   return retval;
 }
 
