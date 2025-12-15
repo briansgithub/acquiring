@@ -65,6 +65,19 @@ export function renderNoteIndicator(container) {
         chordBorrowedEl.style.display = "none";
       }
     },
+    highlightNote(note) {
+      // Remove highlight from all pills
+      const pills = chordList.querySelectorAll(".pill");
+      pills.forEach(p => p.classList.remove("highlighted"));
+
+      // Find and highlight the specific note
+      // Note: This matches the exact text content.
+      // If there are duplicate notes (unlikely in a chord set diff), it highlights all.
+      const target = Array.from(pills).find(p => p.textContent === note);
+      if (target) {
+        target.classList.add("highlighted");
+      }
+    },
     reset() {
       melodyEl.textContent = "--";
       chordRootEl.style.display = "none";

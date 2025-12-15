@@ -85,11 +85,14 @@ const controls = renderControls(controlsPane, {
     currentBpm = tempo;
     currentSecondsPerBeat = 60 / tempo;
     engine.setTempo(tempo);
-    currentBpm = tempo;
-    currentSecondsPerBeat = 60 / tempo;
-    engine.setTempo(tempo);
-    // No need to manually update progress here; audio engine tick will handle it naturally
-    // Tone.js maintains musical position (Ticks) when BPM changes.
+  },
+  onArpeggiateToggle: (enabled) => {
+    isArpeggiated = enabled;
+    updatePlaybackSettings();
+  },
+  onArpeggiateSpeedChange: (speedMs) => {
+    arpeggiationSpeed = speedMs;
+    updatePlaybackSettings();
   },
 });
 const chordRing = renderChordRing(ringPane, {
@@ -126,6 +129,8 @@ let currentRawNotes = []; // Store raw note data for tempo recalculation
 let currentRawChords = []; // Store raw chord data for tempo recalculation
 let currentKey = null; // Store current key for event recalculation
 let isLoading = false;
+let isArpeggiated = true;
+let arpeggiationSpeed = 100; // ms
 
 init();
 
@@ -338,32 +343,128 @@ function createChordEvents(chordsArray, key) {
   const events = [];
   chordsArray.forEach((chord) => {
     if (chord.isRest) return;
-    const chordNotes = chordInterpreter(chord, key).notes;
+    const chordData = chordInterpreter(chord, key);
+    const chordNotes = chordData.notes;
     if (!chordNotes.length) return;
 
     const startTick = (chord.beat - 1) * 192;
     const endTick = startTick + (chord.duration * 192);
 
-    // Note On
-    events.push({
-      time: startTick + "i",
-      type: "attack",
-      notes: chordNotes,
-      name: chord.root, // Original prop kept for ref
-      onTrigger: () => {
-        const chordData = chordInterpreter(chord, key);
-        noteIndicator.updateChord(chordData.notes, chord.root, chordData.chordDegrees, chord.borrowed);
-        chordRing.update(chord);
-      },
-    });
+    if (isArpeggiated) {
+      // Create individual note events
+      // Calculate offset in ticks. Tone.Transport.bpm.value matches currentBpm.
+      // 1 Beat = 60/BPM seconds. 1 Tick = 1/192 Beat.
+      // TicksPerSecond = (BPM * 192) / 60 = BPM * 3.2
+      const ticksPerSecond = currentBpm * 3.2;
+      const offsetTicks = (arpeggiationSpeed / 1000) * ticksPerSecond;
 
-    // Note Off
-    events.push({
-      time: endTick + "i",
-      type: "release",
-      notes: chordNotes,
-    });
+      chordNotes.forEach((note, idx) => {
+        // Stagger start times
+        let noteStartTick = startTick + (idx * offsetTicks);
+        if (noteStartTick >= endTick) noteStartTick = endTick - 1; // Clamp to chord duration?
+
+        // Logic for highlighting:
+        // First note triggers the "Chord" update (showing all notes) AND highlights itself.
+        // Subsequent notes just highlight themselves.
+
+        const noteEvent = {
+          time: Math.round(noteStartTick) + "i",
+          type: "attack",
+          notes: [note], // Engine expects array
+          name: chord.root,
+          onTrigger: () => {
+            if (idx === 0) {
+              // On first note, update the main chord display
+              noteIndicator.updateChord(chordNotes, chord.root, chordData.chordDegrees, chord.borrowed);
+              chordRing.update(chord);
+            }
+            // Highlight this specific note
+            noteIndicator.highlightNote(note);
+          }
+        };
+        events.push(noteEvent);
+
+        // Individual Release? Or release all at end?
+        // Let's release all at endTick to let them ring out together.
+        events.push({
+          time: Math.round(endTick) + "i",
+          type: "release",
+          notes: [note],
+        });
+      });
+
+    } else {
+      // Block Chord (Original Logic)
+      // Note On
+      events.push({
+        time: Math.round(startTick) + "i",
+        type: "attack",
+        notes: chordNotes,
+        name: chord.root, // Original prop kept for ref
+        onTrigger: () => {
+          noteIndicator.updateChord(chordNotes, chord.root, chordData.chordDegrees, chord.borrowed);
+          chordRing.update(chord);
+        },
+      });
+
+      // Note Off
+      events.push({
+        time: Math.round(endTick) + "i",
+        type: "release",
+        notes: chordNotes,
+      });
+    }
   });
+
+  // Events must be sorted by time for Tone.Part
+  events.sort((a, b) => parseInt(a.time) - parseInt(b.time));
+
   return events;
+}
+
+async function updatePlaybackSettings() {
+  if (isLoading || !currentSong) return;
+
+  const wasPlaying = Tone.Transport.state === "started";
+  const currentTicks = Tone.Transport.ticks;
+
+  // Stop engine to clear parts
+  engine.stop();
+
+  // Re-create events with new settings (arpeggiation)
+  const melodyEvents = createMelodyEvents(currentRawNotes, currentKey);
+  const chordEvents = createChordEvents(currentRawChords, currentKey);
+
+  currentMelodyEvents = melodyEvents;
+  currentChordEvents = chordEvents;
+
+  await engine.setupTransport(currentBpm);
+  engine.scheduleMelody(melodyEvents);
+  engine.scheduleChords(chordEvents);
+
+  // Restore position
+  Tone.Transport.ticks = currentTicks;
+
+  if (wasPlaying) {
+    engine.play();
+  } else {
+    // If we were paused/stopped, ensure UI is still correct for current position?
+    // Actually engine.stop() resets things.
+    // If not playing, we probably just want to be ready.
+    // engine.stop() was called, so Transport is at 0 if we don't restore ticks.
+    // restoring ticks is good.
+    // But we are in "paused" state now.
+    controls.resetPlayState(); // "Play" button should show Play
+    // Wait, if it *was* playing, we called engine.play() which sets button to playing?
+    // engine.play() starts transport. We need to sync button state.
+    if (wasPlaying) {
+      // controls.resetPlayState sets to "Play", we want "Pause" (playing state)
+      const playBtn = document.getElementById("play-toggle");
+      if (playBtn) {
+        playBtn.dataset.state = "playing";
+        playBtn.textContent = "Pause";
+      }
+    }
+  }
 }
 
