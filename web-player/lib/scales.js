@@ -193,15 +193,16 @@ export const ROMAN_NUMERALS_LOCRIAN = ["i°", "II", "iii", "iv", "v°", "VI", "V
 export function getScaleDegreeColor(degree, scaleType) {
   // Map colors based on the relative major (tonic of relative major starts with red)
   // The relative major's degree 1 should always be colored red.
-  // We need to find which mode degree corresponds to the relative major's degree 1:
-  // 
-  // Major (Ionian): degree 1 = relative major degree 1 (red)
-  // Minor (Aeolian): degree 3 = relative major degree 1 (red) → shift mode degrees by +5
-  // Dorian: degree 7 = relative major degree 1 (red) → shift mode degrees by +1
-  // Phrygian: degree 4 = relative major degree 1 (red) → shift mode degrees by +4
-  // Lydian: degree 5 = relative major degree 1 (red) → shift mode degrees by +3
-  // Mixolydian: degree 4 = relative major degree 1 (red) → shift mode degrees by +4
-  // Locrian: degree 2 = relative major degree 1 (red) → shift mode degrees by +6
+  // We need to find which mode degree corresponds to the relative major's degree 1.
+  // Using C major as the reference relative major:
+  //
+  // Major (Ionian): C=1 → degree 1 = relative major degree 1 (red), shift = 0
+  // Minor (Aeolian): A=1, B=2, C=3 → degree 3 = relative major degree 1 (red), shift = 5
+  // Dorian: D=1, E=2, F=3, G=4, A=5, B=6, C=7 → degree 7 = relative major degree 1 (red), shift = 1
+  // Phrygian: E=1, F=2, G=3, A=4, B=5, C=6 → degree 6 = relative major degree 1 (red), shift = 2
+  // Lydian: F=1, G=2, A=3, B=4, C=5 → degree 5 = relative major degree 1 (red), shift = 3
+  // Mixolydian: G=1, A=2, B=3, C=4 → degree 4 = relative major degree 1 (red), shift = 4
+  // Locrian: B=1, C=2 → degree 2 = relative major degree 1 (red), shift = 6
   //
   // Formula: majorDegree = ((modeDegree - 1 + shift) mod 7) + 1
   // We want: when modeDegree = relativeMajorDegree1, majorDegree should be 1
@@ -217,8 +218,8 @@ export function getScaleDegreeColor(degree, scaleType) {
     // Dorian degree 7 = Major degree 1, so shift = -(7-1) = -6 mod 7 = 1
     shift = 1;
   } else if (scaleType === 'phrygian') {
-    // Phrygian degree 4 = Major degree 1, so shift = -(4-1) = -3 mod 7 = 4
-    shift = 4;
+    // Phrygian degree 6 = Major degree 1, so shift = -(6-1) = -5 mod 7 = 2
+    shift = 2;
   } else if (scaleType === 'lydian') {
     // Lydian degree 5 = Major degree 1, so shift = -(5-1) = -4 mod 7 = 3
     shift = 3;
