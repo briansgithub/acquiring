@@ -162,6 +162,14 @@ export class AudioEngine {
     this.chordSynth.triggerAttackRelease(notes, duration);
   }
 
+  previewNote(note, duration = "8n") {
+    const Tone = window.Tone;
+    if (Tone.context.state !== "running") {
+      Tone.start();
+    }
+    this.melodySynth.triggerAttackRelease(note, duration);
+  }
+
   releaseAllNotes() {
     // Release all currently playing notes (both melody and chords)
     // This is useful when seeking to prevent notes from getting stuck

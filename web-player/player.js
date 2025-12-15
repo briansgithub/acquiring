@@ -114,11 +114,16 @@ const controls = renderControls(controlsPane, {
   },
 });
 const chordRing = renderChordRing(ringPane, {
-  onChordClick: (notes) => {
-    engine.previewChord(notes, "4n");
+  onChordClick: (chordData) => {
+    engine.previewChord(chordData.notes, "4n");
+    noteIndicator.updateChord(chordData.notes, chordData.root, chordData.chordDegrees, chordData.borrowed, currentKey);
   }
 });
-const noteIndicator = renderNoteIndicator(indicatorPane);
+const noteIndicator = renderNoteIndicator(indicatorPane, {
+  onNoteClick: (note) => {
+    engine.previewNote(note, "4n");
+  }
+});
 const timeline = renderTimeline(timelinePane, {
   onSeek: handleSeek
 });
@@ -473,7 +478,7 @@ function createChordEvents(chordsArray, key) {
           onTrigger: () => {
             if (isFirstNote) {
               // On very first note, update the main chord display
-              noteIndicator.updateChord(chordNotes, chord.root, chordData.chordDegrees, chord.borrowed);
+              noteIndicator.updateChord(chordNotes, chord.root, chordData.chordDegrees, chord.borrowed, currentKey);
               chordRing.update(chord);
             }
             // Only highlight notes when arpeggio speed is >= 50ms to avoid visual clutter at fast speeds
@@ -503,7 +508,7 @@ function createChordEvents(chordsArray, key) {
         notes: chordNotes,
         name: chord.root, // Original prop kept for ref
         onTrigger: () => {
-          noteIndicator.updateChord(chordNotes, chord.root, chordData.chordDegrees, chord.borrowed);
+          noteIndicator.updateChord(chordNotes, chord.root, chordData.chordDegrees, chord.borrowed, currentKey);
           chordRing.update(chord);
         },
       });
@@ -589,7 +594,8 @@ async function updatePlaybackSettings() {
         currentChordInfo.notes,
         currentChordInfo.root,
         currentChordInfo.degrees,
-        currentChordInfo.borrowed
+        currentChordInfo.borrowed,
+        currentKey
       );
       // Also update chord ring if needed
       chordRing.update(currentChordInfo.chord);

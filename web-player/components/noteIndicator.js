@@ -1,4 +1,6 @@
-export function renderNoteIndicator(container) {
+import { getScaleDegreeColor } from "../lib/scales.js";
+
+export function renderNoteIndicator(container, options = {}) {
   container.innerHTML = `
     <h2>Now Playing</h2>
     <div class="card">
@@ -32,7 +34,7 @@ export function renderNoteIndicator(container) {
         melodyEl.textContent = absoluteLabel || relativeLabel || "--";
       }
     },
-    updateChord(notes, root, chordDegrees, borrowed) {
+    updateChord(notes, root, chordDegrees, borrowed, key) {
       // Update root
       if (root) {
         chordRootEl.textContent = root.toString();
@@ -41,12 +43,42 @@ export function renderNoteIndicator(container) {
         chordRootEl.style.display = "none";
       }
 
-      // Update notes
-      chordList.innerHTML = (notes || [])
-        .map((n) => `<span class="pill">${n}</span>`)
-        .join("");
+      // Get color for this chord based on root
+      const chordColor = root && key ? getScaleDegreeColor(root, key.scale) : null;
+
+      // Update notes with colored pills and click handlers
       if (!notes?.length) {
         chordList.innerHTML = '<span style="color:#6b7280;">--</span>';
+      } else {
+        // Clear existing pills
+        chordList.innerHTML = "";
+        
+        // Create and append pills with event listeners
+        (notes || []).forEach((n) => {
+          const pill = document.createElement("span");
+          pill.className = "pill";
+          pill.textContent = n;
+          pill.style.cursor = "pointer";
+          
+          if (chordColor) {
+            // Convert hex to rgba for background with opacity
+            const r = parseInt(chordColor.slice(1, 3), 16);
+            const g = parseInt(chordColor.slice(3, 5), 16);
+            const b = parseInt(chordColor.slice(5, 7), 16);
+            pill.style.background = `rgba(${r}, ${g}, ${b}, 0.12)`;
+            pill.style.borderColor = `rgba(${r}, ${g}, ${b}, 0.4)`;
+            pill.style.color = `rgb(${r}, ${g}, ${b})`;
+          }
+          
+          // Add click handler to play the note
+          pill.addEventListener("click", () => {
+            if (options.onNoteClick) {
+              options.onNoteClick(n);
+            }
+          });
+          
+          chordList.appendChild(pill);
+        });
       }
 
       // Update chord degrees

@@ -290,7 +290,14 @@ export function renderChordRing(container, options = {}) {
   function playDiatonicTriad(degree) {
     // Logic for playing the placeholder triad
     const triadData = rootToDiatonicTriad(degree, currentKey, 3);
-    if (options.onChordClick) options.onChordClick(triadData.notes);
+    if (options.onChordClick) {
+      options.onChordClick({
+        notes: triadData.notes,
+        root: degree,
+        chordDegrees: triadData.chordDegrees,
+        borrowed: null
+      });
+    }
   }
 
   function playChord(chordObj) {
@@ -308,7 +315,14 @@ export function renderChordRing(container, options = {}) {
     // If it's a variant (borrowed), `rootToDiatonicTriad` accepts `borrowed` param!
     const borrowed = chordObj.borrowed || null;
     const triadData = rootToDiatonicTriad(chordObj.root, currentKey, 3, borrowed);
-    if (options.onChordClick) options.onChordClick(triadData.notes);
+    if (options.onChordClick) {
+      options.onChordClick({
+        notes: triadData.notes,
+        root: chordObj.root,
+        chordDegrees: triadData.chordDegrees,
+        borrowed: borrowed
+      });
+    }
   }
 
 
