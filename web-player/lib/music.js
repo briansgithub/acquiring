@@ -189,57 +189,6 @@ export function sdToToneJSNoteName(sd, relOctave, key, baseOctave) {
 }
 
 
-//only used in chords right now
-function semitoneToNoteName(semitone, key) {
-  // Convert a semitone (0-11) to a note name using diatonic approach
-  // Find which scale degree this semitone corresponds to, or the closest one
-  const tonicOffset = NOTE_NAME_TO_INTEGER_NOTATION[key.tonic];
-  let scaleIntervals;
-  if (key.scale === "major") {
-    scaleIntervals = MAJOR_SCALE_SPECIFIC_INTERVALS;
-  } else if (key.scale === "minor") {
-    scaleIntervals = MINOR_SCALE_SPECIFIC_INTERVALS;
-  } else {
-    throw new Error(`Unsupported scale type: ${key.scale}`);
-  }
-  const diatonicNames = MAJOR_SCALE_LABELS[key.tonic];
-
-  
-  // Check if semitone matches a diatonic scale degree
-  for (let i = 0; i < scaleIntervals.length; i++) {
-    const interval = (tonicOffset + scaleIntervals[i]) % 12;
-    if (interval === semitone) {
-      return diatonicNames[i];
-    }
-  }
-  
-  // If not diatonic, find the closest scale degree and apply accidental
-  // This is a simplified approach - find the nearest scale degree
-  let minDiff = Infinity;
-  let closestDegree = 0;
-  for (let i = 0; i < scaleIntervals.length; i++) {
-    const interval = (tonicOffset + scaleIntervals[i]) % 12;
-    let diff = Math.abs(semitone - interval);
-    if (diff > 6) diff = 12 - diff; // Wrap around
-    if (diff < minDiff) {
-      minDiff = diff;
-      closestDegree = i;
-    }
-  }
-  
-  const baseLabel = diatonicNames[closestDegree];
-  const baseInterval = (tonicOffset + scaleIntervals[closestDegree]) % 12;
-  let accidentalShift = semitone - baseInterval;
-  // Normalize accidental shift to -6 to +6 range (wrapping around)
-  if (accidentalShift > 6) {
-    accidentalShift -= 12;
-  } else if (accidentalShift < -6) {
-    accidentalShift += 12;
-  }
-  
-  return appendAccidental(baseLabel, accidentalShift);
-}
-
 //chordRootSD is explicitely an int from 1-7 (no modifiers). 
 // it indicates the tonal basis of the chord
 export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = null) {
