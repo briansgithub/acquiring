@@ -14,6 +14,10 @@ const timelinePane = document.getElementById("timeline-pane");
 
 const engine = new AudioEngine();
 
+// State variables
+let useRomanNumerals = true; // Track label mode (roman numerals vs letter labels)
+let currentKey = null; // Store current key for event recalculation
+
 // Handler function for play/pause
 async function handlePlayPause(shouldPlay) {
   if (isLoading) {
@@ -133,18 +137,36 @@ const controls = renderControls(controlsPane, {
       updatePlaybackSettings();
     }, 150);
   },
+  onLabelModeChange: (useRoman) => {
+    useRomanNumerals = useRoman;
+    // Update chord ring with new label mode
+    if (currentKey) {
+      chordRing.setLabelMode(useRomanNumerals, currentKey);
+      // Redraw chord ring
+      if (currentRawChords) {
+        chordRing.setSongData(currentRawChords, currentKey);
+        const currentTicks = Tone.Transport.ticks;
+        const currentChordInfo = findCurrentChordAtTick(currentTicks);
+        if (currentChordInfo) {
+          chordRing.update(currentChordInfo.chord);
+        }
+      }
+    }
+  },
 });
 const chordRing = renderChordRing(ringPane, {
   onChordClick: (chordData) => {
     isManualChordPreview = true;
     engine.previewChord(chordData.notes, "4n");
     noteIndicator.updateChord(chordData.notes, chordData.root, chordData.chordDegrees, chordData.borrowed, currentKey, chordData.chord);
-  }
+  },
+  labelMode: useRomanNumerals
 });
 const noteIndicator = renderNoteIndicator(indicatorPane, {
   onNoteClick: (note) => {
     engine.previewNote(note, "4n");
-  }
+  },
+  key: currentKey
 });
 const timeline = renderTimeline(timelinePane, {
   onSeek: handleSeek
@@ -172,7 +194,6 @@ let currentBpm = 120;
 let originalBpm = 120; // Store the original tempo from the loaded section
 let currentRawNotes = []; // Store raw note data for tempo recalculation
 let currentRawChords = []; // Store raw chord data for tempo recalculation
-let currentKey = null; // Store current key for event recalculation
 let isLoading = false;
 let isArpeggiated = true;
 let arpeggiationSpeed = 100; // ms

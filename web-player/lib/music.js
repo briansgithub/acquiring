@@ -135,7 +135,7 @@ function appendAccidental(label, shift) {
   return label;
 }
 
-function getNoteLabel(sd, key, customIntervals = null) {
+export function getNoteLabel(sd, key, customIntervals = null) {
   const rawDegreeNumber = rawDegree(sd);
   const accidentalShift = modifierValue(sd);
 

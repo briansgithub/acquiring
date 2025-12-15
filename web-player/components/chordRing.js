@@ -10,8 +10,8 @@ import {
   ROMAN_NUMERALS_LOCRIAN,
   getScaleDegreeColor 
 } from "../lib/scales.js";
-import { getChordSymbol } from "../lib/jsonToSymbol.js";
-import { rootToDiatonicTriad } from "../lib/music.js";
+import { getChordSymbol, getChordLetterName } from "../lib/jsonToSymbol.js";
+import { rootToDiatonicTriad, getNoteLabel } from "../lib/music.js";
 
 export function renderChordRing(container, options = {}) {
   const canvas = document.createElement("canvas");
@@ -30,6 +30,7 @@ export function renderChordRing(container, options = {}) {
 
   // External Data
   let currentKey = { tonic: "C", scale: "major" };
+  let useRomanNumerals = options.labelMode !== false; // Default to true (roman numerals)
 
   let currentGroupedChords = {}; // Map of root (1-7) -> Array of {symbol, chordObj}
 
@@ -130,10 +131,12 @@ export function renderChordRing(container, options = {}) {
           subLabel = `(${borrowed})`;
         }
       }
-      drawNode(dx, dy, nodeRadius, color, exactDiatonic.symbol, 1.0, isActive, false, subLabel);
+      const displayLabel = useRomanNumerals ? exactDiatonic.symbol : getChordLetterName(chord, currentKey);
+      drawNode(dx, dy, nodeRadius, color, displayLabel, 1.0, isActive, false, subLabel);
     } else {
       // Placeholder
-      drawNode(dx, dy, nodeRadius, color, expectedDiatonicLabel, 0.3, false, true);
+      const placeholderLabel = useRomanNumerals ? expectedDiatonicLabel : getNoteLabel(degree, currentKey);
+      drawNode(dx, dy, nodeRadius, color, placeholderLabel, 0.3, false, true);
     }
 
     // 2. Draw Variants (Outer Rings)
@@ -156,7 +159,8 @@ export function renderChordRing(container, options = {}) {
         }
       }
 
-      drawNode(vx, vy, nodeRadius, color, v.symbol, 0.9, isActive, false, subLabel);
+      const displayLabel = useRomanNumerals ? v.symbol : getChordLetterName(v.chord, currentKey);
+      drawNode(vx, vy, nodeRadius, color, displayLabel, 0.9, isActive, false, subLabel);
     });
   }
 
@@ -387,8 +391,22 @@ export function renderChordRing(container, options = {}) {
       draw();
     },
 
+    setLabelMode(useRoman, key) {
+      useRomanNumerals = useRoman;
+      if (key) {
+        currentKey = key;
+      }
+      // Recalculate active chord symbol if needed
+      if (activeChordSymbol !== null) {
+        // activeChordSymbol is already set, just redraw
+      }
+      draw();
+    },
+
     setSongData(chords, key) {
-      currentKey = key;
+      if (key) {
+        currentKey = key;
+      }
       currentGroupedChords = {};
 
       // Initialize Groups

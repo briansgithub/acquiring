@@ -14,6 +14,7 @@ import {
   ROMAN_NUMERALS_MIXOLYDIAN,
   ROMAN_NUMERALS_LOCRIAN
 } from "./scales.js";
+import { getNoteLabel } from "./music.js";
 
 // Helper function to get chord qualities for a scale type
 function getChordQualitiesForScale(scaleType) {
@@ -144,5 +145,105 @@ export function getChordSymbol(chord, key) {
     }
 
     return baseSymbol;
+}
+
+/**
+ * Converts a chord object to its letter name representation (e.g., "Cm", "C", "C°", "C7").
+ * @param {Object} chord - The chord object from the JSON data.
+ * @param {Object} key - The key object { tonic, scale }.
+ * @returns {string} The letter name symbol (e.g., "Cm", "C7", "F#m").
+ */
+export function getChordLetterName(chord, key) {
+    if (!chord || !chord.root) return "";
+
+    const root = chord.root;
+    let scale = key.scale;
+
+    // Handle Borrowed Chords
+    if (chord.borrowed) {
+        if (typeof chord.borrowed === 'string') {
+            scale = chord.borrowed;
+        }
+    }
+
+    // Get chord qualities based on the scale
+    const qualities = getChordQualitiesForScale(scale);
+    const quality = (root >= 1 && root <= 7) ? qualities[root - 1] : "major";
+
+    // Get root note name
+    const rootNoteName = getNoteLabel(root, key);
+    
+    let suffix = "";
+
+    // Add quality suffix
+    if (quality === "minor") {
+        suffix += "m";
+    } else if (quality === "diminished") {
+        suffix += "°";
+    }
+    // Major has no suffix
+
+    // Add 7th chord suffix
+    if (chord.type === 7) {
+        suffix += "7";
+    }
+
+    // Handle inversions (add slash notation with bass note)
+    // For inversions, we need to calculate which note is in the bass
+    if (chord.inversion === 1) {
+        // First inversion: third is in bass
+        // Third is root + 2 scale degrees (wrapped)
+        const thirdDegree = ((root - 1 + 2) % 7) + 1;
+        const thirdNoteName = getNoteLabel(thirdDegree, key);
+        return `${rootNoteName}${suffix}/${thirdNoteName}`;
+    } else if (chord.inversion === 2) {
+        // Second inversion: fifth is in bass
+        const fifthDegree = ((root - 1 + 4) % 7) + 1;
+        const fifthNoteName = getNoteLabel(fifthDegree, key);
+        return `${rootNoteName}${suffix}/${fifthNoteName}`;
+    } else if (chord.inversion === 3 && chord.type === 7) {
+        // Third inversion (7th chords only): seventh is in bass
+        const seventhDegree = ((root - 1 + 6) % 7) + 1;
+        const seventhNoteName = getNoteLabel(seventhDegree, key);
+        return `${rootNoteName}${suffix}/${seventhNoteName}`;
+    }
+
+    return rootNoteName + suffix;
+}
+
+/**
+ * Converts a scale degree (1-7) to its roman numeral representation.
+ * @param {number|string} degree - The scale degree (1-7).
+ * @param {Object} key - The key object { tonic, scale }.
+ * @returns {string} The roman numeral (e.g., "I", "ii", "V").
+ */
+export function getScaleDegreeRomanNumeral(degree, key) {
+    const rawDegree = typeof degree === 'string' ? parseInt(degree.replace(/[^0-9]/g, ""), 10) : degree;
+    if (rawDegree < 1 || rawDegree > 7) return "";
+    
+    const romans = getRomanNumeralsForScale(key.scale);
+    return romans[rawDegree - 1] || "";
+}
+
+/**
+ * Converts a note name to its roman numeral representation based on the key.
+ * @param {string} noteName - The note name (e.g., "C", "F#", "Bb").
+ * @param {Object} key - The key object { tonic, scale }.
+ * @returns {string} The roman numeral (e.g., "I", "ii", "V").
+ */
+export function getNoteNameRomanNumeral(noteName, key) {
+    // Remove octave if present
+    const noteWithoutOctave = noteName.replace(/[0-9]/g, "");
+    
+    // Find which scale degree this note corresponds to
+    for (let degree = 1; degree <= 7; degree++) {
+        const expectedNote = getNoteLabel(degree, key);
+        if (expectedNote === noteWithoutOctave) {
+            return getScaleDegreeRomanNumeral(degree, key);
+        }
+    }
+    
+    // If not found, return the note name itself
+    return noteWithoutOctave;
 }
 

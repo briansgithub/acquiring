@@ -196,12 +196,12 @@ export function getScaleDegreeColor(degree, scaleType) {
   // We need to find which mode degree corresponds to the relative major's degree 1:
   // 
   // Major (Ionian): degree 1 = relative major degree 1 (red)
-  // Minor (Aeolian): degree 6 = relative major degree 1 (red) → shift mode degrees by +2
+  // Minor (Aeolian): degree 3 = relative major degree 1 (red) → shift mode degrees by +5
   // Dorian: degree 7 = relative major degree 1 (red) → shift mode degrees by +1
-  // Phrygian: degree 4 = relative major degree 1 (red) → shift mode degrees by -3 (or +4)
-  // Lydian: degree 5 = relative major degree 1 (red) → shift mode degrees by -4 (or +3)
-  // Mixolydian: degree 4 = relative major degree 1 (red) → shift mode degrees by -3 (or +4)
-  // Locrian: degree 2 = relative major degree 1 (red) → shift mode degrees by -1 (or +6)
+  // Phrygian: degree 4 = relative major degree 1 (red) → shift mode degrees by +4
+  // Lydian: degree 5 = relative major degree 1 (red) → shift mode degrees by +3
+  // Mixolydian: degree 4 = relative major degree 1 (red) → shift mode degrees by +4
+  // Locrian: degree 2 = relative major degree 1 (red) → shift mode degrees by +6
   //
   // Formula: majorDegree = ((modeDegree - 1 + shift) mod 7) + 1
   // We want: when modeDegree = relativeMajorDegree1, majorDegree should be 1
@@ -211,8 +211,8 @@ export function getScaleDegreeColor(degree, scaleType) {
 
   let shift = 0;
   if (scaleType === 'minor') {
-    // Minor degree 6 = Major degree 1, so shift = -(6-1) = -5 mod 7 = 2
-    shift = 2;
+    // Minor degree 3 = Major degree 1, so shift = -(3-1) = -2 mod 7 = 5
+    shift = 5;
   } else if (scaleType === 'dorian') {
     // Dorian degree 7 = Major degree 1, so shift = -(7-1) = -6 mod 7 = 1
     shift = 1;
