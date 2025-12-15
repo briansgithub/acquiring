@@ -320,23 +320,13 @@ function getCustomScaleIntervals(borrowedArray) {
   return intervals; // Returns exactly 7 elements
 }
 
-//chordRootSD is explicitely an int from 1-7 (no modifiers). 
-// it indicates the tonal basis of the chord
-// chordType: 5 = triad, 7 = dominant 7th (4-note chord)
-// inversion: 0 = root position, 1 = first inversion, 2 = second inversion, 3 = third inversion (7th chords only)
-export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = null, chordType = 5, inversion = 0) {
-
-  // 1. SAVE THE ORIGINAL KEY
-  // We need to keep a reference to the original key to calculate 
-  // the final scale degrees relative to it.
-  const originalKey = { ...key };
-
-  // swap out the scale for the borrowed scale
-  let {tonic, scale} = key;
+// Resolves borrowed scale and returns the modified key, custom intervals, and chord qualities
+function resolveBorrowedScale(key, borrowed) {
+  let { tonic, scale } = key;
   let customScaleIntervals = null;
   let scaleChordQualities = null;
 
-  if(borrowed === null || borrowed === "") {
+  if (borrowed === null || borrowed === "") {
     scale = key.scale;
   } else if (typeof borrowed === "string") {
     // Handle string mode names
@@ -361,155 +351,150 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
     // Custom scale definition: array of semitone intervals for degrees 1-7
     customScaleIntervals = getCustomScaleIntervals(borrowed);
     scaleChordQualities = generateChordQualitiesFromCustomScale(borrowed);
-    // Use a placeholder scale name for custom scales
     scale = "custom";
   } else {
     throw new Error(`Unsupported borrowed type: ${borrowed}`);
   }
-  key = { tonic, scale };
 
-  // Get chord qualities
-  if (!scaleChordQualities) {
-    if (key.scale === "major") {
-      scaleChordQualities = MAJOR_SCALE_CHORD_QUALITIES;
-    } else if (key.scale === "minor") {
-      scaleChordQualities = MINOR_SCALE_CHORD_QUALITIES;
-    } else if (key.scale === "dorian") {
-      scaleChordQualities = DORIAN_SCALE_CHORD_QUALITIES;
-    } else if (key.scale === "phrygian") {
-      scaleChordQualities = PHRYGIAN_SCALE_CHORD_QUALITIES;
-    } else if (key.scale === "lydian") {
-      scaleChordQualities = LYDIAN_SCALE_CHORD_QUALITIES;
-    } else if (key.scale === "mixolydian") {
-      scaleChordQualities = MIXOLYDIAN_SCALE_CHORD_QUALITIES;
-    } else if (key.scale === "locrian") {
-      scaleChordQualities = LOCRIAN_SCALE_CHORD_QUALITIES;
-    } else {
-      throw new Error(`Unsupported scale type: ${key.scale}`);
-    }
+  return {
+    key: { tonic, scale },
+    customScaleIntervals,
+    scaleChordQualities
+  };
+}
+
+// Gets chord qualities for a given scale
+function getScaleChordQualities(scale, scaleChordQualities) {
+  if (scaleChordQualities) {
+    return scaleChordQualities;
   }
 
-  // This gets the note name based on the NEW (borrowed) key
-  const chordRootNoteName = getNoteLabel(chordRootSD, key, customScaleIntervals);
+  if (scale === "major") {
+    return MAJOR_SCALE_CHORD_QUALITIES;
+  } else if (scale === "minor") {
+    return MINOR_SCALE_CHORD_QUALITIES;
+  } else if (scale === "dorian") {
+    return DORIAN_SCALE_CHORD_QUALITIES;
+  } else if (scale === "phrygian") {
+    return PHRYGIAN_SCALE_CHORD_QUALITIES;
+  } else if (scale === "lydian") {
+    return LYDIAN_SCALE_CHORD_QUALITIES;
+  } else if (scale === "mixolydian") {
+    return MIXOLYDIAN_SCALE_CHORD_QUALITIES;
+  } else if (scale === "locrian") {
+    return LOCRIAN_SCALE_CHORD_QUALITIES;
+  } else {
+    throw new Error(`Unsupported scale type: ${scale}`);
+  }
+}
 
-  const chordQuality = scaleChordQualities[chordRootSD - 1];
-
-  const chordDegrees = TRIAD_DEGREES[chordQuality];
-  const chordDegree1 = chordDegrees[0];
-  const chordDegree2 = chordDegrees[1];
-  const chordDegree3 = chordDegrees[2];
-  
-  // Prepare Note Names
+// Builds the triad tones (3-note chord) - returns tone names and degree indices
+function buildTriadTones(chordRootNoteName, chordDegrees, baseOctave) {
   const relativeOctave = 0;
-  // The local key for the chord construction is always Major based on the root note
-  const rootKey = { tonic: chordRootNoteName, scale: "major"};
+  const rootKey = { tonic: chordRootNoteName, scale: "major" };
 
-  const firstName = sdToToneJSNoteName(chordDegree1, relativeOctave, rootKey, baseOctave);
-  const thirdName = sdToToneJSNoteName(chordDegree2, relativeOctave, rootKey, baseOctave);
-  const fifthName = sdToToneJSNoteName(chordDegree3, relativeOctave, rootKey, baseOctave);
-  
-  let toneJSNames = [firstName, thirdName, fifthName];
-  let degreeIndices = [0, 1, 2]; // Track which degree each note represents
+  const firstName = sdToToneJSNoteName(chordDegrees[0], relativeOctave, rootKey, baseOctave);
+  const thirdName = sdToToneJSNoteName(chordDegrees[1], relativeOctave, rootKey, baseOctave);
+  const fifthName = sdToToneJSNoteName(chordDegrees[2], relativeOctave, rootKey, baseOctave);
 
-  // Add 7th note if chord type is 7 (dominant 7th)
-  if (chordType === 7) {
-    // Dominant 7th = minor 7th interval above root (b7)
-    // In the root key (major scale), degree 7 is the leading tone (major 7th)
-    // For dominant 7th, we need b7 (minor 7th), which is one semitone lower
-    const seventhDegree = "b7";
-    const seventhName = sdToToneJSNoteName(seventhDegree, relativeOctave, rootKey, baseOctave);
-    toneJSNames.push(seventhName);
-    degreeIndices.push(3); // 7th is index 3
+  return {
+    toneJSNames: [firstName, thirdName, fifthName],
+    degreeIndices: [0, 1, 2]
+  };
+}
+
+// Adds the 7th note to make a 4-note chord - modifies toneJSNames and degreeIndices arrays
+function buildTetrachords(toneJSNames, degreeIndices, chordRootNoteName, baseOctave) {
+  const relativeOctave = 0;
+  const rootKey = { tonic: chordRootNoteName, scale: "major" };
+  const seventhDegree = "b7";
+  const seventhName = sdToToneJSNoteName(seventhDegree, relativeOctave, rootKey, baseOctave);
+  toneJSNames.push(seventhName);
+  degreeIndices.push(3);
+}
+
+// Applies inversion to chord tones - modifies toneJSNames and degreeIndices arrays
+function applyInversion(toneJSNames, degreeIndices, inversion, baseOctave) {
+  if (inversion === 0) {
+    return; // No inversion needed
   }
 
-  // Apply inversion by reordering notes and adjusting octaves
-  if (inversion > 0) {
-    const numNotes = toneJSNames.length;
-    
-    // Create reordered arrays
-    const reorderedNotes = [];
-    const reorderedDegreeIndices = [];
-    
-    // For inversions, move the bass note down an octave and upper notes up an octave
-    // Triad inversions:
-    //   Inv 0: [1, 3, 5] -> [1, 3, 5]
-    //   Inv 1: [3, 5, 1] -> [3↓, 5, 1↑]
-    //   Inv 2: [5, 1, 3] -> [5↓, 1↑, 3↑]
-    // 7th chord inversions:
-    //   Inv 0: [1, 3, 5, 7] -> [1, 3, 5, 7]
-    //   Inv 1: [3, 5, 7, 1] -> [3↓, 5, 7, 1↑]
-    //   Inv 2: [5, 7, 1, 3] -> [5↓, 7, 1↑, 3↑]
-    //   Inv 3: [7, 1, 3, 5] -> [7↓, 1↑, 3↑, 5↑]
-    
-    // First pass: extract all note info and calculate bass octave
-    const noteInfos = [];
-    let bassOctave = null;
-    
-    for (let i = 0; i < numNotes; i++) {
-      const sourceIndex = (inversion + i) % numNotes;
-      const noteName = toneJSNames[sourceIndex];
-      const degreeIdx = degreeIndices[sourceIndex];
-      
-      // Extract note name and octave
-      // Tone.js format: "C4", "C#4", "Bb4", "F##4", "Bbb4", etc.
-      const noteMatch = noteName.match(/^([A-G](?:[#bx]+|[b]+)?)(\d+)$/);
-      if (!noteMatch) {
-        // Fallback if parsing fails
-        noteInfos.push({ noteBase: noteName, octave: baseOctave, degreeIdx });
-        if (i === 0) bassOctave = baseOctave - 1;
-        continue;
-      }
-      
-      const [, noteBase, octaveStr] = noteMatch;
-      const octave = parseInt(octaveStr, 10);
-      
-      if (i === 0) {
-        // Bass note: move down an octave
-        bassOctave = Math.max(1, octave - 1);
-      }
-      
-      noteInfos.push({ noteBase, octave, degreeIdx });
+  const numNotes = toneJSNames.length;
+  const reorderedNotes = [];
+  const reorderedDegreeIndices = [];
+
+  // First pass: extract all note info and calculate bass octave
+  const noteInfos = [];
+  let bassOctave = null;
+
+  for (let i = 0; i < numNotes; i++) {
+    const sourceIndex = (inversion + i) % numNotes;
+    const noteName = toneJSNames[sourceIndex];
+    const degreeIdx = degreeIndices[sourceIndex];
+
+    // Extract note name and octave
+    // Tone.js format: "C4", "C#4", "Bb4", "F##4", "Bbb4", etc.
+    const noteMatch = noteName.match(/^([A-G](?:[#bx]+|[b]+)?)(\d+)$/);
+    if (!noteMatch) {
+      // Fallback if parsing fails
+      noteInfos.push({ noteBase: noteName, octave: baseOctave, degreeIdx });
+      if (i === 0) bassOctave = baseOctave - 1;
+      continue;
     }
-    
-    // Second pass: assign octaves ensuring proper voice spacing
-    // Find the highest original octave among upper notes to determine target octave
-    let highestUpperOctave = 0;
-    for (let i = 1; i < numNotes; i++) {
-      if (noteInfos[i].octave > highestUpperOctave) {
-        highestUpperOctave = noteInfos[i].octave;
-      }
+
+    const [, noteBase, octaveStr] = noteMatch;
+    const octave = parseInt(octaveStr, 10);
+
+    if (i === 0) {
+      // Bass note: move down an octave
+      bassOctave = Math.max(1, octave - 1);
     }
-    
-    // Target octave for all upper notes: use the highest original octave among upper notes
-    // But ensure it's at least one octave above bass
-    const targetUpperOctave = Math.max(highestUpperOctave, bassOctave + 1);
-    
-    for (let i = 0; i < numNotes; i++) {
-      const { noteBase, degreeIdx } = noteInfos[i];
-      
-      let finalOctave;
-      if (i === 0) {
-        // Bass note uses calculated bass octave
-        finalOctave = bassOctave;
-      } else {
-        // All upper notes go to the same target octave
-        finalOctave = targetUpperOctave;
-      }
-      
-      reorderedNotes.push(`${noteBase}${finalOctave}`);
-      reorderedDegreeIndices.push(degreeIdx);
-    }
-    
-    toneJSNames = reorderedNotes;
-    degreeIndices = reorderedDegreeIndices;
+
+    noteInfos.push({ noteBase, octave, degreeIdx });
   }
 
-  // 2. REVISED SCALE DEGREE CALCULATION
-  // We iterate through the generated notes and compare them to the ORIGINAL key
-  const baseKeyDegrees = toneJSNames.map((noteName, index) => {
+  // Second pass: assign octaves ensuring proper voice spacing
+  // Find the highest original octave among upper notes to determine target octave
+  let highestUpperOctave = 0;
+  for (let i = 1; i < numNotes; i++) {
+    if (noteInfos[i].octave > highestUpperOctave) {
+      highestUpperOctave = noteInfos[i].octave;
+    }
+  }
+
+  // Target octave for all upper notes: use the highest original octave among upper notes
+  // But ensure it's at least one octave above bass
+  const targetUpperOctave = Math.max(highestUpperOctave, bassOctave + 1);
+
+  for (let i = 0; i < numNotes; i++) {
+    const { noteBase, degreeIdx } = noteInfos[i];
+
+    let finalOctave;
+    if (i === 0) {
+      // Bass note uses calculated bass octave
+      finalOctave = bassOctave;
+    } else {
+      // All upper notes go to the same target octave
+      finalOctave = targetUpperOctave;
+    }
+
+    reorderedNotes.push(`${noteBase}${finalOctave}`);
+    reorderedDegreeIndices.push(degreeIdx);
+  }
+
+  // Replace original arrays with reordered ones
+  toneJSNames.length = 0;
+  toneJSNames.push(...reorderedNotes);
+  degreeIndices.length = 0;
+  degreeIndices.push(...reorderedDegreeIndices);
+}
+
+// Calculates scale degrees relative to original key (label logic)
+function calculateScaleDegrees(toneJSNames, degreeIndices, chordRootSD, chordDegrees, chordType, originalKey) {
+  return toneJSNames.map((noteName, index) => {
     const degreeIdx = degreeIndices[index];
     let degree;
-    
+
     if (degreeIdx < 3) {
       // Triad notes use chordDegrees
       degree = chordDegrees[degreeIdx];
@@ -520,33 +505,75 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
       // Fallback (shouldn't happen)
       degree = "1";
     }
-    
+
     const rawNumber = rawDegree(degree);
-    
+
     // Calculate the generic scale degree integer (1-7)
     const calculatedDegree = ((((chordRootSD - 1) + (rawNumber - 1)) % 7) + 1);
-    
-    // A. Get the ACTUAL note name (strip octave, e.g., "Ab4" -> "Ab")
+
+    // Get the ACTUAL note name (strip octave, e.g., "Ab4" -> "Ab")
     const actualNote = noteName.replace(/[0-9]/g, '');
 
-    // B. Get the EXPECTED diatonic note for this degree in the ORIGINAL key
-    // (This assumes getNoteLabel returns the standard diatonic note, e.g., "A" for degree 6 in C Maj)
+    // Get the EXPECTED diatonic note for this degree in the ORIGINAL key
     const diatonicNote = getNoteLabel(calculatedDegree, originalKey);
 
-    // C. Calculate the modifier by comparing the actual vs diatonic note
+    // Calculate the modifier by comparing the actual vs diatonic note
     const modifier = getModifierDifference(actualNote, diatonicNote);
 
     return `${modifier}${calculatedDegree}`;
   });
+}
+
+//chordRootSD is explicitely an int from 1-7 (no modifiers). 
+// it indicates the tonal basis of the chord
+// chordType: 5 = triad, 7 = dominant 7th (4-note chord)
+// inversion: 0 = root position, 1 = first inversion, 2 = second inversion, 3 = third inversion (7th chords only)
+export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = null, chordType = 5, inversion = 0) {
+  // Save the original key for scale degree calculation
+  const originalKey = { ...key };
+
+  // Resolve borrowed scale
+  const { key: modifiedKey, customScaleIntervals, scaleChordQualities: resolvedQualities } = resolveBorrowedScale(key, borrowed);
+
+  // Get chord qualities for the scale
+  const scaleChordQualities = getScaleChordQualities(modifiedKey.scale, resolvedQualities);
+
+  // Get chord root note name based on the modified key
+  const chordRootNoteName = getNoteLabel(chordRootSD, modifiedKey, customScaleIntervals);
+
+  // Get chord quality and degrees
+  const chordQuality = scaleChordQualities[chordRootSD - 1];
+  const chordDegrees = TRIAD_DEGREES[chordQuality];
+
+  // Build triad tones (3-note chord)
+  const { toneJSNames, degreeIndices } = buildTriadTones(chordRootNoteName, chordDegrees, baseOctave);
+
+  // Add 7th note if needed (4-note chord)
+  if (chordType === 7) {
+    buildTetrachords(toneJSNames, degreeIndices, chordRootNoteName, baseOctave);
+  }
+
+  // Apply inversion
+  applyInversion(toneJSNames, degreeIndices, inversion, baseOctave);
+
+  // Calculate scale degrees relative to original key (label logic)
+  const baseKeyDegrees = calculateScaleDegrees(
+    toneJSNames,
+    degreeIndices,
+    chordRootSD,
+    chordDegrees,
+    chordType,
+    originalKey
+  );
 
   console.log("CHORD DEBUG: chordRootToNotes", {
     root: chordRootSD,
     inversion,
-    rootLabel: firstName,
+    rootLabel: toneJSNames[0],
     toneJSNames,
-    baseKeyDegrees // Now contains correct modifiers (e.g., "b6", "#4")
+    baseKeyDegrees
   });
-  
+
   return { notes: toneJSNames, chordDegrees: baseKeyDegrees };
 }
 
