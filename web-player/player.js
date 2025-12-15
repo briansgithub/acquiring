@@ -423,6 +423,7 @@ function createChordEvents(chordsArray, key) {
         // Capture closure values
         const isFirstNote = (noteIdx === 0);
         const thisNote = note;
+        const shouldHighlight = arpeggiationSpeed >= 50;
 
         const noteEvent = {
           time: Math.round(noteStart) + "i",
@@ -435,8 +436,10 @@ function createChordEvents(chordsArray, key) {
               noteIndicator.updateChord(chordNotes, chord.root, chordData.chordDegrees, chord.borrowed);
               chordRing.update(chord);
             }
-            // Highlight this specific note
-            noteIndicator.highlightNote(thisNote);
+            // Only highlight notes when arpeggio speed is >= 50ms to avoid visual clutter at fast speeds
+            if (shouldHighlight) {
+              noteIndicator.highlightNote(thisNote);
+            }
           }
         };
         events.push(noteEvent);
