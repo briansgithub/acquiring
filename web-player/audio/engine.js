@@ -84,7 +84,7 @@ export class AudioEngine {
     const Tone = window.Tone;
     Tone.Transport.pause();
     // Silence all currently playing notes to prevent hanging sounds
-    if (this.melodySynth) this.melodySynth.releaseAll();
+    if (this.melodySynth) this.melodySynth.triggerRelease();
     if (this.chordSynth) this.chordSynth.releaseAll();
   }
 

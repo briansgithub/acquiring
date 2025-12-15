@@ -64,7 +64,15 @@ export function renderTimeline(container, options = {}) {
                 // Hide if text fits? Simply clip or verify width.
                 const metrics = ctx.measureText(symbol);
                 if (metrics.width < w - 4) {
-                    ctx.fillText(symbol, x + w / 2, y + blockHeight / 2);
+                    if (chord.borrowed) {
+                        // Draw symbol higher
+                        ctx.fillText(symbol, x + w / 2, y + blockHeight / 2 - 8);
+                        // Draw borrowed text lower (smaller)
+                        ctx.font = "italic 12px 'Times New Roman', serif";
+                        ctx.fillText(`(${chord.borrowed})`, x + w / 2, y + blockHeight / 2 + 10);
+                    } else {
+                        ctx.fillText(symbol, x + w / 2, y + blockHeight / 2);
+                    }
                 }
                 ctx.shadowBlur = 0;
             }

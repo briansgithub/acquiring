@@ -352,7 +352,7 @@ function createChordEvents(chordsArray, key) {
       name: chord.root, // Original prop kept for ref
       onTrigger: () => {
         const chordData = chordInterpreter(chord, key);
-        noteIndicator.updateChord(chordData.notes, chord.root, chordData.chordDegrees);
+        noteIndicator.updateChord(chordData.notes, chord.root, chordData.chordDegrees, chord.borrowed);
         chordRing.update(chord);
       },
     });

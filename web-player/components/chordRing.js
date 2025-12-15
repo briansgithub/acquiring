@@ -94,11 +94,17 @@ export function renderChordRing(container, options = {}) {
       const vx = centerX + dist * Math.cos(angle);
       const vy = centerY + dist * Math.sin(angle);
       const isActive = activeChordSymbol === v.symbol;
-      drawNode(vx, vy, nodeRadius, color, v.symbol, 0.9, isActive);
+
+      let subLabel = null;
+      if (v.chord && v.chord.borrowed) {
+        subLabel = `(${v.chord.borrowed})`;
+      }
+
+      drawNode(vx, vy, nodeRadius, color, v.symbol, 0.9, isActive, false, subLabel);
     });
   }
 
-  function drawNode(x, y, r, color, label, opacity, isActive = false, isPlaceholder = false) {
+  function drawNode(x, y, r, color, label, opacity, isActive = false, isPlaceholder = false, subLabel = null) {
     const effectiveRadius = isActive ? r * 1.3 : r;
 
     ctx.beginPath();
@@ -146,7 +152,17 @@ export function renderChordRing(container, options = {}) {
     // Scale text with node size
     const fontSize = isActive ? Math.max(16, 22 * zoom) : Math.max(12, 16 * zoom);
     ctx.font = `${fontSize}px "Times New Roman", Times, serif`;
-    ctx.fillText(label, x, y);
+
+    if (subLabel) {
+      // Draw label higher
+      ctx.fillText(label, x, y - (fontSize * 0.4));
+      // Draw subLabel lower
+      const subFontSize = fontSize * 0.7;
+      ctx.font = `italic ${subFontSize}px "Times New Roman", Times, serif`;
+      ctx.fillText(subLabel, x, y + (fontSize * 0.5));
+    } else {
+      ctx.fillText(label, x, y);
+    }
     ctx.restore();
   }
 
