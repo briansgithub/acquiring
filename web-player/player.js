@@ -21,6 +21,26 @@ async function handlePlayPause(shouldPlay) {
     return;
   }
   if (shouldPlay) {
+    // If a chord was manually previewed, revert to current chord at playback position
+    if (isManualChordPreview) {
+      const currentTicks = Tone.Transport.ticks;
+      const currentChordInfo = findCurrentChordAtTick(currentTicks);
+      if (currentChordInfo) {
+        noteIndicator.updateChord(
+          currentChordInfo.notes,
+          currentChordInfo.root,
+          currentChordInfo.degrees,
+          currentChordInfo.borrowed,
+          currentKey
+        );
+        chordRing.update(currentChordInfo.chord);
+      } else {
+        noteIndicator.reset();
+        chordRing.update(null);
+      }
+      isManualChordPreview = false;
+    }
+    
     // Check if song has ended and needs to be restarted
     // If parts are empty (song ended and stop() was called) or transport is at/past the end
     // Use Ticks for reliable end-of-song check
@@ -115,6 +135,7 @@ const controls = renderControls(controlsPane, {
 });
 const chordRing = renderChordRing(ringPane, {
   onChordClick: (chordData) => {
+    isManualChordPreview = true;
     engine.previewChord(chordData.notes, "4n");
     noteIndicator.updateChord(chordData.notes, chordData.root, chordData.chordDegrees, chordData.borrowed, currentKey);
   }
@@ -155,6 +176,7 @@ let isLoading = false;
 let isArpeggiated = true;
 let arpeggiationSpeed = 100; // ms
 let arpDebounceTimer = null;
+let isManualChordPreview = false; // Track when chord is manually clicked
 
 init();
 
@@ -354,6 +376,23 @@ function handleSeek(ratio) {
   const seconds = songLength * currentSecondsPerBeat * ratio;
   Tone.Transport.seconds = seconds;
   
+  // Update note indicator with chord at this position
+  const currentTicks = Tone.Transport.ticks;
+  const currentChordInfo = findCurrentChordAtTick(currentTicks);
+  if (currentChordInfo) {
+    noteIndicator.updateChord(
+      currentChordInfo.notes,
+      currentChordInfo.root,
+      currentChordInfo.degrees,
+      currentChordInfo.borrowed,
+      currentKey
+    );
+    chordRing.update(currentChordInfo.chord);
+  } else {
+    noteIndicator.reset();
+    chordRing.update(null);
+  }
+  
   // Reschedule parts with current events so they're aligned with the new position
   if (currentMelodyEvents.length > 0 || currentChordEvents.length > 0) {
     engine.rescheduleParts(currentMelodyEvents, currentChordEvents);
@@ -365,6 +404,8 @@ function handleSeek(ratio) {
   }
   
   timeline.updateProgress(ratio);
+  // Reset manual preview flag when seeking
+  isManualChordPreview = false;
 }
 
 function handleSongChange(songIdx) {
@@ -480,6 +521,8 @@ function createChordEvents(chordsArray, key) {
               // On very first note, update the main chord display
               noteIndicator.updateChord(chordNotes, chord.root, chordData.chordDegrees, chord.borrowed, currentKey);
               chordRing.update(chord);
+              // Reset manual preview flag when chord changes during playback
+              isManualChordPreview = false;
             }
             // Only highlight notes when arpeggio speed is >= 50ms to avoid visual clutter at fast speeds
             if (shouldHighlight) {
@@ -510,6 +553,8 @@ function createChordEvents(chordsArray, key) {
         onTrigger: () => {
           noteIndicator.updateChord(chordNotes, chord.root, chordData.chordDegrees, chord.borrowed, currentKey);
           chordRing.update(chord);
+          // Reset manual preview flag when chord changes during playback
+          isManualChordPreview = false;
         },
       });
 
