@@ -1,10 +1,63 @@
-import { MAJOR_SCALE_CHORD_QUALITIES, MINOR_SCALE_CHORD_QUALITIES } from "./scales.js";
+import { 
+  MAJOR_SCALE_CHORD_QUALITIES, 
+  MINOR_SCALE_CHORD_QUALITIES,
+  DORIAN_SCALE_CHORD_QUALITIES,
+  PHRYGIAN_SCALE_CHORD_QUALITIES,
+  LYDIAN_SCALE_CHORD_QUALITIES,
+  MIXOLYDIAN_SCALE_CHORD_QUALITIES,
+  LOCRIAN_SCALE_CHORD_QUALITIES,
+  ROMAN_NUMERALS_MAJOR, 
+  ROMAN_NUMERALS_MINOR,
+  ROMAN_NUMERALS_DORIAN,
+  ROMAN_NUMERALS_PHRYGIAN,
+  ROMAN_NUMERALS_LYDIAN,
+  ROMAN_NUMERALS_MIXOLYDIAN,
+  ROMAN_NUMERALS_LOCRIAN
+} from "./scales.js";
+
+// Helper function to get chord qualities for a scale type
+function getChordQualitiesForScale(scaleType) {
+    if (scaleType === 'minor') {
+        return MINOR_SCALE_CHORD_QUALITIES;
+    } else if (scaleType === 'dorian') {
+        return DORIAN_SCALE_CHORD_QUALITIES;
+    } else if (scaleType === 'phrygian') {
+        return PHRYGIAN_SCALE_CHORD_QUALITIES;
+    } else if (scaleType === 'lydian') {
+        return LYDIAN_SCALE_CHORD_QUALITIES;
+    } else if (scaleType === 'mixolydian') {
+        return MIXOLYDIAN_SCALE_CHORD_QUALITIES;
+    } else if (scaleType === 'locrian') {
+        return LOCRIAN_SCALE_CHORD_QUALITIES;
+    } else {
+        return MAJOR_SCALE_CHORD_QUALITIES; // Default to major
+    }
+}
+
+// Helper function to get roman numerals for a scale type
+function getRomanNumeralsForScale(scaleType) {
+    if (scaleType === 'minor') {
+        return ROMAN_NUMERALS_MINOR;
+    } else if (scaleType === 'dorian') {
+        return ROMAN_NUMERALS_DORIAN;
+    } else if (scaleType === 'phrygian') {
+        return ROMAN_NUMERALS_PHRYGIAN;
+    } else if (scaleType === 'lydian') {
+        return ROMAN_NUMERALS_LYDIAN;
+    } else if (scaleType === 'mixolydian') {
+        return ROMAN_NUMERALS_MIXOLYDIAN;
+    } else if (scaleType === 'locrian') {
+        return ROMAN_NUMERALS_LOCRIAN;
+    } else {
+        return ROMAN_NUMERALS_MAJOR; // Default to major
+    }
+}
 
 /**
  * Converts a chord object to its Roman Numeral representation.
  * @param {Object} chord - The chord object from the JSON data.
  * @param {Object} key - The key object { tonic, scale }.
- * @returns {string} The Roman Numeral symbol (e.g., "ii", "V7/IV", "bVI").
+ * @returns {string} The Roman Numeral symbol (e.g., "ii", "V7/IV", "V/vii°", "bVI").
  */
 export function getChordSymbol(chord, key) {
     if (!chord || !chord.root) return "";
@@ -17,14 +70,13 @@ export function getChordSymbol(chord, key) {
         // If borrowed is an array (custom scale), we'll add a prefix later
         // For standard mode borrowing, adjust scale for chord quality calculation
         if (typeof chord.borrowed === 'string') {
-            // If we are in Major and borrow from Minor, use Minor scale qualities
-            if (scale === 'major' && chord.borrowed === 'minor') scale = 'minor';
-            // If we are in Minor and borrow from Major (Picardy 3rd etc), use Major
-            else if (scale === 'minor' && chord.borrowed === 'major') scale = 'major';
+            // Use the borrowed scale's qualities
+            scale = chord.borrowed;
         }
     }
 
-    let qualities = (scale === 'minor') ? MINOR_SCALE_CHORD_QUALITIES : MAJOR_SCALE_CHORD_QUALITIES;
+    // Get chord qualities based on the scale
+    const qualities = getChordQualitiesForScale(scale);
 
     // Safety check for root being 1-7
     const quality = (root >= 1 && root <= 7) ? qualities[root - 1] : "major";
@@ -77,6 +129,20 @@ export function getChordSymbol(chord, key) {
         }
     }
 
-    return prefix + baseRoman + suffix;
+    const baseSymbol = prefix + baseRoman + suffix;
+
+    // Handle Applied Chords (Secondary Dominants)
+    // If applied is set and not 0, this is a secondary dominant
+    if (chord.applied && chord.applied !== 0 && chord.applied >= 1 && chord.applied <= 7) {
+        const appliedDegree = chord.applied;
+        // Get the roman numeral for the target degree based on the key's scale
+        const targetRomans = getRomanNumeralsForScale(key.scale);
+        const targetRoman = targetRomans[appliedDegree - 1] || "";
+        
+        // Format: <chordSymbol>/<targetRoman>
+        return `${baseSymbol}/${targetRoman}`;
+    }
+
+    return baseSymbol;
 }
 

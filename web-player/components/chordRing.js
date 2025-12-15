@@ -1,5 +1,15 @@
 
-import { SCALE_DEGREE_COLORS, ROMAN_NUMERALS_MAJOR, ROMAN_NUMERALS_MINOR, getScaleDegreeColor } from "../lib/scales.js";
+import { 
+  SCALE_DEGREE_COLORS, 
+  ROMAN_NUMERALS_MAJOR, 
+  ROMAN_NUMERALS_MINOR,
+  ROMAN_NUMERALS_DORIAN,
+  ROMAN_NUMERALS_PHRYGIAN,
+  ROMAN_NUMERALS_LYDIAN,
+  ROMAN_NUMERALS_MIXOLYDIAN,
+  ROMAN_NUMERALS_LOCRIAN,
+  getScaleDegreeColor 
+} from "../lib/scales.js";
 import { getChordSymbol } from "../lib/jsonToSymbol.js";
 import { rootToDiatonicTriad } from "../lib/music.js";
 
@@ -28,6 +38,25 @@ export function renderChordRing(container, options = {}) {
   const CENTER_RING_RADIUS = 80; // Radius of the labeling ring
   const DIATONIC_RING_RADIUS = 150; // Radius where diatonic chords sit
   const VARIANT_SPACING = 70; // Spacing between concentric rings
+
+  // Helper function to get roman numerals for a scale type
+  function getRomanNumeralsForScale(scaleType) {
+    if (scaleType === 'minor') {
+      return ROMAN_NUMERALS_MINOR;
+    } else if (scaleType === 'dorian') {
+      return ROMAN_NUMERALS_DORIAN;
+    } else if (scaleType === 'phrygian') {
+      return ROMAN_NUMERALS_PHRYGIAN;
+    } else if (scaleType === 'lydian') {
+      return ROMAN_NUMERALS_LYDIAN;
+    } else if (scaleType === 'mixolydian') {
+      return ROMAN_NUMERALS_MIXOLYDIAN;
+    } else if (scaleType === 'locrian') {
+      return ROMAN_NUMERALS_LOCRIAN;
+    } else {
+      return ROMAN_NUMERALS_MAJOR; // Default to major
+    }
+  }
 
   function resize() {
     canvas.width = container.clientWidth;
@@ -62,7 +91,7 @@ export function renderChordRing(container, options = {}) {
     const angle = (degree - 1) * (2 * Math.PI / 7) - (Math.PI / 2);
 
     // Get Diatonic Label for this key/degree
-    const diatonicLabels = (currentKey.scale === 'minor') ? ROMAN_NUMERALS_MINOR : ROMAN_NUMERALS_MAJOR;
+    const diatonicLabels = getRomanNumeralsForScale(currentKey.scale);
     const expectedDiatonicLabel = diatonicLabels[degree - 1];
 
     const chords = currentGroupedChords[degree] || [];
@@ -274,7 +303,7 @@ export function renderChordRing(container, options = {}) {
     const centerY = canvas.height / 2 + panY;
     const nodeRadius = NODE_RADIUS * zoom;
 
-    const diatonicLabels = (currentKey.scale === 'minor') ? ROMAN_NUMERALS_MINOR : ROMAN_NUMERALS_MAJOR;
+    const diatonicLabels = getRomanNumeralsForScale(currentKey.scale);
 
     for (let i = 1; i <= 7; i++) {
       const angle = (i - 1) * (2 * Math.PI / 7) - (Math.PI / 2);
@@ -338,7 +367,8 @@ export function renderChordRing(container, options = {}) {
         notes: chordData.notes,
         root: chordObj.root,
         chordDegrees: chordData.chordDegrees,
-        borrowed: borrowed
+        borrowed: borrowed,
+        chord: chordObj
       });
     }
   }

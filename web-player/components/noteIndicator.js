@@ -1,4 +1,5 @@
 import { getScaleDegreeColor } from "../lib/scales.js";
+import { getChordSymbol } from "../lib/jsonToSymbol.js";
 
 export function renderNoteIndicator(container, options = {}) {
   container.innerHTML = `
@@ -34,9 +35,13 @@ export function renderNoteIndicator(container, options = {}) {
         melodyEl.textContent = absoluteLabel || relativeLabel || "--";
       }
     },
-    updateChord(notes, root, chordDegrees, borrowed, key) {
-      // Update root
-      if (root) {
+    updateChord(notes, root, chordDegrees, borrowed, key, chordObj = null) {
+      // Update chord symbol (or root if chord object not provided)
+      if (chordObj && key) {
+        const symbol = getChordSymbol(chordObj, key);
+        chordRootEl.textContent = symbol;
+        chordRootEl.style.display = "block";
+      } else if (root) {
         chordRootEl.textContent = root.toString();
         chordRootEl.style.display = "block";
       } else {

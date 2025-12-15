@@ -550,7 +550,134 @@ export function chordInterpreter(chord, key) {
   const borrowed = chord.borrowed || null;
   const chordType = chord.type || 5; // Default to triad (5) if type not specified
   const inversion = chord.inversion || 0; // Default to root position (0) if inversion not specified
+  
+  // Handle Applied Chords (Secondary Dominants/Functions)
+  // When applied is set, the root is interpreted relative to the applied key, not the original key
+  if (chord.applied && chord.applied !== 0 && chord.applied >= 1 && chord.applied <= 7) {
+    // Get the tonic note of the applied key (the note at scale degree 'applied' in the original key)
+    const appliedTonicNote = getNoteLabel(chord.applied, key);
+    
+    // Create a temporary key with the applied tonic as the root
+    // For applied chords, we typically use major scale unless the applied degree suggests otherwise
+    // Most applied chords are secondary dominants which function in major keys
+    const appliedKey = { tonic: appliedTonicNote, scale: "major" };
+    
+    // The chord.root is now interpreted as a scale degree in the applied key
+    // Get the actual note name for that scale degree in the applied key
+    const actualRootNote = getNoteLabel(chord.root, appliedKey);
+    
+    // Get the chord quality from the applied key (this preserves ii vs I, etc.)
+    const appliedQualities = (appliedKey.scale === 'minor') ? MINOR_SCALE_CHORD_QUALITIES : MAJOR_SCALE_CHORD_QUALITIES;
+    const chordQuality = appliedQualities[chord.root - 1];
+    
+    // For applied chords, we ALWAYS build the chord directly from the note name
+    // because the root note is determined by the applied key, and it may not be
+    // a scale degree in the original key (e.g., V/7 uses A in Ab major, but A is not in Ab major scale)
+    return buildChordFromNoteName(actualRootNote, chordQuality, key, defaultChordOctave, chordType, inversion);
+  }
+  
   return rootToDiatonicTriad(chord.root, key, defaultChordOctave, borrowed, chordType, inversion);
+}
+
+// Helper function to build a chord directly from a note name and quality
+function buildChordFromNoteName(rootNoteName, quality, originalKey, baseOctave, chordType, inversion) {
+  // Get the chord degrees for this quality
+  const chordDegrees = TRIAD_DEGREES[quality];
+  
+  // Create a temporary key with the root note as tonic (major scale)
+  const rootKey = { tonic: rootNoteName, scale: "major" };
+  
+  // Build the chord notes
+  const firstName = sdToToneJSNoteName(chordDegrees[0], 0, rootKey, baseOctave);
+  const thirdName = sdToToneJSNoteName(chordDegrees[1], 0, rootKey, baseOctave);
+  const fifthName = sdToToneJSNoteName(chordDegrees[2], 0, rootKey, baseOctave);
+  
+  let toneJSNames = [firstName, thirdName, fifthName];
+  let degreeIndices = [0, 1, 2];
+  
+  // Add 7th if needed
+  if (chordType === 7) {
+    const seventhName = sdToToneJSNoteName("b7", 0, rootKey, baseOctave);
+    toneJSNames.push(seventhName);
+    degreeIndices.push(3);
+  }
+  
+  // Apply inversion
+  if (inversion > 0) {
+    const numNotes = toneJSNames.length;
+    const reorderedNotes = [];
+    const reorderedDegreeIndices = [];
+    
+    for (let i = 0; i < numNotes; i++) {
+      const sourceIndex = (inversion + i) % numNotes;
+      const noteName = toneJSNames[sourceIndex];
+      const degreeIdx = degreeIndices[sourceIndex];
+      
+      const noteMatch = noteName.match(/^([A-G](?:[#bx]+|[b]+)?)(\d+)$/);
+      if (!noteMatch) {
+        reorderedNotes.push(noteName);
+        reorderedDegreeIndices.push(degreeIdx);
+        continue;
+      }
+      
+      const [, noteBase, octaveStr] = noteMatch;
+      let octave = parseInt(octaveStr, 10);
+      
+      if (i === 0) {
+        octave = Math.max(1, octave - 1);
+      } else {
+        octave = octave + 1;
+      }
+      
+      reorderedNotes.push(`${noteBase}${octave}`);
+      reorderedDegreeIndices.push(degreeIdx);
+    }
+    
+    toneJSNames = reorderedNotes;
+    degreeIndices = reorderedDegreeIndices;
+  }
+  
+  // Calculate scale degrees relative to original key
+  const baseKeyDegrees = toneJSNames.map((noteName, index) => {
+    const degreeIdx = degreeIndices[index];
+    let degree;
+    
+    if (degreeIdx < 3) {
+      degree = chordDegrees[degreeIdx];
+    } else if (degreeIdx === 3 && chordType === 7) {
+      degree = "b7";
+    } else {
+      degree = "1";
+    }
+    
+    const rawNumber = rawDegree(degree);
+    
+    // Find which scale degree in original key corresponds to this note
+    const actualNote = noteName.replace(/[0-9]/g, '');
+    let calculatedDegree = 1;
+    let found = false;
+    
+    for (let sd = 1; sd <= 7; sd++) {
+      const diatonicNote = getNoteLabel(sd, originalKey);
+      if (diatonicNote === actualNote) {
+        calculatedDegree = sd;
+        found = true;
+        break;
+      }
+    }
+    
+    // If not found, calculate based on root note position
+    if (!found) {
+      const rootNoteInKey = getNoteLabel(1, originalKey);
+      // This is a fallback - might not be perfect for chromatic notes
+      calculatedDegree = (((rawNumber - 1) % 7) + 1);
+    }
+    
+    const modifier = found ? getModifierDifference(actualNote, getNoteLabel(calculatedDegree, originalKey)) : "";
+    return `${modifier}${calculatedDegree}`;
+  });
+  
+  return { notes: toneJSNames, chordDegrees: baseKeyDegrees };
 }
 
 

@@ -183,18 +183,56 @@ export const SCALE_DEGREE_COLORS = {
 
 export const ROMAN_NUMERALS_MAJOR = ["I", "ii", "iii", "IV", "V", "vi", "vii°"];
 export const ROMAN_NUMERALS_MINOR = ["i", "ii°", "III", "iv", "v", "VI", "VII"];
+export const ROMAN_NUMERALS_DORIAN = ["i", "ii", "III", "IV", "v", "vi°", "VII"];
+export const ROMAN_NUMERALS_PHRYGIAN = ["i", "II", "III", "iv", "v°", "VI", "vii"];
+export const ROMAN_NUMERALS_LYDIAN = ["I", "II", "iii", "iv°", "V", "vi", "vii"];
+export const ROMAN_NUMERALS_MIXOLYDIAN = ["I", "ii", "iii°", "IV", "v", "vi", "VII"];
+export const ROMAN_NUMERALS_LOCRIAN = ["i°", "II", "iii", "iv", "v°", "VI", "VII"];
 
 
 export function getScaleDegreeColor(degree, scaleType) {
-  // If scale is minor, shift the color mapping to match the relative major
-  // Minor 1 (i) corresponds to Major 6 (vi), so we shift by -2 (or +5)
-  // Mapping: 1->6, 2->7, 3->1, 4->2, 5->3, 6->4, 7->5
+  // Map colors based on the relative major (tonic of relative major starts with red)
+  // The relative major's degree 1 should always be colored red.
+  // We need to find which mode degree corresponds to the relative major's degree 1:
+  // 
+  // Major (Ionian): degree 1 = relative major degree 1 (red)
+  // Minor (Aeolian): degree 6 = relative major degree 1 (red) → shift mode degrees by +2
+  // Dorian: degree 7 = relative major degree 1 (red) → shift mode degrees by +1
+  // Phrygian: degree 4 = relative major degree 1 (red) → shift mode degrees by -3 (or +4)
+  // Lydian: degree 5 = relative major degree 1 (red) → shift mode degrees by -4 (or +3)
+  // Mixolydian: degree 4 = relative major degree 1 (red) → shift mode degrees by -3 (or +4)
+  // Locrian: degree 2 = relative major degree 1 (red) → shift mode degrees by -1 (or +6)
+  //
+  // Formula: majorDegree = ((modeDegree - 1 + shift) mod 7) + 1
+  // We want: when modeDegree = relativeMajorDegree1, majorDegree should be 1
+  // So: ((relativeMajorDegree1 - 1 + shift) mod 7) + 1 = 1
+  //     (relativeMajorDegree1 - 1 + shift) mod 7 = 0
+  //     shift = -(relativeMajorDegree1 - 1) mod 7
 
+  let shift = 0;
   if (scaleType === 'minor') {
-    const majorDegree = ((degree - 3 + 7) % 7) + 1;
-    return SCALE_DEGREE_COLORS[majorDegree];
+    // Minor degree 6 = Major degree 1, so shift = -(6-1) = -5 mod 7 = 2
+    shift = 2;
+  } else if (scaleType === 'dorian') {
+    // Dorian degree 7 = Major degree 1, so shift = -(7-1) = -6 mod 7 = 1
+    shift = 1;
+  } else if (scaleType === 'phrygian') {
+    // Phrygian degree 4 = Major degree 1, so shift = -(4-1) = -3 mod 7 = 4
+    shift = 4;
+  } else if (scaleType === 'lydian') {
+    // Lydian degree 5 = Major degree 1, so shift = -(5-1) = -4 mod 7 = 3
+    shift = 3;
+  } else if (scaleType === 'mixolydian') {
+    // Mixolydian degree 4 = Major degree 1, so shift = -(4-1) = -3 mod 7 = 4
+    shift = 4;
+  } else if (scaleType === 'locrian') {
+    // Locrian degree 2 = Major degree 1, so shift = -(2-1) = -1 mod 7 = 6
+    shift = 6;
   }
-  return SCALE_DEGREE_COLORS[degree];
+  // For major, shift = 0 (no change)
+
+  const majorDegree = ((degree - 1 + shift) % 7) + 1;
+  return SCALE_DEGREE_COLORS[majorDegree];
 }
 
 // Generate scale labels dynamically from intervals

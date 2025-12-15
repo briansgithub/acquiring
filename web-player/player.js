@@ -31,7 +31,8 @@ async function handlePlayPause(shouldPlay) {
           currentChordInfo.root,
           currentChordInfo.degrees,
           currentChordInfo.borrowed,
-          currentKey
+          currentKey,
+          currentChordInfo.chord
         );
         chordRing.update(currentChordInfo.chord);
       } else {
@@ -137,7 +138,7 @@ const chordRing = renderChordRing(ringPane, {
   onChordClick: (chordData) => {
     isManualChordPreview = true;
     engine.previewChord(chordData.notes, "4n");
-    noteIndicator.updateChord(chordData.notes, chordData.root, chordData.chordDegrees, chordData.borrowed, currentKey);
+    noteIndicator.updateChord(chordData.notes, chordData.root, chordData.chordDegrees, chordData.borrowed, currentKey, chordData.chord);
   }
 });
 const noteIndicator = renderNoteIndicator(indicatorPane, {
@@ -385,7 +386,8 @@ function handleSeek(ratio) {
       currentChordInfo.root,
       currentChordInfo.degrees,
       currentChordInfo.borrowed,
-      currentKey
+      currentKey,
+      currentChordInfo.chord
     );
     chordRing.update(currentChordInfo.chord);
   } else {
@@ -519,7 +521,7 @@ function createChordEvents(chordsArray, key) {
           onTrigger: () => {
             if (isFirstNote) {
               // On very first note, update the main chord display
-              noteIndicator.updateChord(chordNotes, chord.root, chordData.chordDegrees, chord.borrowed, currentKey);
+              noteIndicator.updateChord(chordNotes, chord.root, chordData.chordDegrees, chord.borrowed, currentKey, chord);
               chordRing.update(chord);
               // Reset manual preview flag when chord changes during playback
               isManualChordPreview = false;
@@ -551,7 +553,7 @@ function createChordEvents(chordsArray, key) {
         notes: chordNotes,
         name: chord.root, // Original prop kept for ref
         onTrigger: () => {
-          noteIndicator.updateChord(chordNotes, chord.root, chordData.chordDegrees, chord.borrowed, currentKey);
+          noteIndicator.updateChord(chordNotes, chord.root, chordData.chordDegrees, chord.borrowed, currentKey, chord);
           chordRing.update(chord);
           // Reset manual preview flag when chord changes during playback
           isManualChordPreview = false;
@@ -640,7 +642,8 @@ async function updatePlaybackSettings() {
         currentChordInfo.root,
         currentChordInfo.degrees,
         currentChordInfo.borrowed,
-        currentKey
+        currentKey,
+        currentChordInfo.chord
       );
       // Also update chord ring if needed
       chordRing.update(currentChordInfo.chord);
