@@ -46,7 +46,7 @@ export function renderControls(container, { onPlayPause, onRestart, onSeek, onSo
     </div>
     <div class="row" id="arp-speed-row">
       <label for="arp-speed" style="font-size:12px;color:#9ca3af;width:60px;">Arp Spd:</label>
-      <input type="range" id="arp-speed" min="20" max="400" value="100" step="10" class="volume-slider">
+      <input type="range" id="arp-speed" min="20" max="1500" value="100" step="10" class="volume-slider">
       <span id="arp-speed-label" style="font-size:12px;color:#9ca3af;width:35px;text-align:right;">100ms</span>
     </div>
   `;
@@ -126,7 +126,12 @@ export function renderControls(container, { onPlayPause, onRestart, onSeek, onSo
 
   arpSpeedSlider.addEventListener("input", (e) => {
     const ms = Number(e.target.value);
-    arpSpeedLabel.textContent = `${ms}ms`;
+    // Display in seconds if >= 1000ms, otherwise in milliseconds
+    if (ms >= 1000) {
+      arpSpeedLabel.textContent = `${(ms / 1000).toFixed(1)}s`;
+    } else {
+      arpSpeedLabel.textContent = `${ms}ms`;
+    }
     onArpeggiateSpeedChange?.(ms);
   });
 

@@ -85,6 +85,9 @@ const controls = renderControls(controlsPane, {
     currentBpm = tempo;
     currentSecondsPerBeat = 60 / tempo;
     engine.setTempo(tempo);
+    // Reschedule events to keep arpeggio speed constant in milliseconds
+    // The arpeggio speed setting (ms) stays the same, but tick offsets are recalculated
+    updatePlaybackSettings();
   },
   onArpeggiateToggle: (enabled) => {
     isArpeggiated = enabled;
@@ -380,11 +383,17 @@ function createChordEvents(chordsArray, key) {
 
     if (isArpeggiated) {
       // Create individual note events
-      // Calculate offset in ticks. Tone.Transport.bpm.value matches currentBpm.
+      // Calculate offset in ticks to keep arpeggio speed constant in real time (milliseconds)
+      // regardless of tempo changes. We calculate ticks based on the current tempo so that
+      // the arpeggio speed in milliseconds stays constant. When tempo changes, events are
+      // rescheduled with new tick offsets calculated at the new tempo, maintaining the same
+      // millisecond duration.
       // 1 Beat = 60/BPM seconds. 1 Tick = 1/192 Beat.
       // TicksPerSecond = (BPM * 192) / 60 = BPM * 3.2
+      // Convert arpeggio speed (ms) to seconds, then to ticks at current tempo
+      const offsetSeconds = arpeggiationSpeed / 1000;
       const ticksPerSecond = currentBpm * 3.2;
-      const offsetTicks = Math.round((arpeggiationSpeed / 1000) * ticksPerSecond);
+      const offsetTicks = Math.round(offsetSeconds * ticksPerSecond);
 
       let currentTick = Math.round(startTick);
       let noteIdx = 0;
@@ -467,6 +476,36 @@ function createChordEvents(chordsArray, key) {
   return events;
 }
 
+// Helper function to find the current chord at a given tick position
+function findCurrentChordAtTick(tickPosition) {
+  if (!currentRawChords || !currentRawChords.length || !currentKey) return null;
+  
+  // Convert tick position to beat (1 tick = 1/192 beat)
+  const currentBeat = (tickPosition / 192) + 1;
+  
+  // Find the chord that should be playing at this beat
+  // A chord is active if currentBeat is >= chord.beat and < chord.beat + chord.duration
+  for (const chord of currentRawChords) {
+    if (chord.isRest) continue;
+    const chordStartBeat = chord.beat;
+    const chordEndBeat = chordStartBeat + chord.duration;
+    
+    if (currentBeat >= chordStartBeat && currentBeat < chordEndBeat) {
+      const chordData = chordInterpreter(chord, currentKey);
+      return {
+        chord,
+        chordData,
+        notes: chordData.notes,
+        root: chord.root,
+        degrees: chordData.chordDegrees,
+        borrowed: chord.borrowed
+      };
+    }
+  }
+  
+  return null;
+}
+
 async function updatePlaybackSettings() {
   if (isLoading || !currentSong) return;
 
@@ -493,6 +532,22 @@ async function updatePlaybackSettings() {
 
   // Restore position
   Tone.Transport.ticks = currentTicks;
+
+  // Update note indicator immediately with current chord (fixes display issue when tempo changes)
+  // This is especially important for arpeggiated chords where the first note might not trigger immediately
+  if (isArpeggiated && currentTicks > 0) {
+    const currentChordInfo = findCurrentChordAtTick(currentTicks);
+    if (currentChordInfo) {
+      noteIndicator.updateChord(
+        currentChordInfo.notes,
+        currentChordInfo.root,
+        currentChordInfo.degrees,
+        currentChordInfo.borrowed
+      );
+      // Also update chord ring if needed
+      chordRing.update(currentChordInfo.chord);
+    }
+  }
 
   if (wasPlaying) {
     engine.play();
