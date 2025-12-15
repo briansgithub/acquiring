@@ -441,6 +441,10 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
     //   Inv 2: [5, 7, 1, 3] -> [5↓, 7, 1↑, 3↑]
     //   Inv 3: [7, 1, 3, 5] -> [7↓, 1↑, 3↑, 5↑]
     
+    // First pass: extract all note info and calculate bass octave
+    const noteInfos = [];
+    let bassOctave = null;
+    
     for (let i = 0; i < numNotes; i++) {
       const sourceIndex = (inversion + i) % numNotes;
       const noteName = toneJSNames[sourceIndex];
@@ -451,22 +455,48 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
       const noteMatch = noteName.match(/^([A-G](?:[#bx]+|[b]+)?)(\d+)$/);
       if (!noteMatch) {
         // Fallback if parsing fails
-        reorderedNotes.push(noteName);
-        reorderedDegreeIndices.push(degreeIdx);
+        noteInfos.push({ noteBase: noteName, octave: baseOctave, degreeIdx });
+        if (i === 0) bassOctave = baseOctave - 1;
         continue;
       }
       
       const [, noteBase, octaveStr] = noteMatch;
-      let octave = parseInt(octaveStr, 10);
+      const octave = parseInt(octaveStr, 10);
       
-      // Bass note (i === 0) moves down an octave, upper notes move up
       if (i === 0) {
-        octave = Math.max(1, octave - 1); // Lower bass note, but not below octave 1
-      } else {
-        octave = octave + 1; // Raise upper notes
+        // Bass note: move down an octave
+        bassOctave = Math.max(1, octave - 1);
       }
       
-      reorderedNotes.push(`${noteBase}${octave}`);
+      noteInfos.push({ noteBase, octave, degreeIdx });
+    }
+    
+    // Second pass: assign octaves ensuring proper voice spacing
+    // Find the highest original octave among upper notes to determine target octave
+    let highestUpperOctave = 0;
+    for (let i = 1; i < numNotes; i++) {
+      if (noteInfos[i].octave > highestUpperOctave) {
+        highestUpperOctave = noteInfos[i].octave;
+      }
+    }
+    
+    // Target octave for all upper notes: use the highest original octave among upper notes
+    // But ensure it's at least one octave above bass
+    const targetUpperOctave = Math.max(highestUpperOctave, bassOctave + 1);
+    
+    for (let i = 0; i < numNotes; i++) {
+      const { noteBase, degreeIdx } = noteInfos[i];
+      
+      let finalOctave;
+      if (i === 0) {
+        // Bass note uses calculated bass octave
+        finalOctave = bassOctave;
+      } else {
+        // All upper notes go to the same target octave
+        finalOctave = targetUpperOctave;
+      }
+      
+      reorderedNotes.push(`${noteBase}${finalOctave}`);
       reorderedDegreeIndices.push(degreeIdx);
     }
     
@@ -608,6 +638,10 @@ function buildChordFromNoteName(rootNoteName, quality, originalKey, baseOctave, 
     const reorderedNotes = [];
     const reorderedDegreeIndices = [];
     
+    // First pass: extract all note info and calculate bass octave
+    const noteInfos = [];
+    let bassOctave = null;
+    
     for (let i = 0; i < numNotes; i++) {
       const sourceIndex = (inversion + i) % numNotes;
       const noteName = toneJSNames[sourceIndex];
@@ -615,28 +649,55 @@ function buildChordFromNoteName(rootNoteName, quality, originalKey, baseOctave, 
       
       const noteMatch = noteName.match(/^([A-G](?:[#bx]+|[b]+)?)(\d+)$/);
       if (!noteMatch) {
-        reorderedNotes.push(noteName);
-        reorderedDegreeIndices.push(degreeIdx);
+        noteInfos.push({ noteBase: noteName, octave: baseOctave, degreeIdx });
+        if (i === 0) bassOctave = baseOctave - 1;
         continue;
       }
       
       const [, noteBase, octaveStr] = noteMatch;
-      let octave = parseInt(octaveStr, 10);
+      const octave = parseInt(octaveStr, 10);
       
       if (i === 0) {
-        octave = Math.max(1, octave - 1);
-      } else {
-        octave = octave + 1;
+        // Bass note: move down an octave
+        bassOctave = Math.max(1, octave - 1);
       }
       
-      reorderedNotes.push(`${noteBase}${octave}`);
+      noteInfos.push({ noteBase, octave, degreeIdx });
+    }
+    
+    // Second pass: assign octaves ensuring proper voice spacing
+    // Find the highest original octave among upper notes to determine target octave
+    let highestUpperOctave = 0;
+    for (let i = 1; i < numNotes; i++) {
+      if (noteInfos[i].octave > highestUpperOctave) {
+        highestUpperOctave = noteInfos[i].octave;
+      }
+    }
+    
+    // Target octave for all upper notes: use the highest original octave among upper notes
+    // But ensure it's at least one octave above bass
+    const targetUpperOctave = Math.max(highestUpperOctave, bassOctave + 1);
+    
+    for (let i = 0; i < numNotes; i++) {
+      const { noteBase, degreeIdx } = noteInfos[i];
+      
+      let finalOctave;
+      if (i === 0) {
+        // Bass note uses calculated bass octave
+        finalOctave = bassOctave;
+      } else {
+        // All upper notes go to the same target octave
+        finalOctave = targetUpperOctave;
+      }
+      
+      reorderedNotes.push(`${noteBase}${finalOctave}`);
       reorderedDegreeIndices.push(degreeIdx);
     }
     
     toneJSNames = reorderedNotes;
     degreeIndices = reorderedDegreeIndices;
   }
-  
+
   // Calculate scale degrees relative to original key
   const baseKeyDegrees = toneJSNames.map((noteName, index) => {
     const degreeIdx = degreeIndices[index];
