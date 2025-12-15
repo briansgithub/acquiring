@@ -68,7 +68,7 @@ function modifierString(sd) {
 
 // Scale degree 1-7 may be modified with #/b, so processing is more than just a lookup table
 // may return negative if flats or above 12 if sharps
-export function scaleDegreeToSpecificInterval(sd, scale) {
+export function scaleDegreeToSpecificInterval(sd, scale, customIntervals = null) {
 /*
   const tonicOffset = NOTE_NAME_TO_INTEGER_NOTATION[key.tonic];
   if (tonicOffset === undefined) {
@@ -94,6 +94,8 @@ export function scaleDegreeToSpecificInterval(sd, scale) {
     scaleSpecificIntervals = MIXOLYDIAN_SCALE_SPECIFIC_INTERVALS;
   } else if (scale === "locrian") {
     scaleSpecificIntervals = LOCRIAN_SCALE_SPECIFIC_INTERVALS;
+  } else if (scale === "custom" && customIntervals) {
+    scaleSpecificIntervals = customIntervals;
   } else {
     throw new Error(`Unsupported scale type: ${scale}`);
   }
@@ -133,7 +135,7 @@ function appendAccidental(label, shift) {
   return label;
 }
 
-function getNoteLabel(sd, key) {
+function getNoteLabel(sd, key, customIntervals = null) {
   const rawDegreeNumber = rawDegree(sd);
   const accidentalShift = modifierValue(sd);
 
@@ -143,7 +145,7 @@ function getNoteLabel(sd, key) {
   } else if (key.scale === "minor") {
     diatonicNames = MINOR_SCALE_LABELS[key.tonic];
   } else {
-    // For other modes, generate labels dynamically
+    // For other modes or custom scales, generate labels dynamically
     let intervals;
     if (key.scale === "dorian") {
       intervals = DORIAN_SCALE_SPECIFIC_INTERVALS;
@@ -155,6 +157,8 @@ function getNoteLabel(sd, key) {
       intervals = MIXOLYDIAN_SCALE_SPECIFIC_INTERVALS;
     } else if (key.scale === "locrian") {
       intervals = LOCRIAN_SCALE_SPECIFIC_INTERVALS;
+    } else if (key.scale === "custom" && customIntervals) {
+      intervals = customIntervals;
     } else {
       throw new Error(`Unsupported scale type: ${key.scale}`);
     }
@@ -166,13 +170,13 @@ function getNoteLabel(sd, key) {
   return retval;
 }
 
-function getAbsoluteOctave(sd, relativeOctave, key, baseOctave) {
+function getAbsoluteOctave(sd, relativeOctave, key, baseOctave, customIntervals = null) {
 
   // We need to use the MODIFIED interval (accounting for accidentals) for accurate semitone calculation
   // The modifier affects both the note label AND the actual pitch/semitone distance
   // For example, "b3" means minor third (3 semitones), not major third (4 semitones)
   const tonicSemitone = NOTE_NAME_TO_INTEGER_NOTATION[key.tonic];
-  const modifiedSD_SpecificInterval = scaleDegreeToSpecificInterval(sd, key.scale);
+  const modifiedSD_SpecificInterval = scaleDegreeToSpecificInterval(sd, key.scale, customIntervals);
   
   /* The note name and octave must be calculated together to properly handle the B--C boundary.
    The B--C boundary is where octaves change in standard notation and Tone.js.
@@ -187,9 +191,9 @@ function getAbsoluteOctave(sd, relativeOctave, key, baseOctave) {
   let octaveOffset = Math.floor((tonicSemitone + modifiedSD_SpecificInterval) / 12);
   
   // Get the note name that will be generated to check for B--C boundary crossing
-  const noteLabel = getNoteLabel(sd, key);
+  const noteLabel = getNoteLabel(sd, key, customIntervals);
   const noteLetter = noteLabel.replace(/[#bx]+/g, "").replace(/b+/g, ""); // Extract base letter (C, D, E, etc.)
-  
+
   // Extract tonic base letter
   const tonicBase = key.tonic.replace(/[#bx]+/g, "").replace(/b+/g, "");
   const noteOrder = ["C", "D", "E", "F", "G", "A", "B"];
@@ -217,12 +221,104 @@ function getAbsoluteOctave(sd, relativeOctave, key, baseOctave) {
   return retval;
 }
 
-export function sdToToneJSNoteName(sd, relOctave, key, baseOctave) {
-  const noteLabel = getNoteLabel(sd, key);
-  const absoluteOctave = getAbsoluteOctave(sd, relOctave, key, baseOctave);
+export function sdToToneJSNoteName(sd, relOctave, key, baseOctave, customIntervals = null) {
+  const noteLabel = getNoteLabel(sd, key, customIntervals);
+  const absoluteOctave = getAbsoluteOctave(sd, relOctave, key, baseOctave, customIntervals);
   return `${noteLabel}${absoluteOctave}`;
 }
 
+
+// Calculate chord quality from custom scale intervals
+// borrowedArray: original array from API
+// degree: scale degree (1-7)
+// Returns chord quality for a given scale degree
+function getChordQualityFromCustomScale(borrowedArray, degree) {
+  // Get normalized intervals [d1, d2, d3, d4, d5, d6, d7] where d1=0 (root)
+  const intervals = getCustomScaleIntervals(borrowedArray);
+  
+  // Get intervals for the triad: root (degree), third (degree+2), fifth (degree+4)
+  // intervals[0] = degree 1, intervals[1] = degree 2, etc.
+  const rootIdx = (degree - 1) % 7; // degree 1 -> index 0, degree 2 -> index 1, etc.
+  const thirdIdx = (degree + 1) % 7; // degree + 2 - 1 (0-indexed), wrapped
+  const fifthIdx = (degree + 3) % 7; // degree + 4 - 1 (0-indexed), wrapped
+  
+  const rootInterval = intervals[rootIdx];
+  let thirdInterval = intervals[thirdIdx];
+  let fifthInterval = intervals[fifthIdx];
+  
+  // Handle octave wrapping for third and fifth
+  if (thirdIdx < rootIdx) thirdInterval += 12;
+  if (fifthIdx < rootIdx) fifthInterval += 12;
+  
+  // Calculate intervals relative to root
+  const thirdSemitones = thirdInterval - rootInterval;
+  const fifthSemitones = fifthInterval - rootInterval;
+  
+  // Determine chord quality based on intervals
+  // Major third = 4 semitones, minor third = 3 semitones
+  // Perfect fifth = 7 semitones, diminished fifth = 6 semitones
+  const isMajorThird = thirdSemitones === 4;
+  const isMinorThird = thirdSemitones === 3;
+  const isPerfectFifth = fifthSemitones === 7;
+  const isDiminishedFifth = fifthSemitones === 6;
+  
+  if (isMajorThird && isPerfectFifth) {
+    return "major";
+  } else if (isMinorThird && isPerfectFifth) {
+    return "minor";
+  } else if (isMinorThird && isDiminishedFifth) {
+    return "diminished";
+  } else {
+    // Fallback: try to determine from third interval
+    return isMajorThird ? "major" : "minor";
+  }
+}
+
+// Generate chord qualities array for all 7 degrees from custom scale intervals
+function generateChordQualitiesFromCustomScale(intervals) {
+  const qualities = [];
+  for (let degree = 1; degree <= 7; degree++) {
+    qualities.push(getChordQualityFromCustomScale(intervals, degree));
+  }
+  return qualities;
+}
+
+// Generate scale-specific intervals from borrowed array
+// Returns array of 7 intervals [d1, d2, d3, d4, d5, d6, d7] where each is semitone interval from root
+// Format matches MAJOR_SCALE_SPECIFIC_INTERVALS = [0, 2, 4, 5, 7, 9, 11]
+function getCustomScaleIntervals(borrowedArray) {
+  if (!borrowedArray || borrowedArray.length === 0) {
+    return [0, 2, 4, 5, 7, 9, 11]; // Default to major scale
+  }
+  
+  // The borrowed array represents intervals from root for degrees 1-7
+  // If the first element is not 0, we normalize by subtracting it
+  // (assuming degree 1 should be at root = 0)
+  const firstValue = borrowedArray[0];
+  const baseOffset = firstValue !== 0 ? firstValue : 0;
+  
+  const intervals = [];
+  for (let i = 0; i < 7; i++) {
+    let interval;
+    if (i < borrowedArray.length) {
+      interval = borrowedArray[i] - baseOffset;
+    } else {
+      // Default: continue pattern from last interval
+      const lastInterval = intervals[intervals.length - 1] ?? 0;
+      interval = (lastInterval + 2) % 12; // Default: whole step
+    }
+    
+    // Normalize negative values
+    if (interval < 0) {
+      interval = 12 + interval;
+    }
+    // Ensure it's within 0-11 range
+    interval = interval % 12;
+    intervals.push(interval);
+  }
+  
+  return intervals; // Returns exactly 7 elements
+}
 
 //chordRootSD is explicitely an int from 1-7 (no modifiers). 
 // it indicates the tonal basis of the chord
@@ -235,49 +331,64 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
 
   // swap out the scale for the borrowed scale
   let {tonic, scale} = key;
+  let customScaleIntervals = null;
+  let scaleChordQualities = null;
 
-  if(borrowed === null) {
+  if(borrowed === null || borrowed === "") {
     scale = key.scale;
-  } else if (borrowed === "major") {
-    scale = "major";
-  } else if (borrowed === "minor") {
-    scale = "minor";
-  } else if (borrowed === "dorian") {
-    scale = "dorian";
-  } else if (borrowed === "phrygian") {
-    scale = "phrygian";
-  } else if (borrowed === "lydian") {
-    scale = "lydian";
-  } else if (borrowed === "mixolydian") {
-    scale = "mixolydian";
-  } else if (borrowed === "locrian") {
-    scale = "locrian";
+  } else if (typeof borrowed === "string") {
+    // Handle string mode names
+    if (borrowed === "major") {
+      scale = "major";
+    } else if (borrowed === "minor") {
+      scale = "minor";
+    } else if (borrowed === "dorian") {
+      scale = "dorian";
+    } else if (borrowed === "phrygian") {
+      scale = "phrygian";
+    } else if (borrowed === "lydian") {
+      scale = "lydian";
+    } else if (borrowed === "mixolydian") {
+      scale = "mixolydian";
+    } else if (borrowed === "locrian") {
+      scale = "locrian";
+    } else {
+      throw new Error(`Unsupported borrowed type: ${borrowed}`);
+    }
+  } else if (Array.isArray(borrowed)) {
+    // Custom scale definition: array of semitone intervals for degrees 1-7
+    customScaleIntervals = getCustomScaleIntervals(borrowed);
+    scaleChordQualities = generateChordQualitiesFromCustomScale(borrowed);
+    // Use a placeholder scale name for custom scales
+    scale = "custom";
   } else {
     throw new Error(`Unsupported borrowed type: ${borrowed}`);
   }
   key = { tonic, scale };
 
-  let scaleChordQualities
-  if (key.scale === "major") {
-    scaleChordQualities = MAJOR_SCALE_CHORD_QUALITIES;
-  } else if (key.scale === "minor") {
-    scaleChordQualities = MINOR_SCALE_CHORD_QUALITIES;
-  } else if (key.scale === "dorian") {
-    scaleChordQualities = DORIAN_SCALE_CHORD_QUALITIES;
-  } else if (key.scale === "phrygian") {
-    scaleChordQualities = PHRYGIAN_SCALE_CHORD_QUALITIES;
-  } else if (key.scale === "lydian") {
-    scaleChordQualities = LYDIAN_SCALE_CHORD_QUALITIES;
-  } else if (key.scale === "mixolydian") {
-    scaleChordQualities = MIXOLYDIAN_SCALE_CHORD_QUALITIES;
-  } else if (key.scale === "locrian") {
-    scaleChordQualities = LOCRIAN_SCALE_CHORD_QUALITIES;
-  } else {
-    throw new Error(`Unsupported scale type: ${key.scale}`);
+  // Get chord qualities
+  if (!scaleChordQualities) {
+    if (key.scale === "major") {
+      scaleChordQualities = MAJOR_SCALE_CHORD_QUALITIES;
+    } else if (key.scale === "minor") {
+      scaleChordQualities = MINOR_SCALE_CHORD_QUALITIES;
+    } else if (key.scale === "dorian") {
+      scaleChordQualities = DORIAN_SCALE_CHORD_QUALITIES;
+    } else if (key.scale === "phrygian") {
+      scaleChordQualities = PHRYGIAN_SCALE_CHORD_QUALITIES;
+    } else if (key.scale === "lydian") {
+      scaleChordQualities = LYDIAN_SCALE_CHORD_QUALITIES;
+    } else if (key.scale === "mixolydian") {
+      scaleChordQualities = MIXOLYDIAN_SCALE_CHORD_QUALITIES;
+    } else if (key.scale === "locrian") {
+      scaleChordQualities = LOCRIAN_SCALE_CHORD_QUALITIES;
+    } else {
+      throw new Error(`Unsupported scale type: ${key.scale}`);
+    }
   }
 
   // This gets the note name based on the NEW (borrowed) key
-  const chordRootNoteName = getNoteLabel(chordRootSD, key);
+  const chordRootNoteName = getNoteLabel(chordRootSD, key, customScaleIntervals);
 
   const chordQuality = scaleChordQualities[chordRootSD - 1];
 
