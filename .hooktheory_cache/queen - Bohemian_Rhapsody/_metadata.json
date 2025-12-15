@@ -1,0 +1,68 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/queen/bohemian-rhapsody",
+  "songTitle": "Bohemian Rhapsody",
+  "artist": "queen",
+  "timestamp": "2025-12-15T05:46:27.652Z",
+  "songIds": [
+    "yvgP-zzAxYq",
+    "YAg--drVgle",
+    "nJmBDdnWxAV",
+    "RzojJBjAoDe",
+    "LAgQ-WwRgyO",
+    "ZOxVlYWZmdq",
+    "WeglYe_vxrY"
+  ],
+  "sectionMapping": {
+    "yvgP-zzAxYq": "Intro",
+    "YAg--drVgle": "Verse",
+    "nJmBDdnWxAV": "Chorus",
+    "RzojJBjAoDe": "Chorus Lead-Out",
+    "LAgQ-WwRgyO": "Bridge",
+    "ZOxVlYWZmdq": "Pre-Outro",
+    "WeglYe_vxrY": "Outro"
+  },
+  "sections": [
+    {
+      "index": 0,
+      "songId": "yvgP-zzAxYq",
+      "sectionName": "Intro",
+      "numericId": 1672937
+    },
+    {
+      "index": 1,
+      "songId": "YAg--drVgle",
+      "sectionName": "Verse",
+      "numericId": 1672956
+    },
+    {
+      "index": 2,
+      "songId": "nJmBDdnWxAV",
+      "sectionName": "Chorus",
+      "numericId": 1672962
+    },
+    {
+      "index": 3,
+      "songId": "RzojJBjAoDe",
+      "sectionName": "Chorus Lead-Out",
+      "numericId": 1595717
+    },
+    {
+      "index": 4,
+      "songId": "LAgQ-WwRgyO",
+      "sectionName": "Bridge",
+      "numericId": 1595712
+    },
+    {
+      "index": 5,
+      "songId": "ZOxVlYWZmdq",
+      "sectionName": "Pre-Outro",
+      "numericId": 1595716
+    },
+    {
+      "index": 6,
+      "songId": "WeglYe_vxrY",
+      "sectionName": "Outro",
+      "numericId": 1584297
+    }
+  ]
+}
