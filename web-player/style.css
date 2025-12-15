@@ -114,9 +114,10 @@ body {
 }
 
 .indicator {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  gap: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
 }
 
 .indicator .card {

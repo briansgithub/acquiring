@@ -4,16 +4,18 @@ import { getChordSymbol } from "../lib/jsonToSymbol.js";
 export function renderNoteIndicator(container, options = {}) {
   container.innerHTML = `
     <h2>Now Playing</h2>
-    <div class="card">
-      <div class="label">Melody</div>
-      <div class="value" id="melody-note">--</div>
-    </div>
-    <div class="card" style="position:relative;">
-      <div class="label">Chord</div>
-      <div class="chord-root" id="chord-root" style="min-height:24px;"></div>
-      <div class="notes-list" id="chord-notes" style="min-height:32px;margin-top:2px;"></div>
-      <div class="notes-list" id="chord-degrees-pills" style="min-height:32px;margin-top:4px;"></div>
-      <div class="chord-borrowed" id="chord-borrowed" style="position:absolute;top:10px;right:10px;font-style:italic;color:#9ca3af;font-size:0.9em;visibility:hidden;"></div>
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 4px;">
+      <div class="card">
+        <div class="label" style="text-align:center;">Melody</div>
+        <div class="value" id="melody-note" style="text-align:center;">--</div>
+      </div>
+      <div class="card" style="position:relative;">
+        <div class="label">Chord</div>
+        <div class="chord-root" id="chord-root" style="min-height:24px;"></div>
+        <div class="notes-list" id="chord-notes" style="min-height:32px;margin-top:2px;"></div>
+        <div class="notes-list" id="chord-degrees-pills" style="min-height:32px;margin-top:4px;"></div>
+        <div class="chord-borrowed" id="chord-borrowed" style="position:absolute;top:10px;right:10px;font-style:italic;color:#9ca3af;font-size:0.9em;visibility:hidden;"></div>
+      </div>
     </div>
   `;
 
