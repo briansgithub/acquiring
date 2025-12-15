@@ -1,0 +1,44 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/scott-joplin/maple-leaf-rag",
+  "songTitle": "Maple Leaf Rag",
+  "artist": "scott-joplin",
+  "timestamp": "2025-12-15T00:08:50.001Z",
+  "songIds": [
+    "nvgy-kVrgkA",
+    "ZbgOR-qQmnY",
+    "yvgPqBwKxYq",
+    "RPxenBQAob_"
+  ],
+  "sectionMapping": {
+    "nvgy-kVrgkA": "Intro",
+    "ZbgOR-qQmnY": "Chorus",
+    "yvgPqBwKxYq": "Bridge",
+    "RPxenBQAob_": "Outro"
+  },
+  "sections": [
+    {
+      "index": 0,
+      "songId": "nvgy-kVrgkA",
+      "sectionName": "Intro",
+      "numericId": 785200
+    },
+    {
+      "index": 1,
+      "songId": "ZbgOR-qQmnY",
+      "sectionName": "Chorus",
+      "numericId": 749422
+    },
+    {
+      "index": 2,
+      "songId": "yvgPqBwKxYq",
+      "sectionName": "Bridge",
+      "numericId": 785201
+    },
+    {
+      "index": 3,
+      "songId": "RPxenBQAob_",
+      "sectionName": "Outro",
+      "numericId": 766313
+    }
+  ]
+}

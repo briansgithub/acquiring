@@ -28,6 +28,8 @@ export class AudioEngine {
     Tone.Transport.position = 0;
     if (this.isSetup) {
       Tone.Transport.cancel(0);
+      // Reset tickId since the scheduled event is now gone
+      this.tickId = null;
     } else {
       this.isSetup = true;
     }
@@ -40,29 +42,35 @@ export class AudioEngine {
     }
   }
 
-  scheduleMelody(notes) {
+  scheduleMelody(events) {
     const Tone = window.Tone;
-    const part = new Tone.Part((time, note) => {
-      if (note.isRest) return;
-      this.melodySynth.triggerAttackRelease(note.name, note.duration, time);
-      note.onTrigger?.();
-    }, notes).start(0);
+    // Events now contain both Attack and Release types
+    const part = new Tone.Part((time, event) => {
+      if (event.type === "attack") {
+        this.melodySynth.triggerAttack(event.name, time);
+        event.onTrigger?.();
+      } else if (event.type === "release") {
+        this.melodySynth.triggerRelease(time);
+      }
+    }, events).start(0);
     this.parts.push(part);
   }
 
-  scheduleChords(chords) {
+  scheduleChords(events) {
     const Tone = window.Tone;
-    const part = new Tone.Part((time, chord) => {
-      if (!chord.notes?.length) return;
-      
-      // Use single PolySynth instance with triggerAttackRelease (matches reference)
-      // This plays all notes simultaneously with proper timing
-      // PolySynth handles voice management automatically
-      this.chordSynth.triggerAttackRelease(chord.notes, chord.duration, time);
-      
-      this.currentChordNotes = chord.notes;
-      chord.onTrigger?.();
-    }, chords).start(0);
+    const part = new Tone.Part((time, event) => {
+      // Logic for explicit Attack/Release
+      if (!event.notes?.length) return;
+
+      if (event.type === "attack") {
+        this.chordSynth.triggerAttack(event.notes, time);
+        this.currentChordNotes = event.notes;
+        event.onTrigger?.();
+      } else if (event.type === "release") {
+        this.chordSynth.triggerRelease(event.notes, time);
+        // Optional: clear currentChordNotes if needed, but not critical
+      }
+    }, events).start(0);
     this.parts.push(part);
   }
 
@@ -75,6 +83,9 @@ export class AudioEngine {
   pause() {
     const Tone = window.Tone;
     Tone.Transport.pause();
+    // Silence all currently playing notes to prevent hanging sounds
+    if (this.melodySynth) this.melodySynth.triggerRelease();
+    if (this.chordSynth) this.chordSynth.releaseAll();
   }
 
   stop() {
@@ -130,5 +141,14 @@ export class AudioEngine {
     const Tone = window.Tone;
     Tone.Transport.bpm.value = bpm;
   }
+
+  previewChord(notes, duration = "8n") {
+    const Tone = window.Tone;
+    if (Tone.context.state !== "running") {
+      Tone.start();
+    }
+    this.chordSynth.triggerAttackRelease(notes, duration);
+  }
 }
+
 

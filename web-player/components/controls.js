@@ -1,4 +1,4 @@
-export function renderControls(container, { onPlayPause, onRestart, onSeek, onSongChange, onSectionChange, onMelodyVolumeChange, onChordVolumeChange, onTempoChange }) {
+export function renderControls(container, { onPlayPause, onRestart, onSeek, onSongChange, onSectionChange, onMelodyVolumeChange, onChordVolumeChange, onTempoChange, onArpeggiateToggle, onArpeggiateSpeedChange }) {
   container.innerHTML = `
     <h2>Controls</h2>
     <div class="row">
@@ -40,6 +40,15 @@ export function renderControls(container, { onPlayPause, onRestart, onSeek, onSo
       <input type="range" id="chord-volume" min="-60" max="0" value="0" step="1" class="volume-slider">
       <span id="chord-volume-label" style="font-size:12px;color:#9ca3af;width:35px;text-align:right;">0dB</span>
     </div>
+    <div class="row" style="margin-top:10px;">
+      <input type="checkbox" id="arpeggiate-toggle" checked style="cursor:pointer;">
+      <label for="arpeggiate-toggle" style="font-size:12px;color:#9ca3af;cursor:pointer;user-select:none;">Arpeggiate Chords</label>
+    </div>
+    <div class="row" id="arp-speed-row">
+      <label for="arp-speed" style="font-size:12px;color:#9ca3af;width:60px;">Arp Spd:</label>
+      <input type="range" id="arp-speed" min="20" max="400" value="100" step="10" class="volume-slider">
+      <span id="arp-speed-label" style="font-size:12px;color:#9ca3af;width:35px;text-align:right;">100ms</span>
+    </div>
   `;
 
   const playBtn = container.querySelector("#play-toggle");
@@ -57,6 +66,10 @@ export function renderControls(container, { onPlayPause, onRestart, onSeek, onSo
   const chordVolumeLabel = container.querySelector("#chord-volume-label");
   const songTitle = container.querySelector("#song-title");
   const songKey = container.querySelector("#song-key");
+  const arpToggle = container.querySelector("#arpeggiate-toggle");
+  const arpSpeedSlider = container.querySelector("#arp-speed");
+  const arpSpeedLabel = container.querySelector("#arp-speed-label");
+  const arpSpeedRow = container.querySelector("#arp-speed-row");
 
   playBtn.addEventListener("click", () => {
     const isPlaying = playBtn.dataset.state === "playing";
@@ -100,9 +113,21 @@ export function renderControls(container, { onPlayPause, onRestart, onSeek, onSo
   tempoSlider.addEventListener("input", (e) => {
     const percentage = Number(e.target.value);
     tempoLabel.textContent = `${percentage}%`;
-    // Convert percentage to BPM: actualBPM = (percentage / 100) * baseTempo
     const actualBpm = (percentage / 100) * baseTempo;
     onTempoChange?.(actualBpm);
+  });
+
+  arpToggle.addEventListener("change", (e) => {
+    const isChecked = e.target.checked;
+    arpSpeedRow.style.opacity = isChecked ? "1" : "0.5";
+    arpSpeedRow.style.pointerEvents = isChecked ? "auto" : "none";
+    onArpeggiateToggle?.(isChecked);
+  });
+
+  arpSpeedSlider.addEventListener("input", (e) => {
+    const ms = Number(e.target.value);
+    arpSpeedLabel.textContent = `${ms}ms`;
+    onArpeggiateSpeedChange?.(ms);
   });
 
   return {

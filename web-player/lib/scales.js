@@ -32,13 +32,13 @@ export const DEFAULT_KEY = { tonic: "C", scale: "major" };
 
 export const MAJOR_SCALE_LABELS = {
   // Naturals
-  C:  ["C", "D", "E", "F", "G", "A", "B"],
-  D:  ["D", "E", "F#", "G", "A", "B", "C#"],
-  E:  ["E", "F#", "G#", "A", "B", "C#", "D#"],
-  F:  ["F", "G", "A", "Bb", "C", "D", "E"],
-  G:  ["G", "A", "B", "C", "D", "E", "F#"],
-  A:  ["A", "B", "C#", "D", "E", "F#", "G#"],
-  B:  ["B", "C#", "D#", "E", "F#", "G#", "A#"],
+  C: ["C", "D", "E", "F", "G", "A", "B"],
+  D: ["D", "E", "F#", "G", "A", "B", "C#"],
+  E: ["E", "F#", "G#", "A", "B", "C#", "D#"],
+  F: ["F", "G", "A", "Bb", "C", "D", "E"],
+  G: ["G", "A", "B", "C", "D", "E", "F#"],
+  A: ["A", "B", "C#", "D", "E", "F#", "G#"],
+  B: ["B", "C#", "D#", "E", "F#", "G#", "A#"],
 
   // Sharps
   "C#": ["C#", "D#", "E#", "F#", "G#", "A#", "B#"],
@@ -61,13 +61,13 @@ export const MAJOR_SCALE_LABELS = {
 
 export const MINOR_SCALE_LABELS = {
   // Naturals
-  C:  ["C", "D", "Eb", "F", "G", "Ab", "Bb"],
-  D:  ["D", "E", "F", "G", "A", "Bb", "C"],
-  E:  ["E", "F#", "G", "A", "B", "C", "D"],
-  F:  ["F", "G", "Ab", "Bb", "C", "Db", "Eb"],
-  G:  ["G", "A", "Bb", "C", "D", "Eb", "F"],
-  A:  ["A", "B", "C", "D", "E", "F", "G"],
-  B:  ["B", "C#", "D", "E", "F#", "G", "A"],
+  C: ["C", "D", "Eb", "F", "G", "Ab", "Bb"],
+  D: ["D", "E", "F", "G", "A", "Bb", "C"],
+  E: ["E", "F#", "G", "A", "B", "C", "D"],
+  F: ["F", "G", "Ab", "Bb", "C", "Db", "Eb"],
+  G: ["G", "A", "Bb", "C", "D", "Eb", "F"],
+  A: ["A", "B", "C", "D", "E", "F", "G"],
+  B: ["B", "C#", "D", "E", "F#", "G", "A"],
 
   // Sharps
   "C#": ["C#", "D#", "E", "F#", "G#", "A", "B"],
@@ -115,3 +115,30 @@ export const TRIAD_DEGREES = {
   minor: [1, "b3", 5],        // Root, minor 3rd, Perfect 5th
   diminished: [1, "b3", "b5"] // Root, minor 3rd, diminished 5th
 };
+
+export const SCALE_DEGREE_COLORS = {
+  1: "#ff0000",
+  2: "#ffb014",
+  3: "#EFE600",
+  4: "#00D300",
+  5: "#4800FF",
+  6: "#B800E5",
+  7: "#FF00CB"
+};
+
+export const ROMAN_NUMERALS_MAJOR = ["I", "ii", "iii", "IV", "V", "vi", "vii°"];
+export const ROMAN_NUMERALS_MINOR = ["i", "ii°", "III", "iv", "v", "VI", "VII"];
+
+
+export function getScaleDegreeColor(degree, scaleType) {
+  // If scale is minor, shift the color mapping to match the relative major
+  // Minor 1 (i) corresponds to Major 6 (vi), so we shift by -2 (or +5)
+  // Mapping: 1->6, 2->7, 3->1, 4->2, 5->3, 6->4, 7->5
+
+  if (scaleType === 'minor') {
+    const majorDegree = ((degree - 3 + 7) % 7) + 1;
+    return SCALE_DEGREE_COLORS[majorDegree];
+  }
+  return SCALE_DEGREE_COLORS[degree];
+}
+

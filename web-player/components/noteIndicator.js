@@ -10,6 +10,7 @@ export function renderNoteIndicator(container) {
       <div class="chord-root" id="chord-root"></div>
       <div class="notes-list" id="chord-notes"></div>
       <div class="chord-degrees" id="chord-degrees"></div>
+      <div class="chord-borrowed" id="chord-borrowed" style="font-style:italic;color:#9ca3af;font-size:0.9em;margin-top:4px;display:none;"></div>
     </div>
   `;
 
@@ -17,6 +18,7 @@ export function renderNoteIndicator(container) {
   const chordRootEl = container.querySelector("#chord-root");
   const chordList = container.querySelector("#chord-notes");
   const chordDegreesEl = container.querySelector("#chord-degrees");
+  const chordBorrowedEl = container.querySelector("#chord-borrowed");
 
   return {
     updateMelody(absoluteLabel, relativeLabel) {
@@ -30,7 +32,7 @@ export function renderNoteIndicator(container) {
         melodyEl.textContent = absoluteLabel || relativeLabel || "--";
       }
     },
-    updateChord(notes, root, chordDegrees) {
+    updateChord(notes, root, chordDegrees, borrowed) {
       // Update root
       if (root) {
         chordRootEl.textContent = root.toString();
@@ -38,7 +40,7 @@ export function renderNoteIndicator(container) {
       } else {
         chordRootEl.style.display = "none";
       }
-      
+
       // Update notes
       chordList.innerHTML = (notes || [])
         .map((n) => `<span class="pill">${n}</span>`)
@@ -46,7 +48,7 @@ export function renderNoteIndicator(container) {
       if (!notes?.length) {
         chordList.innerHTML = '<span style="color:#6b7280;">--</span>';
       }
-      
+
       // Update chord degrees
       if (chordDegrees && chordDegrees.length > 0) {
         chordDegreesEl.textContent = chordDegrees.join("-");
@@ -54,12 +56,34 @@ export function renderNoteIndicator(container) {
       } else {
         chordDegreesEl.style.display = "none";
       }
+
+      // Update borrowed
+      if (borrowed) {
+        chordBorrowedEl.textContent = `(${borrowed})`;
+        chordBorrowedEl.style.display = "block";
+      } else {
+        chordBorrowedEl.style.display = "none";
+      }
+    },
+    highlightNote(note) {
+      // Remove highlight from all pills
+      const pills = chordList.querySelectorAll(".pill");
+      pills.forEach(p => p.classList.remove("highlighted"));
+
+      // Find and highlight the specific note
+      // Note: This matches the exact text content.
+      // If there are duplicate notes (unlikely in a chord set diff), it highlights all.
+      const target = Array.from(pills).find(p => p.textContent === note);
+      if (target) {
+        target.classList.add("highlighted");
+      }
     },
     reset() {
       melodyEl.textContent = "--";
       chordRootEl.style.display = "none";
       chordList.innerHTML = '<span style="color:#6b7280;">--</span>';
       chordDegreesEl.style.display = "none";
+      chordBorrowedEl.style.display = "none";
     },
   };
 }

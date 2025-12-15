@@ -1,0 +1,342 @@
+{
+  "songId": "nLgaKbMEoYp",
+  "numericId": 1027544,
+  "sectionName": "Verse",
+  "songInfo": "500 Miles",
+  "chords": [
+    {
+      "root": 1,
+      "beat": 1,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 1,
+      "beat": 5,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 1,
+      "beat": 9,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 4,
+      "beat": 13,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 5,
+      "beat": 15,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 1,
+      "beat": 17,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    }
+  ],
+  "notes": [
+    {
+      "sd": "3",
+      "octave": -1,
+      "beat": 4,
+      "duration": 0.25,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "4",
+      "octave": -1,
+      "beat": 4.25,
+      "duration": 0.75,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "5",
+      "octave": -1,
+      "beat": 5,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "6",
+      "octave": -1,
+      "beat": 5.5,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "3",
+      "octave": -1,
+      "beat": 8,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "4",
+      "octave": -1,
+      "beat": 8.5,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "5",
+      "octave": -1,
+      "beat": 9,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "5",
+      "octave": -1,
+      "beat": 9.5,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "5",
+      "octave": -1,
+      "beat": 10,
+      "duration": 0.25,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "6",
+      "octave": -1,
+      "beat": 10.25,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "5",
+      "octave": -1,
+      "beat": 10.75,
+      "duration": 0.75,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "3",
+      "octave": -1,
+      "beat": 11.5,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "3",
+      "octave": -1,
+      "beat": 12,
+      "duration": 0.25,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "3",
+      "octave": -1,
+      "beat": 12.25,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "5",
+      "octave": -1,
+      "beat": 12.75,
+      "duration": 0.75,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "5",
+      "octave": -1,
+      "beat": 13.5,
+      "duration": 0.25,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "5",
+      "octave": -1,
+      "beat": 13.75,
+      "duration": 0.75,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "6",
+      "octave": -1,
+      "beat": 14.5,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "5",
+      "octave": -1,
+      "beat": 15,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "2",
+      "octave": -1,
+      "beat": 15.5,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "2",
+      "octave": -1,
+      "beat": 16,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "1",
+      "octave": -1,
+      "beat": 16.5,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "3",
+      "octave": -1,
+      "beat": 17,
+      "duration": 1,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "3",
+      "octave": -1,
+      "beat": 20,
+      "duration": 0.25,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "4",
+      "octave": -1,
+      "beat": 20.25,
+      "duration": 0.75,
+      "isRest": false,
+      "recordingEndBeat": null
+    }
+  ],
+  "metadata": {
+    "version": "2.24.3",
+    "keys": [
+      {
+        "beat": 1,
+        "scale": "major",
+        "tonic": "E"
+      }
+    ],
+    "tempos": [
+      {
+        "beat": 1,
+        "bpm": 135,
+        "swingFactor": 0,
+        "swingBeat": 0.5
+      }
+    ],
+    "meters": [
+      {
+        "beat": 1,
+        "numBeats": 4,
+        "beatUnit": 1
+      }
+    ],
+    "sections": [],
+    "endBeat": 21,
+    "numericId": 1027544
+  },
+  "stringSongId": "nLgaKbMEoYp",
+  "cachedAt": "2025-12-14T23:21:38.926Z"
+}
