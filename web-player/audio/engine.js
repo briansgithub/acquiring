@@ -6,14 +6,15 @@ export class AudioEngine {
     this.melodySynth = new Tone.Synth({
       oscillator: { type: "square" },
       envelope: { attack: 0.05, decay: 0.2, sustain: 0.7, release: 0.5 },
+      volume: -5,
     }).toDestination();
 
     // Use single persistent PolySynth instance (matches reference implementation)
     // Square oscillator for chords (matches melody for consistent timbre)
-    // Volume set to 0dB to match melody volume
+    // Volume set to -5dB to match melody volume
     this.chordSynth = new Tone.PolySynth(Tone.Synth, {
       oscillator: { type: "square" },
-      volume: 0,
+      volume: -5,
     }).toDestination();
 
     this.parts = [];
@@ -26,8 +27,13 @@ export class AudioEngine {
 
   async setupTransport(bpm) {
     const Tone = window.Tone;
+    // Ensure transport is stopped before setting up
+    if (Tone.Transport.state !== "stopped") {
+      Tone.Transport.stop();
+    }
     Tone.Transport.bpm.value = bpm;
     Tone.Transport.position = 0;
+    Tone.Transport.ticks = 0;
     if (this.isSetup) {
       Tone.Transport.cancel(0);
       // Reset tickId since the scheduled event is now gone
@@ -87,7 +93,7 @@ export class AudioEngine {
 
   pause() {
     const Tone = window.Tone;
-    // Cancel all scheduled parts first to prevent any release events from firing
+    // Cancel parts first to prevent any scheduled release events from firing
     // This is critical for arpeggiated chords which have many scheduled release events
     this.cancelAllParts();
     // Release all currently playing notes immediately
@@ -101,26 +107,20 @@ export class AudioEngine {
 
   stop() {
     const Tone = window.Tone;
-    Tone.Transport.stop();
-    Tone.Transport.position = 0;
-    // Cancel all scheduled parts first
+    // Release all notes FIRST while transport is still active (if it was playing)
+    // This prevents notes from getting stuck when stopping during playback
+    this.releaseAllNotes();
+    // Cancel all scheduled parts to prevent any release events from firing
     for (const part of this.parts) {
       part.cancel();
       part.dispose();
     }
     this.parts = [];
-    // Release all notes (don't dispose synths - keep them for next playback)
-    try {
-      if (this.melodySynth && typeof this.melodySynth.triggerRelease === "function") {
-        this.melodySynth.triggerRelease();
-      }
-      if (this.chordSynth && typeof this.chordSynth.releaseAll === "function") {
-        // Release all currently playing chord notes
-        this.chordSynth.releaseAll();
-      }
-    } catch (e) {
-      // Ignore errors if synths are already disposed
-    }
+    // Stop transport and reset position
+    Tone.Transport.stop();
+    Tone.Transport.position = 0;
+    // Release notes again to catch any that might have been triggered between first release and stop
+    this.releaseAllNotes();
     this.currentChordNotes = null;
     this.activeChordNotes.clear();
   }

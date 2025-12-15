@@ -23,12 +23,15 @@ async function handlePlayPause(shouldPlay) {
   if (shouldPlay) {
     // Check if song has ended and needs to be restarted
     // If parts are empty (song ended and stop() was called) or transport is at/past the end
-    // If parts are empty (song ended and stop() was called) or transport is at/past the end
     // Use Ticks for reliable end-of-song check
     const totalTicks = songLength * 192;
+    const wasPaused = Tone.Transport.state === "paused";
+    
     if (engine.parts.length === 0 || Tone.Transport.ticks >= totalTicks) {
       console.log("Restarting song from beginning...");
       // Reset transport position and reschedule parts with current tempo
+      // Release all notes first to prevent stuck notes
+      engine.releaseAllNotes();
       engine.stop();
       currentSecondsPerBeat = 60 / currentBpm;
       const melodyEvents = createMelodyEvents(currentRawNotes, currentKey);
@@ -43,6 +46,12 @@ async function handlePlayPause(shouldPlay) {
       noteIndicator.reset();
       timeline.updateProgress(0);
       setupProgressTracking();
+    } else if (wasPaused && engine.parts.length > 0) {
+      // Parts were canceled during pause, reschedule from current position
+      const currentTicks = Tone.Transport.ticks;
+      engine.rescheduleParts(currentMelodyEvents, currentChordEvents);
+      // Restore position after rescheduling
+      Tone.Transport.ticks = currentTicks;
     }
     await engine.play();
   } else {
@@ -53,6 +62,8 @@ async function handlePlayPause(shouldPlay) {
 const controls = renderControls(controlsPane, {
   onPlayPause: handlePlayPause,
   onRestart: async () => {
+    // Release all notes first to prevent stuck notes when restarting during playback
+    engine.releaseAllNotes();
     engine.stop();
     // Recalculate events with current tempo
     currentSecondsPerBeat = 60 / currentBpm;
@@ -172,6 +183,8 @@ async function init() {
 async function loadSection(songIndex, sectionIndex) {
   if (isLoading) return;
   isLoading = true;
+  // Release all notes first to prevent stuck notes when switching songs/sections during playback
+  engine.releaseAllNotes();
   engine.stop();
 
   const song = library[songIndex];
@@ -238,8 +251,18 @@ async function loadSection(songIndex, sectionIndex) {
     currentChordEvents = chordEvents;
 
     console.log("Scheduling events for new section...");
+    // Ensure transport is fully stopped and reset before scheduling new events
+    // This prevents events from firing immediately when switching songs during playback
     engine.stop();
     await engine.setupTransport(bpm);
+    // Double-check transport is stopped and reset before scheduling
+    // This is critical when switching songs during playback
+    const Tone = window.Tone;
+    if (Tone.Transport.state !== "stopped") {
+      Tone.Transport.stop();
+    }
+    Tone.Transport.position = 0;
+    Tone.Transport.ticks = 0;
     engine.scheduleMelody(melodyEvents);
     engine.scheduleChords(chordEvents);
 
