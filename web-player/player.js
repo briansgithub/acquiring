@@ -258,11 +258,13 @@ async function loadSection(songIndex, sectionIndex) {
     // Double-check transport is stopped and reset before scheduling
     // This is critical when switching songs during playback
     const Tone = window.Tone;
+    // Force stop transport and reset position/ticks to ensure clean state
     if (Tone.Transport.state !== "stopped") {
       Tone.Transport.stop();
     }
     Tone.Transport.position = 0;
     Tone.Transport.ticks = 0;
+    // Ensure transport remains stopped (song should be paused until play is pressed)
     engine.scheduleMelody(melodyEvents);
     engine.scheduleChords(chordEvents);
 
@@ -279,7 +281,10 @@ async function loadSection(songIndex, sectionIndex) {
     controls.setSongKey(key);
     // Update tempo slider to match loaded section's tempo (100% = original tempo)
     controls.setTempo(bpm, originalBpm);
+    // Reset progress to 0 for both controls and timeline
     controls.updateProgress(0);
+    timeline.updateProgress(0);
+    // Ensure play state is reset (paused) - song should be paused until play is pressed
     controls.resetPlayState();
     chordRing.setSongData(currentRawChords, currentKey);
     chordRing.update(null, null, null);
