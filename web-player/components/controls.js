@@ -32,8 +32,8 @@ export function renderControls(container, { onPlayPause, onRestart, onSeek, onSo
     </div>
     <div class="row">
       <label for="melody-volume" style="font-size:12px;color:#9ca3af;width:60px;">Melody:</label>
-      <input type="range" id="melody-volume" min="-60" max="0" value="-5" step="1" class="volume-slider">
-      <span id="melody-volume-label" style="font-size:12px;color:#9ca3af;width:35px;text-align:right;">-5dB</span>
+      <input type="range" id="melody-volume" min="-60" max="0" value="-10" step="1" class="volume-slider">
+      <span id="melody-volume-label" style="font-size:12px;color:#9ca3af;width:35px;text-align:right;">-10dB</span>
     </div>
     <div class="row">
       <label for="chord-volume" style="font-size:12px;color:#9ca3af;width:60px;">Chords:</label>

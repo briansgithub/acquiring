@@ -13,7 +13,7 @@ export class AudioEngine {
     // Square oscillator for chords (matches melody for consistent timbre)
     // Volume set to -5dB to match melody volume
     this.chordSynth = new Tone.PolySynth(Tone.Synth, {
-      oscillator: { type: "square" },
+      oscillator: { type: "sawtooth" },
       volume: -5,
     }).toDestination();
 
