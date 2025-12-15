@@ -92,7 +92,11 @@ const controls = renderControls(controlsPane, {
   },
   onArpeggiateSpeedChange: (speedMs) => {
     arpeggiationSpeed = speedMs;
-    updatePlaybackSettings();
+    // Debounce to prevent rapid re-scheduling/audio glitches
+    if (arpDebounceTimer) clearTimeout(arpDebounceTimer);
+    arpDebounceTimer = setTimeout(() => {
+      updatePlaybackSettings();
+    }, 150);
   },
 });
 const chordRing = renderChordRing(ringPane, {
@@ -131,6 +135,7 @@ let currentKey = null; // Store current key for event recalculation
 let isLoading = false;
 let isArpeggiated = true;
 let arpeggiationSpeed = 100; // ms
+let arpDebounceTimer = null;
 
 init();
 
@@ -356,19 +361,28 @@ function createChordEvents(chordsArray, key) {
       // 1 Beat = 60/BPM seconds. 1 Tick = 1/192 Beat.
       // TicksPerSecond = (BPM * 192) / 60 = BPM * 3.2
       const ticksPerSecond = currentBpm * 3.2;
-      const offsetTicks = (arpeggiationSpeed / 1000) * ticksPerSecond;
+      const offsetTicks = Math.round((arpeggiationSpeed / 1000) * ticksPerSecond);
 
-      let currentTick = startTick;
+      let currentTick = Math.round(startTick);
       let noteIdx = 0;
 
-      // Loop until we run out of time in the chord (with a small buffer to avoid zero-length notes at the end)
-      while (currentTick + 2 < endTick) {
+      // Loop until we run out of time in the chord.
+      // We require a minimum duration (e.g. 10 ticks or ~25ms) to start a new note
+      // to avoid playing extremely short/glitchy "stub" notes at the very end of a chord.
+      const MIN_NOTE_DURATION_TICKS = 10;
+
+      while (currentTick + MIN_NOTE_DURATION_TICKS < endTick) {
         const note = chordNotes[noteIdx % chordNotes.length];
         const noteStart = currentTick;
 
         let noteEnd = currentTick + offsetTicks;
         // Ensure we don't play past the chord's end
         if (noteEnd > endTick) noteEnd = endTick;
+
+        // Double check duration (redundant with while loop but safe)
+        if (noteEnd - noteStart < MIN_NOTE_DURATION_TICKS) {
+          break;
+        }
 
         // Capture closure values
         const isFirstNote = (noteIdx === 0);
@@ -438,6 +452,7 @@ async function updatePlaybackSettings() {
 
   // Stop engine to clear parts
   engine.stop();
+  noteIndicator.reset();
 
   // Re-create events with new settings (arpeggiation)
   const melodyEvents = createMelodyEvents(currentRawNotes, currentKey);
@@ -449,6 +464,9 @@ async function updatePlaybackSettings() {
   await engine.setupTransport(currentBpm);
   engine.scheduleMelody(melodyEvents);
   engine.scheduleChords(chordEvents);
+
+  // Reschedule progress tracking which gets cleared by setupTransport
+  setupProgressTracking();
 
   // Restore position
   Tone.Transport.ticks = currentTicks;
