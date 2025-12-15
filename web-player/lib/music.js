@@ -2,6 +2,11 @@ import {
   NOTE_NAME_TO_INTEGER_NOTATION,
   MAJOR_SCALE_SPECIFIC_INTERVALS,
   MINOR_SCALE_SPECIFIC_INTERVALS,
+  DORIAN_SCALE_SPECIFIC_INTERVALS,
+  PHRYGIAN_SCALE_SPECIFIC_INTERVALS,
+  LYDIAN_SCALE_SPECIFIC_INTERVALS,
+  MIXOLYDIAN_SCALE_SPECIFIC_INTERVALS,
+  LOCRIAN_SCALE_SPECIFIC_INTERVALS,
   DEFAULT_TEMPO,
   DEFAULT_KEY,
   MAJOR_SCALE_LABELS,
@@ -9,6 +14,12 @@ import {
   TRIAD_DEGREES,
   MAJOR_SCALE_CHORD_QUALITIES,
   MINOR_SCALE_CHORD_QUALITIES,
+  DORIAN_SCALE_CHORD_QUALITIES,
+  PHRYGIAN_SCALE_CHORD_QUALITIES,
+  LYDIAN_SCALE_CHORD_QUALITIES,
+  MIXOLYDIAN_SCALE_CHORD_QUALITIES,
+  LOCRIAN_SCALE_CHORD_QUALITIES,
+  generateScaleLabels,
 } from "./scales.js";
 
 
@@ -73,6 +84,16 @@ export function scaleDegreeToSpecificInterval(sd, scale) {
     scaleSpecificIntervals = MAJOR_SCALE_SPECIFIC_INTERVALS;
   } else if (scale === "minor") {
     scaleSpecificIntervals = MINOR_SCALE_SPECIFIC_INTERVALS;
+  } else if (scale === "dorian") {
+    scaleSpecificIntervals = DORIAN_SCALE_SPECIFIC_INTERVALS;
+  } else if (scale === "phrygian") {
+    scaleSpecificIntervals = PHRYGIAN_SCALE_SPECIFIC_INTERVALS;
+  } else if (scale === "lydian") {
+    scaleSpecificIntervals = LYDIAN_SCALE_SPECIFIC_INTERVALS;
+  } else if (scale === "mixolydian") {
+    scaleSpecificIntervals = MIXOLYDIAN_SCALE_SPECIFIC_INTERVALS;
+  } else if (scale === "locrian") {
+    scaleSpecificIntervals = LOCRIAN_SCALE_SPECIFIC_INTERVALS;
   } else {
     throw new Error(`Unsupported scale type: ${scale}`);
   }
@@ -116,14 +137,28 @@ function getNoteLabel(sd, key) {
   const rawDegreeNumber = rawDegree(sd);
   const accidentalShift = modifierValue(sd);
 
-
   let diatonicNames;
   if(key.scale === "major") {
     diatonicNames = MAJOR_SCALE_LABELS[key.tonic];
   } else if (key.scale === "minor") {
     diatonicNames = MINOR_SCALE_LABELS[key.tonic];
   } else {
-    throw new Error(`Unsupported scale type: ${key.scale}`);
+    // For other modes, generate labels dynamically
+    let intervals;
+    if (key.scale === "dorian") {
+      intervals = DORIAN_SCALE_SPECIFIC_INTERVALS;
+    } else if (key.scale === "phrygian") {
+      intervals = PHRYGIAN_SCALE_SPECIFIC_INTERVALS;
+    } else if (key.scale === "lydian") {
+      intervals = LYDIAN_SCALE_SPECIFIC_INTERVALS;
+    } else if (key.scale === "mixolydian") {
+      intervals = MIXOLYDIAN_SCALE_SPECIFIC_INTERVALS;
+    } else if (key.scale === "locrian") {
+      intervals = LOCRIAN_SCALE_SPECIFIC_INTERVALS;
+    } else {
+      throw new Error(`Unsupported scale type: ${key.scale}`);
+    }
+    diatonicNames = generateScaleLabels(key.tonic, intervals);
   }
 
   const baseLabel = diatonicNames[rawDegreeNumber - 1];
@@ -207,6 +242,16 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
     scale = "major";
   } else if (borrowed === "minor") {
     scale = "minor";
+  } else if (borrowed === "dorian") {
+    scale = "dorian";
+  } else if (borrowed === "phrygian") {
+    scale = "phrygian";
+  } else if (borrowed === "lydian") {
+    scale = "lydian";
+  } else if (borrowed === "mixolydian") {
+    scale = "mixolydian";
+  } else if (borrowed === "locrian") {
+    scale = "locrian";
   } else {
     throw new Error(`Unsupported borrowed type: ${borrowed}`);
   }
@@ -217,6 +262,16 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
     scaleChordQualities = MAJOR_SCALE_CHORD_QUALITIES;
   } else if (key.scale === "minor") {
     scaleChordQualities = MINOR_SCALE_CHORD_QUALITIES;
+  } else if (key.scale === "dorian") {
+    scaleChordQualities = DORIAN_SCALE_CHORD_QUALITIES;
+  } else if (key.scale === "phrygian") {
+    scaleChordQualities = PHRYGIAN_SCALE_CHORD_QUALITIES;
+  } else if (key.scale === "lydian") {
+    scaleChordQualities = LYDIAN_SCALE_CHORD_QUALITIES;
+  } else if (key.scale === "mixolydian") {
+    scaleChordQualities = MIXOLYDIAN_SCALE_CHORD_QUALITIES;
+  } else if (key.scale === "locrian") {
+    scaleChordQualities = LOCRIAN_SCALE_CHORD_QUALITIES;
   } else {
     throw new Error(`Unsupported scale type: ${key.scale}`);
   }
