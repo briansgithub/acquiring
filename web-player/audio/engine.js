@@ -20,6 +20,8 @@ export class AudioEngine {
     this.isSetup = false;
     this.tickId = null;
     this.currentChordNotes = null;
+    // Track all currently playing chord notes (important for arpeggiated chords)
+    this.activeChordNotes = new Set();
   }
 
   async setupTransport(bpm) {
@@ -65,10 +67,13 @@ export class AudioEngine {
       if (event.type === "attack") {
         this.chordSynth.triggerAttack(event.notes, time);
         this.currentChordNotes = event.notes;
+        // Track all notes that are currently playing (for arpeggiated chords)
+        event.notes.forEach(note => this.activeChordNotes.add(note));
         event.onTrigger?.();
       } else if (event.type === "release") {
         this.chordSynth.triggerRelease(event.notes, time);
-        // Optional: clear currentChordNotes if needed, but not critical
+        // Remove notes from tracking when they're released
+        event.notes.forEach(note => this.activeChordNotes.delete(note));
       }
     }, events).start(0);
     this.parts.push(part);
@@ -82,10 +87,16 @@ export class AudioEngine {
 
   pause() {
     const Tone = window.Tone;
+    // Cancel all scheduled parts first to prevent any release events from firing
+    // This is critical for arpeggiated chords which have many scheduled release events
+    this.cancelAllParts();
+    // Release all currently playing notes immediately
+    // This prevents arpeggiated chord notes from getting stuck
+    // Call multiple times to ensure all notes are released (some may be in attack phase)
+    this.releaseAllNotes();
+    this.releaseAllNotes(); // Second call to catch any notes that were mid-attack
+    // Pause the transport
     Tone.Transport.pause();
-    // Silence all currently playing notes to prevent hanging sounds
-    if (this.melodySynth) this.melodySynth.triggerRelease();
-    if (this.chordSynth) this.chordSynth.releaseAll();
   }
 
   stop() {
@@ -111,6 +122,7 @@ export class AudioEngine {
       // Ignore errors if synths are already disposed
     }
     this.currentChordNotes = null;
+    this.activeChordNotes.clear();
   }
 
   onTick(callback) {
@@ -148,6 +160,70 @@ export class AudioEngine {
       Tone.start();
     }
     this.chordSynth.triggerAttackRelease(notes, duration);
+  }
+
+  releaseAllNotes() {
+    // Release all currently playing notes (both melody and chords)
+    // This is useful when seeking to prevent notes from getting stuck
+    // Especially important for arpeggiated chords which have many individual notes
+    const Tone = window.Tone;
+    try {
+      // Release melody note immediately
+      if (this.melodySynth && typeof this.melodySynth.triggerRelease === "function") {
+        this.melodySynth.triggerRelease();
+      }
+      // Release all chord notes
+      if (this.chordSynth) {
+        // First try releaseAll() as the primary method
+        if (typeof this.chordSynth.releaseAll === "function") {
+          this.chordSynth.releaseAll();
+        }
+        // Also explicitly release all tracked notes (critical for arpeggiated chords)
+        // This ensures we catch all notes that were individually triggered
+        if (this.activeChordNotes.size > 0) {
+          const notesArray = Array.from(this.activeChordNotes);
+          try {
+            this.chordSynth.triggerRelease(notesArray);
+            // Clear the tracking set after releasing
+            this.activeChordNotes.clear();
+          } catch (e) {
+            // If release fails, still clear the tracking
+            this.activeChordNotes.clear();
+          }
+        }
+      }
+    } catch (e) {
+      // Ignore errors if synths are already disposed or in invalid state
+      console.warn("Error releasing notes:", e);
+    }
+  }
+
+  cancelAllParts() {
+    // Cancel all scheduled parts without disposing them
+    // This prevents scheduled events from firing after seeking
+    for (const part of this.parts) {
+      part.cancel();
+    }
+  }
+
+  rescheduleParts(melodyEvents, chordEvents) {
+    const Tone = window.Tone;
+    // Clear existing parts
+    this.cancelAllParts();
+    for (const part of this.parts) {
+      part.dispose();
+    }
+    this.parts = [];
+    // Clear note tracking when rescheduling
+    this.activeChordNotes.clear();
+    
+    // Reschedule melody and chords
+    if (melodyEvents && melodyEvents.length > 0) {
+      this.scheduleMelody(melodyEvents);
+    }
+    if (chordEvents && chordEvents.length > 0) {
+      this.scheduleChords(chordEvents);
+    }
   }
 }
 

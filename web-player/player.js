@@ -291,8 +291,31 @@ function setupProgressTracking() {
 }
 
 function handleSeek(ratio) {
+  // Store current playback state
+  const wasPlaying = Tone.Transport.state === "started";
+  
+  // CRITICAL: Release all currently playing notes FIRST, before canceling parts
+  // This ensures that any notes currently in their attack/sustain phase are stopped
+  // This is especially important for arpeggiated chords which have many individual note events
+  engine.releaseAllNotes();
+  
+  // Cancel all scheduled parts to prevent events from firing at wrong times
+  engine.cancelAllParts();
+  
+  // Seek to new position
   const seconds = songLength * currentSecondsPerBeat * ratio;
   Tone.Transport.seconds = seconds;
+  
+  // Reschedule parts with current events so they're aligned with the new position
+  if (currentMelodyEvents.length > 0 || currentChordEvents.length > 0) {
+    engine.rescheduleParts(currentMelodyEvents, currentChordEvents);
+  }
+  
+  // If we were playing, make sure transport is still started
+  if (wasPlaying && Tone.Transport.state !== "started") {
+    engine.play();
+  }
+  
   timeline.updateProgress(ratio);
 }
 
