@@ -249,7 +249,7 @@ export function renderChordRing(container, options = {}) {
     ctx.fillStyle = isActive ? "#000" : "#000"; // Can change text color if needed, but black is readable on these cols
     // Scale text with node size
     const fontSize = isActive ? Math.max(16, 22 * zoom) : Math.max(12, 16 * zoom);
-    ctx.font = `${fontSize}px "Times New Roman", Times, serif`;
+    ctx.font = `bold ${fontSize}px "Times New Roman", Times, serif`;
 
     if (subLabel) {
       // Draw label higher

@@ -16,8 +16,15 @@ export function renderTimeline(container, options = {}) {
     let currentProgressRatio = 0;
 
     function resize() {
-        canvas.width = container.clientWidth;
-        canvas.height = container.clientHeight;
+        const dpr = window.devicePixelRatio || 1;
+        const rect = container.getBoundingClientRect();
+        const logicalWidth = rect.width;
+        const logicalHeight = rect.height;
+        
+        canvas.width = logicalWidth * dpr;
+        canvas.height = logicalHeight * dpr;
+        ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform
+        ctx.scale(dpr, dpr);
         draw();
     }
     window.addEventListener("resize", resize);
@@ -53,8 +60,13 @@ export function renderTimeline(container, options = {}) {
 
             // Label
             if (w > 20) { // Only draw if wide enough
+                // Scale font size based on block dimensions
+                // Use the smaller dimension to ensure text fits, but prioritize height for readability
+                const baseFontSize = Math.min(blockHeight * 0.6, w * 0.3);
+                const fontSize = Math.max(16, baseFontSize); // Minimum 16px
+                
                 ctx.fillStyle = "#000";
-                ctx.font = "bold 16px 'Times New Roman', serif";
+                ctx.font = `bold ${fontSize}px 'Times New Roman', serif`;
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 ctx.shadowColor = "rgba(255,255,255,0.5)"; // Light shadow for contrast on dark blocks? Or no shadow?
@@ -66,13 +78,14 @@ export function renderTimeline(container, options = {}) {
                 if (metrics.width < w - 4) {
                     if (chord.borrowed) {
                         // Draw symbol higher
-                        ctx.fillText(symbol, x + w / 2, y + blockHeight / 2 - 8);
+                        ctx.fillText(symbol, x + w / 2, y + blockHeight / 2 - fontSize * 0.3);
                         // Draw borrowed text lower (smaller)
-                        ctx.font = "italic 12px 'Times New Roman', serif";
+                        const borrowedFontSize = fontSize * 0.5;
+                        ctx.font = `italic ${borrowedFontSize}px 'Times New Roman', serif`;
                         // If borrowed is an array (custom scale), show "(borrowed)"
                         // Otherwise show the mode name
                         const borrowedLabel = Array.isArray(chord.borrowed) ? "(borrowed)" : `(${chord.borrowed})`;
-                        ctx.fillText(borrowedLabel, x + w / 2, y + blockHeight / 2 + 10);
+                        ctx.fillText(borrowedLabel, x + w / 2, y + blockHeight / 2 + fontSize * 0.3);
                     } else {
                         ctx.fillText(symbol, x + w / 2, y + blockHeight / 2);
                     }

@@ -444,7 +444,9 @@ function handleSeek(ratio) {
     engine.play();
   }
   
+  // Update both timeline and controls progress bars
   timeline.updateProgress(ratio);
+  controls.updateProgress(ratio);
   // Reset manual preview flag when seeking
   isManualChordPreview = false;
 }
