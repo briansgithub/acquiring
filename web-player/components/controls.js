@@ -32,8 +32,8 @@ export function renderControls(container, { onPlayPause, onRestart, onSeek, onSo
     </div>
     <div class="row">
       <label for="melody-volume" style="font-size:12px;color:#9ca3af;width:60px;">Melody:</label>
-      <input type="range" id="melody-volume" min="-60" max="0" value="-10" step="1" class="volume-slider">
-      <span id="melody-volume-label" style="font-size:12px;color:#9ca3af;width:35px;text-align:right;">-10dB</span>
+      <input type="range" id="melody-volume" min="-60" max="0" value="-11" step="1" class="volume-slider">
+      <span id="melody-volume-label" style="font-size:12px;color:#9ca3af;width:35px;text-align:right;">-11dB</span>
     </div>
     <div class="row">
       <label for="chord-volume" style="font-size:12px;color:#9ca3af;width:60px;">Chords:</label>
@@ -41,7 +41,7 @@ export function renderControls(container, { onPlayPause, onRestart, onSeek, onSo
       <span id="chord-volume-label" style="font-size:12px;color:#9ca3af;width:35px;text-align:right;">-5dB</span>
     </div>
     <div class="row" style="margin-top:10px;">
-      <input type="checkbox" id="arpeggiate-toggle" checked style="cursor:pointer;">
+      <input type="checkbox" id="arpeggiate-toggle" style="cursor:pointer;">
       <label for="arpeggiate-toggle" style="font-size:12px;color:#9ca3af;cursor:pointer;user-select:none;">Arpeggiate Chords</label>
     </div>
     <div class="row" id="arp-speed-row">
