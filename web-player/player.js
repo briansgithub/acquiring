@@ -139,6 +139,17 @@ const controls = renderControls(controlsPane, {
     }, 150);
   },
 });
+
+// Initialize volumes with default slider values
+const melodyVolumeSlider = document.getElementById("melody-volume");
+const chordVolumeSlider = document.getElementById("chord-volume");
+if (melodyVolumeSlider) {
+  engine.setMelodyVolume(Number(melodyVolumeSlider.value));
+}
+if (chordVolumeSlider) {
+  engine.setChordVolume(Number(chordVolumeSlider.value));
+}
+
 const chordRing = renderChordRing(ringPane, {
   onChordClick: (chordData, arpeggiate = false) => {
     isManualChordPreview = true;
