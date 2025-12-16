@@ -372,8 +372,8 @@ async function loadSection(songIndex, sectionIndex) {
     noteIndicator.reset();
     
     // Compute all chord transitions for the entire section
-    const transitions = computeChordTransitions(currentRawChords, currentKey);
-    chordRing.updateTransitions(transitions);
+    const transitionData = computeChordTransitions(currentRawChords, currentKey);
+    chordRing.updateTransitions(transitionData.full, transitionData.rootOnly);
 
     // Update indicator immediately with the first chord if it starts at beat 0 or 1
     // This fixes the issue where the first chord plays but indicator doesn't show until second chord
@@ -750,9 +750,10 @@ function findCurrentMelodyAtTick(tickPosition) {
 // Compute all chord transitions from the chord array
 function computeChordTransitions(chordsArray, key) {
   const transitions = new Map();
+  const rootTransitions = new Map();
   
   if (!chordsArray || !Array.isArray(chordsArray) || chordsArray.length === 0) {
-    return transitions;
+    return { full: transitions, rootOnly: rootTransitions };
   }
   
   // Filter out rests and sort by beat
@@ -761,13 +762,15 @@ function computeChordTransitions(chordsArray, key) {
     .sort((a, b) => a.beat - b.beat);
   
   if (validChords.length < 2) {
-    return transitions; // Need at least 2 chords for a transition
+    return { full: transitions, rootOnly: rootTransitions }; // Need at least 2 chords for a transition
   }
   
   let lastChordSymbol = null;
+  let lastRoot = null;
   
   for (const chord of validChords) {
     const currentChordSymbol = getChordSymbol(chord, key);
+    const currentRoot = chord.root;
     
     // Only count transitions between different chords
     if (lastChordSymbol !== null && lastChordSymbol !== currentChordSymbol) {
@@ -775,10 +778,17 @@ function computeChordTransitions(chordsArray, key) {
       transitions.set(transitionKey, (transitions.get(transitionKey) || 0) + 1);
     }
     
+    // Count root-only transitions (only between different roots)
+    if (lastRoot !== null && lastRoot !== currentRoot) {
+      const rootTransitionKey = `${lastRoot} → ${currentRoot}`;
+      rootTransitions.set(rootTransitionKey, (rootTransitions.get(rootTransitionKey) || 0) + 1);
+    }
+    
     lastChordSymbol = currentChordSymbol;
+    lastRoot = currentRoot;
   }
   
-  return transitions;
+  return { full: transitions, rootOnly: rootTransitions };
 }
 
 // Helper function to find the current chord at a given tick position

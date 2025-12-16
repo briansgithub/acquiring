@@ -132,6 +132,32 @@ export function renderChordRing(container, options = {}) {
   transitionTable.appendChild(tableBody);
   transitionTableOverlay.appendChild(transitionTable);
 
+  // Add checkbox below table for root-only view
+  const rootOnlyCheckboxContainer = document.createElement("div");
+  rootOnlyCheckboxContainer.style.marginTop = "8px";
+  rootOnlyCheckboxContainer.style.paddingTop = "8px";
+  rootOnlyCheckboxContainer.style.borderTop = "1px solid rgba(255, 255, 255, 0.2)";
+  
+  const rootOnlyLabel = document.createElement("label");
+  rootOnlyLabel.style.cssText = "display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;color:#ffffff;font-size:11px;white-space:nowrap;";
+  const rootOnlyCheckbox = document.createElement("input");
+  rootOnlyCheckbox.type = "checkbox";
+  rootOnlyCheckbox.id = "root-only-toggle";
+  rootOnlyCheckbox.checked = false;
+  rootOnlyCheckbox.style.cssText = "cursor:pointer;";
+  const rootOnlySpan = document.createElement("span");
+  rootOnlySpan.textContent = "Root Only";
+  rootOnlyLabel.appendChild(rootOnlyCheckbox);
+  rootOnlyLabel.appendChild(rootOnlySpan);
+  rootOnlyCheckboxContainer.appendChild(rootOnlyLabel);
+  transitionTableOverlay.appendChild(rootOnlyCheckboxContainer);
+
+  // Checkbox change handler
+  rootOnlyCheckbox.addEventListener("change", (e) => {
+    showRootOnlyView = e.target.checked;
+    updateTransitionTable();
+  });
+
 
   // Interaction State
   let panX = 0;
@@ -145,7 +171,9 @@ export function renderChordRing(container, options = {}) {
   // External Data
   let currentKey = { tonic: "C", scale: "major" };
   let useRomanNumerals = options.labelMode !== false; // Default to true (roman numerals)
-  let transitionCounts = new Map(); // Store transition counts
+  let transitionCounts = new Map(); // Store full transition counts
+  let rootOnlyTransitionCounts = new Map(); // Store root-only transition counts
+  let showRootOnlyView = false; // Toggle for root-only view
   
   // Set initial checkbox state
   romanNumeralToggle.checked = useRomanNumerals;
@@ -511,7 +539,10 @@ export function renderChordRing(container, options = {}) {
     const tbody = transitionTable.querySelector("tbody");
     tbody.innerHTML = "";
 
-    if (transitionCounts.size === 0) {
+    // Use root-only view if checkbox is checked, otherwise use full transitions
+    const countsToDisplay = showRootOnlyView ? rootOnlyTransitionCounts : transitionCounts;
+
+    if (countsToDisplay.size === 0) {
       transitionTableOverlay.style.display = "none";
       return;
     }
@@ -519,7 +550,7 @@ export function renderChordRing(container, options = {}) {
     transitionTableOverlay.style.display = "block";
 
     // Convert Map to array and sort by count (highest to lowest)
-    const sortedTransitions = Array.from(transitionCounts.entries())
+    const sortedTransitions = Array.from(countsToDisplay.entries())
       .sort((a, b) => b[1] - a[1]);
 
     sortedTransitions.forEach(([transition, count]) => {
@@ -555,8 +586,9 @@ export function renderChordRing(container, options = {}) {
       draw();
     },
 
-    updateTransitions(transitions) {
-      transitionCounts = transitions;
+    updateTransitions(transitions, rootOnlyTransitions) {
+      transitionCounts = transitions || new Map();
+      rootOnlyTransitionCounts = rootOnlyTransitions || new Map();
       updateTransitionTable();
     },
 
