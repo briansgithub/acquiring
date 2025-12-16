@@ -14,12 +14,14 @@ export function renderTimeline(container, options = {}) {
     let currentKey = { tonic: "C", scale: "major" };
     let songLengthBeats = 1;
     let currentProgressRatio = 0;
+    let logicalWidth = 0;
+    let logicalHeight = 0;
 
     function resize() {
         const dpr = window.devicePixelRatio || 1;
         const rect = container.getBoundingClientRect();
-        const logicalWidth = rect.width;
-        const logicalHeight = rect.height;
+        logicalWidth = rect.width;
+        logicalHeight = rect.height;
         
         canvas.width = logicalWidth * dpr;
         canvas.height = logicalHeight * dpr;
@@ -33,15 +35,15 @@ export function renderTimeline(container, options = {}) {
     setTimeout(resize, 0); // Defer slightly to ensure container has size
 
     function draw() {
-        if (canvas.width === 0 || canvas.height === 0) return;
+        if (logicalWidth === 0 || logicalHeight === 0) return;
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, logicalWidth, logicalHeight);
 
         if (!currentChords.length) return;
 
-        const pixelsPerBeat = canvas.width / songLengthBeats;
-        const blockHeight = canvas.height * 0.8;
-        const y = (canvas.height - blockHeight) / 2;
+        const pixelsPerBeat = logicalWidth / songLengthBeats;
+        const blockHeight = logicalHeight * 0.8;
+        const y = (logicalHeight - blockHeight) / 2;
 
         // Draw Chords
         currentChords.forEach(chord => {
@@ -95,11 +97,11 @@ export function renderTimeline(container, options = {}) {
         });
 
         // Draw Progress Indicator
-        const progressX = currentProgressRatio * canvas.width;
+        const progressX = currentProgressRatio * logicalWidth;
 
         ctx.beginPath();
         ctx.moveTo(progressX, 0);
-        ctx.lineTo(progressX, canvas.height);
+        ctx.lineTo(progressX, logicalHeight);
         ctx.strokeStyle = "#fff";
         ctx.lineWidth = 2;
         ctx.shadowColor = "#000";
