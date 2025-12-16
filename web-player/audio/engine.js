@@ -157,8 +157,13 @@ export class AudioEngine {
   setChordVolume(volume) {
     // Volume in dB, range typically -60 to 0
     // If volume is at minimum (-30), mute by setting to -Infinity
+    const volumeValue = volume <= -30 ? -Infinity : volume;
     if (this.chordSynth) {
-      this.chordSynth.volume.value = volume <= -30 ? -Infinity : volume;
+      this.chordSynth.volume.value = volumeValue;
+    }
+    // Also update preview synth volume so previews match the chord volume slider
+    if (this.previewSynth) {
+      this.previewSynth.volume.value = volumeValue;
     }
   }
 
