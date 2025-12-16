@@ -404,13 +404,33 @@ function buildTriadTones(chordRootNoteName, chordDegrees, baseOctave) {
 }
 
 // Adds the 7th note to make a 4-note chord - modifies toneJSNames and degreeIndices arrays
-function buildTetrachords(toneJSNames, degreeIndices, chordRootNoteName, baseOctave) {
+function addSeventhNote(toneJSNames, degreeIndices, chordRootNoteName, baseOctave) {
   const relativeOctave = 0;
   const rootKey = { tonic: chordRootNoteName, scale: "major" };
   const seventhDegree = "b7";
   const seventhName = sdToToneJSNoteName(seventhDegree, relativeOctave, rootKey, baseOctave);
   toneJSNames.push(seventhName);
   degreeIndices.push(3);
+}
+
+// Applies secondary dominant transformations to chord tones
+// Modifies toneJSNames and degreeIndices arrays if needed for secondary dominant behavior
+function applySecondaryDominant(toneJSNames, degreeIndices, chordRootNoteName, chordQuality, baseOctave) {
+  // Secondary dominants are typically dominant 7th chords (major triad + minor 7th)
+  // If the chord quality is already "major", ensure it functions as a dominant
+  // This function can be extended to handle other secondary dominant transformations
+  
+  // For now, if it's a major chord, we ensure it has dominant characteristics
+  // The 7th note addition is handled separately, so this function focuses on
+  // any additional tone modifications needed for secondary dominant behavior
+  
+  // Secondary dominants typically don't require tone modification beyond
+  // what's already done in buildTriadTones and addSeventhNote
+  // This function serves as a placeholder for future secondary dominant logic
+  // that might modify intervals or add tensions
+  
+  // No modifications needed for basic secondary dominant behavior
+  // The chord tones are already correct from buildTriadTones/addSeventhNote
 }
 
 // Applies inversion to chord tones - modifies toneJSNames and degreeIndices arrays
@@ -550,8 +570,11 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
 
   // Add 7th note if needed (4-note chord)
   if (chordType === 7) {
-    buildTetrachords(toneJSNames, degreeIndices, chordRootNoteName, baseOctave);
+    addSeventhNote(toneJSNames, degreeIndices, chordRootNoteName, baseOctave);
   }
+
+  // Apply secondary dominant transformations
+  applySecondaryDominant(toneJSNames, degreeIndices, chordRootNoteName, chordQuality, baseOctave);
 
   // Apply inversion
   applyInversion(toneJSNames, degreeIndices, inversion, baseOctave);

@@ -4,6 +4,7 @@ import { renderChordRing } from "./components/chordRing.js";
 import { renderNoteIndicator } from "./components/noteIndicator.js";
 import { renderTimeline } from "./components/timeline.js";
 import { chordInterpreter, getSongLength, parseKey, sdToToneJSNoteName } from "./lib/music.js";
+import { getChordSymbol } from "./lib/jsonToSymbol.js";
 
 const Tone = window.Tone;
 
@@ -101,12 +102,12 @@ const controls = renderControls(controlsPane, {
     await engine.setupTransport(currentBpm);
     engine.scheduleMelody(melodyEvents);
     engine.scheduleChords(chordEvents);
-    controls.updateProgress(0);
-    controls.resetPlayState();
-    chordRing.update(null, null, null);
-    noteIndicator.reset();
-    timeline.updateProgress(0);
-    setupProgressTracking();
+      controls.updateProgress(0);
+      controls.resetPlayState();
+      chordRing.update(null, null, null);
+      noteIndicator.reset();
+      timeline.updateProgress(0);
+      setupProgressTracking();
   },
   onSeek: handleSeek,
   onSongChange: handleSongChange,
@@ -351,6 +352,10 @@ async function loadSection(songIndex, sectionIndex) {
     chordRing.update(null, null, null);
     timeline.setSongData(currentRawChords, currentKey, songLength);
     noteIndicator.reset();
+    
+    // Compute all chord transitions for the entire section
+    const transitions = computeChordTransitions(currentRawChords, currentKey);
+    chordRing.updateTransitions(transitions);
 
     // Update indicator immediately with the first chord if it starts at beat 0 or 1
     // This fixes the issue where the first chord plays but indicator doesn't show until second chord
@@ -480,22 +485,22 @@ function handleSeek(ratio) {
     noteIndicator.updateMelody(null, null);
   }
   
-  // Update chord display
-  const currentChordInfo = findCurrentChordAtTick(currentTicks);
-  if (currentChordInfo) {
-    noteIndicator.updateChord(
-      currentChordInfo.notes,
-      currentChordInfo.root,
-      currentChordInfo.degrees,
-      currentChordInfo.borrowed,
-      currentKey,
-      currentChordInfo.chord
-    );
-    chordRing.update(currentChordInfo.chord);
-  } else {
-    noteIndicator.reset();
-    chordRing.update(null);
-  }
+    // Update chord display
+    const currentChordInfo = findCurrentChordAtTick(currentTicks);
+    if (currentChordInfo) {
+      noteIndicator.updateChord(
+        currentChordInfo.notes,
+        currentChordInfo.root,
+        currentChordInfo.degrees,
+        currentChordInfo.borrowed,
+        currentKey,
+        currentChordInfo.chord
+      );
+      chordRing.update(currentChordInfo.chord);
+    } else {
+      noteIndicator.reset();
+      chordRing.update(null);
+    }
   
   // Reschedule parts with current events so they're aligned with the new position
   if (currentMelodyEvents.length > 0 || currentChordEvents.length > 0) {
@@ -722,6 +727,40 @@ function findCurrentMelodyAtTick(tickPosition) {
   }
   
   return null;
+}
+
+// Compute all chord transitions from the chord array
+function computeChordTransitions(chordsArray, key) {
+  const transitions = new Map();
+  
+  if (!chordsArray || !Array.isArray(chordsArray) || chordsArray.length === 0) {
+    return transitions;
+  }
+  
+  // Filter out rests and sort by beat
+  const validChords = chordsArray
+    .filter(c => !c.isRest)
+    .sort((a, b) => a.beat - b.beat);
+  
+  if (validChords.length < 2) {
+    return transitions; // Need at least 2 chords for a transition
+  }
+  
+  let lastChordSymbol = null;
+  
+  for (const chord of validChords) {
+    const currentChordSymbol = getChordSymbol(chord, key);
+    
+    // Only count transitions between different chords
+    if (lastChordSymbol !== null && lastChordSymbol !== currentChordSymbol) {
+      const transitionKey = `${lastChordSymbol} → ${currentChordSymbol}`;
+      transitions.set(transitionKey, (transitions.get(transitionKey) || 0) + 1);
+    }
+    
+    lastChordSymbol = currentChordSymbol;
+  }
+  
+  return transitions;
 }
 
 // Helper function to find the current chord at a given tick position

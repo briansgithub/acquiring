@@ -44,6 +44,67 @@ export function renderChordRing(container, options = {}) {
   
   const romanNumeralToggle = overlay.querySelector("#roman-numeral-toggle-ring");
 
+  // Create transition table overlay at upper right
+  const transitionTableOverlay = document.createElement("div");
+  transitionTableOverlay.id = "transition-table-overlay";
+  transitionTableOverlay.style.position = "absolute";
+  transitionTableOverlay.style.top = "10px";
+  transitionTableOverlay.style.right = "10px";
+  transitionTableOverlay.style.pointerEvents = "auto";
+  transitionTableOverlay.style.zIndex = "10";
+  transitionTableOverlay.style.maxWidth = "300px";
+  transitionTableOverlay.style.maxHeight = "400px";
+  transitionTableOverlay.style.overflowY = "auto";
+  transitionTableOverlay.style.background = "rgba(17, 24, 39, 0.95)";
+  transitionTableOverlay.style.border = "1px solid rgba(255, 255, 255, 0.2)";
+  transitionTableOverlay.style.borderRadius = "8px";
+  transitionTableOverlay.style.padding = "8px";
+  transitionTableOverlay.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.4)";
+  transitionTableOverlay.style.display = "none"; // Hidden by default until transitions exist
+  
+  const tableTitle = document.createElement("div");
+  tableTitle.textContent = "Chord Transitions";
+  tableTitle.style.fontSize = "12px";
+  tableTitle.style.fontWeight = "600";
+  tableTitle.style.color = "#cbd5e1";
+  tableTitle.style.marginBottom = "6px";
+  tableTitle.style.paddingBottom = "4px";
+  tableTitle.style.borderBottom = "1px solid rgba(255, 255, 255, 0.2)";
+  transitionTableOverlay.appendChild(tableTitle);
+  
+  wrapper.appendChild(transitionTableOverlay);
+
+  const transitionTable = document.createElement("table");
+  transitionTable.style.width = "100%";
+  transitionTable.style.borderCollapse = "collapse";
+  transitionTable.style.fontSize = "11px";
+  transitionTable.style.color = "#e5e7eb";
+  
+  const tableHeader = document.createElement("thead");
+  const headerRow = document.createElement("tr");
+  const header1 = document.createElement("th");
+  header1.textContent = "Transition";
+  header1.style.textAlign = "left";
+  header1.style.padding = "4px 8px";
+  header1.style.borderBottom = "1px solid rgba(255, 255, 255, 0.2)";
+  header1.style.color = "#cbd5e1";
+  header1.style.fontWeight = "600";
+  const header2 = document.createElement("th");
+  header2.textContent = "Count";
+  header2.style.textAlign = "right";
+  header2.style.padding = "4px 8px";
+  header2.style.borderBottom = "1px solid rgba(255, 255, 255, 0.2)";
+  header2.style.color = "#cbd5e1";
+  header2.style.fontWeight = "600";
+  headerRow.appendChild(header1);
+  headerRow.appendChild(header2);
+  tableHeader.appendChild(headerRow);
+  transitionTable.appendChild(tableHeader);
+  
+  const tableBody = document.createElement("tbody");
+  transitionTable.appendChild(tableBody);
+  transitionTableOverlay.appendChild(transitionTable);
+
 
   // Interaction State
   let panX = 0;
@@ -57,6 +118,7 @@ export function renderChordRing(container, options = {}) {
   // External Data
   let currentKey = { tonic: "C", scale: "major" };
   let useRomanNumerals = options.labelMode !== false; // Default to true (roman numerals)
+  let transitionCounts = new Map(); // Store transition counts
   
   // Set initial checkbox state
   romanNumeralToggle.checked = useRomanNumerals;
@@ -418,6 +480,43 @@ export function renderChordRing(container, options = {}) {
 
   // --- UPDATE DATA ---
 
+  function updateTransitionTable() {
+    const tbody = transitionTable.querySelector("tbody");
+    tbody.innerHTML = "";
+
+    if (transitionCounts.size === 0) {
+      transitionTableOverlay.style.display = "none";
+      return;
+    }
+
+    transitionTableOverlay.style.display = "block";
+
+    // Convert Map to array and sort by count (highest to lowest)
+    const sortedTransitions = Array.from(transitionCounts.entries())
+      .sort((a, b) => b[1] - a[1]);
+
+    sortedTransitions.forEach(([transition, count]) => {
+      const row = document.createElement("tr");
+      row.style.borderBottom = "1px solid rgba(255, 255, 255, 0.1)";
+      
+      const cell1 = document.createElement("td");
+      cell1.textContent = transition;
+      cell1.style.padding = "4px 8px";
+      cell1.style.fontFamily = '"Times New Roman", Times, serif';
+      
+      const cell2 = document.createElement("td");
+      cell2.textContent = count;
+      cell2.style.textAlign = "right";
+      cell2.style.padding = "4px 8px";
+      cell2.style.fontWeight = "600";
+      cell2.style.color = "#22d3ee";
+      
+      row.appendChild(cell1);
+      row.appendChild(cell2);
+      tbody.appendChild(row);
+    });
+  }
+
   return {
     update(chord) {
       if (!chord) {
@@ -427,6 +526,11 @@ export function renderChordRing(container, options = {}) {
         activeChordSymbol = getChordSymbol(chord, currentKey);
       }
       draw();
+    },
+
+    updateTransitions(transitions) {
+      transitionCounts = transitions;
+      updateTransitionTable();
     },
 
     setLabelMode(useRoman, key) {
