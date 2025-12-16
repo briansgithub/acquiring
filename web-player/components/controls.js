@@ -31,13 +31,13 @@ export function renderControls(container, { onPlayPause, onRestart, onSeek, onSo
       <span id="tempo-label" style="font-size:12px;color:#9ca3af;width:35px;text-align:right;">100%</span>
     </div>
     <div class="row">
-      <label for="melody-volume" style="font-size:12px;color:#9ca3af;width:60px;">Melody:</label>
-      <input type="range" id="melody-volume" min="-60" max="0" value="-11" step="1" class="volume-slider">
+      <label for="melody-volume" style="font-size:12px;color:#9ca3af;width:60px;">Melody volume:</label>
+      <input type="range" id="melody-volume" min="-30" max="0" value="-16" step="1" class="volume-slider">
       <span id="melody-volume-label" style="font-size:12px;color:#9ca3af;width:35px;text-align:right;">-11dB</span>
     </div>
     <div class="row">
-      <label for="chord-volume" style="font-size:12px;color:#9ca3af;width:60px;">Chords:</label>
-      <input type="range" id="chord-volume" min="-60" max="0" value="-5" step="1" class="volume-slider">
+      <label for="chord-volume" style="font-size:12px;color:#9ca3af;width:60px;">Chord volume:</label>
+      <input type="range" id="chord-volume" min="-30" max="0" value="-9" step="1" class="volume-slider">
       <span id="chord-volume-label" style="font-size:12px;color:#9ca3af;width:35px;text-align:right;">-5dB</span>
     </div>
     <div class="row" style="margin-top:10px;">

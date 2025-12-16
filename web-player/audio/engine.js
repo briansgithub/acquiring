@@ -148,15 +148,17 @@ export class AudioEngine {
 
   setMelodyVolume(volume) {
     // Volume in dB, range typically -60 to 0
+    // If volume is at minimum (-30), mute by setting to -Infinity
     if (this.melodySynth) {
-      this.melodySynth.volume.value = volume;
+      this.melodySynth.volume.value = volume <= -30 ? -Infinity : volume;
     }
   }
 
   setChordVolume(volume) {
     // Volume in dB, range typically -60 to 0
+    // If volume is at minimum (-30), mute by setting to -Infinity
     if (this.chordSynth) {
-      this.chordSynth.volume.value = volume;
+      this.chordSynth.volume.value = volume <= -30 ? -Infinity : volume;
     }
   }
 
