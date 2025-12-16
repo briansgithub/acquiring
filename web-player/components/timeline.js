@@ -4,11 +4,39 @@ import { getScaleDegreeColor } from "../lib/scales.js";
 import { getChordSymbol } from "../lib/jsonToSymbol.js";
 
 export function renderTimeline(container, options = {}) {
+    // Set container to flex column layout
+    container.style.display = "flex";
+    container.style.flexDirection = "column";
+    
+    // Create canvas wrapper that takes up available space
+    const canvasWrapper = document.createElement("div");
+    canvasWrapper.style.cssText = "flex: 1; position: relative; min-height: 0;";
+    
     const canvas = document.createElement("canvas");
     canvas.style.width = "100%";
     canvas.style.height = "100%";
-    container.appendChild(canvas);
+    canvasWrapper.appendChild(canvas);
+    container.appendChild(canvasWrapper);
     const ctx = canvas.getContext("2d");
+    
+    // Create checkbox container at the bottom
+    const checkboxContainer = document.createElement("div");
+    checkboxContainer.style.cssText = "display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-top: 1px solid var(--divider, #1f2937); flex-shrink: 0;";
+    
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.id = "timeline-play-chord-checkbox";
+    checkbox.checked = true; // Checked by default
+    checkbox.style.cssText = "cursor: pointer; width: 16px; height: 16px;";
+    
+    const label = document.createElement("label");
+    label.htmlFor = "timeline-play-chord-checkbox";
+    label.textContent = "Play chord tone on click";
+    label.style.cssText = "cursor: pointer; font-size: 12px; color: var(--text, #e5e7eb); user-select: none;";
+    
+    checkboxContainer.appendChild(checkbox);
+    checkboxContainer.appendChild(label);
+    container.appendChild(checkboxContainer);
 
     let currentChords = [];
     let currentKey = { tonic: "C", scale: "major" };
@@ -19,9 +47,9 @@ export function renderTimeline(container, options = {}) {
 
     function resize() {
         const dpr = window.devicePixelRatio || 1;
-        const rect = container.getBoundingClientRect();
-        logicalWidth = rect.width;
-        logicalHeight = rect.height;
+        const canvasRect = canvas.getBoundingClientRect();
+        logicalWidth = canvasRect.width;
+        logicalHeight = canvasRect.height;
         
         canvas.width = logicalWidth * dpr;
         canvas.height = logicalHeight * dpr;
@@ -117,12 +145,36 @@ export function renderTimeline(container, options = {}) {
         ctx.fill();
     }
 
+    // Helper function to find chord at a given beat position
+    function findChordAtBeat(beat) {
+        for (const chord of currentChords) {
+            if (chord.isRest) continue;
+            const chordStartBeat = chord.beat === 0 ? 1 : chord.beat;
+            const chordEndBeat = chordStartBeat + chord.duration;
+            if (beat >= chordStartBeat && beat < chordEndBeat) {
+                return chord;
+            }
+        }
+        return null;
+    }
+
     // Interaction
     canvas.addEventListener("click", e => {
         if (!songLengthBeats) return;
         const rect = canvas.getBoundingClientRect();
         const clickX = e.clientX - rect.left;
         const ratio = Math.max(0, Math.min(1, clickX / rect.width));
+
+        // Calculate the beat position from the click
+        const clickedBeat = ratio * songLengthBeats + 1;
+        
+        // If checkbox is checked, find and play the chord
+        if (checkbox.checked) {
+            const chord = findChordAtBeat(clickedBeat);
+            if (chord && options.onChordClick) {
+                options.onChordClick(chord);
+            }
+        }
 
         if (options.onSeek) {
             options.onSeek(ratio);

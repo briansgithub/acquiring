@@ -159,6 +159,12 @@ export class AudioEngine {
     if (Tone.context.state !== "running") {
       Tone.start();
     }
+    // Stop any currently playing preview chords to allow immediate new previews
+    // This prevents cooldown when clicking rapidly on the timeline
+    // Note: This may briefly interrupt playback chords, but scheduled Parts will retrigger them
+    if (this.chordSynth && typeof this.chordSynth.releaseAll === "function") {
+      this.chordSynth.releaseAll();
+    }
     this.chordSynth.triggerAttackRelease(notes, duration);
   }
 

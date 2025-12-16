@@ -170,7 +170,14 @@ const noteIndicator = renderNoteIndicator(indicatorPane, {
   key: currentKey
 });
 const timeline = renderTimeline(timelinePane, {
-  onSeek: handleSeek
+  onSeek: handleSeek,
+  onChordClick: (chord) => {
+    if (!currentKey) return;
+    const chordData = chordInterpreter(chord, currentKey);
+    if (chordData && chordData.notes && chordData.notes.length > 0) {
+      engine.previewChord(chordData.notes, "4n");
+    }
+  }
 });
 
 // Add keyboard support for spacebar to toggle play/pause
