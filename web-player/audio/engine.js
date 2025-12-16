@@ -16,6 +16,13 @@ export class AudioEngine {
       oscillator: { type: "sawtooth" },
       volume: -5,
     }).toDestination();
+    
+    // Separate synth for previews to avoid conflicts with playback
+    // This allows rapid preview clicks without interfering with scheduled playback
+    this.previewSynth = new Tone.PolySynth(Tone.Synth, {
+      oscillator: { type: "sawtooth" },
+      volume: -5,
+    }).toDestination();
 
     this.parts = [];
     this.isSetup = false;
@@ -23,6 +30,10 @@ export class AudioEngine {
     this.currentChordNotes = null;
     // Track all currently playing chord notes (important for arpeggiated chords)
     this.activeChordNotes = new Set();
+    // Track preview timeout to clear it when starting a new preview
+    this.previewTimeout = null;
+    // Track notes currently playing from previews (to release only those, not playback notes)
+    this.previewNotes = new Set();
   }
 
   async setupTransport(bpm) {
@@ -159,13 +170,20 @@ export class AudioEngine {
     if (Tone.context.state !== "running") {
       Tone.start();
     }
-    // Stop any currently playing preview chords to allow immediate new previews
-    // This prevents cooldown when clicking rapidly on the timeline
-    // Note: This may briefly interrupt playback chords, but scheduled Parts will retrigger them
-    if (this.chordSynth && typeof this.chordSynth.releaseAll === "function") {
-      this.chordSynth.releaseAll();
+    // Clear any pending preview release timeout
+    if (this.previewTimeout) {
+      clearTimeout(this.previewTimeout);
+      this.previewTimeout = null;
     }
-    this.chordSynth.triggerAttackRelease(notes, duration);
+    // Stop any currently playing preview notes using the dedicated preview synth
+    // This allows rapid clicks without any cooldown or interference with playback
+    if (this.previewSynth && typeof this.previewSynth.releaseAll === "function") {
+      this.previewSynth.releaseAll();
+    }
+    // Use the dedicated preview synth for immediate, reliable playback
+    // This synth is separate from playback, so rapid clicks work perfectly
+    const now = Tone.now();
+    this.previewSynth.triggerAttackRelease(notes, duration, now);
   }
 
   previewNote(note, duration = "8n") {

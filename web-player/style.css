@@ -22,7 +22,7 @@ body {
 #app {
   display: grid;
   grid-template-columns: 260px 1fr 280px;
-  grid-template-rows: 120px 1fr;
+  grid-template-rows: 110px 1fr;
   gap: 12px;
   padding: 12px;
   height: 100vh;

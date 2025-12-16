@@ -21,7 +21,7 @@ export function renderTimeline(container, options = {}) {
     
     // Create checkbox container at the bottom
     const checkboxContainer = document.createElement("div");
-    checkboxContainer.style.cssText = "display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-top: 1px solid var(--divider, #1f2937); flex-shrink: 0;";
+    checkboxContainer.style.cssText = "display: flex; align-items: center; gap: 8px; padding: 0px 12px; border-top: 1px solid var(--divider, #1f2937); flex-shrink: 0;";
     
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
