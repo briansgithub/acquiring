@@ -166,7 +166,8 @@ export function renderChordRing(container, options = {}) {
   let isDragging = false;
   let lastMouseX = 0;
   let lastMouseY = 0;
-  let activeChordSymbol = null; // Track currently playing chord
+  let activeChordSymbol = null; // Track currently playing chord symbol
+  let activeChord = null; // Track currently playing chord object
 
   // External Data
   let currentKey = { tonic: "C", scale: "major" };
@@ -214,6 +215,46 @@ export function renderChordRing(container, options = {}) {
     }
   }
 
+  // Helper function to normalize borrowed value for comparison
+  function normalizeBorrowed(borrowed) {
+    if (borrowed === null || borrowed === undefined || borrowed === "") {
+      return null;
+    }
+    if (Array.isArray(borrowed)) {
+      return JSON.stringify(borrowed); // Convert array to string for comparison
+    }
+    if (typeof borrowed === 'string') {
+      return borrowed;
+    }
+    return null;
+  }
+
+  // Helper function to compare two chords for equality (including borrowed property)
+  function chordsMatch(chord1, chord2) {
+    if (!chord1 || !chord2) return false;
+    if (chord1.root !== chord2.root) return false;
+    if (chord1.type !== chord2.type) return false;
+    if (chord1.inversion !== chord2.inversion) return false;
+    if (chord1.applied !== chord2.applied) return false; // Include applied in comparison
+    
+    // Compare borrowed property - normalize first
+    const borrowed1 = normalizeBorrowed(chord1.borrowed);
+    const borrowed2 = normalizeBorrowed(chord2.borrowed);
+    
+    // Both are null (no borrowed)
+    if (borrowed1 === null && borrowed2 === null) {
+      return true;
+    }
+    
+    // One is null, other is not - they don't match
+    if (borrowed1 === null || borrowed2 === null) {
+      return false;
+    }
+    
+    // Both have borrowed values - compare them
+    return borrowed1 === borrowed2;
+  }
+
   function resize() {
     canvas.width = container.clientWidth;
     canvas.height = container.clientHeight;
@@ -253,16 +294,17 @@ export function renderChordRing(container, options = {}) {
     const chords = currentGroupedChords[degree] || [];
 
     // Separate Exact Diatonic Match vs Variants
-    // For exactDiatonic, prioritize non-borrowed chords (borrowed chords should be variants)
+    // For exactDiatonic, ONLY use non-borrowed chords (borrowed chords should always be variants)
     const exactDiatonic = chords.find(c => 
       c.symbol === expectedDiatonicLabel && 
       (!c.chord.borrowed || c.chord.borrowed === "" || c.chord.borrowed === null)
-    ) || chords.find(c => c.symbol === expectedDiatonicLabel); // Fallback to any match if no non-borrowed found
-    
-    const variants = chords.filter(c => 
-      c.symbol !== expectedDiatonicLabel || 
-      (c.chord.borrowed && c.chord.borrowed !== "" && c.chord.borrowed !== null)
     );
+    
+    // Variants include: chords with different symbols OR borrowed chords (even if symbol matches)
+    const variants = chords.filter(c => {
+      const isBorrowed = c.chord.borrowed && c.chord.borrowed !== "" && c.chord.borrowed !== null;
+      return c.symbol !== expectedDiatonicLabel || isBorrowed;
+    });
 
     // 1. Draw Diatonic Slot (Inner Ring)
     const diatonicDist = DIATONIC_RING_RADIUS * zoom;
@@ -273,7 +315,7 @@ export function renderChordRing(container, options = {}) {
     const color = getScaleDegreeColor(degree, currentKey.scale);
 
     if (exactDiatonic) {
-      const isActive = activeChordSymbol === exactDiatonic.symbol;
+      const isActive = activeChord && chordsMatch(activeChord, exactDiatonic.chord);
       let subLabel = null;
       const chord = exactDiatonic.chord;
       if (chord && chord.borrowed !== undefined && chord.borrowed !== null && chord.borrowed !== "") {
@@ -299,7 +341,7 @@ export function renderChordRing(container, options = {}) {
       const dist = (DIATONIC_RING_RADIUS + VARIANT_SPACING * (idx + 1)) * zoom;
       const vx = centerX + dist * Math.cos(angle);
       const vy = centerY + dist * Math.sin(angle);
-      const isActive = activeChordSymbol === v.symbol;
+      const isActive = activeChord && chordsMatch(activeChord, v.chord);
 
       let subLabel = null;
       const chord = v.chord;
@@ -460,7 +502,7 @@ export function renderChordRing(container, options = {}) {
   function checkClick(mx, my) {
     const centerX = canvas.width / 2 + panX;
     const centerY = canvas.height / 2 + panY;
-    const nodeRadius = NODE_RADIUS * zoom;
+    const baseNodeRadius = NODE_RADIUS * zoom;
 
     const diatonicLabels = getRomanNumeralsForScale(currentKey.scale);
 
@@ -469,15 +511,47 @@ export function renderChordRing(container, options = {}) {
       const degreeChords = currentGroupedChords[i] || [];
       const expectedDiatonicLabel = diatonicLabels[i - 1];
 
-      const exactDiatonic = degreeChords.find(c => c.symbol === expectedDiatonicLabel);
-      const variants = degreeChords.filter(c => c.symbol !== expectedDiatonicLabel);
+      // Use the same logic as drawScaleDegreeNodes to separate exactDiatonic and variants
+      const exactDiatonic = degreeChords.find(c => 
+        c.symbol === expectedDiatonicLabel && 
+        (!c.chord.borrowed || c.chord.borrowed === "" || c.chord.borrowed === null)
+      );
+      
+      const variants = degreeChords.filter(c => {
+        const isBorrowed = c.chord.borrowed && c.chord.borrowed !== "" && c.chord.borrowed !== null;
+        return c.symbol !== expectedDiatonicLabel || isBorrowed;
+      });
 
-      // Check Diatonic/Placeholder Node
+      // Check Variants first (they're on outer rings, so check them before inner ring to avoid conflicts)
+      for (let vIdx = 0; vIdx < variants.length; vIdx++) {
+        const v = variants[vIdx];
+        const vDist = (DIATONIC_RING_RADIUS + VARIANT_SPACING * (vIdx + 1)) * zoom;
+        const vx = centerX + vDist * Math.cos(angle);
+        const vy = centerY + vDist * Math.sin(angle);
+        
+        // Use effective radius (larger if active)
+        const isActive = activeChord && chordsMatch(activeChord, v.chord);
+        const effectiveRadius = isActive ? baseNodeRadius * 1.3 : baseNodeRadius;
+
+        if (Math.hypot(mx - vx, my - vy) <= effectiveRadius) {
+          playChord(v.chord);
+          return;
+        }
+      }
+
+      // Check Diatonic/Placeholder Node (check after variants to avoid conflicts)
       const dDist = DIATONIC_RING_RADIUS * zoom;
       const dx = centerX + dDist * Math.cos(angle);
       const dy = centerY + dDist * Math.sin(angle);
+      
+      // Use effective radius (larger if active)
+      let effectiveRadius = baseNodeRadius;
+      if (exactDiatonic) {
+        const isActive = activeChord && chordsMatch(activeChord, exactDiatonic.chord);
+        effectiveRadius = isActive ? baseNodeRadius * 1.3 : baseNodeRadius;
+      }
 
-      if (Math.hypot(mx - dx, my - dy) <= nodeRadius) {
+      if (Math.hypot(mx - dx, my - dy) <= effectiveRadius) {
         // Clicked Inner Node
         if (exactDiatonic) {
           playChord(exactDiatonic.chord);
@@ -485,19 +559,6 @@ export function renderChordRing(container, options = {}) {
           playDiatonicTriad(i);
         }
         return;
-      }
-
-      // Check Variants
-      for (let vIdx = 0; vIdx < variants.length; vIdx++) {
-        const v = variants[vIdx];
-        const vDist = (DIATONIC_RING_RADIUS + VARIANT_SPACING * (vIdx + 1)) * zoom;
-        const vx = centerX + vDist * Math.cos(angle);
-        const vy = centerY + vDist * Math.sin(angle);
-
-        if (Math.hypot(mx - vx, my - vy) <= nodeRadius) {
-          playChord(v.chord);
-          return;
-        }
       }
     }
   }
@@ -579,9 +640,11 @@ export function renderChordRing(container, options = {}) {
     update(chord) {
       if (!chord) {
         activeChordSymbol = null;
+        activeChord = null;
       } else {
-        // Calculate symbol for the active chord
+        // Store both symbol and chord object for accurate matching
         activeChordSymbol = getChordSymbol(chord, currentKey);
+        activeChord = chord;
       }
       draw();
     },
