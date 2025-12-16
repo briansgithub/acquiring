@@ -25,7 +25,7 @@ export function renderChordRing(container, options = {}) {
   wrapper.appendChild(canvas);
   const ctx = canvas.getContext("2d");
   
-  // Create overlay div for checkbox at bottom
+  // Create overlay div for checkboxes at bottom
   const overlay = document.createElement("div");
   overlay.style.position = "absolute";
   overlay.style.bottom = "10px";
@@ -34,15 +34,42 @@ export function renderChordRing(container, options = {}) {
   overlay.style.pointerEvents = "auto";
   overlay.style.zIndex = "10";
   overlay.style.textAlign = "center";
-  overlay.innerHTML = `
-    <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;color:#ffffff;font-size:12px;white-space:nowrap;">
-      <input type="checkbox" id="roman-numeral-toggle-ring" checked style="cursor:pointer;">
-      <span>Roman Numerals</span>
-    </label>
-  `;
+  overlay.style.display = "flex";
+  overlay.style.flexDirection = "column";
+  overlay.style.gap = "8px";
+  overlay.style.alignItems = "center";
+  
+  // Roman numerals checkbox
+  const romanLabel = document.createElement("label");
+  romanLabel.style.cssText = "display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;color:#ffffff;font-size:12px;white-space:nowrap;";
+  const romanCheckbox = document.createElement("input");
+  romanCheckbox.type = "checkbox";
+  romanCheckbox.id = "roman-numeral-toggle-ring";
+  romanCheckbox.checked = true;
+  romanCheckbox.style.cssText = "cursor:pointer;";
+  const romanSpan = document.createElement("span");
+  romanSpan.textContent = "Roman Numerals";
+  romanLabel.appendChild(romanCheckbox);
+  romanLabel.appendChild(romanSpan);
+  overlay.appendChild(romanLabel);
+  
+  // Arpeggiate checkbox
+  const arpLabel = document.createElement("label");
+  arpLabel.style.cssText = "display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;color:#ffffff;font-size:12px;white-space:nowrap;";
+  const arpCheckbox = document.createElement("input");
+  arpCheckbox.type = "checkbox";
+  arpCheckbox.id = "arpeggiate-toggle-ring";
+  arpCheckbox.checked = false; // Off by default
+  arpCheckbox.style.cssText = "cursor:pointer;";
+  const arpSpan = document.createElement("span");
+  arpSpan.textContent = "Arpeggiate";
+  arpLabel.appendChild(arpCheckbox);
+  arpLabel.appendChild(arpSpan);
+  overlay.appendChild(arpLabel);
+  
   wrapper.appendChild(overlay);
   
-  const romanNumeralToggle = overlay.querySelector("#roman-numeral-toggle-ring");
+  const romanNumeralToggle = romanCheckbox;
 
   // Create transition table overlay at upper right
   const transitionTableOverlay = document.createElement("div");
@@ -456,7 +483,7 @@ export function renderChordRing(container, options = {}) {
         root: degree,
         chordDegrees: triadData.chordDegrees,
         borrowed: null
-      });
+      }, arpCheckbox.checked);
     }
   }
 
@@ -473,7 +500,7 @@ export function renderChordRing(container, options = {}) {
         chordDegrees: chordData.chordDegrees,
         borrowed: borrowed,
         chord: chordObj
-      });
+      }, arpCheckbox.checked);
     }
   }
 

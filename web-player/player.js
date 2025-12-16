@@ -140,9 +140,9 @@ const controls = renderControls(controlsPane, {
   },
 });
 const chordRing = renderChordRing(ringPane, {
-  onChordClick: (chordData) => {
+  onChordClick: (chordData, arpeggiate = false) => {
     isManualChordPreview = true;
-    engine.previewChord(chordData.notes, "4n");
+    engine.previewChord(chordData.notes, "4n", arpeggiate);
     noteIndicator.updateChord(chordData.notes, chordData.root, chordData.chordDegrees, chordData.borrowed, currentKey, chordData.chord);
   },
   labelMode: useRomanNumerals,
@@ -171,11 +171,11 @@ const noteIndicator = renderNoteIndicator(indicatorPane, {
 });
 const timeline = renderTimeline(timelinePane, {
   onSeek: handleSeek,
-  onChordClick: (chord) => {
+  onChordClick: (chord, arpeggiate = false) => {
     if (!currentKey) return;
     const chordData = chordInterpreter(chord, currentKey);
     if (chordData && chordData.notes && chordData.notes.length > 0) {
-      engine.previewChord(chordData.notes, "4n");
+      engine.previewChord(chordData.notes, "4n", arpeggiate);
     }
   }
 });

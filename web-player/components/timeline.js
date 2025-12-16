@@ -21,7 +21,7 @@ export function renderTimeline(container, options = {}) {
     
     // Create checkbox container at the bottom
     const checkboxContainer = document.createElement("div");
-    checkboxContainer.style.cssText = "display: flex; align-items: center; gap: 8px; padding: 0px 12px; border-top: 1px solid var(--divider, #1f2937); flex-shrink: 0;";
+    checkboxContainer.style.cssText = "display: flex; align-items: center; gap: 12px; padding: 0px 12px; border-top: 1px solid var(--divider, #1f2937); flex-shrink: 0;";
     
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
@@ -34,8 +34,43 @@ export function renderTimeline(container, options = {}) {
     label.textContent = "Play chord tone on click";
     label.style.cssText = "cursor: pointer; font-size: 12px; color: var(--text, #e5e7eb); user-select: none;";
     
+    const arpCheckbox = document.createElement("input");
+    arpCheckbox.type = "checkbox";
+    arpCheckbox.id = "timeline-arpeggiate-checkbox";
+    arpCheckbox.checked = false; // Off by default
+    arpCheckbox.disabled = false; // Will be updated based on play checkbox
+    arpCheckbox.style.cssText = "cursor: pointer; width: 16px; height: 16px;";
+    
+    const arpLabel = document.createElement("label");
+    arpLabel.htmlFor = "timeline-arpeggiate-checkbox";
+    arpLabel.textContent = "Arpeggiate";
+    arpLabel.style.cssText = "cursor: pointer; font-size: 12px; color: var(--text, #e5e7eb); user-select: none;";
+    
+    // Update arpeggiate checkbox state based on play checkbox
+    function updateArpCheckboxState() {
+        arpCheckbox.disabled = !checkbox.checked;
+        if (!checkbox.checked) {
+            arpCheckbox.checked = false;
+        }
+        // Update label color to show disabled state
+        if (arpCheckbox.disabled) {
+            arpLabel.style.color = "var(--muted, #9ca3af)";
+            arpLabel.style.cursor = "not-allowed";
+            arpCheckbox.style.cursor = "not-allowed";
+        } else {
+            arpLabel.style.color = "var(--text, #e5e7eb)";
+            arpLabel.style.cursor = "pointer";
+            arpCheckbox.style.cursor = "pointer";
+        }
+    }
+    
+    checkbox.addEventListener("change", updateArpCheckboxState);
+    updateArpCheckboxState(); // Set initial state
+    
     checkboxContainer.appendChild(checkbox);
     checkboxContainer.appendChild(label);
+    checkboxContainer.appendChild(arpCheckbox);
+    checkboxContainer.appendChild(arpLabel);
     container.appendChild(checkboxContainer);
 
     let currentChords = [];
@@ -172,7 +207,7 @@ export function renderTimeline(container, options = {}) {
         if (checkbox.checked) {
             const chord = findChordAtBeat(clickedBeat);
             if (chord && options.onChordClick) {
-                options.onChordClick(chord);
+                options.onChordClick(chord, arpCheckbox.checked);
             }
         }
 

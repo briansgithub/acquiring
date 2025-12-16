@@ -165,7 +165,7 @@ export class AudioEngine {
     Tone.Transport.bpm.value = bpm;
   }
 
-  previewChord(notes, duration = "8n") {
+  previewChord(notes, duration = "8n", arpeggiate = false) {
     const Tone = window.Tone;
     if (Tone.context.state !== "running") {
       Tone.start();
@@ -180,10 +180,24 @@ export class AudioEngine {
     if (this.previewSynth && typeof this.previewSynth.releaseAll === "function") {
       this.previewSynth.releaseAll();
     }
-    // Use the dedicated preview synth for immediate, reliable playback
-    // This synth is separate from playback, so rapid clicks work perfectly
-    const now = Tone.now();
-    this.previewSynth.triggerAttackRelease(notes, duration, now);
+    
+    if (arpeggiate && notes.length > 1) {
+      // Arpeggiate: play notes sequentially
+      const durationSeconds = Tone.Time(duration).toSeconds();
+      const noteDurationSeconds = durationSeconds / notes.length; // Each note gets equal time
+      const now = Tone.now();
+      
+      notes.forEach((note, index) => {
+        const noteStartTime = now + (index * noteDurationSeconds);
+        // Convert seconds back to Tone.js time notation
+        const noteDuration = noteDurationSeconds + "s";
+        this.previewSynth.triggerAttackRelease(note, noteDuration, noteStartTime);
+      });
+    } else {
+      // Block chord: play all notes simultaneously
+      const now = Tone.now();
+      this.previewSynth.triggerAttackRelease(notes, duration, now);
+    }
   }
 
   previewNote(note, duration = "8n") {
