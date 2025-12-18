@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rootToDiatonicTriad Test GUI</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --accent: #22d3ee;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --divider: #1f2937;
+      --success: #10b981;
+      --error: #ef4444;
+      --warning: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 20% 20%, #0b1224, #050814 60%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 20px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--divider);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .panel h2 {
+      margin: 0 0 20px;
+      font-size: 20px;
+      letter-spacing: 0.3px;
+      color: var(--accent);
+      border-bottom: 2px solid var(--divider);
+      padding-bottom: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--divider);
+      background: #0b1324;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.1);
+    }
+
+    .form-group small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    button {
+      flex: 1;
+      background: var(--accent);
+      color: #0b1324;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(34, 211, 238, 0.35);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button.secondary {
+      background: var(--divider);
+      color: var(--text);
+    }
+
+    button.secondary:hover {
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .results {
+      background: var(--panel);
+      border: 1px solid var(--divider);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .result-section {
+      margin-bottom: 25px;
+      padding-bottom: 25px;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .result-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .result-section h3 {
+      margin: 0 0 15px;
+      font-size: 16px;
+      color: var(--accent);
+    }
+
+    .result-item {
+      margin-bottom: 12px;
+    }
+
+    .result-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .result-value {
+      font-size: 16px;
+      color: var(--text);
+      font-family: 'Courier New', monospace;
+      background: #0b1324;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid var(--divider);
+      word-break: break-all;
+    }
+
+    .result-value.success {
+      color: var(--success);
+      border-color: var(--success);
+    }
+
+    .result-value.error {
+      color: var(--error);
+      border-color: var(--error);
+    }
+
+    .notes-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .note-badge {
+      background: var(--accent);
+      color: #0b1324;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 14px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .error-message {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid var(--error);
+      color: var(--error);
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+    }
+
+    .helper-functions {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--divider);
+    }
+
+    .helper-functions h3 {
+      margin: 0 0 15px;
+      font-size: 14px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .helper-result {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .json-display {
+      background: #0b1324;
+      border: 1px solid var(--divider);
+      border-radius: 6px;
+      padding: 15px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: var(--text);
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .test-cases-panel {
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .test-case-item {
+      background: #0b1324;
+      border: 1px solid var(--divider);
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .test-case-item:hover {
+      border-color: var(--accent);
+      background: rgba(34, 211, 238, 0.05);
+    }
+
+    .test-case-item h4 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .test-case-item .params {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: 'Courier New', monospace;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--divider);
+    }
+
+    .tab {
+      padding: 10px 20px;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: color 0.2s ease;
+    }
+
+    .tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @media (max-width: 1024px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="panel">
+      <h2>Test Parameters</h2>
+      
+      <div class="tabs">
+        <button class="tab active" data-tab="manual">Manual Input</button>
+        <button class="tab" data-tab="test-cases">Test Cases</button>
+      </div>
+
+      <div class="tab-content active" id="manual-tab">
+        <form id="test-form">
+          <div class="form-group">
+            <label for="chordRootSD">Chord Root Scale Degree</label>
+            <input type="number" id="chordRootSD" name="chordRootSD" min="1" max="7" value="1" required>
+            <small>Scale degree 1-7 (no modifiers)</small>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="tonic">Tonic</label>
+              <select id="tonic" name="tonic" required>
+                <option value="C">C</option>
+                <option value="C#">C#</option>
+                <option value="Db">Db</option>
+                <option value="D">D</option>
+                <option value="D#">D#</option>
+                <option value="Eb">Eb</option>
+                <option value="E">E</option>
+                <option value="F">F</option>
+                <option value="F#">F#</option>
+                <option value="Gb">Gb</option>
+                <option value="G">G</option>
+                <option value="G#">G#</option>
+                <option value="Ab">Ab</option>
+                <option value="A">A</option>
+                <option value="A#">A#</option>
+                <option value="Bb">Bb</option>
+                <option value="B">B</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="scale">Scale</label>
+              <select id="scale" name="scale" required>
+                <option value="major">Major</option>
+                <option value="minor">Minor</option>
+                <option value="dorian">Dorian</option>
+                <option value="phrygian">Phrygian</option>
+                <option value="lydian">Lydian</option>
+                <option value="mixolydian">Mixolydian</option>
+                <option value="locrian">Locrian</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="baseOctave">Base Octave</label>
+            <input type="number" id="baseOctave" name="baseOctave" min="0" max="8" value="3" required>
+            <small>Base octave for note generation (0-8)</small>
+          </div>
+
+          <div class="form-group">
+            <label for="borrowed">Borrowed Scale</label>
+            <select id="borrowed" name="borrowed">
+              <option value="">None (use key's native scale)</option>
+              <option value="major">Major</option>
+              <option value="minor">Minor</option>
+              <option value="dorian">Dorian</option>
+              <option value="phrygian">Phrygian</option>
+              <option value="lydian">Lydian</option>
+              <option value="mixolydian">Mixolydian</option>
+              <option value="locrian">Locrian</option>
+              <option value="custom">Custom (array)</option>
+            </select>
+            <small>Mode borrowing or custom scale</small>
+          </div>
+
+          <div class="form-group" id="custom-intervals-group" style="display: none;">
+            <label for="customIntervals">Custom Scale Intervals</label>
+            <input type="text" id="customIntervals" name="customIntervals" placeholder="[0, 2, 4, 5, 7, 9, 11]">
+            <small>Array of 7 semitone intervals (e.g., [0, 2, 4, 5, 7, 9, 11] for major)</small>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="chordType">Chord Type</label>
+              <select id="chordType" name="chordType" required>
+                <option value="5">Triad (5)</option>
+                <option value="7">Dominant 7th (7)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="inversion">Inversion</label>
+              <select id="inversion" name="inversion" required>
+                <option value="0">Root Position (0)</option>
+                <option value="1">First Inversion (1)</option>
+                <option value="2">Second Inversion (2)</option>
+                <option value="3">Third Inversion (3)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="button-group">
+            <button type="submit">Test Function</button>
+            <button type="button" class="secondary" id="reset-btn">Reset</button>
+          </div>
+        </form>
+
+        <div class="helper-functions">
+          <h3>Helper Functions</h3>
+          <div class="button-group">
+            <button type="button" class="secondary" id="test-helpers-btn">Test Helpers</button>
+          </div>
+          <div id="helper-results"></div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="test-cases-tab">
+        <div class="test-cases-panel">
+          <div id="test-cases-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="results">
+      <h2>Results</h2>
+      <div id="results-content">
+        <p style="color: var(--muted);">Enter parameters and click "Test Function" to see results.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Check if running via file:// protocol (won't work due to CORS)
+    if (window.location.protocol === 'file:') {
+      document.body.innerHTML = `
+        <div style="padding: 40px; text-align: center; color: var(--text); font-family: system-ui, sans-serif;">
+          <h1 style="color: var(--error);">⚠️ Server Required</h1>
+          <p style="font-size: 18px; margin: 20px 0;">
+            This test GUI must be served through a web server due to ES module CORS restrictions.
+          </p>
+          <p style="margin: 20px 0;">
+            Please run: <code style="background: var(--panel); padding: 8px 16px; border-radius: 6px; display: inline-block;">node test_server.js</code>
+          </p>
+          <p style="margin: 20px 0;">
+            Then open <code style="background: var(--panel); padding: 8px 16px; border-radius: 6px; display: inline-block;">http://localhost:3001</code> in your browser.
+          </p>
+        </div>
+      `;
+    }
+  </script>
+  <script type="module">
+    // Import paths work when served through test_server.js
+    import { rootToDiatonicTriad, getNoteLabel, scaleDegreeToSpecificInterval, sdToToneJSNoteName } from '/web-player/lib/music.js';
+    import { testCases } from '/test_cases_rootToDiatonicTriad.js';
+
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabName = tab.dataset.tab;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(`${tabName}-tab`).classList.add('active');
+      });
+    });
+
+    // Custom intervals toggle
+    document.getElementById('borrowed').addEventListener('change', (e) => {
+      const customGroup = document.getElementById('custom-intervals-group');
+      customGroup.style.display = e.target.value === 'custom' ? 'block' : 'none';
+    });
+
+    // Reset button
+    document.getElementById('reset-btn').addEventListener('click', () => {
+      document.getElementById('test-form').reset();
+      document.getElementById('chordRootSD').value = 1;
+      document.getElementById('baseOctave').value = 3;
+      document.getElementById('custom-intervals-group').style.display = 'none';
+      document.getElementById('results-content').innerHTML = '<p style="color: var(--muted);">Enter parameters and click "Test Function" to see results.</p>';
+      document.getElementById('helper-results').innerHTML = '';
+    });
+
+    // Load test cases
+    function loadTestCases() {
+      const list = document.getElementById('test-cases-list');
+      list.innerHTML = '';
+      
+      testCases.forEach((testCase, index) => {
+        const item = document.createElement('div');
+        item.className = 'test-case-item';
+        item.innerHTML = `
+          <h4>${testCase.description || `Test Case ${index + 1}`}</h4>
+          <div class="params">
+            SD: ${testCase.chordRootSD} | Key: ${testCase.key.tonic} ${testCase.key.scale} | 
+            Octave: ${testCase.baseOctave} | Type: ${testCase.chordType} | Inversion: ${testCase.inversion}
+            ${testCase.borrowed ? `| Borrowed: ${typeof testCase.borrowed === 'string' ? testCase.borrowed : 'custom'}` : ''}
+          </div>
+        `;
+        item.addEventListener('click', () => {
+          loadTestCase(testCase);
+          document.querySelectorAll('.tab').forEach(t => {
+            if (t.dataset.tab === 'manual') {
+              t.click();
+            }
+          });
+        });
+        list.appendChild(item);
+      });
+    }
+
+    function loadTestCase(testCase) {
+      document.getElementById('chordRootSD').value = testCase.chordRootSD;
+      document.getElementById('tonic').value = testCase.key.tonic;
+      document.getElementById('scale').value = testCase.key.scale;
+      document.getElementById('baseOctave').value = testCase.baseOctave;
+      document.getElementById('chordType').value = testCase.chordType;
+      document.getElementById('inversion').value = testCase.inversion;
+      
+      if (testCase.borrowed === null || testCase.borrowed === undefined) {
+        document.getElementById('borrowed').value = '';
+        document.getElementById('custom-intervals-group').style.display = 'none';
+      } else if (Array.isArray(testCase.borrowed)) {
+        document.getElementById('borrowed').value = 'custom';
+        document.getElementById('customIntervals').value = JSON.stringify(testCase.borrowed);
+        document.getElementById('custom-intervals-group').style.display = 'block';
+      } else {
+        document.getElementById('borrowed').value = testCase.borrowed;
+        document.getElementById('custom-intervals-group').style.display = 'none';
+      }
+      
+      // Auto-submit
+      setTimeout(() => {
+        document.getElementById('test-form').dispatchEvent(new Event('submit'));
+      }, 100);
+    }
+
+    // Test helpers button
+    document.getElementById('test-helpers-btn').addEventListener('click', () => {
+      const formData = getFormData();
+      if (!formData) return;
+      
+      const { chordRootSD, key, baseOctave } = formData;
+      const helperResults = document.getElementById('helper-results');
+      
+      try {
+        const noteLabel = getNoteLabel(chordRootSD, key);
+        const specificInterval = scaleDegreeToSpecificInterval(chordRootSD, key.scale);
+        const toneJSNote = sdToToneJSNoteName(chordRootSD, 0, key, baseOctave);
+        
+        helperResults.innerHTML = `
+          <div class="helper-result">getNoteLabel(${chordRootSD}, ${JSON.stringify(key)}) = <strong>${noteLabel}</strong></div>
+          <div class="helper-result">scaleDegreeToSpecificInterval(${chordRootSD}, "${key.scale}") = <strong>${specificInterval}</strong></div>
+          <div class="helper-result">sdToToneJSNoteName(${chordRootSD}, 0, ${JSON.stringify(key)}, ${baseOctave}) = <strong>${toneJSNote}</strong></div>
+        `;
+      } catch (error) {
+        helperResults.innerHTML = `<div class="error-message">Error: ${error.message}</div>`;
+      }
+    });
+
+    function getFormData() {
+      const form = document.getElementById('test-form');
+      const formData = new FormData(form);
+      
+      const chordRootSD = parseInt(formData.get('chordRootSD'));
+      const tonic = formData.get('tonic');
+      const scale = formData.get('scale');
+      const baseOctave = parseInt(formData.get('baseOctave'));
+      const chordType = parseInt(formData.get('chordType'));
+      const inversion = parseInt(formData.get('inversion'));
+      
+      let borrowed = formData.get('borrowed');
+      if (borrowed === '') {
+        borrowed = null;
+      } else if (borrowed === 'custom') {
+        const customIntervals = formData.get('customIntervals');
+        try {
+          borrowed = JSON.parse(customIntervals);
+          if (!Array.isArray(borrowed) || borrowed.length !== 7) {
+            throw new Error('Custom intervals must be an array of 7 numbers');
+          }
+        } catch (e) {
+          alert(`Invalid custom intervals: ${e.message}`);
+          return null;
+        }
+      }
+      
+      const key = { tonic, scale };
+      
+      return { chordRootSD, key, baseOctave, borrowed, chordType, inversion };
+    }
+
+    // Form submission
+    document.getElementById('test-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const formData = getFormData();
+      if (!formData) return;
+      
+      const { chordRootSD, key, baseOctave, borrowed, chordType, inversion } = formData;
+      const resultsContent = document.getElementById('results-content');
+      
+      try {
+        const result = rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed, chordType, inversion);
+        
+        resultsContent.innerHTML = `
+          <div class="result-section">
+            <h3>Function Result</h3>
+            <div class="result-item">
+              <div class="result-label">Notes (Tone.js format)</div>
+              <div class="notes-list">
+                ${result.notes.map(note => `<span class="note-badge">${note}</span>`).join('')}
+              </div>
+            </div>
+            <div class="result-item">
+              <div class="result-label">Chord Degrees (relative to original key)</div>
+              <div class="result-value success">[${result.chordDegrees.join(', ')}]</div>
+            </div>
+          </div>
+          
+          <div class="result-section">
+            <h3>Input Parameters</h3>
+            <div class="result-item">
+              <div class="result-label">Chord Root Scale Degree</div>
+              <div class="result-value">${chordRootSD}</div>
+            </div>
+            <div class="result-item">
+              <div class="result-label">Key</div>
+              <div class="result-value">${key.tonic} ${key.scale}</div>
+            </div>
+            <div class="result-item">
+              <div class="result-label">Base Octave</div>
+              <div class="result-value">${baseOctave}</div>
+            </div>
+            <div class="result-item">
+              <div class="result-label">Borrowed</div>
+              <div class="result-value">${borrowed === null ? 'null' : (typeof borrowed === 'string' ? borrowed : JSON.stringify(borrowed))}</div>
+            </div>
+            <div class="result-item">
+              <div class="result-label">Chord Type</div>
+              <div class="result-value">${chordType === 5 ? 'Triad (5)' : 'Dominant 7th (7)'}</div>
+            </div>
+            <div class="result-item">
+              <div class="result-label">Inversion</div>
+              <div class="result-value">${inversion === 0 ? 'Root Position' : `Inversion ${inversion}`}</div>
+            </div>
+          </div>
+          
+          <div class="result-section">
+            <h3>Full Result Object (JSON)</h3>
+            <div class="json-display">${JSON.stringify(result, null, 2)}</div>
+          </div>
+        `;
+      } catch (error) {
+        resultsContent.innerHTML = `
+          <div class="error-message">
+            <strong>Error:</strong> ${error.message}
+            <br><br>
+            <strong>Stack:</strong><br>
+            ${error.stack}
+          </div>
+        `;
+      }
+    });
+
+    // Load test cases on page load
+    loadTestCases();
+  </script>
+</body>
+</html>
