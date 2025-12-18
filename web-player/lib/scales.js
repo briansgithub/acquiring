@@ -166,9 +166,10 @@ export const LOCRIAN_SCALE_CHORD_QUALITIES = [
 
 // Triad degree patterns
 export const TRIAD_DEGREES = {
-  major: [1, 3, 5],           // Root, Major 3rd, Perfect 5th
-  minor: [1, "b3", 5],        // Root, minor 3rd, Perfect 5th
-  diminished: [1, "b3", "b5"] // Root, minor 3rd, diminished 5th
+  major: [1, 3, 5],             // Root, Major 3rd, Perfect 5th
+  minor: [1, "b3", 5],          // Root, minor 3rd, Perfect 5th
+  diminished: [1, "b3", "b5"],  // Root, minor 3rd, diminished 5th
+  augmented: [1, 3, "#5"]       // Root, Major 3rd, Augmented 5th
 };
 
 export const SCALE_DEGREE_COLORS = {
