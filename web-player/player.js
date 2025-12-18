@@ -184,9 +184,11 @@ const timeline = renderTimeline(timelinePane, {
   onSeek: handleSeek,
   onChordClick: (chord, arpeggiate = false) => {
     if (!currentKey) return;
+    isManualChordPreview = true;
     const chordData = chordInterpreter(chord, currentKey);
     if (chordData && chordData.notes && chordData.notes.length > 0) {
       engine.previewChord(chordData.notes, "4n", arpeggiate);
+      noteIndicator.updateChord(chordData.notes, chord.root, chordData.chordDegrees, chord.borrowed, currentKey, chord);
     }
   }
 });
