@@ -1,0 +1,16 @@
+{
+  "name": "rootToDiatonicTriad-tests",
+  "version": "1.0.0",
+  "description": "Test and debug utilities for rootToDiatonicTriad function",
+  "type": "module",
+  "main": "test_rootToDiatonicTriad.js",
+  "scripts": {
+    "test": "node test_rootToDiatonicTriad.js",
+    "test:all": "node test_rootToDiatonicTriad.js",
+    "test:scenarios": "node test_rootToDiatonicTriad.js --scenarios",
+    "test:single": "node test_rootToDiatonicTriad.js --single",
+    "gui": "node test_server.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
