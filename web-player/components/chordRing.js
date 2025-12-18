@@ -11,7 +11,7 @@ import {
   getScaleDegreeColor 
 } from "../lib/scales.js";
 import { getChordSymbol, getChordLetterName } from "../lib/jsonToSymbol.js";
-import { rootToDiatonicTriad, getNoteLabel } from "../lib/music.js";
+import { rootToDiatonicTriad, getNoteLabel, chordInterpreter } from "../lib/music.js";
 
 export function renderChordRing(container, options = {}) {
   // Create wrapper for canvas and overlay controls
@@ -577,17 +577,14 @@ export function renderChordRing(container, options = {}) {
   }
 
   function playChord(chordObj) {
-    // Use chordInterpreter from music.js which handles chord types (including 7th chords) and inversions
-    const borrowed = chordObj.borrowed || null;
-    const chordType = chordObj.type || 5; // Default to triad if type not specified
-    const inversion = chordObj.inversion || 0; // Default to root position if inversion not specified
-    const chordData = rootToDiatonicTriad(chordObj.root, currentKey, 3, borrowed, chordType, inversion);
+    // Use chordInterpreter from music.js which handles chord types (including 7th chords), inversions, and applied chords
+    const chordData = chordInterpreter(chordObj, currentKey);
     if (options.onChordClick) {
       options.onChordClick({
         notes: chordData.notes,
         root: chordObj.root,
         chordDegrees: chordData.chordDegrees,
-        borrowed: borrowed,
+        borrowed: chordObj.borrowed || null,
         chord: chordObj
       }, arpCheckbox.checked);
     }
