@@ -397,6 +397,12 @@ function buildTriadTones(chordRootNoteName, chordDegrees, baseOctave) {
   const thirdName = sdToToneJSNoteName(chordDegrees[1], relativeOctave, rootKey, baseOctave);
   const fifthName = sdToToneJSNoteName(chordDegrees[2], relativeOctave, rootKey, baseOctave);
 
+  console.log("buildTriadTones", {
+    firstName,
+    thirdName,
+    fifthName
+  });
+
   return {
     toneJSNames: [firstName, thirdName, fifthName],
     degreeIndices: [0, 1, 2]
@@ -435,78 +441,38 @@ function applySecondaryDominant(toneJSNames, degreeIndices, chordRootNoteName, c
 
 // Applies inversion to chord tones - modifies toneJSNames and degreeIndices arrays
 function applyInversion(toneJSNames, degreeIndices, inversion, baseOctave) {
-  if (inversion === 0) {
-    return; // No inversion needed
-  }
+  // If no inversion is needed, exit early
+  if (!inversion || inversion <= 0) return;
 
-  const numNotes = toneJSNames.length;
-  const reorderedNotes = [];
-  const reorderedDegreeIndices = [];
+  // Loop exactly 'inversion' times
+  for (let i = 0; i < inversion; i++) {
+    // 1. Rotate the degree index
+    // Take the first element and move it to the back
+    const movedDegreeIndex = degreeIndices.shift();
+    degreeIndices.push(movedDegreeIndex);
 
-  // First pass: extract all note info and calculate bass octave
-  const noteInfos = [];
-  let bassOctave = null;
+    // 2. Rotate and modify the Note Name
+    const note = toneJSNames.shift();
 
-  for (let i = 0; i < numNotes; i++) {
-    const sourceIndex = (inversion + i) % numNotes;
-    const noteName = toneJSNames[sourceIndex];
-    const degreeIdx = degreeIndices[sourceIndex];
+    // specific regex to capture pitch (Group 1) and octave (Group 2)
+    // e.g. "C#4" -> "C#" and "4", or "Bbb3" -> "Bbb" and "3"
+    const match = note.match(/^([^\d]+)(-?\d+)$/);
 
-    // Extract note name and octave
-    // Tone.js format: "C4", "C#4", "Bb4", "F##4", "Bbb4", etc.
-    const noteMatch = noteName.match(/^([A-G](?:[#bx]+|[b]+)?)(\d+)$/);
-    if (!noteMatch) {
-      // Fallback if parsing fails
-      noteInfos.push({ noteBase: noteName, octave: baseOctave, degreeIdx });
-      if (i === 0) bassOctave = baseOctave - 1;
-      continue;
-    }
-
-    const [, noteBase, octaveStr] = noteMatch;
-    const octave = parseInt(octaveStr, 10);
-
-    if (i === 0) {
-      // Bass note: move down an octave
-      bassOctave = Math.max(1, octave - 1);
-    }
-
-    noteInfos.push({ noteBase, octave, degreeIdx });
-  }
-
-  // Second pass: assign octaves ensuring proper voice spacing
-  // Find the highest original octave among upper notes to determine target octave
-  let highestUpperOctave = 0;
-  for (let i = 1; i < numNotes; i++) {
-    if (noteInfos[i].octave > highestUpperOctave) {
-      highestUpperOctave = noteInfos[i].octave;
-    }
-  }
-
-  // Target octave for all upper notes: use the highest original octave among upper notes
-  // But ensure it's at least one octave above bass
-  const targetUpperOctave = Math.max(highestUpperOctave, bassOctave + 1);
-
-  for (let i = 0; i < numNotes; i++) {
-    const { noteBase, degreeIdx } = noteInfos[i];
-
-    let finalOctave;
-    if (i === 0) {
-      // Bass note uses calculated bass octave
-      finalOctave = bassOctave;
+    if (match) {
+      const pitchClass = match[1]; // The note name (e.g., C, F#, Bb)
+      const currentOctave = parseInt(match[2], 10);
+      
+      // Increment the octave
+      const newOctave = currentOctave + 1;
+      
+      // Reconstruct the note and push to the end of the array
+      toneJSNames.push(`${pitchClass}${newOctave}`);
     } else {
-      // All upper notes go to the same target octave
-      finalOctave = targetUpperOctave;
+      // Fallback: If for some reason the note format is invalid, just rotate it
+      console.warn("applyInversion: Invalid note format encountered", note);
+      toneJSNames.push(note);
     }
-
-    reorderedNotes.push(`${noteBase}${finalOctave}`);
-    reorderedDegreeIndices.push(degreeIdx);
   }
-
-  // Replace original arrays with reordered ones
-  toneJSNames.length = 0;
-  toneJSNames.push(...reorderedNotes);
-  degreeIndices.length = 0;
-  degreeIndices.push(...reorderedDegreeIndices);
 }
 
 // Calculates scale degrees relative to original key (label logic)
@@ -567,6 +533,8 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
 
   // Build triad tones (3-note chord)
   const { toneJSNames, degreeIndices } = buildTriadTones(chordRootNoteName, chordDegrees, baseOctave);
+  console.log("toneJSNames", JSON.stringify(toneJSNames));
+  console.log("degreeIndices", JSON.stringify(degreeIndices));
 
   // Add 7th note if needed (4-note chord)
   if (chordType === 7) {
@@ -578,6 +546,8 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
 
   // Apply inversion
   applyInversion(toneJSNames, degreeIndices, inversion, baseOctave);
+  console.log("toneJSNames", JSON.stringify(toneJSNames));
+  console.log("degreeIndices", JSON.stringify(degreeIndices));
 
   // Calculate scale degrees relative to original key (label logic)
   const baseKeyDegrees = calculateScaleDegrees(
