@@ -3,8 +3,8 @@
  * Tests the specific song: Guns N' Roses - Sweet Child O' Mine
  */
 
-const { findAllSongIdsFromPage } = require('../lib/scraper/pageScraper');
-const { fetchSongData } = require('../lib/api/hooktheoryApi');
+const { findAllSongIdsFromPage } = require('../../../lib/scraper/pageScraper');
+const { fetchSongData } = require('../../../lib/api/hooktheoryApi');
 const https = require('https');
 
 const TEST_URL = 'https://www.hooktheory.com/theorytab/view/guns-n-roses/sweet-child-o-mine';
@@ -134,7 +134,7 @@ async function runTests() {
       console.log('Testing data extraction');
       console.log('='.repeat(80));
       try {
-        const { extractChordAndMelodyObjects } = require('../lib/extractor/dataExtractor');
+        const { extractChordAndMelodyObjects } = require('../../../lib/extractor/dataExtractor');
         const extracted = extractChordAndMelodyObjects(apiResponse);
         console.log(`✓ Extraction successful!`);
       } catch (extractError) {
