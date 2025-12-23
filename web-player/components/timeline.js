@@ -95,6 +95,8 @@ export function renderTimeline(container, options = {}) {
     let currentProgressRatio = 0;
     let logicalWidth = 0;
     let logicalHeight = 0;
+    let firstBeat = 1;
+    let numBeats = 4; // Default to 4/4 time
 
     function resize() {
         const dpr = window.devicePixelRatio || 1;
@@ -121,14 +123,15 @@ export function renderTimeline(container, options = {}) {
         if (!currentChords.length) return;
 
         const pixelsPerBeat = logicalWidth / songLengthBeats;
-        const blockHeight = logicalHeight * 0.8;
-        const y = (logicalHeight - blockHeight) / 2;
+        const axisHeight = 18; // Space reserved for axis below rectangles
+        const blockHeight = (logicalHeight - axisHeight) * 0.8;
+        const y = (logicalHeight - axisHeight - blockHeight) / 2;
 
         // Draw Chords
         currentChords.forEach(chord => {
             if (chord.isRest) return;
 
-            const x = (chord.beat - 1) * pixelsPerBeat;
+            const x = (chord.beat - firstBeat) * pixelsPerBeat;
             const w = chord.duration * pixelsPerBeat;
 
             ctx.fillStyle = getScaleDegreeColor(chord.root, currentKey.scale) || "#888";
@@ -175,6 +178,59 @@ export function renderTimeline(container, options = {}) {
             }
         });
 
+        // Draw Beat Axis
+        const axisY = y + blockHeight + 4; // Position axis close below rectangles
+        
+        // Use numBeats as the interval for labels
+        const beatInterval = numBeats;
+        
+        // Draw axis line (subtle)
+        ctx.strokeStyle = "#444";
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(0, axisY);
+        ctx.lineTo(logicalWidth, axisY);
+        ctx.stroke();
+        
+        // Draw tick marks and labels starting from firstBeat
+        ctx.fillStyle = "#666";
+        ctx.font = "10px sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "top";
+        
+        const lastBeat = firstBeat + songLengthBeats - 1;
+        for (let beat = firstBeat; beat <= lastBeat; beat += beatInterval) {
+            const beatOffset = beat - firstBeat;
+            const tickX = beatOffset * pixelsPerBeat;
+            
+            // Draw tick mark (shorter)
+            ctx.strokeStyle = "#555";
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(tickX, axisY);
+            ctx.lineTo(tickX, axisY + 3);
+            ctx.stroke();
+            
+            // Draw beat number
+            ctx.fillText(beat.toString(), tickX, axisY + 5);
+        }
+        
+        // Draw minor ticks for beats between labels
+        if (beatInterval > 1) {
+            ctx.strokeStyle = "#444";
+            ctx.lineWidth = 0.5;
+            for (let beat = firstBeat; beat <= lastBeat; beat++) {
+                if ((beat - firstBeat) % beatInterval !== 0) {
+                    const beatOffset = beat - firstBeat;
+                    const tickX = beatOffset * pixelsPerBeat;
+                    ctx.beginPath();
+                    ctx.moveTo(tickX, axisY);
+                    ctx.lineTo(tickX, axisY + 2);
+                    ctx.stroke();
+                }
+            }
+        }
+
         // Draw Progress Indicator
         const progressX = currentProgressRatio * logicalWidth;
 
@@ -216,8 +272,8 @@ export function renderTimeline(container, options = {}) {
         const clickX = e.clientX - rect.left;
         const ratio = Math.max(0, Math.min(1, clickX / rect.width));
 
-        // Calculate the beat position from the click
-        const clickedBeat = ratio * songLengthBeats + 1;
+        // Calculate the beat position from the click (accounting for firstBeat offset)
+        const clickedBeat = Math.floor(ratio * songLengthBeats) + firstBeat;
         
         // If checkbox is checked, find and play the chord
         if (checkbox.checked) {
@@ -233,10 +289,21 @@ export function renderTimeline(container, options = {}) {
     });
 
     return {
-        setSongData(chords, key, lengthBeats) {
+        setSongData(chords, key, lengthBeats, metadata = null) {
             currentChords = chords || [];
             currentKey = key;
             songLengthBeats = lengthBeats || 1;
+            
+            // Get firstBeat and numBeats from metadata.meters
+            if (metadata?.meters && metadata.meters.length > 0) {
+                const firstMeter = metadata.meters[0];
+                firstBeat = firstMeter.beat || 1;
+                numBeats = firstMeter.numBeats || 4;
+            } else {
+                firstBeat = 1;
+                numBeats = 4; // Default to 4/4 time
+            }
+            
             draw();
         },
 

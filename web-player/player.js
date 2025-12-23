@@ -370,7 +370,7 @@ async function loadSection(songIndex, sectionIndex) {
     controls.resetPlayState();
     chordRing.setSongData(currentRawChords, currentKey);
     chordRing.update(null, null, null);
-    timeline.setSongData(currentRawChords, currentKey, songLength);
+    timeline.setSongData(currentRawChords, currentKey, songLength, data.metadata);
     timeline.setSongUrl(song.url || null);
     noteIndicator.reset();
     
