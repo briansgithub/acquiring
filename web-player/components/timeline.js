@@ -71,6 +71,22 @@ export function renderTimeline(container, options = {}) {
     checkboxContainer.appendChild(label);
     checkboxContainer.appendChild(arpCheckbox);
     checkboxContainer.appendChild(arpLabel);
+    
+    // Create URL link element
+    const urlLink = document.createElement("a");
+    urlLink.href = "#";
+    urlLink.target = "_blank";
+    urlLink.rel = "noopener noreferrer";
+    urlLink.style.cssText = "font-size: 12px; color: #00AAFF; text-decoration: underline; opacity: 0.7; transition: opacity 0.2s;";
+    urlLink.style.display = "none"; // Hidden by default, shown when URL is set
+    urlLink.addEventListener("mouseenter", () => {
+        urlLink.style.opacity = "1";
+    });
+    urlLink.addEventListener("mouseleave", () => {
+        urlLink.style.opacity = "0.7";
+    });
+    checkboxContainer.appendChild(urlLink);
+    
     container.appendChild(checkboxContainer);
 
     let currentChords = [];
@@ -222,6 +238,16 @@ export function renderTimeline(container, options = {}) {
             currentKey = key;
             songLengthBeats = lengthBeats || 1;
             draw();
+        },
+
+        setSongUrl(url) {
+            if (url) {
+                urlLink.href = url;
+                urlLink.textContent = url;
+                urlLink.style.display = "block";
+            } else {
+                urlLink.style.display = "none";
+            }
         },
 
         updateProgress(ratio) {

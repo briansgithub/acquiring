@@ -69,6 +69,7 @@ async function loadLibrary() {
       artist: artistEntry.name,
       title: artistEntry.name.split(" - ").slice(1).join(" ").trim() || artistEntry.name,
       sections,
+      url: metadata?.url || null,
     });
   }
   // Sort songs alphabetically by title (or artist if title is empty)

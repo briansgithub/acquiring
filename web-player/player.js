@@ -371,6 +371,7 @@ async function loadSection(songIndex, sectionIndex) {
     chordRing.setSongData(currentRawChords, currentKey);
     chordRing.update(null, null, null);
     timeline.setSongData(currentRawChords, currentKey, songLength);
+    timeline.setSongUrl(song.url || null);
     noteIndicator.reset();
     
     // Compute all chord transitions for the entire section
