@@ -374,35 +374,33 @@
     "engRoman": "V⁷(b5)/ii°",
     "engLetter": "B#7",
     "engNotes": [
-      "B#3",
-      "D##4",
-      "F##4",
-      "A#4",
-      "F#4"
+      "B3",
+      "D#4",
+      "F4",
+      "A4"
     ],
     "engPcs": [
-      0,
-      4,
-      6,
-      7,
-      10
+      3,
+      5,
+      9,
+      11
     ],
     "flags": {
       "romanExact": false,
       "romanCore": false,
       "rootPcMatch": false,
       "bassPcMatch": false,
-      "rootInPcs": false,
-      "bassInNotes": false,
-      "pcsExact": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false
     },
-    "notesOk": false,
+    "notesOk": true,
     "romanExact": false,
-    "failureClass": "piano_noise",
+    "failureClass": null,
     "buckets": [
       "type=7",
       "inversion=0",

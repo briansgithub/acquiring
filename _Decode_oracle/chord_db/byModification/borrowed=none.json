@@ -20230,13 +20230,13 @@
       "B3",
       "D4",
       "F4",
-      "A4",
+      "Ab4",
       "F4"
     ],
     "engPcs": [
       2,
       5,
-      9,
+      8,
       11
     ],
     "flags": {
@@ -20246,15 +20246,15 @@
       "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false
     },
-    "notesOk": false,
+    "notesOk": true,
     "romanExact": false,
-    "failureClass": "piano_noise",
+    "failureClass": null,
     "buckets": [
       "type=7",
       "inversion=0",
@@ -29019,7 +29019,7 @@
     ],
     "pianoPcs": [
       4,
-      5,
+      7,
       8,
       10
     ],
@@ -31265,7 +31265,7 @@
     ],
     "pianoPcs": [
       4,
-      5,
+      7,
       8,
       10
     ],
@@ -38023,8 +38023,8 @@
       "G#3"
     ],
     "pianoPcs": [
-      5,
       6,
+      7,
       8,
       9,
       10
@@ -45384,7 +45384,7 @@
       "Gx3"
     ],
     "pianoPcs": [
-      7
+      9
     ],
     "pianoValidated": false,
     "engRoman": "ii⁷",
@@ -113494,7 +113494,7 @@
       "D#3"
     ],
     "pianoPcs": [
-      0,
+      2,
       3
     ],
     "pianoValidated": false,
@@ -113820,7 +113820,7 @@
     ],
     "pianoPcs": [
       0,
-      5
+      7
     ],
     "pianoValidated": false,
     "engRoman": "V⁷/iv",

@@ -460,11 +460,14 @@ function diatonicSeventhDegreeStr(chordRootSD, effKey, customIntervals) {
   } catch (e) { return "b7"; }
 }
 
-// Hooktheory labels dorian vi° / lydian iv° sevenths with ø but voices a dim7 (bb7) stack.
+// Hooktheory labels several mode °/ø sevenths with ø but voices a dim7 (bb7) stack.
 function borrowedModeDimSeventhDegree(chordRootSD, scale, chordQuality, chordType) {
   if (chordType < 7 || chordQuality !== "diminished") return null;
+  if (scale === "custom") return "bb7";
   if (scale === "dorian" && chordRootSD === 6) return "bb7";
   if (scale === "lydian" && chordRootSD === 4) return "bb7";
+  if (scale === "minor" && chordRootSD === 2) return "bb7";
+  if (scale === "phrygian" && chordRootSD === 5) return "bb7";
   return null;
 }
 
@@ -586,6 +589,20 @@ function applySecondaryDominant(toneJSNames, degreeIndices, chordRootNoteName, c
   // The chord tones are already correct from buildTriadTones/addSeventhNote
 }
 
+// Applied + borrowed: numerator from major of the borrowed-scale target; locrian applied===root → i(min7).
+function resolveAppliedBorrowedChord(targetSD, appliedSD, key, baseOctave, borrowed, chordType, inversion, suspensions, modifierChord) {
+  if (borrowed === "locrian" && appliedSD === targetSD) {
+    const { key: modifiedKey, customScaleIntervals } = resolveBorrowedScale(key, borrowed);
+    const tonicNote = getNoteLabel(1, modifiedKey, customScaleIntervals);
+    return buildChordFromNoteName(tonicNote, "minor", key, baseOctave, chordType, inversion, false, suspensions, modifierChord);
+  }
+
+  const { key: modifiedKey, customScaleIntervals } = resolveBorrowedScale(key, borrowed);
+  const targetNote = getNoteLabel(targetSD, modifiedKey, customScaleIntervals);
+  const appliedKey = { tonic: targetNote, scale: "major" };
+  return rootToDiatonicTriad(appliedSD, appliedKey, baseOctave, null, chordType, inversion, 0, suspensions, modifierChord);
+}
+
 //chordRootSD is explicitely an int from 1-7 (no modifiers). 
 // it indicates the tonal basis of the chord
 // chordType: 5 = triad, 7 = dominant 7th (4-note chord)
@@ -593,22 +610,17 @@ function applySecondaryDominant(toneJSNames, degreeIndices, chordRootNoteName, c
 export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = null, chordType = 5, inversion = 0, applied = 0, suspensions = [], modifierChord = null) {
   // Handle applied chords (secondary dominants/functions)
   if (applied !== 0 && applied >= 1 && applied <= 7) {
-    // Resolve borrowed scale to get chord qualities
+    if (borrowed) {
+      return resolveAppliedBorrowedChord(chordRootSD, applied, key, baseOctave, borrowed, chordType, inversion, suspensions, modifierChord);
+    }
+
     const { key: modifiedKey, customScaleIntervals, scaleChordQualities: resolvedQualities } = resolveBorrowedScale(key, borrowed);
     const scaleChordQualities = getScaleChordQualities(modifiedKey.scale, resolvedQualities);
-    
-    // Determine if the applied scale degree chord is major or minor
     const appliedChordQuality = scaleChordQualities[applied - 1];
     const appliedScale = appliedChordQuality === "major" ? "mixolydian" : "phrygian";
-    
-    // Get the note at the applied scale degree
     const chordRootSDNote = getNoteLabel(applied, modifiedKey, customScaleIntervals);
-    
-    // Create the new key for the applied chord
     const appliedKey = { tonic: chordRootSDNote, scale: appliedScale };
-    
-    // Recursively call rootToDiatonicTriad with applied as chordRootSD
-    return rootToDiatonicTriad(applied, appliedKey, baseOctave, borrowed, chordType, inversion, 0, suspensions, modifierChord);
+    return rootToDiatonicTriad(applied, appliedKey, baseOctave, null, chordType, inversion, 0, suspensions, modifierChord);
   }
 
   // Save the original key for scale degree calculation
@@ -725,14 +737,27 @@ export function chordInterpreter(chord, key) {
   const chordType = chord.type || 5; // Default to triad (5) if type not specified
   const inversion = chord.inversion || 0; // Default to root position (0) if inversion not specified
   const suspensions = chord.suspensions || [];
+
+  // Harmonic-minor key + parallel minor borrow: V7/iv is sometimes stored as root=1 applied=0
+  // (tonic pitch-class) instead of root=iv applied=V.
+  if (
+    key.scale === "harmonicMinor"
+    && borrowed === "minor"
+    && chord.root === 1
+    && chordType >= 7
+    && !chord.applied
+  ) {
+    return chordInterpreter({ ...chord, root: 4, applied: 5 }, key);
+  }
   
   // Handle Applied Chords (Secondary Dominants/Functions)
   // HOOKTHEORY DATA MODEL: `applied` is the NUMERATOR chord degree; `root` is the
   // tonicization TARGET (denominator). The tonicized key's tonic is the note at degree
   // `root` in the original key, treated as MAJOR; the chord is then degree `applied` of it.
-  if (chord.applied && chord.applied !== 0 && chord.applied >= 1 && chord.applied <= 7) {
-    // The tonicization target note = scale degree `root` in the original key.
-    const targetTonicNote = getNoteLabel(chord.root, key);
+  if (chord.applied && chord.applied !== 0 && chord.applied >= 1 && chord.applied <= 7 && !borrowed) {
+    // The tonicization target = degree `root` in the borrowed-resolved key (e.g. phrygian bII).
+    const { key: borrowedKey } = resolveBorrowedScale(key, borrowed);
+    const targetTonicNote = getNoteLabel(chord.root, borrowedKey);
 
     // The tonicized key is treated as major.
     const appliedKey = { tonic: targetTonicNote, scale: "major" };

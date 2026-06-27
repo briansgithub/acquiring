@@ -298,6 +298,9 @@ These are **not** re-documented entry-by-entry here; Fixes 001–013 supersede a
 | 2026-06-27 | Fix 017 | corpus1: 22 songs, 84% notesOk (strict); extended truth + piano scrape |
 | 2026-06-27 | Fix 018 | suspensions buckets 0%→94%/92%; chordSuspensions.js + sus7 b7 rule |
 | 2026-06-27 | Fixes 019–024 | Modifier pipeline fleet: omits/adds/alts/extensions + harness root-PC; corpus_all **97.8%** notesOk |
+| 2026-06-27 | Fix 026 | corpus1 borrowed minor/hmin/phr buckets **100%** notesOk |
+| 2026-06-27 | Fix 025 | corpus1: borrowed dorian/lydian dim7 (bb7) voicing |
+| 2026-06-27 | Fix 027 | corpus1: borrowed locrian/custom-array/major **100%** notesOk |
 | 2026-06-27 | Fix 025 | corpus1 borrowed dorian/lydian dim7 voicing **100%** notesOk |
 
 *Append new entries at the bottom of the numbered fix section and add a changelog row when merging decode fixes.*
@@ -363,7 +366,7 @@ These are **not** re-documented entry-by-entry here; Fixes 001–013 supersede a
 |---|---|---|
 | ~~`borrowed=dorian`~~ | ~~79%~~ | **Fixed Fix 025** |
 | ~~`borrowed=lydian`~~ | ~~93%~~ | **Fixed Fix 025** |
-| `borrowed=custom-array` | ~76% | Custom borrowed interval arrays |
+| ~~`borrowed=custom-array`~~ | ~~76%~~ | **Fixed Fix 027** |
 | `alterations=#5` | ~80% | Composite + borrowed interactions |
 | `type=11` | ~82% | `v11(b9)` minor-key spelling; `iiø11` without SVG enrich |
 | `applied=yes` | ~94% | Secondary dominant + borrowed composites |
@@ -389,3 +392,44 @@ These are **not** re-documented entry-by-entry here; Fixes 001–013 supersede a
 **Full corpus rebuild (`--corpus corpus.json`):** `borrowed=dorian` **17/17**, `borrowed=mixolydian` **7/7**, `borrowed=lydian` **6/6**.  
 **Regression:** 500 Miles **12/12**, Eleanor Rigby **19/19** notesOk.  
 **Files:** `web-player/lib/music.js`, `web-player/lib/chordAlterations.js`
+
+---
+
+## Fix 026 — Borrowed minor / phrygian / harmonicMinor voicing (corpus1)
+
+**When:** 2026-06-27 oracle/chord-db-suspensions-truth  
+**Symptom:** corpus1 `borrowed=minor` ~91%, `borrowed=phrygian` ~83%, `borrowed=harmonicMinor` ~83%. ø7 stacks on minor°2 / phrygian°5 voiced as half-dim (`b7`) when ground truth expects dim7 (`bb7`); Summertime `V7/iv` stored as `root=1 applied=0` produced i⁷(min) not B7; Round Midnight `V7(b5)/bII(phr)` used parent-key E# instead of phrygian E; `i△⁴²(hmin)` bass `Cx` failed compare.  
+**Root cause:** `borrowedModeDimSeventhDegree` only covered dorian°6 / lydian°4; `chordInterpreter` applied branch ignored borrowed scale for denominator tonic; Hooktheory stores V7/iv on tonic degree without `applied` field; `svgTruth.noteToPc` did not parse double-sharp `x`.  
+**Fix:** Extended `borrowedModeDimSeventhDegree` for minor°2 and phrygian°5 → `bb7`. Reinterpret `harmonicMinor + borrowed=minor + root=1 + type≥7` as `root=4 applied=5` (V7/iv). Applied-chord target tonic from `resolveBorrowedScale` (phrygian bII = E not E#). `svgTruth` `x` → +2 semitones in `noteToPc` / parse regex.  
+**Bucket rerun (corpus1-filtered, `--rerun`):**
+
+| Bucket | Before | After |
+|---|---|---|
+| `borrowed=minor` | 21/23 (91%) | **23/23 (100%)** |
+| `borrowed=harmonicMinor` | 5/6 (83%) | **6/6 (100%)** |
+| `borrowed=phrygian` | 10/12 (83%) | **12/12 (100%)** |
+| `borrowed=phrygianDominant` | n/a | n/a (0 corpus1 chords) |
+
+**Regression:** 500 Miles **12/12**, Eleanor Rigby **19/19** notesOk.  
+**Files:** `web-player/lib/music.js`, `_Decode_oracle/svgTruth.js`  
+**Exposed by:** Summertime (V7/iv, vø7 phr), Maple Leaf Rag (iiø7 min), Round Midnight (i△42 hmin, V7(b5)/bII phr).
+
+---
+
+## Fix 027 — Borrowed locrian / custom-array applied + dim7 voicing (corpus1)
+
+**When:** 2026-06-27 oracle/chord-db-suspensions-truth  
+**Symptom:** `borrowed=locrian` 75% corpus1 (Summertime `i` vs `V⁷/V`); `borrowed=custom-array` 80% (God Only Knows `#iø7(bor)`, Round Midnight `V7/bV(maj)(bor)`); custom-array `#iø7` stacks used `b7` (G♯) instead of dim7 `bb7` (G♮).  
+**Root cause:** `chordInterpreter` took the applied-chord fast path before borrowed resolution, ignoring `borrowed` arrays/modes. Applied+borrowed composites re-applied `borrowed` on the recursive tonicized key. Custom borrowed diminished sevenths used scale-degree-7 `b7` instead of Hooktheory's dim7 upper tone. Locrian `applied===root` encodes borrowed-mode tonic `i(min7)`, not `V/V`.  
+**Fix:** `resolveAppliedBorrowedChord()` — custom-array applied chords tonicize the borrowed-scale target note and build the numerator in that major key (`borrowed=null` on recurse); locrian `applied===root` → degree-1 minor + `b7`. `chordInterpreter` skips applied fast-path when `borrowed` is set. `borrowedModeDimSeventhDegree` returns `bb7` for `scale==="custom"`. Verified Fix 013 locrian qualities unchanged (deg 5 major, deg 7 minor).  
+**Bucket rerun (corpus1, `--rerun`):**
+
+| Bucket | Before | After |
+|---|---|---|
+| `borrowed=locrian` | 3/4 (75%) | **4/4 (100%)** |
+| `borrowed=custom-array` | 12/15 (80%) | **15/15 (100%)** |
+| `borrowed=major` | 4/4 (100%) | **4/4 (100%)** |
+
+**Rebuild:** `node buildChordDb.js --corpus _Decode_oracle/corpus.json` — 33 songs, 1538 chords.  
+**Regression:** 500 Miles + Eleanor Rigby notesOk unchanged.  
+**Files:** `web-player/lib/music.js`, `_Decode_oracle/chord_db/*`

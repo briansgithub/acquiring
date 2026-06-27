@@ -40,12 +40,12 @@
     "engLetter": "Bm7",
     "engNotes": [
       "B3",
-      "D4",
+      "D#4",
       "F#4",
       "A4"
     ],
     "engPcs": [
-      2,
+      3,
       6,
       9,
       11
@@ -57,15 +57,15 @@
       "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false
     },
-    "notesOk": false,
+    "notesOk": true,
     "romanExact": false,
-    "failureClass": "harness",
+    "failureClass": null,
     "buckets": [
       "type=7",
       "inversion=0",
@@ -1381,13 +1381,13 @@
       "Bb3",
       "Db4",
       "Fb4",
-      "Ab4",
+      "Abb4",
       "Fb4"
     ],
     "engPcs": [
       1,
       4,
-      8,
+      7,
       10
     ],
     "flags": {
@@ -1397,15 +1397,15 @@
       "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false
     },
-    "notesOk": false,
+    "notesOk": true,
     "romanExact": false,
-    "failureClass": "piano_noise",
+    "failureClass": null,
     "buckets": [
       "type=7",
       "inversion=0",
