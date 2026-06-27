@@ -366,6 +366,9 @@ These are **not** re-documented entry-by-entry here; Fixes 001–013 supersede a
 |---|---|---|
 | ~~`borrowed=dorian`~~ | ~~79%~~ | **Fixed Fix 025** |
 | ~~`borrowed=lydian`~~ | ~~93%~~ | **Fixed Fix 025** |
+| ~~`borrowed=minor`~~ | ~~91%~~ | **Fixed Fix 026** |
+| ~~`borrowed=phrygian`~~ | ~~83%~~ | **Fixed Fix 026** |
+| ~~`borrowed=harmonicMinor`~~ | ~~83%~~ | **Fixed Fix 026** |
 | ~~`borrowed=custom-array`~~ | ~~76%~~ | **Fixed Fix 027** |
 | `alterations=#5` | ~80% | Composite + borrowed interactions |
 | `type=11` | ~82% | `v11(b9)` minor-key spelling; `iiø11` without SVG enrich |

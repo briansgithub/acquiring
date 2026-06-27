@@ -19,10 +19,14 @@ const NOTE_BASE_PC = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
 
 function noteToPc(name) {
   if (!name) return null;
-  const m = name.match(/^([A-Ga-g])([b#]*)/);
+  const m = name.match(/^([A-Ga-g])([b#x]*)/);
   if (!m) return null;
   let pc = NOTE_BASE_PC[m[1].toUpperCase()];
-  for (const ch of m[2]) pc += ch === '#' ? 1 : -1;
+  for (const ch of m[2]) {
+    if (ch === '#') pc += 1;
+    else if (ch === 'x') pc += 2;
+    else if (ch === 'b') pc -= 1;
+  }
   return ((pc % 12) + 12) % 12;
 }
 
@@ -79,8 +83,8 @@ function parseLetter(letterRaw) {
     bassName = cleaned.slice(slash + 1);
     rootPart = cleaned.slice(0, slash);
   }
-  const rootMatch = rootPart.match(/^([A-Ga-g][b#]*)/);
-  const bassMatch = bassName ? bassName.match(/^([A-Ga-g][b#]*)/) : null;
+  const rootMatch = rootPart.match(/^([A-Ga-g][b#x]*)/);
+  const bassMatch = bassName ? bassName.match(/^([A-Ga-g][b#x]*)/) : null;
   const rootName = rootMatch ? rootMatch[1] : null;
   const bassClean = bassMatch ? bassMatch[1] : null;
   return {
