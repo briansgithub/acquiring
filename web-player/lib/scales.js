@@ -31,6 +31,8 @@ export const PHRYGIAN_SCALE_SPECIFIC_INTERVALS = [0, 1, 3, 5, 7, 8, 10];
 export const LYDIAN_SCALE_SPECIFIC_INTERVALS = [0, 2, 4, 6, 7, 9, 11];
 export const MIXOLYDIAN_SCALE_SPECIFIC_INTERVALS = [0, 2, 4, 5, 7, 9, 10];
 export const LOCRIAN_SCALE_SPECIFIC_INTERVALS = [0, 1, 3, 5, 6, 8, 10];
+export const HARMONIC_MINOR_SCALE_SPECIFIC_INTERVALS = [0, 2, 3, 5, 7, 8, 11];
+export const PHRYGIAN_DOMINANT_SCALE_SPECIFIC_INTERVALS = [0, 1, 4, 5, 7, 8, 10];
 
 export const DEFAULT_TEMPO = 120;
 export const DEFAULT_KEY = { tonic: "C", scale: "major" };
@@ -158,9 +160,29 @@ export const LOCRIAN_SCALE_CHORD_QUALITIES = [
   "major",      // II
   "minor",      // iii
   "minor",      // iv
-  "diminished", // v°
+  "major",      // V  (e.g. C locrian -> Gb major triad)
   "major",      // VI
-  "major"       // VII
+  "minor"       // vii (e.g. C locrian -> Bb minor triad)
+];
+
+export const HARMONIC_MINOR_SCALE_CHORD_QUALITIES = [
+  "minor",      // i
+  "diminished", // ii°
+  "augmented",  // III+
+  "minor",      // iv
+  "major",      // V
+  "major",      // VI
+  "diminished"  // vii°
+];
+
+export const PHRYGIAN_DOMINANT_SCALE_CHORD_QUALITIES = [
+  "major",      // I
+  "major",      // II
+  "diminished", // iii°
+  "minor",      // iv
+  "diminished", // v°
+  "augmented",  // VI+
+  "minor"       // vii
 ];
 
 
@@ -188,7 +210,9 @@ export const ROMAN_NUMERALS_DORIAN = ["i", "ii", "III", "IV", "v", "vi°", "VII"
 export const ROMAN_NUMERALS_PHRYGIAN = ["i", "II", "III", "iv", "v°", "VI", "vii"];
 export const ROMAN_NUMERALS_LYDIAN = ["I", "II", "iii", "iv°", "V", "vi", "vii"];
 export const ROMAN_NUMERALS_MIXOLYDIAN = ["I", "ii", "iii°", "IV", "v", "vi", "VII"];
-export const ROMAN_NUMERALS_LOCRIAN = ["i°", "II", "iii", "iv", "v°", "VI", "VII"];
+export const ROMAN_NUMERALS_LOCRIAN = ["i°", "II", "iii", "iv", "V", "VI", "vii"];
+export const ROMAN_NUMERALS_HARMONIC_MINOR = ["i", "ii°", "III+", "iv", "V", "VI", "vii°"];
+export const ROMAN_NUMERALS_PHRYGIAN_DOMINANT = ["I", "II", "iii°", "iv", "v°", "VI+", "vii"];
 
 
 export function getScaleDegreeColor(degree, scaleType) {

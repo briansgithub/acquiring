@@ -1,0 +1,230 @@
+# Chord / Note Decode Fix Log
+
+Permanent sequential record of errors found while reverse-engineering Hooktheory's `.json` chord objects against visual ground truth, and the fixes applied to the theory engine.
+
+**Validation harness:** `_Decode_oracle/` (scrape → SVG truth → `engineRun` → `compare` → `report`)  
+**Engine files:** `web-player/lib/music.js`, `web-player/lib/jsonToSymbol.js`, `web-player/lib/scales.js`  
+**Corpora:** `corpus.json` (24 songs), `corpus2.json` (50 songs), `corpus_all.json` (74 entries)
+
+**Ground truth rule:** Vision channel (screenshots) is authoritative; SVG-text channel must agree. Symbol-level validation compares Roman numerals and letter names; note-level validation compares pitch-class sets and bass note presence.
+
+**Current accuracy (67 resolved songs, 3220 chords, 2026-06-27):** romanExact 97% · romanCore 99% · notesOk 99%
+
+---
+
+## How to use this log
+
+1. Read entries **in order** — later fixes sometimes depend on earlier data-model corrections.
+2. Each entry lists: symptom → root cause → fix → files → songs that exposed it.
+3. **Open / known-non-engine** items are at the end; do not re-fix harness-only issues as engine bugs.
+
+---
+
+## Fix 001 — Applied-chord field semantics reversed
+
+**When:** Oracle corpus phase 1 (Maple Leaf Rag, early triads)  
+**Symptom:** Secondary dominants rendered backwards, e.g. `{root:2, applied:7}` produced `ii/vii°` instead of ground-truth `vii°/ii`. Notes and letter names wrong for all applied chords.  
+**Root cause:** Engine treated `chord.root` as the numerator (applied chord degree) and `chord.applied` as the denominator target. Hooktheory's model is the **opposite**: `applied` = numerator degree, `root` = tonicization target (denominator).  
+**Fix:** Rewrote applied-chord branches in `getChordSymbol`, `getChordLetterName`, and `chordInterpreter` to build the numerator from the **major scale of the target degree's note** and the denominator from the active key's scale at `chord.root`. Leading-tone applied chords (`applied === 7`) use fully diminished quality (`vii°7`, `bb7` in notes).  
+**Files:** `web-player/lib/jsonToSymbol.js`, `web-player/lib/music.js`  
+**Exposed by:** Maple Leaf Rag, Bohemian Rhapsody patterns, most secondary-dominant passages.
+
+---
+
+## Fix 002 — Custom borrowed scale arrays treated as relative offsets
+
+**When:** Oracle corpus phase 1  
+**Symptom:** Custom `borrowed: [int, int, ...]` chords (7-semitone arrays) produced wrong roots and qualities; e.g. `VII(bor)` vs `vii°(bor)`.  
+**Root cause:** `getCustomScaleIntervals` subtracted a erroneous `baseOffset` from array values. Hooktheory arrays are **absolute semitone offsets from the tonic** (same as major `[0,2,4,5,7,9,11]`).  
+**Fix:** Use array values directly as scale degree intervals. Derive triad quality and accidental prefix from the array in symbol generation (`customArrayTriadQuality`, `customArrayPrefix`).  
+**Files:** `web-player/lib/music.js`, `web-player/lib/jsonToSymbol.js`  
+**Exposed by:** Maple Leaf Rag Chorus, Bohemian Rhapsody Bridge.
+
+---
+
+## Fix 003 — Symbol suffix ordering and attribute rendering
+
+**When:** Oracle corpus phase 1 (attribute matrix showed 0% on borrowed, suspensions, alterations, type=9)  
+**Symptom:** Missing `(min)` / mode tags, wrong order of °/ø/△/figured-bass/extensions, suspensions and alterations omitted or misplaced, `+` for augmented wrong.  
+**Root cause:** Monolithic suffix string in old `getChordSymbol`; no structured `buildSuffix`.  
+**Fix:** Introduced `buildSuffix` with Hooktheory order: `[+][°|ø|△][figured-bass][extension][(addN)][(noN)][susN][(alt)]`. Added `buildNumeral`, `BORROWED_TAG`, `borrowedPrefix`.  
+**Files:** `web-player/lib/jsonToSymbol.js`  
+**Exposed by:** Global attribute matrix across corpus 1.
+
+---
+
+## Fix 004 — Chord types 9 and 11 not decoded in symbols or notes
+
+**When:** Oracle corpus phase 1  
+**Symptom:** `type: 9` / `type: 11` chords lacked 9th/11th in Roman symbols and generated note arrays.  
+**Root cause:** Note builders only handled triads and 7ths; `buildSuffix` had no superscript for 9/11.  
+**Fix:** Extended `buildSuffix` with `SUPERS` for 9/11/13. In `rootToDiatonicTriad` / `buildChordFromNoteName`, append 9th and 11th scale degrees when `chordType >= 9` / `>= 11`.  
+**Files:** `web-player/lib/jsonToSymbol.js`, `web-player/lib/music.js`  
+**Exposed by:** Jazz-tier songs, extended harmony passages.
+
+---
+
+## Fix 005 — Harmonic minor as an active **key** scale
+
+**When:** Oracle corpus phase 1 (Penny Lane)  
+**Symptom:** `Unsupported scale type: harmonicMinor` thrown; Verse sections failed entirely.  
+**Root cause:** Only major/minor and church modes were defined; `harmonicMinor` appeared as `keys[].scale` in Hooktheory data.  
+**Fix:** Added `HARMONIC_MINOR_SCALE_SPECIFIC_INTERVALS`, chord qualities, and Roman numerals to `scales.js`. Wired through `scaleDegreeToSpecificInterval`, `getNoteLabel`, `getScaleChordQualities`, `getChordQualitiesForScale`, `getRomanNumeralsForScale`.  
+**Files:** `web-player/lib/scales.js`, `web-player/lib/music.js`, `web-player/lib/jsonToSymbol.js`  
+**Exposed by:** Penny Lane, other harmonic-minor-key songs.
+
+---
+
+## Fix 006 — Diatonic seventh quality (major vs minor vs diminished 7th)
+
+**When:** Oracle corpus phase 1 (Penny Lane `I△42`, major-key major-7th chords)  
+**Symptom:** All 7th chords received `b7` in notes; symbols showed `7` instead of `△7` where diatonic major 7th expected. Inversions failed `bassInNotes` / `notesOk`.  
+**Root cause:** `addSeventhNote` always used minor 7th (`b7`). No diatonic quality lookup per scale degree.  
+**Fix:** Added `diatonicSeventhDegreeStr` to classify 7th interval as `"7"`, `"b7"`, or `"bb7"` from the active scale. Added `isMajorSeventh` / `customArraySeventhMajor` for symbol `△`. Refactored `addSeventhNote` to take explicit seventh degree string.  
+**Files:** `web-player/lib/music.js`, `web-player/lib/jsonToSymbol.js`  
+**Exposed by:** Penny Lane, any `I△7` / `IV△7` in major or borrowed contexts.
+
+---
+
+## Fix 007 — `(addN)` and `(noN)` tags missing from symbols
+
+**When:** Oracle corpus phase 1  
+**Symptom:** `adds` / `omits` JSON fields ignored in Roman output.  
+**Root cause:** `buildSuffix` did not render them.  
+**Fix:** Render `(addN)` and `(noN)`; promote `add4`→`(add11)` and `add6`→`(add13)` when `chord.type >= 7`.  
+**Files:** `web-player/lib/jsonToSymbol.js`  
+**Exposed by:** Songs with `adds: [9]`, `omits: [3]` (power chords).
+
+---
+
+## Fix 008 — Quality markers on suspended chords
+
+**When:** Oracle corpus phase 1  
+**Symptom:** `IV△⁷sus2` instead of `IV7sus2` — △/ø/° shown when third is suspended.  
+**Root cause:** Quality suffix added before checking suspensions.  
+**Fix:** In `buildSuffix`, skip °/ø/△ when `chord.suspensions` is non-empty.  
+**Files:** `web-player/lib/jsonToSymbol.js`  
+**Exposed by:** Suspended-dominant and sus-add passages.
+
+---
+
+## Fix 009 — Borrowed accidental prefix referenced major scale only
+
+**When:** Oracle corpus phase 1  
+**Symptom:** Wrong `♭`/`♯` prefix on borrowed chords in non-major keys, e.g. `#viø7(dor)` in harmonic minor.  
+**Root cause:** `borrowedPrefix` compared borrowed note to **major** scale degree, not active key scale.  
+**Fix:** Compare borrowed root to `getNoteLabel(degree, { tonic, scale: key.scale })`.  
+**Files:** `web-player/lib/jsonToSymbol.js`  
+**Exposed by:** Penny Lane, mode-mixture in minor keys.
+
+---
+
+## Fix 010 — Harmonic minor as a **borrowed** scale `(hmin)`
+
+**When:** Oracle corpus 2 (hotel-california, while-my-guitar, boulevard, soundgarden, billy-joel, amy-winehouse)  
+**Symptom:** `V(hmin)` / `V7(hmin)` rendered as minor `v` / `v⁷` with wrong letter names and notes (e.g. `F#m7` instead of `F#7`). ~35 chords.  
+**Root cause:** Fix 005 added harmonic minor as a **key** scale only. `borrowed: "harmonicMinor"` fell through `resolveBorrowedScale` as unsupported; engine used parent key quality (minor → lowercase v).  
+**Fix:** Handle `harmonicMinor` in `resolveBorrowedScale`. Add `harmonicMinor: 'hmin'` to `BORROWED_TAG` and `SUPPORTED_BORROWED`. Wire qualities/romans in symbol helpers.  
+**Files:** `web-player/lib/music.js`, `web-player/lib/jsonToSymbol.js`  
+**Exposed by:** Hotel California, While My Guitar Gently Weeps, Boulevard of Broken Dreams, Back to Black, Soundgarden Black Hole Sun, Billy Joel Piano Man.  
+**Result:** Hotel California 77%→100% notes; cluster of 35 `(hmin)` mismatches eliminated.
+
+---
+
+## Fix 011 — Phrygian dominant scale `(phdm)`
+
+**When:** Oracle corpus 2 (lucy-in-the-sky, duke-ellington, soundgarden)  
+**Symptom:** `iv△7(phdm)`, `bII(phdm)` decoded with wrong quality, roots, and accidentals.  
+**Root cause:** `phrygianDominant` not defined as scale; confused with phrygian mode.  
+**Fix:** Added `PHRYGIAN_DOMINANT_SCALE_SPECIFIC_INTERVALS` `[0,1,4,5,7,8,10]`, qualities `[major, major, dim, minor, dim, aug, minor]`, romans `[I, II, iii°, iv, v°, VI+, vii]`. Wired as key and borrowed scale.  
+**Files:** `web-player/lib/scales.js`, `web-player/lib/music.js`, `web-player/lib/jsonToSymbol.js`  
+**Exposed by:** Lucy in the Sky with Diamonds, In a Sentimental Mood, Black Hole Sun.
+
+---
+
+## Fix 012 — Double-accidental arithmetic in `appendAccidental`
+
+**When:** Oracle corpus 2 (billie-jean, light-my-fire)  
+**Symptom:** `ii42` symbol correct (`G#m7/F#`) but notes had **F natural** bass instead of F#; `bassInNotes` failed on 20 chords. Letter name showed `G#m7/F`.  
+**Root cause:** When lowering 7th in a chord-root major scale, diatonic 7th can be **double-sharp** (e.g. G# major → Fx). Old `appendAccidental` mapped `Fx` + shift(-1) → `F` (natural) instead of `F#`.  
+**Fix:** Rewrote `appendAccidental` to accumulate accidental value (#=+1, b=-1, x=+2) and re-encode, so `Fx` lowered by 1 → `F#`.  
+**Files:** `web-player/lib/music.js`  
+**Exposed by:** Billie Jean (all `ii42` in Intro/Verse), The Doors Light My Fire (`vi42(mix)`).  
+**Result:** Billie Jean notesOk 62%→100%.
+
+---
+
+## Fix 013 — Locrian scale chord qualities wrong at degrees 5 and 7
+
+**When:** Oracle corpus 2 (amy-winehouse, blue-in-green); latent since locrian support added  
+**Symptom:** Locrian borrowed degree 5 rendered as `v°` (diminished) instead of `V` (major); degree 7 as `VII` (major) instead of `vii` (minor). Wrong roots/notes for `bV` chords; `vii11(loc)` case wrong.  
+**Root cause:** `LOCRIAN_SCALE_CHORD_QUALITIES` had `[..., "diminished", "major", "major"]` at degrees 5–7; correct locrian triads are **V = major**, **vii = minor**.  
+**Fix:** Qualities at deg 5 → `"major"`, deg 7 → `"minor"`. Romans: `"V"`, `"vii"` (was `"v°"`, `"VII"`).  
+**Files:** `web-player/lib/scales.js`  
+**Exposed by:** Back to Black (`bV`, `bVsus2`), Blue in Green (`vii11(loc)`).  
+**Note:** Remaining back-to-black **symbol** mismatches (`bVsus27` vs `bV⁷sus2`) are token-order / suspended-dominant rendering cosmetics; notes are 100%.
+
+---
+
+## Fix 014 — ESM module loading for oracle harness
+
+**When:** Oracle harness build  
+**Symptom:** `engineRun.js` could not `import()` `music.js` / `jsonToSymbol.js` from CommonJS.  
+**Root cause:** Engine uses ESM `import`/`export`; Node treated `.js` as CommonJS.  
+**Fix:** Added `web-player/lib/package.json` with `"type": "module"`. `engineRun.js` uses dynamic `import()`.  
+**Files:** `web-player/lib/package.json`, `_Decode_oracle/engineRun.js`  
+**Not a decode rule** — infrastructure for automated testing.
+
+---
+
+## Attempted / reverted (do not re-apply without re-validating)
+
+| Change | Why reverted |
+|---|---|
+| Force **uppercase** Roman on all suspended chords | Breaks Nirvana *Smells Like Teen Spirit* (`ivsus2` must stay lowercase). Hooktheory is inconsistent: locrian `bVsus2` uses uppercase V, diatonic `ivsus2` uses lowercase. |
+| `joinRoman` column-clustering for figured bass | Fixed God Only Knows `V64` vs `V46` SVG parse but broke other songs. |
+| DP alignment in `compare.js` | Greedy proportional alignment performs better overall; Penny Lane gaps are scrape omissions not engine bugs. |
+
+---
+
+## Open issues (not engine decode bugs)
+
+These appear in `GLOBAL_discrepancies.md` but are **harness limits, alignment artifacts, or cosmetic symbol ordering** — not wrong note generation:
+
+| Issue | Type | Notes |
+|---|---|---|
+| Penny Lane Verse (12 disc) | Alignment | Hooktheory UI omits ~3 mid-section chords from render; JSON has them. Engine correct where aligned. |
+| Summertime Verse (7 disc) | Alignment | Rendered/JSON offset in Verse tab; aligned beats pass 100%. |
+| Zombie Chorus b1 | Scrape | Chorus tab rendered 1 chord vs 16 in JSON. |
+| God Only Knows `V46` vs `V64` | SVG parse | Stacked figured-bass digit order from sub-pixel `relX`; engine `V⁶₄` is correct. |
+| `Vsus47/ii` vs `V⁷sus4/ii` | Symbol order | Same notes; Hooktheory puts `sus4` before `7` in SVG text. |
+| `Isus4sus27` vs `I⁷sus4sus2` | Symbol order | Same chord object renders differently at different beats in Journey Pre-Chorus. |
+| `bVsus27(b5)(loc)` vs `bV⁷sus2(b5)(loc)` | Symbol order + case | After Fix 013 notes correct; token order still differs. |
+| Round Midnight (4 disc) | Exotic jazz | Custom-array + applied + phrygian edge cases; low priority. |
+| Applied `(maj)` tag on minor targets | Symbol only | Summertime `V/i(maj)` — notes OK, tag missing. |
+| Tom Petty Free Fallin romanExact 60% | Symbol | Core roman matches 100%; superscript/figured-bass normalization only. |
+
+---
+
+## Pre-oracle engine history (context only)
+
+Commits before the decode oracle that touched the same code paths:
+
+| Commit | Summary |
+|---|---|
+| `da04a08` | Fix inversion logic |
+| `e613e75` | Borrowed chord symbol accuracy; custom borrowed triads; Maple Leaf Rag fixes |
+| `e84ca6f` | Augmented chord quality |
+
+These are **not** re-documented entry-by-entry here; Fixes 001–013 supersede and extend that work under automated oracle validation.
+
+---
+
+## Changelog
+
+| Date | Entry | Corpus state |
+|---|---|---|
+| 2026-06-26 | Fixes 001–009 | corpus 1: 22 songs, ~98% romanExact |
+| 2026-06-27 | Fixes 010–013 | corpus_all: 67 songs, 99% notesOk |
+
+*Append new entries at the bottom of the numbered fix section and add a changelog row when merging decode fixes.*

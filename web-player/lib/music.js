@@ -19,6 +19,10 @@ import {
   LYDIAN_SCALE_CHORD_QUALITIES,
   MIXOLYDIAN_SCALE_CHORD_QUALITIES,
   LOCRIAN_SCALE_CHORD_QUALITIES,
+  HARMONIC_MINOR_SCALE_SPECIFIC_INTERVALS,
+  HARMONIC_MINOR_SCALE_CHORD_QUALITIES,
+  PHRYGIAN_DOMINANT_SCALE_SPECIFIC_INTERVALS,
+  PHRYGIAN_DOMINANT_SCALE_CHORD_QUALITIES,
   generateScaleLabels,
 } from "./scales.js";
 
@@ -94,6 +98,10 @@ export function scaleDegreeToSpecificInterval(sd, scale, customIntervals = null)
     scaleSpecificIntervals = MIXOLYDIAN_SCALE_SPECIFIC_INTERVALS;
   } else if (scale === "locrian") {
     scaleSpecificIntervals = LOCRIAN_SCALE_SPECIFIC_INTERVALS;
+  } else if (scale === "harmonicMinor") {
+    scaleSpecificIntervals = HARMONIC_MINOR_SCALE_SPECIFIC_INTERVALS;
+  } else if (scale === "phrygianDominant") {
+    scaleSpecificIntervals = PHRYGIAN_DOMINANT_SCALE_SPECIFIC_INTERVALS;
   } else if (scale === "custom" && customIntervals) {
     scaleSpecificIntervals = customIntervals;
   } else {
@@ -105,34 +113,22 @@ export function scaleDegreeToSpecificInterval(sd, scale, customIntervals = null)
 }
 
 function appendAccidental(label, shift) {
-  // label: e.g., F, F#, Bb, etc.
-  // Returns Tone.js format: note name with accidental after the letter (e.g., "F#", "Bb")
+  // label: e.g., F, F#, Bb, Fx (double-sharp), Bbb (double-flat).
+  // Returns Tone.js format: letter + accidental(s). Uses proper accidental arithmetic so that
+  // shifting a double-accidental works (e.g. lowering "Fx" by 1 -> "F#", not "F").
   if (shift === 0) return label;
-  
-  const base = label.replace(/[#bx]+/g, "").replace(/b+/g, ""); // Remove all accidentals to get base letter
-  
-  if (label.includes("b")) {
-    if (shift === -1) {
-      // single flat → double flat
-      return label.startsWith("bb") ? label : `${base}bb`;
-    } else if (shift === 1) {
-      // flat to natural
-      return base;
-    }
-  } else if (label.includes("#") || label.includes("x")) {
-    if (shift === 1) {
-      // sharp → double sharp (Tone.js uses "##" for double sharp)
-      return label.includes("##") || label.includes("x") ? label : `${base}x`;
-    } else if (shift === -1) {
-      // sharp to natural
-      return base;
-    }
-  } else {
-    // Natural, so add accidental after the letter (Tone.js format)
-    if (shift === 1) return `${base}#`;
-    if (shift === -1) return `${base}b`;
+  const letter = label[0];
+  let value = 0;
+  for (const ch of label.slice(1)) {
+    if (ch === '#') value += 1;
+    else if (ch === 'x') value += 2;
+    else if (ch === 'b') value -= 1;
   }
-  return label;
+  value += shift;
+  let acc = '';
+  if (value > 0) acc = value === 2 ? 'x' : '#'.repeat(value); // Tone.js double-sharp = "x"
+  else if (value < 0) acc = 'b'.repeat(-value);
+  return letter + acc;
 }
 
 export function getNoteLabel(sd, key, customIntervals = null) {
@@ -157,6 +153,10 @@ export function getNoteLabel(sd, key, customIntervals = null) {
       intervals = MIXOLYDIAN_SCALE_SPECIFIC_INTERVALS;
     } else if (key.scale === "locrian") {
       intervals = LOCRIAN_SCALE_SPECIFIC_INTERVALS;
+    } else if (key.scale === "harmonicMinor") {
+      intervals = HARMONIC_MINOR_SCALE_SPECIFIC_INTERVALS;
+    } else if (key.scale === "phrygianDominant") {
+      intervals = PHRYGIAN_DOMINANT_SCALE_SPECIFIC_INTERVALS;
     } else if (key.scale === "custom" && customIntervals) {
       intervals = customIntervals;
     } else {
@@ -291,17 +291,14 @@ function getCustomScaleIntervals(borrowedArray) {
     return [0, 2, 4, 5, 7, 9, 11]; // Default to major scale
   }
   
-  // The borrowed array represents intervals from root for degrees 1-7
-  // If the first element is not 0, we normalize by subtracting it
-  // (assuming degree 1 should be at root = 0)
-  const firstValue = borrowedArray[0];
-  const baseOffset = firstValue !== 0 ? firstValue : 0;
-  
+  // The borrowed array holds ABSOLUTE semitone offsets from the tonic for degrees 1-7
+  // (verified against rendered ground truth: e.g. [1,3,4,6,8,10,11] in Ab yields a VII = G
+  // because degree 7 = 11 semitones above the tonic). They are used directly, NOT re-based.
   const intervals = [];
   for (let i = 0; i < 7; i++) {
     let interval;
     if (i < borrowedArray.length) {
-      interval = borrowedArray[i] - baseOffset;
+      interval = borrowedArray[i];
     } else {
       // Default: continue pattern from last interval
       const lastInterval = intervals[intervals.length - 1] ?? 0;
@@ -344,6 +341,10 @@ function resolveBorrowedScale(key, borrowed) {
       scale = "mixolydian";
     } else if (borrowed === "locrian") {
       scale = "locrian";
+    } else if (borrowed === "harmonicMinor") {
+      scale = "harmonicMinor";
+    } else if (borrowed === "phrygianDominant") {
+      scale = "phrygianDominant";
     } else {
       throw new Error(`Unsupported borrowed type: ${borrowed}`);
     }
@@ -383,6 +384,10 @@ function getScaleChordQualities(scale, scaleChordQualities) {
     return MIXOLYDIAN_SCALE_CHORD_QUALITIES;
   } else if (scale === "locrian") {
     return LOCRIAN_SCALE_CHORD_QUALITIES;
+  } else if (scale === "harmonicMinor") {
+    return HARMONIC_MINOR_SCALE_CHORD_QUALITIES;
+  } else if (scale === "phrygianDominant") {
+    return PHRYGIAN_DOMINANT_SCALE_CHORD_QUALITIES;
   } else {
     throw new Error(`Unsupported scale type: ${scale}`);
   }
@@ -409,35 +414,42 @@ function buildTriadTones(chordRootNoteName, chordDegrees, baseOctave) {
   };
 }
 
-// Adds the 7th note to make a 4-note chord - modifies toneJSNames and degreeIndices arrays
-function addSeventhNote(toneJSNames, degreeIndices, chordRootNoteName, baseOctave) {
+// Adds the 7th note to make a 4-note chord - modifies toneJSNames and degreeIndices arrays.
+// seventhDegree selects the seventh quality in the chord-root major frame:
+//   "7" = major 7th (I△7), "b7" = minor 7th (dominant/half-dim), "bb7" = diminished 7th (vii°7).
+function addSeventhNote(toneJSNames, degreeIndices, chordRootNoteName, baseOctave, seventhDegree = "b7") {
   const relativeOctave = 0;
   const rootKey = { tonic: chordRootNoteName, scale: "major" };
-  const seventhDegree = "b7";
   const seventhName = sdToToneJSNoteName(seventhDegree, relativeOctave, rootKey, baseOctave);
   toneJSNames.push(seventhName);
   degreeIndices.push(3);
 }
 
-// Applies secondary dominant transformations to chord tones
-// Modifies toneJSNames and degreeIndices arrays if needed for secondary dominant behavior
-function applySecondaryDominant(toneJSNames, degreeIndices, chordRootNoteName, chordQuality, baseOctave) {
-  // Secondary dominants are typically dominant 7th chords (major triad + minor 7th)
-  // If the chord quality is already "major", ensure it functions as a dominant
-  // This function can be extended to handle other secondary dominant transformations
-  
-  // For now, if it's a major chord, we ensure it has dominant characteristics
-  // The 7th note addition is handled separately, so this function focuses on
-  // any additional tone modifications needed for secondary dominant behavior
-  
-  // Secondary dominants typically don't require tone modification beyond
-  // what's already done in buildTriadTones and addSeventhNote
-  // This function serves as a placeholder for future secondary dominant logic
-  // that might modify intervals or add tensions
-  
-  // No modifications needed for basic secondary dominant behavior
-  // The chord tones are already correct from buildTriadTones/addSeventhNote
+const NOTE_PC_LOCAL = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+function noteToPcLocal(note) {
+  const m = (note || '').match(/^([A-Ga-g])(.*)$/);
+  if (!m) return null;
+  let pc = NOTE_PC_LOCAL[m[1].toUpperCase()];
+  for (const ch of m[2]) { if (ch === '#') pc += 1; else if (ch === 'x') pc += 2; else if (ch === 'b') pc -= 1; }
+  return ((pc % 12) + 12) % 12;
 }
+
+// Determine the diatonic seventh quality of the chord at `chordRootSD` within `effKey`, so the
+// generated notes match the rendered symbol (e.g. I△7 = major 7th, vii°7 in harmonic minor =
+// diminished 7th). Returns "7" (major), "b7" (minor/dominant), or "bb7" (diminished).
+function diatonicSeventhDegreeStr(chordRootSD, effKey, customIntervals) {
+  try {
+    const r = noteToPcLocal(getNoteLabel(chordRootSD, effKey, customIntervals));
+    const sevSD = ((chordRootSD - 1 + 6) % 7) + 1;
+    const s = noteToPcLocal(getNoteLabel(sevSD, effKey, customIntervals));
+    if (r == null || s == null) return "b7";
+    const iv = (((s - r) % 12) + 12) % 12;
+    if (iv === 11) return "7";
+    if (iv === 9) return "bb7";
+    return "b7";
+  } catch (e) { return "b7"; }
+}
+
 
 // Applies inversion to chord tones - modifies toneJSNames and degreeIndices arrays
 function applyInversion(toneJSNames, degreeIndices, inversion, baseOctave) {
@@ -510,11 +522,51 @@ function calculateScaleDegrees(toneJSNames, degreeIndices, chordRootSD, chordDeg
   });
 }
 
+// Applies secondary dominant transformations to chord tones
+// Modifies toneJSNames and degreeIndices arrays if needed for secondary dominant behavior
+function applySecondaryDominant(toneJSNames, degreeIndices, chordRootNoteName, chordQuality, baseOctave) {
+  // Secondary dominants are typically dominant 7th chords (major triad + minor 7th)
+  // If the chord quality is already "major", ensure it functions as a dominant
+  // This function can be extended to handle other secondary dominant transformations
+  
+  // For now, if it's a major chord, we ensure it has dominant characteristics
+  // The 7th note addition is handled separately, so this function focuses on
+  // any additional tone modifications needed for secondary dominant behavior
+  
+  // Secondary dominants typically don't require tone modification beyond
+  // what's already done in buildTriadTones and addSeventhNote
+  // This function serves as a placeholder for future secondary dominant logic
+  // that might modify intervals or add tensions
+  
+  // No modifications needed for basic secondary dominant behavior
+  // The chord tones are already correct from buildTriadTones/addSeventhNote
+}
+
 //chordRootSD is explicitely an int from 1-7 (no modifiers). 
 // it indicates the tonal basis of the chord
 // chordType: 5 = triad, 7 = dominant 7th (4-note chord)
 // inversion: 0 = root position, 1 = first inversion, 2 = second inversion, 3 = third inversion (7th chords only)
-export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = null, chordType = 5, inversion = 0) {
+export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = null, chordType = 5, inversion = 0, applied = 0) {
+  // Handle applied chords (secondary dominants/functions)
+  if (applied !== 0 && applied >= 1 && applied <= 7) {
+    // Resolve borrowed scale to get chord qualities
+    const { key: modifiedKey, customScaleIntervals, scaleChordQualities: resolvedQualities } = resolveBorrowedScale(key, borrowed);
+    const scaleChordQualities = getScaleChordQualities(modifiedKey.scale, resolvedQualities);
+    
+    // Determine if the applied scale degree chord is major or minor
+    const appliedChordQuality = scaleChordQualities[applied - 1];
+    const appliedScale = appliedChordQuality === "major" ? "mixolydian" : "phrygian";
+    
+    // Get the note at the applied scale degree
+    const chordRootSDNote = getNoteLabel(applied, modifiedKey, customScaleIntervals);
+    
+    // Create the new key for the applied chord
+    const appliedKey = { tonic: chordRootSDNote, scale: appliedScale };
+    
+    // Recursively call rootToDiatonicTriad with applied as chordRootSD
+    return rootToDiatonicTriad(applied, appliedKey, baseOctave, borrowed, chordType, inversion, 0);
+  }
+
   // Save the original key for scale degree calculation
   const originalKey = { ...key };
 
@@ -536,9 +588,22 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
   console.log("toneJSNames", JSON.stringify(toneJSNames));
   console.log("degreeIndices", JSON.stringify(degreeIndices));
 
-  // Add 7th note if needed (4-note chord)
-  if (chordType === 7) {
-    addSeventhNote(toneJSNames, degreeIndices, chordRootNoteName, baseOctave);
+  // Add 7th note if needed (also the basis for 9th/11th chords). The seventh quality follows
+  // the prevailing (borrowed-resolved) scale so notes agree with the rendered △7/ø7/°7 symbol.
+  if (chordType >= 7) {
+    const seventhDegree = diatonicSeventhDegreeStr(chordRootSD, modifiedKey, customScaleIntervals);
+    addSeventhNote(toneJSNames, degreeIndices, chordRootNoteName, baseOctave, seventhDegree);
+  }
+  // Add upper extensions (9th, 11th) for type 9/11 chords.
+  if (chordType >= 9) {
+    const rootKey = { tonic: chordRootNoteName, scale: "major" };
+    toneJSNames.push(sdToToneJSNoteName("2", 1, rootKey, baseOctave));
+    degreeIndices.push(4);
+  }
+  if (chordType >= 11) {
+    const rootKey = { tonic: chordRootNoteName, scale: "major" };
+    toneJSNames.push(sdToToneJSNoteName("4", 1, rootKey, baseOctave));
+    degreeIndices.push(5);
   }
 
   // Apply secondary dominant transformations
@@ -602,35 +667,34 @@ export function chordInterpreter(chord, key) {
   const inversion = chord.inversion || 0; // Default to root position (0) if inversion not specified
   
   // Handle Applied Chords (Secondary Dominants/Functions)
-  // When applied is set, the root is interpreted relative to the applied key, not the original key
+  // HOOKTHEORY DATA MODEL: `applied` is the NUMERATOR chord degree; `root` is the
+  // tonicization TARGET (denominator). The tonicized key's tonic is the note at degree
+  // `root` in the original key, treated as MAJOR; the chord is then degree `applied` of it.
   if (chord.applied && chord.applied !== 0 && chord.applied >= 1 && chord.applied <= 7) {
-    // Get the tonic note of the applied key (the note at scale degree 'applied' in the original key)
-    const appliedTonicNote = getNoteLabel(chord.applied, key);
-    
-    // Create a temporary key with the applied tonic as the root
-    // For applied chords, we typically use major scale unless the applied degree suggests otherwise
-    // Most applied chords are secondary dominants which function in major keys
-    const appliedKey = { tonic: appliedTonicNote, scale: "major" };
-    
-    // The chord.root is now interpreted as a scale degree in the applied key
-    // Get the actual note name for that scale degree in the applied key
-    const actualRootNote = getNoteLabel(chord.root, appliedKey);
-    
-    // Get the chord quality from the applied key (this preserves ii vs I, etc.)
-    const appliedQualities = (appliedKey.scale === 'minor') ? MINOR_SCALE_CHORD_QUALITIES : MAJOR_SCALE_CHORD_QUALITIES;
-    const chordQuality = appliedQualities[chord.root - 1];
-    
-    // For applied chords, we ALWAYS build the chord directly from the note name
-    // because the root note is determined by the applied key, and it may not be
-    // a scale degree in the original key (e.g., V/7 uses A in Ab major, but A is not in Ab major scale)
-    return buildChordFromNoteName(actualRootNote, chordQuality, key, defaultChordOctave, chordType, inversion);
+    // The tonicization target note = scale degree `root` in the original key.
+    const targetTonicNote = getNoteLabel(chord.root, key);
+
+    // The tonicized key is treated as major.
+    const appliedKey = { tonic: targetTonicNote, scale: "major" };
+
+    // The actual chord root = scale degree `applied` within the tonicized (major) key.
+    const actualRootNote = getNoteLabel(chord.applied, appliedKey);
+
+    // Quality comes from the major scale of the tonicized key at the chord's degree.
+    const chordQuality = MAJOR_SCALE_CHORD_QUALITIES[chord.applied - 1];
+
+    // Leading-tone applied chords (vii°7/x) are fully diminished (use a diminished 7th).
+    const fullyDiminished = chord.applied === 7 && chordQuality === 'diminished';
+
+    return buildChordFromNoteName(actualRootNote, chordQuality, key, defaultChordOctave, chordType, inversion, fullyDiminished);
   }
   
-  return rootToDiatonicTriad(chord.root, key, defaultChordOctave, borrowed, chordType, inversion);
+  const applied = chord.applied || 0;
+  return rootToDiatonicTriad(chord.root, key, defaultChordOctave, borrowed, chordType, inversion, applied);
 }
 
 // Helper function to build a chord directly from a note name and quality
-function buildChordFromNoteName(rootNoteName, quality, originalKey, baseOctave, chordType, inversion) {
+function buildChordFromNoteName(rootNoteName, quality, originalKey, baseOctave, chordType, inversion, fullyDiminished = false) {
   // Get the chord degrees for this quality
   const chordDegrees = TRIAD_DEGREES[quality];
   
@@ -645,11 +709,22 @@ function buildChordFromNoteName(rootNoteName, quality, originalKey, baseOctave, 
   let toneJSNames = [firstName, thirdName, fifthName];
   let degreeIndices = [0, 1, 2];
   
-  // Add 7th if needed
-  if (chordType === 7) {
-    const seventhName = sdToToneJSNoteName("b7", 0, rootKey, baseOctave);
+  // Add 7th if needed. Fully-diminished sevenths (vii°7) use a diminished 7th (bb7);
+  // all others use a minor 7th (b7), which covers dominant and half-diminished sevenths.
+  if (chordType >= 7) {
+    const seventhDegree = fullyDiminished ? "bb7" : "b7";
+    const seventhName = sdToToneJSNoteName(seventhDegree, 0, rootKey, baseOctave);
     toneJSNames.push(seventhName);
     degreeIndices.push(3);
+  }
+  // Add upper extensions (9th, 11th) for type 9/11 chords.
+  if (chordType >= 9) {
+    toneJSNames.push(sdToToneJSNoteName("2", 1, rootKey, baseOctave));
+    degreeIndices.push(4);
+  }
+  if (chordType >= 11) {
+    toneJSNames.push(sdToToneJSNoteName("4", 1, rootKey, baseOctave));
+    degreeIndices.push(5);
   }
   
   // Apply inversion

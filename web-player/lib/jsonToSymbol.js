@@ -6,13 +6,17 @@ import {
   LYDIAN_SCALE_CHORD_QUALITIES,
   MIXOLYDIAN_SCALE_CHORD_QUALITIES,
   LOCRIAN_SCALE_CHORD_QUALITIES,
+  HARMONIC_MINOR_SCALE_CHORD_QUALITIES,
+  PHRYGIAN_DOMINANT_SCALE_CHORD_QUALITIES,
   ROMAN_NUMERALS_MAJOR, 
   ROMAN_NUMERALS_MINOR,
   ROMAN_NUMERALS_DORIAN,
   ROMAN_NUMERALS_PHRYGIAN,
   ROMAN_NUMERALS_LYDIAN,
   ROMAN_NUMERALS_MIXOLYDIAN,
-  ROMAN_NUMERALS_LOCRIAN
+  ROMAN_NUMERALS_LOCRIAN,
+  ROMAN_NUMERALS_HARMONIC_MINOR,
+  ROMAN_NUMERALS_PHRYGIAN_DOMINANT
 } from "./scales.js";
 import { getNoteLabel } from "./music.js";
 
@@ -30,6 +34,10 @@ function getChordQualitiesForScale(scaleType) {
         return MIXOLYDIAN_SCALE_CHORD_QUALITIES;
     } else if (scaleType === 'locrian') {
         return LOCRIAN_SCALE_CHORD_QUALITIES;
+    } else if (scaleType === 'harmonicMinor') {
+        return HARMONIC_MINOR_SCALE_CHORD_QUALITIES;
+    } else if (scaleType === 'phrygianDominant') {
+        return PHRYGIAN_DOMINANT_SCALE_CHORD_QUALITIES;
     } else {
         return MAJOR_SCALE_CHORD_QUALITIES; // Default to major
     }
@@ -49,102 +57,228 @@ function getRomanNumeralsForScale(scaleType) {
         return ROMAN_NUMERALS_MIXOLYDIAN;
     } else if (scaleType === 'locrian') {
         return ROMAN_NUMERALS_LOCRIAN;
+    } else if (scaleType === 'harmonicMinor') {
+        return ROMAN_NUMERALS_HARMONIC_MINOR;
+    } else if (scaleType === 'phrygianDominant') {
+        return ROMAN_NUMERALS_PHRYGIAN_DOMINANT;
     } else {
         return ROMAN_NUMERALS_MAJOR; // Default to major
     }
+}
+
+const ROMAN_MAP = { 1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI', 7: 'VII' };
+
+const MAJOR_OFFSETS = [0, 2, 4, 5, 7, 9, 11];
+
+// Triad quality from a custom borrowed scale (array of absolute semitone offsets from tonic).
+function customArrayTriadQuality(arr, degree) {
+    const at = (i) => arr[(((i - 1) % 7) + 7) % 7];
+    const r = at(degree);
+    let third = at(degree + 2) - r;
+    let fifth = at(degree + 4) - r;
+    third = ((third % 12) + 12) % 12;
+    fifth = ((fifth % 12) + 12) % 12;
+    if (third === 4 && fifth === 7) return 'major';
+    if (third === 3 && fifth === 7) return 'minor';
+    if (third === 3 && fifth === 6) return 'diminished';
+    if (third === 4 && fifth === 8) return 'augmented';
+    return third <= 3 ? 'minor' : 'major';
+}
+
+// Accidental prefix for a custom borrowed root vs the major scale at the same degree.
+function customArrayPrefix(arr, degree) {
+    const diff = arr[degree - 1] - MAJOR_OFFSETS[degree - 1];
+    if (diff === -1) return '♭';
+    if (diff === -2) return '♭♭';
+    if (diff === 1) return '♯';
+    if (diff === 2) return '♯♯';
+    return '';
+}
+
+// Abbreviations Hooktheory renders for borrowed (mode-mixture) chords.
+const BORROWED_TAG = {
+    minor: 'min', dorian: 'dor', phrygian: 'phr',
+    lydian: 'lyd', mixolydian: 'mix', locrian: 'loc', major: 'maj',
+    harmonicMinor: 'hmin', phrygianDominant: 'phdm',
+};
+// Borrowed scales whose notes/qualities our engine can resolve directly.
+const SUPPORTED_BORROWED = new Set(['minor', 'dorian', 'phrygian', 'lydian', 'mixolydian', 'locrian', 'major', 'harmonicMinor', 'phrygianDominant']);
+
+const NOTE_BASE = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+function noteToPc(note) {
+    const m = (note || '').match(/^([A-Ga-g])(.*)$/);
+    if (!m) return null;
+    let pc = NOTE_BASE[m[1].toUpperCase()];
+    for (const ch of m[2]) { if (ch === '#') pc += 1; else if (ch === 'b') pc -= 1; else if (ch === 'x') pc += 2; }
+    return ((pc % 12) + 12) % 12;
+}
+
+// True when the diatonic seventh of the chord (degree d + a 7th, read in effKey) is a MAJOR
+// seventh (11 semitones) -> rendered "△7" / "maj7" (e.g. I△7, IV△7, bVI△7 in minor).
+function isMajorSeventh(degree, effKey) {
+    try {
+        const root = getNoteLabel(degree, effKey);
+        const seventhDeg = ((degree - 1 + 6) % 7) + 1;
+        const sev = getNoteLabel(seventhDeg, effKey);
+        const r = noteToPc(root), s = noteToPc(sev);
+        if (r == null || s == null) return false;
+        return ((s - r + 12) % 12) === 11;
+    } catch (e) { return false; }
+}
+
+// Same, for a custom borrowed scale given as absolute semitone offsets from the tonic.
+function customArraySeventhMajor(arr, degree) {
+    const at = (i) => arr[(((i - 1) % 7) + 7) % 7];
+    const iv = (((at(degree + 6) - at(degree)) % 12) + 12) % 12;
+    return iv === 11;
+}
+
+// Accidental prefix for a borrowed root: compare the borrowed-scale note at this degree to
+// the major-scale note at the same degree (e.g. bVI in Ab = Fb vs F -> "b").
+function accidentalValue(note) {
+    if (/bb/.test(note)) return -2;
+    if (/x|##/.test(note)) return 2;
+    if (note.includes('b')) return -1;
+    if (note.includes('#')) return 1;
+    return 0;
+}
+function borrowedPrefix(degree, key, borrowedScale) {
+    try {
+        const borrowedNote = getNoteLabel(degree, { tonic: key.tonic, scale: borrowedScale });
+        // The prefix marks the borrowed root's deviation from the diatonic degree of the
+        // ACTIVE key (e.g. #vi(dor) when the key is harmonic minor), not always major.
+        const refNote = getNoteLabel(degree, { tonic: key.tonic, scale: key.scale || 'major' });
+        const diff = accidentalValue(borrowedNote) - accidentalValue(refNote);
+        if (diff === -1) return '♭';
+        if (diff === -2) return '♭♭';
+        if (diff === 1) return '♯';
+        if (diff === 2) return '♯♯';
+    } catch (e) { /* fall through */ }
+    return '';
+}
+
+const SUPERS = { 5: '', 7: '⁷', 9: '⁹', 11: '¹¹', 13: '¹³' };
+
+// Builds the augmented / quality / figured-bass / extension / suspension / alteration suffix
+// for a chord. Order matches Hooktheory's rendering:
+//   [+] [°|ø|△] [figured-bass digits] [extension number] [susN...] [(alteration)...]
+// opts.fullyDiminished: a diminished 7th renders "°7" (vii°7) instead of half-dim "ø7".
+// opts.majorSeventh: a major-quality seventh renders "△" (I△7, IV△9).
+function buildSuffix(chord, quality, opts = {}) {
+    const fullyDiminished = opts.fullyDiminished || false;
+    const majorSeventh = opts.majorSeventh || false;
+    const suspended = Array.isArray(chord.suspensions) && chord.suspensions.length > 0;
+    let suffix = '';
+
+    // Augmented fifth (#5 alteration, or a diatonic augmented triad e.g. III+) renders "+".
+    const augmented = quality === 'augmented' || (Array.isArray(chord.alterations) && chord.alterations.includes('#5'));
+    if (augmented) suffix += '+';
+
+    // Diminished / half-diminished / major-seventh marker sits right after the numeral.
+    // Suspended chords replace the third, so Hooktheory drops the quality marker entirely.
+    if (!suspended) {
+        if (quality === 'diminished') {
+            suffix += (chord.type >= 7 && !fullyDiminished) ? 'ø' : '°';
+        } else if (chord.type >= 7 && majorSeventh) {
+            suffix += '△';
+        }
+    }
+
+    // Figured-bass inversion digits.
+    if (chord.inversion === 1) suffix += (chord.type >= 7) ? '⁶⁵' : '⁶';
+    else if (chord.inversion === 2) suffix += (chord.type >= 7) ? '⁴³' : '⁶₄';
+    else if (chord.inversion === 3) suffix += '⁴²';
+
+    // Extension number (7/9/11/13), shown only when no inversion figure already implies it.
+    if (chord.type >= 7) {
+        const hasInversionSuffix = /[⁶⁴⁵³²]/.test(suffix);
+        if (!hasInversionSuffix) suffix += (SUPERS[chord.type] || '⁷');
+    }
+
+    // Added tones. A 4th/6th is promoted to its compound form (11th/13th) once the chord
+    // already carries a 7th (e.g. ii7(add11), I9(add13)); a 6th stays "add6" on a plain triad.
+    if (Array.isArray(chord.adds) && chord.adds.length) {
+        suffix += chord.adds.map((v) => `(add${(v <= 6 && chord.type >= 7) ? v + 7 : v})`).join('');
+    }
+
+    // Omitted tones (e.g. (no3) power chords, (no5)).
+    if (Array.isArray(chord.omits) && chord.omits.length) {
+        suffix += chord.omits.map((v) => `(no${v})`).join('');
+    }
+
+    // Suspensions (sus2 / sus4).
+    if (suspended) {
+        suffix += chord.suspensions.map((s) => `sus${s}`).join('');
+    }
+
+    // Alterations (e.g. (b5), (#5)).
+    if (Array.isArray(chord.alterations) && chord.alterations.length) {
+        suffix += chord.alterations.map((a) => `(${a})`).join('');
+    }
+
+    return suffix;
+}
+
+// Builds a single numeral (no applied "/"), given the chord's degree and the quality array
+// to read its quality from. `prefix` is any accidental prefix for borrowed roots.
+function buildNumeral(degree, qualities, chord, prefix, opts = {}) {
+    const quality = (degree >= 1 && degree <= 7) ? qualities[degree - 1] : 'major';
+    let roman = ROMAN_MAP[degree] || '';
+    if (quality === 'minor' || quality === 'diminished') roman = roman.toLowerCase();
+    return (prefix || '') + roman + buildSuffix(chord, quality, opts);
 }
 
 /**
  * Converts a chord object to its Roman Numeral representation.
  * @param {Object} chord - The chord object from the JSON data.
  * @param {Object} key - The key object { tonic, scale }.
- * @returns {string} The Roman Numeral symbol (e.g., "ii", "V7/IV", "V/vii°", "bVI").
+ * @returns {string} The Roman Numeral symbol (e.g., "ii", "vii°/ii", "V⁷/V", "♭VI(min)").
  */
 export function getChordSymbol(chord, key) {
     if (!chord || !chord.root) return "";
 
-    const root = chord.root;
-    let scale = key.scale;
-
-    // Handle Borrowed Chords (simple mode mixture)
-    if (chord.borrowed) {
-        // If borrowed is an array (custom scale), we'll add a prefix later
-        // For standard mode borrowing, adjust scale for chord quality calculation
-        if (typeof chord.borrowed === 'string') {
-            // Use the borrowed scale's qualities
-            scale = chord.borrowed;
-        }
-    }
-
-    // Get chord qualities based on the scale
-    const qualities = getChordQualitiesForScale(scale);
-
-    // Safety check for root being 1-7
-    const quality = (root >= 1 && root <= 7) ? qualities[root - 1] : "major";
-
-    const romanMap = { 1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI', 7: 'VII' };
-    let baseRoman = romanMap[root] || "";
-
-    if (quality === "minor" || quality === "diminished") {
-        baseRoman = baseRoman.toLowerCase();
-    }
-
-    let suffix = "";
-
-    // Inversions
-    if (chord.inversion === 1) suffix += (chord.type === 7) ? "⁶⁵" : "⁶";
-    if (chord.inversion === 2) suffix += (chord.type === 7) ? "⁴³" : "⁶₄";
-    if (chord.inversion === 3) suffix += "⁴²"; // Only applies to 7th chords
-
-    // Diminished symbol
-    if (quality === "diminished") {
-        suffix += "°";
-    }
-
-    // Type handling (add 7, etc)
-    if (chord.type === 7) {
-        suffix = suffix.replace("°", "ø"); // Half-diminished logic if applicable, but simplistic for now
-        
-        // Standard figured bass for 7th chord inversions implies the 7th.
-        // Root pos: 7 -> "⁷"
-        // 1st inv: 6/5 -> "⁶⁵" (7th implied, don't add "⁷")
-        // 2nd inv: 4/3 -> "⁴³" (7th implied, don't add "⁷")
-        // 3rd inv: 4/2 -> "⁴²" (7th implied, don't add "⁷")
-        // So if an inversion suffix was added, we DON'T add "7" again.
-        const hasInversionSuffix = (suffix.includes("⁶") || suffix.includes("⁴") || suffix.includes("⁵") || suffix.includes("³") || suffix.includes("²"));
-        if (!hasInversionSuffix && !suffix.includes("⁷")) {
-            suffix += "⁷";
-        }
-    }
-
-    // Prefix for borrowed roots in Major (e.g. bIII, bVI, bVII)
-    // Only add flat for standard mode borrowing where root is actually lowered
-    // Custom borrowed scales will use the same symbol but appear as separate nodes with "(borrowed)" label
-    let prefix = "";
-    if (chord.borrowed && typeof chord.borrowed === 'string') {
-        if (key.scale === 'major' && chord.borrowed === 'minor') {
-            // Standard mode borrowing - only add flat for roots that are lowered (3, 6, 7)
-            if ([3, 6, 7].includes(root)) {
-                prefix = "♭";
-            }
-        }
-    }
-
-    const baseSymbol = prefix + baseRoman + suffix;
-
-    // Handle Applied Chords (Secondary Dominants)
-    // If applied is set and not 0, this is a secondary dominant
-    if (chord.applied && chord.applied !== 0 && chord.applied >= 1 && chord.applied <= 7) {
-        const appliedDegree = chord.applied;
-        // Get the roman numeral for the target degree based on the key's scale
+    // --- Applied chords (secondary dominants / leading-tone chords) ---
+    // HOOKTHEORY DATA MODEL: `applied` is the NUMERATOR chord degree, `root` is the
+    // tonicization TARGET (denominator). The numerator chord is read from the MAJOR scale
+    // of the target; the denominator numeral is read from the main key.
+    if (chord.applied && chord.applied >= 1 && chord.applied <= 7) {
+        const fullyDim = chord.applied === 7; // leading-tone applied chords are fully diminished
+        const targetTonic = getNoteLabel(chord.root, key);
+        const numeratorKey = { tonic: targetTonic, scale: 'major' };
+        const majorSeventh = chord.type >= 7 && isMajorSeventh(chord.applied, numeratorKey);
+        const numerator = buildNumeral(chord.applied, MAJOR_SCALE_CHORD_QUALITIES, chord, '', { fullyDiminished: fullyDim, majorSeventh });
         const targetRomans = getRomanNumeralsForScale(key.scale);
-        const targetRoman = targetRomans[appliedDegree - 1] || "";
-        
-        // Format: <chordSymbol>/<targetRoman>
-        return `${baseSymbol}/${targetRoman}`;
+        const denominator = targetRomans[chord.root - 1] || '';
+        return `${numerator}/${denominator}`;
     }
 
-    return baseSymbol;
+    // --- Normal / borrowed chords ---
+    const borrowed = chord.borrowed;
+    let scale = key.scale;
+    let tag = '';
+    let prefix = '';
+    if (typeof borrowed === 'string' && borrowed && BORROWED_TAG[borrowed]) {
+        if (SUPPORTED_BORROWED.has(borrowed)) {
+            scale = borrowed;
+            prefix = borrowedPrefix(chord.root, key, borrowed);
+        }
+        tag = `(${BORROWED_TAG[borrowed]})`;
+    } else if (Array.isArray(borrowed)) {
+        // Custom borrowed scale: derive quality + accidental directly from the array of
+        // absolute semitone offsets (matches the note builder), not the main key's scale.
+        tag = '(bor)';
+        const quality = customArrayTriadQuality(borrowed, chord.root);
+        prefix = customArrayPrefix(borrowed, chord.root);
+        const majorSeventh = chord.type >= 7 && quality !== 'diminished' && customArraySeventhMajor(borrowed, chord.root);
+        let roman = ROMAN_MAP[chord.root] || '';
+        if (quality === 'minor' || quality === 'diminished') roman = roman.toLowerCase();
+        return prefix + roman + buildSuffix(chord, quality, { majorSeventh }) + tag;
+    }
+
+    const qualities = getChordQualitiesForScale(scale);
+    const quality = (chord.root >= 1 && chord.root <= 7) ? qualities[chord.root - 1] : 'major';
+    const majorSeventh = chord.type >= 7 && quality !== 'diminished' && isMajorSeventh(chord.root, { tonic: key.tonic, scale });
+    return buildNumeral(chord.root, qualities, chord, prefix, { majorSeventh }) + tag;
 }
 
 /**
@@ -156,56 +290,45 @@ export function getChordSymbol(chord, key) {
 export function getChordLetterName(chord, key) {
     if (!chord || !chord.root) return "";
 
-    const root = chord.root;
-    let scale = key.scale;
-
-    // Handle Borrowed Chords
-    if (chord.borrowed) {
-        if (typeof chord.borrowed === 'string') {
-            scale = chord.borrowed;
-        }
+    // Resolve the degree + key the chord root should be read from. For applied chords the
+    // root note comes from the MAJOR scale of the tonicization target (degree `root`), and
+    // the chord degree is `applied`.
+    let degree, effKey, quality;
+    if (chord.applied && chord.applied >= 1 && chord.applied <= 7) {
+        const targetTonic = getNoteLabel(chord.root, key);
+        effKey = { tonic: targetTonic, scale: 'major' };
+        degree = chord.applied;
+        quality = MAJOR_SCALE_CHORD_QUALITIES[degree - 1];
+    } else {
+        let scale = key.scale;
+        if (typeof chord.borrowed === 'string' && chord.borrowed && SUPPORTED_BORROWED.has(chord.borrowed)) scale = chord.borrowed;
+        effKey = { tonic: key.tonic, scale };
+        degree = chord.root;
+        quality = getChordQualitiesForScale(scale)[degree - 1];
     }
 
-    // Get chord qualities based on the scale
-    const qualities = getChordQualitiesForScale(scale);
-    const quality = (root >= 1 && root <= 7) ? qualities[root - 1] : "major";
+    const rootNoteName = getNoteLabel(degree, effKey);
+    const majorSeventh = chord.type >= 7 && quality !== 'diminished' && quality !== 'augmented' && isMajorSeventh(degree, effKey);
+    const augmented = quality === 'augmented' || (Array.isArray(chord.alterations) && chord.alterations.includes('#5'));
 
-    // Get root note name
-    const rootNoteName = getNoteLabel(root, key);
-    
     let suffix = "";
-
-    // Add quality suffix
-    if (quality === "minor") {
-        suffix += "m";
-    } else if (quality === "diminished") {
-        suffix += "°";
-    }
-    // Major has no suffix
-
-    // Add 7th chord suffix
-    if (chord.type === 7) {
-        suffix += "7";
+    if (quality === "minor") suffix += "m";
+    else if (quality === "diminished") suffix += "°";
+    else if (augmented) suffix += "+";
+    if (chord.type >= 7) suffix += (majorSeventh ? 'maj' : '') + String(chord.type);
+    if (Array.isArray(chord.suspensions) && chord.suspensions.length) {
+        suffix += chord.suspensions.map((s) => `sus${s}`).join('');
     }
 
-    // Handle inversions (add slash notation with bass note)
-    // For inversions, we need to calculate which note is in the bass
-    if (chord.inversion === 1) {
-        // First inversion: third is in bass
-        // Third is root + 2 scale degrees (wrapped)
-        const thirdDegree = ((root - 1 + 2) % 7) + 1;
-        const thirdNoteName = getNoteLabel(thirdDegree, key);
-        return `${rootNoteName}${suffix}/${thirdNoteName}`;
-    } else if (chord.inversion === 2) {
-        // Second inversion: fifth is in bass
-        const fifthDegree = ((root - 1 + 4) % 7) + 1;
-        const fifthNoteName = getNoteLabel(fifthDegree, key);
-        return `${rootNoteName}${suffix}/${fifthNoteName}`;
-    } else if (chord.inversion === 3 && chord.type === 7) {
-        // Third inversion (7th chords only): seventh is in bass
-        const seventhDegree = ((root - 1 + 6) % 7) + 1;
-        const seventhNoteName = getNoteLabel(seventhDegree, key);
-        return `${rootNoteName}${suffix}/${seventhNoteName}`;
+    // Inversion bass note: nth chord tone read within the effective key.
+    let bassOffset = null;
+    if (chord.inversion === 1) bassOffset = 2;        // third
+    else if (chord.inversion === 2) bassOffset = 4;   // fifth
+    else if (chord.inversion === 3 && chord.type >= 7) bassOffset = 6; // seventh
+    if (bassOffset != null) {
+        const bassDegree = ((degree - 1 + bassOffset) % 7) + 1;
+        const bassNoteName = getNoteLabel(bassDegree, effKey);
+        return `${rootNoteName}${suffix}/${bassNoteName}`;
     }
 
     return rootNoteName + suffix;

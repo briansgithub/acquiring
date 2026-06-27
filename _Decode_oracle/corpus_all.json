@@ -1,0 +1,496 @@
+[
+  {
+    "tier": 1,
+    "note": "basic triads I-IV-V / I-V-vi-IV",
+    "url": "https://www.hooktheory.com/theorytab/view/the-proclaimers/500-miles",
+    "alternates": []
+  },
+  {
+    "tier": 1,
+    "note": "basic triads",
+    "url": "https://www.hooktheory.com/theorytab/view/bob-marley/three-little-birds",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/journey/dont-stop-believin"
+    ]
+  },
+  {
+    "tier": 1,
+    "note": "basic triads",
+    "url": "https://www.hooktheory.com/theorytab/view/john-denver/take-me-home-country-roads",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/lynyrd-skynyrd/sweet-home-alabama"
+    ]
+  },
+  {
+    "tier": 1,
+    "note": "I-V-vi-IV pop",
+    "url": "https://www.hooktheory.com/theorytab/view/the-beatles/let-it-be",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/journey/dont-stop-believin"
+    ]
+  },
+  {
+    "tier": 2,
+    "note": "sus / add, simple sevenths",
+    "url": "https://www.hooktheory.com/theorytab/view/oasis/wonderwall",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/the-cranberries/zombie"
+    ]
+  },
+  {
+    "tier": 2,
+    "note": "sevenths + inversions",
+    "url": "https://www.hooktheory.com/theorytab/view/ed-sheeran/perfect",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/john-legend/all-of-me"
+    ]
+  },
+  {
+    "tier": 2,
+    "note": "sevenths + inversions",
+    "url": "https://www.hooktheory.com/theorytab/view/adele/someone-like-you",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/elton-john/your-song"
+    ]
+  },
+  {
+    "tier": 2,
+    "note": "descending bass / inversions",
+    "url": "https://www.hooktheory.com/theorytab/view/elton-john/your-song",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/the-beatles/something"
+    ]
+  },
+  {
+    "tier": 3,
+    "note": "secondary dominants / applied",
+    "url": "https://www.hooktheory.com/theorytab/view/the-beatles/penny-lane",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/the-beatles/eight-days-a-week"
+    ]
+  },
+  {
+    "tier": 3,
+    "note": "applied chords",
+    "url": "https://www.hooktheory.com/theorytab/view/the-beach-boys/god-only-knows",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/the-beatles/i-want-to-hold-your-hand"
+    ]
+  },
+  {
+    "tier": 3,
+    "note": "applied chords / chromatic",
+    "url": "https://www.hooktheory.com/theorytab/view/stevie-wonder/isnt-she-lovely",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/stevie-wonder/sir-duke"
+    ]
+  },
+  {
+    "tier": 3,
+    "note": "applied + sevenths",
+    "url": "https://www.hooktheory.com/theorytab/view/queen/somebody-to-love",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/queen/killer-queen"
+    ]
+  },
+  {
+    "tier": 4,
+    "note": "borrowed / modal mixture",
+    "url": "https://www.hooktheory.com/theorytab/view/radiohead/creep",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/the-beatles/while-my-guitar-gently-weeps"
+    ]
+  },
+  {
+    "tier": 4,
+    "note": "dorian / modal",
+    "url": "https://www.hooktheory.com/theorytab/view/nirvana/come-as-you-are",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/daft-punk/get-lucky"
+    ]
+  },
+  {
+    "tier": 4,
+    "note": "modal / borrowed",
+    "url": "https://www.hooktheory.com/theorytab/view/the-beatles/eleanor-rigby",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/simon-and-garfunkel/the-sound-of-silence"
+    ]
+  },
+  {
+    "tier": 4,
+    "note": "borrowed / suspensions",
+    "url": "https://www.hooktheory.com/theorytab/view/coldplay/clocks",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/coldplay/the-scientist"
+    ]
+  },
+  {
+    "tier": 5,
+    "note": "jazz standard / ii-V-I, sevenths",
+    "url": "https://www.hooktheory.com/theorytab/view/frank-sinatra/fly-me-to-the-moon",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/the-beatles/michelle"
+    ]
+  },
+  {
+    "tier": 5,
+    "note": "bossa / extended harmony",
+    "url": "https://www.hooktheory.com/theorytab/view/antonio-carlos-jobim/the-girl-from-ipanema",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/antonio-carlos-jobim/corcovado"
+    ]
+  },
+  {
+    "tier": 5,
+    "note": "jazz / chromatic",
+    "url": "https://www.hooktheory.com/theorytab/view/duke-ellington/take-the-a-train",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/george-gershwin/summertime"
+    ]
+  },
+  {
+    "tier": 5,
+    "note": "jazz standard, ii-V chains",
+    "url": "https://www.hooktheory.com/theorytab/view/joseph-kosma/autumn-leaves",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/miles-davis/so-what"
+    ]
+  },
+  {
+    "tier": 5,
+    "note": "ragtime / chromatic (verified)",
+    "url": "https://www.hooktheory.com/theorytab/view/scott-joplin/maple-leaf-rag",
+    "alternates": []
+  },
+  {
+    "tier": 5,
+    "note": "jazz ballad / altered",
+    "url": "https://www.hooktheory.com/theorytab/view/thelonious-monk/round-midnight",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/herbie-hancock/cantaloupe-island"
+    ]
+  },
+  {
+    "tier": 5,
+    "note": "coltrane changes / max chromaticism",
+    "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/giant-steps",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/dave-brubeck/take-five"
+    ]
+  },
+  {
+    "tier": 5,
+    "note": "romantic / chromatic classical",
+    "url": "https://www.hooktheory.com/theorytab/view/frederic-chopin/nocturne-op-9-no-2",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/claude-debussy/clair-de-lune"
+    ]
+  },
+  {
+    "tier": 1,
+    "url": "https://www.hooktheory.com/theorytab/view/journey/dont-stop-believin",
+    "alternates": []
+  },
+  {
+    "tier": 1,
+    "url": "https://www.hooktheory.com/theorytab/view/lynyrd-skynyrd/sweet-home-alabama",
+    "alternates": []
+  },
+  {
+    "tier": 1,
+    "url": "https://www.hooktheory.com/theorytab/view/the-cranberries/zombie",
+    "alternates": []
+  },
+  {
+    "tier": 1,
+    "url": "https://www.hooktheory.com/theorytab/view/bob-dylan/knockin-on-heavens-door",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/guns-n-roses/knockin-on-heavens-door"
+    ]
+  },
+  {
+    "tier": 1,
+    "url": "https://www.hooktheory.com/theorytab/view/neil-young/heart-of-gold",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/cyndi-lauper/time-after-time"
+    ]
+  },
+  {
+    "tier": 1,
+    "url": "https://www.hooktheory.com/theorytab/view/tom-petty/free-fallin",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/tom-petty/i-wont-back-down"
+    ]
+  },
+  {
+    "tier": 1,
+    "url": "https://www.hooktheory.com/theorytab/view/green-day/good-riddance-time-of-your-life",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/green-day/boulevard-of-broken-dreams"
+    ]
+  },
+  {
+    "tier": 1,
+    "url": "https://www.hooktheory.com/theorytab/view/ben-e-king/stand-by-me",
+    "alternates": []
+  },
+  {
+    "tier": 1,
+    "url": "https://www.hooktheory.com/theorytab/view/john-legend/all-of-me",
+    "alternates": []
+  },
+  {
+    "tier": 1,
+    "url": "https://www.hooktheory.com/theorytab/view/passenger/let-her-go",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/jason-mraz/im-yours"
+    ]
+  },
+  {
+    "tier": 2,
+    "url": "https://www.hooktheory.com/theorytab/view/the-beatles/something",
+    "alternates": []
+  },
+  {
+    "tier": 2,
+    "url": "https://www.hooktheory.com/theorytab/view/oasis/dont-look-back-in-anger",
+    "alternates": []
+  },
+  {
+    "tier": 2,
+    "url": "https://www.hooktheory.com/theorytab/view/eagles/hotel-california",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/the-eagles/hotel-california"
+    ]
+  },
+  {
+    "tier": 2,
+    "url": "https://www.hooktheory.com/theorytab/view/guns-n-roses/sweet-child-o-mine",
+    "alternates": []
+  },
+  {
+    "tier": 2,
+    "url": "https://www.hooktheory.com/theorytab/view/a-ha/take-on-me",
+    "alternates": []
+  },
+  {
+    "tier": 2,
+    "url": "https://www.hooktheory.com/theorytab/view/toto/africa",
+    "alternates": []
+  },
+  {
+    "tier": 2,
+    "url": "https://www.hooktheory.com/theorytab/view/fleetwood-mac/dreams",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/fleetwood-mac/go-your-own-way"
+    ]
+  },
+  {
+    "tier": 2,
+    "url": "https://www.hooktheory.com/theorytab/view/the-police/every-breath-you-take",
+    "alternates": []
+  },
+  {
+    "tier": 2,
+    "url": "https://www.hooktheory.com/theorytab/view/rem/losing-my-religion",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/r-e-m/losing-my-religion"
+    ]
+  },
+  {
+    "tier": 2,
+    "url": "https://www.hooktheory.com/theorytab/view/coldplay/the-scientist",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/coldplay/viva-la-vida"
+    ]
+  },
+  {
+    "tier": 3,
+    "url": "https://www.hooktheory.com/theorytab/view/the-beatles/hey-jude",
+    "alternates": []
+  },
+  {
+    "tier": 3,
+    "url": "https://www.hooktheory.com/theorytab/view/billy-joel/piano-man",
+    "alternates": []
+  },
+  {
+    "tier": 3,
+    "url": "https://www.hooktheory.com/theorytab/view/elton-john/rocket-man",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/elton-john/tiny-dancer"
+    ]
+  },
+  {
+    "tier": 3,
+    "url": "https://www.hooktheory.com/theorytab/view/the-beatles/blackbird",
+    "alternates": []
+  },
+  {
+    "tier": 3,
+    "url": "https://www.hooktheory.com/theorytab/view/the-beatles/i-want-to-hold-your-hand",
+    "alternates": []
+  },
+  {
+    "tier": 3,
+    "url": "https://www.hooktheory.com/theorytab/view/simon-and-garfunkel/bridge-over-troubled-water",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/simon-and-garfunkel/mrs-robinson"
+    ]
+  },
+  {
+    "tier": 3,
+    "url": "https://www.hooktheory.com/theorytab/view/carole-king/its-too-late",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/carole-king/you-ve-got-a-friend"
+    ]
+  },
+  {
+    "tier": 3,
+    "url": "https://www.hooktheory.com/theorytab/view/stevie-wonder/sir-duke",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/stevie-wonder/superstition"
+    ]
+  },
+  {
+    "tier": 3,
+    "url": "https://www.hooktheory.com/theorytab/view/earth-wind-and-fire/september",
+    "alternates": []
+  },
+  {
+    "tier": 3,
+    "url": "https://www.hooktheory.com/theorytab/view/the-jackson-5/i-want-you-back",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/michael-jackson/billie-jean"
+    ]
+  },
+  {
+    "tier": 4,
+    "url": "https://www.hooktheory.com/theorytab/view/radiohead/karma-police",
+    "alternates": []
+  },
+  {
+    "tier": 4,
+    "url": "https://www.hooktheory.com/theorytab/view/the-beatles/while-my-guitar-gently-weeps",
+    "alternates": []
+  },
+  {
+    "tier": 4,
+    "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/breathe",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/pink-floyd/money"
+    ]
+  },
+  {
+    "tier": 4,
+    "url": "https://www.hooktheory.com/theorytab/view/david-bowie/space-oddity",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/david-bowie/life-on-mars"
+    ]
+  },
+  {
+    "tier": 4,
+    "url": "https://www.hooktheory.com/theorytab/view/the-doors/light-my-fire",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/the-doors/riders-on-the-storm"
+    ]
+  },
+  {
+    "tier": 4,
+    "url": "https://www.hooktheory.com/theorytab/view/soundgarden/black-hole-sun",
+    "alternates": []
+  },
+  {
+    "tier": 4,
+    "url": "https://www.hooktheory.com/theorytab/view/nirvana/smells-like-teen-spirit",
+    "alternates": []
+  },
+  {
+    "tier": 4,
+    "url": "https://www.hooktheory.com/theorytab/view/red-hot-chili-peppers/under-the-bridge",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/red-hot-chili-peppers/californication"
+    ]
+  },
+  {
+    "tier": 4,
+    "url": "https://www.hooktheory.com/theorytab/view/amy-winehouse/back-to-black",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/amy-winehouse/rehab"
+    ]
+  },
+  {
+    "tier": 4,
+    "url": "https://www.hooktheory.com/theorytab/view/the-beatles/lucy-in-the-sky-with-diamonds",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/the-beatles/strawberry-fields-forever"
+    ]
+  },
+  {
+    "tier": 5,
+    "url": "https://www.hooktheory.com/theorytab/view/george-gershwin/summertime",
+    "alternates": []
+  },
+  {
+    "tier": 5,
+    "url": "https://www.hooktheory.com/theorytab/view/miles-davis/blue-in-green",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/miles-davis/freddie-freeloader"
+    ]
+  },
+  {
+    "tier": 5,
+    "url": "https://www.hooktheory.com/theorytab/view/herbie-hancock/cantaloupe-island",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/herbie-hancock/watermelon-man"
+    ]
+  },
+  {
+    "tier": 5,
+    "url": "https://www.hooktheory.com/theorytab/view/dave-brubeck/take-five",
+    "alternates": []
+  },
+  {
+    "tier": 5,
+    "url": "https://www.hooktheory.com/theorytab/view/bill-evans/waltz-for-debby",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/vince-guaraldi/linus-and-lucy"
+    ]
+  },
+  {
+    "tier": 5,
+    "url": "https://www.hooktheory.com/theorytab/view/duke-ellington/in-a-sentimental-mood",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/duke-ellington/caravan"
+    ]
+  },
+  {
+    "tier": 5,
+    "url": "https://www.hooktheory.com/theorytab/view/antonio-carlos-jobim/corcovado",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/antonio-carlos-jobim/wave"
+    ]
+  },
+  {
+    "tier": 5,
+    "url": "https://www.hooktheory.com/theorytab/view/chick-corea/spain",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/pat-metheny/spain"
+    ]
+  },
+  {
+    "tier": 5,
+    "url": "https://www.hooktheory.com/theorytab/view/wes-montgomery/four-on-six",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/sonny-rollins/st-thomas"
+    ]
+  },
+  {
+    "tier": 5,
+    "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/naima",
+    "alternates": [
+      "https://www.hooktheory.com/theorytab/view/joe-henderson/recorda-me"
+    ]
+  }
+]
