@@ -46,11 +46,15 @@
     "engNotes": [
       "D3",
       "F#3",
-      "A3"
+      "A3",
+      "G3",
+      "E4"
     ],
     "engPcs": [
       2,
+      4,
       6,
+      7,
       9
     ],
     "flags": {
@@ -60,15 +64,15 @@
       "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false
     },
-    "notesOk": false,
+    "notesOk": true,
     "romanExact": false,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=5",
       "inversion=0",

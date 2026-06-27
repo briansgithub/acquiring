@@ -57,8 +57,19 @@ async function rerunBucket(entries) {
   let pass = 0;
   const failures = [];
   for (const e of entries) {
-    const eng = await runChord(e.chord, e.key);
-    const truth = { roman: e.truthRoman, letter: parseLetter(e.truthLetter) };
+    const mods = require('./truthLetterParse').mergeMods(e.truthLetter, e.truthRoman, e.chord);
+    const halfDim = /ø/.test(e.truthRoman || '');
+    const enrichedChord = {
+      ...e.chord,
+      adds: mods.adds,
+      omits: mods.omits,
+      alterations: mods.alterations,
+      suspensions: mods.suspensions,
+      type: mods.type,
+      halfDim,
+    };
+    const eng = await runChord(enrichedChord, e.key);
+    const truth = { roman: e.truthRoman, letter: parseLetter(e.truthLetter), key: e.key };
     const rendered = e.pianoNotes ? { pianoNotes: e.pianoNotes } : {};
     const row = compareChord(truth, { ...eng, chord: e.chord, beat: e.beat }, rendered);
     if (row.notesOk) pass++;

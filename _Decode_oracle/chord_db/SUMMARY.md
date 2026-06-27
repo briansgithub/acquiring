@@ -1,46 +1,48 @@
 # Chord DB — modification pass rates
 
-Built: 2026-06-27T07:39:23.468Z | Updated: 2026-06-27T07:41:00.060Z | Sources: 70 songs | Unique chords: 3378
+Built: 2026-06-27T08:12:05.846Z | Updated: 2026-06-27T08:15:32.753Z | Sources: 70 songs | Unique chords: 3378
 
-- **notesOk (unique):** 90.2% (3048/3378)
-- **romanExact (unique):** 96.8% (3269/3378)
-- **Chords below 99% target:** 330 failing (9.8% of corpus)
-- **Buckets below 99%:** 39 / 41
+- **notesOk (unique):** 97.8% (3303/3378)
+- **romanExact (unique):** 94.6% (3196/3378)
+- **Chords below 99% target:** 75 failing (2.2% of corpus)
+- **Buckets below 99%:** 21 / 41
 
 ## Worst buckets (engine fix priority)
 
-### `adds=9` — 0.0% (0/56)
+### `omits=3+5` — 0.0% (0/1)
 
-Failure mix: engine=49, harness=0, piano_noise=7
+Failure mix: engine=1, harness=0, piano_noise=0
 
 Example:
 ```json
 {
-  "id": "a-ha__take-on-me/Intro/1",
-  "truthRoman": "ii(add9)",
-  "engRoman": "ii(add9)",
+  "id": "rem__losing-my-religion/Intro/15",
+  "truthRoman": "iiø11(no3no5)",
+  "engRoman": "iiø¹¹(no3)(no5)(b5)(b9)(3)(5)",
   "truthPcs": [
-    1,
-    2,
-    6,
+    0,
+    5,
+    8,
     11
   ],
   "engPcs": [
-    2,
-    6,
+    0,
+    5,
+    9,
     11
   ],
   "chord": {
     "root": 2,
-    "beat": 1,
-    "duration": 8,
-    "type": 5,
+    "beat": 15,
+    "duration": 2,
+    "type": 11,
     "inversion": 0,
     "applied": 0,
-    "adds": [
-      9
+    "adds": [],
+    "omits": [
+      3,
+      5
     ],
-    "omits": [],
     "alterations": [],
     "suspensions": [],
     "substitutions": [],
@@ -54,43 +56,51 @@ Example:
 }
 ```
 
-### `adds=4` — 0.0% (0/40)
+### `borrowed=custom-array` — 76.5% (13/17)
 
-Failure mix: engine=29, harness=0, piano_noise=11
+Failure mix: engine=1, harness=0, piano_noise=3
 
 Example:
 ```json
 {
-  "id": "adele__someone-like-you/Chorus/41",
-  "truthRoman": "vi(add4)",
-  "engRoman": "vi(add4)",
+  "id": "the-beach-boys__god-only-knows/Verse/29",
+  "truthRoman": "#iø7(bor)",
+  "engRoman": "♯iø⁷(b5)(bor)",
   "truthPcs": [
     1,
-    6,
-    9,
-    11
+    4,
+    7,
+    10
   ],
   "engPcs": [
     1,
-    6,
-    9
+    3,
+    8,
+    10
   ],
   "chord": {
-    "root": 6,
-    "beat": 41,
-    "duration": 2,
-    "type": 5,
+    "root": 1,
+    "beat": 29,
+    "duration": 4,
+    "type": 7,
     "inversion": 0,
     "applied": 0,
-    "adds": [
-      4
-    ],
+    "adds": [],
     "omits": [],
     "alterations": [],
     "suspensions": [],
+    "substitutions": [],
     "pedal": null,
     "alternate": "",
-    "borrowed": "",
+    "borrowed": [
+      1,
+      2,
+      4,
+      6,
+      7,
+      9,
+      11
+    ],
     "isRest": false,
     "recordingEndBeat": null
   },
@@ -98,148 +108,53 @@ Example:
 }
 ```
 
-### `type=13` — 0.0% (0/34)
+### `borrowed=dorian` — 79.1% (34/43)
 
-Failure mix: engine=8, harness=0, piano_noise=26
+Failure mix: engine=5, harness=2, piano_noise=2
 
 Example:
 ```json
 {
-  "id": "amy-winehouse__back-to-black/Verse/31.5",
-  "truthRoman": "VII13(b9)",
-  "engRoman": "VII¹³(b9)",
+  "id": "the-beatles__penny-lane/Verse/21",
+  "truthRoman": "#viø7(dor)",
+  "engRoman": "♯viø⁷(b5)(dor)",
   "truthPcs": [
-    0,
-    1,
-    4,
+    2,
     5,
-    7,
-    9,
-    10
-  ],
-  "engPcs": [
-    0,
-    2,
-    4,
-    5,
-    7,
-    10
-  ],
-  "chord": {
-    "root": 7,
-    "beat": 31.5,
-    "duration": 1,
-    "type": 13,
-    "inversion": 0,
-    "applied": 0,
-    "adds": [],
-    "omits": [],
-    "alterations": [
-      "b9"
-    ],
-    "suspensions": [],
-    "substitutions": [],
-    "pedal": null,
-    "alternate": "",
-    "borrowed": "",
-    "isRest": false,
-    "recordingEndBeat": null
-  },
-  "failureClass": "engine"
-}
-```
-
-### `alterations=b5` — 0.0% (0/21)
-
-Failure mix: engine=18, harness=0, piano_noise=3
-
-Example:
-```json
-{
-  "id": "adele__someone-like-you/Pre-Chorus/37",
-  "truthRoman": "IV(add6)(b5)",
-  "engRoman": "IV(add6)(b5)",
-  "truthPcs": [
-    2,
-    6,
-    8
-  ],
-  "engPcs": [
-    2,
-    6,
-    9
-  ],
-  "chord": {
-    "root": 4,
-    "beat": 37,
-    "duration": 4,
-    "type": 5,
-    "inversion": 0,
-    "applied": 0,
-    "adds": [
-      6
-    ],
-    "omits": [],
-    "alterations": [
-      "b5"
-    ],
-    "suspensions": [],
-    "pedal": null,
-    "alternate": "",
-    "borrowed": "",
-    "isRest": false,
-    "recordingEndBeat": null
-  },
-  "failureClass": "engine"
-}
-```
-
-### `omits=3` — 0.0% (0/17)
-
-Failure mix: engine=12, harness=2, piano_noise=3
-
-Example:
-```json
-{
-  "id": "adele__someone-like-you/Intro/17",
-  "truthRoman": "vi(no3)",
-  "engRoman": "vi(no3)",
-  "truthPcs": [
-    1,
-    6
+    8,
+    11
   ],
   "engPcs": [
     1,
     6,
-    9
+    8,
+    11
   ],
   "chord": {
     "root": 6,
-    "beat": 17,
-    "duration": 8,
-    "type": 5,
+    "beat": 21,
+    "duration": 4,
+    "type": 7,
     "inversion": 0,
     "applied": 0,
     "adds": [],
-    "omits": [
-      3
-    ],
+    "omits": [],
     "alterations": [],
     "suspensions": [],
     "substitutions": [],
     "pedal": null,
     "alternate": "",
-    "borrowed": "",
+    "borrowed": "dorian",
     "isRest": false,
     "recordingEndBeat": null
   },
-  "failureClass": "engine"
+  "failureClass": "harness"
 }
 ```
 
-### `alterations=#5` — 0.0% (0/15)
+### `alterations=#5` — 80.0% (12/15)
 
-Failure mix: engine=8, harness=0, piano_noise=7
+Failure mix: engine=3, harness=0, piano_noise=0
 
 Example:
 ```json
@@ -253,9 +168,9 @@ Example:
     8
   ],
   "engPcs": [
+    0,
     5,
-    8,
-    11
+    8
   ],
   "chord": {
     "root": 5,
@@ -281,45 +196,41 @@ Example:
 }
 ```
 
-### `alterations=b9` — 0.0% (0/12)
+### `type=11` — 82.4% (28/34)
 
-Failure mix: engine=6, harness=0, piano_noise=6
+Failure mix: engine=6, harness=0, piano_noise=0
 
 Example:
 ```json
 {
-  "id": "amy-winehouse__back-to-black/Verse/31.5",
-  "truthRoman": "VII13(b9)",
-  "engRoman": "VII¹³(b9)",
+  "id": "amy-winehouse__back-to-black/Verse/16.5",
+  "truthRoman": "v11",
+  "engRoman": "v¹¹(b9)",
   "truthPcs": [
     0,
-    1,
+    2,
     4,
-    5,
     7,
     9,
     10
   ],
   "engPcs": [
     0,
-    2,
     4,
-    5,
     7,
+    9,
     10
   ],
   "chord": {
-    "root": 7,
-    "beat": 31.5,
-    "duration": 1,
-    "type": 13,
+    "root": 5,
+    "beat": 16.5,
+    "duration": 0.5,
+    "type": 11,
     "inversion": 0,
     "applied": 0,
     "adds": [],
     "omits": [],
-    "alterations": [
-      "b9"
-    ],
+    "alterations": [],
     "suspensions": [],
     "substitutions": [],
     "pedal": null,
@@ -332,93 +243,226 @@ Example:
 }
 ```
 
-### `alterations=#9` — 0.0% (0/4)
+### `alterations=b5` — 85.7% (18/21)
 
-Failure mix: engine=4, harness=0, piano_noise=0
+Failure mix: engine=2, harness=0, piano_noise=1
 
 Example:
 ```json
 {
-  "id": "the-doors__light-my-fire/Verse/12.5",
-  "truthRoman": "I6(#9)5(mix)",
-  "engRoman": "I⁶⁵(#9)(mix)",
+  "id": "the-police__every-breath-you-take/Chorus/64.5",
+  "truthRoman": "vi°△7(b5)(bor)",
+  "engRoman": "vi△⁷(b5)(bor)",
   "truthPcs": [
-    0,
-    3,
-    6,
+    2,
+    5,
     8,
     11
   ],
   "engPcs": [
-    0,
-    3,
-    6,
-    8
+    4,
+    5,
+    8,
+    11
   ],
   "chord": {
-    "root": 1,
-    "beat": 12.5,
+    "root": 6,
+    "beat": 64.5,
     "duration": 0.5,
+    "type": 7,
+    "inversion": 0,
+    "applied": 0,
+    "adds": [],
+    "omits": [],
+    "alterations": [
+      "b5"
+    ],
+    "suspensions": [],
+    "substitutions": [],
+    "pedal": null,
+    "alternate": "",
+    "borrowed": [
+      0,
+      2,
+      4,
+      5,
+      8,
+      9,
+      11
+    ],
+    "isRest": false,
+    "recordingEndBeat": null
+  },
+  "failureClass": "engine"
+}
+```
+
+### `borrowed=phrygian` — 86.7% (13/15)
+
+Failure mix: engine=1, harness=0, piano_noise=1
+
+Example:
+```json
+{
+  "id": "george-gershwin__summertime/Chorus/35",
+  "truthRoman": "vø7(phr)",
+  "engRoman": "vø⁷(b5)(phr)",
+  "truthPcs": [
+    1,
+    4,
+    7,
+    10
+  ],
+  "engPcs": [
+    2,
+    4,
+    7,
+    9
+  ],
+  "chord": {
+    "root": 5,
+    "beat": 35,
+    "duration": 2,
+    "type": 7,
+    "inversion": 0,
+    "applied": 0,
+    "adds": [],
+    "omits": [],
+    "alterations": [],
+    "suspensions": [],
+    "substitutions": [],
+    "pedal": null,
+    "alternate": "",
+    "borrowed": "phrygian",
+    "isRest": false,
+    "recordingEndBeat": null
+  },
+  "failureClass": "engine"
+}
+```
+
+### `borrowed=major` — 88.5% (23/26)
+
+Failure mix: engine=3, harness=0, piano_noise=0
+
+Example:
+```json
+{
+  "id": "green-day__boulevard-of-broken-dreams/Outro/11",
+  "truthRoman": "V/#iii(maj)(maj)",
+  "engRoman": "V/III",
+  "truthPcs": [
+    4,
+    8,
+    11
+  ],
+  "engPcs": [
+    3,
+    7,
+    10
+  ],
+  "chord": {
+    "root": 3,
+    "beat": 11,
+    "duration": 2,
+    "type": 5,
+    "inversion": 0,
+    "applied": 5,
+    "adds": [],
+    "omits": [],
+    "alterations": [],
+    "suspensions": [],
+    "substitutions": [],
+    "pedal": null,
+    "alternate": "",
+    "borrowed": "major",
+    "isRest": false,
+    "recordingEndBeat": null
+  },
+  "failureClass": "engine"
+}
+```
+
+### `borrowed=locrian` — 90.0% (9/10)
+
+Failure mix: engine=0, harness=1, piano_noise=0
+
+Example:
+```json
+{
+  "id": "george-gershwin__summertime/Verse/9",
+  "truthRoman": "i",
+  "engRoman": "V⁷/V",
+  "truthPcs": [
+    2,
+    6,
+    9,
+    11
+  ],
+  "engPcs": [
+    1,
+    5,
+    8,
+    11
+  ],
+  "chord": {
+    "root": 5,
+    "beat": 9,
+    "duration": 4,
+    "type": 7,
+    "inversion": 0,
+    "applied": 5,
+    "adds": [],
+    "omits": [],
+    "alterations": [],
+    "suspensions": [],
+    "pedal": null,
+    "alternate": "",
+    "borrowed": "locrian",
+    "isRest": false,
+    "recordingEndBeat": null
+  },
+  "failureClass": "harness"
+}
+```
+
+### `inversion=1` — 90.4% (189/209)
+
+Failure mix: engine=17, harness=2, piano_noise=1
+
+Example:
+```json
+{
+  "id": "carole-king__its-too-late/Chorus/27",
+  "truthRoman": "vi65",
+  "engRoman": "vi⁶⁵",
+  "truthPcs": [
+    0,
+    3,
+    5,
+    9
+  ],
+  "engPcs": [
+    0,
+    2,
+    5,
+    9
+  ],
+  "chord": {
+    "root": 6,
+    "beat": 27,
+    "duration": 2,
     "type": 7,
     "inversion": 1,
     "applied": 0,
     "adds": [],
     "omits": [],
-    "alterations": [
-      "#9"
-    ],
-    "suspensions": [],
-    "substitutions": [],
-    "pedal": null,
-    "alternate": "",
-    "borrowed": "mixolydian",
-    "isRest": false,
-    "recordingEndBeat": null
-  },
-  "failureClass": "engine"
-}
-```
-
-### `adds=4+9` — 0.0% (0/1)
-
-Failure mix: engine=1, harness=0, piano_noise=0
-
-Example:
-```json
-{
-  "id": "radiohead__karma-police/Chorus/31",
-  "truthRoman": "V(add4add9)",
-  "engRoman": "V(add4)(add9)",
-  "truthPcs": [
-    2,
-    4,
-    6,
-    7,
-    9
-  ],
-  "engPcs": [
-    2,
-    6,
-    9
-  ],
-  "chord": {
-    "root": 5,
-    "beat": 31,
-    "duration": 2,
-    "type": 5,
-    "inversion": 0,
-    "applied": 0,
-    "adds": [
-      4,
-      9
-    ],
-    "omits": [],
     "alterations": [],
     "suspensions": [],
     "substitutions": [],
     "pedal": null,
     "alternate": "",
-    "borrowed": "",
+    "borrowed": null,
     "isRest": false,
     "recordingEndBeat": null
   },
@@ -426,94 +470,43 @@ Example:
 }
 ```
 
-### `adds=6+9` — 0.0% (0/1)
-
-Failure mix: engine=1, harness=0, piano_noise=0
-
-Example:
-```json
-{
-  "id": "the-cranberries__zombie/Intro/13",
-  "truthRoman": "VII6(add6add9)",
-  "engRoman": "VII⁶(add6)(add9)",
-  "truthPcs": [
-    2,
-    4,
-    6,
-    9
-  ],
-  "engPcs": [
-    2,
-    6,
-    9
-  ],
-  "chord": {
-    "root": 7,
-    "beat": 13,
-    "duration": 4,
-    "type": 5,
-    "inversion": 1,
-    "applied": 0,
-    "adds": [
-      6,
-      9
-    ],
-    "omits": [],
-    "alterations": [],
-    "suspensions": [],
-    "substitutions": [],
-    "pedal": null,
-    "alternate": "",
-    "borrowed": "",
-    "isRest": false,
-    "recordingEndBeat": null
-  },
-  "failureClass": "engine"
-}
-```
-
-### `alterations=#11` — 0.0% (0/1)
+### `borrowed=lydian` — 93.3% (14/15)
 
 Failure mix: engine=0, harness=0, piano_noise=1
 
 Example:
 ```json
 {
-  "id": "duke-ellington__take-the-a-train/Chorus/9",
-  "truthRoman": "V9(#11)/V",
-  "engRoman": "V⁹(#11)/V",
+  "id": "elton-john__your-song/Chorus/21",
+  "truthRoman": "#ivø7(lyd)",
+  "engRoman": "♯ivø⁷(b5)(lyd)",
   "truthPcs": [
     0,
-    2,
-    4,
+    3,
     6,
-    8,
     9
   ],
   "engPcs": [
     0,
     2,
-    4,
-    6,
+    7,
     9
   ],
   "chord": {
-    "root": 5,
-    "beat": 9,
-    "duration": 8,
-    "type": 9,
+    "root": 4,
+    "beat": 21,
+    "duration": 2,
+    "type": 7,
     "inversion": 0,
-    "applied": 5,
+    "applied": 0,
     "adds": [],
     "omits": [],
-    "alterations": [
-      "#11"
-    ],
+    "alterations": [],
     "suspensions": [],
     "substitutions": [],
     "pedal": null,
     "alternate": "",
-    "borrowed": "",
+    "borrowed": "lydian",
     "isRest": false,
     "recordingEndBeat": null
   },
@@ -521,46 +514,41 @@ Example:
 }
 ```
 
-### `alterations=#5+#9` — 0.0% (0/1)
+### `applied=yes` — 94.2% (178/189)
 
-Failure mix: engine=1, harness=0, piano_noise=0
+Failure mix: engine=7, harness=2, piano_noise=2
 
 Example:
 ```json
 {
-  "id": "miles-davis__blue-in-green/Intro/11",
-  "truthRoman": "V+7(#5#9)/v(maj)",
-  "engRoman": "V+⁷(#5)(#9)/v",
+  "id": "green-day__boulevard-of-broken-dreams/Outro/11",
+  "truthRoman": "V/#iii(maj)(maj)",
+  "engRoman": "V/III",
   "truthPcs": [
-    0,
-    2,
-    4,
-    7,
-    8
-  ],
-  "engPcs": [
-    2,
     4,
     8,
     11
   ],
+  "engPcs": [
+    3,
+    7,
+    10
+  ],
   "chord": {
-    "root": 5,
+    "root": 3,
     "beat": 11,
     "duration": 2,
-    "type": 7,
+    "type": 5,
     "inversion": 0,
     "applied": 5,
     "adds": [],
     "omits": [],
-    "alterations": [
-      "#5",
-      "#9"
-    ],
+    "alterations": [],
     "suspensions": [],
+    "substitutions": [],
     "pedal": null,
     "alternate": "",
-    "borrowed": "",
+    "borrowed": "major",
     "isRest": false,
     "recordingEndBeat": null
   },
@@ -572,47 +560,47 @@ Example:
 
 | Modification | count | notesOk | romanExact | failing | engine | harness | piano | example |
 |---|---:|---:|---:|---:|---:|---:|---:|---|
-| adds=9 | 56 | 0.0% | 91.1% | 56 | 49 | 0 | 7 | `a-ha__take-on-me/Intro/1` ii(add9)→ii(add9) |
-| adds=4 | 40 | 0.0% | 72.5% | 40 | 29 | 0 | 11 | `adele__someone-like-you/Chorus/41` vi(add4)→vi(add4) |
-| type=13 | 34 | 0.0% | 100.0% | 34 | 8 | 0 | 26 | `amy-winehouse__back-to-black/Verse/31.5` VII13(b9)→VII¹³(b9) |
-| alterations=b5 | 21 | 0.0% | 61.9% | 21 | 18 | 0 | 3 | `adele__someone-like-you/Pre-Chorus/37` IV(add6)(b5)→IV(add6)(b5) |
-| omits=3 | 17 | 0.0% | 100.0% | 17 | 12 | 2 | 3 | `adele__someone-like-you/Intro/17` vi(no3)→vi(no3) |
-| alterations=#5 | 15 | 0.0% | 80.0% | 15 | 8 | 0 | 7 | `pink-floyd__money/Chorus/8` vii/V(maj)(#5)(maj)→vii+°(#5)/v |
-| alterations=b9 | 12 | 0.0% | 100.0% | 12 | 6 | 0 | 6 | `amy-winehouse__back-to-black/Verse/31.5` VII13(b9)→VII¹³(b9) |
-| alterations=#9 | 4 | 0.0% | 0.0% | 4 | 4 | 0 | 0 | `the-doors__light-my-fire/Verse/12.5` I6(#9)5(mix)→I⁶⁵(#9)(mix) |
-| adds=4+9 | 1 | 0.0% | 0.0% | 1 | 1 | 0 | 0 | `radiohead__karma-police/Chorus/31` V(add4add9)→V(add4)(add9) |
-| adds=6+9 | 1 | 0.0% | 0.0% | 1 | 1 | 0 | 0 | `the-cranberries__zombie/Intro/13` VII6(add6add9)→VII⁶(add6)(add9) |
-| alterations=#11 | 1 | 0.0% | 100.0% | 1 | 0 | 0 | 1 | `duke-ellington__take-the-a-train/Chorus/9` V9(#11)/V→V⁹(#11)/V |
-| alterations=#5+#9 | 1 | 0.0% | 0.0% | 1 | 1 | 0 | 0 | `miles-davis__blue-in-green/Intro/11` V+7(#5#9)/v(maj)→V+⁷(#5)(#9)/v |
-| omits=3+5 | 1 | 0.0% | 0.0% | 1 | 1 | 0 | 0 | `rem__losing-my-religion/Intro/15` iiø11(no3no5)→iiø¹¹(no3)(no5) |
-| alterations=b5+b9 | 1 | 0.0% | 0.0% | 1 | 0 | 0 | 1 | `thelonious-monk__round-midnight/Verse/29` V7(b5b9)(maj)→V⁷(b5)(b9)(maj) |
-| omits=5 | 30 | 6.7% | 96.7% | 28 | 28 | 0 | 0 | `john-legend__all-of-me/Intro and Verse/3` IV(no5)→IV(no5) |
-| type=11 | 34 | 29.4% | 97.1% | 24 | 16 | 0 | 8 | `amy-winehouse__back-to-black/Verse/16.5` v11→v¹¹ |
-| borrowed=locrian | 10 | 40.0% | 40.0% | 6 | 5 | 1 | 0 | `amy-winehouse__back-to-black/Verse/15.5` bVsus27(b5)(loc)→♭V⁷sus2(b5)(loc) |
-| adds=6 | 42 | 59.5% | 59.5% | 17 | 15 | 0 | 2 | `adele__someone-like-you/Pre-Chorus/37` IV(add6)(b5)→IV(add6)(b5) |
-| borrowed=dorian | 43 | 74.4% | 97.7% | 11 | 7 | 2 | 2 | `soundgarden__black-hole-sun/Intro/5` i6(add4)(dor)→i⁶(add4)(dor) |
-| suspensions=2+4 | 4 | 75.0% | 50.0% | 1 | 0 | 0 | 1 | `frank-sinatra__fly-me-to-the-moon/Verse/53` V7(add13)sus2sus4→V⁷(add13)sus2sus4 |
-| borrowed=custom-array | 17 | 76.5% | 82.4% | 4 | 1 | 0 | 3 | `the-beach-boys__god-only-knows/Verse/29` #iø7(bor)→♯iø⁷(bor) |
-| borrowed=mixolydian | 36 | 80.6% | 86.1% | 7 | 6 | 0 | 1 | `soundgarden__black-hole-sun/Chorus/29` IV(mix)(add4)→IV(add4)(mix) |
-| borrowed=minor | 66 | 81.8% | 86.4% | 12 | 9 | 1 | 2 | `soundgarden__black-hole-sun/Chorus Lead-Out/9` III(min)(add4)→III(add4)(min) |
-| borrowed=harmonicMinor | 37 | 83.8% | 89.2% | 6 | 6 | 0 | 0 | `soundgarden__black-hole-sun/Chorus Lead-Out/13` V(hmin)(add4)→V(add4)(hmin) |
-| borrowed=major | 26 | 84.6% | 84.6% | 4 | 3 | 0 | 1 | `green-day__boulevard-of-broken-dreams/Outro/11` V/#iii(maj)(maj)→V/III |
-| inversion=1 | 209 | 86.1% | 96.7% | 29 | 25 | 2 | 2 | `elton-john__rocket-man/Verse/25` V6(add9)→V⁶(add9) |
-| borrowed=phrygian | 15 | 86.7% | 93.3% | 2 | 1 | 0 | 1 | `george-gershwin__summertime/Chorus/35` vø7(phr)→vø⁷(phr) |
-| applied=yes | 189 | 86.8% | 79.4% | 25 | 17 | 2 | 6 | `billy-joel__piano-man/Verse/19` V/V(add9)→V(add9)/V |
-| type=7 | 1108 | 88.2% | 94.9% | 131 | 87 | 15 | 29 | `amy-winehouse__back-to-black/Verse/15.5` bVsus27(b5)(loc)→♭V⁷sus2(b5)(loc) |
-| inversion=3 | 112 | 88.4% | 89.3% | 13 | 10 | 2 | 1 | `elton-john__your-song/Verse/21` vi4(add11)2→vi⁴²(add11) |
-| inversion=0 | 2838 | 90.2% | 97.2% | 279 | 179 | 19 | 81 | `a-ha__take-on-me/Intro/1` ii(add9)→ii(add9) |
-| type=9 | 112 | 90.2% | 100.0% | 11 | 6 | 0 | 5 | `adele__someone-like-you/Pre-Chorus/29` IV△9(b5)→IV△⁹(b5) |
-| applied=no | 3189 | 90.4% | 97.8% | 305 | 203 | 24 | 78 | `a-ha__take-on-me/Intro/1` ii(add9)→ii(add9) |
-| borrowed=none | 3108 | 91.1% | 97.6% | 277 | 182 | 22 | 73 | `a-ha__take-on-me/Intro/1` ii(add9)→ii(add9) |
-| suspensions=2 | 62 | 91.9% | 91.9% | 5 | 5 | 0 | 0 | `amy-winehouse__back-to-black/Verse/15.5` bVsus27(b5)(loc)→♭V⁷sus2(b5)(loc) |
-| borrowed=lydian | 15 | 93.3% | 100.0% | 1 | 0 | 0 | 1 | `elton-john__your-song/Chorus/21` #ivø7(lyd)→♯ivø⁷(lyd) |
-| type=5 | 2090 | 93.8% | 97.6% | 130 | 103 | 11 | 16 | `a-ha__take-on-me/Intro/1` ii(add9)→ii(add9) |
-| suspensions=4 | 81 | 93.8% | 97.5% | 5 | 5 | 0 | 0 | `earth-wind-and-fire__september/Verse/29` V9(add13)sus4/IV→V⁹(add13)sus4/IV |
-| inversion=2 | 219 | 95.9% | 95.0% | 9 | 6 | 3 | 0 | `the-beatles__penny-lane/Verse/3.5` I→I⁶₄ |
+| omits=3+5 | 1 | 0.0% | 0.0% | 1 | 1 | 0 | 0 | `rem__losing-my-religion/Intro/15` iiø11(no3no5)→iiø¹¹(no3)(no5)(b5)(b9)(3)(5) |
+| borrowed=custom-array | 17 | 76.5% | 70.6% | 4 | 1 | 0 | 3 | `the-beach-boys__god-only-knows/Verse/29` #iø7(bor)→♯iø⁷(b5)(bor) |
+| borrowed=dorian | 43 | 79.1% | 79.1% | 9 | 5 | 2 | 2 | `the-beatles__penny-lane/Verse/21` #viø7(dor)→♯viø⁷(b5)(dor) |
+| alterations=#5 | 15 | 80.0% | 80.0% | 3 | 3 | 0 | 0 | `pink-floyd__money/Chorus/8` vii/V(maj)(#5)(maj)→vii+°(#5)/v |
+| type=11 | 34 | 82.4% | 82.4% | 6 | 6 | 0 | 0 | `amy-winehouse__back-to-black/Verse/16.5` v11→v¹¹(b9) |
+| alterations=b5 | 21 | 85.7% | 61.9% | 3 | 2 | 0 | 1 | `the-police__every-breath-you-take/Chorus/64.5` vi°△7(b5)(bor)→vi△⁷(b5)(bor) |
+| borrowed=phrygian | 15 | 86.7% | 86.7% | 2 | 1 | 0 | 1 | `george-gershwin__summertime/Chorus/35` vø7(phr)→vø⁷(b5)(phr) |
+| borrowed=major | 26 | 88.5% | 84.6% | 3 | 3 | 0 | 0 | `green-day__boulevard-of-broken-dreams/Outro/11` V/#iii(maj)(maj)→V/III |
+| borrowed=locrian | 10 | 90.0% | 40.0% | 1 | 0 | 1 | 0 | `george-gershwin__summertime/Verse/9` i→V⁷/V |
+| inversion=1 | 209 | 90.4% | 96.7% | 20 | 17 | 2 | 1 | `carole-king__its-too-late/Chorus/27` vi65→vi⁶⁵ |
+| borrowed=lydian | 15 | 93.3% | 93.3% | 1 | 0 | 0 | 1 | `elton-john__your-song/Chorus/21` #ivø7(lyd)→♯ivø⁷(b5)(lyd) |
+| applied=yes | 189 | 94.2% | 76.7% | 11 | 7 | 2 | 2 | `green-day__boulevard-of-broken-dreams/Outro/11` V/#iii(maj)(maj)→V/III |
+| type=7 | 1108 | 94.9% | 91.0% | 57 | 32 | 15 | 10 | `carole-king__its-too-late/Chorus/1` IV△7/I→IV△⁷/I |
+| adds=6 | 42 | 95.2% | 42.9% | 2 | 2 | 0 | 0 | `radiohead__karma-police/Verse/3` viø7(add13)→viø⁷(add13)(add13)(b5) |
+| borrowed=minor | 66 | 95.5% | 83.3% | 3 | 1 | 1 | 1 | `george-gershwin__summertime/Verse/17` V7/iv→i⁷(min) |
+| borrowed=harmonicMinor | 37 | 97.3% | 89.2% | 1 | 1 | 0 | 0 | `thelonious-monk__round-midnight/Verse/1` i△42(hmin)→i△⁴²(hmin) |
+| inversion=3 | 112 | 97.3% | 89.3% | 3 | 1 | 2 | 0 | `the-beatles__penny-lane/Verse/6` vi7→I△⁴² |
+| inversion=2 | 219 | 97.7% | 95.0% | 5 | 2 | 3 | 0 | `the-beatles__penny-lane/Verse/3.5` I→I⁶₄ |
+| applied=no | 3189 | 98.0% | 95.7% | 64 | 34 | 22 | 8 | `adele__someone-like-you/Verse/1` I→IV |
+| inversion=0 | 2838 | 98.3% | 94.6% | 47 | 21 | 17 | 9 | `adele__someone-like-you/Verse/1` I→IV |
+| borrowed=none | 3108 | 98.4% | 95.7% | 51 | 29 | 20 | 2 | `adele__someone-like-you/Verse/1` I→IV |
+| type=5 | 2090 | 99.4% | 96.8% | 12 | 3 | 9 | 0 | `adele__someone-like-you/Verse/1` I→IV |
+| type=9 | 112 | 100.0% | 92.0% | 0 | 0 | 0 | 0 |  |
+| suspensions=4 | 81 | 100.0% | 91.4% | 0 | 0 | 0 | 0 |  |
+| suspensions=2 | 62 | 100.0% | 91.9% | 0 | 0 | 0 | 0 |  |
+| adds=9 | 56 | 100.0% | 91.1% | 0 | 0 | 0 | 0 |  |
+| adds=4 | 40 | 100.0% | 45.0% | 0 | 0 | 0 | 0 |  |
+| borrowed=mixolydian | 36 | 100.0% | 83.3% | 0 | 0 | 0 | 0 |  |
+| type=13 | 34 | 100.0% | 100.0% | 0 | 0 | 0 | 0 |  |
+| omits=5 | 30 | 100.0% | 0.0% | 0 | 0 | 0 | 0 |  |
+| omits=3 | 17 | 100.0% | 88.2% | 0 | 0 | 0 | 0 |  |
+| alterations=b9 | 12 | 100.0% | 100.0% | 0 | 0 | 0 | 0 |  |
 | borrowed=phrygianDominant | 5 | 100.0% | 80.0% | 0 | 0 | 0 | 0 |  |
+| suspensions=2+4 | 4 | 100.0% | 25.0% | 0 | 0 | 0 | 0 |  |
+| alterations=#9 | 4 | 100.0% | 0.0% | 0 | 0 | 0 | 0 |  |
 | suspensions=4+2 | 2 | 100.0% | 50.0% | 0 | 0 | 0 | 0 |  |
+| adds=4+9 | 1 | 100.0% | 0.0% | 0 | 0 | 0 | 0 |  |
+| adds=6+9 | 1 | 100.0% | 0.0% | 0 | 0 | 0 | 0 |  |
+| alterations=#11 | 1 | 100.0% | 100.0% | 0 | 0 | 0 | 0 |  |
+| alterations=#5+#9 | 1 | 100.0% | 0.0% | 0 | 0 | 0 | 0 |  |
+| alterations=b5+b9 | 1 | 100.0% | 0.0% | 0 | 0 | 0 | 0 |  |
 
 ## Recommended engine fix order
 

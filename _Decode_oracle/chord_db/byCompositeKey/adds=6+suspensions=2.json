@@ -33,7 +33,7 @@
     "truthRoman": "IV6(add6)sus2/IV",
     "truthLetter": "G(add6)sus2/A",
     "truthPcs": [
-      2,
+      4,
       7,
       9
     ],
@@ -44,11 +44,11 @@
     "engLetter": "Gsus2/B",
     "engNotes": [
       "A2",
-      "D4",
+      "E4",
       "G4"
     ],
     "engPcs": [
-      2,
+      4,
       7,
       9
     ],

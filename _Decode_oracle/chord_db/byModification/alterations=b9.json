@@ -49,15 +49,17 @@
       "E3",
       "G3",
       "Bb3",
-      "D4",
-      "F4"
+      "Db4",
+      "F4",
+      "A4"
     ],
     "engPcs": [
       0,
-      2,
+      1,
       4,
       5,
       7,
+      9,
       10
     ],
     "flags": {
@@ -67,15 +69,15 @@
       "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false
     },
-    "notesOk": false,
+    "notesOk": true,
     "romanExact": true,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=13",
       "inversion=0",
@@ -135,15 +137,17 @@
       "E3",
       "G3",
       "Bb3",
-      "D4",
-      "F4"
+      "Db4",
+      "F4",
+      "A4"
     ],
     "engPcs": [
       0,
-      2,
+      1,
       4,
       5,
       7,
+      9,
       10
     ],
     "flags": {
@@ -153,15 +157,15 @@
       "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false
     },
-    "notesOk": false,
+    "notesOk": true,
     "romanExact": true,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=13",
       "inversion=0",
@@ -221,15 +225,17 @@
       "E3",
       "G3",
       "Bb3",
-      "D4",
-      "F4"
+      "Db4",
+      "F4",
+      "A4"
     ],
     "engPcs": [
       0,
-      2,
+      1,
       4,
       5,
       7,
+      9,
       10
     ],
     "flags": {
@@ -239,15 +245,15 @@
       "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false
     },
-    "notesOk": false,
+    "notesOk": true,
     "romanExact": true,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=13",
       "inversion=0",
@@ -307,15 +313,17 @@
       "E3",
       "G3",
       "Bb3",
-      "D4",
-      "F4"
+      "Db4",
+      "F4",
+      "A4"
     ],
     "engPcs": [
       0,
-      2,
+      1,
       4,
       5,
       7,
+      9,
       10
     ],
     "flags": {
@@ -325,15 +333,15 @@
       "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false
     },
-    "notesOk": false,
+    "notesOk": true,
     "romanExact": true,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=13",
       "inversion=0",
@@ -393,15 +401,17 @@
       "E3",
       "G3",
       "Bb3",
-      "D4",
-      "F4"
+      "Db4",
+      "F4",
+      "A4"
     ],
     "engPcs": [
       0,
-      2,
+      1,
       4,
       5,
       7,
+      9,
       10
     ],
     "flags": {
@@ -411,15 +421,15 @@
       "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false
     },
-    "notesOk": false,
+    "notesOk": true,
     "romanExact": true,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=13",
       "inversion=0",
@@ -482,7 +492,7 @@
       "Bb3",
       "D4",
       "F4",
-      "A4",
+      "Ab4",
       "C5"
     ],
     "engPcs": [
@@ -490,7 +500,7 @@
       2,
       5,
       7,
-      9,
+      8,
       10
     ],
     "flags": {
@@ -500,15 +510,15 @@
       "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false
     },
-    "notesOk": false,
+    "notesOk": true,
     "romanExact": true,
-    "failureClass": "piano_noise",
+    "failureClass": null,
     "buckets": [
       "type=11",
       "inversion=0",
@@ -574,11 +584,13 @@
       "D3",
       "F#3",
       "A3",
-      "C4"
+      "C4",
+      "Eb4"
     ],
     "engPcs": [
       0,
       2,
+      3,
       6,
       9
     ],
@@ -589,15 +601,15 @@
       "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false
     },
-    "notesOk": false,
+    "notesOk": true,
     "romanExact": true,
-    "failureClass": "piano_noise",
+    "failureClass": null,
     "buckets": [
       "type=7",
       "inversion=0",
@@ -663,11 +675,13 @@
       "D3",
       "F#3",
       "A3",
-      "C4"
+      "C4",
+      "Eb4"
     ],
     "engPcs": [
       0,
       2,
+      3,
       6,
       9
     ],
@@ -678,15 +692,15 @@
       "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false
     },
-    "notesOk": false,
+    "notesOk": true,
     "romanExact": true,
-    "failureClass": "piano_noise",
+    "failureClass": null,
     "buckets": [
       "type=7",
       "inversion=0",
@@ -748,11 +762,13 @@
       "D3",
       "F#3",
       "A3",
-      "C4"
+      "C4",
+      "Eb4"
     ],
     "engPcs": [
       0,
       2,
+      3,
       6,
       9
     ],
@@ -763,15 +779,15 @@
       "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false
     },
-    "notesOk": false,
+    "notesOk": true,
     "romanExact": true,
-    "failureClass": "piano_noise",
+    "failureClass": null,
     "buckets": [
       "type=7",
       "inversion=0",
@@ -831,11 +847,13 @@
       "D3",
       "F#3",
       "A3",
-      "C4"
+      "C4",
+      "Eb4"
     ],
     "engPcs": [
       0,
       2,
+      3,
       6,
       9
     ],
@@ -846,15 +864,15 @@
       "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false
     },
-    "notesOk": false,
+    "notesOk": true,
     "romanExact": true,
-    "failureClass": "piano_noise",
+    "failureClass": null,
     "buckets": [
       "type=7",
       "inversion=0",
@@ -910,11 +928,13 @@
       "D3",
       "F#3",
       "A3",
-      "C4"
+      "C4",
+      "Eb4"
     ],
     "engPcs": [
       0,
       2,
+      3,
       6,
       9
     ],
@@ -925,15 +945,15 @@
       "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false
     },
-    "notesOk": false,
+    "notesOk": true,
     "romanExact": true,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=7",
       "inversion=0",
@@ -999,11 +1019,13 @@
       "D3",
       "F#3",
       "A3",
-      "C4"
+      "C4",
+      "Eb4"
     ],
     "engPcs": [
       0,
       2,
+      3,
       6,
       9
     ],
@@ -1014,15 +1036,15 @@
       "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false
     },
-    "notesOk": false,
+    "notesOk": true,
     "romanExact": true,
-    "failureClass": "piano_noise",
+    "failureClass": null,
     "buckets": [
       "type=7",
       "inversion=0",

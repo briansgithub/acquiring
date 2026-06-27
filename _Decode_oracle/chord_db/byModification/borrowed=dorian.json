@@ -1076,9 +1076,11 @@
     "engNotes": [
       "Bb3",
       "D4",
+      "C4",
       "G4"
     ],
     "engPcs": [
+      0,
       2,
       7,
       10
@@ -1090,15 +1092,15 @@
       "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false
     },
-    "notesOk": false,
+    "notesOk": true,
     "romanExact": true,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=5",
       "inversion=1",
@@ -1285,9 +1287,9 @@
     "truthRoman": "i(add6)(dor)",
     "truthLetter": "em6",
     "truthPcs": [
+      1,
       4,
-      7,
-      11
+      7
     ],
     "pianoNotes": [
       "E2",
@@ -1302,12 +1304,12 @@
     "engNotes": [
       "E3",
       "G3",
-      "B3"
+      "C#4"
     ],
     "engPcs": [
+      1,
       4,
-      7,
-      11
+      7
     ],
     "flags": {
       "romanExact": true,
@@ -1365,9 +1367,9 @@
     "truthRoman": "i(add6)(dor)",
     "truthLetter": "em6",
     "truthPcs": [
+      1,
       4,
-      7,
-      11
+      7
     ],
     "pianoNotes": [
       "E2",
@@ -1383,12 +1385,12 @@
     "engNotes": [
       "E3",
       "G3",
-      "B3"
+      "C#4"
     ],
     "engPcs": [
+      1,
       4,
-      7,
-      11
+      7
     ],
     "flags": {
       "romanExact": true,
@@ -2549,22 +2551,22 @@
       11
     ],
     "pianoValidated": false,
-    "engRoman": "♯viø⁷(dor)",
+    "engRoman": "♯viø⁷(b5)(dor)",
     "engLetter": "G#°7",
     "engNotes": [
       "G#3",
       "B3",
-      "D4",
+      "Db4",
       "F#4"
     ],
     "engPcs": [
-      2,
+      1,
       6,
       8,
       11
     ],
     "flags": {
-      "romanExact": true,
+      "romanExact": false,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": true,
@@ -2577,7 +2579,7 @@
       "usePiano": false
     },
     "notesOk": false,
-    "romanExact": true,
+    "romanExact": false,
     "failureClass": "harness",
     "buckets": [
       "type=7",
@@ -2633,22 +2635,22 @@
       11
     ],
     "pianoValidated": false,
-    "engRoman": "♯viø⁷(dor)",
+    "engRoman": "♯viø⁷(b5)(dor)",
     "engLetter": "G#°7",
     "engNotes": [
       "G#3",
       "B3",
-      "D4",
+      "Db4",
       "F#4"
     ],
     "engPcs": [
-      2,
+      1,
       6,
       8,
       11
     ],
     "flags": {
-      "romanExact": true,
+      "romanExact": false,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": true,
@@ -2661,7 +2663,7 @@
       "usePiano": false
     },
     "notesOk": false,
-    "romanExact": true,
+    "romanExact": false,
     "failureClass": "harness",
     "buckets": [
       "type=7",
@@ -2709,22 +2711,22 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "♯viø⁷(dor)",
+    "engRoman": "♯viø⁷(b5)(dor)",
     "engLetter": "F#°7",
     "engNotes": [
       "F#3",
       "A3",
-      "C4",
+      "B3",
       "E4"
     ],
     "engPcs": [
-      0,
       4,
       6,
-      9
+      9,
+      11
     ],
     "flags": {
-      "romanExact": true,
+      "romanExact": false,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": true,
@@ -2737,7 +2739,7 @@
       "usePiano": false
     },
     "notesOk": false,
-    "romanExact": true,
+    "romanExact": false,
     "failureClass": "engine",
     "buckets": [
       "type=7",
@@ -2785,22 +2787,22 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "♯viø⁷(dor)",
+    "engRoman": "♯viø⁷(b5)(dor)",
     "engLetter": "F#°7",
     "engNotes": [
       "F#3",
       "A3",
-      "C4",
+      "B3",
       "E4"
     ],
     "engPcs": [
-      0,
       4,
       6,
-      9
+      9,
+      11
     ],
     "flags": {
-      "romanExact": true,
+      "romanExact": false,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": true,
@@ -2813,7 +2815,7 @@
       "usePiano": false
     },
     "notesOk": false,
-    "romanExact": true,
+    "romanExact": false,
     "failureClass": "engine",
     "buckets": [
       "type=7",
@@ -2861,22 +2863,22 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "♯viø⁷(dor)",
+    "engRoman": "♯viø⁷(b5)(dor)",
     "engLetter": "F#°7",
     "engNotes": [
       "F#3",
       "A3",
-      "C4",
+      "B3",
       "E4"
     ],
     "engPcs": [
-      0,
       4,
       6,
-      9
+      9,
+      11
     ],
     "flags": {
-      "romanExact": true,
+      "romanExact": false,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": true,
@@ -2889,7 +2891,7 @@
       "usePiano": false
     },
     "notesOk": false,
-    "romanExact": true,
+    "romanExact": false,
     "failureClass": "engine",
     "buckets": [
       "type=7",
@@ -2937,22 +2939,22 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "♯viø⁷(dor)",
+    "engRoman": "♯viø⁷(b5)(dor)",
     "engLetter": "F#°7",
     "engNotes": [
       "F#3",
       "A3",
-      "C4",
+      "B3",
       "E4"
     ],
     "engPcs": [
-      0,
       4,
       6,
-      9
+      9,
+      11
     ],
     "flags": {
-      "romanExact": true,
+      "romanExact": false,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": true,
@@ -2965,7 +2967,7 @@
       "usePiano": false
     },
     "notesOk": false,
-    "romanExact": true,
+    "romanExact": false,
     "failureClass": "engine",
     "buckets": [
       "type=7",
@@ -3024,22 +3026,22 @@
       10
     ],
     "pianoValidated": false,
-    "engRoman": "♯viø⁷(dor)",
+    "engRoman": "♯viø⁷(b5)(dor)",
     "engLetter": "B#°7",
     "engNotes": [
       "B#3",
       "D#4",
-      "F#4",
+      "F4",
       "A#4"
     ],
     "engPcs": [
       0,
       3,
-      6,
+      5,
       10
     ],
     "flags": {
-      "romanExact": true,
+      "romanExact": false,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": true,
@@ -3052,7 +3054,7 @@
       "usePiano": false
     },
     "notesOk": false,
-    "romanExact": true,
+    "romanExact": false,
     "failureClass": "piano_noise",
     "buckets": [
       "type=7",
@@ -3106,12 +3108,12 @@
     "engNotes": [
       "G#3",
       "B#4",
-      "D#4",
+      "D4",
       "F#4"
     ],
     "engPcs": [
       0,
-      3,
+      2,
       6,
       8
     ],
@@ -3122,15 +3124,15 @@
       "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false
     },
-    "notesOk": false,
+    "notesOk": true,
     "romanExact": true,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=7",
       "inversion=0",
@@ -3181,22 +3183,22 @@
       6
     ],
     "pianoValidated": false,
-    "engRoman": "♯viø⁷(dor)",
+    "engRoman": "♯viø⁷(b5)(dor)",
     "engLetter": "B#°7",
     "engNotes": [
       "B#3",
       "D#4",
-      "F#4",
+      "F4",
       "A#4"
     ],
     "engPcs": [
       0,
       3,
-      6,
+      5,
       10
     ],
     "flags": {
-      "romanExact": true,
+      "romanExact": false,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": true,
@@ -3209,7 +3211,7 @@
       "usePiano": false
     },
     "notesOk": false,
-    "romanExact": true,
+    "romanExact": false,
     "failureClass": "piano_noise",
     "buckets": [
       "type=7",
@@ -3259,19 +3261,21 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "viø⁴³(add13)(dor)",
+    "engRoman": "viø⁴³(add13)(add13)(b5)(dor)",
     "engLetter": "F°7/Cb",
     "engNotes": [
-      "Cb4",
+      "Bb4",
       "Eb4",
+      "D5",
       "F4",
       "Ab4"
     ],
     "engPcs": [
+      2,
       3,
       5,
       8,
-      11
+      10
     ],
     "flags": {
       "romanExact": false,
@@ -3279,7 +3283,7 @@
       "rootPcMatch": true,
       "bassPcMatch": true,
       "rootInPcs": true,
-      "bassInNotes": true,
+      "bassInNotes": false,
       "pcsExact": false,
       "pianoExact": false,
       "pianoPcsExact": false,

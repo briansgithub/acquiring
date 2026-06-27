@@ -69,6 +69,11 @@ function omitsFromText(letter, roman) {
   for (const t of allParenTags(letter, roman)) {
     const o = t.match(/^no(\d+)$/);
     if (o) omits.add(parseInt(o[1], 10));
+    const n = t.match(/^n[°o]?(\d+)n?[°o]?(\d+)$/i);
+    if (n) {
+      omits.add(parseInt(n[1], 10));
+      omits.add(parseInt(n[2], 10));
+    }
   }
   const s = ((letter || '') + (roman || '')).toLowerCase();
   const m = s.match(/\(no(\d+)\)|no(\d+)/g);
@@ -76,17 +81,47 @@ function omitsFromText(letter, roman) {
     const d = x.match(/(\d+)/);
     if (d) omits.add(parseInt(d[1], 10));
   });
+  const nm = s.match(/n[°o]?(\d+)n?[°o]?(\d+)/gi);
+  if (nm) nm.forEach((x) => {
+    const d = x.match(/(\d+)/g);
+    if (d) d.forEach((n) => omits.add(parseInt(n, 10)));
+  });
   return [...omits];
+}
+
+function splitAltToken(tag) {
+  const out = [];
+  const re = /([#b]?\d+)/g;
+  let m;
+  while ((m = re.exec(tag))) {
+    const tok = m[1];
+    if (!tok.startsWith('add') && !tok.startsWith('no')) out.push(tok);
+  }
+  return out;
 }
 
 function altsFromText(letter, roman) {
   const alts = new Set();
   for (const t of allParenTags(letter, roman)) {
-    if (/^[#b]?\d+$/.test(t) && !t.startsWith('add') && !t.startsWith('no')) alts.add(t);
+    if (/^n[°o]?\d/i.test(t)) continue;
+    if (/^[#b]?\d+$/.test(t) && !t.startsWith('add') && !t.startsWith('no')) {
+      alts.add(t);
+    } else if (/[b#]\d/.test(t)) {
+      splitAltToken(t).forEach((x) => alts.add(x));
+    }
   }
   const s = ((letter || '') + (roman || '')).toLowerCase();
-  const m = s.match(/\(([#b]?\d+)\)/g);
-  if (m) m.forEach((x) => alts.add(x.slice(1, -1)));
+  const m = s.match(/\(([^)]+)\)/g);
+  if (m) {
+    for (const x of m) {
+      const inner = x.slice(1, -1);
+      if (/^no\d/.test(inner)) continue;
+      if (/^n[°o]?\d/i.test(inner)) continue;
+      if (/^add\d/.test(inner)) continue;
+      if (/^[#b]?\d+$/.test(inner)) alts.add(inner);
+      else splitAltToken(inner).forEach((tok) => alts.add(tok));
+    }
+  }
   return [...alts];
 }
 

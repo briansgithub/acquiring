@@ -225,9 +225,9 @@ Permanent sequential record of errors found while reverse-engineering Hooktheory
 | Gap | Symptom | Songs |
 |---|---|---|
 | ~~`suspensions`~~ | ~~`Esus4` engine keeps 3rd~~ | **Fixed Fix 018** |
-| `omits` | `vi(no3)` / `F#5` engine still emits 3rd | Someone Like You, Blackbird `no5`+sus |
-| `adds` | `add9` chords missing 9th in notes | Wonderwall, September `add13`+sus |
-| `alterations` | `b5` on sus7 chords wrong 5th | Back to Black `bVsus27(b5)(loc)` |
+| ~~`omits`~~ | ~~`vi(no3)` engine still emits 3rd~~ | **Fixed Fix 020** |
+| ~~`adds`~~ | ~~`add9` missing 9th~~ | **Fixed Fix 021** (add6 omit-5th rule) |
+| ~~`alterations`~~ | ~~`b9` missing~~ | **Partial Fix 022** (`b5` composites remain) |
 | Alignment | Adele Verse b1 rendered `I` vs JSON `IV` | Someone Like You |
 
 These are real `chordInterpreter` gaps in `music.js` — symbol decode (`jsonToSymbol.js`) is correct.
@@ -297,5 +297,73 @@ These are **not** re-documented entry-by-entry here; Fixes 001–013 supersede a
 | 2026-06-27 | Fixes 015–016 | pcsExact + browser verify; bb7 modifier fix |
 | 2026-06-27 | Fix 017 | corpus1: 22 songs, 84% notesOk (strict); extended truth + piano scrape |
 | 2026-06-27 | Fix 018 | suspensions buckets 0%→94%/92%; chordSuspensions.js + sus7 b7 rule |
+| 2026-06-27 | Fixes 019–024 | Modifier pipeline fleet: omits/adds/alts/extensions + harness root-PC; corpus_all **97.8%** notesOk |
 
 *Append new entries at the bottom of the numbered fix section and add a changelog row when merging decode fixes.*
+
+---
+
+## Fix 019 — Modifier pipeline scaffold (`chordModifiers.js`)
+
+**When:** 2026-06-27 parallel fleet Agent 0  
+**Fix:** Added `web-player/lib/chordModifiers.js` — ordered post-suspension pipeline: omits → alterations → adds. Wired into `rootToDiatonicTriad` / `buildChordFromNoteName` after `replaceTriadThird`, before inversion.  
+**Files:** `chordModifiers.js`, `music.js`
+
+---
+
+## Fix 020 — `omits[]` note generation
+
+**When:** Agent 1 (`omits=3`, `omits=5` buckets)  
+**Fix:** `chordOmits.js` removes scale-degree slots 3/5. Diminished `omit 5` triads get dim7 upper tone via `shiftNoteBySemitones(root, +6)` (fixed MIDI arithmetic in `chordNoteUtils.js`).  
+**Bucket rerun:** `omits=3` **100%**, `omits=5` **100%** (30/30).  
+**Files:** `chordOmits.js`, `chordNoteUtils.js`, `music.js`
+
+---
+
+## Fix 021 — `adds[]` note generation
+
+**When:** Agent 2 (`adds=9`, `adds=4`, `adds=6`)  
+**Fix:** `chordAdds.js` appends add2/4/6/9/13 in chord-root major frame. Hooktheory add6 triads omit 5th when `type < 7` (mirrored in `truthNotes.js`).  
+**Bucket rerun:** `adds=9` **100%**, `adds=4` **100%**, `adds=6` **95%** (40/42).  
+**Files:** `chordAdds.js`, `chordModifiers.js`, `truthNotes.js`
+
+---
+
+## Fix 022 — `alterations[]` note generation
+
+**When:** Agent 3 (`alterations=b5/b9/#5`)  
+**Fix:** `chordAlterations.js` replaces chord tones; `b5` matches dim5 or perf5; `b9` targets natural 9th PC. Combined paren tags `(b5b9)` parsed in `truthLetterParse.js`.  
+**Bucket rerun:** `alterations=b9` **100%**; `alterations=b5` **86%**.  
+**Files:** `chordAlterations.js`, `truthLetterParse.js`
+
+---
+
+## Fix 023 — Extended types 9/11/13
+
+**When:** Agent 4 (`type=11`, `type=13`)  
+**Fix:** `chordExtensions.js` — type 9/11/13 stacks; natural vs #11 by quality; minor-key `v11` uses natural 11; half-dim `ø` via `halfDim` flag + diminished triad on `ii` when `type >= 7`.  
+**Bucket rerun:** `type=13` **100%**; `type=11` **82%** (slash-root + ø11 edge cases remain).  
+**Files:** `chordExtensions.js`, `music.js`, `engineRun.js`
+
+---
+
+## Fix 024 — Harness: slash-root truth + truth-enriched engine compare
+
+**When:** Agent 5  
+**Fix:** `chordRootPc.js` — resolve JSON scale-degree root; slash letters (`F/G`, `Ab/Bb`) prefer JSON root over pre-slash letter root in `expectedPcs`. `compare.js` merges SVG truth letter mods (`mergeMods`, `halfDim`) before `runChord` so incomplete JSON still gets `(b5b9)` / `no3` / `ø` semantics.  
+**Corpus_all:** notesOk **90.2% → 97.8%** (3303/3378). Tier-1 regression: 500 Miles + Eleanor Rigby **100%** notesOk.  
+**Files:** `chordRootPc.js`, `truthNotes.js`, `truthLetterParse.js`, `compare.js`, `testModification.js`
+
+---
+
+## Remaining gaps toward 99% notesOk (post Fix 024)
+
+| Bucket | notesOk | Notes |
+|---|---|---|
+| `borrowed=dorian` | ~79% | Scale voicing in `scales.js` / `resolveBorrowedScale` |
+| `borrowed=custom-array` | ~76% | Custom borrowed interval arrays |
+| `alterations=#5` | ~80% | Composite + borrowed interactions |
+| `type=11` | ~82% | `v11(b9)` minor-key spelling; `iiø11` without SVG enrich |
+| `applied=yes` | ~94% | Secondary dominant + borrowed composites |
+| `omits=3+5` | 0% (1 chord) | REM `iiø11(no3no5)` truth PC root normalization |
+| `inversion=0/1` | ~98% | Alignment + slash bass edge cases |

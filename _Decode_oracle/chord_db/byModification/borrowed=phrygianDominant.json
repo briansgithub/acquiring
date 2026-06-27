@@ -30,9 +30,9 @@
     "truthRoman": "iv(phdm)(add6)",
     "truthLetter": "ebm6",
     "truthPcs": [
+      0,
       3,
-      6,
-      10
+      6
     ],
     "pianoNotes": null,
     "pianoPcs": null,
@@ -42,12 +42,12 @@
     "engNotes": [
       "Eb3",
       "Gb3",
-      "Bb3"
+      "C4"
     ],
     "engPcs": [
+      0,
       3,
-      6,
-      10
+      6
     ],
     "flags": {
       "romanExact": false,

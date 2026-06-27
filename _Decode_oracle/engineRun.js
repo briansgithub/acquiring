@@ -40,6 +40,35 @@ function activeKeyAtBeat(keys, beat) {
   return { tonic, scale: chosen.scale || 'major' };
 }
 
+const { mergeMods } = require('./truthLetterParse');
+
+function enrichChordFromSymbol(chord, roman, letter) {
+  const mods = mergeMods(letter, roman, chord);
+  const alterations = [...new Set([...(chord.alterations || []), ...mods.alterations])];
+  const halfDim = chord.halfDim || /ø/.test(roman || "") || /\(b5b9\)|b5b9/i.test(letter || "");
+  if (halfDim && (mods.type ?? 5) >= 9) {
+    for (const a of ["b5", "b9"]) {
+      if (!alterations.includes(a)) alterations.push(a);
+    }
+  }
+  if (
+    (mods.type ?? 5) >= 11
+    && chord?.root === 5
+    && !alterations.includes("b9")
+    && /\(b9\)|b9/i.test(letter || "")
+  ) {
+    alterations.push("b9");
+  }
+  return {
+    ...chord,
+    adds: mods.adds,
+    omits: mods.omits,
+    alterations,
+    suspensions: mods.suspensions,
+    type: mods.type,
+    halfDim,
+  };
+}
 let engine = null;
 async function loadEngine() {
   if (engine) return engine;
@@ -64,7 +93,8 @@ async function runChord(chord, key) {
     quiet(() => {
       out.roman = sym.getChordSymbol(chord, key);
       out.letter = sym.getChordLetterName(chord, key);
-      const interp = music.chordInterpreter(chord, key);
+      const enriched = enrichChordFromSymbol(chord, out.roman, out.letter);
+      const interp = music.chordInterpreter(enriched, key);
       out.notes = interp.notes;
       const bare = (interp.notes || []).map(bareNote);
       out.pcs = Array.from(new Set(bare.map(noteNameToPc).filter((x) => x !== null))).sort((a, b) => a - b);

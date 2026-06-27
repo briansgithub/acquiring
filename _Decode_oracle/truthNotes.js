@@ -7,6 +7,7 @@ const { noteToPc } = require('./svgTruth');
 const {
   triadQualityFromLetter, seventhKind, extensionsFromType, mergeMods,
 } = require('./truthLetterParse');
+const { resolveTruthRootPc } = require('./chordRootPc');
 
 const TRIAD_SEMIS = {
   major: [0, 4, 7],
@@ -38,11 +39,14 @@ function triadSemis(quality, suspensions, omits) {
   return semis;
 }
 
-function applyAdds(semis, adds, hasSeventh) {
+function applyAdds(semis, adds, hasSeventh, chordType = 5) {
   for (const a of adds) {
     const ext = (a <= 6 && hasSeventh) ? a + 7 : a;
-    const s = EXT_SEMIS[ext] ?? (ext === 2 ? 2 : ext === 4 ? 5 : null);
+    const s = EXT_SEMIS[ext] ?? (ext === 2 ? 2 : ext === 4 ? 5 : ext === 6 ? 9 : null);
     if (s != null && !semis.includes(s)) semis.push(s);
+  }
+  if (adds.includes(6) && chordType < 7 && !adds.includes(9)) {
+    semis = semis.filter((x) => x !== 7);
   }
   return semis;
 }
@@ -68,10 +72,15 @@ function applyAlts(semis, alterations, quality) {
   return semis;
 }
 
-function expectedPcs(truthLetter, roman, chord) {
-  const rootPc = truthLetter?.rootPc;
+function expectedPcs(truthLetter, roman, chord, key = null) {
+  const rootPc = key
+    ? resolveTruthRootPc(truthLetter, chord, key)
+    : truthLetter?.rootPc;
   if (rootPc == null) return null;
-  const quality = triadQualityFromLetter(truthLetter.letter, roman);
+  const romanLower = String(roman || '').toLowerCase();
+  const isHalfDim = /ø|m7b5|half/.test(romanLower + (truthLetter?.letter || ''));
+  let quality = triadQualityFromLetter(truthLetter.letter, roman);
+  if (isHalfDim) quality = 'diminished';
   const mods = mergeMods(truthLetter.letter, roman, chord);
   let semis = triadSemis(quality, mods.suspensions, mods.omits);
 
@@ -79,11 +88,15 @@ function expectedPcs(truthLetter, roman, chord) {
   if (sev) semis.push(SEVEN_MAP[sev]);
 
   for (const ext of extensionsFromType(mods.type)) {
-    const s = EXT_SEMIS[ext];
-    if (s != null) semis.push(s);
+    if (ext === 11 && (isHalfDim || mods.alterations.some((a) => String(a).toLowerCase() === "b5"))) {
+      if (!semis.includes(9)) semis.push(9);
+    } else {
+      const s = EXT_SEMIS[ext];
+      if (s != null) semis.push(s);
+    }
   }
 
-  semis = applyAdds(semis, mods.adds, !!sev);
+  semis = applyAdds(semis, mods.adds, !!sev, mods.type);
   semis = applyAlts(semis, mods.alterations, quality);
 
   return [...new Set(semis.map((i) => (rootPc + i) % 12))].sort((a, b) => a - b);

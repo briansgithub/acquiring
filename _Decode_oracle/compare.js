@@ -16,9 +16,24 @@
  */
 
 const { sectionTruth, parseLetter } = require('./svgTruth');
-const { runSection } = require('./engineRun');
+const { runSection, runChord, activeKeyAtBeat } = require('./engineRun');
+const { mergeMods } = require('./truthLetterParse');
 const { canonRoman, canonCore } = require('./normalize');
 const { expectedPcs, pcsEqual, noteNamesToPcs, notesExact } = require('./truthNotes');
+
+function enrichChordFromTruth(chord, truthRoman, truthLetterRaw) {
+  const mods = mergeMods(truthLetterRaw, truthRoman, chord);
+  const halfDim = /ø/.test(truthRoman || '');
+  return {
+    ...chord,
+    adds: mods.adds,
+    omits: mods.omits,
+    alterations: mods.alterations,
+    suspensions: mods.suspensions,
+    type: mods.type,
+    halfDim,
+  };
+}
 
 function compareChord(truth, eng, rendered) {
   const tRoman = canonRoman(truth.roman);
@@ -26,7 +41,7 @@ function compareChord(truth, eng, rendered) {
   const tLetter = truth.letter;
   const eLetter = parseLetter(eng.letter || '');
 
-  const truthPcs = expectedPcs(tLetter, truth.roman, eng.chord);
+  const truthPcs = expectedPcs(tLetter, truth.roman, eng.chord, truth.key);
   const pianoNotes = rendered?.pianoNotes || null;
   const pianoPcs = pianoNotes ? noteNamesToPcs(pianoNotes) : null;
   const pianoValidated = pianoPcs != null && truthPcs != null && pcsEqual(pianoPcs, truthPcs);
@@ -106,13 +121,21 @@ function alignPairs(truth, eng) {
 
 async function compareSection(section) {
   const truth = sectionTruth(section);
-  const eng = await runSection(section);
-  const countMatch = truth.length === eng.length;
-  const pairs = countMatch ? truth.map((t, i) => [t, eng[i]]) : alignPairs(truth, eng);
+  const baselineEng = await runSection(section);
+  const countMatch = truth.length === baselineEng.length;
+  const pairs = countMatch ? truth.map((t, i) => [t, baselineEng[i]]) : alignPairs(truth, baselineEng);
   const rendered = section.rendered || [];
+  const eng = [];
+  for (let i = 0; i < pairs.length; i++) {
+    const [t, e] = pairs[i];
+    const enriched = enrichChordFromTruth(e.chord, t.roman, t.letter.letter);
+    const res = await runChord(enriched, e.key);
+    eng.push({ beat: e.beat, key: e.key, chord: e.chord, ...res });
+  }
   const rows = pairs.map(([t, e], i) => {
     const rIdx = countMatch ? i : truth.indexOf(t);
-    return compareChord(t, e, rendered[rIdx >= 0 ? rIdx : i]);
+    const key = eng[i]?.key || activeKeyAtBeat(section.json?.metadata?.keys || [], e.beat ?? 1);
+    return compareChord({ ...t, key }, eng[i], rendered[rIdx >= 0 ? rIdx : i]);
   });
   return {
     name: section.name,

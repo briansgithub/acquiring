@@ -32,8 +32,7 @@
     "truthRoman": "iiø11(no3no5)",
     "truthLetter": "bm11(n°3n5)(b5b9)",
     "truthPcs": [
-      1,
-      4,
+      0,
       5,
       8,
       11
@@ -41,20 +40,16 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "iiø¹¹(no3)(no5)",
+    "engRoman": "iiø¹¹(no3)(no5)(b5)(b9)(3)(5)",
     "engLetter": "B°11",
     "engNotes": [
       "B3",
-      "D4",
-      "F4",
       "A4",
-      "C#5",
-      "E5"
+      "C5",
+      "F4"
     ],
     "engPcs": [
-      1,
-      2,
-      4,
+      0,
       5,
       9,
       11

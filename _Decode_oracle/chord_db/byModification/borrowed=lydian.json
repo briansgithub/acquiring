@@ -553,22 +553,22 @@
       10
     ],
     "pianoValidated": false,
-    "engRoman": "♯ivø⁷(lyd)",
+    "engRoman": "♯ivø⁷(b5)(lyd)",
     "engLetter": "A°7",
     "engNotes": [
       "A3",
       "C4",
-      "Eb4",
+      "D4",
       "G4"
     ],
     "engPcs": [
       0,
-      3,
+      2,
       7,
       9
     ],
     "flags": {
-      "romanExact": true,
+      "romanExact": false,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": true,
@@ -581,7 +581,7 @@
       "usePiano": false
     },
     "notesOk": false,
-    "romanExact": true,
+    "romanExact": false,
     "failureClass": "piano_noise",
     "buckets": [
       "type=7",
