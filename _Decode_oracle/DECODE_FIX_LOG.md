@@ -302,6 +302,8 @@ These are **not** re-documented entry-by-entry here; Fixes 001–013 supersede a
 | 2026-06-27 | Fix 025 | corpus1: borrowed dorian/lydian dim7 (bb7) voicing |
 | 2026-06-27 | Fix 027 | corpus1: borrowed locrian/custom-array/major **100%** notesOk |
 | 2026-06-27 | Fix 025 | corpus1 borrowed dorian/lydian dim7 voicing **100%** notesOk |
+| 2026-06-27 | Fixes 028–029 | corpus2 **99.45%**, corpus3 **99.04%** notesOk; `--db-dir` |
+| 2026-06-27 | Fix 030 | pageScraper tab-based; 10 popular songs in `.hooktheory_cache` |
 
 *Append new entries at the bottom of the numbered fix section and add a changelog row when merging decode fixes.*
 
@@ -549,3 +551,20 @@ node _Decode_oracle/testModification.js --failing --db-dir _Decode_oracle/chord_
 ```
 
 **Files:** `svgTruth.js`, `music.js`, `chordExtensions.js`, `DECODE_FIX_LOG.md`
+
+---
+
+## Fix 030 — Hooktheory page scraper (extract_hooktheory_data.js)
+
+**When:** 2026-06-27 (web-player song cache expansion)  
+**Symptom:** `extract_hooktheory_data.js` failed for all URLs: `col-md-8 container not found on page`.  
+**Root cause:** Hooktheory removed the Bootstrap `div.col-md-8` layout; old `pageScraper.js` scrolled H2s inside that container.  
+**Fix:** Rewrote `lib/scraper/pageScraper.js` to discover sections via `a.tb-section-tab`, click each tab, read `tab-{songId}` container IDs (same model as `_Decode_oracle/scrapeSong.js`).  
+**Result:** 10 popular songs cached to `.hooktheory_cache/` (16 total with originals). Batch: `_Debug_testing/cache_10_popular.cjs`.  
+**Files:** `lib/scraper/pageScraper.js`, `_Debug_testing/cache_10_popular.cjs`, `.hooktheory_cache/*` (10 new artist dirs)
+
+---
+
+## Agent onboarding
+
+Permanent session summary for future agents: [`AGENT_WORK_RECORD.md`](./AGENT_WORK_RECORD.md)
