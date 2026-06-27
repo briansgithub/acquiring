@@ -45,6 +45,7 @@ async function buildChordDatabase(opts = {}) {
 function bucketStats(entries) {
   const total = entries.length;
   const notesOk = entries.filter((e) => e.notesOk).length;
+  const orderOk = entries.filter((e) => e.orderOk).length;
   const romanExact = entries.filter((e) => e.romanExact).length;
   const failing = entries.filter((e) => !e.notesOk);
   const byClass = { engine: 0, harness: 0, piano_noise: 0, unknown: 0 };
@@ -56,6 +57,8 @@ function bucketStats(entries) {
     total,
     notesOk,
     notesOkPct: total ? (100 * notesOk) / total : 100,
+    orderOk,
+    orderOkPct: total ? (100 * orderOk) / total : 100,
     romanExact,
     romanExactPct: total ? (100 * romanExact) / total : 100,
     failing: failing.length,

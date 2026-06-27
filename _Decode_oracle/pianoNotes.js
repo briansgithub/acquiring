@@ -92,19 +92,35 @@ async function loadMusic() {
   return musicEngine;
 }
 
-async function rawToNoteNames(pianoRaw, key, baseOctave = 3) {
-  if (!pianoRaw?.length) return [];
+async function rawToNoteNames(pianoRaw, chordRootTonic, baseOctave = 3) {
+  if (!pianoRaw?.length || !chordRootTonic) return [];
   const { sdToToneJSNoteName } = await loadMusic();
+  const rootKey = { tonic: chordRootTonic, scale: 'major' };
+  const ordered = [...pianoRaw].sort((a, b) => b.cy - a.cy);
   const names = [];
-  for (const n of pianoRaw) {
+  const seen = new Set();
+  for (const n of ordered) {
     if (!n.sd) continue;
     const relOct = parseInt(n.octave, 10);
     if (Number.isNaN(relOct)) continue;
     try {
-      names.push(sdToToneJSNoteName(n.sd, relOct, key, baseOctave));
+      const name = sdToToneJSNoteName(n.sd, relOct, rootKey, baseOctave);
+      if (!seen.has(name)) {
+        seen.add(name);
+        names.push(name);
+      }
     } catch (_) { /* skip */ }
   }
-  return [...new Set(names)].sort();
+  return names;
+}
+
+async function chordRootTonic(chord, parentKey) {
+  const sym = await import(require('url').pathToFileURL(
+    require('path').join(__dirname, '..', 'web-player', 'lib', 'jsonToSymbol.js'),
+  ).href);
+  const letter = sym.getChordLetterName(chord, parentKey);
+  const m = String(letter || '').match(/^([A-G](?:x|#|b)*)/);
+  return m ? m[1] : parentKey.tonic;
 }
 
 async function attachPianoNotes(page, containerId, section, rendered) {
@@ -118,8 +134,9 @@ async function attachPianoNotes(page, containerId, section, rendered) {
     const g = grouped[i] || { pianoRaw: [] };
     const beat = chords[i]?.beat ?? 1;
     const key = activeKeyAtBeat(keys, beat);
-    let pianoNotes = await rawToNoteNames(g.pianoRaw, key);
     const chord = chords[i];
+    const rootTonic = chord ? await chordRootTonic(chord, key) : key.tonic;
+    let pianoNotes = await rawToNoteNames(g.pianoRaw, rootTonic);
     const minNotes = chord?.type >= 7 ? 3 : 2;
     if (pianoNotes.length < minNotes || pianoNotes.length > 8) pianoNotes = [];
     rendered[i].pianoRaw = g.pianoRaw;

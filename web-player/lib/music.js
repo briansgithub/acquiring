@@ -28,6 +28,7 @@ import {
 import { replaceTriadThird } from "./chordSuspensions.js";
 import { applyChordModifiers, applyTypeExtensions } from "./chordModifiers.js";
 import { shiftNoteBySemitones } from "./chordNoteUtils.js";
+import { finalizeVoicing } from "./chordVoicing.js";
 
 
 
@@ -412,12 +413,6 @@ function buildTriadTones(chordRootNoteName, chordDegrees, baseOctave) {
   const thirdName = sdToToneJSNoteName(chordDegrees[1], relativeOctave, rootKey, baseOctave);
   const fifthName = sdToToneJSNoteName(chordDegrees[2], relativeOctave, rootKey, baseOctave);
 
-  console.log("buildTriadTones", {
-    firstName,
-    thirdName,
-    fifthName
-  });
-
   return {
     toneJSNames: [firstName, thirdName, fifthName],
     degreeIndices: [0, 1, 2]
@@ -591,7 +586,7 @@ function applySecondaryDominant(toneJSNames, degreeIndices, chordRootNoteName, c
 
 // Applied + borrowed: numerator from major of the borrowed-scale target; locrian applied===root → i(min7).
 function resolveAppliedBorrowedChord(targetSD, appliedSD, key, baseOctave, borrowed, chordType, inversion, suspensions, modifierChord) {
-  if (borrowed === "locrian" && appliedSD === targetSD) {
+  if (borrowed === "locrian" && appliedSD === targetSD && chordType < 7) {
     const { key: modifiedKey, customScaleIntervals } = resolveBorrowedScale(key, borrowed);
     const tonicNote = getNoteLabel(1, modifiedKey, customScaleIntervals);
     return buildChordFromNoteName(tonicNote, "minor", key, baseOctave, chordType, inversion, false, suspensions, modifierChord);
@@ -654,6 +649,8 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
   const halfDimIi = isHalfDiminishedIi(chordRootSD, modifiedKey, chordType, useSusFrame, modifierChord);
   const triadQuality = halfDimIi
     ? "diminished"
+    : modifierChord?.dimTriad
+      ? "diminished"
     : sharp5Minor
       ? "minor"
       : phdmMaj7
@@ -664,9 +661,7 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
   const omitTriad35 = effModifierChord?.omits?.includes(3) && effModifierChord?.omits?.includes(5);
 
   // Build triad tones (3-note chord)
-  const { toneJSNames, degreeIndices } = buildTriadTones(chordRootNoteName, chordDegrees, baseOctave);
-  console.log("toneJSNames", JSON.stringify(toneJSNames));
-  console.log("degreeIndices", JSON.stringify(degreeIndices));
+  let { toneJSNames, degreeIndices } = buildTriadTones(chordRootNoteName, chordDegrees, baseOctave);
 
   // Add 7th note if needed (also the basis for 9th/11th chords). The seventh quality follows
   // the prevailing (borrowed-resolved) scale so notes agree with the rendered △7/ø7/°7 symbol.
@@ -676,8 +671,10 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
     const customDimMaj7 = Array.isArray(borrowed) && chordQuality === "diminished";
     const seventhDegree = useSusFrame
       ? "b7"
-      : hmBorrowedMinor7
+        : hmBorrowedMinor7
         ? "b7"
+        : effModifierChord?.dimTriad
+          ? "bb7"
         : customDimMaj7
           ? "7"
           : (triadQuality === "diminished" && hasSharp5)
@@ -712,10 +709,18 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
 
   // Apply inversion
   applyInversion(toneJSNames, degreeIndices, inversion, baseOctave);
-  console.log("toneJSNames", JSON.stringify(toneJSNames));
-  console.log("degreeIndices", JSON.stringify(degreeIndices));
 
-  // Calculate scale degrees relative to original key (label logic)
+  const dimSeventh = chordType >= 7 && (
+    chordQuality === "diminished"
+    || halfDimIi
+    || borrowedModeDimSeventhDegree(chordRootSD, modifiedKey.scale, chordQuality, chordType) === "bb7"
+  );
+  [toneJSNames, degreeIndices] = finalizeVoicing(toneJSNames, degreeIndices, {
+    triadDiminished: dimSeventh,
+    inversion,
+    chordType,
+  });
+
   const baseKeyDegrees = calculateScaleDegrees(
     toneJSNames,
     degreeIndices,
@@ -724,14 +729,6 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
     chordType,
     originalKey
   );
-
-  console.log("CHORD DEBUG: chordRootToNotes", {
-    root: chordRootSD,
-    inversion,
-    rootLabel: toneJSNames[0],
-    toneJSNames,
-    baseKeyDegrees
-  });
 
   return { notes: toneJSNames, chordDegrees: baseKeyDegrees };
 }
@@ -768,44 +765,36 @@ export function chordInterpreter(chord, key) {
   const inversion = chord.inversion || 0; // Default to root position (0) if inversion not specified
   const suspensions = chord.suspensions || [];
 
-  // Harmonic-minor key + parallel minor borrow: V7/iv is sometimes stored as root=1 applied=0
-  // (tonic pitch-class) instead of root=iv applied=V.
-  if (
-    key.scale === "harmonicMinor"
-    && borrowed === "minor"
-    && chord.root === 1
-    && chordType >= 7
-    && !chord.applied
-    && !chord.inversion
-  ) {
-    return chordInterpreter({ ...chord, root: 4, applied: 5 }, key);
-  }
-  
   // Handle Applied Chords (Secondary Dominants/Functions)
   // HOOKTHEORY DATA MODEL: `applied` is the NUMERATOR chord degree; `root` is the
   // tonicization TARGET (denominator). The tonicized key's tonic is the note at degree
   // `root` in the original key, treated as MAJOR; the chord is then degree `applied` of it.
   if (chord.applied && chord.applied !== 0 && chord.applied >= 1 && chord.applied <= 7 && !borrowed) {
-    // The tonicization target = degree `root` in the borrowed-resolved key (e.g. phrygian bII).
-    const { key: borrowedKey } = resolveBorrowedScale(key, borrowed);
+    const { key: borrowedKey, scaleChordQualities: parentQualities } = resolveBorrowedScale(key, borrowed);
+    const parentChordQualities = getScaleChordQualities(borrowedKey.scale, parentQualities);
     const targetTonicNote = getNoteLabel(chord.root, borrowedKey);
 
-    // The tonicized key is treated as major.
-    const appliedKey = { tonic: targetTonicNote, scale: "major" };
+    const targetQual = parentChordQualities[chord.root - 1];
+    const useMinorTonicization = (targetQual === "minor" || targetQual === "diminished")
+      && [2, 3].includes(chord.applied);
+    const appliedScale = useMinorTonicization ? "minor" : "major";
+    const appliedKey = { tonic: targetTonicNote, scale: appliedScale };
 
-    // The actual chord root = scale degree `applied` within the tonicized (major) key.
     const actualRootNote = getNoteLabel(chord.applied, appliedKey);
+    const appliedQualities = getScaleChordQualities(appliedScale);
+    const chordQuality = appliedQualities[chord.applied - 1];
 
-    // Quality comes from the major scale of the tonicized key at the chord's degree.
-    const chordQuality = MAJOR_SCALE_CHORD_QUALITIES[chord.applied - 1];
-
-    // Leading-tone applied chords (vii°7/x) are fully diminished (use a diminished 7th).
-    const fullyDiminished = chord.applied === 7 && chordQuality === 'diminished';
-    const useMaj7 = chordType >= 7 && chordQuality === 'major' && chord.applied === 4;
+    const fullyDiminished = chord.applied === 7 && chordQuality === "diminished";
+    const halfDimApplied = chordType >= 7 && chordQuality === "diminished" && chord.applied !== 7;
+    const useMaj7 = chordType >= 7 && chordQuality === "major" && chord.applied === 4;
 
     return buildChordFromNoteName(
       actualRootNote, chordQuality, key, defaultChordOctave, chordType, inversion,
-      fullyDiminished, suspensions, { ...chord, useMaj7 },
+      fullyDiminished, suspensions, {
+        ...chord,
+        useMaj7,
+        halfDim: chord.halfDim || halfDimApplied,
+      },
     );
   }
   
@@ -816,7 +805,7 @@ export function chordInterpreter(chord, key) {
 // Helper function to build a chord directly from a note name and quality
 function buildChordFromNoteName(rootNoteName, quality, originalKey, baseOctave, chordType, inversion, fullyDiminished = false, suspensions = [], modifierChord = null) {
   const useSusFrame = suspensions && suspensions.length > 0;
-  const triadQuality = modifierChord?.halfDim
+  const triadQuality = modifierChord?.halfDim || modifierChord?.dimTriad
     ? "diminished"
     : useSusFrame && quality === "diminished" ? "major" : quality;
   const chordDegrees = TRIAD_DEGREES[triadQuality];
@@ -838,6 +827,7 @@ function buildChordFromNoteName(rootNoteName, quality, originalKey, baseOctave, 
     const hasSharp5 = modifierChord?.alterations?.includes("#5");
     const seventhDegree = fullyDiminished ? "bb7"
       : modifierChord?.halfDim ? "b7"
+        : modifierChord?.dimTriad ? "bb7"
         : (quality === "diminished" && hasSharp5) ? "b7"
           : (modifierChord?.useMaj7 ? "7" : "b7");
     const seventhName = sdToToneJSNoteName(seventhDegree, 0, rootKey, baseOctave);
@@ -918,6 +908,13 @@ function buildChordFromNoteName(rootNoteName, quality, originalKey, baseOctave, 
     toneJSNames = reorderedNotes;
     degreeIndices = reorderedDegreeIndices;
   }
+
+  [toneJSNames, degreeIndices] = finalizeVoicing(toneJSNames, degreeIndices, {
+    fullyDiminished,
+    triadDiminished: triadQuality === "diminished" && chordType >= 7,
+    inversion,
+    chordType,
+  });
 
   // Calculate scale degrees relative to original key
   const baseKeyDegrees = toneJSNames.map((noteName, index) => {

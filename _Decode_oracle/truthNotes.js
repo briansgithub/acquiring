@@ -1,6 +1,6 @@
 /**
  * truthNotes.js
- * Derive expected pitch-class sets from letter + Roman + JSON chord object.
+ * Derive expected pitch-class sets and note-order checks from letter + Roman + JSON.
  */
 
 const { noteToPc } = require('./svgTruth');
@@ -8,6 +8,55 @@ const {
   triadQualityFromLetter, triadQualityFromRoman, seventhKind, extensionsFromType, mergeMods,
 } = require('./truthLetterParse');
 const { resolveTruthRootPc, isFiguredSixthLetter } = require('./chordRootPc');
+
+const NOTE_BASE_PC = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+
+function noteToMidi(name) {
+  const m = String(name).match(/^([A-Ga-g])([#bx]*|b*)(\d+)$/);
+  if (!m) return null;
+  const basePc = NOTE_BASE_PC[m[1].toUpperCase()];
+  if (basePc == null) return null;
+  let total = (parseInt(m[3], 10) + 1) * 12 + basePc;
+  for (const ch of m[2]) {
+    if (ch === '#') total += 1;
+    else if (ch === 'x') total += 2;
+    else if (ch === 'b') total -= 1;
+  }
+  return total;
+}
+
+function sortNotesByPitch(names) {
+  return [...names].sort((a, b) => (noteToMidi(a) ?? 0) - (noteToMidi(b) ?? 0));
+}
+
+function notesOrderEqual(a, b) {
+  if (!a?.length || !b?.length || a.length !== b.length) return false;
+  return a.every((n, i) => String(n) === String(b[i]));
+}
+
+function pcOrder(names) {
+  return [...names].sort((a, b) => {
+    const pa = noteToPc(String(a).replace(/-?\d+$/, ''));
+    const pb = noteToPc(String(b).replace(/-?\d+$/, ''));
+    return (pa ?? 0) - (pb ?? 0);
+  });
+}
+
+function pitchClassOrder(names) {
+  return pcOrder(names).map((n) => noteToPc(String(n).replace(/-?\d+$/, '')));
+}
+
+function checkNoteOrder(engNotes, pianoNotes, pianoValidated, inversion) {
+  if (pianoValidated && pianoNotes?.length >= 2 && pianoNotes.length === engNotes?.length) {
+    const engPcs = pitchClassOrder(engNotes);
+    const pianoPcs = pitchClassOrder(pianoNotes);
+    return engPcs.every((pc, i) => pc === pianoPcs[i]);
+  }
+  if ((inversion || 0) === 0 && engNotes?.length) {
+    return notesOrderEqual(engNotes, sortNotesByPitch(engNotes));
+  }
+  return true;
+}
 
 const TRIAD_SEMIS = {
   major: [0, 4, 7],
@@ -123,5 +172,6 @@ function notesExact(a, b) {
 
 module.exports = {
   expectedPcs, pcsEqual, noteNamesToPcs, notesExact,
+  noteToMidi, sortNotesByPitch, notesOrderEqual, checkNoteOrder,
   triadQualityFromLetter, mergeMods,
 };

@@ -44,6 +44,7 @@ function rowToEntry(row, ctx) {
     engPcs: row.engPcs ?? null,
     flags,
     notesOk: !!row.notesOk,
+    orderOk: row.flags?.orderOk !== false,
     romanExact: !!flags.romanExact,
     failureClass: classifyFailure(row, { countMatch }),
     buckets: buckets.map(([k, v]) => `${k}=${v}`),

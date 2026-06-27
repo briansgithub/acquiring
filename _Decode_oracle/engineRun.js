@@ -43,13 +43,15 @@ function activeKeyAtBeat(keys, beat) {
 const { mergeMods } = require('./truthLetterParse');
 
 function enrichChordFromSymbol(chord, roman, letter) {
+  const halfDim = chord.halfDim || /ø/.test(roman || "") || /\(b5b9\)|b5b9/i.test(letter || "");
+  const dimTriad = chord.dimTriad || (/°/.test(roman || "") && !halfDim);
+  const flattenHalfDimB5 = chord.flattenHalfDimB5
+    || (halfDim && (chord.alterations || []).includes('b5'));
   if (chord._truthEnriched) {
-    const halfDim = chord.halfDim || /ø/.test(roman || '');
-    return { ...chord, halfDim };
+    return { ...chord, halfDim, dimTriad: chord.dimTriad, flattenHalfDimB5: chord.flattenHalfDimB5 };
   }
   const mods = mergeMods(letter, roman, chord);
   const alterations = [...new Set([...(chord.alterations || []), ...mods.alterations])];
-  const halfDim = chord.halfDim || /ø/.test(roman || "") || /\(b5b9\)|b5b9/i.test(letter || "");
   if (halfDim && (mods.type ?? 5) >= 9) {
     for (const a of ["b5", "b9"]) {
       if (!alterations.includes(a)) alterations.push(a);
@@ -63,6 +65,8 @@ function enrichChordFromSymbol(chord, roman, letter) {
     suspensions: mods.suspensions,
     type: mods.type,
     halfDim,
+    dimTriad,
+    flattenHalfDimB5,
   };
 }
 let engine = null;

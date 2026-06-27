@@ -65,9 +65,11 @@
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
-      "usePiano": false
+      "usePiano": false,
+      "orderOk": true
     },
     "notesOk": true,
+    "orderOk": true,
     "romanExact": true,
     "failureClass": null,
     "buckets": [

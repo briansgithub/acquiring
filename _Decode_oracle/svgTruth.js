@@ -30,16 +30,24 @@ function noteToPc(name) {
   return ((pc % 12) + 12) % 12;
 }
 
+const LETTER_ROW_FILL = '#dae0e6';
+
 // Split a chord's text fragments into the upper (Roman) and lower (letter-name) rows.
 function splitRows(texts) {
   if (!texts.length) return { upper: [], lower: [] };
   const maxY = Math.max(...texts.map((t) => t.y));
   const minY = Math.min(...texts.map((t) => t.y));
-  // If everything is on one line there is no letter row.
-  if (maxY - minY < 12) return { upper: texts.slice(), lower: [] };
-  const lower = texts.filter((t) => t.y >= maxY - 8);
-  const upper = texts.filter((t) => t.y < maxY - 8);
-  return { upper, lower };
+  if (maxY - minY >= 12) {
+    const lower = texts.filter((t) => t.y >= maxY - 8);
+    const upper = texts.filter((t) => t.y < maxY - 8);
+    return { upper, lower };
+  }
+  // Repeat-condensed strips collapse y; Hooktheory letter row uses #dae0e6, roman #ffffff.
+  const lower = texts.filter((t) => (t.fill || '').toLowerCase() === LETTER_ROW_FILL);
+  if (lower.length && lower.length < texts.length) {
+    return { upper: texts.filter((t) => (t.fill || '').toLowerCase() !== LETTER_ROW_FILL), lower };
+  }
+  return { upper: texts.slice(), lower: [] };
 }
 
 // Order fragments left-to-right, then top-to-bottom (so stacked figured-bass digits flatten

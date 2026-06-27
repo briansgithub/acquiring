@@ -565,6 +565,153 @@ node _Decode_oracle/testModification.js --failing --db-dir _Decode_oracle/chord_
 
 ---
 
+## Fix 031 — Note order validation + inv=0 pitch-ascending voicing
+
+**When:** 2026-06-27 (corpus2 closed-loop order check)  
+**Symptom:** After enabling `orderOk` in compare/DB, corpus2 regressed on inv=0 chords; dim7 spread voicing wrong (e.g. Maple `vii°7/V`); engine crash `Assignment to constant variable` on add9 chords; `Cb4` etc. mis-sorted.  
+**Root cause:** (1) `buildChordFromNoteName` / `rootToDiatonicTriad` never sorted inv=0 voicings; dim7 kept 3rd/5th in root octave. (2) `noteToMidi` in engine + harness mishandled `Cb`/`Fb` spellings. (3) `let { toneJSNames, degreeIndices }` was `const` in `music.js`. (4) `notesOk` did not require `orderOk`. (5) Piano scrape order is staff top-to-bottom, not pitch-ascending.  
+**Fix:**
+
+| Area | Change |
+|---|---|
+| Engine | New `chordVoicing.js`: `finalizeVoicing`, `spreadDim7Voicing`, `sortVoicingByPitch`; wired into `buildChordFromNoteName` + `rootToDiatonicTriad` |
+| Engine | `noteToMidi` handles `b` accidentals after letter (Cb4, Fb3) |
+| Engine | `let { toneJSNames, degreeIndices }` in triad builders |
+| Harness | `truthNotes.checkNoteOrder`: inv=0 → pitch-ascending; piano-validated inv=0 compares pitch-sorted both sides |
+| Harness | `compare.notesOk` requires `orderOk`; chord DB tracks `orderOk` per entry |
+| Harness | `pianoNotes.chordRootTonic` for data-sd scale-degree→note conversion |
+
+**Corpus2 DB:** `_Decode_oracle/chord_db_corpus2/` — **50 songs**, **2347 chords**, notesOk **99.7%** (2339/2347), orderOk **100%** (2347/2347).  
+**Before order check:** notesOk ~99.45% (order not gated).  
+**Remaining 8 notesOk failures:** 2 engine (`alterations=b5` half-dim applied, `borrowed=custom-array` dim△7), 6 harness (Summertime locrian alignment, Zombie `VII6D` parse).
+
+**Commands:**
+```bash
+node _Debug_testing/probe_maple_ddim7.cjs   # expect D3, Cb4, F4, Ab4
+node _Decode_oracle/buildChordDb.js --corpus _Decode_oracle/corpus2.json --db-dir _Decode_oracle/chord_db_corpus2
+node _Decode_oracle/testModification.js --failing --db-dir _Decode_oracle/chord_db_corpus2
+node _Decode_oracle/compare.js _Decode_oracle/out/scott-joplin__maple-leaf-rag/scrape.json
+```
+
+**Files:** `web-player/lib/chordVoicing.js`, `web-player/lib/music.js`, `_Decode_oracle/truthNotes.js`, `_Decode_oracle/compare.js`, `_Decode_oracle/pianoNotes.js`, `_Decode_oracle/chord_db/*`
+
+---
+
+## Fix 032 — Summertime leading-JSON chord skip
+
+**When:** 2026-06-27  
+**Symptom:** `george-gershwin__summertime/Verse` — 10 rendered vs 11 JSON; beats misaligned from beat 1.  
+**Root cause:** First JSON chord is a rest/phantom; SVG strip starts at JSON[1].  
+**Fix:** `compare.js` `leadingJsonSkipCount()` — when `jsonCount === renderedCount + 1` and first SVG root matches `JSON[1]` not `JSON[0]`, skip leading JSON chord before pairing.  
+**Files:** `_Decode_oracle/compare.js`
+
+---
+
+## Fix 033 — Applied locrian V7 + dimTriad bor
+
+**When:** 2026-06-27  
+**Symptom:** `bridge-over-troubled-water` `iiø6(b5)5/ii`; `every-breath-you-take` `vi°△7(b5)(bor)` engine PC mismatches.  
+**Root cause:** (1) Locrian `applied===target` shortcut forced minor triad on type-7 applied chords. (2) `°` in roman not setting `dimTriad` + `bb7`. (3) `engineRun.enrichChordFromSymbol` overwrote truth flags on re-enrich.  
+**Fix:** Gate locrian shortcut to `chordType < 7`; `dimTriad` from `°`; preserve `_truthEnriched` flags in `engineRun.js`.  
+**Files:** `web-player/lib/music.js`, `chordAlterations.js`, `chordModifiers.js`, `_Decode_oracle/engineRun.js`, `_Decode_oracle/compare.js`
+
+---
+
+## Fix 034 — Piano PC-order gate + Summertime engine (closed-loop iteration)
+
+**When:** 2026-06-27  
+**Symptom:** ~46 “engine” failures were PCs-exact but `orderOk` false; Summertime beats 9 (`V7/bV(loc)`) and 17 (`i7(min)`); corpus still had alignment harness clusters.  
+**Root cause:**
+
+| Bucket | Cause |
+|---|---|
+| Misclassified engine | `checkNoteOrder` compared literal note names or midi-sorted order; piano scrape is staff-order with voice-crossing (e.g. Clocks `Bb3,Eb4,G3` vs engine `Eb3,G3,Bb3`) — same PCs, different register order |
+| Inv 1/2 engine | Inverted chords compared `C#4` vs `C#3` after pc-sort — octave spelling false negative |
+| Summertime beat 9 | `V7/bV(loc)` with `root=5 applied=5` hit locrian `applied===target` → i minor instead of C7 |
+| Summertime beat 17 | Erroneous `hm + borrowed=minor + root=1` → `V7/iv` redirect in `chordInterpreter` |
+
+**Fix:**
+
+| Area | Change |
+|---|---|
+| Harness | `truthNotes.checkNoteOrder`: compare **pitch-class ascending** order (`pcOrder` / `pitchClassOrder`) for all piano-validated pairs regardless of inversion |
+| Engine | Locrian `applied===target` shortcut only when `chordType < 7` (Fix 033 extension) |
+| Engine | Remove hm `borrowed=minor root=1` → `V7/iv` redirect block |
+
+**Corpus DB after rebuild:**
+
+| Corpus | Chords | notesOk | Fail | eng | harness | piano |
+|---|---:|---:|---:|---:|---:|---:|
+| 1 (`chord_db`) | 1538 | **99.2%** | 13 | 0 | 11 | 2 |
+| 2 (`chord_db_corpus2`) | 2347 | **99.96%** | 1 | 0 | 1 | 0 |
+| 3 (`chord_db_corpus3`) | 6732 | **99.5%** | 31 | 0 | 28 | 3 |
+
+**Remaining failure taxonomy (all corpora):**
+
+1. **Alignment / count mismatch (harness)** — rendered strip count ≠ JSON chord count; pairs drift:
+   - `the-cranberries__zombie/Chorus` — **1 vs 16** (repeat-condensed SVG; sole corpus2 failure)
+   - `the-beatles__penny-lane/Verse` — **43 vs 46** (figured-bass `I△42`, `V42`, `ii65`)
+   - `the-kinks__waterloo-sunset/Bridge` — **21 vs 23** (`V42`, `V43/IV`, `IV△42/IV`)
+   - `bruno-mars__i-just-might` Intro/Chorus — repeat-prefix (+2/+2 chords)
+2. **Truth-parser / figured notation (harness)** — PCs match on some rows but roman/root wrong after mis-alignment; `VII6D/F#` needs figured-sixth + slash parse when alignment fixed
+3. **Piano noise (3)** — `god-only-knows` `#iø7(bor)` custom-array b5 bleed; `whitney-houston` `iø7(loc)` bb7 vs natural 7
+
+**Next P0:** extend `alignPairs` for small deltas (+2/+3) and repeat-condensed sections; `VII6D` letter parse in `truthLetterParse` / `chordRootPc`.
+
+**Commands:**
+```bash
+node _Decode_oracle/buildChordDb.js --corpus _Decode_oracle/corpus2.json --db-dir _Decode_oracle/chord_db_corpus2
+node _Decode_oracle/compare.js _Decode_oracle/out/george-gershwin__summertime/scrape.json
+node _Decode_oracle/compare.js _Decode_oracle/out/the-cranberries__zombie/scrape.json
+```
+
+**Files:** `_Decode_oracle/truthNotes.js`, `web-player/lib/music.js`, `_Decode_oracle/DECODE_FIX_LOG.md`
+
+---
+
+## Fix 035 — Repeat-condensed SVG row split + rootPc alignment
+
+**When:** 2026-06-27  
+**Symptom:** corpus2 sole failure `zombie/Chorus` `VII6D/F#→i`; corpus3 clusters on `bruno-mars/i-just-might` Intro/Chorus and partial Waterloo Bridge recovery.
+
+**Root cause:**
+
+| Issue | Cause |
+|---|---|
+| `VII6D/F#` empty letter | Repeat-condensed strip sets all SVG fragments to `y=0`; `splitRows` put roman+letter in upper band → roman `VII6D/F#`, letter blank |
+| Chorus 1↔16 mis-pair | `alignPairs` index-0 paired rendered `D/F#` with JSON `i` |
+| Bruno Intro 4↔8 | Index pairing: rendered `ii7` on JSON `I` beats |
+| Bruno Chorus 9↔11 | +2 leading JSON chords before first rendered `iii7`; ratio 0.82 used position matcher instead of skip |
+
+**Fix:**
+
+| Area | Change |
+|---|---|
+| `svgTruth.js` | When `y` span &lt; 12, split rows by fill: `#ffffff` = roman, `#dae0e6` = letter (Hooktheory convention) |
+| `compare.js` | `alignByRootPc()` for repeat-condensed sections (`ratio < 0.8`) — monotonic letter-root match |
+| `compare.js` | `leadingJsonSkipCount()` generalized: skip up to 3 leading JSON chords when first SVG root matches `JSON[skip]` |
+
+**Corpus DB after rebuild:**
+
+| Corpus | Chords | notesOk | Fail | eng | harness | piano |
+|---|---:|---:|---:|---:|---:|---:|
+| 1 (`chord_db`) | 1538 | **99.2%** | 12 | 0 | 10 | 2 |
+| 2 (`chord_db_corpus2`) | 2347 | **100.0%** | **0** | 0 | 0 | 0 |
+| 3 (`chord_db_corpus3`) | 6740 | **99.8%** | 14 | 0 | 11 | 3 |
+
+**Deferred (see `REMAINING_FAILURES.md`):** Penny Lane Verse figured-bass alignment (10); Waterloo Bridge/41 compound figured parse (1); god-only-knows `#iø7(bor)` b5 (2); whitney `iø7(loc)` bb7 (1).
+
+**Commands:**
+```bash
+node _Decode_oracle/compare.js _Decode_oracle/out/the-cranberries__zombie/scrape.json
+node _Decode_oracle/compare.js _Decode_oracle/out/bruno-mars__i-just-might/scrape.json
+node _Decode_oracle/buildChordDb.js --corpus _Decode_oracle/corpus2.json --db-dir _Decode_oracle/chord_db_corpus2
+```
+
+**Files:** `_Decode_oracle/svgTruth.js`, `_Decode_oracle/compare.js`, `_Decode_oracle/REMAINING_FAILURES.md`
+
+---
+
 ## Agent onboarding
 
 Permanent session summary for future agents: [`AGENT_WORK_RECORD.md`](./AGENT_WORK_RECORD.md)

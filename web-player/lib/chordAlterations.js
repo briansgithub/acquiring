@@ -32,7 +32,7 @@ const ALT_RULES = {
 
 
 
-export function applyAlterations(toneJSNames, degreeIndices, alterations, chordRootNoteName, baseOctave, sdToToneJSNoteName) {
+export function applyAlterations(toneJSNames, degreeIndices, alterations, chordRootNoteName, baseOctave, sdToToneJSNoteName, chord = null) {
 
   if (!alterations?.length) return;
 
@@ -55,6 +55,16 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
 
 
     if (key === "b5" || key === "#5") {
+      if (key === "b5" && chord?.halfDim && chord?.flattenHalfDimB5) {
+        const b7Pc = (rootPc + 10) % 12;
+        for (let i = 0; i < toneJSNames.length; i++) {
+          if (noteNameToPc(toneJSNames[i]) === b7Pc) {
+            toneJSNames[i] = shiftNoteBySemitones(toneJSNames[i], -1);
+            break;
+          }
+        }
+        continue;
+      }
 
       // b5 only flattens a perfect fifth; dim triads already carry the b5 at +6.
       const fifthPcs = key === "b5"

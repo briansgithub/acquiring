@@ -25,13 +25,13 @@
       "isRest": false,
       "recordingEndBeat": null
     },
-    "truthRoman": "i",
-    "truthLetter": "bm",
+    "truthRoman": "V7/bV(loc)",
+    "truthLetter": "C7",
     "truthPcs": [
-      2,
-      6,
-      9,
-      11
+      0,
+      4,
+      7,
+      10
     ],
     "pianoNotes": null,
     "pianoPcs": null,
@@ -39,16 +39,16 @@
     "engRoman": "V⁷/V",
     "engLetter": "C#7",
     "engNotes": [
-      "B3",
-      "D4",
-      "F#4",
-      "A4"
+      "C3",
+      "E3",
+      "G3",
+      "Bb3"
     ],
     "engPcs": [
-      2,
-      6,
-      9,
-      11
+      0,
+      4,
+      7,
+      10
     ],
     "flags": {
       "romanExact": false,
@@ -61,9 +61,11 @@
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
-      "usePiano": false
+      "usePiano": false,
+      "orderOk": true
     },
     "notesOk": true,
+    "orderOk": true,
     "romanExact": false,
     "failureClass": null,
     "buckets": [
@@ -129,16 +131,18 @@
       "romanExact": true,
       "romanCore": true,
       "rootPcMatch": true,
-      "bassPcMatch": true,
+      "bassPcMatch": false,
       "rootInPcs": true,
       "bassInNotes": true,
       "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
-      "usePiano": false
+      "usePiano": false,
+      "orderOk": true
     },
     "notesOk": true,
+    "orderOk": true,
     "romanExact": true,
     "failureClass": null,
     "buckets": [
@@ -208,16 +212,18 @@
       "romanExact": true,
       "romanCore": true,
       "rootPcMatch": true,
-      "bassPcMatch": true,
+      "bassPcMatch": false,
       "rootInPcs": true,
       "bassInNotes": true,
       "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
-      "usePiano": false
+      "usePiano": false,
+      "orderOk": true
     },
     "notesOk": true,
+    "orderOk": true,
     "romanExact": true,
     "failureClass": null,
     "buckets": [
@@ -287,16 +293,18 @@
       "romanExact": true,
       "romanCore": true,
       "rootPcMatch": true,
-      "bassPcMatch": true,
+      "bassPcMatch": false,
       "rootInPcs": true,
       "bassInNotes": true,
       "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
-      "usePiano": false
+      "usePiano": false,
+      "orderOk": true
     },
     "notesOk": true,
+    "orderOk": true,
     "romanExact": true,
     "failureClass": null,
     "buckets": [

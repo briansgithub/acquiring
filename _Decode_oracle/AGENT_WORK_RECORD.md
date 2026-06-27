@@ -2,8 +2,8 @@
 
 **Audience:** Future Cursor agents continuing reverse-engineering of Hooktheory `.json` chord objects into correct piano voicings and Roman symbols.
 
-**Last updated:** 2026-06-27  
-**Primary branch:** `oracle/chord-db-suspensions-truth` (merged into `main` at `34ca5e3`; song-cache commit `4d7baf8` on feature branch)
+**Last updated:** 2026-06-27 (Fix 035 merged)  
+**Primary branch:** `main` — Fixes 031–035 on `oracle/chord-db-suspensions-truth` merged 2026-06-27
 
 **Detailed fix-by-fix log:** [`DECODE_FIX_LOG.md`](./DECODE_FIX_LOG.md) — read fixes **in order**; append new numbered fixes there.
 
@@ -138,6 +138,8 @@ Full detail in [`DECODE_FIX_LOG.md`](./DECODE_FIX_LOG.md). Highlights:
 | 018–024 | Suspensions, modifier pipeline (omits/adds/alts/extensions), slash-root harness |
 | 025–027 | Borrowed dim7 voicing; applied+borrowed; locrian/custom-array |
 | 028–029 | Corpus2/3: figured-sixth letters, applied IV△7, minor 11th, bassPc harness, phdm/#5/hm shells |
+| 030–031 | Hooktheory page scraper; note order (`orderOk`), inv=0 pitch voicing, dim7 spread, `Cb` midi |
+| 032–035 | Summertime leading-JSON skip; locrian V7 + dimTriad bor; PC-order gate; repeat-condensed SVG fill split; `alignByRootPc`; generalized leading skip |
 
 ### 7.3 Infrastructure added
 
@@ -165,6 +167,21 @@ node _Debug_testing/cache_10_popular.cjs
 
 Player library: **16 songs** in `.hooktheory_cache/` (6 original + 10 new).
 
+### 7.5 Closed-loop accuracy (Fix 035, 2026-06-27)
+
+| Corpus | DB dir | Chords | notesOk | Failing | eng | harness | piano |
+|---|---|---:|---:|---:|---:|---:|---:|
+| 1 | `chord_db/` | 1538 | **99.2%** | 12 | 0 | 10 | 2 |
+| 2 | `chord_db_corpus2/` | 2347 | **100.0%** | **0** | 0 | 0 | 0 |
+| 3 | `chord_db_corpus3/` | 6740 | **99.8%** | 14 | 0 | 11 | 3 |
+
+**Deferred failures:** see [`REMAINING_FAILURES.md`](./REMAINING_FAILURES.md) — Penny Lane figured-bass alignment (10), piano noise god-only-knows/whitney (3), Waterloo Bridge/41 (1).
+
+```bash
+node _Decode_oracle/buildChordDb.js --corpus _Decode_oracle/corpus2.json --db-dir _Decode_oracle/chord_db_corpus2
+node _Decode_oracle/testModification.js --failing --db-dir _Decode_oracle/chord_db_corpus2
+```
+
 ---
 
 ## 8. Git commits (oracle arc)
@@ -183,18 +200,17 @@ e439aec  Fix borrowed minor/phrygian/hmin voicing (Fix 026)
 
 ## 9. Known open issues (do not confuse with regressions)
 
-### Engine (sparse, ~2–12 chords per corpus)
+**Authoritative list:** [`REMAINING_FAILURES.md`](./REMAINING_FAILURES.md)
 
-- Custom-borrowed `vi°△7(b5)` (Police *Every Breath You Take*)
-- Applied half-dim figured-sixth `iiø6(b5)/ii` (Simon *Bridge Over Troubled Water*)
-- `vii7(#5)`, `iiø11(no3no5)`, applied+borrowed+#5 composites
-- `omits=3+5` REM chord root PC edge case
+### Harness / alignment (deferred)
 
-### Harness / alignment (majority of corpus3 failures)
+- **Penny Lane Verse** — 10 failures: analyst Roman on SVG vs figured-bass JSON (`I△42` / `vi7` dual representation); 43 vs 46 count
+- **Waterloo Sunset Bridge/41** — `iiiø4(add13)2` compound figured-bass parse
 
-- `adele__set-fire-to-the-rain` — ~25 failures from rendered/JSON index drift
-- `penny-lane`, `waterloo-sunset`, `summertime` — section alignment
-- `piano_noise` — melody bleed in piano DOM scrape (3 chords)
+### Piano noise (deferred engine edge cases)
+
+- **God Only Knows** `#iø7(bor)` — custom-array b5 bleed (2 chords)
+- **Whitney** `iø7(loc)` — bb7 vs natural 5 (1 chord)
 
 ### Symbol-only (notes OK)
 

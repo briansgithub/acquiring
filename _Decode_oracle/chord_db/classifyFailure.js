@@ -21,6 +21,7 @@ function classifyFailure(row, sectionMeta = {}) {
     return 'piano_noise';
   }
   if (!f.romanCore) return 'engine';
+  if (f.pcsExact && f.bassInNotes && f.orderOk === false) return 'engine';
   if (hasEngineMod(row.chord || {})) return 'engine';
   if (f.pcsExact === false || f.bassInNotes === false) return 'engine';
   return 'harness';

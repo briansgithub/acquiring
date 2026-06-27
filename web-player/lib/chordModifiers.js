@@ -17,7 +17,7 @@ export function applyChordModifiers(toneJSNames, degreeIndices, chordRootNoteNam
   const adds = chord.adds || [];
 
   applyOmits(toneJSNames, degreeIndices, omits);
-  applyAlterations(toneJSNames, degreeIndices, alterations, chordRootNoteName, baseOctave, sdToToneJSNoteName);
+  applyAlterations(toneJSNames, degreeIndices, alterations, chordRootNoteName, baseOctave, sdToToneJSNoteName, chord);
   applyAdds(toneJSNames, degreeIndices, adds, chordRootNoteName, baseOctave, sdToToneJSNoteName, chord?.type ?? 5);
 }
 

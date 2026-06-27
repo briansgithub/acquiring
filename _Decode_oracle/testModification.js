@@ -45,11 +45,11 @@ function printBucketTable(buckets, { failingOnly = false, threshold = 99 } = {})
     .map(([mod, s]) => ({ mod, ...s }))
     .sort((a, b) => a.notesOkPct - b.notesOkPct || b.total - a.total);
   const filtered = failingOnly ? rows.filter((r) => r.notesOkPct < threshold) : rows;
-  console.log(`\n${'Modification'.padEnd(28)} ${'count'.padStart(6)} ${'notesOk'.padStart(8)} ${'roman'.padStart(8)} ${'fail'.padStart(5)}`);
-  console.log('-'.repeat(60));
+  console.log(`\n${'Modification'.padEnd(28)} ${'count'.padStart(6)} ${'notesOk'.padStart(8)} ${'orderOk'.padStart(8)} ${'roman'.padStart(8)} ${'fail'.padStart(5)}`);
+  console.log('-'.repeat(68));
   for (const r of filtered) {
     console.log(
-      `${r.mod.padEnd(28)} ${String(r.total).padStart(6)} ${pct(r.notesOk, r.total).padStart(8)} ${pct(r.romanExact, r.total).padStart(8)} ${String(r.failing).padStart(5)}`,
+      `${r.mod.padEnd(28)} ${String(r.total).padStart(6)} ${pct(r.notesOk, r.total).padStart(8)} ${pct(r.orderOk ?? r.total, r.total).padStart(8)} ${pct(r.romanExact, r.total).padStart(8)} ${String(r.failing).padStart(5)}`,
     );
   }
   console.log(`\n${filtered.length} buckets${failingOnly ? ` below ${threshold}%` : ''}`);

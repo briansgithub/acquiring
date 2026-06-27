@@ -46,8 +46,8 @@
     "engNotes": [
       "D3",
       "F#3",
-      "A3",
       "G3",
+      "A3",
       "E4"
     ],
     "engPcs": [
@@ -68,9 +68,11 @@
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
-      "usePiano": false
+      "usePiano": false,
+      "orderOk": true
     },
     "notesOk": true,
+    "orderOk": true,
     "romanExact": false,
     "failureClass": null,
     "buckets": [
