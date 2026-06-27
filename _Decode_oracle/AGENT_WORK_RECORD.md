@@ -194,6 +194,7 @@ ad45c8f  Strengthen decode oracle with full note truth, chord DB, suspensions fi
 e439aec  Fix borrowed minor/phrygian/hmin voicing (Fix 026)
 34ca5e3  Add corpus2/3 chord DBs and Fixes 028-029 for 99%+ notesOk  [merged to main]
 4d7baf8  Fix Hooktheory page scraper and cache 10 popular songs
+3f8cafc  Fixes 031-035: order gate, alignment, corpus2 100% notesOk  [merged to main]
 ```
 
 ---
