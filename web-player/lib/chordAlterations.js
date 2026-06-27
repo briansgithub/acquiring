@@ -56,7 +56,10 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
 
     if (key === "b5" || key === "#5") {
 
-      const fifthPcs = [(rootPc + 7) % 12, (rootPc + 6) % 12];
+      // b5 only flattens a perfect fifth; dim triads already carry the b5 at +6.
+      const fifthPcs = key === "b5"
+        ? [(rootPc + 7) % 12]
+        : [(rootPc + 7) % 12, (rootPc + 6) % 12];
 
       let found = false;
 

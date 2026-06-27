@@ -460,6 +460,14 @@ function diatonicSeventhDegreeStr(chordRootSD, effKey, customIntervals) {
   } catch (e) { return "b7"; }
 }
 
+// Hooktheory labels dorian vi° / lydian iv° sevenths with ø but voices a dim7 (bb7) stack.
+function borrowedModeDimSeventhDegree(chordRootSD, scale, chordQuality, chordType) {
+  if (chordType < 7 || chordQuality !== "diminished") return null;
+  if (scale === "dorian" && chordRootSD === 6) return "bb7";
+  if (scale === "lydian" && chordRootSD === 4) return "bb7";
+  return null;
+}
+
 
 function isHalfDiminishedIi(chordRootSD, modifiedKey, chordType, useSusFrame, modifierChord) {
   return !useSusFrame
@@ -636,7 +644,8 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
   if (chordType >= 7 && !omitTriad35) {
     const seventhDegree = useSusFrame
       ? "b7"
-      : diatonicSeventhDegreeStr(chordRootSD, modifiedKey, customScaleIntervals);
+      : borrowedModeDimSeventhDegree(chordRootSD, modifiedKey.scale, chordQuality, chordType)
+        ?? diatonicSeventhDegreeStr(chordRootSD, modifiedKey, customScaleIntervals);
     addSeventhNote(toneJSNames, degreeIndices, chordRootNoteName, baseOctave, seventhDegree);
   } else if (
     chordQuality === "diminished" &&

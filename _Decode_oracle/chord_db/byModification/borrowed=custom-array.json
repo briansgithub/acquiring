@@ -1,85 +1,5 @@
 [
   {
-    "id": "maple/Chorus/47",
-    "song": "maple",
-    "section": "Chorus",
-    "beat": 47,
-    "key": {
-      "tonic": "Ab",
-      "scale": "major"
-    },
-    "chord": {
-      "root": 7,
-      "beat": 47,
-      "duration": 1,
-      "type": 5,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [],
-      "suspensions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": [
-        1,
-        3,
-        4,
-        6,
-        8,
-        10,
-        11
-      ],
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "VII(bor)",
-    "truthLetter": "G",
-    "truthPcs": [
-      2,
-      7,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "VII(bor)",
-    "engLetter": "G°",
-    "engNotes": [
-      "G3",
-      "B3",
-      "D4"
-    ],
-    "engPcs": [
-      2,
-      7,
-      11
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": true,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false
-    },
-    "notesOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=5",
-      "inversion=0",
-      "applied=no",
-      "borrowed=custom-array"
-    ],
-    "compositeKey": null
-  },
-  {
     "id": "scott-joplin__maple-leaf-rag/Chorus/47",
     "song": "scott-joplin__maple-leaf-rag",
     "section": "Chorus",
@@ -914,12 +834,13 @@
     "engNotes": [
       "A#3",
       "C#4",
-      "Eb4",
-      "G#4"
+      "E4",
+      "G#4",
+      "E4"
     ],
     "engPcs": [
       1,
-      3,
+      4,
       8,
       10
     ],
@@ -1006,14 +927,15 @@
     "engNotes": [
       "D#3",
       "F#3",
-      "Ab3",
-      "C#4"
+      "A3",
+      "C#4",
+      "A3"
     ],
     "engPcs": [
       1,
       3,
       6,
-      8
+      9
     ],
     "flags": {
       "romanExact": false,
@@ -1040,26 +962,24 @@
     "compositeKey": null
   },
   {
-    "id": "the-police__every-breath-you-take/Chorus/64.5",
-    "song": "the-police__every-breath-you-take",
-    "section": "Chorus",
-    "beat": 64.5,
+    "id": "the-beatles__something/Verse/27",
+    "song": "the-beatles__something",
+    "section": "Verse",
+    "beat": 27,
     "key": {
-      "tonic": "Ab",
+      "tonic": "C",
       "scale": "major"
     },
     "chord": {
       "root": 6,
-      "beat": 64.5,
-      "duration": 0.5,
+      "beat": 27,
+      "duration": 2,
       "type": 7,
-      "inversion": 0,
+      "inversion": 2,
       "applied": 0,
       "adds": [],
       "omits": [],
-      "alterations": [
-        "b5"
-      ],
+      "alterations": [],
       "suspensions": [],
       "substitutions": [],
       "pedal": null,
@@ -1076,53 +996,136 @@
       "isRest": false,
       "recordingEndBeat": null
     },
-    "truthRoman": "vi°△7(b5)(bor)",
-    "truthLetter": "fmmaj7(b5)",
+    "truthRoman": "vi△43(bor)",
+    "truthLetter": "ammaj7/E",
     "truthPcs": [
-      2,
-      5,
+      0,
+      4,
       8,
-      11
+      9
     ],
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "vi△⁷(b5)(bor)",
-    "engLetter": "Fm7",
+    "engRoman": "vi△⁴³(bor)",
+    "engLetter": "Am7/E",
     "engNotes": [
-      "F3",
-      "Ab3",
-      "B3",
-      "E4"
+      "E4",
+      "G#4",
+      "A4",
+      "C5"
     ],
     "engPcs": [
+      0,
       4,
-      5,
       8,
-      11
+      9
     ],
     "flags": {
-      "romanExact": false,
-      "romanCore": false,
+      "romanExact": true,
+      "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false
     },
-    "notesOk": false,
-    "romanExact": false,
-    "failureClass": "engine",
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
     "buckets": [
       "type=7",
-      "inversion=0",
+      "inversion=2",
       "applied=no",
-      "borrowed=custom-array",
-      "alterations=b5"
+      "borrowed=custom-array"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__something/Solo/27",
+    "song": "the-beatles__something",
+    "section": "Solo",
+    "beat": 27,
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 27,
+      "duration": 2,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": [
+        0,
+        2,
+        4,
+        5,
+        8,
+        9,
+        11
+      ],
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi△43(bor)",
+    "truthLetter": "ammaj7/E",
+    "truthPcs": [
+      0,
+      4,
+      8,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vi△⁴³(bor)",
+    "engLetter": "Am7/E",
+    "engNotes": [
+      "E4",
+      "G#4",
+      "A4",
+      "C5"
+    ],
+    "engPcs": [
+      0,
+      4,
+      8,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=2",
+      "applied=no",
+      "borrowed=custom-array"
     ],
     "compositeKey": null
   },
@@ -1302,174 +1305,6 @@
       "type=7",
       "inversion=0",
       "applied=yes",
-      "borrowed=custom-array"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "the-beatles__something/Verse/27",
-    "song": "the-beatles__something",
-    "section": "Verse",
-    "beat": 27,
-    "key": {
-      "tonic": "C",
-      "scale": "major"
-    },
-    "chord": {
-      "root": 6,
-      "beat": 27,
-      "duration": 2,
-      "type": 7,
-      "inversion": 2,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": [
-        0,
-        2,
-        4,
-        5,
-        8,
-        9,
-        11
-      ],
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "vi△43(bor)",
-    "truthLetter": "ammaj7/E",
-    "truthPcs": [
-      0,
-      4,
-      8,
-      9
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "vi△⁴³(bor)",
-    "engLetter": "Am7/E",
-    "engNotes": [
-      "E4",
-      "G#4",
-      "A4",
-      "C5"
-    ],
-    "engPcs": [
-      0,
-      4,
-      8,
-      9
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": true,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false
-    },
-    "notesOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=2",
-      "applied=no",
-      "borrowed=custom-array"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "the-beatles__something/Solo/27",
-    "song": "the-beatles__something",
-    "section": "Solo",
-    "beat": 27,
-    "key": {
-      "tonic": "C",
-      "scale": "major"
-    },
-    "chord": {
-      "root": 6,
-      "beat": 27,
-      "duration": 2,
-      "type": 7,
-      "inversion": 2,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": [
-        0,
-        2,
-        4,
-        5,
-        8,
-        9,
-        11
-      ],
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "vi△43(bor)",
-    "truthLetter": "ammaj7/E",
-    "truthPcs": [
-      0,
-      4,
-      8,
-      9
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "vi△⁴³(bor)",
-    "engLetter": "Am7/E",
-    "engNotes": [
-      "E4",
-      "G#4",
-      "A4",
-      "C5"
-    ],
-    "engPcs": [
-      0,
-      4,
-      8,
-      9
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": true,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false
-    },
-    "notesOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=2",
-      "applied=no",
       "borrowed=custom-array"
     ],
     "compositeKey": null

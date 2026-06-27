@@ -298,6 +298,7 @@ These are **not** re-documented entry-by-entry here; Fixes 001–013 supersede a
 | 2026-06-27 | Fix 017 | corpus1: 22 songs, 84% notesOk (strict); extended truth + piano scrape |
 | 2026-06-27 | Fix 018 | suspensions buckets 0%→94%/92%; chordSuspensions.js + sus7 b7 rule |
 | 2026-06-27 | Fixes 019–024 | Modifier pipeline fleet: omits/adds/alts/extensions + harness root-PC; corpus_all **97.8%** notesOk |
+| 2026-06-27 | Fix 025 | corpus1 borrowed dorian/lydian dim7 voicing **100%** notesOk |
 
 *Append new entries at the bottom of the numbered fix section and add a changelog row when merging decode fixes.*
 
@@ -360,10 +361,31 @@ These are **not** re-documented entry-by-entry here; Fixes 001–013 supersede a
 
 | Bucket | notesOk | Notes |
 |---|---|---|
-| `borrowed=dorian` | ~79% | Scale voicing in `scales.js` / `resolveBorrowedScale` |
+| ~~`borrowed=dorian`~~ | ~~79%~~ | **Fixed Fix 025** |
+| ~~`borrowed=lydian`~~ | ~~93%~~ | **Fixed Fix 025** |
 | `borrowed=custom-array` | ~76% | Custom borrowed interval arrays |
 | `alterations=#5` | ~80% | Composite + borrowed interactions |
 | `type=11` | ~82% | `v11(b9)` minor-key spelling; `iiø11` without SVG enrich |
 | `applied=yes` | ~94% | Secondary dominant + borrowed composites |
 | `omits=3+5` | 0% (1 chord) | REM `iiø11(no3no5)` truth PC root normalization |
 | `inversion=0/1` | ~98% | Alignment + slash bass edge cases |
+
+---
+
+## Fix 025 — Borrowed dorian / lydian dim7 voicing (corpus1)
+
+**When:** 2026-06-27 oracle/chord-db-suspensions-truth  
+**Symptom:** `#viø7(dor)` and `#ivø7(lyd)` chords (Penny Lane, Round Midnight, Your Song) emitted half-dim stacks (min7 = `b7`) while ground truth expects dim7 (`bb7`); `m7(b5)` letter enrich double-flattened an existing dim5 via `b5` alt.  
+**Root cause:** `diatonicSeventhDegreeStr` reads the diatonic subdominant (min7 above root) for dorian vi° / lydian iv°; Hooktheory renders ø but voices dim7. `chordAlterations` `b5` matched both perf5 and dim5 PCs.  
+**Fix:** `borrowedModeDimSeventhDegree()` in `music.js` — dorian degree 6 / lydian degree 4 diminished sevenths use `bb7`. `chordAlterations.js` — `b5` only targets perfect fifth (+7).  
+**Bucket rerun (corpus1-filtered, `--rerun`):**
+
+| Bucket | Before | After |
+|---|---|---|
+| `borrowed=dorian` | 6/10 (60%) | **10/10 (100%)** |
+| `borrowed=mixolydian` | 6/6 (100%) | **6/6 (100%)** |
+| `borrowed=lydian` | 0/1 (0%) | **1/1 (100%)** |
+
+**Full corpus rebuild (`--corpus corpus.json`):** `borrowed=dorian` **17/17**, `borrowed=mixolydian` **7/7**, `borrowed=lydian` **6/6**.  
+**Regression:** 500 Miles **12/12**, Eleanor Rigby **19/19** notesOk.  
+**Files:** `web-player/lib/music.js`, `web-player/lib/chordAlterations.js`
