@@ -1,0 +1,28 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/the-beatles/hey-jude",
+  "songTitle": "Hey Jude",
+  "artist": "the-beatles",
+  "timestamp": "2026-06-27T09:43:38.876Z",
+  "songIds": [
+    "RzojraWnoDe",
+    "yvmrvQbzmOW"
+  ],
+  "sectionMapping": {
+    "RzojraWnoDe": "Verse",
+    "yvmrvQbzmOW": "Outro"
+  },
+  "sections": [
+    {
+      "index": 0,
+      "songId": "RzojraWnoDe",
+      "sectionName": "Verse",
+      "numericId": 1647389
+    },
+    {
+      "index": 1,
+      "songId": "yvmrvQbzmOW",
+      "sectionName": "Outro",
+      "numericId": 1588574
+    }
+  ]
+}

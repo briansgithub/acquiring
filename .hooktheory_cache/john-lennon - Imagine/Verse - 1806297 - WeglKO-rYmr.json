@@ -1,0 +1,528 @@
+{
+  "songId": "WeglKO-rYmr",
+  "numericId": 1806297,
+  "sectionName": "Verse",
+  "songInfo": "Imagine",
+  "chords": [
+    {
+      "root": 1,
+      "beat": 1,
+      "duration": 3,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 1,
+      "beat": 4,
+      "duration": 1,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 4,
+      "beat": 5,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 1,
+      "beat": 9,
+      "duration": 3,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 1,
+      "beat": 12,
+      "duration": 1,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 4,
+      "beat": 13,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 1,
+      "beat": 17,
+      "duration": 3,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 1,
+      "beat": 20,
+      "duration": 1,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 4,
+      "beat": 21,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 1,
+      "beat": 25,
+      "duration": 3,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 1,
+      "beat": 28,
+      "duration": 1,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 4,
+      "beat": 29,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    }
+  ],
+  "notes": [
+    {
+      "sd": "3",
+      "octave": -1,
+      "beat": 1.75,
+      "duration": 0.25,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "5",
+      "octave": -1,
+      "beat": 2,
+      "duration": 0.25,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "5",
+      "octave": -1,
+      "beat": 2.25,
+      "duration": 0.75,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "5",
+      "octave": -1,
+      "beat": 3,
+      "duration": 1,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "7",
+      "octave": -1,
+      "beat": 4,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "7",
+      "octave": -1,
+      "beat": 4.5,
+      "duration": 0.25,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "6",
+      "octave": -1,
+      "beat": 4.75,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "6",
+      "octave": -1,
+      "beat": 8,
+      "duration": 0.25,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "#6",
+      "octave": -1,
+      "beat": 8.25,
+      "duration": 0.25,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "7",
+      "octave": -1,
+      "beat": 8.5,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "5",
+      "octave": -1,
+      "beat": 9.75,
+      "duration": 0.25,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "5",
+      "octave": -1,
+      "beat": 10,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "5",
+      "octave": -1,
+      "beat": 10.5,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "5",
+      "octave": -1,
+      "beat": 11,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "7",
+      "octave": -1,
+      "beat": 11.5,
+      "duration": 1,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "6",
+      "octave": -1,
+      "beat": 12.5,
+      "duration": 1,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "6",
+      "octave": -1,
+      "beat": 16,
+      "duration": 0.25,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "#6",
+      "octave": -1,
+      "beat": 16.25,
+      "duration": 0.25,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "7",
+      "octave": -1,
+      "beat": 16.5,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "5",
+      "octave": -1,
+      "beat": 18,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "5",
+      "octave": -1,
+      "beat": 18.5,
+      "duration": 1.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "7",
+      "octave": -1,
+      "beat": 20,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "7",
+      "octave": -1,
+      "beat": 20.5,
+      "duration": 0.25,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "6",
+      "octave": -1,
+      "beat": 20.75,
+      "duration": 0.75,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "6",
+      "octave": -1,
+      "beat": 24,
+      "duration": 0.25,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "#6",
+      "octave": -1,
+      "beat": 24.25,
+      "duration": 0.25,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "7",
+      "octave": -1,
+      "beat": 24.5,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "1",
+      "octave": -1,
+      "beat": 26.75,
+      "duration": 0.25,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "5",
+      "octave": -1,
+      "beat": 27,
+      "duration": 0.25,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "5",
+      "octave": -1,
+      "beat": 27.25,
+      "duration": 0.75,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "7",
+      "octave": -1,
+      "beat": 28,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "7",
+      "octave": -1,
+      "beat": 28.5,
+      "duration": 0.5,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "6",
+      "octave": -1,
+      "beat": 29,
+      "duration": 1,
+      "isRest": false,
+      "recordingEndBeat": null
+    }
+  ],
+  "metadata": {
+    "version": "2.34.3",
+    "keys": [
+      {
+        "beat": 1,
+        "scale": "major",
+        "tonic": "C"
+      }
+    ],
+    "tempos": [
+      {
+        "beat": 1,
+        "bpm": 76,
+        "swingFactor": 0,
+        "swingBeat": 0.5
+      }
+    ],
+    "meters": [
+      {
+        "beat": 1,
+        "numBeats": 4,
+        "beatUnit": 1
+      }
+    ],
+    "sections": [],
+    "endBeat": 65,
+    "numericId": 1806297
+  },
+  "stringSongId": "WeglKO-rYmr",
+  "cachedAt": "2026-06-27T09:45:17.597Z"
+}

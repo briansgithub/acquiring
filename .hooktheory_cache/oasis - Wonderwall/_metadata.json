@@ -1,0 +1,36 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/oasis/wonderwall",
+  "songTitle": "Wonderwall",
+  "artist": "oasis",
+  "timestamp": "2026-06-27T09:43:59.691Z",
+  "songIds": [
+    "JkmZAOKK_oq",
+    "VMgJXrWWaoq",
+    "RPxe-ZOK-xb"
+  ],
+  "sectionMapping": {
+    "JkmZAOKK_oq": "Verse",
+    "VMgJXrWWaoq": "Pre-Chorus and Chorus",
+    "RPxe-ZOK-xb": "Chorus"
+  },
+  "sections": [
+    {
+      "index": 0,
+      "songId": "JkmZAOKK_oq",
+      "sectionName": "Verse",
+      "numericId": 1683646
+    },
+    {
+      "index": 1,
+      "songId": "VMgJXrWWaoq",
+      "sectionName": "Pre-Chorus and Chorus",
+      "numericId": 1683647
+    },
+    {
+      "index": 2,
+      "songId": "RPxe-ZOK-xb",
+      "sectionName": "Chorus",
+      "numericId": 1683649
+    }
+  ]
+}

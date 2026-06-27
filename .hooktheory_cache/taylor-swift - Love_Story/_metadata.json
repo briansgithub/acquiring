@@ -1,0 +1,52 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/love-story",
+  "songTitle": "Love Story",
+  "artist": "taylor-swift",
+  "timestamp": "2026-06-27T09:44:39.878Z",
+  "songIds": [
+    "yvgPXGPjjgY",
+    "ZbgO_yd_gnY",
+    "kygzyeRkjmK",
+    "dPoDwEzdxnM",
+    "nLgarvBzxYp"
+  ],
+  "sectionMapping": {
+    "yvgPXGPjjgY": "Verse",
+    "ZbgO_yd_gnY": "Pre-Chorus",
+    "kygzyeRkjmK": "Chorus",
+    "dPoDwEzdxnM": "Bridge",
+    "nLgarvBzxYp": "Outro"
+  },
+  "sections": [
+    {
+      "index": 0,
+      "songId": "yvgPXGPjjgY",
+      "sectionName": "Verse",
+      "numericId": 1779037
+    },
+    {
+      "index": 1,
+      "songId": "ZbgO_yd_gnY",
+      "sectionName": "Pre-Chorus",
+      "numericId": 1219022
+    },
+    {
+      "index": 2,
+      "songId": "kygzyeRkjmK",
+      "sectionName": "Chorus",
+      "numericId": 1779043
+    },
+    {
+      "index": 3,
+      "songId": "dPoDwEzdxnM",
+      "sectionName": "Bridge",
+      "numericId": 1340027
+    },
+    {
+      "index": 4,
+      "songId": "nLgarvBzxYp",
+      "sectionName": "Outro",
+      "numericId": 1631980
+    }
+  ]
+}

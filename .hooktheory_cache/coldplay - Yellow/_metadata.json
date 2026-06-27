@@ -1,0 +1,52 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/coldplay/yellow",
+  "songTitle": "Yellow",
+  "artist": "coldplay",
+  "timestamp": "2026-06-27T09:44:30.196Z",
+  "songIds": [
+    "lamkKbEwmDM",
+    "kwxAynkAxKG",
+    "veoYPblkxdn",
+    "VMgJVvpAgqK",
+    "JkmZAORMjoq"
+  ],
+  "sectionMapping": {
+    "lamkKbEwmDM": "Intro",
+    "kwxAynkAxKG": "Verse",
+    "veoYPblkxdn": "Pre-Chorus",
+    "VMgJVvpAgqK": "Chorus",
+    "JkmZAORMjoq": "Outro"
+  },
+  "sections": [
+    {
+      "index": 0,
+      "songId": "lamkKbEwmDM",
+      "sectionName": "Intro",
+      "numericId": 1532309
+    },
+    {
+      "index": 1,
+      "songId": "kwxAynkAxKG",
+      "sectionName": "Verse",
+      "numericId": 734833
+    },
+    {
+      "index": 2,
+      "songId": "veoYPblkxdn",
+      "sectionName": "Pre-Chorus",
+      "numericId": 1177514
+    },
+    {
+      "index": 3,
+      "songId": "VMgJVvpAgqK",
+      "sectionName": "Chorus",
+      "numericId": 904111
+    },
+    {
+      "index": 4,
+      "songId": "JkmZAORMjoq",
+      "sectionName": "Outro",
+      "numericId": 1711146
+    }
+  ]
+}

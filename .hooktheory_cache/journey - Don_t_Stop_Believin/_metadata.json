@@ -1,0 +1,52 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/journey/dont-stop-believin",
+  "songTitle": "Don't Stop Believin",
+  "artist": "journey",
+  "timestamp": "2026-06-27T09:43:49.576Z",
+  "songIds": [
+    "kygzyeEwjmK",
+    "ANmppAbZmyM",
+    "Abm_nzWzoak",
+    "nJmBljrdxAV",
+    "RzojpRDMgDe"
+  ],
+  "sectionMapping": {
+    "kygzyeEwjmK": "Intro",
+    "ANmppAbZmyM": "Verse",
+    "Abm_nzWzoak": "Pre-Chorus",
+    "nJmBljrdxAV": "Chorus",
+    "RzojpRDMgDe": "Solo"
+  },
+  "sections": [
+    {
+      "index": 0,
+      "songId": "kygzyeEwjmK",
+      "sectionName": "Intro",
+      "numericId": 1797043
+    },
+    {
+      "index": 1,
+      "songId": "ANmppAbZmyM",
+      "sectionName": "Verse",
+      "numericId": 1091532
+    },
+    {
+      "index": 2,
+      "songId": "Abm_nzWzoak",
+      "sectionName": "Pre-Chorus",
+      "numericId": 779029
+    },
+    {
+      "index": 3,
+      "songId": "nJmBljrdxAV",
+      "sectionName": "Chorus",
+      "numericId": 1140762
+    },
+    {
+      "index": 4,
+      "songId": "RzojpRDMgDe",
+      "sectionName": "Solo",
+      "numericId": 1112653
+    }
+  ]
+}

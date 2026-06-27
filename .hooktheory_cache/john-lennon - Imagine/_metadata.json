@@ -1,0 +1,28 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/john-lennon/imagine",
+  "songTitle": "Imagine",
+  "artist": "john-lennon",
+  "timestamp": "2026-06-27T09:45:17.600Z",
+  "songIds": [
+    "WeglKO-rYmr",
+    "kygzBAEzgKB"
+  ],
+  "sectionMapping": {
+    "WeglKO-rYmr": "Verse",
+    "kygzBAEzgKB": "Chorus Lead-Out"
+  },
+  "sections": [
+    {
+      "index": 0,
+      "songId": "WeglKO-rYmr",
+      "sectionName": "Verse",
+      "numericId": 1806297
+    },
+    {
+      "index": 1,
+      "songId": "kygzBAEzgKB",
+      "sectionName": "Chorus Lead-Out",
+      "numericId": 1273343
+    }
+  ]
+}
