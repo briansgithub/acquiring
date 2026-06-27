@@ -1,0 +1,91 @@
+[
+  {
+    "id": "duke-ellington__take-the-a-train/Chorus/9",
+    "song": "duke-ellington__take-the-a-train",
+    "section": "Chorus",
+    "beat": 9,
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 9,
+      "duration": 8,
+      "type": 9,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#11"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V9(#11)/V",
+    "truthLetter": "D9(#11)",
+    "truthPcs": [
+      0,
+      2,
+      4,
+      6,
+      8,
+      9
+    ],
+    "pianoNotes": [
+      "Ab2",
+      "E3"
+    ],
+    "pianoPcs": [
+      4,
+      8
+    ],
+    "pianoValidated": false,
+    "engRoman": "V⁹(#11)/V",
+    "engLetter": "D9",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3",
+      "C4",
+      "E4"
+    ],
+    "engPcs": [
+      0,
+      2,
+      4,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "piano_noise",
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=yes",
+      "borrowed=none",
+      "alterations=#11"
+    ],
+    "compositeKey": null
+  }
+]

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "miles-davis__blue-in-green/Intro/11",
+    "song": "miles-davis__blue-in-green",
+    "section": "Intro",
+    "beat": 11,
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 11,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#5",
+        "#9"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V+7(#5#9)/v(maj)",
+    "truthLetter": "E+7+(#5#9)",
+    "truthPcs": [
+      0,
+      2,
+      4,
+      7,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V+⁷(#5)(#9)/v",
+    "engLetter": "E+7",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "D4"
+    ],
+    "engPcs": [
+      2,
+      4,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": false,
+    "failureClass": "engine",
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=yes",
+      "borrowed=none",
+      "alterations=#5+#9"
+    ],
+    "compositeKey": null
+  }
+]

@@ -1,0 +1,327 @@
+[
+  {
+    "id": "elton-john__rocket-man/Verse/22.75",
+    "song": "elton-john__rocket-man",
+    "section": "Verse",
+    "beat": 22.75,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 22.75,
+      "duration": 2.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        2,
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "Isus2sus4(add6)",
+    "truthLetter": "Bb(add6)sus2sus4",
+    "truthPcs": [
+      3,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add6)sus2sus4",
+    "engLetter": "Bbsus2sus4",
+    "engNotes": [
+      "Bb3",
+      "Eb4",
+      "F4"
+    ],
+    "engPcs": [
+      3,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=2+4",
+      "adds=6"
+    ],
+    "compositeKey": "adds=6+suspensions=2+4"
+  },
+  {
+    "id": "elton-john__rocket-man/Pre-Chorus/23",
+    "song": "elton-john__rocket-man",
+    "section": "Pre-Chorus",
+    "beat": 23,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 23,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        2,
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "Isus2sus4(add6)",
+    "truthLetter": "Bb(add6)sus2sus4",
+    "truthPcs": [
+      3,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add6)sus2sus4",
+    "engLetter": "Bbsus2sus4",
+    "engNotes": [
+      "Bb3",
+      "Eb4",
+      "F4"
+    ],
+    "engPcs": [
+      3,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=2+4",
+      "adds=6"
+    ],
+    "compositeKey": "adds=6+suspensions=2+4"
+  },
+  {
+    "id": "john-legend__all-of-me/Pre-Chorus and Chorus/45",
+    "song": "john-legend__all-of-me",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 45,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 45,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        2,
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "Vsus2sus4",
+    "truthLetter": "Ebsus2sus4",
+    "truthPcs": [
+      3,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "Vsus2sus4",
+    "engLetter": "Ebsus2sus4",
+    "engNotes": [
+      "Eb3",
+      "Ab3",
+      "Bb3"
+    ],
+    "engPcs": [
+      3,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=2+4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "frank-sinatra__fly-me-to-the-moon/Verse/53",
+    "song": "frank-sinatra__fly-me-to-the-moon",
+    "section": "Verse",
+    "beat": 53,
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 53,
+      "duration": 1.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        2,
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(add13)sus2sus4",
+    "truthLetter": "G7(add13)sus2sus4",
+    "truthPcs": [
+      0,
+      2,
+      4,
+      5,
+      7
+    ],
+    "pianoNotes": [
+      "C2"
+    ],
+    "pianoPcs": [
+      0
+    ],
+    "pianoValidated": false,
+    "engRoman": "V⁷(add13)sus2sus4",
+    "engLetter": "G7sus2sus4",
+    "engNotes": [
+      "G3",
+      "C4",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      0,
+      2,
+      5,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "piano_noise",
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=2+4",
+      "adds=6"
+    ],
+    "compositeKey": "adds=6+suspensions=2+4"
+  }
+]

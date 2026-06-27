@@ -8,8 +8,8 @@
  *   2. Absolute notes - parsed letter name (root pitch-class + bass pitch-class) of the
  *                       engine vs the rendered letter name. This is the "symbols checked
  *                       against the absolute note names" requirement.
- *   3. Pitch sanity   - the rendered chord root pitch-class must appear in the engine's
- *                       decoded pitch-class set, and the bass pitch-classes must agree.
+ *   3. Pitch sanity   - full pitch-class set from letter name + type must match engine PCs,
+ *                       and bass pitch-classes must agree.
  *
  * Alignment: rendered chord-views and non-rest JSON chords are both in beat order and (per
  * the scraper's validation) equal in count, so we zip by index.
@@ -18,12 +18,19 @@
 const { sectionTruth, parseLetter } = require('./svgTruth');
 const { runSection } = require('./engineRun');
 const { canonRoman, canonCore } = require('./normalize');
+const { expectedPcs, pcsEqual, noteNamesToPcs, notesExact } = require('./truthNotes');
 
-function compareChord(truth, eng) {
+function compareChord(truth, eng, rendered) {
   const tRoman = canonRoman(truth.roman);
   const eRoman = canonRoman(eng.roman);
-  const tLetter = truth.letter;             // already parsed by svgTruth
+  const tLetter = truth.letter;
   const eLetter = parseLetter(eng.letter || '');
+
+  const truthPcs = expectedPcs(tLetter, truth.roman, eng.chord);
+  const pianoNotes = rendered?.pianoNotes || null;
+  const pianoPcs = pianoNotes ? noteNamesToPcs(pianoNotes) : null;
+  const pianoValidated = pianoPcs != null && truthPcs != null && pcsEqual(pianoPcs, truthPcs);
+  const usePiano = pianoValidated;
 
   const romanExact = tRoman === eRoman;
   const romanCore = canonCore(truth.roman) === canonCore(eng.roman);
@@ -31,6 +38,12 @@ function compareChord(truth, eng) {
   const bassPcMatch = tLetter.bassPc != null && tLetter.bassPc === eLetter.bassPc;
   const rootInPcs = tLetter.rootPc != null && Array.isArray(eng.pcs) && eng.pcs.includes(tLetter.rootPc);
   const bassInNotes = tLetter.bassPc != null && eng.bassPc != null && tLetter.bassPc === eng.bassPc;
+  const pcsExact = truthPcs != null && pcsEqual(eng.pcs, truthPcs);
+  const pianoExact = pianoNotes != null && notesExact(eng.notes, pianoNotes);
+  const pianoPcsExact = pianoPcs != null && pcsEqual(eng.pcs, pianoPcs);
+  const notesOk = usePiano
+    ? (pianoExact || pianoPcsExact) && bassInNotes
+    : pcsExact && bassInNotes;
 
   return {
     beat: eng.beat,
@@ -41,8 +54,15 @@ function compareChord(truth, eng) {
     engLetter: eng.letter,
     engNotes: eng.notes,
     engPcs: eng.pcs,
-    flags: { romanExact, romanCore, rootPcMatch, bassPcMatch, rootInPcs, bassInNotes },
-    ok: romanExact && rootPcMatch && bassPcMatch,
+    truthPcs,
+    pianoNotes,
+    pianoPcs,
+    flags: {
+      romanExact, romanCore, rootPcMatch, bassPcMatch, rootInPcs, bassInNotes,
+      pcsExact, pianoExact, pianoPcsExact, pianoValidated, usePiano,
+    },
+    ok: romanExact && notesOk,
+    notesOk,
     engineError: eng.error || null,
   };
 }
@@ -89,7 +109,11 @@ async function compareSection(section) {
   const eng = await runSection(section);
   const countMatch = truth.length === eng.length;
   const pairs = countMatch ? truth.map((t, i) => [t, eng[i]]) : alignPairs(truth, eng);
-  const rows = pairs.map(([t, e]) => compareChord(t, e));
+  const rendered = section.rendered || [];
+  const rows = pairs.map(([t, e], i) => {
+    const rIdx = countMatch ? i : truth.indexOf(t);
+    return compareChord(t, e, rendered[rIdx >= 0 ? rIdx : i]);
+  });
   return {
     name: section.name,
     songId: section.songId,
@@ -115,20 +139,22 @@ if (require.main === module) {
   const scrape = require(path.resolve(file));
   (async () => {
     const res = await compareSong(scrape);
-    let total = 0, okRoman = 0, okRoot = 0, okBass = 0, okAll = 0;
+    let total = 0, okRoman = 0, okPcs = 0, okPiano = 0, okBass = 0, okNotes = 0, okAll = 0;
     for (const s of res.sections) {
       console.log(`\n== ${s.name} (${s.songId})  count ${s.truthCount}/${s.engCount} ${s.countMatch ? '' : '!! COUNT MISMATCH'} ==`);
       for (const r of s.rows) {
         total++;
         if (r.flags.romanExact) okRoman++;
-        if (r.flags.rootPcMatch) okRoot++;
-        if (r.flags.bassPcMatch) okBass++;
+        if (r.flags.pcsExact) okPcs++;
+        if (r.flags.pianoExact || r.flags.pianoPcsExact) okPiano++;
+        if (r.flags.bassInNotes) okBass++;
+        if (r.notesOk) okNotes++;
         if (r.ok) okAll++;
         const mark = r.ok ? 'OK ' : '  X';
         const detail = r.ok ? '' : `  [${Object.entries(r.flags).filter(([, v]) => !v).map(([k]) => k).join(',')}]`;
-        console.log(`  ${mark} beat ${String(r.beat).padStart(3)}  truth: ${String(r.truthRoman).padEnd(14)} ${String(r.truthLetter).padEnd(12)} | eng: ${String(r.engRoman).padEnd(14)} ${String(r.engLetter).padEnd(12)}${detail}${r.engineError ? ' ERR:' + r.engineError : ''}`);
+        console.log(`  ${mark} beat ${String(r.beat).padStart(3)}  truth: ${String(r.truthRoman).padEnd(14)} ${String(r.truthLetter).padEnd(12)} | eng: ${String(r.engRoman).padEnd(14)} ${String(r.engLetter).padEnd(12)} pcs=[${(r.truthPcs || []).join(',')}] piano=${r.pianoNotes ? JSON.stringify(r.pianoNotes) : '-'}${detail}${r.engineError ? ' ERR:' + r.engineError : ''}`);
       }
     }
-    console.log(`\n--- TOTALS: ${total} chords | romanExact ${okRoman}/${total} | root ${okRoot}/${total} | bass ${okBass}/${total} | allOK ${okAll}/${total} ---`);
+    console.log(`\n--- TOTALS: ${total} chords | romanExact ${okRoman}/${total} | pcsExact ${okPcs}/${total} | pianoOk ${okPiano}/${total} | notesOk ${okNotes}/${total} | bass ${okBass}/${total} | allOK ${okAll}/${total} ---`);
   })();
 }

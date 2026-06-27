@@ -1,0 +1,322 @@
+[
+  {
+    "id": "the-doors__light-my-fire/Verse/12.5",
+    "song": "the-doors__light-my-fire",
+    "section": "Verse",
+    "beat": 12.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 12.5,
+      "duration": 0.5,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "mixolydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I6(#9)5(mix)",
+    "truthLetter": "G#7(#9)/B#",
+    "truthPcs": [
+      0,
+      3,
+      6,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I⁶⁵(#9)(mix)",
+    "engLetter": "G#7/B#",
+    "engNotes": [
+      "B#4",
+      "D#4",
+      "F#4",
+      "G#4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": false,
+    "failureClass": "engine",
+    "buckets": [
+      "type=7",
+      "inversion=1",
+      "applied=no",
+      "borrowed=mixolydian",
+      "alterations=#9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-doors__light-my-fire/Verse/20.5",
+    "song": "the-doors__light-my-fire",
+    "section": "Verse",
+    "beat": 20.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 20.5,
+      "duration": 0.5,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "mixolydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I6(#9)5(mix)",
+    "truthLetter": "G#7(#9)/B#",
+    "truthPcs": [
+      0,
+      3,
+      6,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I⁶⁵(#9)(mix)",
+    "engLetter": "G#7/B#",
+    "engNotes": [
+      "B#4",
+      "D#4",
+      "F#4",
+      "G#4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": false,
+    "failureClass": "engine",
+    "buckets": [
+      "type=7",
+      "inversion=1",
+      "applied=no",
+      "borrowed=mixolydian",
+      "alterations=#9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-doors__light-my-fire/Verse/28.5",
+    "song": "the-doors__light-my-fire",
+    "section": "Verse",
+    "beat": 28.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 28.5,
+      "duration": 0.5,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "mixolydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I6(#9)5(mix)",
+    "truthLetter": "G#7(#9)/B#",
+    "truthPcs": [
+      0,
+      3,
+      6,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I⁶⁵(#9)(mix)",
+    "engLetter": "G#7/B#",
+    "engNotes": [
+      "B#4",
+      "D#4",
+      "F#4",
+      "G#4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": false,
+    "failureClass": "engine",
+    "buckets": [
+      "type=7",
+      "inversion=1",
+      "applied=no",
+      "borrowed=mixolydian",
+      "alterations=#9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-doors__light-my-fire/Verse/36.5",
+    "song": "the-doors__light-my-fire",
+    "section": "Verse",
+    "beat": 36.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 36.5,
+      "duration": 0.5,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "mixolydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I6(#9)5(mix)",
+    "truthLetter": "G#7(#9)/B#",
+    "truthPcs": [
+      0,
+      3,
+      6,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I⁶⁵(#9)(mix)",
+    "engLetter": "G#7/B#",
+    "engNotes": [
+      "B#4",
+      "D#4",
+      "F#4",
+      "G#4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": false,
+    "failureClass": "engine",
+    "buckets": [
+      "type=7",
+      "inversion=1",
+      "applied=no",
+      "borrowed=mixolydian",
+      "alterations=#9"
+    ],
+    "compositeKey": null
+  }
+]

@@ -1,0 +1,4351 @@
+[
+  {
+    "id": "a-ha__take-on-me/Intro/1",
+    "song": "a-ha__take-on-me",
+    "section": "Intro",
+    "beat": 1,
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 1,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "ii(add9)",
+    "truthLetter": "bm(add9)",
+    "truthPcs": [
+      1,
+      2,
+      6,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(add9)",
+    "engLetter": "Bm",
+    "engNotes": [
+      "B3",
+      "D4",
+      "F#4"
+    ],
+    "engPcs": [
+      2,
+      6,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "a-ha__take-on-me/Intro/25",
+    "song": "a-ha__take-on-me",
+    "section": "Intro",
+    "beat": 25,
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 25,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "ii(add9)",
+    "truthLetter": "bm(add9)",
+    "truthPcs": [
+      1,
+      2,
+      6,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(add9)",
+    "engLetter": "Bm",
+    "engNotes": [
+      "B3",
+      "D4",
+      "F#4"
+    ],
+    "engPcs": [
+      2,
+      6,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "a-ha__take-on-me/Bridge/33",
+    "song": "a-ha__take-on-me",
+    "section": "Bridge",
+    "beat": 33,
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 33,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "ii(add9)",
+    "truthLetter": "bm(add9)",
+    "truthPcs": [
+      1,
+      2,
+      6,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(add9)",
+    "engLetter": "Bm",
+    "engNotes": [
+      "B3",
+      "D4",
+      "F#4"
+    ],
+    "engPcs": [
+      2,
+      6,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "adele__someone-like-you/Pre-Chorus/1",
+    "song": "adele__someone-like-you",
+    "section": "Pre-Chorus",
+    "beat": 1,
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 1,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(add9)",
+    "truthLetter": "E(add9)",
+    "truthPcs": [
+      4,
+      6,
+      8,
+      11
+    ],
+    "pianoNotes": [
+      "A2",
+      "B2",
+      "C#3"
+    ],
+    "pianoPcs": [
+      1,
+      9,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "V(add9)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "piano_noise",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "adele__someone-like-you/Pre-Chorus/17",
+    "song": "adele__someone-like-you",
+    "section": "Pre-Chorus",
+    "beat": 17,
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 17,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(add9)",
+    "truthLetter": "E(add9)",
+    "truthPcs": [
+      4,
+      6,
+      8,
+      11
+    ],
+    "pianoNotes": [
+      "B2",
+      "C#3"
+    ],
+    "pianoPcs": [
+      1,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "V(add9)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "piano_noise",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "billy-joel__piano-man/Verse/19",
+    "song": "billy-joel__piano-man",
+    "section": "Verse",
+    "beat": 19,
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 19,
+      "duration": 3,
+      "type": 5,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V/V(add9)",
+    "truthLetter": "D(add9)",
+    "truthPcs": [
+      2,
+      4,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add9)/V",
+    "engLetter": "D",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3"
+    ],
+    "engPcs": [
+      2,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": false,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=yes",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "coldplay__the-scientist/Outro/5",
+    "song": "coldplay__the-scientist",
+    "section": "Outro",
+    "beat": 5,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 5,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(add9)",
+    "truthLetter": "Bb(add9)",
+    "truthPcs": [
+      0,
+      2,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV(add9)",
+    "engLetter": "Bb",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "elton-john__rocket-man/Verse/25",
+    "song": "elton-john__rocket-man",
+    "section": "Verse",
+    "beat": 25,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 25,
+      "duration": 8,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V6(add9)",
+    "truthLetter": "F(add9)/A",
+    "truthPcs": [
+      0,
+      5,
+      7,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁶(add9)",
+    "engLetter": "F/A",
+    "engNotes": [
+      "A3",
+      "C4",
+      "F4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "fleetwood-mac__dreams/Pre-Chorus/9",
+    "song": "fleetwood-mac__dreams",
+    "section": "Pre-Chorus",
+    "beat": 9,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 9,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VI(add9)",
+    "truthLetter": "F(add9)",
+    "truthPcs": [
+      0,
+      5,
+      7,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VI(add9)",
+    "engLetter": "F",
+    "engNotes": [
+      "F3",
+      "A3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "fleetwood-mac__dreams/Pre-Chorus/25",
+    "song": "fleetwood-mac__dreams",
+    "section": "Pre-Chorus",
+    "beat": 25,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 25,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VI(add9)",
+    "truthLetter": "F(add9)",
+    "truthPcs": [
+      0,
+      5,
+      7,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VI(add9)",
+    "engLetter": "F",
+    "engNotes": [
+      "F3",
+      "A3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "fleetwood-mac__dreams/Pre-Chorus/41",
+    "song": "fleetwood-mac__dreams",
+    "section": "Pre-Chorus",
+    "beat": 41,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 41,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VI(add9)",
+    "truthLetter": "F(add9)",
+    "truthPcs": [
+      0,
+      5,
+      7,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VI(add9)",
+    "engLetter": "F",
+    "engNotes": [
+      "F3",
+      "A3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "guns-n-roses__sweet-child-o-mine/Verse/9",
+    "song": "guns-n-roses__sweet-child-o-mine",
+    "section": "Verse",
+    "beat": 9,
+    "key": {
+      "tonic": "C#",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 9,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VII(add9)",
+    "truthLetter": "B(add9)",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VII(add9)",
+    "engLetter": "B",
+    "engNotes": [
+      "B3",
+      "D#4",
+      "F#4"
+    ],
+    "engPcs": [
+      3,
+      6,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-legend__all-of-me/Pre-Chorus and Chorus/53.75",
+    "song": "john-legend__all-of-me",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 53.75,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 53.75,
+      "duration": 1.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add9)",
+    "truthLetter": "Ab(add9)",
+    "truthPcs": [
+      0,
+      3,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add9)",
+    "engLetter": "Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-legend__all-of-me/Pre-Chorus and Chorus/55",
+    "song": "john-legend__all-of-me",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 55,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 55,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(add9)",
+    "truthLetter": "Eb(add9)",
+    "truthPcs": [
+      3,
+      5,
+      7,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add9)",
+    "engLetter": "Eb",
+    "engNotes": [
+      "Eb3",
+      "G3",
+      "Bb3"
+    ],
+    "engPcs": [
+      3,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-legend__all-of-me/Pre-Chorus and Chorus/61.75",
+    "song": "john-legend__all-of-me",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 61.75,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 61.75,
+      "duration": 1.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add9)",
+    "truthLetter": "Ab(add9)",
+    "truthPcs": [
+      0,
+      3,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add9)",
+    "engLetter": "Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-legend__all-of-me/Pre-Chorus and Chorus/63",
+    "song": "john-legend__all-of-me",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 63,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 63,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(add9)",
+    "truthLetter": "Eb(add9)",
+    "truthPcs": [
+      3,
+      5,
+      7,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add9)",
+    "engLetter": "Eb",
+    "engNotes": [
+      "Eb3",
+      "G3",
+      "Bb3"
+    ],
+    "engPcs": [
+      3,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "lynyrd-skynyrd__sweet-home-alabama/Intro/11",
+    "song": "lynyrd-skynyrd__sweet-home-alabama",
+    "section": "Intro",
+    "beat": 11,
+    "key": {
+      "tonic": "D",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 11,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VII(add9)",
+    "truthLetter": "C(add9)",
+    "truthPcs": [
+      0,
+      2,
+      4,
+      7
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VII(add9)",
+    "engLetter": "C",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3"
+    ],
+    "engPcs": [
+      0,
+      4,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "lynyrd-skynyrd__sweet-home-alabama/Intro/19",
+    "song": "lynyrd-skynyrd__sweet-home-alabama",
+    "section": "Intro",
+    "beat": 19,
+    "key": {
+      "tonic": "D",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 19,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VII(add9)",
+    "truthLetter": "C(add9)",
+    "truthPcs": [
+      0,
+      2,
+      4,
+      7
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VII(add9)",
+    "engLetter": "C",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3"
+    ],
+    "engPcs": [
+      0,
+      4,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "lynyrd-skynyrd__sweet-home-alabama/Intro/27",
+    "song": "lynyrd-skynyrd__sweet-home-alabama",
+    "section": "Intro",
+    "beat": 27,
+    "key": {
+      "tonic": "D",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 27,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VII(add9)",
+    "truthLetter": "C(add9)",
+    "truthPcs": [
+      0,
+      2,
+      4,
+      7
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VII(add9)",
+    "engLetter": "C",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3"
+    ],
+    "engPcs": [
+      0,
+      4,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "lynyrd-skynyrd__sweet-home-alabama/Verse/3",
+    "song": "lynyrd-skynyrd__sweet-home-alabama",
+    "section": "Verse",
+    "beat": 3,
+    "key": {
+      "tonic": "D",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 3,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VII(add9)",
+    "truthLetter": "C(add9)",
+    "truthPcs": [
+      0,
+      2,
+      4,
+      7
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VII(add9)",
+    "engLetter": "C",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3"
+    ],
+    "engPcs": [
+      0,
+      4,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "lynyrd-skynyrd__sweet-home-alabama/Verse/11",
+    "song": "lynyrd-skynyrd__sweet-home-alabama",
+    "section": "Verse",
+    "beat": 11,
+    "key": {
+      "tonic": "D",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 11,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VII(add9)",
+    "truthLetter": "C(add9)",
+    "truthPcs": [
+      0,
+      2,
+      4,
+      7
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VII(add9)",
+    "engLetter": "C",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3"
+    ],
+    "engPcs": [
+      0,
+      4,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "lynyrd-skynyrd__sweet-home-alabama/Verse/19",
+    "song": "lynyrd-skynyrd__sweet-home-alabama",
+    "section": "Verse",
+    "beat": 19,
+    "key": {
+      "tonic": "D",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 19,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VII(add9)",
+    "truthLetter": "C(add9)",
+    "truthPcs": [
+      0,
+      2,
+      4,
+      7
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VII(add9)",
+    "engLetter": "C",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3"
+    ],
+    "engPcs": [
+      0,
+      4,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "lynyrd-skynyrd__sweet-home-alabama/Verse/27",
+    "song": "lynyrd-skynyrd__sweet-home-alabama",
+    "section": "Verse",
+    "beat": 27,
+    "key": {
+      "tonic": "D",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 27,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VII(add9)",
+    "truthLetter": "C(add9)",
+    "truthPcs": [
+      0,
+      2,
+      4,
+      7
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VII(add9)",
+    "engLetter": "C",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3"
+    ],
+    "engPcs": [
+      0,
+      4,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "lynyrd-skynyrd__sweet-home-alabama/Chorus/3",
+    "song": "lynyrd-skynyrd__sweet-home-alabama",
+    "section": "Chorus",
+    "beat": 3,
+    "key": {
+      "tonic": "D",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 3,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VII(add9)",
+    "truthLetter": "C(add9)",
+    "truthPcs": [
+      0,
+      2,
+      4,
+      7
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VII(add9)",
+    "engLetter": "C",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3"
+    ],
+    "engPcs": [
+      0,
+      4,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "lynyrd-skynyrd__sweet-home-alabama/Chorus/11",
+    "song": "lynyrd-skynyrd__sweet-home-alabama",
+    "section": "Chorus",
+    "beat": 11,
+    "key": {
+      "tonic": "D",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 11,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VII(add9)",
+    "truthLetter": "C(add9)",
+    "truthPcs": [
+      0,
+      2,
+      4,
+      7
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VII(add9)",
+    "engLetter": "C",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3"
+    ],
+    "engPcs": [
+      0,
+      4,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "lynyrd-skynyrd__sweet-home-alabama/Chorus/19",
+    "song": "lynyrd-skynyrd__sweet-home-alabama",
+    "section": "Chorus",
+    "beat": 19,
+    "key": {
+      "tonic": "D",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 19,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VII(add9)",
+    "truthLetter": "C(add9)",
+    "truthPcs": [
+      0,
+      2,
+      4,
+      7
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VII(add9)",
+    "engLetter": "C",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3"
+    ],
+    "engPcs": [
+      0,
+      4,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "lynyrd-skynyrd__sweet-home-alabama/Chorus/27",
+    "song": "lynyrd-skynyrd__sweet-home-alabama",
+    "section": "Chorus",
+    "beat": 27,
+    "key": {
+      "tonic": "D",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 27,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VII(add9)",
+    "truthLetter": "C(add9)",
+    "truthPcs": [
+      0,
+      2,
+      4,
+      7
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VII(add9)",
+    "engLetter": "C",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3"
+    ],
+    "engPcs": [
+      0,
+      4,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "oasis__wonderwall/Verse/25",
+    "song": "oasis__wonderwall",
+    "section": "Verse",
+    "beat": 25,
+    "key": {
+      "tonic": "F#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 25,
+      "duration": 1.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VI(add9)",
+    "truthLetter": "D(add9)",
+    "truthPcs": [
+      2,
+      4,
+      6,
+      9
+    ],
+    "pianoNotes": [
+      "F#2"
+    ],
+    "pianoPcs": [
+      6
+    ],
+    "pianoValidated": false,
+    "engRoman": "VI(add9)",
+    "engLetter": "D",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3"
+    ],
+    "engPcs": [
+      2,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "piano_noise",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "oasis__wonderwall/Chorus/5",
+    "song": "oasis__wonderwall",
+    "section": "Chorus",
+    "beat": 5,
+    "key": {
+      "tonic": "F#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 5,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VI(add9)",
+    "truthLetter": "D(add9)",
+    "truthPcs": [
+      2,
+      4,
+      6,
+      9
+    ],
+    "pianoNotes": [
+      "A2",
+      "C#3"
+    ],
+    "pianoPcs": [
+      1,
+      9
+    ],
+    "pianoValidated": false,
+    "engRoman": "VI(add9)",
+    "engLetter": "D",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3"
+    ],
+    "engPcs": [
+      2,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "piano_noise",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "oasis__wonderwall/Chorus/13",
+    "song": "oasis__wonderwall",
+    "section": "Chorus",
+    "beat": 13,
+    "key": {
+      "tonic": "F#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 13,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VI(add9)",
+    "truthLetter": "D(add9)",
+    "truthPcs": [
+      2,
+      4,
+      6,
+      9
+    ],
+    "pianoNotes": [
+      "A2",
+      "C#3"
+    ],
+    "pianoPcs": [
+      1,
+      9
+    ],
+    "pianoValidated": false,
+    "engRoman": "VI(add9)",
+    "engLetter": "D",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3"
+    ],
+    "engPcs": [
+      2,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "piano_noise",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "oasis__wonderwall/Chorus/21",
+    "song": "oasis__wonderwall",
+    "section": "Chorus",
+    "beat": 21,
+    "key": {
+      "tonic": "F#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 21,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VI(add9)",
+    "truthLetter": "D(add9)",
+    "truthPcs": [
+      2,
+      4,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VI(add9)",
+    "engLetter": "D",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3"
+    ],
+    "engPcs": [
+      2,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "oasis__wonderwall/Chorus/29",
+    "song": "oasis__wonderwall",
+    "section": "Chorus",
+    "beat": 29,
+    "key": {
+      "tonic": "F#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 29,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VI(add9)",
+    "truthLetter": "D(add9)",
+    "truthPcs": [
+      2,
+      4,
+      6,
+      9
+    ],
+    "pianoNotes": [
+      "A2",
+      "B2"
+    ],
+    "pianoPcs": [
+      9,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "VI(add9)",
+    "engLetter": "D",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3"
+    ],
+    "engPcs": [
+      2,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "piano_noise",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "queen__somebody-to-love/Intro/8",
+    "song": "queen__somebody-to-love",
+    "section": "Intro",
+    "beat": 8,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 8,
+      "duration": 3,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(add9)",
+    "truthLetter": "Db(add9)",
+    "truthPcs": [
+      1,
+      3,
+      5,
+      8
+    ],
+    "pianoNotes": [
+      "Eb4"
+    ],
+    "pianoPcs": [
+      3
+    ],
+    "pianoValidated": false,
+    "engRoman": "IV(add9)",
+    "engLetter": "Db",
+    "engNotes": [
+      "Db3",
+      "F3",
+      "Ab3"
+    ],
+    "engPcs": [
+      1,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "piano_noise",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "radiohead__karma-police/Chorus/5",
+    "song": "radiohead__karma-police",
+    "section": "Chorus",
+    "beat": 5,
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 5,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add9)",
+    "truthLetter": "G(add9)",
+    "truthPcs": [
+      2,
+      7,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add9)",
+    "engLetter": "G",
+    "engNotes": [
+      "G3",
+      "B3",
+      "D4"
+    ],
+    "engPcs": [
+      2,
+      7,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "radiohead__karma-police/Chorus/25",
+    "song": "radiohead__karma-police",
+    "section": "Chorus",
+    "beat": 25,
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 25,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(add9)",
+    "truthLetter": "C(add9)",
+    "truthPcs": [
+      0,
+      2,
+      4,
+      7
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV(add9)",
+    "engLetter": "C",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3"
+    ],
+    "engPcs": [
+      0,
+      4,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__hey-jude/Outro/9",
+    "song": "the-beatles__hey-jude",
+    "section": "Outro",
+    "beat": 9,
+    "key": {
+      "tonic": "F",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 9,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(add9)",
+    "truthLetter": "Bb(add9)",
+    "truthPcs": [
+      0,
+      2,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV(add9)",
+    "engLetter": "Bb",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Intro/1",
+    "song": "the-police__every-breath-you-take",
+    "section": "Intro",
+    "beat": 1,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 1,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add9)",
+    "truthLetter": "Ab(add9)",
+    "truthPcs": [
+      0,
+      3,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add9)",
+    "engLetter": "Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Intro/9",
+    "song": "the-police__every-breath-you-take",
+    "section": "Intro",
+    "beat": 9,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 9,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi(add9)",
+    "truthLetter": "fm(add9)",
+    "truthPcs": [
+      0,
+      5,
+      7,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vi(add9)",
+    "engLetter": "Fm",
+    "engNotes": [
+      "F3",
+      "Ab3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Intro/25",
+    "song": "the-police__every-breath-you-take",
+    "section": "Intro",
+    "beat": 25,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 25,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add9)",
+    "truthLetter": "Ab(add9)",
+    "truthPcs": [
+      0,
+      3,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add9)",
+    "engLetter": "Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Verse/5",
+    "song": "the-police__every-breath-you-take",
+    "section": "Verse",
+    "beat": 5,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 5,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add9)",
+    "truthLetter": "Ab(add9)",
+    "truthPcs": [
+      0,
+      3,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add9)",
+    "engLetter": "Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Verse/13",
+    "song": "the-police__every-breath-you-take",
+    "section": "Verse",
+    "beat": 13,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 13,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi(add9)",
+    "truthLetter": "fm(add9)",
+    "truthPcs": [
+      0,
+      5,
+      7,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vi(add9)",
+    "engLetter": "Fm",
+    "engNotes": [
+      "F3",
+      "Ab3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Verse/29",
+    "song": "the-police__every-breath-you-take",
+    "section": "Verse",
+    "beat": 29,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 29,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi(add9)",
+    "truthLetter": "fm(add9)",
+    "truthPcs": [
+      0,
+      5,
+      7,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vi(add9)",
+    "engLetter": "Fm",
+    "engNotes": [
+      "F3",
+      "Ab3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Verse/37",
+    "song": "the-police__every-breath-you-take",
+    "section": "Verse",
+    "beat": 37,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 37,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add9)",
+    "truthLetter": "Ab(add9)",
+    "truthPcs": [
+      0,
+      3,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add9)",
+    "engLetter": "Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Verse/45",
+    "song": "the-police__every-breath-you-take",
+    "section": "Verse",
+    "beat": 45,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 45,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi(add9)",
+    "truthLetter": "fm(add9)",
+    "truthPcs": [
+      0,
+      5,
+      7,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vi(add9)",
+    "engLetter": "Fm",
+    "engNotes": [
+      "F3",
+      "Ab3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Verse/61",
+    "song": "the-police__every-breath-you-take",
+    "section": "Verse",
+    "beat": 61,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 61,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add9)",
+    "truthLetter": "Ab(add9)",
+    "truthPcs": [
+      0,
+      3,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add9)",
+    "engLetter": "Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Chorus/1",
+    "song": "the-police__every-breath-you-take",
+    "section": "Chorus",
+    "beat": 1,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 1,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(add9)",
+    "truthLetter": "Db(add9)",
+    "truthPcs": [
+      1,
+      3,
+      5,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV(add9)",
+    "engLetter": "Db",
+    "engNotes": [
+      "Db3",
+      "F3",
+      "Ab3"
+    ],
+    "engPcs": [
+      1,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Chorus/9",
+    "song": "the-police__every-breath-you-take",
+    "section": "Chorus",
+    "beat": 9,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 9,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add9)",
+    "truthLetter": "Ab(add9)",
+    "truthPcs": [
+      0,
+      3,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add9)",
+    "engLetter": "Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Chorus/33",
+    "song": "the-police__every-breath-you-take",
+    "section": "Chorus",
+    "beat": 33,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 33,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add9)",
+    "truthLetter": "Ab(add9)",
+    "truthPcs": [
+      0,
+      3,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add9)",
+    "engLetter": "Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Bridge/41",
+    "song": "the-police__every-breath-you-take",
+    "section": "Bridge",
+    "beat": 41,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 41,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add9)",
+    "truthLetter": "Ab(add9)",
+    "truthPcs": [
+      0,
+      3,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add9)",
+    "engLetter": "Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Bridge/49",
+    "song": "the-police__every-breath-you-take",
+    "section": "Bridge",
+    "beat": 49,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 49,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi(add9)",
+    "truthLetter": "fm(add9)",
+    "truthPcs": [
+      0,
+      5,
+      7,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vi(add9)",
+    "engLetter": "Fm",
+    "engNotes": [
+      "F3",
+      "Ab3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Bridge/65",
+    "song": "the-police__every-breath-you-take",
+    "section": "Bridge",
+    "beat": 65,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 65,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi(add9)",
+    "truthLetter": "fm(add9)",
+    "truthPcs": [
+      0,
+      5,
+      7,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vi(add9)",
+    "engLetter": "Fm",
+    "engNotes": [
+      "F3",
+      "Ab3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Outro/1",
+    "song": "the-police__every-breath-you-take",
+    "section": "Outro",
+    "beat": 1,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 1,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add9)",
+    "truthLetter": "Ab(add9)",
+    "truthPcs": [
+      0,
+      3,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add9)",
+    "engLetter": "Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "tom-petty__free-fallin/Chorus/2.5",
+    "song": "tom-petty__free-fallin",
+    "section": "Chorus",
+    "beat": 2.5,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 2.5,
+      "duration": 2.5,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV6(add9)4",
+    "truthLetter": "Bb(add9)/F",
+    "truthPcs": [
+      0,
+      2,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV⁶₄(add9)",
+    "engLetter": "Bb/F",
+    "engNotes": [
+      "F4",
+      "Bb4",
+      "D5"
+    ],
+    "engPcs": [
+      2,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": false,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "tom-petty__free-fallin/Chorus/5",
+    "song": "tom-petty__free-fallin",
+    "section": "Chorus",
+    "beat": 5,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV6(add9)4",
+    "truthLetter": "Bb(add9)/F",
+    "truthPcs": [
+      0,
+      2,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV⁶₄(add9)",
+    "engLetter": "Bb/F",
+    "engNotes": [
+      "F4",
+      "Bb4",
+      "D5"
+    ],
+    "engPcs": [
+      2,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": false,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "tom-petty__free-fallin/Chorus/10.5",
+    "song": "tom-petty__free-fallin",
+    "section": "Chorus",
+    "beat": 10.5,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 10.5,
+      "duration": 2.5,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV6(add9)4",
+    "truthLetter": "Bb(add9)/F",
+    "truthPcs": [
+      0,
+      2,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV⁶₄(add9)",
+    "engLetter": "Bb/F",
+    "engNotes": [
+      "F4",
+      "Bb4",
+      "D5"
+    ],
+    "engPcs": [
+      2,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": false,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "tom-petty__free-fallin/Chorus/13",
+    "song": "tom-petty__free-fallin",
+    "section": "Chorus",
+    "beat": 13,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 13,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV6(add9)4",
+    "truthLetter": "Bb(add9)/F",
+    "truthPcs": [
+      0,
+      2,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV⁶₄(add9)",
+    "engLetter": "Bb/F",
+    "engNotes": [
+      "F4",
+      "Bb4",
+      "D5"
+    ],
+    "engPcs": [
+      2,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": false,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  }
+]

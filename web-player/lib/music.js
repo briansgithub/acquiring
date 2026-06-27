@@ -25,6 +25,7 @@ import {
   PHRYGIAN_DOMINANT_SCALE_CHORD_QUALITIES,
   generateScaleLabels,
 } from "./scales.js";
+import { replaceTriadThird } from "./chordSuspensions.js";
 
 
 
@@ -60,13 +61,20 @@ function rawDegree(sd) {
   return parseInt(sd.replace(/[^0-9]/g, ""), 10) || 1;
 }
 function modifierValue(sd) {
-  sd = sd.toString()
-  return sd.startsWith("b") ? -1 : sd.startsWith("#") ? 1 : 0;
+  // Count leading accidentals before the degree digit: bb7 -> -2, b7 -> -1, #7 -> +1.
+  const m = sd.toString().match(/^([#b]+)/);
+  if (!m) return 0;
+  let v = 0;
+  for (const ch of m[1]) {
+    if (ch === '#') v += 1;
+    else if (ch === 'b') v -= 1;
+  }
+  return v;
 }
 function modifierString(sd) {
-  sd = sd.toString()
-  if (sd.startsWith("b")) return "b";
-  if (sd.startsWith("#")) return "#";
+  const v = modifierValue(sd);
+  if (v > 0) return '#'.repeat(v);
+  if (v < 0) return 'b'.repeat(-v);
   return "";
 }
 
@@ -546,7 +554,7 @@ function applySecondaryDominant(toneJSNames, degreeIndices, chordRootNoteName, c
 // it indicates the tonal basis of the chord
 // chordType: 5 = triad, 7 = dominant 7th (4-note chord)
 // inversion: 0 = root position, 1 = first inversion, 2 = second inversion, 3 = third inversion (7th chords only)
-export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = null, chordType = 5, inversion = 0, applied = 0) {
+export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = null, chordType = 5, inversion = 0, applied = 0, suspensions = []) {
   // Handle applied chords (secondary dominants/functions)
   if (applied !== 0 && applied >= 1 && applied <= 7) {
     // Resolve borrowed scale to get chord qualities
@@ -564,7 +572,7 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
     const appliedKey = { tonic: chordRootSDNote, scale: appliedScale };
     
     // Recursively call rootToDiatonicTriad with applied as chordRootSD
-    return rootToDiatonicTriad(applied, appliedKey, baseOctave, borrowed, chordType, inversion, 0);
+    return rootToDiatonicTriad(applied, appliedKey, baseOctave, borrowed, chordType, inversion, 0, suspensions);
   }
 
   // Save the original key for scale degree calculation
@@ -579,9 +587,13 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
   // Get chord root note name based on the modified key
   const chordRootNoteName = getNoteLabel(chordRootSD, modifiedKey, customScaleIntervals);
 
-  // Get chord quality and degrees
+  // Get chord quality and degrees, degrees
   const chordQuality = scaleChordQualities[chordRootSD - 1];
-  const chordDegrees = TRIAD_DEGREES[chordQuality];
+  let chordDegrees = TRIAD_DEGREES[chordQuality];
+  const useSusFrame = suspensions && suspensions.length > 0;
+  if (useSusFrame && chordQuality === "diminished") {
+    chordDegrees = TRIAD_DEGREES.major;
+  }
 
   // Build triad tones (3-note chord)
   const { toneJSNames, degreeIndices } = buildTriadTones(chordRootNoteName, chordDegrees, baseOctave);
@@ -591,7 +603,9 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
   // Add 7th note if needed (also the basis for 9th/11th chords). The seventh quality follows
   // the prevailing (borrowed-resolved) scale so notes agree with the rendered △7/ø7/°7 symbol.
   if (chordType >= 7) {
-    const seventhDegree = diatonicSeventhDegreeStr(chordRootSD, modifiedKey, customScaleIntervals);
+    const seventhDegree = useSusFrame
+      ? "b7"
+      : diatonicSeventhDegreeStr(chordRootSD, modifiedKey, customScaleIntervals);
     addSeventhNote(toneJSNames, degreeIndices, chordRootNoteName, baseOctave, seventhDegree);
   }
   // Add upper extensions (9th, 11th) for type 9/11 chords.
@@ -605,6 +619,8 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
     toneJSNames.push(sdToToneJSNoteName("4", 1, rootKey, baseOctave));
     degreeIndices.push(5);
   }
+
+  replaceTriadThird(toneJSNames, degreeIndices, chordRootNoteName, baseOctave, suspensions, sdToToneJSNoteName);
 
   // Apply secondary dominant transformations
   applySecondaryDominant(toneJSNames, degreeIndices, chordRootNoteName, chordQuality, baseOctave);
@@ -665,6 +681,7 @@ export function chordInterpreter(chord, key) {
   const borrowed = chord.borrowed || null;
   const chordType = chord.type || 5; // Default to triad (5) if type not specified
   const inversion = chord.inversion || 0; // Default to root position (0) if inversion not specified
+  const suspensions = chord.suspensions || [];
   
   // Handle Applied Chords (Secondary Dominants/Functions)
   // HOOKTHEORY DATA MODEL: `applied` is the NUMERATOR chord degree; `root` is the
@@ -686,17 +703,18 @@ export function chordInterpreter(chord, key) {
     // Leading-tone applied chords (vii°7/x) are fully diminished (use a diminished 7th).
     const fullyDiminished = chord.applied === 7 && chordQuality === 'diminished';
 
-    return buildChordFromNoteName(actualRootNote, chordQuality, key, defaultChordOctave, chordType, inversion, fullyDiminished);
+    return buildChordFromNoteName(actualRootNote, chordQuality, key, defaultChordOctave, chordType, inversion, fullyDiminished, suspensions);
   }
   
   const applied = chord.applied || 0;
-  return rootToDiatonicTriad(chord.root, key, defaultChordOctave, borrowed, chordType, inversion, applied);
+  return rootToDiatonicTriad(chord.root, key, defaultChordOctave, borrowed, chordType, inversion, applied, suspensions);
 }
 
 // Helper function to build a chord directly from a note name and quality
-function buildChordFromNoteName(rootNoteName, quality, originalKey, baseOctave, chordType, inversion, fullyDiminished = false) {
-  // Get the chord degrees for this quality
-  const chordDegrees = TRIAD_DEGREES[quality];
+function buildChordFromNoteName(rootNoteName, quality, originalKey, baseOctave, chordType, inversion, fullyDiminished = false, suspensions = []) {
+  const useSusFrame = suspensions && suspensions.length > 0;
+  const triadQuality = useSusFrame && quality === "diminished" ? "major" : quality;
+  const chordDegrees = TRIAD_DEGREES[triadQuality];
   
   // Create a temporary key with the root note as tonic (major scale)
   const rootKey = { tonic: rootNoteName, scale: "major" };
@@ -726,6 +744,8 @@ function buildChordFromNoteName(rootNoteName, quality, originalKey, baseOctave, 
     toneJSNames.push(sdToToneJSNoteName("4", 1, rootKey, baseOctave));
     degreeIndices.push(5);
   }
+
+  replaceTriadThird(toneJSNames, degreeIndices, rootNoteName, baseOctave, suspensions, sdToToneJSNoteName);
   
   // Apply inversion
   if (inversion > 0) {

@@ -1,0 +1,16 @@
+# Decode oracle report
+
+**Something by The Beatles Chords, Melody, and Music Theory Analysis - Hooktheory**
+
+- Chords compared: **57**
+- Roman exact: **100%** (57/57)
+- Roman core (ignoring borrowed/alteration tags): **100%** (57/57)
+- Notes consistent (root in pcs + bass agree): **100%** (57/57)
+
+## Sections
+
+| Section | chords | romanExact | romanCore | notesOk |
+|---|---|---|---|---|
+| Verse | 17 | 100% | 100% | 100% |
+| Bridge | 24 | 100% | 100% | 100% |
+| Solo | 16 | 100% | 100% | 100% |

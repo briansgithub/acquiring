@@ -1,0 +1,80 @@
+[
+  {
+    "id": "the-cranberries__zombie/Intro/13",
+    "song": "the-cranberries__zombie",
+    "section": "Intro",
+    "beat": 13,
+    "key": {
+      "tonic": "E",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 13,
+      "duration": 4,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [
+        6,
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VII6(add6add9)",
+    "truthLetter": "D6/9/F#",
+    "truthPcs": [
+      2,
+      4,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VII⁶(add6)(add9)",
+    "engLetter": "D/F#",
+    "engNotes": [
+      "F#3",
+      "A3",
+      "D4"
+    ],
+    "engPcs": [
+      2,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": false,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none",
+      "adds=6+9"
+    ],
+    "compositeKey": null
+  }
+]

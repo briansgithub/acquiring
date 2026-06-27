@@ -1,0 +1,2604 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/money",
+  "title": "Money by Pink Floyd Chords, Melody, and Music Theory Analysis - Hooktheory",
+  "sections": [
+    {
+      "name": "Verse",
+      "hash": "#verse",
+      "songId": "jDgX__kw_mK",
+      "containerId": "tab-jDgX__kw_mK",
+      "renderedCount": 29,
+      "jsonChordCount": 29,
+      "jsonNonRestCount": 29,
+      "json": {
+        "songId": 1729657,
+        "songInfo": "Money",
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "duration": 1.5,
+            "type": 7,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 2.5,
+            "duration": 0.5,
+            "type": 7,
+            "inversion": 2,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 3,
+            "duration": 1,
+            "type": 7,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 4,
+            "duration": 1,
+            "type": 5,
+            "inversion": 2,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 5,
+            "duration": 1,
+            "type": 7,
+            "inversion": 3,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 6,
+            "duration": 1,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 4,
+            "beat": 7,
+            "duration": 1,
+            "type": 7,
+            "inversion": 3,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 8,
+            "duration": 1.5,
+            "type": 7,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 9.5,
+            "duration": 0.5,
+            "type": 7,
+            "inversion": 2,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 10,
+            "duration": 1,
+            "type": 7,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 11,
+            "duration": 1,
+            "type": 5,
+            "inversion": 2,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 12,
+            "duration": 1,
+            "type": 7,
+            "inversion": 3,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 13,
+            "duration": 1,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 4,
+            "beat": 14,
+            "duration": 1,
+            "type": 7,
+            "inversion": 3,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 15,
+            "duration": 1.5,
+            "type": 7,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 16.5,
+            "duration": 0.5,
+            "type": 5,
+            "inversion": 2,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 17,
+            "duration": 1,
+            "type": 7,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 18,
+            "duration": 1,
+            "type": 5,
+            "inversion": 2,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 19,
+            "duration": 1,
+            "type": 7,
+            "inversion": 3,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 20,
+            "duration": 1,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 4,
+            "beat": 21,
+            "duration": 1,
+            "type": 7,
+            "inversion": 3,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 22,
+            "duration": 1.5,
+            "type": 7,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 23.5,
+            "duration": 0.5,
+            "type": 7,
+            "inversion": 2,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 24,
+            "duration": 0.5,
+            "type": 7,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 4,
+            "beat": 24.5,
+            "duration": 0.5,
+            "type": 5,
+            "inversion": 2,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 25,
+            "duration": 1,
+            "type": 5,
+            "inversion": 2,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 26,
+            "duration": 1,
+            "type": 7,
+            "inversion": 3,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 27,
+            "duration": 1,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 4,
+            "beat": 28,
+            "duration": 1,
+            "type": 7,
+            "inversion": 3,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          }
+        ],
+        "notes": [
+          {
+            "sd": "5",
+            "octave": -1,
+            "beat": 1,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "5",
+            "octave": -1,
+            "beat": 1.5,
+            "duration": 1.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 3,
+            "duration": 4,
+            "isRest": true,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": -1,
+            "beat": 7,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": -1,
+            "beat": 7.5,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "7",
+            "octave": -2,
+            "beat": 8,
+            "duration": 2,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 10,
+            "duration": 4,
+            "isRest": true,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": -1,
+            "beat": 14,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": -1,
+            "beat": 14.5,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": -1,
+            "beat": 15,
+            "duration": 1,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": -1,
+            "beat": 16,
+            "duration": 1,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": -1,
+            "beat": 17,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": -1,
+            "beat": 17.5,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "5",
+            "octave": -2,
+            "beat": 18,
+            "duration": 1,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "7",
+            "octave": -2,
+            "beat": 19,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "7",
+            "octave": -2,
+            "beat": 19.5,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": -1,
+            "beat": 20,
+            "duration": 1,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "4",
+            "octave": -1,
+            "beat": 21,
+            "duration": 1,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": -1,
+            "beat": 22,
+            "duration": 0.25,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": -1,
+            "beat": 22.25,
+            "duration": 0.25,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "7",
+            "octave": -2,
+            "beat": 22.5,
+            "duration": 1.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 24.25,
+            "duration": 4.75,
+            "isRest": true,
+            "recordingEndBeat": null
+          }
+        ],
+        "metadata": {
+          "version": "2.34.3",
+          "keys": [
+            {
+              "beat": 1,
+              "scale": "dorian",
+              "tonic": "B"
+            }
+          ],
+          "tempos": [
+            {
+              "beat": 1,
+              "bpm": 121,
+              "swingFactor": 0.66,
+              "swingBeat": 0.5
+            }
+          ],
+          "meters": [
+            {
+              "beat": 1,
+              "numBeats": 3,
+              "beatUnit": 1
+            },
+            {
+              "beat": 4,
+              "numBeats": 4,
+              "beatUnit": 1
+            },
+            {
+              "beat": 8,
+              "numBeats": 3,
+              "beatUnit": 1
+            },
+            {
+              "beat": 11,
+              "numBeats": 4,
+              "beatUnit": 1
+            },
+            {
+              "beat": 15,
+              "numBeats": 3,
+              "beatUnit": 1
+            },
+            {
+              "beat": 18,
+              "numBeats": 4,
+              "beatUnit": 1
+            },
+            {
+              "beat": 22,
+              "numBeats": 3,
+              "beatUnit": 1
+            },
+            {
+              "beat": 25,
+              "numBeats": 4,
+              "beatUnit": 1
+            }
+          ],
+          "sections": [],
+          "endBeat": 29
+        }
+      },
+      "rendered": [
+        {
+          "order": 0,
+          "raw": "i7bm7",
+          "stableX": 39,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 32,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "7",
+              "relX": 39,
+              "y": 811,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm7",
+              "relX": 21,
+              "y": 846,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 1,
+          "raw": "i43bm7/F#",
+          "stableX": 119,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 2,
+              "y": 812,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 7,
+              "y": 814,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "3",
+              "relX": 7,
+              "y": 820,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm7",
+              "relX": 3,
+              "y": 854,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/F#",
+              "relX": 6,
+              "y": 854,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 2,
+          "raw": "i7bm7",
+          "stableX": 135,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 16,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "7",
+              "relX": 23,
+              "y": 811,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm7",
+              "relX": 7,
+              "y": 847,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 3,
+          "raw": "i64bm/F#",
+          "stableX": 183,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 16,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "6",
+              "relX": 23,
+              "y": 811,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 23,
+              "y": 820,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm",
+              "relX": 8,
+              "y": 850,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/F#",
+              "relX": 21,
+              "y": 850,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 4,
+          "raw": "i42bm/A",
+          "stableX": 231,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 16,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 23,
+              "y": 811,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "2",
+              "relX": 23,
+              "y": 820,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm",
+              "relX": 8,
+              "y": 850,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/A",
+              "relX": 22,
+              "y": 850,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 5,
+          "raw": "ibm",
+          "stableX": 279,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 19,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm",
+              "relX": 10,
+              "y": 846,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 6,
+          "raw": "IV42E/D",
+          "stableX": 327,
+          "texts": [
+            {
+              "s": "IV",
+              "relX": 6,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 33,
+              "y": 811,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "2",
+              "relX": 33,
+              "y": 820,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "E",
+              "relX": 9,
+              "y": 848,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/D",
+              "relX": 18,
+              "y": 848,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 7,
+          "raw": "i7bm7",
+          "stableX": 375,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 32,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "7",
+              "relX": 39,
+              "y": 811,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm7",
+              "relX": 21,
+              "y": 846,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 8,
+          "raw": "i43bm7/F#",
+          "stableX": 455,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 2,
+              "y": 812,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 7,
+              "y": 814,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "3",
+              "relX": 7,
+              "y": 820,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm7",
+              "relX": 3,
+              "y": 854,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/F#",
+              "relX": 6,
+              "y": 854,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 9,
+          "raw": "i7bm7",
+          "stableX": 471,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 16,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "7",
+              "relX": 23,
+              "y": 811,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm7",
+              "relX": 7,
+              "y": 847,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 10,
+          "raw": "i64bm/F#",
+          "stableX": 519,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 16,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "6",
+              "relX": 23,
+              "y": 811,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 23,
+              "y": 820,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm",
+              "relX": 8,
+              "y": 850,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/F#",
+              "relX": 21,
+              "y": 850,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 11,
+          "raw": "i42bm/A",
+          "stableX": 567,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 16,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 23,
+              "y": 811,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "2",
+              "relX": 23,
+              "y": 820,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm",
+              "relX": 8,
+              "y": 850,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/A",
+              "relX": 22,
+              "y": 850,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 12,
+          "raw": "ibm",
+          "stableX": 615,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 19,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm",
+              "relX": 10,
+              "y": 846,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 13,
+          "raw": "IV42E/D",
+          "stableX": 663,
+          "texts": [
+            {
+              "s": "IV",
+              "relX": 6,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 33,
+              "y": 811,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "2",
+              "relX": 33,
+              "y": 820,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "E",
+              "relX": 9,
+              "y": 848,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/D",
+              "relX": 18,
+              "y": 848,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 14,
+          "raw": "i7bm7",
+          "stableX": 711,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 32,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "7",
+              "relX": 39,
+              "y": 811,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm7",
+              "relX": 21,
+              "y": 846,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 15,
+          "raw": "i64bm/F#",
+          "stableX": 791,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 2,
+              "y": 812,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "6",
+              "relX": 7,
+              "y": 814,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 7,
+              "y": 820,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm",
+              "relX": 2,
+              "y": 854,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/F#",
+              "relX": 6,
+              "y": 854,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 16,
+          "raw": "i7bm7",
+          "stableX": 807,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 16,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "7",
+              "relX": 23,
+              "y": 811,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm7",
+              "relX": 7,
+              "y": 847,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 17,
+          "raw": "i64bm/F#",
+          "stableX": 855,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 16,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "6",
+              "relX": 23,
+              "y": 811,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 23,
+              "y": 820,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm",
+              "relX": 8,
+              "y": 850,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/F#",
+              "relX": 21,
+              "y": 850,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 18,
+          "raw": "i42bm/A",
+          "stableX": 903,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 16,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 23,
+              "y": 811,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "2",
+              "relX": 23,
+              "y": 820,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm",
+              "relX": 8,
+              "y": 850,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/A",
+              "relX": 22,
+              "y": 850,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 19,
+          "raw": "ibm",
+          "stableX": 951,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 19,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm",
+              "relX": 10,
+              "y": 846,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 20,
+          "raw": "IV42E/D",
+          "stableX": 999,
+          "texts": [
+            {
+              "s": "IV",
+              "relX": 6,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 33,
+              "y": 811,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "2",
+              "relX": 33,
+              "y": 820,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "E",
+              "relX": 9,
+              "y": 848,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/D",
+              "relX": 18,
+              "y": 848,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 21,
+          "raw": "i7bm7",
+          "stableX": 1047,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 32,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "7",
+              "relX": 39,
+              "y": 811,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm7",
+              "relX": 21,
+              "y": 846,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 22,
+          "raw": "i43bm7/F#",
+          "stableX": 1127,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 2,
+              "y": 812,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 7,
+              "y": 814,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "3",
+              "relX": 7,
+              "y": 820,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm7",
+              "relX": 3,
+              "y": 854,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/F#",
+              "relX": 6,
+              "y": 854,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 23,
+          "raw": "i7bm7",
+          "stableX": 1143,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 8,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "7",
+              "relX": 15,
+              "y": 811,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm7",
+              "relX": 5,
+              "y": 850,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 24,
+          "raw": "IV64E/B",
+          "stableX": 1175,
+          "texts": [
+            {
+              "s": "IV",
+              "relX": 1,
+              "y": 818,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "6",
+              "relX": 9,
+              "y": 818,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 9,
+              "y": 821,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "E",
+              "relX": 4,
+              "y": 853,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/B",
+              "relX": 5,
+              "y": 853,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 25,
+          "raw": "i64bm/F#",
+          "stableX": 1191,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 16,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "6",
+              "relX": 23,
+              "y": 811,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 23,
+              "y": 820,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm",
+              "relX": 8,
+              "y": 850,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/F#",
+              "relX": 21,
+              "y": 850,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 26,
+          "raw": "i42bm/A",
+          "stableX": 1239,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 16,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 23,
+              "y": 811,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "2",
+              "relX": 23,
+              "y": 820,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm",
+              "relX": 8,
+              "y": 850,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/A",
+              "relX": 22,
+              "y": 850,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 27,
+          "raw": "ibm",
+          "stableX": 1287,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 19,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm",
+              "relX": 10,
+              "y": 846,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 28,
+          "raw": "IV42E/D",
+          "stableX": 1335,
+          "texts": [
+            {
+              "s": "IV",
+              "relX": 6,
+              "y": 807,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 33,
+              "y": 811,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "2",
+              "relX": 33,
+              "y": 820,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "E",
+              "relX": 9,
+              "y": 848,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/D",
+              "relX": 18,
+              "y": 848,
+              "fill": "#dae0e6"
+            }
+          ]
+        }
+      ],
+      "strips": [
+        {
+          "file": "_Decode_oracle\\out\\pink-floyd__money\\screens\\Verse_strip0.png",
+          "scrollLeft": 0
+        },
+        {
+          "file": "_Decode_oracle\\out\\pink-floyd__money\\screens\\Verse_strip1.png",
+          "scrollLeft": 870
+        }
+      ]
+    },
+    {
+      "name": "Chorus",
+      "hash": "#chorus",
+      "songId": "VMgJXXWOKoq",
+      "containerId": "tab-VMgJXXWOKoq",
+      "renderedCount": 13,
+      "jsonChordCount": 13,
+      "jsonNonRestCount": 13,
+      "json": {
+        "songId": 1730783,
+        "songInfo": "Money",
+        "chords": [
+          {
+            "root": 5,
+            "beat": 1,
+            "duration": 7,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 5,
+            "beat": 8,
+            "duration": 1,
+            "type": 5,
+            "inversion": 0,
+            "applied": 7,
+            "adds": [],
+            "omits": [],
+            "alterations": [
+              "#5"
+            ],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "major",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 4,
+            "beat": 9,
+            "duration": 4,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 6,
+            "beat": 13,
+            "duration": 1,
+            "type": 5,
+            "inversion": 1,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 6,
+            "beat": 14,
+            "duration": 1,
+            "type": 5,
+            "inversion": 2,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 15,
+            "duration": 1.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 16.5,
+            "duration": 0.5,
+            "type": 5,
+            "inversion": 2,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 17,
+            "duration": 0.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 4,
+            "beat": 17.5,
+            "duration": 0.5,
+            "type": 5,
+            "inversion": 2,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 18,
+            "duration": 1,
+            "type": 5,
+            "inversion": 2,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 19,
+            "duration": 1,
+            "type": 7,
+            "inversion": 3,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 20,
+            "duration": 1,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 4,
+            "beat": 21,
+            "duration": 1,
+            "type": 7,
+            "inversion": 3,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          }
+        ],
+        "notes": [
+          {
+            "sd": "5",
+            "octave": -1,
+            "beat": 1,
+            "duration": 1,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "5",
+            "octave": -1,
+            "beat": 2,
+            "duration": 1,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "5",
+            "octave": -1,
+            "beat": 3,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "2",
+            "octave": -1,
+            "beat": 3.5,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "5",
+            "octave": -2,
+            "beat": 4,
+            "duration": 1,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "7",
+            "octave": -2,
+            "beat": 5,
+            "duration": 1,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "2",
+            "octave": -1,
+            "beat": 6,
+            "duration": 0.75,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 6.75,
+            "duration": 0.25,
+            "isRest": true,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "5",
+            "octave": -1,
+            "beat": 7,
+            "duration": 1,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "#4",
+            "octave": -1,
+            "beat": 8,
+            "duration": 1,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "4",
+            "octave": -1,
+            "beat": 9,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "5",
+            "octave": -2,
+            "beat": 9.5,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "4",
+            "octave": -2,
+            "beat": 10,
+            "duration": 1,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "6",
+            "octave": -2,
+            "beat": 11,
+            "duration": 1,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "7",
+            "octave": -2,
+            "beat": 12,
+            "duration": 0.75,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 12.75,
+            "duration": 0.25,
+            "isRest": true,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": -1,
+            "beat": 13,
+            "duration": 0.75,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 13.75,
+            "duration": 0.25,
+            "isRest": true,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": -1,
+            "beat": 14,
+            "duration": 0.25,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "4",
+            "octave": -1,
+            "beat": 14.25,
+            "duration": 1,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": -1,
+            "beat": 15.25,
+            "duration": 0.25,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": -1,
+            "beat": 15.5,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "7",
+            "octave": -2,
+            "beat": 16,
+            "duration": 1,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 17,
+            "duration": 5,
+            "isRest": true,
+            "recordingEndBeat": null
+          }
+        ],
+        "metadata": {
+          "version": "2.34.3",
+          "keys": [
+            {
+              "beat": 1,
+              "scale": "minor",
+              "tonic": "B"
+            },
+            {
+              "beat": 15,
+              "scale": "dorian",
+              "tonic": "B"
+            }
+          ],
+          "tempos": [
+            {
+              "beat": 1,
+              "bpm": 125,
+              "swingFactor": 0.66,
+              "swingBeat": 0.5
+            }
+          ],
+          "meters": [
+            {
+              "beat": 1,
+              "numBeats": 4,
+              "beatUnit": 1
+            },
+            {
+              "beat": 13,
+              "numBeats": 2,
+              "beatUnit": 1
+            },
+            {
+              "beat": 15,
+              "numBeats": 3,
+              "beatUnit": 1
+            },
+            {
+              "beat": 18,
+              "numBeats": 4,
+              "beatUnit": 1
+            }
+          ],
+          "sections": [],
+          "endBeat": 22
+        }
+      },
+      "rendered": [
+        {
+          "order": 0,
+          "raw": "vf#m",
+          "stableX": 39,
+          "texts": [
+            {
+              "s": "v",
+              "relX": 118,
+              "y": 828,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "f#m",
+              "relX": 111,
+              "y": 867,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 1,
+          "raw": "vii(#5)(maj)/V(maj)e#m(#5)",
+          "stableX": 291,
+          "texts": [
+            {
+              "s": "vii",
+              "relX": 5,
+              "y": 838,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "(#5)",
+              "relX": 12,
+              "y": 839,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "(maj)",
+              "relX": 8,
+              "y": 843,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "/",
+              "relX": 17,
+              "y": 838,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "V",
+              "relX": 21,
+              "y": 838,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "(maj)",
+              "relX": 20,
+              "y": 843,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "e#m",
+              "relX": 7,
+              "y": 873,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "(#5)",
+              "relX": 20,
+              "y": 872,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 2,
+          "raw": "ivem",
+          "stableX": 327,
+          "texts": [
+            {
+              "s": "iv",
+              "relX": 61,
+              "y": 828,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "em",
+              "relX": 59,
+              "y": 867,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 3,
+          "raw": "VI6G/B",
+          "stableX": 471,
+          "texts": [
+            {
+              "s": "VI",
+              "relX": 2,
+              "y": 832,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "6",
+              "relX": 25,
+              "y": 834,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "G",
+              "relX": 7,
+              "y": 871,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/B",
+              "relX": 14,
+              "y": 871,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 4,
+          "raw": "VI64G/D",
+          "stableX": 507,
+          "texts": [
+            {
+              "s": "VI",
+              "relX": 2,
+              "y": 832,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "6",
+              "relX": 25,
+              "y": 834,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 25,
+              "y": 842,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "G",
+              "relX": 7,
+              "y": 871,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/D",
+              "relX": 14,
+              "y": 871,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 5,
+          "raw": "ibm",
+          "stableX": 593,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 25,
+              "y": 828,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm",
+              "relX": 16,
+              "y": 867,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 6,
+          "raw": "i64bm/F#",
+          "stableX": 653,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 2,
+              "y": 837,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "6",
+              "relX": 4,
+              "y": 838,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 4,
+              "y": 842,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm",
+              "relX": 2,
+              "y": 876,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/F#",
+              "relX": 4,
+              "y": 876,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 7,
+          "raw": "ibm",
+          "stableX": 665,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 7,
+              "y": 828,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm",
+              "relX": 4,
+              "y": 871,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 8,
+          "raw": "IV64E/B",
+          "stableX": 689,
+          "texts": [
+            {
+              "s": "IV",
+              "relX": 1,
+              "y": 840,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "6",
+              "relX": 6,
+              "y": 840,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 6,
+              "y": 842,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "E",
+              "relX": 2,
+              "y": 875,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/B",
+              "relX": 4,
+              "y": 875,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 9,
+          "raw": "i64bm/F#",
+          "stableX": 701,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 10,
+              "y": 828,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "6",
+              "relX": 17,
+              "y": 832,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 17,
+              "y": 841,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm",
+              "relX": 6,
+              "y": 873,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/F#",
+              "relX": 15,
+              "y": 873,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 10,
+          "raw": "i42bm/A",
+          "stableX": 737,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 10,
+              "y": 828,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 17,
+              "y": 832,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "2",
+              "relX": 17,
+              "y": 841,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm",
+              "relX": 6,
+              "y": 872,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/A",
+              "relX": 16,
+              "y": 872,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 11,
+          "raw": "ibm",
+          "stableX": 773,
+          "texts": [
+            {
+              "s": "i",
+              "relX": 13,
+              "y": 828,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bm",
+              "relX": 5,
+              "y": 867,
+              "fill": "#dae0e6"
+            }
+          ]
+        },
+        {
+          "order": 12,
+          "raw": "IV42E/D",
+          "stableX": 809,
+          "texts": [
+            {
+              "s": "IV",
+              "relX": 3,
+              "y": 832,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "4",
+              "relX": 25,
+              "y": 834,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "2",
+              "relX": 25,
+              "y": 842,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "E",
+              "relX": 7,
+              "y": 871,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/D",
+              "relX": 13,
+              "y": 871,
+              "fill": "#dae0e6"
+            }
+          ]
+        }
+      ],
+      "strips": [
+        {
+          "file": "_Decode_oracle\\out\\pink-floyd__money\\screens\\Chorus_strip0.png",
+          "scrollLeft": 0
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

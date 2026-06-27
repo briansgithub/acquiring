@@ -10,7 +10,8 @@
  * Metrics tracked per slice:
  *   romanExact - canonical Roman strings identical
  *   romanCore  - identical after dropping parenthetical borrowed/alteration tags
- *   notesOk    - rendered root pitch-class present in engine pcs AND bass pitch-classes agree
+ *   notesOk    - full pitch-class set matches letter-name implication (pcsExact) AND bass agrees
+ *   browserOk  - web-player #chord-notes matches engine notes (set in run.js after browserVerify)
  */
 
 const fs = require('fs');
@@ -37,7 +38,9 @@ function rowMetrics(r) {
   return {
     romanExact: !!r.flags.romanExact,
     romanCore: !!r.flags.romanCore,
-    notesOk: !!(r.flags.rootInPcs && r.flags.bassInNotes),
+    notesOk: !!r.notesOk,
+    pianoOk: !!(r.flags.pianoExact || r.flags.pianoPcsExact),
+    browserOk: r.browserOk === true,
   };
 }
 
@@ -45,9 +48,9 @@ function pct(n, d) { return d ? ((100 * n) / d).toFixed(0) + '%' : '-'; }
 
 function buildReport(compareResult, scrape, outDir) {
   fs.mkdirSync(outDir, { recursive: true });
-  const matrix = new Map(); // "attr=value" -> {total, romanExact, romanCore, notesOk}
+  const matrix = new Map(); // "attr=value" -> {total, romanExact, romanCore, notesOk, browserOk}
   const discrepancies = [];
-  let total = 0, romanExact = 0, romanCore = 0, notesOk = 0;
+  let total = 0, romanExact = 0, romanCore = 0, notesOk = 0, browserOk = 0;
 
   const stripFor = (section, idx) => {
     // best-effort: map chord order to the strip that covers it
@@ -64,19 +67,24 @@ function buildReport(compareResult, scrape, outDir) {
       if (m.romanExact) romanExact++;
       if (m.romanCore) romanCore++;
       if (m.notesOk) notesOk++;
+      if (m.browserOk) browserOk++;
       for (const [k, v] of attrBuckets(r.chord)) {
         const key = `${k}=${v}`;
-        if (!matrix.has(key)) matrix.set(key, { total: 0, romanExact: 0, romanCore: 0, notesOk: 0 });
+        if (!matrix.has(key)) matrix.set(key, { total: 0, romanExact: 0, romanCore: 0, notesOk: 0, browserOk: 0 });
         const e = matrix.get(key);
-        e.total++; if (m.romanExact) e.romanExact++; if (m.romanCore) e.romanCore++; if (m.notesOk) e.notesOk++;
+        e.total++; if (m.romanExact) e.romanExact++; if (m.romanCore) e.romanCore++;
+        if (m.notesOk) e.notesOk++; if (m.browserOk) e.browserOk++;
       }
-      if (!(m.romanCore && m.notesOk)) {
+      const browserGate = r.browserOk == null || m.browserOk;
+      if (!(m.romanCore && m.notesOk && browserGate)) {
         discrepancies.push({
           section: sec.name, beat: r.beat, chord: r.chord,
           truthRoman: r.truthRoman, engRoman: r.engRoman,
           truthLetter: r.truthLetter, engLetter: r.engLetter,
-          engNotes: r.engNotes, flags: r.flags, strip: stripFor(scrapeSec, idx),
-          engineError: r.engineError,
+          engNotes: r.engNotes, truthPcs: r.truthPcs, engPcs: r.engPcs,
+          pianoNotes: r.pianoNotes, pianoPcs: r.pianoPcs,
+          flags: r.flags, browserOk: r.browserOk, browserNotes: r.browserNotes,
+          strip: stripFor(scrapeSec, idx), engineError: r.engineError,
         });
       }
     });
@@ -89,20 +97,26 @@ function buildReport(compareResult, scrape, outDir) {
   md += `- Chords compared: **${total}**\n`;
   md += `- Roman exact: **${pct(romanExact, total)}** (${romanExact}/${total})\n`;
   md += `- Roman core (ignoring borrowed/alteration tags): **${pct(romanCore, total)}** (${romanCore}/${total})\n`;
-  md += `- Notes consistent (root in pcs + bass agree): **${pct(notesOk, total)}** (${notesOk}/${total})\n\n`;
-  md += `## Sections\n\n| Section | chords | romanExact | romanCore | notesOk |\n|---|---|---|---|---|\n`;
+  md += `- Notes exact (full PC set + bass): **${pct(notesOk, total)}** (${notesOk}/${total})\n`;
+  if (compareResult.sections.some((s) => s.rows.some((r) => r.browserOk != null))) {
+    md += `- Browser display matches engine: **${pct(browserOk, total)}** (${browserOk}/${total})\n`;
+  }
+  md += `\n## Sections\n\n| Section | chords | romanExact | romanCore | notesOk | browserOk |\n|---|---|---|---|---|---|\n`;
   compareResult.sections.forEach((sec) => {
-    let t = 0, re = 0, rc = 0, no = 0;
-    sec.rows.forEach((r) => { t++; const m = rowMetrics(r); if (m.romanExact) re++; if (m.romanCore) rc++; if (m.notesOk) no++; });
-    md += `| ${sec.name} | ${t} | ${pct(re, t)} | ${pct(rc, t)} | ${pct(no, t)} |\n`;
+    let t = 0, re = 0, rc = 0, no = 0, bo = 0;
+    sec.rows.forEach((r) => {
+      t++; const m = rowMetrics(r);
+      if (m.romanExact) re++; if (m.romanCore) rc++; if (m.notesOk) no++; if (m.browserOk) bo++;
+    });
+    md += `| ${sec.name} | ${t} | ${pct(re, t)} | ${pct(rc, t)} | ${pct(no, t)} | ${pct(bo, t)} |\n`;
   });
   fs.writeFileSync(path.join(outDir, 'summary.md'), md);
 
   // attribute_matrix.md
   let am = `# Attribute accuracy matrix\n\n${compareResult.title || ''}\n\n`;
-  am += `| Attribute | total | romanExact | romanCore | notesOk |\n|---|---|---|---|---|\n`;
+  am += `| Attribute | total | romanExact | romanCore | notesOk | browserOk |\n|---|---|---|---|---|---|\n`;
   [...matrix.entries()].sort().forEach(([key, e]) => {
-    am += `| ${key} | ${e.total} | ${pct(e.romanExact, e.total)} | ${pct(e.romanCore, e.total)} | ${pct(e.notesOk, e.total)} |\n`;
+    am += `| ${key} | ${e.total} | ${pct(e.romanExact, e.total)} | ${pct(e.romanCore, e.total)} | ${pct(e.notesOk, e.total)} | ${pct(e.browserOk, e.total)} |\n`;
   });
   fs.writeFileSync(path.join(outDir, 'attribute_matrix.md'), am);
 
@@ -116,7 +130,9 @@ function buildReport(compareResult, scrape, outDir) {
       (c.alterations && c.alterations.length ? ` alt=${JSON.stringify(c.alterations)}` : '');
     dm += `## ${d.section} beat ${d.beat}\n`;
     dm += `- truth: \`${d.truthRoman}\` (${d.truthLetter}) | engine: \`${d.engRoman}\` (${d.engLetter})\n`;
-    dm += `- engine notes: ${JSON.stringify(d.engNotes)}\n`;
+    dm += `- engine notes: ${JSON.stringify(d.engNotes)} | truth PCs: [${(d.truthPcs || []).join(',')}] | engine PCs: [${(d.engPcs || []).join(',')}]\n`;
+    if (d.pianoNotes) dm += `- piano scrape: ${JSON.stringify(d.pianoNotes)} | piano PCs: [${(d.pianoPcs || []).join(',')}]\n`;
+    if (d.browserNotes) dm += `- browser DOM: ${JSON.stringify(d.browserNotes)} (browserOk=${d.browserOk})\n`;
     dm += `- json: ${attrs}\n`;
     dm += `- failing: ${Object.entries(d.flags).filter(([, v]) => !v).map(([k]) => k).join(', ')}\n`;
     if (d.engineError) dm += `- engine error: ${d.engineError}\n`;
@@ -125,9 +141,9 @@ function buildReport(compareResult, scrape, outDir) {
   }
   fs.writeFileSync(path.join(outDir, 'discrepancies.md'), dm);
 
-  return { total, romanExact, romanCore, notesOk, discrepancies: discrepancies.length, discrepancyList: discrepancies, matrix };
+  return { total, romanExact, romanCore, notesOk, browserOk, discrepancies: discrepancies.length, discrepancyList: discrepancies, matrix };
 }
 
 function pctExport(n, d) { return pct(n, d); }
 
-module.exports = { buildReport, pctExport };
+module.exports = { buildReport, pctExport, attrBuckets, rowMetrics };

@@ -166,6 +166,74 @@ Permanent sequential record of errors found while reverse-engineering Hooktheory
 
 ---
 
+## Fix 015 — Oracle `notesOk` only checked root PC, not full chord tone set
+
+**When:** Live browser verification of Maple Leaf Rag `vii°⁷/V` (Intro beat 33)  
+**Symptom:** Hooktheory piano shows **D3, Cb4, F4, Ab4**; engine/player showed **D3, F3, Ab3, C4** (C natural instead of Cb). Oracle reported `notesOk: true`.  
+**Root cause:** `compare.js` `notesOk` required only `rootInPcs` + `bassInNotes`. Wrong 7th (PC 0 vs 11) still contains root D and bass D → false pass.  
+**Fix:** Added `truthNotes.js` to derive expected pitch-class set from letter name + chord type. New flag `pcsExact`; `ok` and `notesOk` now require full PC set match. Added `browserVerify.js` — Puppeteer clicks timeline beats and compares `#chord-notes` pills to engine output.  
+**Files:** `_Decode_oracle/truthNotes.js`, `_Decode_oracle/compare.js`, `_Decode_oracle/report.js`, `_Decode_oracle/run.js`, `_Decode_oracle/browserVerify.js`  
+**Exposed by:** Maple Leaf Rag `d°7` / `vii°7/V` applied diminished-7th.
+
+---
+
+## Fix 016 — `modifierValue("bb7")` treated as `b7` (single flat)
+
+**When:** Same chord as Fix 015  
+**Symptom:** Diminished-7th scale degree `bb7` produced C natural (b7) instead of Cb (bb7).  
+**Root cause:** `modifierValue` used `startsWith("b")` → always `-1` regardless of `bb` prefix.  
+**Fix:** Count all leading `#`/`b` characters: `bb` → -2, `b` → -1, `#` → +1. `modifierString` mirrors count.  
+**Files:** `web-player/lib/music.js`  
+**Result:** `vii°⁷/V` notes **D3, F3, Ab3, Cb4** — PCs {2,5,8,11} match Hooktheory.
+
+---
+
+## Fix 017 — Extended truthNotes + piano scrape harness (corpus1 clean rerun)
+
+**When:** 2026-06-27 corpus1 verification rerun  
+**Symptom:** `truthNotes.js` only inferred triad + basic 7th; missed `(b9)`, `sus4`, `add9`, `omit3`, JSON `adds`/`omits`/`suspensions`/`alterations`. No piano-roll ground truth.  
+**Fix:** Split letter parsing into `truthLetterParse.js`. `truthNotes.js` now builds full PC sets from letter + Roman + JSON modifiers. Added `pianoNotes.js` — scrapes `g.note-view` `data-sd`/`data-octave` per chord column (Puppeteer, piano+chords view). `compare.js`: `pianoExact`/`pianoPcsExact` flags; uses validated piano scrape when `pianoPcs === truthPcs`, else falls back to letter-inferred `pcsExact`. `run.js --rescrape-truth` deletes `scrape.json` only and re-scrapes with `skipScreenshots` (reuses `screens/*.png`).  
+**Files:** `_Decode_oracle/truthLetterParse.js`, `_Decode_oracle/truthNotes.js`, `_Decode_oracle/pianoNotes.js`, `_Decode_oracle/scrapeSong.js`, `_Decode_oracle/compare.js`, `_Decode_oracle/report.js`, `_Decode_oracle/run.js`  
+**Corpus1 result (22 songs, 1051 chords):** romanExact **98%** | notesOk **84%** (was ~99% on old weak metric that ignored sus/add/omit). Tier-1 triads **100%** notesOk.  
+**Piano scrape note:** DOM `note-view` elements often capture melody bleed, not isolated chord voicings; piano ground truth only gates comparison when PCs agree with letter inference.
+
+---
+
+## Fix 018 — `suspensions` in `chordInterpreter` note generation
+
+**When:** 2026-06-27 chord_db bucket triage (`suspensions=4` 81 chords, `suspensions=2` 62, all 0% notesOk)  
+**Symptom:** `Esus4` engine kept 3rd (G#) instead of 4th (A); all sus2/sus4/sus7 chords emitted major/minor triad third. Symbols correct via `jsonToSymbol.js`; notes ignored `chord.suspensions`.  
+**Root cause:** `chordInterpreter` / `rootToDiatonicTriad` / `buildChordFromNoteName` never read `suspensions` when assembling tones.  
+**Fix:** Added `web-player/lib/chordSuspensions.js` — `replaceTriadThird` swaps triad third (degree index 1) for `2` or `4` in chord-root major frame; sus4 wins when both `[2,4]` present (Hooktheory voicing). Wired through `chordInterpreter` → both note builders. Suspended chords: use **major triad frame** when underlying quality is diminished (perfect 5th for `vii7sus2`); use **`b7`** (not diatonic △7) when `type >= 7` and suspensions present — matches `IV7sus2` / `I7sus2` ground truth and Fix 008 symbol rule (no △ on sus).  
+**Files:** `web-player/lib/chordSuspensions.js`, `web-player/lib/music.js`  
+**Exposed by:** Wonderwall `Esus4`, Come As You Are `isus4`, Penny Lane `vii7sus2`, Clocks `IV7sus2`, applied `V7sus4/iii`.  
+**Bucket rerun (engine only, `--rerun`):**
+
+| Bucket | Before | After | Remaining failures |
+|---|---|---|---|
+| `suspensions=4` | 0/81 (0%) | 76/81 (93.8%) | 3× `omits=5`, 2× `adds=6` composite |
+| `suspensions=2` | 0/62 (0%) | 57/62 (91.9%) | 5× `alterations=b5` composite (Back to Black loc) |
+| `suspensions=2+4` | 0/4 (0%) | 3/4 (75%) | 1× `adds=6` composite |
+| `suspensions=4+2` | 0/2 (0%) | 2/2 (100%) | — |
+
+**Regression:** `the-proclaimers__500-miles` 48/48, `the-beatles__eleanor-rigby` 80/80 notesOk unchanged.
+
+---
+
+## Open engine gaps exposed by Fix 017 (not yet fixed)
+
+| Gap | Symptom | Songs |
+|---|---|---|
+| ~~`suspensions`~~ | ~~`Esus4` engine keeps 3rd~~ | **Fixed Fix 018** |
+| `omits` | `vi(no3)` / `F#5` engine still emits 3rd | Someone Like You, Blackbird `no5`+sus |
+| `adds` | `add9` chords missing 9th in notes | Wonderwall, September `add13`+sus |
+| `alterations` | `b5` on sus7 chords wrong 5th | Back to Black `bVsus27(b5)(loc)` |
+| Alignment | Adele Verse b1 rendered `I` vs JSON `IV` | Someone Like You |
+
+These are real `chordInterpreter` gaps in `music.js` — symbol decode (`jsonToSymbol.js`) is correct.
+
+---
+
 ## Fix 014 — ESM module loading for oracle harness
 
 **When:** Oracle harness build  
@@ -225,6 +293,9 @@ These are **not** re-documented entry-by-entry here; Fixes 001–013 supersede a
 | Date | Entry | Corpus state |
 |---|---|---|
 | 2026-06-26 | Fixes 001–009 | corpus 1: 22 songs, ~98% romanExact |
-| 2026-06-27 | Fixes 010–013 | corpus_all: 67 songs, 99% notesOk |
+| 2026-06-27 | Fixes 010–013 | corpus_all: 67 songs, 99% notesOk (weak metric) |
+| 2026-06-27 | Fixes 015–016 | pcsExact + browser verify; bb7 modifier fix |
+| 2026-06-27 | Fix 017 | corpus1: 22 songs, 84% notesOk (strict); extended truth + piano scrape |
+| 2026-06-27 | Fix 018 | suspensions buckets 0%→94%/92%; chordSuspensions.js + sus7 b7 rule |
 
 *Append new entries at the bottom of the numbered fix section and add a changelog row when merging decode fixes.*

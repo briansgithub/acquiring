@@ -1,0 +1,174 @@
+[
+  {
+    "id": "earth-wind-and-fire__september/Verse/29",
+    "song": "earth-wind-and-fire__september",
+    "section": "Verse",
+    "beat": 29,
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 29,
+      "duration": 6.5,
+      "type": 9,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V9(add13)sus4/IV",
+    "truthLetter": "A9(add13)sus4",
+    "truthPcs": [
+      2,
+      4,
+      6,
+      7,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁹(add13)sus4/IV",
+    "engLetter": "A9sus4",
+    "engNotes": [
+      "A3",
+      "D4",
+      "E4",
+      "G4",
+      "B4"
+    ],
+    "engPcs": [
+      2,
+      4,
+      7,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=yes",
+      "borrowed=none",
+      "suspensions=4",
+      "adds=6"
+    ],
+    "compositeKey": "adds=6+suspensions=4"
+  },
+  {
+    "id": "earth-wind-and-fire__september/Verse/61",
+    "song": "earth-wind-and-fire__september",
+    "section": "Verse",
+    "beat": 61,
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 61,
+      "duration": 8,
+      "type": 9,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V9(add13)sus4/IV",
+    "truthLetter": "A9(add13)sus4",
+    "truthPcs": [
+      2,
+      4,
+      6,
+      7,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁹(add13)sus4/IV",
+    "engLetter": "A9sus4",
+    "engNotes": [
+      "A3",
+      "D4",
+      "E4",
+      "G4",
+      "B4"
+    ],
+    "engPcs": [
+      2,
+      4,
+      7,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=yes",
+      "borrowed=none",
+      "suspensions=4",
+      "adds=6"
+    ],
+    "compositeKey": "adds=6+suspensions=4"
+  }
+]

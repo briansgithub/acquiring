@@ -1,0 +1,3301 @@
+[
+  {
+    "id": "maple/Chorus/24",
+    "song": "maple",
+    "section": "Chorus",
+    "beat": 24,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 24,
+      "duration": 1,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi°64(dor)",
+    "truthLetter": "f°/Cb",
+    "truthPcs": [
+      5,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vi°⁶₄(dor)",
+    "engLetter": "F°/Cb",
+    "engNotes": [
+      "Cb4",
+      "F4",
+      "Ab4"
+    ],
+    "engPcs": [
+      5,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "maple/Outro/8",
+    "song": "maple",
+    "section": "Outro",
+    "beat": 8,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 8,
+      "duration": 1,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi°64(dor)",
+    "truthLetter": "f°/Cb",
+    "truthPcs": [
+      5,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vi°⁶₄(dor)",
+    "engLetter": "F°/Cb",
+    "engNotes": [
+      "Cb4",
+      "F4",
+      "Ab4"
+    ],
+    "engPcs": [
+      5,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "maple/Outro/40",
+    "song": "maple",
+    "section": "Outro",
+    "beat": 40,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 40,
+      "duration": 1,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi°64(dor)",
+    "truthLetter": "f°/Cb",
+    "truthPcs": [
+      5,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vi°⁶₄(dor)",
+    "engLetter": "F°/Cb",
+    "engNotes": [
+      "Cb4",
+      "F4",
+      "Ab4"
+    ],
+    "engPcs": [
+      5,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "nirvana__smells-like-teen-spirit/Chorus/3",
+    "song": "nirvana__smells-like-teen-spirit",
+    "section": "Chorus",
+    "beat": 3,
+    "key": {
+      "tonic": "F",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 3,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(dor)",
+    "truthLetter": "Bb",
+    "truthPcs": [
+      2,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV(dor)",
+    "engLetter": "Bb",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "nirvana__smells-like-teen-spirit/Chorus/11",
+    "song": "nirvana__smells-like-teen-spirit",
+    "section": "Chorus",
+    "beat": 11,
+    "key": {
+      "tonic": "F",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 11,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(dor)",
+    "truthLetter": "Bb",
+    "truthPcs": [
+      2,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV(dor)",
+    "engLetter": "Bb",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "nirvana__smells-like-teen-spirit/Chorus/19",
+    "song": "nirvana__smells-like-teen-spirit",
+    "section": "Chorus",
+    "beat": 19,
+    "key": {
+      "tonic": "F",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 19,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(dor)",
+    "truthLetter": "Bb",
+    "truthPcs": [
+      2,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV(dor)",
+    "engLetter": "Bb",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "nirvana__smells-like-teen-spirit/Chorus/27",
+    "song": "nirvana__smells-like-teen-spirit",
+    "section": "Chorus",
+    "beat": 27,
+    "key": {
+      "tonic": "F",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 27,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(dor)",
+    "truthLetter": "Bb",
+    "truthPcs": [
+      2,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV(dor)",
+    "engLetter": "Bb",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "nirvana__smells-like-teen-spirit/Solo/3",
+    "song": "nirvana__smells-like-teen-spirit",
+    "section": "Solo",
+    "beat": 3,
+    "key": {
+      "tonic": "F",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 3,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(dor)",
+    "truthLetter": "Bb",
+    "truthPcs": [
+      2,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV(dor)",
+    "engLetter": "Bb",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "nirvana__smells-like-teen-spirit/Solo/11",
+    "song": "nirvana__smells-like-teen-spirit",
+    "section": "Solo",
+    "beat": 11,
+    "key": {
+      "tonic": "F",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 11,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(dor)",
+    "truthLetter": "Bb",
+    "truthPcs": [
+      2,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV(dor)",
+    "engLetter": "Bb",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "nirvana__smells-like-teen-spirit/Solo/19",
+    "song": "nirvana__smells-like-teen-spirit",
+    "section": "Solo",
+    "beat": 19,
+    "key": {
+      "tonic": "F",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 19,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(dor)",
+    "truthLetter": "Bb",
+    "truthPcs": [
+      2,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV(dor)",
+    "engLetter": "Bb",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "nirvana__smells-like-teen-spirit/Solo/27",
+    "song": "nirvana__smells-like-teen-spirit",
+    "section": "Solo",
+    "beat": 27,
+    "key": {
+      "tonic": "F",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 27,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(dor)",
+    "truthLetter": "Bb",
+    "truthPcs": [
+      2,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV(dor)",
+    "engLetter": "Bb",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "scott-joplin__maple-leaf-rag/Chorus/24",
+    "song": "scott-joplin__maple-leaf-rag",
+    "section": "Chorus",
+    "beat": 24,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 24,
+      "duration": 1,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi°64(dor)",
+    "truthLetter": "f°/Cb",
+    "truthPcs": [
+      5,
+      8,
+      11
+    ],
+    "pianoNotes": [
+      "F4"
+    ],
+    "pianoPcs": [
+      5
+    ],
+    "pianoValidated": false,
+    "engRoman": "vi°⁶₄(dor)",
+    "engLetter": "F°/Cb",
+    "engNotes": [
+      "Cb4",
+      "F4",
+      "Ab4"
+    ],
+    "engPcs": [
+      5,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "scott-joplin__maple-leaf-rag/Outro/8",
+    "song": "scott-joplin__maple-leaf-rag",
+    "section": "Outro",
+    "beat": 8,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 8,
+      "duration": 1,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi°64(dor)",
+    "truthLetter": "f°/Cb",
+    "truthPcs": [
+      5,
+      8,
+      11
+    ],
+    "pianoNotes": [
+      "Ab4",
+      "F4"
+    ],
+    "pianoPcs": [
+      5,
+      8
+    ],
+    "pianoValidated": false,
+    "engRoman": "vi°⁶₄(dor)",
+    "engLetter": "F°/Cb",
+    "engNotes": [
+      "Cb4",
+      "F4",
+      "Ab4"
+    ],
+    "engPcs": [
+      5,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "scott-joplin__maple-leaf-rag/Outro/40",
+    "song": "scott-joplin__maple-leaf-rag",
+    "section": "Outro",
+    "beat": 40,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 40,
+      "duration": 1,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi°64(dor)",
+    "truthLetter": "f°/Cb",
+    "truthPcs": [
+      5,
+      8,
+      11
+    ],
+    "pianoNotes": [
+      "Ab4",
+      "F4"
+    ],
+    "pianoPcs": [
+      5,
+      8
+    ],
+    "pianoValidated": false,
+    "engRoman": "vi°⁶₄(dor)",
+    "engLetter": "F°/Cb",
+    "engNotes": [
+      "Cb4",
+      "F4",
+      "Ab4"
+    ],
+    "engPcs": [
+      5,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Intro/5",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Intro",
+    "beat": 5,
+    "key": {
+      "tonic": "G",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 5,
+      "duration": 4,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i6(add4)(dor)",
+    "truthLetter": "gm(add4)/Bb",
+    "truthPcs": [
+      0,
+      2,
+      7,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁶(add4)(dor)",
+    "engLetter": "Gm/Bb",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "G4"
+    ],
+    "engPcs": [
+      2,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=dorian",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Instrumental/4.5",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Instrumental",
+    "beat": 4.5,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 4.5,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "#vi°(dor)",
+    "truthLetter": "f#°",
+    "truthPcs": [
+      0,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♯vi°(dor)",
+    "engLetter": "F#°",
+    "engNotes": [
+      "F#3",
+      "A3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Instrumental/13.5",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Instrumental",
+    "beat": 13.5,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 13.5,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "#vi°(dor)",
+    "truthLetter": "f#°",
+    "truthPcs": [
+      0,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♯vi°(dor)",
+    "engLetter": "F#°",
+    "engNotes": [
+      "F#3",
+      "A3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__eleanor-rigby/Chorus/5",
+    "song": "the-beatles__eleanor-rigby",
+    "section": "Chorus",
+    "beat": 5,
+    "key": {
+      "tonic": "E",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 5,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)(dor)",
+    "truthLetter": "em6",
+    "truthPcs": [
+      4,
+      7,
+      11
+    ],
+    "pianoNotes": [
+      "E2",
+      "E3"
+    ],
+    "pianoPcs": [
+      4
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(add6)(dor)",
+    "engLetter": "Em",
+    "engNotes": [
+      "E3",
+      "G3",
+      "B3"
+    ],
+    "engPcs": [
+      4,
+      7,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__eleanor-rigby/Chorus/21",
+    "song": "the-beatles__eleanor-rigby",
+    "section": "Chorus",
+    "beat": 21,
+    "key": {
+      "tonic": "E",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 21,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)(dor)",
+    "truthLetter": "em6",
+    "truthPcs": [
+      4,
+      7,
+      11
+    ],
+    "pianoNotes": [
+      "E2",
+      "G3"
+    ],
+    "pianoPcs": [
+      4,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(add6)(dor)",
+    "engLetter": "Em",
+    "engNotes": [
+      "E3",
+      "G3",
+      "B3"
+    ],
+    "engPcs": [
+      4,
+      7,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "eagles__hotel-california/Verse/13",
+    "song": "eagles__hotel-california",
+    "section": "Verse",
+    "beat": 13,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 13,
+      "duration": 4,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV9(dor)",
+    "truthLetter": "E9",
+    "truthPcs": [
+      2,
+      4,
+      6,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV⁹(dor)",
+    "engLetter": "E9",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "D4",
+      "F#4"
+    ],
+    "engPcs": [
+      2,
+      4,
+      6,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "eagles__hotel-california/Outro/29",
+    "song": "eagles__hotel-california",
+    "section": "Outro",
+    "beat": 29,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 29,
+      "duration": 8,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV9(dor)",
+    "truthLetter": "E9",
+    "truthPcs": [
+      2,
+      4,
+      6,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV⁹(dor)",
+    "engLetter": "E9",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "D4",
+      "F#4"
+    ],
+    "engPcs": [
+      2,
+      4,
+      6,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "eagles__hotel-california/Outro/93",
+    "song": "eagles__hotel-california",
+    "section": "Outro",
+    "beat": 93,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 93,
+      "duration": 8,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV9(dor)",
+    "truthLetter": "E9",
+    "truthPcs": [
+      2,
+      4,
+      6,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV⁹(dor)",
+    "engLetter": "E9",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "D4",
+      "F#4"
+    ],
+    "engPcs": [
+      2,
+      4,
+      6,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "eagles__hotel-california/Outro/157",
+    "song": "eagles__hotel-california",
+    "section": "Outro",
+    "beat": 157,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 157,
+      "duration": 8,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV9(dor)",
+    "truthLetter": "E9",
+    "truthPcs": [
+      2,
+      4,
+      6,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV⁹(dor)",
+    "engLetter": "E9",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "D4",
+      "F#4"
+    ],
+    "engPcs": [
+      2,
+      4,
+      6,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "eagles__hotel-california/Outro/221",
+    "song": "eagles__hotel-california",
+    "section": "Outro",
+    "beat": 221,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 221,
+      "duration": 8,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV9(dor)",
+    "truthLetter": "E9",
+    "truthPcs": [
+      2,
+      4,
+      6,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV⁹(dor)",
+    "engLetter": "E9",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "D4",
+      "F#4"
+    ],
+    "engPcs": [
+      2,
+      4,
+      6,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "herbie-hancock__watermelon-man/Chorus/17",
+    "song": "herbie-hancock__watermelon-man",
+    "section": "Chorus",
+    "beat": 17,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 17,
+      "duration": 8,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV7(dor)",
+    "truthLetter": "Bb7",
+    "truthPcs": [
+      2,
+      5,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV⁷(dor)",
+    "engLetter": "Bb7",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "herbie-hancock__watermelon-man/Chorus/37",
+    "song": "herbie-hancock__watermelon-man",
+    "section": "Chorus",
+    "beat": 37,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 37,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV7(dor)",
+    "truthLetter": "Bb7",
+    "truthPcs": [
+      2,
+      5,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV⁷(dor)",
+    "engLetter": "Bb7",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "herbie-hancock__watermelon-man/Chorus/45",
+    "song": "herbie-hancock__watermelon-man",
+    "section": "Chorus",
+    "beat": 45,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 45,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV7(dor)",
+    "truthLetter": "Bb7",
+    "truthPcs": [
+      2,
+      5,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV⁷(dor)",
+    "engLetter": "Bb7",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "herbie-hancock__watermelon-man/Chorus/53",
+    "song": "herbie-hancock__watermelon-man",
+    "section": "Chorus",
+    "beat": 53,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 53,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV7(dor)",
+    "truthLetter": "Bb7",
+    "truthPcs": [
+      2,
+      5,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV⁷(dor)",
+    "engLetter": "Bb7",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "radiohead__karma-police/Outro/13",
+    "song": "radiohead__karma-police",
+    "section": "Outro",
+    "beat": 13,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 13,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV7(dor)",
+    "truthLetter": "E7",
+    "truthPcs": [
+      2,
+      4,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV⁷(dor)",
+    "engLetter": "E7",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "D4"
+    ],
+    "engPcs": [
+      2,
+      4,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "red-hot-chili-peppers__under-the-bridge/Bridge/31",
+    "song": "red-hot-chili-peppers__under-the-bridge",
+    "section": "Bridge",
+    "beat": 31,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 31,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VII△7(dor)",
+    "truthLetter": "Gmaj7",
+    "truthPcs": [
+      2,
+      6,
+      7,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VII△⁷(dor)",
+    "engLetter": "Gmaj7",
+    "engNotes": [
+      "G3",
+      "B3",
+      "D4",
+      "F#4"
+    ],
+    "engPcs": [
+      2,
+      6,
+      7,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__sir-duke/Pre-Chorus and Chorus/1",
+    "song": "stevie-wonder__sir-duke",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 1,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 1,
+      "duration": 1,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV9(dor)",
+    "truthLetter": "E9",
+    "truthPcs": [
+      2,
+      4,
+      6,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV⁹(dor)",
+    "engLetter": "E9",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "D4",
+      "F#4"
+    ],
+    "engPcs": [
+      2,
+      4,
+      6,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__sir-duke/Pre-Chorus and Chorus/6.75",
+    "song": "stevie-wonder__sir-duke",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 6.75,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 6.75,
+      "duration": 3.25,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV9(dor)",
+    "truthLetter": "E9",
+    "truthPcs": [
+      2,
+      4,
+      6,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV⁹(dor)",
+    "engLetter": "E9",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "D4",
+      "F#4"
+    ],
+    "engPcs": [
+      2,
+      4,
+      6,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__sir-duke/Pre-Chorus and Chorus/14",
+    "song": "stevie-wonder__sir-duke",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 14,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 14,
+      "duration": 0.5,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV9(dor)",
+    "truthLetter": "E9",
+    "truthPcs": [
+      2,
+      4,
+      6,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV⁹(dor)",
+    "engLetter": "E9",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "D4",
+      "F#4"
+    ],
+    "engPcs": [
+      2,
+      4,
+      6,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__penny-lane/Verse/21",
+    "song": "the-beatles__penny-lane",
+    "section": "Verse",
+    "beat": 21,
+    "key": {
+      "tonic": "B",
+      "scale": "harmonicMinor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 21,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "#viø7(dor)",
+    "truthLetter": "g#m7(b5)",
+    "truthPcs": [
+      2,
+      5,
+      8,
+      11
+    ],
+    "pianoNotes": [
+      "B2",
+      "C#3",
+      "D#3"
+    ],
+    "pianoPcs": [
+      1,
+      3,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "♯viø⁷(dor)",
+    "engLetter": "G#°7",
+    "engNotes": [
+      "G#3",
+      "B3",
+      "D4",
+      "F#4"
+    ],
+    "engPcs": [
+      2,
+      6,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "harness",
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__penny-lane/Verse/53",
+    "song": "the-beatles__penny-lane",
+    "section": "Verse",
+    "beat": 53,
+    "key": {
+      "tonic": "B",
+      "scale": "harmonicMinor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 53,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "#viø7(dor)",
+    "truthLetter": "g#m7(b5)",
+    "truthPcs": [
+      2,
+      5,
+      8,
+      11
+    ],
+    "pianoNotes": [
+      "B2",
+      "C#3",
+      "D#3"
+    ],
+    "pianoPcs": [
+      1,
+      3,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "♯viø⁷(dor)",
+    "engLetter": "G#°7",
+    "engNotes": [
+      "G#3",
+      "B3",
+      "D4",
+      "F#4"
+    ],
+    "engPcs": [
+      2,
+      6,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "harness",
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__while-my-guitar-gently-weeps/Intro/9",
+    "song": "the-beatles__while-my-guitar-gently-weeps",
+    "section": "Intro",
+    "beat": 9,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 9,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "#viø7(dor)",
+    "truthLetter": "f#m7(b5)",
+    "truthPcs": [
+      0,
+      3,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♯viø⁷(dor)",
+    "engLetter": "F#°7",
+    "engNotes": [
+      "F#3",
+      "A3",
+      "C4",
+      "E4"
+    ],
+    "engPcs": [
+      0,
+      4,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__while-my-guitar-gently-weeps/Verse/9",
+    "song": "the-beatles__while-my-guitar-gently-weeps",
+    "section": "Verse",
+    "beat": 9,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 9,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "#viø7(dor)",
+    "truthLetter": "f#m7(b5)",
+    "truthPcs": [
+      0,
+      3,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♯viø⁷(dor)",
+    "engLetter": "F#°7",
+    "engNotes": [
+      "F#3",
+      "A3",
+      "C4",
+      "E4"
+    ],
+    "engPcs": [
+      0,
+      4,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__while-my-guitar-gently-weeps/Solo/17",
+    "song": "the-beatles__while-my-guitar-gently-weeps",
+    "section": "Solo",
+    "beat": 17,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 17,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "#viø7(dor)",
+    "truthLetter": "f#m7(b5)",
+    "truthPcs": [
+      0,
+      3,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♯viø⁷(dor)",
+    "engLetter": "F#°7",
+    "engNotes": [
+      "F#3",
+      "A3",
+      "C4",
+      "E4"
+    ],
+    "engPcs": [
+      0,
+      4,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__while-my-guitar-gently-weeps/Solo/49",
+    "song": "the-beatles__while-my-guitar-gently-weeps",
+    "section": "Solo",
+    "beat": 49,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 49,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "#viø7(dor)",
+    "truthLetter": "f#m7(b5)",
+    "truthPcs": [
+      0,
+      3,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♯viø⁷(dor)",
+    "engLetter": "F#°7",
+    "engNotes": [
+      "F#3",
+      "A3",
+      "C4",
+      "E4"
+    ],
+    "engPcs": [
+      0,
+      4,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "thelonious-monk__round-midnight/Verse/9",
+    "song": "thelonious-monk__round-midnight",
+    "section": "Verse",
+    "beat": 9,
+    "key": {
+      "tonic": "D#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 9,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "#viø7(dor)",
+    "truthLetter": "b#m7(b5)",
+    "truthPcs": [
+      0,
+      3,
+      6,
+      9
+    ],
+    "pianoNotes": [
+      "A#3",
+      "B#4",
+      "C#4",
+      "D#3",
+      "F#3"
+    ],
+    "pianoPcs": [
+      0,
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "♯viø⁷(dor)",
+    "engLetter": "B#°7",
+    "engNotes": [
+      "B#3",
+      "D#4",
+      "F#4",
+      "A#4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "piano_noise",
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "thelonious-monk__round-midnight/Verse/24",
+    "song": "thelonious-monk__round-midnight",
+    "section": "Verse",
+    "beat": 24,
+    "key": {
+      "tonic": "D#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 24,
+      "duration": 1,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV7(b5)(dor)",
+    "truthLetter": "G#7(b5)",
+    "truthPcs": [
+      0,
+      2,
+      6,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV⁷(b5)(dor)",
+    "engLetter": "G#7",
+    "engNotes": [
+      "G#3",
+      "B#4",
+      "D#4",
+      "F#4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "engine",
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian",
+      "alterations=b5"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "thelonious-monk__round-midnight/Verse/25",
+    "song": "thelonious-monk__round-midnight",
+    "section": "Verse",
+    "beat": 25,
+    "key": {
+      "tonic": "D#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 25,
+      "duration": 1,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "#viø7(dor)",
+    "truthLetter": "b#m7(b5)",
+    "truthPcs": [
+      0,
+      3,
+      6,
+      9
+    ],
+    "pianoNotes": [
+      "F#3"
+    ],
+    "pianoPcs": [
+      6
+    ],
+    "pianoValidated": false,
+    "engRoman": "♯viø⁷(dor)",
+    "engLetter": "B#°7",
+    "engNotes": [
+      "B#3",
+      "D#4",
+      "F#4",
+      "A#4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": true,
+    "failureClass": "piano_noise",
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Chorus/5",
+    "song": "the-police__every-breath-you-take",
+    "section": "Chorus",
+    "beat": 5,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 5,
+      "duration": 4,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "viø4(add13)3(dor)",
+    "truthLetter": "fm7(add13)(b5)/Cb",
+    "truthPcs": [
+      2,
+      5,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "viø⁴³(add13)(dor)",
+    "engLetter": "F°7/Cb",
+    "engNotes": [
+      "Cb4",
+      "Eb4",
+      "F4",
+      "Ab4"
+    ],
+    "engPcs": [
+      3,
+      5,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": false,
+    "failureClass": "engine",
+    "buckets": [
+      "type=7",
+      "inversion=2",
+      "applied=no",
+      "borrowed=dorian",
+      "adds=6"
+    ],
+    "compositeKey": null
+  }
+]

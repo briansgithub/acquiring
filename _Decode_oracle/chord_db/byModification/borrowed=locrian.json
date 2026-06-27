@@ -1,0 +1,801 @@
+[
+  {
+    "id": "amy-winehouse__back-to-black/Verse/15.5",
+    "song": "amy-winehouse__back-to-black",
+    "section": "Verse",
+    "beat": 15.5,
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 15.5,
+      "duration": 1,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "locrian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bVsus27(b5)(loc)",
+    "truthLetter": "Ab7(b5)sus2",
+    "truthPcs": [
+      2,
+      6,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭V⁷sus2(b5)(loc)",
+    "engLetter": "Abmaj7sus2",
+    "engNotes": [
+      "Ab3",
+      "Bb3",
+      "Eb4",
+      "Gb4"
+    ],
+    "engPcs": [
+      3,
+      6,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": false,
+    "failureClass": "engine",
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=locrian",
+      "suspensions=2",
+      "alterations=b5"
+    ],
+    "compositeKey": "alterations=b5+suspensions=2"
+  },
+  {
+    "id": "amy-winehouse__back-to-black/Verse/47.5",
+    "song": "amy-winehouse__back-to-black",
+    "section": "Verse",
+    "beat": 47.5,
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 47.5,
+      "duration": 1,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "locrian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bVsus27(b5)(loc)",
+    "truthLetter": "Ab7(b5)sus2",
+    "truthPcs": [
+      2,
+      6,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭V⁷sus2(b5)(loc)",
+    "engLetter": "Abmaj7sus2",
+    "engNotes": [
+      "Ab3",
+      "Bb3",
+      "Eb4",
+      "Gb4"
+    ],
+    "engPcs": [
+      3,
+      6,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": false,
+    "failureClass": "engine",
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=locrian",
+      "suspensions=2",
+      "alterations=b5"
+    ],
+    "compositeKey": "alterations=b5+suspensions=2"
+  },
+  {
+    "id": "amy-winehouse__back-to-black/Verse/79.5",
+    "song": "amy-winehouse__back-to-black",
+    "section": "Verse",
+    "beat": 79.5,
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 79.5,
+      "duration": 1,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "locrian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bVsus27(b5)(loc)",
+    "truthLetter": "Ab7(b5)sus2",
+    "truthPcs": [
+      2,
+      6,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭V⁷sus2(b5)(loc)",
+    "engLetter": "Abmaj7sus2",
+    "engNotes": [
+      "Ab3",
+      "Bb3",
+      "Eb4",
+      "Gb4"
+    ],
+    "engPcs": [
+      3,
+      6,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": false,
+    "failureClass": "engine",
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=locrian",
+      "suspensions=2",
+      "alterations=b5"
+    ],
+    "compositeKey": "alterations=b5+suspensions=2"
+  },
+  {
+    "id": "amy-winehouse__back-to-black/Verse/111.5",
+    "song": "amy-winehouse__back-to-black",
+    "section": "Verse",
+    "beat": 111.5,
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 111.5,
+      "duration": 1,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "locrian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bVsus27(b5)(loc)",
+    "truthLetter": "Ab7(b5)sus2",
+    "truthPcs": [
+      2,
+      6,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭V⁷sus2(b5)(loc)",
+    "engLetter": "Abmaj7sus2",
+    "engNotes": [
+      "Ab3",
+      "Bb3",
+      "Eb4",
+      "Gb4"
+    ],
+    "engPcs": [
+      3,
+      6,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": false,
+    "failureClass": "engine",
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=locrian",
+      "suspensions=2",
+      "alterations=b5"
+    ],
+    "compositeKey": "alterations=b5+suspensions=2"
+  },
+  {
+    "id": "amy-winehouse__back-to-black/Instrumental/15.5",
+    "song": "amy-winehouse__back-to-black",
+    "section": "Instrumental",
+    "beat": 15.5,
+    "key": {
+      "tonic": "D",
+      "scale": "harmonicMinor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 15.5,
+      "duration": 1,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "locrian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bVsus27(b5)(loc)",
+    "truthLetter": "Ab7(b5)sus2",
+    "truthPcs": [
+      2,
+      6,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭V⁷sus2(b5)(loc)",
+    "engLetter": "Abmaj7sus2",
+    "engNotes": [
+      "Ab3",
+      "Bb3",
+      "Eb4",
+      "Gb4"
+    ],
+    "engPcs": [
+      3,
+      6,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": false,
+    "failureClass": "engine",
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=locrian",
+      "suspensions=2",
+      "alterations=b5"
+    ],
+    "compositeKey": "alterations=b5+suspensions=2"
+  },
+  {
+    "id": "george-gershwin__summertime/Verse/9",
+    "song": "george-gershwin__summertime",
+    "section": "Verse",
+    "beat": 9,
+    "key": {
+      "tonic": "B",
+      "scale": "harmonicMinor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 9,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "locrian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i",
+    "truthLetter": "bm",
+    "truthPcs": [
+      2,
+      6,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷/V",
+    "engLetter": "C#7",
+    "engNotes": [
+      "C#3",
+      "E#3",
+      "G#3",
+      "B3"
+    ],
+    "engPcs": [
+      1,
+      5,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": false,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=yes",
+      "borrowed=locrian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "george-gershwin__summertime/Verse/25",
+    "song": "george-gershwin__summertime",
+    "section": "Verse",
+    "beat": 25,
+    "key": {
+      "tonic": "B",
+      "scale": "harmonicMinor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 25,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "locrian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VI7(loc)",
+    "truthLetter": "G7",
+    "truthPcs": [
+      2,
+      5,
+      7,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VI⁷(loc)",
+    "engLetter": "G7",
+    "engNotes": [
+      "G3",
+      "B3",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      7,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=locrian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "miles-davis__blue-in-green/Intro/3",
+    "song": "miles-davis__blue-in-green",
+    "section": "Intro",
+    "beat": 3,
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 3,
+      "duration": 2,
+      "type": 11,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "locrian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vii11(loc)",
+    "truthLetter": "cm11",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vii¹¹(loc)",
+    "engLetter": "Cm11",
+    "engNotes": [
+      "C3",
+      "Eb3",
+      "G3",
+      "Bb3",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=11",
+      "inversion=0",
+      "applied=no",
+      "borrowed=locrian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__sir-duke/Verse/9",
+    "song": "stevie-wonder__sir-duke",
+    "section": "Verse",
+    "beat": 9,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 9,
+      "duration": 4,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "locrian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bVI9(loc)",
+    "truthLetter": "G9",
+    "truthPcs": [
+      2,
+      5,
+      7,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭VI⁹(loc)",
+    "engLetter": "G9",
+    "engNotes": [
+      "G3",
+      "B3",
+      "D4",
+      "F4",
+      "A4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      7,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=locrian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__sir-duke/Verse/25",
+    "song": "stevie-wonder__sir-duke",
+    "section": "Verse",
+    "beat": 25,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 25,
+      "duration": 4,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "locrian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bVI9(loc)",
+    "truthLetter": "G9",
+    "truthPcs": [
+      2,
+      5,
+      7,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭VI⁹(loc)",
+    "engLetter": "G9",
+    "engNotes": [
+      "G3",
+      "B3",
+      "D4",
+      "F4",
+      "A4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      7,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=locrian"
+    ],
+    "compositeKey": null
+  }
+]

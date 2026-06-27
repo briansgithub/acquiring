@@ -21,6 +21,7 @@ const fs = require('fs');
 const path = require('path');
 const { extractChordAndMelodyObjects } = require('../lib/extractor/dataExtractor');
 const { fetchSongData } = require('../lib/api/hooktheoryApi');
+const { attachPianoNotes } = require('./pianoNotes');
 
 const CHORDS_PER_STRIP = 10;
 const SCALE = 2;
@@ -127,8 +128,20 @@ async function activeContainerId(page) {
 
 // Capture the chord row by horizontally scrolling the inner staff container and
 // screenshotting the visible strip at each offset (strips overlap to avoid splits).
-async function screenshotStrips(page, containerId, destDir, sectionSlug) {
-  fs.mkdirSync(destDir, { recursive: true });
+function stripFilesExist(outDir, sectionSlug) {
+  const dir = path.join(outDir, 'screens');
+  if (!fs.existsSync(dir)) return false;
+  return fs.readdirSync(dir).some((f) => f.startsWith(`${sectionSlug}_strip`) && f.endsWith('.png'));
+}
+
+async function screenshotStrips(page, containerId, screensDir, sectionSlug) {
+  fs.mkdirSync(screensDir, { recursive: true });
+  if (fs.readdirSync(screensDir).some((f) => f.startsWith(`${sectionSlug}_strip`) && f.endsWith('.png'))) {
+    return fs.readdirSync(screensDir)
+      .filter((f) => f.startsWith(`${sectionSlug}_strip`) && f.endsWith('.png'))
+      .sort()
+      .map((f) => ({ file: path.relative(process.cwd(), path.join(screensDir, f)), cached: true }));
+  }
   const handle = await page.evaluateHandle((cid) => {
     const c = document.getElementById(cid);
     return c ? c.querySelector('.staff-scroll-area') : null;
@@ -142,7 +155,7 @@ async function screenshotStrips(page, containerId, destDir, sectionSlug) {
   for (let left = 0; left < dims.sw; left += step) {
     await page.evaluate((s, l) => { s.scrollLeft = l; }, el, left);
     await sleep(120);
-    const file = path.join(destDir, `${sectionSlug}_strip${idx}.png`);
+    const file = path.join(screensDir, `${sectionSlug}_strip${idx}.png`);
     try {
       await el.screenshot({ path: file });
       strips.push({ file: path.relative(process.cwd(), file), scrollLeft: left });
@@ -158,6 +171,8 @@ async function screenshotStrips(page, containerId, destDir, sectionSlug) {
 
 async function scrapeSong(url, outDir, opts = {}) {
   const verbose = opts.verbose !== false;
+  const skipScreenshots = opts.skipScreenshots !== false;
+  const scrapePiano = opts.scrapePiano !== false;
   const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
   const result = { url, title: null, sections: [], errors: [] };
   try {
@@ -211,9 +226,25 @@ async function scrapeSong(url, outDir, opts = {}) {
       if (body) { try { json = await extractChordAndMelodyObjects(body); } catch (e) { result.errors.push(`extract ${tab.name}: ${e.message}`); } }
 
       const expectedCount = json ? (json.chords || []).filter((c) => !c.isRest).length : 0;
-      const rendered = cid ? await extractAllRendered(page, cid, expectedCount) : [];
+      let rendered = cid ? await extractAllRendered(page, cid, expectedCount) : [];
       const sectionSlug = tab.name.replace(/[^a-zA-Z0-9]+/g, '_');
-      const strips = cid ? await screenshotStrips(page, cid, path.join(outDir, 'screens'), sectionSlug) : [];
+      const strips = cid && !skipScreenshots
+        ? await screenshotStrips(page, cid, path.join(outDir, 'screens'), sectionSlug)
+        : (stripFilesExist(outDir, sectionSlug)
+          ? fs.readdirSync(path.join(outDir, 'screens'))
+            .filter((f) => f.startsWith(`${sectionSlug}_strip`) && f.endsWith('.png'))
+            .sort()
+            .map((f) => ({ file: path.relative(process.cwd(), path.join(outDir, 'screens', f)), cached: true }))
+          : []);
+
+      if (scrapePiano && cid && rendered.length) {
+        try {
+          const secDraft = { name: tab.name, json };
+          rendered = await attachPianoNotes(page, cid, secDraft, rendered);
+        } catch (e) {
+          result.errors.push(`piano ${tab.name}: ${e.message}`);
+        }
+      }
 
       const sec = {
         name: tab.name,
