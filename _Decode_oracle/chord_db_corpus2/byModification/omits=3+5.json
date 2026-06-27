@@ -1,0 +1,81 @@
+[
+  {
+    "id": "rem__losing-my-religion/Intro/15",
+    "song": "rem__losing-my-religion",
+    "section": "Intro",
+    "beat": 15,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 15,
+      "duration": 2,
+      "type": 11,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        3,
+        5
+      ],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iiø11(no3no5)",
+    "truthLetter": "bm11(n°3n5)(b5b9)",
+    "truthPcs": [
+      0,
+      5,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "iiø¹¹(no3)(no5)(b5)(b9)",
+    "engLetter": "B°11",
+    "engNotes": [
+      "B3",
+      "F4",
+      "Ab4",
+      "F4"
+    ],
+    "engPcs": [
+      5,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": false,
+    "failureClass": "engine",
+    "buckets": [
+      "type=11",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "omits=3+5"
+    ],
+    "compositeKey": null
+  }
+]

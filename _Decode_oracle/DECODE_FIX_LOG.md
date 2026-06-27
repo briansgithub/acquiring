@@ -436,3 +436,116 @@ These are **not** re-documented entry-by-entry here; Fixes 001–013 supersede a
 **Rebuild:** `node buildChordDb.js --corpus _Decode_oracle/corpus.json` — 33 songs, 1538 chords.  
 **Regression:** 500 Miles + Eleanor Rigby notesOk unchanged.  
 **Files:** `web-player/lib/music.js`, `_Decode_oracle/chord_db/*`
+
+---
+
+## Fix 028 — Corpus2 chord DB + figured-sixth harness + type-11 minor voicing
+
+**When:** 2026-06-27 oracle/chord-db-suspensions-truth (corpus2 closed-loop)  
+**Symptom:** corpus2 baseline **98.39%** notesOk (2134/2169). Systematic failures on Hooktheory **figured-sixth letters** (`G6`, `A6`, `F6` for `v65`/`vi65`), applied **IV△7/I** (maj7 vs b7), engine-letter **b9 bleed** on `v11`, minor **11th** voicing (`Am11` missing natural 11th D), bass compare on enharmonic slash chords.  
+**Root cause:** `resolveTruthRootPc` treated `G6` letter root as chord root (not bass); `triadQualityFromLetter` parsed add-6 major stacks; `buildChordFromNoteName` used `b7` for applied IV; `enrichChordFromSymbol` re-merged engine-letter `b9` over truth enrich; `applyTypeExtensions` natural-11 path used scale-degree `6` (F#) instead of `4` (+1 oct) for minor 11ths.  
+**Fix:**
+
+| Area | Change |
+|---|---|
+| Harness | `isFiguredSixthLetter` → JSON root + `triadQualityFromRoman` in `expectedPcs` |
+| Harness | `bassInNotes` accepts `pcsExact && romanCore` (slash spelling) |
+| Harness | `enrichChordFromTruth` sets `_truthEnriched`; engineRun skips engine-letter re-merge |
+| Engine | Applied `applied===4` → `useMaj7` in `buildChordFromNoteName` |
+| Engine | Minor natural-11: target PC `root+5`, voice as sd `4` +1 octave |
+
+**Corpus2 DB:** `_Decode_oracle/chord_db_corpus2/` via `--db-dir` (45 primary songs, 2169 chords).  
+**Result:** notesOk **99.45%** (2157/2169). `inversion=1` bucket **99.1%** (was ~90% on v65/vi65). `type=11` **94.4%** (was 72%).  
+
+**Remaining 12 failures (0.55%):**
+
+| ID | Class | Notes |
+|---|---|---|
+| `amy-winehouse…/Instrumental/7.5` | engine | `i42(min)` borrowed-minor inv3 seventh |
+| `carole-king…/Chorus/31` | engine | `vii7(#5)` altered half-dim |
+| `george-gershwin__summertime/Verse/*` (5) | harness | section `countMatch=false` alignment |
+| `pink-floyd__money/Chorus/8` | engine | applied+borrowed+#5 augmented dim |
+| `rem__losing-my-religion/Intro/15` | engine | `iiø11(no3no5)` root PC |
+| `simon-and-garfunkel…/Intro/11` | engine | applied `iiø6(b5)/ii` |
+| `the-cranberries__zombie/Chorus/1` | harness | `VII6D/F#` alignment |
+| `the-police…/Chorus/64.5` | engine | custom-borrowed `vi°△7(b5)` |
+
+**Commands:**
+```bash
+node _Decode_oracle/buildChordDb.js --corpus _Decode_oracle/corpus2.json --db-dir _Decode_oracle/chord_db_corpus2
+node _Decode_oracle/testModification.js --list --db-dir _Decode_oracle/chord_db_corpus2
+node _Decode_oracle/testModification.js --failing --db-dir _Decode_oracle/chord_db_corpus2
+```
+
+**Files:** `chordRootPc.js`, `truthLetterParse.js`, `truthNotes.js`, `compare.js`, `engineRun.js`, `chordExtensions.js`, `music.js`, `chord_db/writeOutput.js`, `buildChordDb.js`, `testModification.js`
+
+---
+
+## Tooling — corpus3 (500 songs, 2026-06-27)
+
+**Deliverable:** `_Decode_oracle/corpus3.json` — 500 Hooktheory TheoryTab entries with `complexityRank` 1–500 and coarse `tier` 1–5.
+
+**Tier definitions** (`_Decode_oracle/corpus3/tierMeta.js`):
+
+| Tier | Ranks | Focus |
+|---|---|---|
+| 1 | 1–100 | Basic triads, I–IV–V, I–V–vi–IV |
+| 2 | 101–200 | Sevenths, sus/add, inversions |
+| 3 | 201–300 | Applied chords, secondary dominants |
+| 4 | 301–400 | Borrowed/modal mixture, suspensions |
+| 5 | 401–500 | Jazz/extended harmony, chromatic/classical |
+
+**Entry fields:** `complexityRank`, `tier`, `note`, `artist`, `title`, `slug`, `url`, `alternates`, `source`.
+
+**Build pipeline:**
+- `node _Decode_oracle/corpus3/buildCorpus3.js` — merge corpus1/2, tier seeds, discovered URLs (1020 via browse+search scrape), out/cache; dedupe; priority sort (corpus > seed > scraped > discovered); filter junk test URLs.
+- `node _Research_testing/discover_theorytab_urls.js` + `discover_theorytab_search.js` — Hooktheory URL discovery.
+- `node _Decode_oracle/batchScrapeCorpus.js --corpus corpus3.json --compare` — batch scrape missing `out/<slug>/scrape.json`.
+- `node _Decode_oracle/buildChordDb.js --corpus corpus3.json --db-dir chord_db_corpus3` — corpus-filtered chord DB.
+
+**Initial scrape coverage (2026-06-27):** 73/500 valid scrape.json, 18 empty/404, 409 pending.
+
+**Initial chord_db_corpus3 (73 songs, 3382 chords):** notesOk **99.3%** (3357/3382), romanExact 95.6%; 12 buckets below 99%.
+
+**Commands:**
+```bash
+node _Decode_oracle/corpus3/buildCorpus3.js
+node _Decode_oracle/batchScrapeCorpus.js --corpus _Decode_oracle/corpus3.json --compare --limit 50
+node _Decode_oracle/buildChordDb.js --corpus _Decode_oracle/corpus3.json --db-dir _Decode_oracle/chord_db_corpus3
+node _Decode_oracle/testModification.js --list --db-dir _Decode_oracle/chord_db_corpus3
+node _Decode_oracle/run.js --corpus _Decode_oracle/corpus3.json --no-browser
+```
+
+**Files added:** `corpus3.json`, `corpus3/buildCorpus3.js`, `corpus3/tierMeta.js`, `corpus3/seeds/tier{1-5}.json`, `batchScrapeCorpus.js`, `chord_db_corpus3/`, `_Research_testing/discover_theorytab_urls.js`, `discover_theorytab_search.js`.
+
+---
+
+## Fix 029 — Corpus3 closed-loop: bassPc harness + engine voicing buckets
+
+**When:** 2026-06-27 oracle/chord-db-suspensions-truth (corpus3 closed-loop)  
+**Symptom:** corpus3 at **99.3%** on 162 songs regressed on expanded scrape; systematic engine gaps on phdm `bVI+△7`, `#5` dim→minor, applied `vii/#5`, `iiø11(no3no5)`, `i42(min)` hm-borrow remap; harness `bassPc` false-negatives when letter has no slash.  
+**Root cause:** `parseLetter` set `bassPc=rootPc` without slash; phrygian-dominant VI+ rendered as aug not maj7; `#5` on dim used dim7 frame; hm `i(min)` inv42 mis-routed to `V7/iv`; half-dim / minor 11 `(no3no5)` shells missing 7th/9th/11th PCs.  
+**Fix:**
+
+| Area | Change |
+|---|---|
+| Harness | `parseLetter`: `bassPc` only when slash bass present |
+| Engine | phdm bVI maj7: force major triad when no `#5` alt |
+| Engine | `#5` on dim scale degree → minor triad + `b7` |
+| Engine | applied borrowed `vii` + `#5` → minor + alt |
+| Engine | hm `borrowed=minor` + `inversion>0` → skip `V7/iv` remap |
+| Engine | `omitTriad35` + type≥7 → add `b7`/`bb7`; half-dim 11th at +1 when skipNine |
+| Engine | `skipNine` only when halfDim + omits 3+5 |
+
+**Corpus3 DB:** `_Decode_oracle/chord_db_corpus3/` — **179 songs**, **6740 chords**, notesOk **99.04%** (6675/6740).  
+**Before (162 songs / 6096 chords):** 99.3% (6055/6096), 41 failing.  
+**Remaining:** 65 failing (60 harness alignment, 3 piano_noise, 2 engine).
+
+**Commands:**
+```bash
+node _Decode_oracle/buildChordDb.js --corpus _Decode_oracle/corpus3.json --db-dir _Decode_oracle/chord_db_corpus3
+node _Decode_oracle/testModification.js --list --db-dir _Decode_oracle/chord_db_corpus3
+node _Decode_oracle/testModification.js --failing --db-dir _Decode_oracle/chord_db_corpus3
+```
+
+**Files:** `svgTruth.js`, `music.js`, `chordExtensions.js`, `DECODE_FIX_LOG.md`

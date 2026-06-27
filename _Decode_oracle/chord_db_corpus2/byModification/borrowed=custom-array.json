@@ -1,0 +1,947 @@
+[
+  {
+    "id": "stevie-wonder__sir-duke/Verse/31",
+    "song": "stevie-wonder__sir-duke",
+    "section": "Verse",
+    "beat": 31,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 31,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": [
+        -1,
+        1,
+        3,
+        4,
+        6,
+        8,
+        10
+      ],
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bV7(bor)",
+    "truthLetter": "F7",
+    "truthPcs": [
+      0,
+      3,
+      5,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭V⁷(bor)",
+    "engLetter": "F#7",
+    "engNotes": [
+      "F3",
+      "A3",
+      "C4",
+      "Eb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=custom-array"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__sir-duke/Pre-Chorus and Chorus/2",
+    "song": "stevie-wonder__sir-duke",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 2,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 2,
+      "duration": 1,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": [
+        1,
+        2,
+        4,
+        6,
+        8,
+        9,
+        11
+      ],
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "III9(bor)",
+    "truthLetter": "D#9",
+    "truthPcs": [
+      1,
+      3,
+      5,
+      7,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "III⁹(bor)",
+    "engLetter": "D#m9",
+    "engNotes": [
+      "D#3",
+      "F##3",
+      "A#3",
+      "C#4",
+      "E#4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      5,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=custom-array"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__sir-duke/Pre-Chorus and Chorus/6",
+    "song": "stevie-wonder__sir-duke",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 6,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 6,
+      "duration": 0.75,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": [
+        1,
+        2,
+        4,
+        6,
+        8,
+        9,
+        11
+      ],
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "III9(bor)",
+    "truthLetter": "D#9",
+    "truthPcs": [
+      1,
+      3,
+      5,
+      7,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "III⁹(bor)",
+    "engLetter": "D#m9",
+    "engNotes": [
+      "D#3",
+      "F##3",
+      "A#3",
+      "C#4",
+      "E#4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      5,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=custom-array"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__sir-duke/Pre-Chorus and Chorus/10",
+    "song": "stevie-wonder__sir-duke",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 10,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 10,
+      "duration": 1,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": [
+        1,
+        2,
+        4,
+        6,
+        8,
+        9,
+        11
+      ],
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "III9(bor)",
+    "truthLetter": "D#9",
+    "truthPcs": [
+      1,
+      3,
+      5,
+      7,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "III⁹(bor)",
+    "engLetter": "D#m9",
+    "engNotes": [
+      "D#3",
+      "F##3",
+      "A#3",
+      "C#4",
+      "E#4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      5,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=custom-array"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__sir-duke/Pre-Chorus and Chorus/13.5",
+    "song": "stevie-wonder__sir-duke",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 13.5,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 13.5,
+      "duration": 0.5,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": [
+        1,
+        2,
+        4,
+        6,
+        8,
+        9,
+        11
+      ],
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "III9(bor)",
+    "truthLetter": "D#9",
+    "truthPcs": [
+      1,
+      3,
+      5,
+      7,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "III⁹(bor)",
+    "engLetter": "D#m9",
+    "engNotes": [
+      "D#3",
+      "F##3",
+      "A#3",
+      "C#4",
+      "E#4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      5,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=custom-array"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__sir-duke/Pre-Chorus and Chorus/14.5",
+    "song": "stevie-wonder__sir-duke",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 14.5,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 14.5,
+      "duration": 0.25,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": [
+        -1,
+        1,
+        3,
+        4,
+        6,
+        8,
+        10
+      ],
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bV7sus2(bor)",
+    "truthLetter": "F7sus2",
+    "truthPcs": [
+      0,
+      3,
+      5,
+      7
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭V⁷sus2(bor)",
+    "engLetter": "F#7sus2",
+    "engNotes": [
+      "F3",
+      "G3",
+      "C4",
+      "Eb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      5,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=custom-array",
+      "suspensions=2"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__sir-duke/Pre-Chorus and Chorus/21",
+    "song": "stevie-wonder__sir-duke",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 21,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 21,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": [
+        1,
+        2,
+        4,
+        6,
+        8,
+        9,
+        11
+      ],
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "#iv7(bor)",
+    "truthLetter": "e#m7",
+    "truthPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♯iv⁷(bor)",
+    "engLetter": "Emaj7",
+    "engNotes": [
+      "E#3",
+      "G#3",
+      "B#4",
+      "D#4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=custom-array"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__sir-duke/Pre-Chorus and Chorus/37",
+    "song": "stevie-wonder__sir-duke",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 37,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 37,
+      "duration": 4,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": [
+        1,
+        2,
+        4,
+        6,
+        8,
+        9,
+        11
+      ],
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "#iv9(bor)",
+    "truthLetter": "e#m9",
+    "truthPcs": [
+      0,
+      3,
+      5,
+      7,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♯iv⁹(bor)",
+    "engLetter": "Emaj9",
+    "engNotes": [
+      "E#3",
+      "G#3",
+      "B#4",
+      "D#4",
+      "F##4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      5,
+      7,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=custom-array"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__something/Verse/27",
+    "song": "the-beatles__something",
+    "section": "Verse",
+    "beat": 27,
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 27,
+      "duration": 2,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": [
+        0,
+        2,
+        4,
+        5,
+        8,
+        9,
+        11
+      ],
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi△43(bor)",
+    "truthLetter": "ammaj7/E",
+    "truthPcs": [
+      0,
+      4,
+      8,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vi△⁴³(bor)",
+    "engLetter": "Am7/E",
+    "engNotes": [
+      "E4",
+      "G#4",
+      "A4",
+      "C5"
+    ],
+    "engPcs": [
+      0,
+      4,
+      8,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=2",
+      "applied=no",
+      "borrowed=custom-array"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__something/Solo/27",
+    "song": "the-beatles__something",
+    "section": "Solo",
+    "beat": 27,
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 27,
+      "duration": 2,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": [
+        0,
+        2,
+        4,
+        5,
+        8,
+        9,
+        11
+      ],
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi△43(bor)",
+    "truthLetter": "ammaj7/E",
+    "truthPcs": [
+      0,
+      4,
+      8,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vi△⁴³(bor)",
+    "engLetter": "Am7/E",
+    "engNotes": [
+      "E4",
+      "G#4",
+      "A4",
+      "C5"
+    ],
+    "engPcs": [
+      0,
+      4,
+      8,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=2",
+      "applied=no",
+      "borrowed=custom-array"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Chorus/64.5",
+    "song": "the-police__every-breath-you-take",
+    "section": "Chorus",
+    "beat": 64.5,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 64.5,
+      "duration": 0.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": [
+        0,
+        2,
+        4,
+        5,
+        8,
+        9,
+        11
+      ],
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi°△7(b5)(bor)",
+    "truthLetter": "fmmaj7(b5)",
+    "truthPcs": [
+      2,
+      5,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vi△⁷(b5)(bor)",
+    "engLetter": "Fm7",
+    "engNotes": [
+      "F3",
+      "Ab3",
+      "B3",
+      "E4"
+    ],
+    "engPcs": [
+      4,
+      5,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": false,
+    "failureClass": "engine",
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=custom-array",
+      "alterations=b5"
+    ],
+    "compositeKey": null
+  }
+]

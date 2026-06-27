@@ -1,0 +1,1464 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/ariana-grande/positions",
+  "title": "positions by Ariana Grande Chords, Melody, and Music Theory Analysis - Hooktheory",
+  "sections": [
+    {
+      "name": "Pre-Chorus",
+      "songId": "bWgMny_JxlX",
+      "countMatch": true,
+      "truthCount": 11,
+      "engCount": 11,
+      "rows": [
+        {
+          "beat": 5,
+          "chord": {
+            "root": 1,
+            "beat": 5,
+            "duration": 3.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "i",
+          "engRoman": "i",
+          "truthLetter": "dm",
+          "engLetter": "Dm",
+          "engNotes": [
+            "D3",
+            "F3",
+            "A3"
+          ],
+          "engPcs": [
+            2,
+            5,
+            9
+          ],
+          "truthPcs": [
+            2,
+            5,
+            9
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        },
+        {
+          "beat": 8.5,
+          "chord": {
+            "root": 5,
+            "beat": 8.5,
+            "duration": 4.5,
+            "type": 7,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "v7",
+          "engRoman": "v⁷",
+          "truthLetter": "am7",
+          "engLetter": "Am7",
+          "engNotes": [
+            "A3",
+            "C4",
+            "E4",
+            "G4"
+          ],
+          "engPcs": [
+            0,
+            4,
+            7,
+            9
+          ],
+          "truthPcs": [
+            0,
+            4,
+            7,
+            9
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        },
+        {
+          "beat": 13,
+          "chord": {
+            "root": 7,
+            "beat": 13,
+            "duration": 2.5,
+            "type": 7,
+            "inversion": 3,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "VII42",
+          "engRoman": "VII⁴²",
+          "truthLetter": "C/Bb",
+          "engLetter": "C7/Bb",
+          "engNotes": [
+            "Bb3",
+            "C4",
+            "E4",
+            "G4"
+          ],
+          "engPcs": [
+            0,
+            4,
+            7,
+            10
+          ],
+          "truthPcs": [
+            0,
+            4,
+            7,
+            10
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        },
+        {
+          "beat": 15.5,
+          "chord": {
+            "root": 1,
+            "beat": 15.5,
+            "duration": 1,
+            "type": 5,
+            "inversion": 2,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "i64",
+          "engRoman": "i⁶₄",
+          "truthLetter": "dm/A",
+          "engLetter": "Dm/A",
+          "engNotes": [
+            "A3",
+            "D4",
+            "F4"
+          ],
+          "engPcs": [
+            2,
+            5,
+            9
+          ],
+          "truthPcs": [
+            2,
+            5,
+            9
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        },
+        {
+          "beat": 16.5,
+          "chord": {
+            "root": 4,
+            "beat": 16.5,
+            "duration": 3,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "iv",
+          "engRoman": "iv",
+          "truthLetter": "gm",
+          "engLetter": "Gm",
+          "engNotes": [
+            "G3",
+            "Bb3",
+            "D4"
+          ],
+          "engPcs": [
+            2,
+            7,
+            10
+          ],
+          "truthPcs": [
+            2,
+            7,
+            10
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        },
+        {
+          "beat": 19.5,
+          "chord": {
+            "root": 4,
+            "beat": 19.5,
+            "duration": 1.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "iv",
+          "engRoman": "iv",
+          "truthLetter": "gm",
+          "engLetter": "Gm",
+          "engNotes": [
+            "G3",
+            "Bb3",
+            "D4"
+          ],
+          "engPcs": [
+            2,
+            7,
+            10
+          ],
+          "truthPcs": [
+            2,
+            7,
+            10
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        },
+        {
+          "beat": 21,
+          "chord": {
+            "root": 1,
+            "beat": 21,
+            "duration": 3.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "i",
+          "engRoman": "i",
+          "truthLetter": "dm",
+          "engLetter": "Dm",
+          "engNotes": [
+            "D3",
+            "F3",
+            "A3"
+          ],
+          "engPcs": [
+            2,
+            5,
+            9
+          ],
+          "truthPcs": [
+            2,
+            5,
+            9
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        },
+        {
+          "beat": 24.5,
+          "chord": {
+            "root": 5,
+            "beat": 24.5,
+            "duration": 4.5,
+            "type": 7,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "v7",
+          "engRoman": "v⁷",
+          "truthLetter": "am7",
+          "engLetter": "Am7",
+          "engNotes": [
+            "A3",
+            "C4",
+            "E4",
+            "G4"
+          ],
+          "engPcs": [
+            0,
+            4,
+            7,
+            9
+          ],
+          "truthPcs": [
+            0,
+            4,
+            7,
+            9
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        },
+        {
+          "beat": 29,
+          "chord": {
+            "root": 7,
+            "beat": 29,
+            "duration": 2.5,
+            "type": 7,
+            "inversion": 3,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "VII42",
+          "engRoman": "VII⁴²",
+          "truthLetter": "C/Bb",
+          "engLetter": "C7/Bb",
+          "engNotes": [
+            "Bb3",
+            "C4",
+            "E4",
+            "G4"
+          ],
+          "engPcs": [
+            0,
+            4,
+            7,
+            10
+          ],
+          "truthPcs": [
+            0,
+            4,
+            7,
+            10
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        },
+        {
+          "beat": 31.5,
+          "chord": {
+            "root": 1,
+            "beat": 31.5,
+            "duration": 1,
+            "type": 5,
+            "inversion": 2,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "i64",
+          "engRoman": "i⁶₄",
+          "truthLetter": "dm/A",
+          "engLetter": "Dm/A",
+          "engNotes": [
+            "A3",
+            "D4",
+            "F4"
+          ],
+          "engPcs": [
+            2,
+            5,
+            9
+          ],
+          "truthPcs": [
+            2,
+            5,
+            9
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        },
+        {
+          "beat": 32.5,
+          "chord": {
+            "root": 4,
+            "beat": 32.5,
+            "duration": 0.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "iv",
+          "engRoman": "iv",
+          "truthLetter": "gm",
+          "engLetter": "Gm",
+          "engNotes": [
+            "G3",
+            "Bb3",
+            "D4"
+          ],
+          "engPcs": [
+            2,
+            7,
+            10
+          ],
+          "truthPcs": [
+            2,
+            7,
+            10
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        }
+      ]
+    },
+    {
+      "name": "Chorus",
+      "songId": "ZOxVJJaEZxd",
+      "countMatch": true,
+      "truthCount": 12,
+      "engCount": 12,
+      "rows": [
+        {
+          "beat": 5,
+          "chord": {
+            "root": 1,
+            "beat": 5,
+            "duration": 3.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "i",
+          "engRoman": "i",
+          "truthLetter": "dm",
+          "engLetter": "Dm",
+          "engNotes": [
+            "D3",
+            "F3",
+            "A3"
+          ],
+          "engPcs": [
+            2,
+            5,
+            9
+          ],
+          "truthPcs": [
+            2,
+            5,
+            9
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        },
+        {
+          "beat": 8.5,
+          "chord": {
+            "root": 5,
+            "beat": 8.5,
+            "duration": 4.5,
+            "type": 7,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "v7",
+          "engRoman": "v⁷",
+          "truthLetter": "am7",
+          "engLetter": "Am7",
+          "engNotes": [
+            "A3",
+            "C4",
+            "E4",
+            "G4"
+          ],
+          "engPcs": [
+            0,
+            4,
+            7,
+            9
+          ],
+          "truthPcs": [
+            0,
+            4,
+            7,
+            9
+          ],
+          "pianoNotes": [
+            "A3",
+            "C4",
+            "G3"
+          ],
+          "pianoPcs": [
+            0,
+            7,
+            9
+          ],
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        },
+        {
+          "beat": 13,
+          "chord": {
+            "root": 7,
+            "beat": 13,
+            "duration": 2.5,
+            "type": 7,
+            "inversion": 3,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "VII42",
+          "engRoman": "VII⁴²",
+          "truthLetter": "C/Bb",
+          "engLetter": "C7/Bb",
+          "engNotes": [
+            "Bb3",
+            "C4",
+            "E4",
+            "G4"
+          ],
+          "engPcs": [
+            0,
+            4,
+            7,
+            10
+          ],
+          "truthPcs": [
+            0,
+            4,
+            7,
+            10
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        },
+        {
+          "beat": 15.5,
+          "chord": {
+            "root": 1,
+            "beat": 15.5,
+            "duration": 1,
+            "type": 5,
+            "inversion": 2,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "i64",
+          "engRoman": "i⁶₄",
+          "truthLetter": "dm/A",
+          "engLetter": "Dm/A",
+          "engNotes": [
+            "A3",
+            "D4",
+            "F4"
+          ],
+          "engPcs": [
+            2,
+            5,
+            9
+          ],
+          "truthPcs": [
+            2,
+            5,
+            9
+          ],
+          "pianoNotes": [
+            "A3",
+            "G3"
+          ],
+          "pianoPcs": [
+            7,
+            9
+          ],
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        },
+        {
+          "beat": 16.5,
+          "chord": {
+            "root": 4,
+            "beat": 16.5,
+            "duration": 4.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "iv",
+          "engRoman": "iv",
+          "truthLetter": "gm",
+          "engLetter": "Gm",
+          "engNotes": [
+            "G3",
+            "Bb3",
+            "D4"
+          ],
+          "engPcs": [
+            2,
+            7,
+            10
+          ],
+          "truthPcs": [
+            2,
+            7,
+            10
+          ],
+          "pianoNotes": [
+            "A3",
+            "C4",
+            "G3"
+          ],
+          "pianoPcs": [
+            0,
+            7,
+            9
+          ],
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        },
+        {
+          "beat": 21,
+          "chord": {
+            "root": 1,
+            "beat": 21,
+            "duration": 3.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "i",
+          "engRoman": "i",
+          "truthLetter": "dm",
+          "engLetter": "Dm",
+          "engNotes": [
+            "D3",
+            "F3",
+            "A3"
+          ],
+          "engPcs": [
+            2,
+            5,
+            9
+          ],
+          "truthPcs": [
+            2,
+            5,
+            9
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        },
+        {
+          "beat": 24.5,
+          "chord": {
+            "root": 5,
+            "beat": 24.5,
+            "duration": 4.5,
+            "type": 7,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "v7",
+          "engRoman": "v⁷",
+          "truthLetter": "am7",
+          "engLetter": "Am7",
+          "engNotes": [
+            "A3",
+            "C4",
+            "E4",
+            "G4"
+          ],
+          "engPcs": [
+            0,
+            4,
+            7,
+            9
+          ],
+          "truthPcs": [
+            0,
+            4,
+            7,
+            9
+          ],
+          "pianoNotes": [
+            "A3",
+            "C4",
+            "G3"
+          ],
+          "pianoPcs": [
+            0,
+            7,
+            9
+          ],
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        },
+        {
+          "beat": 29,
+          "chord": {
+            "root": 7,
+            "beat": 29,
+            "duration": 2.5,
+            "type": 7,
+            "inversion": 3,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "VII42",
+          "engRoman": "VII⁴²",
+          "truthLetter": "C/Bb",
+          "engLetter": "C7/Bb",
+          "engNotes": [
+            "Bb3",
+            "C4",
+            "E4",
+            "G4"
+          ],
+          "engPcs": [
+            0,
+            4,
+            7,
+            10
+          ],
+          "truthPcs": [
+            0,
+            4,
+            7,
+            10
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        },
+        {
+          "beat": 31.5,
+          "chord": {
+            "root": 1,
+            "beat": 31.5,
+            "duration": 1,
+            "type": 5,
+            "inversion": 2,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "i64",
+          "engRoman": "i⁶₄",
+          "truthLetter": "dm/A",
+          "engLetter": "Dm/A",
+          "engNotes": [
+            "A3",
+            "D4",
+            "F4"
+          ],
+          "engPcs": [
+            2,
+            5,
+            9
+          ],
+          "truthPcs": [
+            2,
+            5,
+            9
+          ],
+          "pianoNotes": [
+            "A3",
+            "F3",
+            "G3"
+          ],
+          "pianoPcs": [
+            5,
+            7,
+            9
+          ],
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        },
+        {
+          "beat": 32.5,
+          "chord": {
+            "root": 4,
+            "beat": 32.5,
+            "duration": 2.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "iv",
+          "engRoman": "iv",
+          "truthLetter": "gm",
+          "engLetter": "Gm",
+          "engNotes": [
+            "G3",
+            "Bb3",
+            "D4"
+          ],
+          "engPcs": [
+            2,
+            7,
+            10
+          ],
+          "truthPcs": [
+            2,
+            7,
+            10
+          ],
+          "pianoNotes": [
+            "A3",
+            "G3"
+          ],
+          "pianoPcs": [
+            7,
+            9
+          ],
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        },
+        {
+          "beat": 35,
+          "chord": {
+            "root": 4,
+            "beat": 35,
+            "duration": 1,
+            "type": 11,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "iv11",
+          "engRoman": "iv¹¹",
+          "truthLetter": "gm11",
+          "engLetter": "Gm11",
+          "engNotes": [
+            "G3",
+            "Bb3",
+            "D4",
+            "F4",
+            "A4",
+            "C5"
+          ],
+          "engPcs": [
+            0,
+            2,
+            5,
+            7,
+            9,
+            10
+          ],
+          "truthPcs": [
+            0,
+            2,
+            5,
+            7,
+            9,
+            10
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        },
+        {
+          "beat": 36,
+          "chord": {
+            "root": 4,
+            "beat": 36,
+            "duration": 1,
+            "type": 5,
+            "inversion": 2,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "iv64",
+          "engRoman": "iv⁶₄",
+          "truthLetter": "gm/D",
+          "engLetter": "Gm/D",
+          "engNotes": [
+            "D4",
+            "G4",
+            "Bb4"
+          ],
+          "engPcs": [
+            2,
+            7,
+            10
+          ],
+          "truthPcs": [
+            2,
+            7,
+            10
+          ],
+          "pianoNotes": [
+            "A3",
+            "G3"
+          ],
+          "pianoPcs": [
+            7,
+            9
+          ],
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": true,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        }
+      ]
+    }
+  ]
+}

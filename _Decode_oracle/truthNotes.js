@@ -5,9 +5,9 @@
 
 const { noteToPc } = require('./svgTruth');
 const {
-  triadQualityFromLetter, seventhKind, extensionsFromType, mergeMods,
+  triadQualityFromLetter, triadQualityFromRoman, seventhKind, extensionsFromType, mergeMods,
 } = require('./truthLetterParse');
-const { resolveTruthRootPc } = require('./chordRootPc');
+const { resolveTruthRootPc, isFiguredSixthLetter } = require('./chordRootPc');
 
 const TRIAD_SEMIS = {
   major: [0, 4, 7],
@@ -79,7 +79,10 @@ function expectedPcs(truthLetter, roman, chord, key = null) {
   if (rootPc == null) return null;
   const romanLower = String(roman || '').toLowerCase();
   const isHalfDim = /ø|m7b5|half/.test(romanLower + (truthLetter?.letter || ''));
-  let quality = triadQualityFromLetter(truthLetter.letter, roman);
+  const figuredSix = isFiguredSixthLetter(truthLetter.letter, chord);
+  let quality = figuredSix
+    ? triadQualityFromRoman(roman)
+    : triadQualityFromLetter(truthLetter.letter, roman);
   if (isHalfDim) quality = 'diminished';
   const mods = mergeMods(truthLetter.letter, roman, chord);
   let semis = triadSemis(quality, mods.suspensions, mods.omits);

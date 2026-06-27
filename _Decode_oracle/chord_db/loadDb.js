@@ -4,7 +4,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { loadIndex, DB_DIR } = require('./writeOutput');
+const { loadIndex, DB_DIR, getDbDir } = require('./writeOutput');
 const { indexEntries } = require('./rebuildMaps');
 
 function loadDatabase() {
@@ -16,7 +16,7 @@ function loadDatabase() {
     for (const info of Object.values(index.bucketIndex)) {
       if (!info?.file || seenFiles.has(info.file)) continue;
       seenFiles.add(info.file);
-      const filePath = path.join(DB_DIR, info.file);
+      const filePath = path.join(getDbDir(), info.file);
       if (!fs.existsSync(filePath)) continue;
       const entries = JSON.parse(fs.readFileSync(filePath, 'utf8'));
       for (const e of entries) entriesById.set(e.id, e);

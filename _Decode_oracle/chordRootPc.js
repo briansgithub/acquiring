@@ -81,14 +81,23 @@ function chordRootPc(chord, key) {
   return scaleNoteAtDegree(effKey.tonic, effKey.scale || 'major', chord.root);
 }
 
+/** Hooktheory "G6" letter = Em7/G (figured-sixth), not a G add-6 chord. */
+function isFiguredSixthLetter(letterRaw, chord) {
+  if (!letterRaw || !chord?.inversion || chord.inversion < 1) return false;
+  if ((chord.type ?? 5) < 7) return false;
+  const s = String(letterRaw).split('/')[0].replace(/\([^)]*\)/g, '');
+  return /^[A-Ga-g][b#x]*6$/.test(s);
+}
+
 /** Prefer JSON scale-degree root when slash letter disagrees (Hooktheory X/bass layout). */
 function resolveTruthRootPc(letterParsed, chord, key) {
   const jsonPc = chordRootPc(chord, key);
   if (jsonPc == null) return letterParsed?.rootPc ?? null;
+  if (isFiguredSixthLetter(letterParsed?.letter, chord)) return jsonPc;
   if (letterParsed?.bassName && letterParsed.rootPc != null && letterParsed.rootPc !== jsonPc) {
     return jsonPc;
   }
   return letterParsed?.rootPc ?? jsonPc;
 }
 
-module.exports = { chordRootPc, resolveTruthRootPc, scaleNoteAtDegree };
+module.exports = { chordRootPc, resolveTruthRootPc, scaleNoteAtDegree, isFiguredSixthLetter };

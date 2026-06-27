@@ -1,0 +1,2385 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/bob-marley/no-woman-no-cry",
+  "title": "No Woman No Cry by Bob Marley Chords, Melody, and Music Theory Analysis - Hooktheory",
+  "sections": [
+    {
+      "name": "Verse",
+      "hash": "#verse",
+      "songId": "zngRMlODmJj",
+      "containerId": "tab-zngRMlODmJj",
+      "renderedCount": 16,
+      "jsonChordCount": 16,
+      "jsonNonRestCount": 16,
+      "json": {
+        "songId": 1665239,
+        "songInfo": "No Woman No Cry",
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "duration": 2,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 5,
+            "beat": 3,
+            "duration": 2,
+            "type": 5,
+            "inversion": 1,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 6,
+            "beat": 5,
+            "duration": 1.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 4,
+            "beat": 6.5,
+            "duration": 2.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 9,
+            "duration": 2,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 5,
+            "beat": 11,
+            "duration": 2,
+            "type": 5,
+            "inversion": 1,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 6,
+            "beat": 13,
+            "duration": 1.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 4,
+            "beat": 14.5,
+            "duration": 2.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 17,
+            "duration": 2,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 5,
+            "beat": 19,
+            "duration": 2,
+            "type": 5,
+            "inversion": 1,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 6,
+            "beat": 21,
+            "duration": 1.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 4,
+            "beat": 22.5,
+            "duration": 2.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 25,
+            "duration": 2,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 5,
+            "beat": 27,
+            "duration": 2,
+            "type": 5,
+            "inversion": 1,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 6,
+            "beat": 29,
+            "duration": 1.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 4,
+            "beat": 30.5,
+            "duration": 2.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          }
+        ],
+        "notes": [
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 1,
+            "duration": 1.25,
+            "isRest": true,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 2.25,
+            "duration": 0.25,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 2.5,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "5",
+            "octave": 0,
+            "beat": 3,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "5",
+            "octave": 0,
+            "beat": 3.5,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 4,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 4.5,
+            "duration": 0.5,
+            "isRest": true,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 5,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 5.5,
+            "duration": 0.25,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 5.75,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 6.25,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "6",
+            "octave": -1,
+            "beat": 6.75,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 7.25,
+            "duration": 1.75,
+            "isRest": true,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 9,
+            "duration": 1,
+            "isRest": true,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 10,
+            "duration": 0.33,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 10.33,
+            "duration": 0.34,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 10.67,
+            "duration": 0.33,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 11,
+            "duration": 0.25,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "2",
+            "octave": 0,
+            "beat": 11.25,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 11.75,
+            "duration": 1,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "7",
+            "octave": -1,
+            "beat": 12.75,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "2",
+            "octave": 0,
+            "beat": 13.25,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 13.75,
+            "duration": 0.75,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 14.5,
+            "duration": 2.5,
+            "isRest": true,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 17,
+            "duration": 1,
+            "isRest": true,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 18,
+            "duration": 0.25,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 18.25,
+            "duration": 0.25,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 18.5,
+            "duration": 0.25,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 18.75,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "5",
+            "octave": 0,
+            "beat": 19.25,
+            "duration": 0.75,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 20,
+            "duration": 0.75,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 20.75,
+            "duration": 0.25,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "5",
+            "octave": 0,
+            "beat": 21,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 21.5,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 22,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "5",
+            "octave": -1,
+            "beat": 24.25,
+            "duration": 0.25,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 24.5,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "2",
+            "octave": 0,
+            "beat": 25,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 25.5,
+            "duration": 0.8300000000000001,
+            "isRest": true,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 26.33,
+            "duration": 0.34,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 26.67,
+            "duration": 0.33,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 27,
+            "duration": 0.33,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 27.33,
+            "duration": 0.34,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 27.67,
+            "duration": 0.5800000000000001,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "4",
+            "octave": 0,
+            "beat": 28.25,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 28.75,
+            "duration": 0.25,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "2",
+            "octave": 0,
+            "beat": 29,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 29.5,
+            "duration": 1,
+            "isRest": false,
+            "recordingEndBeat": null
+          }
+        ],
+        "metadata": {
+          "version": "2.34.3",
+          "keys": [
+            {
+              "beat": 1,
+              "scale": "major",
+              "tonic": "Db"
+            }
+          ],
+          "tempos": [
+            {
+              "beat": 1,
+              "bpm": 78,
+              "swingFactor": 0,
+              "swingBeat": 0.5
+            }
+          ],
+          "meters": [
+            {
+              "beat": 1,
+              "numBeats": 4,
+              "beatUnit": 1
+            }
+          ],
+          "sections": [],
+          "endBeat": 33
+        }
+      },
+      "rendered": [
+        {
+          "order": 0,
+          "raw": "IDb",
+          "stableX": 39,
+          "texts": [
+            {
+              "s": "I",
+              "relX": 31,
+              "y": 720,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Db",
+              "relX": 26,
+              "y": 759,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [],
+          "pianoNotes": null
+        },
+        {
+          "order": 1,
+          "raw": "V6Ab/C",
+          "stableX": 111,
+          "texts": [
+            {
+              "s": "V",
+              "relX": 21,
+              "y": 720,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "6",
+              "relX": 41,
+              "y": 724,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Ab",
+              "relX": 15,
+              "y": 759,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/C",
+              "relX": 33,
+              "y": 759,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [
+            {
+              "stableX": 93,
+              "sd": "3",
+              "octave": "0",
+              "cy": 640
+            },
+            {
+              "stableX": 111,
+              "sd": "5",
+              "octave": "0",
+              "cy": 618
+            }
+          ],
+          "pianoNotes": [
+            "Ab3",
+            "F3"
+          ]
+        },
+        {
+          "order": 2,
+          "raw": "vibbm",
+          "stableX": 183,
+          "texts": [
+            {
+              "s": "vi",
+              "relX": 15,
+              "y": 720,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bbm",
+              "relX": 10,
+              "y": 759,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [
+            {
+              "stableX": 183,
+              "sd": "3",
+              "octave": "0",
+              "cy": 640
+            }
+          ],
+          "pianoNotes": null
+        },
+        {
+          "order": 3,
+          "raw": "IVGb",
+          "stableX": 237,
+          "texts": [
+            {
+              "s": "IV",
+              "relX": 30,
+              "y": 720,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Gb",
+              "relX": 35,
+              "y": 759,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [
+            {
+              "stableX": 228,
+              "sd": "1",
+              "octave": "0",
+              "cy": 662
+            },
+            {
+              "stableX": 246,
+              "sd": "6",
+              "octave": "-1",
+              "cy": 684
+            }
+          ],
+          "pianoNotes": [
+            "Bb2",
+            "Db3"
+          ]
+        },
+        {
+          "order": 4,
+          "raw": "IDb",
+          "stableX": 327,
+          "texts": [
+            {
+              "s": "I",
+              "relX": 31,
+              "y": 720,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Db",
+              "relX": 26,
+              "y": 759,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [],
+          "pianoNotes": null
+        },
+        {
+          "order": 5,
+          "raw": "V6Ab/C",
+          "stableX": 399,
+          "texts": [
+            {
+              "s": "V",
+              "relX": 21,
+              "y": 720,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "6",
+              "relX": 41,
+              "y": 724,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Ab",
+              "relX": 15,
+              "y": 759,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/C",
+              "relX": 33,
+              "y": 759,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [
+            {
+              "stableX": 387,
+              "sd": "3",
+              "octave": "0",
+              "cy": 640
+            },
+            {
+              "stableX": 408,
+              "sd": "2",
+              "octave": "0",
+              "cy": 651
+            }
+          ],
+          "pianoNotes": [
+            "Eb3",
+            "F3"
+          ]
+        },
+        {
+          "order": 6,
+          "raw": "vibbm",
+          "stableX": 471,
+          "texts": [
+            {
+              "s": "vi",
+              "relX": 15,
+              "y": 720,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bbm",
+              "relX": 10,
+              "y": 759,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [
+            {
+              "stableX": 462,
+              "sd": "7",
+              "octave": "-1",
+              "cy": 673
+            },
+            {
+              "stableX": 480,
+              "sd": "2",
+              "octave": "0",
+              "cy": 651
+            }
+          ],
+          "pianoNotes": [
+            "C3",
+            "Eb3"
+          ]
+        },
+        {
+          "order": 7,
+          "raw": "IVGb",
+          "stableX": 525,
+          "texts": [
+            {
+              "s": "IV",
+              "relX": 30,
+              "y": 720,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Gb",
+              "relX": 35,
+              "y": 759,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [],
+          "pianoNotes": null
+        },
+        {
+          "order": 8,
+          "raw": "IDb",
+          "stableX": 615,
+          "texts": [
+            {
+              "s": "I",
+              "relX": 31,
+              "y": 720,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Db",
+              "relX": 26,
+              "y": 759,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [],
+          "pianoNotes": null
+        },
+        {
+          "order": 9,
+          "raw": "V6Ab/C",
+          "stableX": 687,
+          "texts": [
+            {
+              "s": "V",
+              "relX": 21,
+              "y": 720,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "6",
+              "relX": 41,
+              "y": 724,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Ab",
+              "relX": 15,
+              "y": 759,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/C",
+              "relX": 33,
+              "y": 759,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [
+            {
+              "stableX": 669,
+              "sd": "3",
+              "octave": "0",
+              "cy": 640
+            },
+            {
+              "stableX": 696,
+              "sd": "5",
+              "octave": "0",
+              "cy": 618
+            }
+          ],
+          "pianoNotes": [
+            "Ab3",
+            "F3"
+          ]
+        },
+        {
+          "order": 10,
+          "raw": "vibbm",
+          "stableX": 759,
+          "texts": [
+            {
+              "s": "vi",
+              "relX": 15,
+              "y": 720,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bbm",
+              "relX": 10,
+              "y": 759,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [
+            {
+              "stableX": 750,
+              "sd": "3",
+              "octave": "0",
+              "cy": 640
+            },
+            {
+              "stableX": 759,
+              "sd": "5",
+              "octave": "0",
+              "cy": 618
+            }
+          ],
+          "pianoNotes": [
+            "Ab3",
+            "F3"
+          ]
+        },
+        {
+          "order": 11,
+          "raw": "IVGb",
+          "stableX": 813,
+          "texts": [
+            {
+              "s": "IV",
+              "relX": 30,
+              "y": 720,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Gb",
+              "relX": 35,
+              "y": 759,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [
+            {
+              "stableX": 795,
+              "sd": "1",
+              "octave": "0",
+              "cy": 662
+            }
+          ],
+          "pianoNotes": null
+        },
+        {
+          "order": 12,
+          "raw": "IDb",
+          "stableX": 903,
+          "texts": [
+            {
+              "s": "I",
+              "relX": 31,
+              "y": 720,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Db",
+              "relX": 26,
+              "y": 759,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [
+            {
+              "stableX": 885,
+              "sd": "1",
+              "octave": "0",
+              "cy": 662
+            },
+            {
+              "stableX": 903,
+              "sd": "2",
+              "octave": "0",
+              "cy": 651
+            }
+          ],
+          "pianoNotes": [
+            "Db3",
+            "Eb3"
+          ]
+        },
+        {
+          "order": 13,
+          "raw": "V6Ab/C",
+          "stableX": 975,
+          "texts": [
+            {
+              "s": "V",
+              "relX": 21,
+              "y": 720,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "6",
+              "relX": 41,
+              "y": 724,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Ab",
+              "relX": 15,
+              "y": 759,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/C",
+              "relX": 33,
+              "y": 759,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [
+            {
+              "stableX": 963,
+              "sd": "3",
+              "octave": "0",
+              "cy": 640
+            }
+          ],
+          "pianoNotes": null
+        },
+        {
+          "order": 14,
+          "raw": "vibbm",
+          "stableX": 1047,
+          "texts": [
+            {
+              "s": "vi",
+              "relX": 15,
+              "y": 720,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bbm",
+              "relX": 10,
+              "y": 759,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [
+            {
+              "stableX": 1038,
+              "sd": "3",
+              "octave": "0",
+              "cy": 640
+            },
+            {
+              "stableX": 1047,
+              "sd": "2",
+              "octave": "0",
+              "cy": 651
+            },
+            {
+              "stableX": 1065,
+              "sd": "1",
+              "octave": "0",
+              "cy": 662
+            }
+          ],
+          "pianoNotes": [
+            "Db3",
+            "Eb3",
+            "F3"
+          ]
+        },
+        {
+          "order": 15,
+          "raw": "IVGb",
+          "stableX": 1101,
+          "texts": [
+            {
+              "s": "IV",
+              "relX": 30,
+              "y": 720,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Gb",
+              "relX": 35,
+              "y": 759,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [],
+          "pianoNotes": null
+        }
+      ],
+      "strips": []
+    },
+    {
+      "name": "Chorus",
+      "hash": "#chorus",
+      "songId": "VMgJalYymqK",
+      "containerId": "tab-VMgJalYymqK",
+      "renderedCount": 16,
+      "jsonChordCount": 16,
+      "jsonNonRestCount": 16,
+      "json": {
+        "songId": 1665247,
+        "songInfo": "No Woman No Cry",
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "duration": 2,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 5,
+            "beat": 3,
+            "duration": 2,
+            "type": 5,
+            "inversion": 1,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 6,
+            "beat": 5,
+            "duration": 1.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 4,
+            "beat": 6.5,
+            "duration": 2.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 9,
+            "duration": 2,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 4,
+            "beat": 11,
+            "duration": 1.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 12.5,
+            "duration": 2.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 5,
+            "beat": 15,
+            "duration": 2,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 17,
+            "duration": 2,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 5,
+            "beat": 19,
+            "duration": 2,
+            "type": 5,
+            "inversion": 1,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 6,
+            "beat": 21,
+            "duration": 1.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 4,
+            "beat": 22.5,
+            "duration": 2.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 25,
+            "duration": 2,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 4,
+            "beat": 27,
+            "duration": 1.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 1,
+            "beat": 28.5,
+            "duration": 2.5,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "root": 5,
+            "beat": 31,
+            "duration": 2,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": null,
+            "isRest": false,
+            "recordingEndBeat": null
+          }
+        ],
+        "notes": [
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 2,
+            "duration": 1,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "7",
+            "octave": -1,
+            "beat": 3,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 3.5,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "7",
+            "octave": -1,
+            "beat": 4,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "7",
+            "octave": -1,
+            "beat": 4.5,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "6",
+            "octave": -1,
+            "beat": 5,
+            "duration": 0.75,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 10,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "4",
+            "octave": 0,
+            "beat": 11,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 11.5,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 12,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 12.5,
+            "duration": 1,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "5",
+            "octave": -2,
+            "beat": 15,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "6",
+            "octave": -2,
+            "beat": 15.5,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "7",
+            "octave": -2,
+            "beat": 16,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "5",
+            "octave": 0,
+            "beat": 18.5,
+            "duration": 1,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "4",
+            "octave": 0,
+            "beat": 19.5,
+            "duration": 0.25,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "4",
+            "octave": 0,
+            "beat": 19.75,
+            "duration": 0.25,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 20,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "2",
+            "octave": 0,
+            "beat": 20.5,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "6",
+            "octave": -1,
+            "beat": 21.5,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 22,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "4",
+            "octave": 0,
+            "beat": 22.5,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 23,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 26,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "4",
+            "octave": 0,
+            "beat": 27,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 27.5,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "3",
+            "octave": 0,
+            "beat": 28,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "1",
+            "octave": 0,
+            "beat": 28.5,
+            "duration": 1,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "5",
+            "octave": -2,
+            "beat": 31,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "6",
+            "octave": -2,
+            "beat": 31.5,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          {
+            "sd": "7",
+            "octave": -2,
+            "beat": 32,
+            "duration": 0.5,
+            "isRest": false,
+            "recordingEndBeat": null
+          }
+        ],
+        "metadata": {
+          "version": "2.34.3",
+          "keys": [
+            {
+              "beat": 1,
+              "scale": "major",
+              "tonic": "Db"
+            }
+          ],
+          "tempos": [
+            {
+              "beat": 1,
+              "bpm": 79,
+              "swingFactor": 0,
+              "swingBeat": 0.5
+            }
+          ],
+          "meters": [
+            {
+              "beat": 1,
+              "numBeats": 4,
+              "beatUnit": 1
+            }
+          ],
+          "sections": [],
+          "endBeat": 33
+        }
+      },
+      "rendered": [
+        {
+          "order": 0,
+          "raw": "IDb",
+          "stableX": 39,
+          "texts": [
+            {
+              "s": "I",
+              "relX": 31,
+              "y": 797,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Db",
+              "relX": 26,
+              "y": 836,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [],
+          "pianoNotes": null
+        },
+        {
+          "order": 1,
+          "raw": "V6Ab/C",
+          "stableX": 111,
+          "texts": [
+            {
+              "s": "V",
+              "relX": 21,
+              "y": 797,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "6",
+              "relX": 41,
+              "y": 801,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Ab",
+              "relX": 15,
+              "y": 836,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/C",
+              "relX": 33,
+              "y": 836,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [
+            {
+              "stableX": 111,
+              "sd": "7",
+              "octave": "-1",
+              "cy": 673
+            },
+            {
+              "stableX": 129,
+              "sd": "1",
+              "octave": "0",
+              "cy": 662
+            }
+          ],
+          "pianoNotes": [
+            "C3",
+            "Db3"
+          ]
+        },
+        {
+          "order": 2,
+          "raw": "vibbm",
+          "stableX": 183,
+          "texts": [
+            {
+              "s": "vi",
+              "relX": 15,
+              "y": 797,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bbm",
+              "relX": 10,
+              "y": 836,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [
+            {
+              "stableX": 165,
+              "sd": "7",
+              "octave": "-1",
+              "cy": 673
+            },
+            {
+              "stableX": 183,
+              "sd": "6",
+              "octave": "-1",
+              "cy": 684
+            }
+          ],
+          "pianoNotes": [
+            "Bb2",
+            "C3"
+          ]
+        },
+        {
+          "order": 3,
+          "raw": "IVGb",
+          "stableX": 237,
+          "texts": [
+            {
+              "s": "IV",
+              "relX": 30,
+              "y": 797,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Gb",
+              "relX": 35,
+              "y": 836,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [],
+          "pianoNotes": null
+        },
+        {
+          "order": 4,
+          "raw": "IDb",
+          "stableX": 327,
+          "texts": [
+            {
+              "s": "I",
+              "relX": 31,
+              "y": 797,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Db",
+              "relX": 26,
+              "y": 836,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [],
+          "pianoNotes": null
+        },
+        {
+          "order": 5,
+          "raw": "IVGb",
+          "stableX": 399,
+          "texts": [
+            {
+              "s": "IV",
+              "relX": 12,
+              "y": 797,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Gb",
+              "relX": 17,
+              "y": 836,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [
+            {
+              "stableX": 399,
+              "sd": "4",
+              "octave": "0",
+              "cy": 629
+            },
+            {
+              "stableX": 417,
+              "sd": "3",
+              "octave": "0",
+              "cy": 640
+            }
+          ],
+          "pianoNotes": [
+            "F3",
+            "Gb3"
+          ]
+        },
+        {
+          "order": 6,
+          "raw": "IDb",
+          "stableX": 453,
+          "texts": [
+            {
+              "s": "I",
+              "relX": 40,
+              "y": 797,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Db",
+              "relX": 35,
+              "y": 836,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [
+            {
+              "stableX": 435,
+              "sd": "3",
+              "octave": "0",
+              "cy": 640
+            },
+            {
+              "stableX": 453,
+              "sd": "1",
+              "octave": "0",
+              "cy": 662
+            }
+          ],
+          "pianoNotes": [
+            "Db3",
+            "F3"
+          ]
+        },
+        {
+          "order": 7,
+          "raw": "VAb",
+          "stableX": 543,
+          "texts": [
+            {
+              "s": "V",
+              "relX": 25,
+              "y": 797,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Ab",
+              "relX": 25,
+              "y": 836,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [
+            {
+              "stableX": 543,
+              "sd": "5",
+              "octave": "-2",
+              "cy": 772
+            },
+            {
+              "stableX": 561,
+              "sd": "6",
+              "octave": "-2",
+              "cy": 761
+            }
+          ],
+          "pianoNotes": [
+            "Ab1",
+            "Bb1"
+          ]
+        },
+        {
+          "order": 8,
+          "raw": "IDb",
+          "stableX": 615,
+          "texts": [
+            {
+              "s": "I",
+              "relX": 31,
+              "y": 797,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Db",
+              "relX": 26,
+              "y": 836,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [],
+          "pianoNotes": null
+        },
+        {
+          "order": 9,
+          "raw": "V6Ab/C",
+          "stableX": 687,
+          "texts": [
+            {
+              "s": "V",
+              "relX": 21,
+              "y": 797,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "6",
+              "relX": 41,
+              "y": 801,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Ab",
+              "relX": 15,
+              "y": 836,
+              "fill": "#dae0e6"
+            },
+            {
+              "s": "/C",
+              "relX": 33,
+              "y": 836,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [
+            {
+              "stableX": 669,
+              "sd": "5",
+              "octave": "0",
+              "cy": 618
+            },
+            {
+              "stableX": 705,
+              "sd": "4",
+              "octave": "0",
+              "cy": 629
+            }
+          ],
+          "pianoNotes": [
+            "Ab3",
+            "Gb3"
+          ]
+        },
+        {
+          "order": 10,
+          "raw": "vibbm",
+          "stableX": 759,
+          "texts": [
+            {
+              "s": "vi",
+              "relX": 15,
+              "y": 797,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "bbm",
+              "relX": 10,
+              "y": 836,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [
+            {
+              "stableX": 741,
+              "sd": "2",
+              "octave": "0",
+              "cy": 651
+            },
+            {
+              "stableX": 777,
+              "sd": "6",
+              "octave": "-1",
+              "cy": 684
+            }
+          ],
+          "pianoNotes": [
+            "Bb2",
+            "Eb3"
+          ]
+        },
+        {
+          "order": 11,
+          "raw": "IVGb",
+          "stableX": 813,
+          "texts": [
+            {
+              "s": "IV",
+              "relX": 30,
+              "y": 797,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Gb",
+              "relX": 35,
+              "y": 836,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [
+            {
+              "stableX": 795,
+              "sd": "1",
+              "octave": "0",
+              "cy": 662
+            },
+            {
+              "stableX": 813,
+              "sd": "4",
+              "octave": "0",
+              "cy": 629
+            }
+          ],
+          "pianoNotes": [
+            "Db3",
+            "Gb3"
+          ]
+        },
+        {
+          "order": 12,
+          "raw": "IDb",
+          "stableX": 903,
+          "texts": [
+            {
+              "s": "I",
+              "relX": 31,
+              "y": 797,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Db",
+              "relX": 26,
+              "y": 836,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [],
+          "pianoNotes": null
+        },
+        {
+          "order": 13,
+          "raw": "IVGb",
+          "stableX": 975,
+          "texts": [
+            {
+              "s": "IV",
+              "relX": 12,
+              "y": 797,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Gb",
+              "relX": 17,
+              "y": 836,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [
+            {
+              "stableX": 975,
+              "sd": "4",
+              "octave": "0",
+              "cy": 629
+            },
+            {
+              "stableX": 993,
+              "sd": "3",
+              "octave": "0",
+              "cy": 640
+            }
+          ],
+          "pianoNotes": [
+            "F3",
+            "Gb3"
+          ]
+        },
+        {
+          "order": 14,
+          "raw": "IDb",
+          "stableX": 1029,
+          "texts": [
+            {
+              "s": "I",
+              "relX": 40,
+              "y": 797,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Db",
+              "relX": 35,
+              "y": 836,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [
+            {
+              "stableX": 1011,
+              "sd": "3",
+              "octave": "0",
+              "cy": 640
+            },
+            {
+              "stableX": 1029,
+              "sd": "1",
+              "octave": "0",
+              "cy": 662
+            }
+          ],
+          "pianoNotes": [
+            "Db3",
+            "F3"
+          ]
+        },
+        {
+          "order": 15,
+          "raw": "VAb",
+          "stableX": 1119,
+          "texts": [
+            {
+              "s": "V",
+              "relX": 25,
+              "y": 797,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "Ab",
+              "relX": 25,
+              "y": 836,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [
+            {
+              "stableX": 1119,
+              "sd": "5",
+              "octave": "-2",
+              "cy": 772
+            },
+            {
+              "stableX": 1137,
+              "sd": "6",
+              "octave": "-2",
+              "cy": 761
+            }
+          ],
+          "pianoNotes": [
+            "Ab1",
+            "Bb1"
+          ]
+        }
+      ],
+      "strips": []
+    }
+  ],
+  "errors": []
+}

@@ -600,6 +600,15 @@ function resolveAppliedBorrowedChord(targetSD, appliedSD, key, baseOctave, borro
   const { key: modifiedKey, customScaleIntervals } = resolveBorrowedScale(key, borrowed);
   const targetNote = getNoteLabel(targetSD, modifiedKey, customScaleIntervals);
   const appliedKey = { tonic: targetNote, scale: "major" };
+  const appliedQuality = MAJOR_SCALE_CHORD_QUALITIES[appliedSD - 1];
+  const sharp5MinorApplied = modifierChord?.alterations?.includes("#5")
+    && appliedSD === 7 && appliedQuality === "diminished";
+  if (sharp5MinorApplied) {
+    const appliedRoot = getNoteLabel(appliedSD, appliedKey);
+    return buildChordFromNoteName(
+      appliedRoot, "minor", key, baseOctave, chordType, inversion, false, suspensions, modifierChord,
+    );
+  }
   return rootToDiatonicTriad(appliedSD, appliedKey, baseOctave, null, chordType, inversion, 0, suspensions, modifierChord);
 }
 
@@ -637,11 +646,19 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
 
   // Get chord quality and degrees, degrees
   const chordQuality = scaleChordQualities[chordRootSD - 1];
+  const phdmMaj7 = borrowed === "phrygianDominant" && chordRootSD === 6
+    && !(modifierChord?.alterations || []).includes("#5");
+  const sharp5Minor = (modifierChord?.alterations || []).includes("#5")
+    && chordQuality === "diminished";
   const useSusFrame = suspensions && suspensions.length > 0;
   const halfDimIi = isHalfDiminishedIi(chordRootSD, modifiedKey, chordType, useSusFrame, modifierChord);
   const triadQuality = halfDimIi
     ? "diminished"
-    : (useSusFrame && chordQuality === "diminished" ? "major" : chordQuality);
+    : sharp5Minor
+      ? "minor"
+      : phdmMaj7
+        ? "major"
+        : (useSusFrame && chordQuality === "diminished" ? "major" : chordQuality);
   let chordDegrees = TRIAD_DEGREES[triadQuality];
   const effModifierChord = enrichModifierChord(modifierChord, chordRootSD, modifiedKey, chordType, useSusFrame);
   const omitTriad35 = effModifierChord?.omits?.includes(3) && effModifierChord?.omits?.includes(5);
@@ -654,11 +671,23 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
   // Add 7th note if needed (also the basis for 9th/11th chords). The seventh quality follows
   // the prevailing (borrowed-resolved) scale so notes agree with the rendered △7/ø7/°7 symbol.
   if (chordType >= 7 && !omitTriad35) {
+    const hasSharp5 = effModifierChord?.alterations?.includes("#5");
+    const hmBorrowedMinor7 = borrowed === "minor" && originalKey.scale === "harmonicMinor" && chordRootSD === 1;
+    const customDimMaj7 = Array.isArray(borrowed) && chordQuality === "diminished";
     const seventhDegree = useSusFrame
       ? "b7"
-      : borrowedModeDimSeventhDegree(chordRootSD, modifiedKey.scale, chordQuality, chordType)
-        ?? diatonicSeventhDegreeStr(chordRootSD, modifiedKey, customScaleIntervals);
+      : hmBorrowedMinor7
+        ? "b7"
+        : customDimMaj7
+          ? "7"
+          : (triadQuality === "diminished" && hasSharp5)
+            ? "b7"
+            : borrowedModeDimSeventhDegree(chordRootSD, modifiedKey.scale, chordQuality, chordType)
+              ?? diatonicSeventhDegreeStr(chordRootSD, modifiedKey, customScaleIntervals);
     addSeventhNote(toneJSNames, degreeIndices, chordRootNoteName, baseOctave, seventhDegree);
+  } else if (omitTriad35 && chordType >= 7) {
+    const seventh = effModifierChord?.halfDim ? "bb7" : "b7";
+    addSeventhNote(toneJSNames, degreeIndices, chordRootNoteName, baseOctave, seventh);
   } else if (
     chordQuality === "diminished" &&
     modifierChord?.omits?.includes(5)
@@ -667,7 +696,8 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
     degreeIndices.push(3);
   }
   // Upper extensions (9 / 11 / 13) for extended chord types.
-  const skipNine = effModifierChord?.omits?.includes(3) && effModifierChord?.omits?.includes(5);
+  const skipNine = effModifierChord?.omits?.includes(3) && effModifierChord?.omits?.includes(5)
+    && !!effModifierChord?.halfDim;
   applyTypeExtensions(
     toneJSNames, degreeIndices, chordRootNoteName, baseOctave, chordType, sdToToneJSNoteName, triadQuality,
     { natural11: modifiedKey.scale === "minor" && chordRootSD === 5, skipNine },
@@ -746,6 +776,7 @@ export function chordInterpreter(chord, key) {
     && chord.root === 1
     && chordType >= 7
     && !chord.applied
+    && !chord.inversion
   ) {
     return chordInterpreter({ ...chord, root: 4, applied: 5 }, key);
   }
@@ -770,8 +801,12 @@ export function chordInterpreter(chord, key) {
 
     // Leading-tone applied chords (vii°7/x) are fully diminished (use a diminished 7th).
     const fullyDiminished = chord.applied === 7 && chordQuality === 'diminished';
+    const useMaj7 = chordType >= 7 && chordQuality === 'major' && chord.applied === 4;
 
-    return buildChordFromNoteName(actualRootNote, chordQuality, key, defaultChordOctave, chordType, inversion, fullyDiminished, suspensions, chord);
+    return buildChordFromNoteName(
+      actualRootNote, chordQuality, key, defaultChordOctave, chordType, inversion,
+      fullyDiminished, suspensions, { ...chord, useMaj7 },
+    );
   }
   
   const applied = chord.applied || 0;
@@ -781,7 +816,9 @@ export function chordInterpreter(chord, key) {
 // Helper function to build a chord directly from a note name and quality
 function buildChordFromNoteName(rootNoteName, quality, originalKey, baseOctave, chordType, inversion, fullyDiminished = false, suspensions = [], modifierChord = null) {
   const useSusFrame = suspensions && suspensions.length > 0;
-  const triadQuality = useSusFrame && quality === "diminished" ? "major" : quality;
+  const triadQuality = modifierChord?.halfDim
+    ? "diminished"
+    : useSusFrame && quality === "diminished" ? "major" : quality;
   const chordDegrees = TRIAD_DEGREES[triadQuality];
   
   // Create a temporary key with the root note as tonic (major scale)
@@ -798,7 +835,11 @@ function buildChordFromNoteName(rootNoteName, quality, originalKey, baseOctave, 
   // Add 7th if needed. Fully-diminished sevenths (vii°7) use a diminished 7th (bb7);
   // all others use a minor 7th (b7), which covers dominant and half-diminished sevenths.
   if (chordType >= 7) {
-    const seventhDegree = fullyDiminished ? "bb7" : "b7";
+    const hasSharp5 = modifierChord?.alterations?.includes("#5");
+    const seventhDegree = fullyDiminished ? "bb7"
+      : modifierChord?.halfDim ? "b7"
+        : (quality === "diminished" && hasSharp5) ? "b7"
+          : (modifierChord?.useMaj7 ? "7" : "b7");
     const seventhName = sdToToneJSNoteName(seventhDegree, 0, rootKey, baseOctave);
     toneJSNames.push(seventhName);
     degreeIndices.push(3);

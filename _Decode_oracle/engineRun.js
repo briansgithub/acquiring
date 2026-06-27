@@ -43,6 +43,10 @@ function activeKeyAtBeat(keys, beat) {
 const { mergeMods } = require('./truthLetterParse');
 
 function enrichChordFromSymbol(chord, roman, letter) {
+  if (chord._truthEnriched) {
+    const halfDim = chord.halfDim || /ø/.test(roman || '');
+    return { ...chord, halfDim };
+  }
   const mods = mergeMods(letter, roman, chord);
   const alterations = [...new Set([...(chord.alterations || []), ...mods.alterations])];
   const halfDim = chord.halfDim || /ø/.test(roman || "") || /\(b5b9\)|b5b9/i.test(letter || "");
@@ -50,14 +54,6 @@ function enrichChordFromSymbol(chord, roman, letter) {
     for (const a of ["b5", "b9"]) {
       if (!alterations.includes(a)) alterations.push(a);
     }
-  }
-  if (
-    (mods.type ?? 5) >= 11
-    && chord?.root === 5
-    && !alterations.includes("b9")
-    && /\(b9\)|b9/i.test(letter || "")
-  ) {
-    alterations.push("b9");
   }
   return {
     ...chord,

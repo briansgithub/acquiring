@@ -1,0 +1,89 @@
+[
+  {
+    "id": "adele__set-fire-to-the-rain/Pre-Chorus/21",
+    "song": "adele__set-fire-to-the-rain",
+    "section": "Pre-Chorus",
+    "beat": 21,
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 21,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VIIsus4(add9)",
+    "truthLetter": "C(add9)sus4",
+    "truthPcs": [
+      0,
+      2,
+      5,
+      7
+    ],
+    "pianoNotes": [
+      "E3",
+      "F3"
+    ],
+    "pianoPcs": [
+      4,
+      5
+    ],
+    "pianoValidated": false,
+    "engRoman": "VII(add9)sus4",
+    "engLetter": "Csus4",
+    "engNotes": [
+      "C3",
+      "F3",
+      "G3",
+      "D4"
+    ],
+    "engPcs": [
+      0,
+      2,
+      5,
+      7
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "adds=9"
+    ],
+    "compositeKey": "adds=9+suspensions=4"
+  }
+]

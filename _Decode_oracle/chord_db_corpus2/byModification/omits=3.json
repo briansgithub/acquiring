@@ -1,0 +1,811 @@
+[
+  {
+    "id": "john-legend__all-of-me/Intro and Verse/1",
+    "song": "john-legend__all-of-me",
+    "section": "Intro and Verse",
+    "beat": 1,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 1,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        3
+      ],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi(no3)",
+    "truthLetter": "F5",
+    "truthPcs": [
+      0,
+      5
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vi(no3)",
+    "engLetter": "Fm",
+    "engNotes": [
+      "F3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "omits=3"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-legend__all-of-me/Intro and Verse/7",
+    "song": "john-legend__all-of-me",
+    "section": "Intro and Verse",
+    "beat": 7,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 7,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        3
+      ],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(no3)",
+    "truthLetter": "Eb5",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(no3)",
+    "engLetter": "Eb",
+    "engNotes": [
+      "Eb3",
+      "Bb3"
+    ],
+    "engPcs": [
+      3,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "omits=3"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-legend__all-of-me/Intro and Verse/9",
+    "song": "john-legend__all-of-me",
+    "section": "Intro and Verse",
+    "beat": 9,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 9,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        3
+      ],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi(no3)",
+    "truthLetter": "F5",
+    "truthPcs": [
+      0,
+      5
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vi(no3)",
+    "engLetter": "Fm",
+    "engNotes": [
+      "F3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "omits=3"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-legend__all-of-me/Intro and Verse/15",
+    "song": "john-legend__all-of-me",
+    "section": "Intro and Verse",
+    "beat": 15,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 15,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        3
+      ],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(no3)",
+    "truthLetter": "Eb5",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(no3)",
+    "engLetter": "Eb",
+    "engNotes": [
+      "Eb3",
+      "Bb3"
+    ],
+    "engPcs": [
+      3,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "omits=3"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "nirvana__smells-like-teen-spirit/Verse/1",
+    "song": "nirvana__smells-like-teen-spirit",
+    "section": "Verse",
+    "beat": 1,
+    "key": {
+      "tonic": "F",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 1,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        3
+      ],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(no3)",
+    "truthLetter": "F5",
+    "truthPcs": [
+      0,
+      5
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no3)",
+    "engLetter": "Fm",
+    "engNotes": [
+      "F3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "omits=3"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "nirvana__smells-like-teen-spirit/Verse/9",
+    "song": "nirvana__smells-like-teen-spirit",
+    "section": "Verse",
+    "beat": 9,
+    "key": {
+      "tonic": "F",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 9,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        3
+      ],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(no3)",
+    "truthLetter": "F5",
+    "truthPcs": [
+      0,
+      5
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no3)",
+    "engLetter": "Fm",
+    "engNotes": [
+      "F3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "omits=3"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "nirvana__smells-like-teen-spirit/Verse/17",
+    "song": "nirvana__smells-like-teen-spirit",
+    "section": "Verse",
+    "beat": 17,
+    "key": {
+      "tonic": "F",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 17,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        3
+      ],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(no3)",
+    "truthLetter": "F5",
+    "truthPcs": [
+      0,
+      5
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no3)",
+    "engLetter": "Fm",
+    "engNotes": [
+      "F3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "omits=3"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "nirvana__smells-like-teen-spirit/Verse/25",
+    "song": "nirvana__smells-like-teen-spirit",
+    "section": "Verse",
+    "beat": 25,
+    "key": {
+      "tonic": "F",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 25,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        3
+      ],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(no3)",
+    "truthLetter": "F5",
+    "truthPcs": [
+      0,
+      5
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no3)",
+    "engLetter": "Fm",
+    "engNotes": [
+      "F3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "omits=3"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "nirvana__smells-like-teen-spirit/Solo/41",
+    "song": "nirvana__smells-like-teen-spirit",
+    "section": "Solo",
+    "beat": 41,
+    "key": {
+      "tonic": "F",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 41,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        3
+      ],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(no3)",
+    "truthLetter": "F5",
+    "truthPcs": [
+      0,
+      5
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no3)",
+    "engLetter": "Fm",
+    "engNotes": [
+      "F3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "omits=3"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Intro/21",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Intro",
+    "beat": 21,
+    "key": {
+      "tonic": "G",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 21,
+      "duration": 8,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        3
+      ],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "v7(no3)",
+    "truthLetter": "dm7(n°3)",
+    "truthPcs": [
+      0,
+      2,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "v⁷(no3)",
+    "engLetter": "Dm7",
+    "engNotes": [
+      "D3",
+      "A3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      2,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "omits=3"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Chorus/9",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Chorus",
+    "beat": 9,
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 9,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        3
+      ],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(no3)",
+    "truthLetter": "D7(n°3)",
+    "truthPcs": [
+      0,
+      2,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(no3)",
+    "engLetter": "D7",
+    "engNotes": [
+      "D3",
+      "A3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      2,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "omits=3"
+    ],
+    "compositeKey": null
+  }
+]

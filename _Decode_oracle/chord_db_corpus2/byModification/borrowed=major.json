@@ -1,0 +1,1759 @@
+[
+  {
+    "id": "dave-brubeck__take-five/Intro and Verse/99",
+    "song": "dave-brubeck__take-five",
+    "section": "Intro and Verse",
+    "beat": 99,
+    "key": {
+      "tonic": "D#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 99,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(maj)",
+    "truthLetter": "A#7",
+    "truthPcs": [
+      2,
+      5,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(maj)",
+    "engLetter": "A#7",
+    "engNotes": [
+      "A#3",
+      "C##4",
+      "E#4",
+      "G#4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "duke-ellington__in-a-sentimental-mood/Verse/27",
+    "song": "duke-ellington__in-a-sentimental-mood",
+    "section": "Verse",
+    "beat": 27,
+    "key": {
+      "tonic": "Bb",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 27,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7/#vi(maj)(maj)",
+    "truthLetter": "D7",
+    "truthPcs": [
+      0,
+      2,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷/VI",
+    "engLetter": "Db7",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      2,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=yes",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "george-gershwin__summertime/Chorus/57",
+    "song": "george-gershwin__summertime",
+    "section": "Chorus",
+    "beat": 57,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 57,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(maj)",
+    "truthLetter": "D",
+    "truthPcs": [
+      2,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV(maj)",
+    "engLetter": "D",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3"
+    ],
+    "engPcs": [
+      2,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "green-day__boulevard-of-broken-dreams/Outro/7",
+    "song": "green-day__boulevard-of-broken-dreams",
+    "section": "Outro",
+    "beat": 7,
+    "key": {
+      "tonic": "F",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 7,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "#vi(maj)",
+    "truthLetter": "dm",
+    "truthPcs": [
+      2,
+      5,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♯vi(maj)",
+    "engLetter": "Dm",
+    "engNotes": [
+      "D3",
+      "F3",
+      "A3"
+    ],
+    "engPcs": [
+      2,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "green-day__boulevard-of-broken-dreams/Outro/11",
+    "song": "green-day__boulevard-of-broken-dreams",
+    "section": "Outro",
+    "beat": 11,
+    "key": {
+      "tonic": "F",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 11,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V/#iii(maj)(maj)",
+    "truthLetter": "E",
+    "truthPcs": [
+      4,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V/III",
+    "engLetter": "Eb",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=yes",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "guns-n-roses__sweet-child-o-mine/Chorus/1",
+    "song": "guns-n-roses__sweet-child-o-mine",
+    "section": "Chorus",
+    "beat": 1,
+    "key": {
+      "tonic": "C#",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 1,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(maj)",
+    "truthLetter": "G#",
+    "truthPcs": [
+      0,
+      3,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(maj)",
+    "engLetter": "G#",
+    "engNotes": [
+      "G#3",
+      "B#4",
+      "D#4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "guns-n-roses__sweet-child-o-mine/Chorus/2.5",
+    "song": "guns-n-roses__sweet-child-o-mine",
+    "section": "Chorus",
+    "beat": 2.5,
+    "key": {
+      "tonic": "C#",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 2.5,
+      "duration": 2.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(maj)",
+    "truthLetter": "G#",
+    "truthPcs": [
+      0,
+      3,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(maj)",
+    "engLetter": "G#",
+    "engNotes": [
+      "G#3",
+      "B#4",
+      "D#4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "guns-n-roses__sweet-child-o-mine/Chorus/17",
+    "song": "guns-n-roses__sweet-child-o-mine",
+    "section": "Chorus",
+    "beat": 17,
+    "key": {
+      "tonic": "C#",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 17,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(maj)",
+    "truthLetter": "G#",
+    "truthPcs": [
+      0,
+      3,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(maj)",
+    "engLetter": "G#",
+    "engNotes": [
+      "G#3",
+      "B#4",
+      "D#4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "guns-n-roses__sweet-child-o-mine/Chorus/18.5",
+    "song": "guns-n-roses__sweet-child-o-mine",
+    "section": "Chorus",
+    "beat": 18.5,
+    "key": {
+      "tonic": "C#",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 18.5,
+      "duration": 2.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(maj)",
+    "truthLetter": "G#",
+    "truthPcs": [
+      0,
+      3,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(maj)",
+    "engLetter": "G#",
+    "engNotes": [
+      "G#3",
+      "B#4",
+      "D#4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "michael-jackson__billie-jean/Pre-Chorus/29",
+    "song": "michael-jackson__billie-jean",
+    "section": "Pre-Chorus",
+    "beat": 29,
+    "key": {
+      "tonic": "F#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 29,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(maj)",
+    "truthLetter": "C#",
+    "truthPcs": [
+      1,
+      5,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(maj)",
+    "engLetter": "C#",
+    "engNotes": [
+      "C#3",
+      "E#3",
+      "G#3"
+    ],
+    "engPcs": [
+      1,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "nirvana__smells-like-teen-spirit/Chorus Lead-Out/8",
+    "song": "nirvana__smells-like-teen-spirit",
+    "section": "Chorus Lead-Out",
+    "beat": 8,
+    "key": {
+      "tonic": "F",
+      "scale": "phrygian"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 8,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "#iii(maj)",
+    "truthLetter": "am",
+    "truthPcs": [
+      0,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♯iii(maj)",
+    "engLetter": "Am",
+    "engNotes": [
+      "A3",
+      "C4",
+      "E4"
+    ],
+    "engPcs": [
+      0,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "nirvana__smells-like-teen-spirit/Chorus Lead-Out/16",
+    "song": "nirvana__smells-like-teen-spirit",
+    "section": "Chorus Lead-Out",
+    "beat": 16,
+    "key": {
+      "tonic": "F",
+      "scale": "phrygian"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 16,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "#iii(maj)",
+    "truthLetter": "am",
+    "truthPcs": [
+      0,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♯iii(maj)",
+    "engLetter": "Am",
+    "engNotes": [
+      "A3",
+      "C4",
+      "E4"
+    ],
+    "engPcs": [
+      0,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "pink-floyd__money/Chorus/8",
+    "song": "pink-floyd__money",
+    "section": "Chorus",
+    "beat": 8,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 8,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 7,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#5"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vii/V(maj)(#5)(maj)",
+    "truthLetter": "e#m(#5)",
+    "truthPcs": [
+      1,
+      5,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vii+°(#5)/v",
+    "engLetter": "E#°",
+    "engNotes": [
+      "E#3",
+      "G#3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": false,
+    "romanExact": false,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=yes",
+      "borrowed=major",
+      "alterations=#5"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "red-hot-chili-peppers__under-the-bridge/Bridge/1",
+    "song": "red-hot-chili-peppers__under-the-bridge",
+    "section": "Bridge",
+    "beat": 1,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 1,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(maj)",
+    "truthLetter": "A",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(maj)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "red-hot-chili-peppers__under-the-bridge/Bridge/9",
+    "song": "red-hot-chili-peppers__under-the-bridge",
+    "section": "Bridge",
+    "beat": 9,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 9,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(maj)",
+    "truthLetter": "A",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(maj)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "red-hot-chili-peppers__under-the-bridge/Bridge/17",
+    "song": "red-hot-chili-peppers__under-the-bridge",
+    "section": "Bridge",
+    "beat": 17,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 17,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(maj)",
+    "truthLetter": "A",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(maj)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "red-hot-chili-peppers__under-the-bridge/Outro/1",
+    "song": "red-hot-chili-peppers__under-the-bridge",
+    "section": "Outro",
+    "beat": 1,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 1,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(maj)",
+    "truthLetter": "A",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(maj)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "red-hot-chili-peppers__under-the-bridge/Outro/9",
+    "song": "red-hot-chili-peppers__under-the-bridge",
+    "section": "Outro",
+    "beat": 9,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 9,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(maj)",
+    "truthLetter": "A",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(maj)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "red-hot-chili-peppers__under-the-bridge/Outro/17",
+    "song": "red-hot-chili-peppers__under-the-bridge",
+    "section": "Outro",
+    "beat": 17,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 17,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(maj)",
+    "truthLetter": "A",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(maj)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "red-hot-chili-peppers__under-the-bridge/Outro/25",
+    "song": "red-hot-chili-peppers__under-the-bridge",
+    "section": "Outro",
+    "beat": 25,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 25,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(maj)",
+    "truthLetter": "A",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(maj)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "red-hot-chili-peppers__under-the-bridge/Outro/33",
+    "song": "red-hot-chili-peppers__under-the-bridge",
+    "section": "Outro",
+    "beat": 33,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 33,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(maj)",
+    "truthLetter": "A",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(maj)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "red-hot-chili-peppers__under-the-bridge/Outro/41",
+    "song": "red-hot-chili-peppers__under-the-bridge",
+    "section": "Outro",
+    "beat": 41,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 41,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(maj)",
+    "truthLetter": "A",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(maj)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "red-hot-chili-peppers__under-the-bridge/Outro/49",
+    "song": "red-hot-chili-peppers__under-the-bridge",
+    "section": "Outro",
+    "beat": 49,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 49,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(maj)",
+    "truthLetter": "A",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(maj)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "red-hot-chili-peppers__under-the-bridge/Outro/57",
+    "song": "red-hot-chili-peppers__under-the-bridge",
+    "section": "Outro",
+    "beat": 57,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 57,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(maj)",
+    "truthLetter": "A",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(maj)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  }
+]

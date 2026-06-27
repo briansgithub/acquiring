@@ -7,8 +7,18 @@ const path = require('path');
 const { summarizeBuckets } = require('./buildDb');
 
 const DB_DIR = path.join(__dirname);
-const SHARD_DIR = path.join(DB_DIR, 'byModification');
-const COMPOSITE_DIR = path.join(DB_DIR, 'byCompositeKey');
+const DEFAULT_DB_DIR = DB_DIR;
+let activeDbDir = DEFAULT_DB_DIR;
+
+function configureDbDir(dir) {
+  activeDbDir = dir ? path.resolve(dir) : DEFAULT_DB_DIR;
+}
+
+function getDbDir() {
+  return activeDbDir;
+}
+function shardDir() { return path.join(getDbDir(), 'byModification'); }
+function compositeDir() { return path.join(getDbDir(), 'byCompositeKey'); }
 
 function pct(n, d) {
   return d ? `${((100 * n) / d).toFixed(1)}%` : '-';
@@ -26,7 +36,7 @@ function writeShardFile(dir, key, entries) {
     return null;
   }
   fs.writeFileSync(filePath, JSON.stringify(entries, null, 2));
-  return path.relative(DB_DIR, filePath).replace(/\\/g, '/');
+  return path.relative(getDbDir(), filePath).replace(/\\/g, '/');
 }
 
 function writeShards(map, dir) {
@@ -133,12 +143,14 @@ function writeDatabase(db, opts = {}) {
   const statsMap = summarizeBuckets(db.byModification);
   const existing = loadIndex();
   const fullWrite = !opts.affectedModBuckets;
+  const modShardDir = shardDir();
+  const compShardDir = compositeDir();
 
   let modIndex;
   if (fullWrite) {
-    modIndex = writeShards(db.byModification, SHARD_DIR);
+    modIndex = writeShards(db.byModification, modShardDir);
   } else {
-    modIndex = writeShardsPartial(db.byModification, SHARD_DIR, opts.affectedModBuckets);
+    modIndex = writeShardsPartial(db.byModification, modShardDir, opts.affectedModBuckets);
     for (const [key, info] of Object.entries(existing?.bucketIndex || {})) {
       if (!modIndex[key] && info?.file) modIndex[key] = { file: info.file, count: info.total };
     }
@@ -147,9 +159,9 @@ function writeDatabase(db, opts = {}) {
   let compositeIndex = {};
   if (db.byCompositeKey.size) {
     if (fullWrite) {
-      compositeIndex = writeShards(db.byCompositeKey, COMPOSITE_DIR);
+      compositeIndex = writeShards(db.byCompositeKey, compShardDir);
     } else if (opts.affectedCompositeKeys?.size) {
-      compositeIndex = writeShardsPartial(db.byCompositeKey, COMPOSITE_DIR, opts.affectedCompositeKeys);
+      compositeIndex = writeShardsPartial(db.byCompositeKey, compShardDir, opts.affectedCompositeKeys);
       for (const [key, info] of Object.entries(existing?.compositeIndex || {})) {
         if (!compositeIndex[key] && info?.file) compositeIndex[key] = info;
       }
@@ -168,14 +180,14 @@ function writeDatabase(db, opts = {}) {
   index.meta.notesOkPct = db.meta.totalChords
     ? Math.round((100 * globalNotesOk) / db.meta.totalChords * 10) / 10
     : 100;
-  fs.writeFileSync(path.join(DB_DIR, 'chord_db.json'), JSON.stringify(index, null, 2));
+  fs.writeFileSync(path.join(getDbDir(), 'chord_db.json'), JSON.stringify(index, null, 2));
 
-  const summary = writeSummary(statsMap, db.meta, path.join(DB_DIR, 'SUMMARY.md'), db.allEntries);
+  const summary = writeSummary(statsMap, db.meta, path.join(getDbDir(), 'SUMMARY.md'), db.allEntries);
   return { index, summary };
 }
 
 function loadIndex() {
-  const p = path.join(DB_DIR, 'chord_db.json');
+  const p = path.join(getDbDir(), 'chord_db.json');
   if (!fs.existsSync(p)) return null;
   return JSON.parse(fs.readFileSync(p, 'utf8'));
 }
@@ -184,15 +196,17 @@ function loadBucket(bucketKey) {
   const index = loadIndex();
   const info = index?.bucketIndex?.[bucketKey];
   if (!info?.file) return null;
-  const file = path.join(DB_DIR, info.file);
+  const file = path.join(getDbDir(), info.file);
   if (!fs.existsSync(file)) return null;
   return JSON.parse(fs.readFileSync(file, 'utf8'));
 }
 
 module.exports = {
-  DB_DIR,
-  SHARD_DIR,
-  COMPOSITE_DIR,
+  DB_DIR: DEFAULT_DB_DIR,
+  configureDbDir,
+  getDbDir,
+  shardDir,
+  compositeDir,
   writeDatabase,
   writeSummary,
   writeShardsPartial,

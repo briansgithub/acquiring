@@ -8,19 +8,21 @@
  *   node _Decode_oracle/testModification.js adds=9 --rerun
  */
 
+const path = require('path');
 const { compareChord } = require('./compare');
 const { runChord } = require('./engineRun');
 const { parseLetter } = require('./svgTruth');
-const { loadIndex, loadBucket, pct } = require('./chord_db/writeOutput');
+const { loadIndex, loadBucket, pct, configureDbDir } = require('./chord_db/writeOutput');
 
 function parseArgs(argv) {
-  const out = { bucket: null, list: false, failing: false, rerun: false, threshold: 99 };
+  const out = { bucket: null, list: false, failing: false, rerun: false, threshold: 99, dbDir: null };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--list') out.list = true;
     else if (a === '--failing') out.failing = true;
     else if (a === '--rerun') out.rerun = true;
     else if (a === '--threshold') out.threshold = Number(argv[++i]) || 99;
+    else if (a === '--db-dir') out.dbDir = path.resolve(argv[++i]);
     else if (a === '--help' || a === '-h') out.help = true;
     else if (!a.startsWith('-')) out.bucket = a;
   }
@@ -108,6 +110,7 @@ function printEntries(entries, { verbose = false } = {}) {
 async function main() {
   const opts = parseArgs(process.argv.slice(2));
   if (opts.help) { printHelp(); return; }
+  if (opts.dbDir) configureDbDir(opts.dbDir);
 
   const index = loadIndex();
   if (!index) {

@@ -1,0 +1,3232 @@
+[
+  {
+    "id": "amy-winehouse__back-to-black/Verse/25",
+    "song": "amy-winehouse__back-to-black",
+    "section": "Verse",
+    "beat": 25,
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 25,
+      "duration": 6.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)",
+    "truthLetter": "A",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(hmin)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "amy-winehouse__back-to-black/Verse/32.5",
+    "song": "amy-winehouse__back-to-black",
+    "section": "Verse",
+    "beat": 32.5,
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 32.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V6(hmin)",
+    "truthLetter": "A/C#",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁶(hmin)",
+    "engLetter": "A/C#",
+    "engNotes": [
+      "C#4",
+      "E4",
+      "A4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "amy-winehouse__back-to-black/Verse/57",
+    "song": "amy-winehouse__back-to-black",
+    "section": "Verse",
+    "beat": 57,
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 57,
+      "duration": 6.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)",
+    "truthLetter": "A",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(hmin)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "amy-winehouse__back-to-black/Verse/64.5",
+    "song": "amy-winehouse__back-to-black",
+    "section": "Verse",
+    "beat": 64.5,
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 64.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V6(hmin)",
+    "truthLetter": "A/C#",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁶(hmin)",
+    "engLetter": "A/C#",
+    "engNotes": [
+      "C#4",
+      "E4",
+      "A4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "amy-winehouse__back-to-black/Verse/89",
+    "song": "amy-winehouse__back-to-black",
+    "section": "Verse",
+    "beat": 89,
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 89,
+      "duration": 6.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)",
+    "truthLetter": "A",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(hmin)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "amy-winehouse__back-to-black/Verse/96.5",
+    "song": "amy-winehouse__back-to-black",
+    "section": "Verse",
+    "beat": 96.5,
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 96.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V6(hmin)",
+    "truthLetter": "A/C#",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁶(hmin)",
+    "engLetter": "A/C#",
+    "engNotes": [
+      "C#4",
+      "E4",
+      "A4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "amy-winehouse__back-to-black/Verse/121",
+    "song": "amy-winehouse__back-to-black",
+    "section": "Verse",
+    "beat": 121,
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 121,
+      "duration": 6.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)",
+    "truthLetter": "A",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(hmin)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "amy-winehouse__back-to-black/Verse/128.5",
+    "song": "amy-winehouse__back-to-black",
+    "section": "Verse",
+    "beat": 128.5,
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 128.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V6(hmin)",
+    "truthLetter": "A/C#",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁶(hmin)",
+    "engLetter": "A/C#",
+    "engNotes": [
+      "C#4",
+      "E4",
+      "A4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ancient__willothewisp/Intro/13",
+    "song": "ancient__willothewisp",
+    "section": "Intro",
+    "beat": 13,
+    "key": {
+      "tonic": "G",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 13,
+      "duration": 12,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V6(hmin)",
+    "truthLetter": "D/F#",
+    "truthPcs": [
+      2,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁶(hmin)",
+    "engLetter": "D/F#",
+    "engNotes": [
+      "F#3",
+      "A3",
+      "D4"
+    ],
+    "engPcs": [
+      2,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ancient__willothewisp/Intro/61",
+    "song": "ancient__willothewisp",
+    "section": "Intro",
+    "beat": 61,
+    "key": {
+      "tonic": "G",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 61,
+      "duration": 12,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V6(hmin)",
+    "truthLetter": "D/F#",
+    "truthPcs": [
+      2,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁶(hmin)",
+    "engLetter": "D/F#",
+    "engNotes": [
+      "F#3",
+      "A3",
+      "D4"
+    ],
+    "engPcs": [
+      2,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ancient__willothewisp/Intro/85",
+    "song": "ancient__willothewisp",
+    "section": "Intro",
+    "beat": 85,
+    "key": {
+      "tonic": "G",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 85,
+      "duration": 12,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "#vii°43(hmin)",
+    "truthLetter": "f#°7/C",
+    "truthPcs": [
+      0,
+      3,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♯viiø⁴³(hmin)",
+    "engLetter": "F#°7/C",
+    "engNotes": [
+      "C4",
+      "Eb4",
+      "F#4",
+      "A4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=2",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ancient__willothewisp/Intro/101",
+    "song": "ancient__willothewisp",
+    "section": "Intro",
+    "beat": 101,
+    "key": {
+      "tonic": "G",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 101,
+      "duration": 3,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)",
+    "truthLetter": "D",
+    "truthPcs": [
+      2,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(hmin)",
+    "engLetter": "D",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3"
+    ],
+    "engPcs": [
+      2,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "billy-joel__piano-man/Instrumental Intro/12",
+    "song": "billy-joel__piano-man",
+    "section": "Instrumental Intro",
+    "beat": 12,
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 12,
+      "duration": 13,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "ii°(add6)(hmin)",
+    "truthLetter": "d°(add6)",
+    "truthPcs": [
+      2,
+      5,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii°(add6)(hmin)",
+    "engLetter": "D°",
+    "engNotes": [
+      "D3",
+      "F3",
+      "Ab3",
+      "B3"
+    ],
+    "engPcs": [
+      2,
+      5,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "duke-ellington__in-a-sentimental-mood/Verse/3",
+    "song": "duke-ellington__in-a-sentimental-mood",
+    "section": "Verse",
+    "beat": 3,
+    "key": {
+      "tonic": "Bb",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 3,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i△7(hmin)",
+    "truthLetter": "bbmmaj7",
+    "truthPcs": [
+      1,
+      5,
+      9,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i△⁷(hmin)",
+    "engLetter": "Bbmmaj7",
+    "engNotes": [
+      "Bb3",
+      "Db4",
+      "F4",
+      "A4"
+    ],
+    "engPcs": [
+      1,
+      5,
+      9,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "duke-ellington__in-a-sentimental-mood/Verse/16",
+    "song": "duke-ellington__in-a-sentimental-mood",
+    "section": "Verse",
+    "beat": 16,
+    "key": {
+      "tonic": "Bb",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 16,
+      "duration": 1,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(hmin)",
+    "truthLetter": "F7",
+    "truthPcs": [
+      0,
+      3,
+      5,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(hmin)",
+    "engLetter": "F7",
+    "engNotes": [
+      "F3",
+      "A3",
+      "C4",
+      "Eb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "eagles__hotel-california/Verse/5",
+    "song": "eagles__hotel-california",
+    "section": "Verse",
+    "beat": 5,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 5,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(hmin)",
+    "truthLetter": "F#7",
+    "truthPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(hmin)",
+    "engLetter": "F#7",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "eagles__hotel-california/Verse/29",
+    "song": "eagles__hotel-california",
+    "section": "Verse",
+    "beat": 29,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 29,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(hmin)",
+    "truthLetter": "F#7",
+    "truthPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(hmin)",
+    "engLetter": "F#7",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "eagles__hotel-california/Chorus/9",
+    "song": "eagles__hotel-california",
+    "section": "Chorus",
+    "beat": 9,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 9,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(hmin)",
+    "truthLetter": "F#7",
+    "truthPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(hmin)",
+    "engLetter": "F#7",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "eagles__hotel-california/Chorus/29",
+    "song": "eagles__hotel-california",
+    "section": "Chorus",
+    "beat": 29,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 29,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(hmin)",
+    "truthLetter": "F#7",
+    "truthPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(hmin)",
+    "engLetter": "F#7",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "eagles__hotel-california/Outro/13",
+    "song": "eagles__hotel-california",
+    "section": "Outro",
+    "beat": 13,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 13,
+      "duration": 8,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(hmin)",
+    "truthLetter": "F#7",
+    "truthPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(hmin)",
+    "engLetter": "F#7",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "eagles__hotel-california/Outro/61",
+    "song": "eagles__hotel-california",
+    "section": "Outro",
+    "beat": 61,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 61,
+      "duration": 8,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(hmin)",
+    "truthLetter": "F#7",
+    "truthPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(hmin)",
+    "engLetter": "F#7",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "eagles__hotel-california/Outro/77",
+    "song": "eagles__hotel-california",
+    "section": "Outro",
+    "beat": 77,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 77,
+      "duration": 8,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(hmin)",
+    "truthLetter": "F#7",
+    "truthPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(hmin)",
+    "engLetter": "F#7",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "eagles__hotel-california/Outro/125",
+    "song": "eagles__hotel-california",
+    "section": "Outro",
+    "beat": 125,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 125,
+      "duration": 8,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(hmin)",
+    "truthLetter": "F#7",
+    "truthPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(hmin)",
+    "engLetter": "F#7",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "eagles__hotel-california/Outro/141",
+    "song": "eagles__hotel-california",
+    "section": "Outro",
+    "beat": 141,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 141,
+      "duration": 8,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(hmin)",
+    "truthLetter": "F#7",
+    "truthPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(hmin)",
+    "engLetter": "F#7",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "eagles__hotel-california/Outro/189",
+    "song": "eagles__hotel-california",
+    "section": "Outro",
+    "beat": 189,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 189,
+      "duration": 8,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(hmin)",
+    "truthLetter": "F#7",
+    "truthPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(hmin)",
+    "engLetter": "F#7",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "eagles__hotel-california/Outro/205",
+    "song": "eagles__hotel-california",
+    "section": "Outro",
+    "beat": 205,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 205,
+      "duration": 8,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(hmin)",
+    "truthLetter": "F#7",
+    "truthPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(hmin)",
+    "engLetter": "F#7",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "eagles__hotel-california/Outro/253",
+    "song": "eagles__hotel-california",
+    "section": "Outro",
+    "beat": 253,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 253,
+      "duration": 8,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(hmin)",
+    "truthLetter": "F#7",
+    "truthPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(hmin)",
+    "engLetter": "F#7",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "green-day__boulevard-of-broken-dreams/Chorus/29",
+    "song": "green-day__boulevard-of-broken-dreams",
+    "section": "Chorus",
+    "beat": 29,
+    "key": {
+      "tonic": "F",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 29,
+      "duration": 2.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)",
+    "truthLetter": "C",
+    "truthPcs": [
+      0,
+      4,
+      7
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(hmin)",
+    "engLetter": "C",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3"
+    ],
+    "engPcs": [
+      0,
+      4,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "green-day__boulevard-of-broken-dreams/Instrumental/31",
+    "song": "green-day__boulevard-of-broken-dreams",
+    "section": "Instrumental",
+    "beat": 31,
+    "key": {
+      "tonic": "F",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 31,
+      "duration": 4.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)",
+    "truthLetter": "C",
+    "truthPcs": [
+      0,
+      4,
+      7
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(hmin)",
+    "engLetter": "C",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3"
+    ],
+    "engPcs": [
+      0,
+      4,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "miles-davis__blue-in-green/Intro/7",
+    "song": "miles-davis__blue-in-green",
+    "section": "Intro",
+    "beat": 7,
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 7,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#5"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V+7(#5)(hmin)",
+    "truthLetter": "A+7+(#5)",
+    "truthPcs": [
+      1,
+      5,
+      7,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V+⁷(#5)(hmin)",
+    "engLetter": "A+7",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "F4",
+      "G4"
+    ],
+    "engPcs": [
+      1,
+      5,
+      7,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor",
+      "alterations=#5"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__good-4-u/Verse/29",
+    "song": "olivia-rodrigo__good-4-u",
+    "section": "Verse",
+    "beat": 29,
+    "key": {
+      "tonic": "F#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 29,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)",
+    "truthLetter": "C#",
+    "truthPcs": [
+      1,
+      5,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(hmin)",
+    "engLetter": "C#",
+    "engNotes": [
+      "C#3",
+      "E#3",
+      "G#3"
+    ],
+    "engPcs": [
+      1,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__good-4-u/Verse/61",
+    "song": "olivia-rodrigo__good-4-u",
+    "section": "Verse",
+    "beat": 61,
+    "key": {
+      "tonic": "F#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 61,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)",
+    "truthLetter": "C#",
+    "truthPcs": [
+      1,
+      5,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(hmin)",
+    "engLetter": "C#",
+    "engNotes": [
+      "C#3",
+      "E#3",
+      "G#3"
+    ],
+    "engPcs": [
+      1,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "red-hot-chili-peppers__under-the-bridge/Bridge/29",
+    "song": "red-hot-chili-peppers__under-the-bridge",
+    "section": "Bridge",
+    "beat": 29,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 29,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(hmin)",
+    "truthLetter": "E7",
+    "truthPcs": [
+      2,
+      4,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(hmin)",
+    "engLetter": "E7",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "D4"
+    ],
+    "engPcs": [
+      2,
+      4,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Chorus Lead-Out/13",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Chorus Lead-Out",
+    "beat": 13,
+    "key": {
+      "tonic": "G",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 13,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)(add4)",
+    "truthLetter": "D(add4)",
+    "truthPcs": [
+      2,
+      6,
+      7,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add4)(hmin)",
+    "engLetter": "D",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3",
+      "G3"
+    ],
+    "engPcs": [
+      2,
+      6,
+      7,
+      9
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Chorus Lead-Out/25",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Chorus Lead-Out",
+    "beat": 25,
+    "key": {
+      "tonic": "G",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 25,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)(add4)",
+    "truthLetter": "D(add4)",
+    "truthPcs": [
+      2,
+      6,
+      7,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add4)(hmin)",
+    "engLetter": "D",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3",
+      "G3"
+    ],
+    "engPcs": [
+      2,
+      6,
+      7,
+      9
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Chorus Lead-Out/37",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Chorus Lead-Out",
+    "beat": 37,
+    "key": {
+      "tonic": "G",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 37,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)(add4)",
+    "truthLetter": "D(add4)",
+    "truthPcs": [
+      2,
+      6,
+      7,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add4)(hmin)",
+    "engLetter": "D",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3",
+      "G3"
+    ],
+    "engPcs": [
+      2,
+      6,
+      7,
+      9
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Chorus Lead-Out/49",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Chorus Lead-Out",
+    "beat": 49,
+    "key": {
+      "tonic": "G",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 49,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)(add4)",
+    "truthLetter": "D(add4)",
+    "truthPcs": [
+      2,
+      6,
+      7,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add4)(hmin)",
+    "engLetter": "D",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3",
+      "G3"
+    ],
+    "engPcs": [
+      2,
+      6,
+      7,
+      9
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__while-my-guitar-gently-weeps/Intro/29",
+    "song": "the-beatles__while-my-guitar-gently-weeps",
+    "section": "Intro",
+    "beat": 29,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 29,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)",
+    "truthLetter": "E",
+    "truthPcs": [
+      4,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(hmin)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__while-my-guitar-gently-weeps/Verse/29",
+    "song": "the-beatles__while-my-guitar-gently-weeps",
+    "section": "Verse",
+    "beat": 29,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 29,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)",
+    "truthLetter": "E",
+    "truthPcs": [
+      4,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(hmin)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__while-my-guitar-gently-weeps/Solo/5",
+    "song": "the-beatles__while-my-guitar-gently-weeps",
+    "section": "Solo",
+    "beat": 5,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 5,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)",
+    "truthLetter": "E",
+    "truthPcs": [
+      4,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(hmin)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__while-my-guitar-gently-weeps/Solo/37",
+    "song": "the-beatles__while-my-guitar-gently-weeps",
+    "section": "Solo",
+    "beat": 37,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 37,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)",
+    "truthLetter": "E",
+    "truthPcs": [
+      4,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(hmin)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__while-my-guitar-gently-weeps/Solo/69",
+    "song": "the-beatles__while-my-guitar-gently-weeps",
+    "section": "Solo",
+    "beat": 69,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 69,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)",
+    "truthLetter": "E",
+    "truthPcs": [
+      4,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(hmin)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "thelonious-monk__round-midnight/Verse/1",
+    "song": "thelonious-monk__round-midnight",
+    "section": "Verse",
+    "beat": 1,
+    "key": {
+      "tonic": "D#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 1,
+      "duration": 2,
+      "type": 7,
+      "inversion": 3,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i△42(hmin)",
+    "truthLetter": "d#m/Cx",
+    "truthPcs": [
+      2,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": [
+      "A#2",
+      "A#3",
+      "D#3",
+      "E#3"
+    ],
+    "pianoPcs": [
+      3,
+      5,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i△⁴²(hmin)",
+    "engLetter": "D#mmaj7/D",
+    "engNotes": [
+      "C##4",
+      "D#4",
+      "F#4",
+      "A#4"
+    ],
+    "engPcs": [
+      2,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=3",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  }
+]

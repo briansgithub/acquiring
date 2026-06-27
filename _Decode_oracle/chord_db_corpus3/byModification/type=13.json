@@ -1,0 +1,3705 @@
+[
+  {
+    "id": "alicia-keys__3-hour-drive-ft-sampha/Verse and Pre-Chorus/1",
+    "song": "alicia-keys__3-hour-drive-ft-sampha",
+    "section": "Verse and Pre-Chorus",
+    "beat": 1,
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 1,
+      "duration": 4,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VI△13",
+    "truthLetter": "Abmaj13(#11)",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VI△¹³(#11)",
+    "engLetter": "Abmaj13",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4",
+      "G4",
+      "Bb4",
+      "D5",
+      "F5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "alicia-keys__3-hour-drive-ft-sampha/Verse and Pre-Chorus/17",
+    "song": "alicia-keys__3-hour-drive-ft-sampha",
+    "section": "Verse and Pre-Chorus",
+    "beat": 17,
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 17,
+      "duration": 4,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VI△13",
+    "truthLetter": "Abmaj13(#11)",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": [
+      "C3",
+      "Eb3",
+      "F3",
+      "G3"
+    ],
+    "pianoPcs": [
+      0,
+      3,
+      5,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "VI△¹³(#11)",
+    "engLetter": "Abmaj13",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4",
+      "G4",
+      "Bb4",
+      "D5",
+      "F5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "amy-winehouse__back-to-black/Verse/31.5",
+    "song": "amy-winehouse__back-to-black",
+    "section": "Verse",
+    "beat": 31.5,
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 31.5,
+      "duration": 1,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b9"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VII13(b9)",
+    "truthLetter": "C13(b9)",
+    "truthPcs": [
+      0,
+      1,
+      4,
+      5,
+      7,
+      9,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VII¹³(b9)",
+    "engLetter": "C13",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3",
+      "Bb3",
+      "Db4",
+      "F4",
+      "A4"
+    ],
+    "engPcs": [
+      0,
+      1,
+      4,
+      5,
+      7,
+      9,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "alterations=b9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "amy-winehouse__back-to-black/Verse/63.5",
+    "song": "amy-winehouse__back-to-black",
+    "section": "Verse",
+    "beat": 63.5,
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 63.5,
+      "duration": 1,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b9"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VII13(b9)",
+    "truthLetter": "C13(b9)",
+    "truthPcs": [
+      0,
+      1,
+      4,
+      5,
+      7,
+      9,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VII¹³(b9)",
+    "engLetter": "C13",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3",
+      "Bb3",
+      "Db4",
+      "F4",
+      "A4"
+    ],
+    "engPcs": [
+      0,
+      1,
+      4,
+      5,
+      7,
+      9,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "alterations=b9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "amy-winehouse__back-to-black/Verse/95.5",
+    "song": "amy-winehouse__back-to-black",
+    "section": "Verse",
+    "beat": 95.5,
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 95.5,
+      "duration": 1,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b9"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VII13(b9)",
+    "truthLetter": "C13(b9)",
+    "truthPcs": [
+      0,
+      1,
+      4,
+      5,
+      7,
+      9,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VII¹³(b9)",
+    "engLetter": "C13",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3",
+      "Bb3",
+      "Db4",
+      "F4",
+      "A4"
+    ],
+    "engPcs": [
+      0,
+      1,
+      4,
+      5,
+      7,
+      9,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "alterations=b9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "amy-winehouse__back-to-black/Verse/127.5",
+    "song": "amy-winehouse__back-to-black",
+    "section": "Verse",
+    "beat": 127.5,
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 127.5,
+      "duration": 1,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b9"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VII13(b9)",
+    "truthLetter": "C13(b9)",
+    "truthPcs": [
+      0,
+      1,
+      4,
+      5,
+      7,
+      9,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VII¹³(b9)",
+    "engLetter": "C13",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3",
+      "Bb3",
+      "Db4",
+      "F4",
+      "A4"
+    ],
+    "engPcs": [
+      0,
+      1,
+      4,
+      5,
+      7,
+      9,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "alterations=b9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "amy-winehouse__back-to-black/Instrumental/31.5",
+    "song": "amy-winehouse__back-to-black",
+    "section": "Instrumental",
+    "beat": 31.5,
+    "key": {
+      "tonic": "D",
+      "scale": "harmonicMinor"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 31.5,
+      "duration": 1,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b9"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "minor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bVII13(b9)(min)",
+    "truthLetter": "C13(b9)",
+    "truthPcs": [
+      0,
+      1,
+      4,
+      5,
+      7,
+      9,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭VII¹³(b9)(min)",
+    "engLetter": "C13",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3",
+      "Bb3",
+      "Db4",
+      "F4",
+      "A4"
+    ],
+    "engPcs": [
+      0,
+      1,
+      4,
+      5,
+      7,
+      9,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=minor",
+      "alterations=b9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Chorus/7",
+    "song": "john-coltrane__giant-steps",
+    "section": "Chorus",
+    "beat": 7,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 7,
+      "duration": 1.5,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "Bb13",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": [
+      "G3"
+    ],
+    "pianoPcs": [
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "Bb13",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4",
+      "C5",
+      "Eb5",
+      "G5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Chorus/19",
+    "song": "john-coltrane__giant-steps",
+    "section": "Chorus",
+    "beat": 19,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 19,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "Bb13",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": [
+      "Bb3"
+    ],
+    "pianoPcs": [
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "Bb13",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4",
+      "C5",
+      "Eb5",
+      "G5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Chorus/47",
+    "song": "john-coltrane__giant-steps",
+    "section": "Chorus",
+    "beat": 47,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 47,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "F#13",
+    "truthPcs": [
+      1,
+      3,
+      4,
+      6,
+      8,
+      10,
+      11
+    ],
+    "pianoNotes": [
+      "D#4",
+      "F#4"
+    ],
+    "pianoPcs": [
+      3,
+      6
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "F#13",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4",
+      "E4",
+      "G#4",
+      "B4",
+      "D#5"
+    ],
+    "engPcs": [
+      1,
+      3,
+      4,
+      6,
+      8,
+      10,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Chorus/55",
+    "song": "john-coltrane__giant-steps",
+    "section": "Chorus",
+    "beat": 55,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 55,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "Bb13",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": [
+      "Bb4",
+      "G4"
+    ],
+    "pianoPcs": [
+      7,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "Bb13",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4",
+      "C5",
+      "Eb5",
+      "G5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 1/11",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 1",
+    "beat": 11,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 11,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "Bb13",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": [
+      "Ab2",
+      "C3",
+      "F2",
+      "G2"
+    ],
+    "pianoPcs": [
+      0,
+      5,
+      7,
+      8
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "Bb13",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4",
+      "C5",
+      "Eb5",
+      "G5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 1/23",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 1",
+    "beat": 23,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 23,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "Bb13",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": [
+      "Ab3",
+      "C4",
+      "D3",
+      "F3"
+    ],
+    "pianoPcs": [
+      0,
+      2,
+      5,
+      8
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "Bb13",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4",
+      "C5",
+      "Eb5",
+      "G5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 1/51",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 1",
+    "beat": 51,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 51,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "F#13",
+    "truthPcs": [
+      1,
+      3,
+      4,
+      6,
+      8,
+      10,
+      11
+    ],
+    "pianoNotes": [
+      "A#2",
+      "F#2",
+      "G#2"
+    ],
+    "pianoPcs": [
+      6,
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "F#13",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4",
+      "E4",
+      "G#4",
+      "B4",
+      "D#5"
+    ],
+    "engPcs": [
+      1,
+      3,
+      4,
+      6,
+      8,
+      10,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 1/59",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 1",
+    "beat": 59,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 59,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "Bb13",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": [
+      "D3",
+      "F3",
+      "G3",
+      "Gb3"
+    ],
+    "pianoPcs": [
+      2,
+      5,
+      6,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "Bb13",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4",
+      "C5",
+      "Eb5",
+      "G5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 1/75",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 1",
+    "beat": 75,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 75,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "Bb13",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": [
+      "A3",
+      "Ab3",
+      "Bb3",
+      "C4"
+    ],
+    "pianoPcs": [
+      0,
+      8,
+      9,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "Bb13",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4",
+      "C5",
+      "Eb5",
+      "G5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 1/87",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 1",
+    "beat": 87,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 87,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "Bb13",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": [
+      "Ab3",
+      "C4",
+      "D3",
+      "F3"
+    ],
+    "pianoPcs": [
+      0,
+      2,
+      5,
+      8
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "Bb13",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4",
+      "C5",
+      "Eb5",
+      "G5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 1/115",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 1",
+    "beat": 115,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 115,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "F#13",
+    "truthPcs": [
+      1,
+      3,
+      4,
+      6,
+      8,
+      10,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "F#13",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4",
+      "E4",
+      "G#4",
+      "B4",
+      "D#5"
+    ],
+    "engPcs": [
+      1,
+      3,
+      4,
+      6,
+      8,
+      10,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 1/123",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 1",
+    "beat": 123,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 123,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "Bb13",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": [
+      "C3",
+      "D3",
+      "F3",
+      "G3"
+    ],
+    "pianoPcs": [
+      0,
+      2,
+      5,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "Bb13",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4",
+      "C5",
+      "Eb5",
+      "G5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 1/139",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 1",
+    "beat": 139,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 139,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "Bb13",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": [
+      "Ab2",
+      "C3",
+      "F2",
+      "G2"
+    ],
+    "pianoPcs": [
+      0,
+      5,
+      7,
+      8
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "Bb13",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4",
+      "C5",
+      "Eb5",
+      "G5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 1/155",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 1",
+    "beat": 155,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 155,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "F#13",
+    "truthPcs": [
+      1,
+      3,
+      4,
+      6,
+      8,
+      10,
+      11
+    ],
+    "pianoNotes": [
+      "A#3",
+      "E3",
+      "Fx3",
+      "G#3"
+    ],
+    "pianoPcs": [
+      4,
+      7,
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "F#13",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4",
+      "E4",
+      "G#4",
+      "B4",
+      "D#5"
+    ],
+    "engPcs": [
+      1,
+      3,
+      4,
+      6,
+      8,
+      10,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 1/163",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 1",
+    "beat": 163,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 163,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "Bb13",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": [
+      "C4",
+      "D3",
+      "D4"
+    ],
+    "pianoPcs": [
+      0,
+      2
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "Bb13",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4",
+      "C5",
+      "Eb5",
+      "G5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 1/171",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 1",
+    "beat": 171,
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 171,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#5"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V+13(#5)",
+    "truthLetter": "D+13+(#5)",
+    "truthPcs": [
+      0,
+      2,
+      4,
+      6,
+      7,
+      10,
+      11
+    ],
+    "pianoNotes": [
+      "C4"
+    ],
+    "pianoPcs": [
+      0
+    ],
+    "pianoValidated": false,
+    "engRoman": "V+¹³(#5)",
+    "engLetter": "D+13",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "Bb3",
+      "C4",
+      "E4",
+      "G4",
+      "B4"
+    ],
+    "engPcs": [
+      0,
+      2,
+      4,
+      6,
+      7,
+      10,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "alterations=#5"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 1/179",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 1",
+    "beat": 179,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 179,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "F#13",
+    "truthPcs": [
+      1,
+      3,
+      4,
+      6,
+      8,
+      10,
+      11
+    ],
+    "pianoNotes": [
+      "A#2",
+      "F#2",
+      "G#2"
+    ],
+    "pianoPcs": [
+      6,
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "F#13",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4",
+      "E4",
+      "G#4",
+      "B4",
+      "D#5"
+    ],
+    "engPcs": [
+      1,
+      3,
+      4,
+      6,
+      8,
+      10,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 1/187",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 1",
+    "beat": 187,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 187,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "Bb13",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": [
+      "C3",
+      "D3",
+      "Eb3",
+      "F3"
+    ],
+    "pianoPcs": [
+      0,
+      2,
+      3,
+      5
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "Bb13",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4",
+      "C5",
+      "Eb5",
+      "G5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 1/195",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 1",
+    "beat": 195,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 195,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "F#13",
+    "truthPcs": [
+      1,
+      3,
+      4,
+      6,
+      8,
+      10,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "F#13",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4",
+      "E4",
+      "G#4",
+      "B4",
+      "D#5"
+    ],
+    "engPcs": [
+      1,
+      3,
+      4,
+      6,
+      8,
+      10,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 3/7",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 3",
+    "beat": 7,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 7,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "Bb13",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": [
+      "Ab2",
+      "C3",
+      "F2",
+      "G2"
+    ],
+    "pianoPcs": [
+      0,
+      5,
+      7,
+      8
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "Bb13",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4",
+      "C5",
+      "Eb5",
+      "G5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 3/19",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 3",
+    "beat": 19,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 19,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "Bb13",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": [
+      "Ab3",
+      "C4",
+      "D3",
+      "F3"
+    ],
+    "pianoPcs": [
+      0,
+      2,
+      5,
+      8
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "Bb13",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4",
+      "C5",
+      "Eb5",
+      "G5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 3/31",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 3",
+    "beat": 31,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 31,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "Bb13",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": [
+      "Ab3",
+      "Bb3",
+      "F3",
+      "G3"
+    ],
+    "pianoPcs": [
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "Bb13",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4",
+      "C5",
+      "Eb5",
+      "G5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 3/55",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 3",
+    "beat": 55,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 55,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "Bb13",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": [
+      "Ab3"
+    ],
+    "pianoPcs": [
+      8
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "Bb13",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4",
+      "C5",
+      "Eb5",
+      "G5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 3/71",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 3",
+    "beat": 71,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 71,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "Bb13",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": [
+      "Ab2",
+      "C3",
+      "F2",
+      "G2"
+    ],
+    "pianoPcs": [
+      0,
+      5,
+      7,
+      8
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "Bb13",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4",
+      "C5",
+      "Eb5",
+      "G5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 3/83",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 3",
+    "beat": 83,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 83,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "Bb13",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": [
+      "Ab3",
+      "Bb3",
+      "C4"
+    ],
+    "pianoPcs": [
+      0,
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "Bb13",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4",
+      "C5",
+      "Eb5",
+      "G5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 3/95",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 3",
+    "beat": 95,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 95,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "Bb13",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": [
+      "C3",
+      "D3",
+      "F3",
+      "G3"
+    ],
+    "pianoPcs": [
+      0,
+      2,
+      5,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "Bb13",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4",
+      "C5",
+      "Eb5",
+      "G5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 3/119",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 3",
+    "beat": 119,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 119,
+      "duration": 2,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "Bb13",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": [
+      "Ab3",
+      "Bb3"
+    ],
+    "pianoPcs": [
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "Bb13",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4",
+      "C5",
+      "Eb5",
+      "G5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "marvin-gaye__whats-going-on/Verse/45",
+    "song": "marvin-gaye__whats-going-on",
+    "section": "Verse",
+    "beat": 45,
+    "key": {
+      "tonic": "E",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 45,
+      "duration": 4,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "B13",
+    "truthPcs": [
+      1,
+      3,
+      4,
+      6,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "B13",
+    "engNotes": [
+      "B3",
+      "D#4",
+      "F#4",
+      "A4",
+      "C#5",
+      "E5",
+      "G#5"
+    ],
+    "engPcs": [
+      1,
+      3,
+      4,
+      6,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "marvin-gaye__whats-going-on/Pre-Chorus and Chorus/23",
+    "song": "marvin-gaye__whats-going-on",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 23,
+    "key": {
+      "tonic": "E",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 23,
+      "duration": 0.75,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "B13",
+    "truthPcs": [
+      1,
+      3,
+      4,
+      6,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "B13",
+    "engNotes": [
+      "B3",
+      "D#4",
+      "F#4",
+      "A4",
+      "C#5",
+      "E5",
+      "G#5"
+    ],
+    "engPcs": [
+      1,
+      3,
+      4,
+      6,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "marvin-gaye__whats-going-on/Bridge/45",
+    "song": "marvin-gaye__whats-going-on",
+    "section": "Bridge",
+    "beat": 45,
+    "key": {
+      "tonic": "E",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 45,
+      "duration": 4,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13",
+    "truthLetter": "B13",
+    "truthPcs": [
+      1,
+      3,
+      4,
+      6,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V¹³",
+    "engLetter": "B13",
+    "engNotes": [
+      "B3",
+      "D#4",
+      "F#4",
+      "A4",
+      "C#5",
+      "E5",
+      "G#5"
+    ],
+    "engPcs": [
+      1,
+      3,
+      4,
+      6,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__lacy/Chorus/65",
+    "song": "olivia-rodrigo__lacy",
+    "section": "Chorus",
+    "beat": 65,
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 65,
+      "duration": 4,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VI△13",
+    "truthLetter": "Abmaj13(#11)",
+    "truthPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VI△¹³(#11)",
+    "engLetter": "Abmaj13",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4",
+      "G4",
+      "Bb4",
+      "D5",
+      "F5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__lacy/Chorus/69",
+    "song": "olivia-rodrigo__lacy",
+    "section": "Chorus",
+    "beat": 69,
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 69,
+      "duration": 8,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": [
+        -1,
+        1,
+        3,
+        5,
+        6,
+        8,
+        10
+      ],
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi13(bor)",
+    "truthLetter": "abm13",
+    "truthPcs": [
+      1,
+      3,
+      5,
+      6,
+      8,
+      10,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭vi¹³(bor)",
+    "engLetter": "Abmaj13",
+    "engNotes": [
+      "Ab3",
+      "Cb4",
+      "Eb4",
+      "Gb4",
+      "Bb4",
+      "Db5",
+      "F5"
+    ],
+    "engPcs": [
+      1,
+      3,
+      5,
+      6,
+      8,
+      10,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=no",
+      "borrowed=custom-array"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__isnt-she-lovely/Intro/181",
+    "song": "stevie-wonder__isnt-she-lovely",
+    "section": "Intro",
+    "beat": 181,
+    "key": {
+      "tonic": "E",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 181,
+      "duration": 12,
+      "type": 13,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13/V",
+    "truthLetter": "F#13",
+    "truthPcs": [
+      1,
+      3,
+      4,
+      6,
+      8,
+      10,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V¹³/V",
+    "engLetter": "F#13",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4",
+      "E4",
+      "G#4",
+      "B4",
+      "D#5"
+    ],
+    "engPcs": [
+      1,
+      3,
+      4,
+      6,
+      8,
+      10,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=yes",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__isnt-she-lovely/Chorus/133",
+    "song": "stevie-wonder__isnt-she-lovely",
+    "section": "Chorus",
+    "beat": 133,
+    "key": {
+      "tonic": "E",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 133,
+      "duration": 12,
+      "type": 13,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V13/V",
+    "truthLetter": "F#13",
+    "truthPcs": [
+      1,
+      3,
+      4,
+      6,
+      8,
+      10,
+      11
+    ],
+    "pianoNotes": [
+      "A3",
+      "C#3",
+      "G#3"
+    ],
+    "pianoPcs": [
+      1,
+      8,
+      9
+    ],
+    "pianoValidated": false,
+    "engRoman": "V¹³/V",
+    "engLetter": "F#13",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4",
+      "E4",
+      "G#4",
+      "B4",
+      "D#5"
+    ],
+    "engPcs": [
+      1,
+      3,
+      4,
+      6,
+      8,
+      10,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=yes",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  }
+]

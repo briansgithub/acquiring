@@ -1,0 +1,512 @@
+[
+  {
+    "id": "earth-wind-and-fire__september/Verse/29",
+    "song": "earth-wind-and-fire__september",
+    "section": "Verse",
+    "beat": 29,
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 29,
+      "duration": 6.5,
+      "type": 9,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V9(add13)sus4/IV",
+    "truthLetter": "A9(add13)sus4",
+    "truthPcs": [
+      2,
+      4,
+      6,
+      7,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁹(add13)(add13)sus4/IV",
+    "engLetter": "A9sus4",
+    "engNotes": [
+      "A3",
+      "D4",
+      "E4",
+      "G4",
+      "B4",
+      "F#5"
+    ],
+    "engPcs": [
+      2,
+      4,
+      6,
+      7,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=yes",
+      "borrowed=none",
+      "suspensions=4",
+      "adds=6"
+    ],
+    "compositeKey": "adds=6+suspensions=4"
+  },
+  {
+    "id": "earth-wind-and-fire__september/Verse/61",
+    "song": "earth-wind-and-fire__september",
+    "section": "Verse",
+    "beat": 61,
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 61,
+      "duration": 8,
+      "type": 9,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V9(add13)sus4/IV",
+    "truthLetter": "A9(add13)sus4",
+    "truthPcs": [
+      2,
+      4,
+      6,
+      7,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁹(add13)(add13)sus4/IV",
+    "engLetter": "A9sus4",
+    "engNotes": [
+      "A3",
+      "D4",
+      "E4",
+      "G4",
+      "B4",
+      "F#5"
+    ],
+    "engPcs": [
+      2,
+      4,
+      6,
+      7,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=yes",
+      "borrowed=none",
+      "suspensions=4",
+      "adds=6"
+    ],
+    "compositeKey": "adds=6+suspensions=4"
+  },
+  {
+    "id": "olivia-rodrigo__obsessed/Bridge/31",
+    "song": "olivia-rodrigo__obsessed",
+    "section": "Bridge",
+    "beat": 31,
+    "key": {
+      "tonic": "F",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 31,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VIIsus4(add6)",
+    "truthLetter": "Eb(add6)sus4",
+    "truthPcs": [
+      0,
+      3,
+      8
+    ],
+    "pianoNotes": [
+      "Bb3",
+      "C4"
+    ],
+    "pianoPcs": [
+      0,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "VII(add6)sus4",
+    "engLetter": "Ebsus4",
+    "engNotes": [
+      "Eb3",
+      "Ab3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "adds=6"
+    ],
+    "compositeKey": "adds=6+suspensions=4"
+  },
+  {
+    "id": "olivia-rodrigo__obsessed/Bridge/31.5",
+    "song": "olivia-rodrigo__obsessed",
+    "section": "Bridge",
+    "beat": 31.5,
+    "key": {
+      "tonic": "F",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 31.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VIIsus4(add6)",
+    "truthLetter": "Eb(add6)sus4",
+    "truthPcs": [
+      0,
+      3,
+      8
+    ],
+    "pianoNotes": [
+      "Bb3",
+      "C4"
+    ],
+    "pianoPcs": [
+      0,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "VII(add6)sus4",
+    "engLetter": "Ebsus4",
+    "engNotes": [
+      "Eb3",
+      "Ab3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "adds=6"
+    ],
+    "compositeKey": "adds=6+suspensions=4"
+  },
+  {
+    "id": "olivia-rodrigo__obsessed/Bridge/32",
+    "song": "olivia-rodrigo__obsessed",
+    "section": "Bridge",
+    "beat": 32,
+    "key": {
+      "tonic": "F",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 32,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VIIsus4(add6)",
+    "truthLetter": "Eb(add6)sus4",
+    "truthPcs": [
+      0,
+      3,
+      8
+    ],
+    "pianoNotes": [
+      "Bb3",
+      "C4"
+    ],
+    "pianoPcs": [
+      0,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "VII(add6)sus4",
+    "engLetter": "Ebsus4",
+    "engNotes": [
+      "Eb3",
+      "Ab3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "adds=6"
+    ],
+    "compositeKey": "adds=6+suspensions=4"
+  },
+  {
+    "id": "olivia-rodrigo__obsessed/Bridge/32.5",
+    "song": "olivia-rodrigo__obsessed",
+    "section": "Bridge",
+    "beat": 32.5,
+    "key": {
+      "tonic": "F",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 32.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VIIsus4(add6)",
+    "truthLetter": "Eb(add6)sus4",
+    "truthPcs": [
+      0,
+      3,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VII(add6)sus4",
+    "engLetter": "Ebsus4",
+    "engNotes": [
+      "Eb3",
+      "Ab3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "adds=6"
+    ],
+    "compositeKey": "adds=6+suspensions=4"
+  }
+]

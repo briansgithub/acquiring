@@ -1,0 +1,7789 @@
+[
+  {
+    "id": "adele__someone-like-you/Chorus/41",
+    "song": "adele__someone-like-you",
+    "section": "Chorus",
+    "beat": 41,
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 41,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi(add4)",
+    "truthLetter": "f#m(add4)",
+    "truthPcs": [
+      1,
+      6,
+      9,
+      11
+    ],
+    "pianoNotes": [
+      "C#4"
+    ],
+    "pianoPcs": [
+      1
+    ],
+    "pianoValidated": false,
+    "engRoman": "vi(add4)",
+    "engLetter": "F#m",
+    "engNotes": [
+      "F#3",
+      "A3",
+      "C#4",
+      "B3"
+    ],
+    "engPcs": [
+      1,
+      6,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ariana-grande__7-rings/Bridge/41",
+    "song": "ariana-grande__7-rings",
+    "section": "Bridge",
+    "beat": 41,
+    "key": {
+      "tonic": "C#",
+      "scale": "harmonicMinor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 41,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VI(add4)",
+    "truthLetter": "A(add4)",
+    "truthPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "pianoNotes": [
+      "C#4",
+      "G#3"
+    ],
+    "pianoPcs": [
+      1,
+      8
+    ],
+    "pianoValidated": false,
+    "engRoman": "VI(add4)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4",
+      "D4"
+    ],
+    "engPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ariana-grande__7-rings/Bridge/45",
+    "song": "ariana-grande__7-rings",
+    "section": "Bridge",
+    "beat": 45,
+    "key": {
+      "tonic": "C#",
+      "scale": "harmonicMinor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 45,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VI(add4)",
+    "truthLetter": "A(add4)",
+    "truthPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VI(add4)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4",
+      "D4"
+    ],
+    "engPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ariana-grande__7-rings/Bridge/57",
+    "song": "ariana-grande__7-rings",
+    "section": "Bridge",
+    "beat": 57,
+    "key": {
+      "tonic": "C#",
+      "scale": "harmonicMinor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 57,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(add11)",
+    "truthLetter": "G#7(add11)",
+    "truthPcs": [
+      0,
+      1,
+      3,
+      6,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(add11)(add11)",
+    "engLetter": "G#7",
+    "engNotes": [
+      "G#3",
+      "B#4",
+      "D#4",
+      "F#4",
+      "C#5"
+    ],
+    "engPcs": [
+      0,
+      1,
+      3,
+      6,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ariana-grande__7-rings/Bridge/61",
+    "song": "ariana-grande__7-rings",
+    "section": "Bridge",
+    "beat": 61,
+    "key": {
+      "tonic": "C#",
+      "scale": "harmonicMinor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 61,
+      "duration": 4,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V6(add11)5",
+    "truthLetter": "G#7(add11)/B#",
+    "truthPcs": [
+      0,
+      1,
+      3,
+      6,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁶⁵(add11)(add11)",
+    "engLetter": "G#7/B#",
+    "engNotes": [
+      "B#4",
+      "D#4",
+      "F#4",
+      "C#5",
+      "G#4"
+    ],
+    "engPcs": [
+      0,
+      1,
+      3,
+      6,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "coldplay__clocks/Verse/5",
+    "song": "coldplay__clocks",
+    "section": "Verse",
+    "beat": 5,
+    "key": {
+      "tonic": "Eb",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 5,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "v(add4)",
+    "truthLetter": "bbm(add4)",
+    "truthPcs": [
+      1,
+      3,
+      5,
+      10
+    ],
+    "pianoNotes": [
+      "Bb2",
+      "C3",
+      "Db3"
+    ],
+    "pianoPcs": [
+      0,
+      1,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "v(add4)",
+    "engLetter": "Bbm",
+    "engNotes": [
+      "Bb3",
+      "Db4",
+      "F4",
+      "Eb4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "coldplay__clocks/Verse/21",
+    "song": "coldplay__clocks",
+    "section": "Verse",
+    "beat": 21,
+    "key": {
+      "tonic": "Eb",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 21,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "v(add4)",
+    "truthLetter": "bbm(add4)",
+    "truthPcs": [
+      1,
+      3,
+      5,
+      10
+    ],
+    "pianoNotes": [
+      "Bb2",
+      "C3",
+      "Db3"
+    ],
+    "pianoPcs": [
+      0,
+      1,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "v(add4)",
+    "engLetter": "Bbm",
+    "engNotes": [
+      "Bb3",
+      "Db4",
+      "F4",
+      "Eb4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "coldplay__clocks/Verse/37",
+    "song": "coldplay__clocks",
+    "section": "Verse",
+    "beat": 37,
+    "key": {
+      "tonic": "Eb",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 37,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "v(add4)",
+    "truthLetter": "bbm(add4)",
+    "truthPcs": [
+      1,
+      3,
+      5,
+      10
+    ],
+    "pianoNotes": [
+      "Bb2",
+      "C3",
+      "Db3"
+    ],
+    "pianoPcs": [
+      0,
+      1,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "v(add4)",
+    "engLetter": "Bbm",
+    "engNotes": [
+      "Bb3",
+      "Db4",
+      "F4",
+      "Eb4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "coldplay__clocks/Verse/57",
+    "song": "coldplay__clocks",
+    "section": "Verse",
+    "beat": 57,
+    "key": {
+      "tonic": "Eb",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 57,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "v(add4)",
+    "truthLetter": "bbm(add4)",
+    "truthPcs": [
+      1,
+      3,
+      5,
+      10
+    ],
+    "pianoNotes": [
+      "Bb2",
+      "Db3"
+    ],
+    "pianoPcs": [
+      1,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "v(add4)",
+    "engLetter": "Bbm",
+    "engNotes": [
+      "Bb3",
+      "Db4",
+      "F4",
+      "Eb4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "coldplay__the-scientist/Chorus/36.5",
+    "song": "coldplay__the-scientist",
+    "section": "Chorus",
+    "beat": 36.5,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 36.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(add4)",
+    "truthLetter": "C(add4)",
+    "truthPcs": [
+      0,
+      4,
+      5,
+      7
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add4)",
+    "engLetter": "C",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3",
+      "F3"
+    ],
+    "engPcs": [
+      0,
+      4,
+      5,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "dionne-warwick__walk-on-by/Chorus/1",
+    "song": "dionne-warwick__walk-on-by",
+    "section": "Chorus",
+    "beat": 1,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 1,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV△7(add11)",
+    "truthLetter": "Bbmaj7(add11)",
+    "truthPcs": [
+      2,
+      3,
+      5,
+      9,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV△⁷(add11)(add11)",
+    "engLetter": "Bbmaj7",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "A4",
+      "Eb5"
+    ],
+    "engPcs": [
+      2,
+      3,
+      5,
+      9,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "dionne-warwick__walk-on-by/Chorus/9",
+    "song": "dionne-warwick__walk-on-by",
+    "section": "Chorus",
+    "beat": 9,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 9,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV△7(add11)",
+    "truthLetter": "Bbmaj7(add11)",
+    "truthPcs": [
+      2,
+      3,
+      5,
+      9,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV△⁷(add11)(add11)",
+    "engLetter": "Bbmaj7",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "A4",
+      "Eb5"
+    ],
+    "engPcs": [
+      2,
+      3,
+      5,
+      9,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "dionne-warwick__walk-on-by/Chorus/17",
+    "song": "dionne-warwick__walk-on-by",
+    "section": "Chorus",
+    "beat": 17,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 17,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV△7(add11)",
+    "truthLetter": "Bbmaj7(add11)",
+    "truthPcs": [
+      2,
+      3,
+      5,
+      9,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV△⁷(add11)(add11)",
+    "engLetter": "Bbmaj7",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "A4",
+      "Eb5"
+    ],
+    "engPcs": [
+      2,
+      3,
+      5,
+      9,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "dionne-warwick__walk-on-by/Chorus/25",
+    "song": "dionne-warwick__walk-on-by",
+    "section": "Chorus",
+    "beat": 25,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 25,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV△7(add11)",
+    "truthLetter": "Bbmaj7(add11)",
+    "truthPcs": [
+      2,
+      3,
+      5,
+      9,
+      10
+    ],
+    "pianoNotes": [
+      "Ab3",
+      "F3",
+      "G3"
+    ],
+    "pianoPcs": [
+      5,
+      7,
+      8
+    ],
+    "pianoValidated": false,
+    "engRoman": "IV△⁷(add11)(add11)",
+    "engLetter": "Bbmaj7",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "A4",
+      "Eb5"
+    ],
+    "engPcs": [
+      2,
+      3,
+      5,
+      9,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "elton-john__your-song/Verse/21",
+    "song": "elton-john__your-song",
+    "section": "Verse",
+    "beat": 21,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 21,
+      "duration": 4,
+      "type": 7,
+      "inversion": 3,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi4(add11)2",
+    "truthLetter": "cm(add11)/Bb",
+    "truthPcs": [
+      0,
+      3,
+      5,
+      7,
+      10
+    ],
+    "pianoNotes": [
+      "Eb3"
+    ],
+    "pianoPcs": [
+      3
+    ],
+    "pianoValidated": false,
+    "engRoman": "vi⁴²(add11)(add11)",
+    "engLetter": "Cm7/Bb",
+    "engNotes": [
+      "Bb3",
+      "F4",
+      "C4",
+      "Eb4",
+      "G4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      5,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=3",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Chorus/61",
+    "song": "john-coltrane__giant-steps",
+    "section": "Chorus",
+    "beat": 61,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 61,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "ii7(add11)",
+    "truthLetter": "c#m7(add11)",
+    "truthPcs": [
+      1,
+      4,
+      6,
+      8,
+      11
+    ],
+    "pianoNotes": [
+      "F#4"
+    ],
+    "pianoPcs": [
+      6
+    ],
+    "pianoValidated": false,
+    "engRoman": "ii⁷(add11)(add11)",
+    "engLetter": "C#m7",
+    "engNotes": [
+      "C#3",
+      "E3",
+      "G#3",
+      "B3",
+      "F#4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      6,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 1/65",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 1",
+    "beat": 65,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 65,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "ii7(add11)",
+    "truthLetter": "c#m7(add11)",
+    "truthPcs": [
+      1,
+      4,
+      6,
+      8,
+      11
+    ],
+    "pianoNotes": [
+      "A#3",
+      "B3"
+    ],
+    "pianoPcs": [
+      10,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "ii⁷(add11)(add11)",
+    "engLetter": "C#m7",
+    "engNotes": [
+      "C#3",
+      "E3",
+      "G#3",
+      "B3",
+      "F#4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      6,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "john-coltrane__giant-steps/Solo 1/129",
+    "song": "john-coltrane__giant-steps",
+    "section": "Solo 1",
+    "beat": 129,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 129,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "ii7(add11)",
+    "truthLetter": "c#m7(add11)",
+    "truthPcs": [
+      1,
+      4,
+      6,
+      8,
+      11
+    ],
+    "pianoNotes": [
+      "B3",
+      "C#3",
+      "E3",
+      "G#3"
+    ],
+    "pianoPcs": [
+      1,
+      4,
+      8,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "ii⁷(add11)(add11)",
+    "engLetter": "C#m7",
+    "engNotes": [
+      "C#3",
+      "E3",
+      "G#3",
+      "B3",
+      "F#4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      6,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "miles-davis__so-what/Verse/7",
+    "song": "miles-davis__so-what",
+    "section": "Verse",
+    "beat": 7,
+    "key": {
+      "tonic": "D",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 7,
+      "duration": 1.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "ii7(add11)",
+    "truthLetter": "em7(add11)",
+    "truthPcs": [
+      2,
+      4,
+      7,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii⁷(add11)(add11)",
+    "engLetter": "Em7",
+    "engNotes": [
+      "E3",
+      "G3",
+      "B3",
+      "D4",
+      "A4"
+    ],
+    "engPcs": [
+      2,
+      4,
+      7,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "miles-davis__so-what/Verse/8.5",
+    "song": "miles-davis__so-what",
+    "section": "Verse",
+    "beat": 8.5,
+    "key": {
+      "tonic": "D",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 8.5,
+      "duration": 0.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7(add11)",
+    "truthLetter": "dm7(add11)",
+    "truthPcs": [
+      0,
+      2,
+      5,
+      7,
+      9
+    ],
+    "pianoNotes": [
+      "A1",
+      "B1",
+      "C2",
+      "D1",
+      "D2",
+      "E2"
+    ],
+    "pianoPcs": [
+      0,
+      2,
+      4,
+      9,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "i⁷(add11)(add11)",
+    "engLetter": "Dm7",
+    "engNotes": [
+      "D3",
+      "F3",
+      "A3",
+      "C4",
+      "G4"
+    ],
+    "engPcs": [
+      0,
+      2,
+      5,
+      7,
+      9
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "miles-davis__so-what/Verse/15",
+    "song": "miles-davis__so-what",
+    "section": "Verse",
+    "beat": 15,
+    "key": {
+      "tonic": "D",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 15,
+      "duration": 1.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "ii7(add11)",
+    "truthLetter": "em7(add11)",
+    "truthPcs": [
+      2,
+      4,
+      7,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii⁷(add11)(add11)",
+    "engLetter": "Em7",
+    "engNotes": [
+      "E3",
+      "G3",
+      "B3",
+      "D4",
+      "A4"
+    ],
+    "engPcs": [
+      2,
+      4,
+      7,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "miles-davis__so-what/Verse/16.5",
+    "song": "miles-davis__so-what",
+    "section": "Verse",
+    "beat": 16.5,
+    "key": {
+      "tonic": "D",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 16.5,
+      "duration": 0.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7(add11)",
+    "truthLetter": "dm7(add11)",
+    "truthPcs": [
+      0,
+      2,
+      5,
+      7,
+      9
+    ],
+    "pianoNotes": [
+      "A1",
+      "B1",
+      "C2",
+      "D1",
+      "D2",
+      "E2"
+    ],
+    "pianoPcs": [
+      0,
+      2,
+      4,
+      9,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "i⁷(add11)(add11)",
+    "engLetter": "Dm7",
+    "engNotes": [
+      "D3",
+      "F3",
+      "A3",
+      "C4",
+      "G4"
+    ],
+    "engPcs": [
+      0,
+      2,
+      5,
+      7,
+      9
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "miles-davis__so-what/Verse/23",
+    "song": "miles-davis__so-what",
+    "section": "Verse",
+    "beat": 23,
+    "key": {
+      "tonic": "D",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 23,
+      "duration": 1.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "ii7(add11)",
+    "truthLetter": "em7(add11)",
+    "truthPcs": [
+      2,
+      4,
+      7,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii⁷(add11)(add11)",
+    "engLetter": "Em7",
+    "engNotes": [
+      "E3",
+      "G3",
+      "B3",
+      "D4",
+      "A4"
+    ],
+    "engPcs": [
+      2,
+      4,
+      7,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "miles-davis__so-what/Verse/24.5",
+    "song": "miles-davis__so-what",
+    "section": "Verse",
+    "beat": 24.5,
+    "key": {
+      "tonic": "D",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 24.5,
+      "duration": 0.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7(add11)",
+    "truthLetter": "dm7(add11)",
+    "truthPcs": [
+      0,
+      2,
+      5,
+      7,
+      9
+    ],
+    "pianoNotes": [
+      "D2",
+      "E2"
+    ],
+    "pianoPcs": [
+      2,
+      4
+    ],
+    "pianoValidated": false,
+    "engRoman": "i⁷(add11)(add11)",
+    "engLetter": "Dm7",
+    "engNotes": [
+      "D3",
+      "F3",
+      "A3",
+      "C4",
+      "G4"
+    ],
+    "engPcs": [
+      0,
+      2,
+      5,
+      7,
+      9
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "miles-davis__so-what/Verse/31",
+    "song": "miles-davis__so-what",
+    "section": "Verse",
+    "beat": 31,
+    "key": {
+      "tonic": "D",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 31,
+      "duration": 1.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "ii7(add11)",
+    "truthLetter": "em7(add11)",
+    "truthPcs": [
+      2,
+      4,
+      7,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii⁷(add11)(add11)",
+    "engLetter": "Em7",
+    "engNotes": [
+      "E3",
+      "G3",
+      "B3",
+      "D4",
+      "A4"
+    ],
+    "engPcs": [
+      2,
+      4,
+      7,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "miles-davis__so-what/Verse/32.5",
+    "song": "miles-davis__so-what",
+    "section": "Verse",
+    "beat": 32.5,
+    "key": {
+      "tonic": "D",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 32.5,
+      "duration": 0.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7(add11)",
+    "truthLetter": "dm7(add11)",
+    "truthPcs": [
+      0,
+      2,
+      5,
+      7,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁷(add11)(add11)",
+    "engLetter": "Dm7",
+    "engNotes": [
+      "D3",
+      "F3",
+      "A3",
+      "C4",
+      "G4"
+    ],
+    "engPcs": [
+      0,
+      2,
+      5,
+      7,
+      9
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__all-american-bitch/Outro/3",
+    "song": "olivia-rodrigo__all-american-bitch",
+    "section": "Outro",
+    "beat": 3,
+    "key": {
+      "tonic": "F#",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 3,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(add4)",
+    "truthLetter": "B(add4)",
+    "truthPcs": [
+      3,
+      4,
+      6,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV(add4)",
+    "engLetter": "B",
+    "engNotes": [
+      "B3",
+      "D#4",
+      "F#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      6,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__all-american-bitch/Outro/7",
+    "song": "olivia-rodrigo__all-american-bitch",
+    "section": "Outro",
+    "beat": 7,
+    "key": {
+      "tonic": "F#",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 7,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(add4)",
+    "truthLetter": "B(add4)",
+    "truthPcs": [
+      3,
+      4,
+      6,
+      11
+    ],
+    "pianoNotes": [
+      "C#4",
+      "F#3"
+    ],
+    "pianoPcs": [
+      1,
+      6
+    ],
+    "pianoValidated": false,
+    "engRoman": "IV(add4)",
+    "engLetter": "B",
+    "engNotes": [
+      "B3",
+      "D#4",
+      "F#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      6,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__all-american-bitch/Outro/13",
+    "song": "olivia-rodrigo__all-american-bitch",
+    "section": "Outro",
+    "beat": 13,
+    "key": {
+      "tonic": "F#",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 13,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(add4)",
+    "truthLetter": "B(add4)",
+    "truthPcs": [
+      3,
+      4,
+      6,
+      11
+    ],
+    "pianoNotes": [
+      "A#3",
+      "C#3",
+      "C#4"
+    ],
+    "pianoPcs": [
+      1,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "IV(add4)",
+    "engLetter": "B",
+    "engNotes": [
+      "B3",
+      "D#4",
+      "F#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      6,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Chorus Lead-Out/1",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Chorus Lead-Out",
+    "beat": 1,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 1,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Chorus Lead-Out/5",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Chorus Lead-Out",
+    "beat": 5,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 5,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Chorus Lead-Out/9",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Chorus Lead-Out",
+    "beat": 9,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 9,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Chorus Lead-Out/13",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Chorus Lead-Out",
+    "beat": 13,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 13,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Chorus Lead-Out/17",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Chorus Lead-Out",
+    "beat": 17,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 17,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": [
+      "E3",
+      "G#3"
+    ],
+    "pianoPcs": [
+      4,
+      8
+    ],
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Chorus Lead-Out/21",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Chorus Lead-Out",
+    "beat": 21,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 21,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Chorus Lead-Out/25",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Chorus Lead-Out",
+    "beat": 25,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 25,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Bridge/1",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Bridge",
+    "beat": 1,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 1,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Bridge/2",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Bridge",
+    "beat": 2,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 2,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Bridge/3",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Bridge",
+    "beat": 3,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 3,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Bridge/4",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Bridge",
+    "beat": 4,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 4,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Bridge/5",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Bridge",
+    "beat": 5,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 5,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Bridge/6",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Bridge",
+    "beat": 6,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 6,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Bridge/7",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Bridge",
+    "beat": 7,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 7,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Bridge/17",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Bridge",
+    "beat": 17,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 17,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": [
+      "B2",
+      "G#3"
+    ],
+    "pianoPcs": [
+      8,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Bridge/18",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Bridge",
+    "beat": 18,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 18,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Bridge/19",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Bridge",
+    "beat": 19,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 19,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Bridge/20",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Bridge",
+    "beat": 20,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 20,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Bridge/21",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Bridge",
+    "beat": 21,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 21,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Bridge/22",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Bridge",
+    "beat": 22,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 22,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Bridge/23",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Bridge",
+    "beat": 23,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 23,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Solo/1",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Solo",
+    "beat": 1,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 1,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": [
+      "A4",
+      "A5",
+      "B4"
+    ],
+    "pianoPcs": [
+      9,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Solo/5",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Solo",
+    "beat": 5,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 5,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": [
+      "A5",
+      "B5"
+    ],
+    "pianoPcs": [
+      9,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Solo/9",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Solo",
+    "beat": 9,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 9,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": [
+      "D5",
+      "E5",
+      "Fx5"
+    ],
+    "pianoPcs": [
+      2,
+      4,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Solo/13",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Solo",
+    "beat": 13,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 13,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": [
+      "C#5",
+      "D5"
+    ],
+    "pianoPcs": [
+      1,
+      2
+    ],
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Solo/17",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Solo",
+    "beat": 17,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 17,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Solo/21",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Solo",
+    "beat": 21,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 21,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Solo/25",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Solo",
+    "beat": 25,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 25,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": [
+      "A4",
+      "Fx3",
+      "G#4"
+    ],
+    "pianoPcs": [
+      7,
+      8,
+      9
+    ],
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Solo/29",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Solo",
+    "beat": 29,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 29,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": [
+      "B4",
+      "G#3"
+    ],
+    "pianoPcs": [
+      8,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Solo/33",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Solo",
+    "beat": 33,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 33,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": [
+      "A3",
+      "B3"
+    ],
+    "pianoPcs": [
+      9,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Solo/37",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Solo",
+    "beat": 37,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 37,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Solo/41",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Solo",
+    "beat": 41,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 41,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Solo/45",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Solo",
+    "beat": 45,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 45,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": [
+      "A3",
+      "A4"
+    ],
+    "pianoPcs": [
+      9
+    ],
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Solo/49",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Solo",
+    "beat": 49,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 49,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Solo/53",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Solo",
+    "beat": 53,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 53,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Solo/57",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Solo",
+    "beat": 57,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 57,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Solo/61",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Solo",
+    "beat": 61,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 61,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__bad-idea-right/Solo/61.5",
+    "song": "olivia-rodrigo__bad-idea-right",
+    "section": "Solo",
+    "beat": 61.5,
+    "key": {
+      "tonic": "E",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 61.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": [
+      "D4",
+      "E5"
+    ],
+    "pianoPcs": [
+      2,
+      4
+    ],
+    "pianoValidated": false,
+    "engRoman": "I(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__making-the-bed/Chorus/81",
+    "song": "olivia-rodrigo__making-the-bed",
+    "section": "Chorus",
+    "beat": 81,
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 81,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(add4)",
+    "truthLetter": "D(add4)",
+    "truthPcs": [
+      2,
+      6,
+      7,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add4)",
+    "engLetter": "D",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3",
+      "G3"
+    ],
+    "engPcs": [
+      2,
+      6,
+      7,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__obsessed/Pre-Chorus/23",
+    "song": "olivia-rodrigo__obsessed",
+    "section": "Pre-Chorus",
+    "beat": 23,
+    "key": {
+      "tonic": "F",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 23,
+      "duration": 2,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "III6(add4)4",
+    "truthLetter": "Ab(add4)/Eb",
+    "truthPcs": [
+      0,
+      1,
+      3,
+      8
+    ],
+    "pianoNotes": [
+      "Ab3",
+      "Bb3",
+      "G3"
+    ],
+    "pianoPcs": [
+      7,
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "III⁶₄(add4)",
+    "engLetter": "Ab/Eb",
+    "engNotes": [
+      "Eb4",
+      "Db4",
+      "Ab4",
+      "C5"
+    ],
+    "engPcs": [
+      0,
+      1,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__pretty-isnt-pretty/Chorus/12.5",
+    "song": "olivia-rodrigo__pretty-isnt-pretty",
+    "section": "Chorus",
+    "beat": 12.5,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 12.5,
+      "duration": 4.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(add4)",
+    "truthLetter": "A(add4)",
+    "truthPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add4)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4",
+      "D4"
+    ],
+    "engPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__pretty-isnt-pretty/Chorus/28.5",
+    "song": "olivia-rodrigo__pretty-isnt-pretty",
+    "section": "Chorus",
+    "beat": 28.5,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 28.5,
+      "duration": 4.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(add4)",
+    "truthLetter": "A(add4)",
+    "truthPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add4)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4",
+      "D4"
+    ],
+    "engPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__pretty-isnt-pretty/Chorus/44.5",
+    "song": "olivia-rodrigo__pretty-isnt-pretty",
+    "section": "Chorus",
+    "beat": 44.5,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 44.5,
+      "duration": 4.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(add4)",
+    "truthLetter": "A(add4)",
+    "truthPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add4)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4",
+      "D4"
+    ],
+    "engPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__pretty-isnt-pretty/Chorus/60.5",
+    "song": "olivia-rodrigo__pretty-isnt-pretty",
+    "section": "Chorus",
+    "beat": 60.5,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 60.5,
+      "duration": 4.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(add4)",
+    "truthLetter": "A(add4)",
+    "truthPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add4)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4",
+      "D4"
+    ],
+    "engPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "olivia-rodrigo__scared-of-my-guitar/Chorus/45",
+    "song": "olivia-rodrigo__scared-of-my-guitar",
+    "section": "Chorus",
+    "beat": 45,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 45,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(add4)",
+    "truthLetter": "A(add4)",
+    "truthPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add4)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4",
+      "D4"
+    ],
+    "engPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "radiohead__karma-police/Verse/31",
+    "song": "radiohead__karma-police",
+    "section": "Verse",
+    "beat": 31,
+    "key": {
+      "tonic": "A",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 31,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(add4)",
+    "truthLetter": "D(add4)",
+    "truthPcs": [
+      2,
+      6,
+      7,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV(add4)",
+    "engLetter": "D",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3",
+      "G3"
+    ],
+    "engPcs": [
+      2,
+      6,
+      7,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "radiohead__karma-police/Chorus/19",
+    "song": "radiohead__karma-police",
+    "section": "Chorus",
+    "beat": 19,
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 19,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(add4)",
+    "truthLetter": "D(add4)",
+    "truthPcs": [
+      2,
+      6,
+      7,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add4)",
+    "engLetter": "D",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3",
+      "G3"
+    ],
+    "engPcs": [
+      2,
+      6,
+      7,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Intro/5",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Intro",
+    "beat": 5,
+    "key": {
+      "tonic": "G",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 5,
+      "duration": 4,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i6(add4)(dor)",
+    "truthLetter": "gm(add4)/Bb",
+    "truthPcs": [
+      0,
+      2,
+      7,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁶(add4)(dor)",
+    "engLetter": "Gm/Bb",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "C4",
+      "G4"
+    ],
+    "engPcs": [
+      0,
+      2,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=dorian",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Chorus/29",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Chorus",
+    "beat": 29,
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 29,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "mixolydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(mix)(add4)",
+    "truthLetter": "C(add4)",
+    "truthPcs": [
+      0,
+      4,
+      5,
+      7
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV(add4)(mix)",
+    "engLetter": "C",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3",
+      "F3"
+    ],
+    "engPcs": [
+      0,
+      4,
+      5,
+      7
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=mixolydian",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Chorus Lead-Out/5",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Chorus Lead-Out",
+    "beat": 5,
+    "key": {
+      "tonic": "G",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 5,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(add4)",
+    "truthLetter": "C(add4)",
+    "truthPcs": [
+      0,
+      4,
+      5,
+      7
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV(add4)",
+    "engLetter": "C",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3",
+      "F3"
+    ],
+    "engPcs": [
+      0,
+      4,
+      5,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Chorus Lead-Out/9",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Chorus Lead-Out",
+    "beat": 9,
+    "key": {
+      "tonic": "G",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 9,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "minor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "III(min)(add4)",
+    "truthLetter": "Bb(add4)",
+    "truthPcs": [
+      2,
+      3,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "III(add4)(min)",
+    "engLetter": "Bb",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Eb4"
+    ],
+    "engPcs": [
+      2,
+      3,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=minor",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Chorus Lead-Out/13",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Chorus Lead-Out",
+    "beat": 13,
+    "key": {
+      "tonic": "G",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 13,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)(add4)",
+    "truthLetter": "D(add4)",
+    "truthPcs": [
+      2,
+      6,
+      7,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add4)(hmin)",
+    "engLetter": "D",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3",
+      "G3"
+    ],
+    "engPcs": [
+      2,
+      6,
+      7,
+      9
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Chorus Lead-Out/17",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Chorus Lead-Out",
+    "beat": 17,
+    "key": {
+      "tonic": "G",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 17,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(add4)",
+    "truthLetter": "C(add4)",
+    "truthPcs": [
+      0,
+      4,
+      5,
+      7
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV(add4)",
+    "engLetter": "C",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3",
+      "F3"
+    ],
+    "engPcs": [
+      0,
+      4,
+      5,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Chorus Lead-Out/21",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Chorus Lead-Out",
+    "beat": 21,
+    "key": {
+      "tonic": "G",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 21,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "minor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "III(min)(add4)",
+    "truthLetter": "Bb(add4)",
+    "truthPcs": [
+      2,
+      3,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "III(add4)(min)",
+    "engLetter": "Bb",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Eb4"
+    ],
+    "engPcs": [
+      2,
+      3,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=minor",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Chorus Lead-Out/25",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Chorus Lead-Out",
+    "beat": 25,
+    "key": {
+      "tonic": "G",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 25,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)(add4)",
+    "truthLetter": "D(add4)",
+    "truthPcs": [
+      2,
+      6,
+      7,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add4)(hmin)",
+    "engLetter": "D",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3",
+      "G3"
+    ],
+    "engPcs": [
+      2,
+      6,
+      7,
+      9
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Chorus Lead-Out/29",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Chorus Lead-Out",
+    "beat": 29,
+    "key": {
+      "tonic": "G",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 29,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(add4)",
+    "truthLetter": "C(add4)",
+    "truthPcs": [
+      0,
+      4,
+      5,
+      7
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV(add4)",
+    "engLetter": "C",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3",
+      "F3"
+    ],
+    "engPcs": [
+      0,
+      4,
+      5,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Chorus Lead-Out/33",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Chorus Lead-Out",
+    "beat": 33,
+    "key": {
+      "tonic": "G",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 33,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "minor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "III(min)(add4)",
+    "truthLetter": "Bb(add4)",
+    "truthPcs": [
+      2,
+      3,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "III(add4)(min)",
+    "engLetter": "Bb",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Eb4"
+    ],
+    "engPcs": [
+      2,
+      3,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=minor",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Chorus Lead-Out/37",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Chorus Lead-Out",
+    "beat": 37,
+    "key": {
+      "tonic": "G",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 37,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)(add4)",
+    "truthLetter": "D(add4)",
+    "truthPcs": [
+      2,
+      6,
+      7,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add4)(hmin)",
+    "engLetter": "D",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3",
+      "G3"
+    ],
+    "engPcs": [
+      2,
+      6,
+      7,
+      9
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Chorus Lead-Out/41",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Chorus Lead-Out",
+    "beat": 41,
+    "key": {
+      "tonic": "G",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 41,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(add4)",
+    "truthLetter": "C(add4)",
+    "truthPcs": [
+      0,
+      4,
+      5,
+      7
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV(add4)",
+    "engLetter": "C",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3",
+      "F3"
+    ],
+    "engPcs": [
+      0,
+      4,
+      5,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Chorus Lead-Out/45",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Chorus Lead-Out",
+    "beat": 45,
+    "key": {
+      "tonic": "G",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 45,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "minor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "III(min)(add4)",
+    "truthLetter": "Bb(add4)",
+    "truthPcs": [
+      2,
+      3,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "III(add4)(min)",
+    "engLetter": "Bb",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Eb4"
+    ],
+    "engPcs": [
+      2,
+      3,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=minor",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Chorus Lead-Out/49",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Chorus Lead-Out",
+    "beat": 49,
+    "key": {
+      "tonic": "G",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 49,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)(add4)",
+    "truthLetter": "D(add4)",
+    "truthPcs": [
+      2,
+      6,
+      7,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add4)(hmin)",
+    "engLetter": "D",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3",
+      "G3"
+    ],
+    "engPcs": [
+      2,
+      6,
+      7,
+      9
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Bridge/1",
+    "song": "the-police__every-breath-you-take",
+    "section": "Bridge",
+    "beat": 1,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 1,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VI(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VI(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Bridge/9",
+    "song": "the-police__every-breath-you-take",
+    "section": "Bridge",
+    "beat": 9,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 9,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VII(add4)",
+    "truthLetter": "F#(add4)",
+    "truthPcs": [
+      1,
+      6,
+      10,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VII(add4)",
+    "engLetter": "F#",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4",
+      "B3"
+    ],
+    "engPcs": [
+      1,
+      6,
+      10,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Bridge/17",
+    "song": "the-police__every-breath-you-take",
+    "section": "Bridge",
+    "beat": 17,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 17,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VI(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VI(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Bridge/25",
+    "song": "the-police__every-breath-you-take",
+    "section": "Bridge",
+    "beat": 25,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 25,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VII(add4)",
+    "truthLetter": "F#(add4)",
+    "truthPcs": [
+      1,
+      6,
+      10,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VII(add4)",
+    "engLetter": "F#",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4",
+      "B3"
+    ],
+    "engPcs": [
+      1,
+      6,
+      10,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Bridge/33",
+    "song": "the-police__every-breath-you-take",
+    "section": "Bridge",
+    "beat": 33,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 33,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VI(add4)",
+    "truthLetter": "E(add4)",
+    "truthPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VI(add4)",
+    "engLetter": "E",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "A3"
+    ],
+    "engPcs": [
+      4,
+      8,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-police__every-breath-you-take/Bridge/61",
+    "song": "the-police__every-breath-you-take",
+    "section": "Bridge",
+    "beat": 61,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 61,
+      "duration": 4,
+      "type": 7,
+      "inversion": 3,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi4(add11)2",
+    "truthLetter": "fm(add11)/Eb",
+    "truthPcs": [
+      0,
+      3,
+      5,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vi⁴²(add11)(add11)",
+    "engLetter": "Fm7/Eb",
+    "engNotes": [
+      "Eb4",
+      "Bb4",
+      "F4",
+      "Ab4",
+      "C5"
+    ],
+    "engPcs": [
+      0,
+      3,
+      5,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=3",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  }
+]

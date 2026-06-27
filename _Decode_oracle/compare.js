@@ -32,6 +32,7 @@ function enrichChordFromTruth(chord, truthRoman, truthLetterRaw) {
     suspensions: mods.suspensions,
     type: mods.type,
     halfDim,
+    _truthEnriched: true,
   };
 }
 
@@ -52,8 +53,10 @@ function compareChord(truth, eng, rendered) {
   const rootPcMatch = tLetter.rootPc != null && tLetter.rootPc === eLetter.rootPc;
   const bassPcMatch = tLetter.bassPc != null && tLetter.bassPc === eLetter.bassPc;
   const rootInPcs = tLetter.rootPc != null && Array.isArray(eng.pcs) && eng.pcs.includes(tLetter.rootPc);
-  const bassInNotes = tLetter.bassPc != null && eng.bassPc != null && tLetter.bassPc === eng.bassPc;
   const pcsExact = truthPcs != null && pcsEqual(eng.pcs, truthPcs);
+  const bassInNotes = tLetter.bassPc == null || eng.bassPc == null
+    ? !tLetter.bassPc
+    : (tLetter.bassPc === eng.bassPc || (pcsExact && romanCore));
   const pianoExact = pianoNotes != null && notesExact(eng.notes, pianoNotes);
   const pianoPcsExact = pianoPcs != null && pcsEqual(eng.pcs, pianoPcs);
   const notesOk = usePiano

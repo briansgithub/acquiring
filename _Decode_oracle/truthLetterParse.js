@@ -133,6 +133,15 @@ function extensionsFromType(chordType) {
   return ext;
 }
 
+function triadQualityFromRoman(roman) {
+  const stripped = String(roman || '').replace(/\(.*$/, '').replace(/\/.*$/, '');
+  const core = stripped.match(/^([b#]?)([ivxIVXø°+]+)/)?.[2] || '';
+  if (/ø|°/.test(core)) return 'diminished';
+  if (/\+/.test(core)) return 'augmented';
+  if (/^[ivx]/.test(core)) return 'minor';
+  return 'major';
+}
+
 function mergeMods(letter, roman, chord) {
   const c = chord || {};
   const susText = susFromText(letter, roman);
@@ -145,6 +154,6 @@ function mergeMods(letter, roman, chord) {
 }
 
 module.exports = {
-  allParenTags, stripForQuality, triadQualityFromLetter, seventhKind,
+  allParenTags, stripForQuality, triadQualityFromLetter, triadQualityFromRoman, seventhKind,
   susFromText, addsFromText, omitsFromText, altsFromText, extensionsFromType, mergeMods,
 };

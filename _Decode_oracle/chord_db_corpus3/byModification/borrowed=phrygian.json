@@ -1,0 +1,1787 @@
+[
+  {
+    "id": "alan-silvestri__night-at-the-museum/Intro/10",
+    "song": "alan-silvestri__night-at-the-museum",
+    "section": "Intro",
+    "beat": 10,
+    "key": {
+      "tonic": "G",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 10,
+      "duration": 3,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bII(phr)",
+    "truthLetter": "Ab",
+    "truthPcs": [
+      0,
+      3,
+      8
+    ],
+    "pianoNotes": [
+      "C4",
+      "G3"
+    ],
+    "pianoPcs": [
+      0,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "♭II(phr)",
+    "engLetter": "Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=phrygian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "alan-silvestri__night-at-the-museum/Intro/19",
+    "song": "alan-silvestri__night-at-the-museum",
+    "section": "Intro",
+    "beat": 19,
+    "key": {
+      "tonic": "G",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 19,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bVI(phr)",
+    "truthLetter": "Eb",
+    "truthPcs": [
+      3,
+      7,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭VI(phr)",
+    "engLetter": "Eb",
+    "engNotes": [
+      "Eb3",
+      "G3",
+      "Bb3"
+    ],
+    "engPcs": [
+      3,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=phrygian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "alan-silvestri__night-at-the-museum/Intro/34",
+    "song": "alan-silvestri__night-at-the-museum",
+    "section": "Intro",
+    "beat": 34,
+    "key": {
+      "tonic": "G",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 34,
+      "duration": 3,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bII(phr)",
+    "truthLetter": "Ab",
+    "truthPcs": [
+      0,
+      3,
+      8
+    ],
+    "pianoNotes": [
+      "C4",
+      "G3"
+    ],
+    "pianoPcs": [
+      0,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "♭II(phr)",
+    "engLetter": "Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=phrygian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "alan-silvestri__night-at-the-museum/Verse and Pre-Chorus/13",
+    "song": "alan-silvestri__night-at-the-museum",
+    "section": "Verse and Pre-Chorus",
+    "beat": 13,
+    "key": {
+      "tonic": "G#",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 13,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bII(phr)",
+    "truthLetter": "A",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": [
+      "A#2",
+      "C#3",
+      "G#2"
+    ],
+    "pianoPcs": [
+      1,
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "♭II(phr)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=phrygian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "alan-silvestri__night-at-the-museum/Verse and Pre-Chorus/21",
+    "song": "alan-silvestri__night-at-the-museum",
+    "section": "Verse and Pre-Chorus",
+    "beat": 21,
+    "key": {
+      "tonic": "G#",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 21,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iv(phr)",
+    "truthLetter": "c#m",
+    "truthPcs": [
+      1,
+      4,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "iv(phr)",
+    "engLetter": "C#m",
+    "engNotes": [
+      "C#3",
+      "E3",
+      "G#3"
+    ],
+    "engPcs": [
+      1,
+      4,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=phrygian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "alan-silvestri__night-at-the-museum/Verse and Pre-Chorus/29",
+    "song": "alan-silvestri__night-at-the-museum",
+    "section": "Verse and Pre-Chorus",
+    "beat": 29,
+    "key": {
+      "tonic": "G#",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 29,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bII(phr)",
+    "truthLetter": "A",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭II(phr)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=phrygian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ariana-grande__thank-u-next/Verse and Pre-Chorus/13",
+    "song": "ariana-grande__thank-u-next",
+    "section": "Verse and Pre-Chorus",
+    "beat": 13,
+    "key": {
+      "tonic": "Bb",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 13,
+      "duration": 4,
+      "type": 7,
+      "inversion": 3,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "III42(phr)",
+    "truthLetter": "Db/Cb",
+    "truthPcs": [
+      1,
+      5,
+      8,
+      11
+    ],
+    "pianoNotes": [
+      "Db3",
+      "Eb3",
+      "F3"
+    ],
+    "pianoPcs": [
+      1,
+      3,
+      5
+    ],
+    "pianoValidated": false,
+    "engRoman": "III⁴²(phr)",
+    "engLetter": "Db7/Cb",
+    "engNotes": [
+      "Cb4",
+      "Db4",
+      "F4",
+      "Ab4"
+    ],
+    "engPcs": [
+      1,
+      5,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=3",
+      "applied=no",
+      "borrowed=phrygian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ariana-grande__thank-u-next/Verse and Pre-Chorus/29",
+    "song": "ariana-grande__thank-u-next",
+    "section": "Verse and Pre-Chorus",
+    "beat": 29,
+    "key": {
+      "tonic": "Bb",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 29,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "III7(phr)",
+    "truthLetter": "Db7",
+    "truthPcs": [
+      1,
+      5,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "III⁷(phr)",
+    "engLetter": "Db7",
+    "engNotes": [
+      "Db3",
+      "F3",
+      "Ab3",
+      "Cb4"
+    ],
+    "engPcs": [
+      1,
+      5,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=phrygian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "george-gershwin__summertime/Chorus/35",
+    "song": "george-gershwin__summertime",
+    "section": "Chorus",
+    "beat": 35,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 35,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vø7(phr)",
+    "truthLetter": "em7(b5)",
+    "truthPcs": [
+      1,
+      4,
+      7,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vø⁷(b5)(phr)",
+    "engLetter": "E°7",
+    "engNotes": [
+      "E3",
+      "G3",
+      "Bb3",
+      "Db4",
+      "Bb3"
+    ],
+    "engPcs": [
+      1,
+      4,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=phrygian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Intro/17",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Intro",
+    "beat": 17,
+    "key": {
+      "tonic": "G",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 17,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bVIsus4(phr)",
+    "truthLetter": "Ebsus4",
+    "truthPcs": [
+      3,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭VIsus4(phr)",
+    "engLetter": "Ebsus4",
+    "engNotes": [
+      "Eb3",
+      "Ab3",
+      "Bb3"
+    ],
+    "engPcs": [
+      3,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=phrygian",
+      "suspensions=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Chorus/5",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Chorus",
+    "beat": 5,
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 5,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bVIsus4(phr)",
+    "truthLetter": "Ebsus4",
+    "truthPcs": [
+      3,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭VIsus4(phr)",
+    "engLetter": "Ebsus4",
+    "engNotes": [
+      "Eb3",
+      "Ab3",
+      "Bb3"
+    ],
+    "engPcs": [
+      3,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=phrygian",
+      "suspensions=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "soundgarden__black-hole-sun/Chorus/21",
+    "song": "soundgarden__black-hole-sun",
+    "section": "Chorus",
+    "beat": 21,
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 21,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bVIsus4(phr)",
+    "truthLetter": "Ebsus4",
+    "truthPcs": [
+      3,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭VIsus4(phr)",
+    "engLetter": "Ebsus4",
+    "engNotes": [
+      "Eb3",
+      "Ab3",
+      "Bb3"
+    ],
+    "engPcs": [
+      3,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=phrygian",
+      "suspensions=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__sir-duke/Pre-Chorus and Chorus/3",
+    "song": "stevie-wonder__sir-duke",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 3,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 3,
+      "duration": 1,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bIII9(phr)",
+    "truthLetter": "D9",
+    "truthPcs": [
+      0,
+      2,
+      4,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭III⁹(phr)",
+    "engLetter": "D9",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3",
+      "C4",
+      "E4"
+    ],
+    "engPcs": [
+      0,
+      2,
+      4,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=phrygian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__sir-duke/Pre-Chorus and Chorus/5",
+    "song": "stevie-wonder__sir-duke",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 5,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 5,
+      "duration": 1,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bIII9(phr)",
+    "truthLetter": "D9",
+    "truthPcs": [
+      0,
+      2,
+      4,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭III⁹(phr)",
+    "engLetter": "D9",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3",
+      "C4",
+      "E4"
+    ],
+    "engPcs": [
+      0,
+      2,
+      4,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=phrygian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__sir-duke/Pre-Chorus and Chorus/11",
+    "song": "stevie-wonder__sir-duke",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 11,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 11,
+      "duration": 1,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bIII9(phr)",
+    "truthLetter": "D9",
+    "truthPcs": [
+      0,
+      2,
+      4,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭III⁹(phr)",
+    "engLetter": "D9",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3",
+      "C4",
+      "E4"
+    ],
+    "engPcs": [
+      0,
+      2,
+      4,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=phrygian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__sir-duke/Pre-Chorus and Chorus/13",
+    "song": "stevie-wonder__sir-duke",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 13,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 13,
+      "duration": 0.5,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bIII9(phr)",
+    "truthLetter": "D9",
+    "truthPcs": [
+      0,
+      2,
+      4,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭III⁹(phr)",
+    "engLetter": "D9",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3",
+      "C4",
+      "E4"
+    ],
+    "engPcs": [
+      0,
+      2,
+      4,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=phrygian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beach-boys__god-only-knows/Bridge/6.5",
+    "song": "the-beach-boys__god-only-knows",
+    "section": "Bridge",
+    "beat": 6.5,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 6.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bIII64(phr)",
+    "truthLetter": "F/C",
+    "truthPcs": [
+      0,
+      5,
+      9
+    ],
+    "pianoNotes": [
+      "A3"
+    ],
+    "pianoPcs": [
+      9
+    ],
+    "pianoValidated": false,
+    "engRoman": "♭III⁶₄(phr)",
+    "engLetter": "F/C",
+    "engNotes": [
+      "C4",
+      "F4",
+      "A4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=phrygian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beach-boys__god-only-knows/Bridge/7.5",
+    "song": "the-beach-boys__god-only-knows",
+    "section": "Bridge",
+    "beat": 7.5,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 7.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bIII(phr)",
+    "truthLetter": "F",
+    "truthPcs": [
+      0,
+      5,
+      9
+    ],
+    "pianoNotes": [
+      "E#3"
+    ],
+    "pianoPcs": [
+      5
+    ],
+    "pianoValidated": false,
+    "engRoman": "♭III(phr)",
+    "engLetter": "F",
+    "engNotes": [
+      "F3",
+      "A3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=phrygian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beach-boys__god-only-knows/Bridge/8.5",
+    "song": "the-beach-boys__god-only-knows",
+    "section": "Bridge",
+    "beat": 8.5,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 8.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bIII6(phr)",
+    "truthLetter": "F/A",
+    "truthPcs": [
+      0,
+      5,
+      9
+    ],
+    "pianoNotes": [
+      "D3"
+    ],
+    "pianoPcs": [
+      2
+    ],
+    "pianoValidated": false,
+    "engRoman": "♭III⁶(phr)",
+    "engLetter": "F/A",
+    "engNotes": [
+      "A3",
+      "C4",
+      "F4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=phrygian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beach-boys__god-only-knows/Bridge/14.5",
+    "song": "the-beach-boys__god-only-knows",
+    "section": "Bridge",
+    "beat": 14.5,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 14.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bIII64(phr)",
+    "truthLetter": "F/C",
+    "truthPcs": [
+      0,
+      5,
+      9
+    ],
+    "pianoNotes": [
+      "A3"
+    ],
+    "pianoPcs": [
+      9
+    ],
+    "pianoValidated": false,
+    "engRoman": "♭III⁶₄(phr)",
+    "engLetter": "F/C",
+    "engNotes": [
+      "C4",
+      "F4",
+      "A4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=phrygian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beach-boys__god-only-knows/Bridge/15.5",
+    "song": "the-beach-boys__god-only-knows",
+    "section": "Bridge",
+    "beat": 15.5,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 15.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bIII(phr)",
+    "truthLetter": "F",
+    "truthPcs": [
+      0,
+      5,
+      9
+    ],
+    "pianoNotes": [
+      "E#3"
+    ],
+    "pianoPcs": [
+      5
+    ],
+    "pianoValidated": false,
+    "engRoman": "♭III(phr)",
+    "engLetter": "F",
+    "engNotes": [
+      "F3",
+      "A3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=phrygian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beach-boys__god-only-knows/Bridge/16.5",
+    "song": "the-beach-boys__god-only-knows",
+    "section": "Bridge",
+    "beat": 16.5,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 16.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bIII6(phr)",
+    "truthLetter": "F/A",
+    "truthPcs": [
+      0,
+      5,
+      9
+    ],
+    "pianoNotes": [
+      "D3"
+    ],
+    "pianoPcs": [
+      2
+    ],
+    "pianoValidated": false,
+    "engRoman": "♭III⁶(phr)",
+    "engLetter": "F/A",
+    "engNotes": [
+      "A3",
+      "C4",
+      "F4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=phrygian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "thelonious-monk__round-midnight/Verse/26",
+    "song": "thelonious-monk__round-midnight",
+    "section": "Verse",
+    "beat": 26,
+    "key": {
+      "tonic": "D#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 26,
+      "duration": 3,
+      "type": 7,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(b5)/bII(maj)(phr)",
+    "truthLetter": "B7(b5)",
+    "truthPcs": [
+      3,
+      5,
+      9,
+      11
+    ],
+    "pianoNotes": [
+      "D#3",
+      "E#3"
+    ],
+    "pianoPcs": [
+      3,
+      5
+    ],
+    "pianoValidated": false,
+    "engRoman": "V⁷(b5)/ii°",
+    "engLetter": "B#7",
+    "engNotes": [
+      "B3",
+      "D#4",
+      "F4",
+      "A4"
+    ],
+    "engPcs": [
+      3,
+      5,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=yes",
+      "borrowed=phrygian",
+      "alterations=b5"
+    ],
+    "compositeKey": null
+  }
+]

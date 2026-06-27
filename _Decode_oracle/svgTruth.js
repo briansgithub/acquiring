@@ -93,7 +93,7 @@ function parseLetter(letterRaw) {
     rootPc: noteToPc(rootName),
     isMinorish: rootName ? /^[a-g]/.test(rootName) : null, // lowercase root => minor/dim per HT
     bassName: bassClean,
-    bassPc: bassClean ? noteToPc(bassClean) : (rootName ? noteToPc(rootName) : null),
+    bassPc: bassClean ? noteToPc(bassClean) : null,
   };
 }
 

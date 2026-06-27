@@ -1,0 +1,324 @@
+[
+  {
+    "id": "coldplay__yellow/Intro/13",
+    "song": "coldplay__yellow",
+    "section": "Intro",
+    "beat": 13,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 13,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "Vsus2(add6)",
+    "truthLetter": "F#(add6)sus2",
+    "truthPcs": [
+      3,
+      6,
+      8
+    ],
+    "pianoNotes": [
+      "A#3",
+      "G#3"
+    ],
+    "pianoPcs": [
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "V(add6)sus2",
+    "engLetter": "F#sus2",
+    "engNotes": [
+      "F#3",
+      "G#3",
+      "D#4"
+    ],
+    "engPcs": [
+      3,
+      6,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=2",
+      "adds=6"
+    ],
+    "compositeKey": "adds=6+suspensions=2"
+  },
+  {
+    "id": "coldplay__yellow/Outro/17",
+    "song": "coldplay__yellow",
+    "section": "Outro",
+    "beat": 17,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 17,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "Vsus2(add6)",
+    "truthLetter": "F#(add6)sus2",
+    "truthPcs": [
+      3,
+      6,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add6)sus2",
+    "engLetter": "F#sus2",
+    "engNotes": [
+      "F#3",
+      "G#3",
+      "D#4"
+    ],
+    "engPcs": [
+      3,
+      6,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=2",
+      "adds=6"
+    ],
+    "compositeKey": "adds=6+suspensions=2"
+  },
+  {
+    "id": "coldplay__yellow/Outro/41",
+    "song": "coldplay__yellow",
+    "section": "Outro",
+    "beat": 41,
+    "key": {
+      "tonic": "B",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 41,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "Vsus2(add6)",
+    "truthLetter": "F#(add6)sus2",
+    "truthPcs": [
+      3,
+      6,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add6)sus2",
+    "engLetter": "F#sus2",
+    "engNotes": [
+      "F#3",
+      "G#3",
+      "D#4"
+    ],
+    "engPcs": [
+      3,
+      6,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=2",
+      "adds=6"
+    ],
+    "compositeKey": "adds=6+suspensions=2"
+  },
+  {
+    "id": "earth-wind-and-fire__september/Chorus/25",
+    "song": "earth-wind-and-fire__september",
+    "section": "Chorus",
+    "beat": 25,
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 25,
+      "duration": 8,
+      "type": 5,
+      "inversion": 1,
+      "applied": 4,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV6(add6)sus2/IV",
+    "truthLetter": "G(add6)sus2/A",
+    "truthPcs": [
+      4,
+      7,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV⁶(add6)sus2/IV",
+    "engLetter": "Gsus2/B",
+    "engNotes": [
+      "A2",
+      "E4",
+      "G4"
+    ],
+    "engPcs": [
+      4,
+      7,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false
+    },
+    "notesOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=yes",
+      "borrowed=none",
+      "suspensions=2",
+      "adds=6"
+    ],
+    "compositeKey": "adds=6+suspensions=2"
+  }
+]

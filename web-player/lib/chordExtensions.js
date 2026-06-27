@@ -13,17 +13,24 @@ export function applyTypeExtensions(toneJSNames, degreeIndices, chordRootNoteNam
   }
   if (chordType >= 11) {
     const natural11Pc = triadQuality === "diminished"
-      ? (rootPc + 9) % 12
-      : (rootPc + 10) % 12;
+      ? (rootPc + (opts.skipNine ? 1 : 9)) % 12
+      : triadQuality === "minor"
+        ? (rootPc + 5) % 12
+        : (rootPc + 10) % 12;
     const sharp11Pc = (rootPc + 5) % 12;
     const useNatural11 = triadQuality === "diminished" || !!opts.natural11;
     const targetPc = useNatural11 ? natural11Pc : sharp11Pc;
     if (!hasPc(toneJSNames, targetPc)) {
       if (useNatural11 && triadQuality === "diminished") {
-        toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 9));
+        const semis = opts.skipNine ? 1 : 9;
+        toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], semis));
       } else {
-        const sd = useNatural11 ? "6" : "4";
-        const relOct = useNatural11 ? 0 : 1;
+        const sd = useNatural11
+          ? (triadQuality === "minor" ? "4" : "6")
+          : "4";
+        const relOct = useNatural11
+          ? (triadQuality === "minor" ? 1 : 0)
+          : 1;
         toneJSNames.push(sdToToneJSNoteName(sd, relOct, rk, baseOctave));
       }
       degreeIndices.push(5);
