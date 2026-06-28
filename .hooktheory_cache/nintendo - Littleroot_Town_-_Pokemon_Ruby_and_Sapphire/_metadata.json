@@ -1,0 +1,28 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/nintendo/littleroot-town---pokemon-ruby-and-sapphire",
+  "songTitle": "Littleroot Town - Pokemon Ruby and Sapphire",
+  "artist": "nintendo",
+  "timestamp": "2026-06-28T04:52:49.173Z",
+  "songIds": [
+    "AQodEbwWmDl",
+    "dPoDnRNZgnM"
+  ],
+  "sectionMapping": {
+    "AQodEbwWmDl": "Verse",
+    "dPoDnRNZgnM": "Chorus"
+  },
+  "sections": [
+    {
+      "index": 0,
+      "songId": "AQodEbwWmDl",
+      "sectionName": "Verse",
+      "numericId": 1613431
+    },
+    {
+      "index": 1,
+      "songId": "dPoDnRNZgnM",
+      "sectionName": "Chorus",
+      "numericId": 812827
+    }
+  ]
+}

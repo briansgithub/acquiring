@@ -1,0 +1,44 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/scott-joplin/gladiolus-rag",
+  "songTitle": "Gladiolus Rag",
+  "artist": "scott-joplin",
+  "timestamp": "2026-06-27T11:21:24.852Z",
+  "songIds": [
+    "dPoDjYRqgnM",
+    "JNgqRvRnxrz",
+    "AaoGBjwPxeQ",
+    "Abm_nQdroak"
+  ],
+  "sectionMapping": {
+    "dPoDjYRqgnM": "Verse",
+    "JNgqRvRnxrz": "Chorus",
+    "AaoGBjwPxeQ": "Bridge",
+    "Abm_nQdroak": "Outro"
+  },
+  "sections": [
+    {
+      "index": 0,
+      "songId": "dPoDjYRqgnM",
+      "sectionName": "Verse",
+      "numericId": 784627
+    },
+    {
+      "index": 1,
+      "songId": "JNgqRvRnxrz",
+      "sectionName": "Chorus",
+      "numericId": 743176
+    },
+    {
+      "index": 2,
+      "songId": "AaoGBjwPxeQ",
+      "sectionName": "Bridge",
+      "numericId": 784628
+    },
+    {
+      "index": 3,
+      "songId": "Abm_nQdroak",
+      "sectionName": "Outro",
+      "numericId": 784629
+    }
+  ]
+}
