@@ -12,10 +12,14 @@ export function renderNoteIndicator(container, options = {}) {
       </div>
       <div class="card" style="position:relative;">
         <div class="label">Chord</div>
+        <label for="root-position-toggle" style="position:absolute;top:10px;right:10px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;color:#9ca3af;font-size:12px;">
+          <input type="checkbox" id="root-position-toggle" style="cursor:pointer;" />
+          Root position
+        </label>
         <div class="chord-root" id="chord-root" style="min-height:24px;"></div>
         <div class="notes-list" id="chord-notes" style="min-height:32px;margin-top:2px;"></div>
         <div class="notes-list" id="chord-degrees-pills" style="min-height:32px;margin-top:4px;"></div>
-        <div class="chord-borrowed" id="chord-borrowed" style="position:absolute;top:10px;right:10px;font-style:italic;color:#9ca3af;font-size:0.9em;visibility:hidden;"></div>
+        <div class="chord-borrowed" id="chord-borrowed" style="position:absolute;top:34px;right:10px;font-style:italic;color:#9ca3af;font-size:0.9em;visibility:hidden;"></div>
       </div>
     </div>
   `;
@@ -26,6 +30,11 @@ export function renderNoteIndicator(container, options = {}) {
   const chordList = container.querySelector("#chord-notes");
   const chordDegreesPillsList = container.querySelector("#chord-degrees-pills");
   const chordBorrowedEl = container.querySelector("#chord-borrowed");
+  const rootPositionToggle = container.querySelector("#root-position-toggle");
+
+  rootPositionToggle.addEventListener("change", () => {
+    options.onRootPositionChange?.(rootPositionToggle.checked);
+  });
   
   let currentKey = options.key || { tonic: "C", scale: "major" };
   
@@ -276,6 +285,9 @@ export function renderNoteIndicator(container, options = {}) {
       chordDegreesPillsList.innerHTML = "";
       chordBorrowedEl.textContent = "";
       chordBorrowedEl.style.visibility = "hidden";
+    },
+    setRootPositionChecked(checked) {
+      rootPositionToggle.checked = !!checked;
     },
   };
 }

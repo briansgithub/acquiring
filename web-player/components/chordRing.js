@@ -577,8 +577,9 @@ export function renderChordRing(container, options = {}) {
   }
 
   function playChord(chordObj) {
-    // Use chordInterpreter from music.js which handles chord types (including 7th chords), inversions, and applied chords
-    const chordData = chordInterpreter(chordObj, currentKey);
+    const chordData = chordInterpreter(chordObj, currentKey, {
+      forceRootPosition: options.getForceRootPosition?.() ?? false,
+    });
     if (options.onChordClick) {
       options.onChordClick({
         notes: chordData.notes,
