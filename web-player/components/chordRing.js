@@ -255,6 +255,10 @@ export function renderChordRing(container, options = {}) {
     return borrowed1 === borrowed2;
   }
 
+  function isNodeActive(entry) {
+    return activeChordSymbol !== null && entry.symbol === activeChordSymbol;
+  }
+
   function resize() {
     canvas.width = container.clientWidth;
     canvas.height = container.clientHeight;
@@ -315,7 +319,7 @@ export function renderChordRing(container, options = {}) {
     const color = getScaleDegreeColor(degree, currentKey.scale);
 
     if (exactDiatonic) {
-      const isActive = activeChord && chordsMatch(activeChord, exactDiatonic.chord);
+      const isActive = isNodeActive(exactDiatonic);
       let subLabel = null;
       const chord = exactDiatonic.chord;
       if (chord && chord.borrowed !== undefined && chord.borrowed !== null && chord.borrowed !== "") {
@@ -341,7 +345,7 @@ export function renderChordRing(container, options = {}) {
       const dist = (DIATONIC_RING_RADIUS + VARIANT_SPACING * (idx + 1)) * zoom;
       const vx = centerX + dist * Math.cos(angle);
       const vy = centerY + dist * Math.sin(angle);
-      const isActive = activeChord && chordsMatch(activeChord, v.chord);
+      const isActive = isNodeActive(v);
 
       let subLabel = null;
       const chord = v.chord;
@@ -530,7 +534,7 @@ export function renderChordRing(container, options = {}) {
         const vy = centerY + vDist * Math.sin(angle);
         
         // Use effective radius (larger if active)
-        const isActive = activeChord && chordsMatch(activeChord, v.chord);
+        const isActive = isNodeActive(v);
         const effectiveRadius = isActive ? baseNodeRadius * 1.3 : baseNodeRadius;
 
         if (Math.hypot(mx - vx, my - vy) <= effectiveRadius) {
@@ -547,7 +551,7 @@ export function renderChordRing(container, options = {}) {
       // Use effective radius (larger if active)
       let effectiveRadius = baseNodeRadius;
       if (exactDiatonic) {
-        const isActive = activeChord && chordsMatch(activeChord, exactDiatonic.chord);
+        const isActive = isNodeActive(exactDiatonic);
         effectiveRadius = isActive ? baseNodeRadius * 1.3 : baseNodeRadius;
       }
 
