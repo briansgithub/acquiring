@@ -68,6 +68,12 @@ function addColumnIfMissing(db, table, name, type) {
   db.exec(`ALTER TABLE ${table} ADD COLUMN ${name} ${type}`);
 }
 
+const SONGS_PIPELINE_COLUMNS = [
+  ['cache_dir', 'TEXT'],
+  ['processed_at', 'TEXT'],
+  ['oracle_tested_at', 'TEXT'],
+];
+
 function migrateSchema(db) {
   db.exec(SONG_DETAILS_DDL);
   for (const [name, type] of SONG_STATS_COLUMNS) {
@@ -75,6 +81,9 @@ function migrateSchema(db) {
   }
   for (const [name, type] of SONG_SECTIONS_COLUMNS) {
     addColumnIfMissing(db, 'song_sections', name, type);
+  }
+  for (const [name, type] of SONGS_PIPELINE_COLUMNS) {
+    addColumnIfMissing(db, 'songs', name, type);
   }
 }
 

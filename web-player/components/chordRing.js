@@ -376,11 +376,19 @@ export function renderChordRing(container, options = {}) {
   }
 
   function resize() {
-    canvas.width = container.clientWidth;
-    canvas.height = container.clientHeight;
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    if (w < 1 || h < 1) return;
+    if (canvas.width === w && canvas.height === h) return;
+    canvas.width = w;
+    canvas.height = h;
     draw();
   }
   window.addEventListener("resize", resize);
+  if (typeof ResizeObserver !== "undefined") {
+    const ro = new ResizeObserver(() => resize());
+    ro.observe(container);
+  }
 
   // Initial Resize
   resize();

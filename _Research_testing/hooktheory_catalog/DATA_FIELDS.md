@@ -25,6 +25,9 @@ Maps every field available from Hooktheory enrichment (page HTML + public API `?
 | `first_seen_at`, `last_checked_at` | Catalog | Yes — ordering, freshness |
 | `status`, `error_message` | Enricher | Yes — queue / daemon |
 | `discovery_source` | Discover phase | Yes — provenance |
+| `cache_dir` | Cache sync / extract | Yes — Song Selector `cacheKey`, processed flag |
+| `processed_at` | Cache sync / extract | Yes — processed pipeline flag |
+| `oracle_tested_at` | Oracle harness (future) | Yes — tested pipeline flag |
 
 ---
 

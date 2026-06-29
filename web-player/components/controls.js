@@ -1,11 +1,11 @@
-export function renderControls(container, { onPlayPause, onRestart, onSeek, onSongChange, onSectionChange, onMelodyVolumeChange, onChordVolumeChange, onTempoChange, onArpeggiateToggle, onArpeggiateSpeedChange }) {
+export function renderControls(container, { hideSongSelect = false, onPlayPause, onRestart, onSeek, onSongChange, onSectionChange, onMelodyVolumeChange, onChordVolumeChange, onTempoChange, onArpeggiateToggle, onArpeggiateSpeedChange }) {
   container.innerHTML = `
     <h2>Controls</h2>
     <div class="row">
       <button id="play-toggle">Play</button>
       <button id="restart-btn">Restart</button>
     </div>
-    <div class="row">
+    <div class="row song-select-row"${hideSongSelect ? ' hidden' : ''}>
       <label for="song-select" style="font-size:18px;color:#9ca3af;width:60px;">Song:</label>
       <select id="song-select" class="select"></select>
     </div>

@@ -76,14 +76,30 @@ Run from `_Research_testing/hooktheory_catalog/` unless noted. Root shims (`node
 | `$env:CATALOG_INTERVAL_MS = "30000"; .\start-daemon.ps1` | Slower background enrich |
 | `$env:CATALOG_MAX_SONGS = "100"` | Daemon stops after 100 enrichments |
 
+## Cache sync (`lib/cacheSync.js`, `lib/library.js`)
+
+- `syncCacheToCatalog(db)` — scan `.hooktheory_cache/`, upsert by URL slug
+- `markSongFromCache(db, url, cacheDirName)` — called from `extract_hooktheory_data.js` after each extract
+- `listLibrary(db)` / `getLibrarySong(db, slug)` / `resolveLoad(db, slug)` — unified API helpers
+- `lib/pipelineFlags.js` — `computeFlags`, `canLoad`, `loadGateMissing`
+
 ## Web UI (from repo root)
 
 | Command | What it does |
 |---------|----------------|
-| `node web-player/server.js` | Start server; open `/catalog.html` |
+| `python launch_player.py` | Free port 3000, start server, Ctrl+C / Quit stops |
+| `node web-player/server.js` | Start server only |
+| `GET /api/library` | Song Selector index (catalog + cache flags) |
+| `POST /api/library/load?slug=…` | Gated load — returns `cacheKey` |
 | `POST /api/catalog/update?mode=quick&enrichLimit=5` | Trigger foreground update via HTTP |
 | `POST /api/catalog/daemon/start?phase=auto` | Start daemon via HTTP |
 | `POST /api/catalog/daemon/stop` | Write stop file via HTTP |
+
+## Cache backfill
+
+| Command | What it does |
+|---------|----------------|
+| `node cli/backfill-cache.js` | Upsert all `.hooktheory_cache/` songs into catalog DB |
 
 ## Monitor & troubleshoot
 

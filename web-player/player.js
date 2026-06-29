@@ -3,6 +3,7 @@ import { renderControls } from "./components/controls.js";
 import { renderChordRing } from "./components/chordRing.js";
 import { renderNoteIndicator } from "./components/noteIndicator.js";
 import { renderTimeline } from "./components/timeline.js";
+import { renderSongSelector } from "./components/songSelector.js";
 import { chordInterpreter, getSongLength, parseKey, sdToToneJSNoteName } from "./lib/music.js";
 import { getChordSymbol } from "./lib/jsonToSymbol.js";
 
@@ -12,6 +13,7 @@ const controlsPane = document.getElementById("controls-pane");
 const ringPane = document.getElementById("ring-pane");
 const indicatorPane = document.getElementById("indicator-pane");
 const timelinePane = document.getElementById("timeline-pane");
+const selectorPane = document.getElementById("selector-pane");
 
 const engine = new AudioEngine();
 
@@ -96,6 +98,7 @@ async function handlePlayPause(shouldPlay) {
 }
 
 const controls = renderControls(controlsPane, {
+  hideSongSelect: true,
   onPlayPause: handlePlayPause,
   onRestart: async () => {
     // Release all notes first to prevent stuck notes when restarting during playback
@@ -210,6 +213,24 @@ const timeline = renderTimeline(timelinePane, {
       noteIndicator.updateChord(chordData.notes, chord.root, chordData.chordDegrees, chord.borrowed, currentKey, chord);
     }
   }
+});
+
+const songSelector = renderSongSelector(selectorPane, {
+  onLoad: async ({ cacheKey }) => {
+    try {
+      const res = await fetch("/api/songs");
+      library = await res.json();
+      const idx = library.findIndex((s) => s.artist === cacheKey);
+      if (idx < 0) {
+        console.error("Loaded song not found in playback cache:", cacheKey);
+        return;
+      }
+      controls.setSongs(library);
+      handleSongChange(String(idx));
+    } catch (err) {
+      console.error("Selector load failed:", err);
+    }
+  },
 });
 
 // Add keyboard support for spacebar to toggle play/pause

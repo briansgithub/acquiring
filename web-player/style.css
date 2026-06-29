@@ -21,7 +21,7 @@ body {
 
 #app {
   display: grid;
-  grid-template-columns: 260px 280px 1fr;
+  grid-template-columns: 260px 280px 1fr 340px;
   grid-template-rows: 110px 1fr;
   gap: 12px;
   padding: 12px;
@@ -41,6 +41,11 @@ body {
   padding: 12px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
   overflow: hidden;
+  min-height: 0;
+}
+
+.pane.selector {
+  overflow: visible;
 }
 
 .pane h2 {
@@ -229,4 +234,370 @@ body {
 
 .volume-slider::-moz-range-thumb:hover {
   transform: scale(1.2);
+}
+
+.quit-btn {
+  position: fixed;
+  bottom: 14px;
+  right: 14px;
+  z-index: 100;
+  background: #1f2937;
+  color: #94a3b8;
+  border: 1px solid var(--divider);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.quit-btn:hover {
+  color: #fca5a5;
+  border-color: #b91c1c;
+  background: #2a1215;
+}
+
+/* ---- Song Selector panel ---- */
+.selector {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.selector-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.sel-back {
+  background: #0b1324;
+  color: var(--text);
+  border: 1px solid var(--divider);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.sel-back:hover {
+  border-color: var(--accent);
+}
+
+.selector-body {
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+.sel-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  z-index: 1;
+}
+
+.sel-field:focus-within {
+  z-index: 20;
+}
+
+.sel-label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.autocomplete {
+  position: relative;
+}
+
+.sel-input {
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--divider);
+  background: #0b1324;
+  color: var(--text);
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.sel-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.autocomplete-drop {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  background: #0b1324;
+  border: 1px solid var(--divider);
+  border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.autocomplete-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(31, 41, 55, 0.6);
+}
+
+.autocomplete-item:last-child {
+  border-bottom: none;
+}
+
+.autocomplete-item:hover {
+  background: rgba(34, 211, 238, 0.12);
+}
+
+.ac-title {
+  font-size: 14px;
+  color: var(--text);
+}
+
+.ac-sub {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.autocomplete-empty {
+  padding: 8px 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.sel-hint {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.sel-retry {
+  margin-left: 6px;
+  background: #0b1324;
+  color: var(--accent);
+  border: 1px solid var(--divider);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.sel-retry:hover {
+  border-color: var(--accent);
+}
+
+.sel-artist-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.sel-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.sel-song-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.song-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #0b1324;
+  border: 1px solid var(--divider);
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.song-link:hover {
+  border-color: var(--accent);
+}
+
+.song-link-status {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.entry-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.entry-artist {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.entry-btns {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  margin: 8px 0 10px;
+}
+
+.entry-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  background: #0b1324;
+  color: var(--text);
+  border: 1px solid var(--divider);
+  border-radius: 8px;
+  padding: 8px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: default;
+  text-transform: capitalize;
+}
+
+.entry-btn--done {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.18);
+  color: #bbf7d0;
+}
+
+.entry-btn--pending {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.14);
+  color: #fecaca;
+}
+
+.entry-load-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
+}
+
+.sel-load-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sel-load-btn--ready {
+  background: #22c55e;
+  color: #052e16;
+}
+
+.sel-load-btn--ready:hover {
+  background: #16a34a;
+}
+
+.sel-load-btn--blocked {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fecaca;
+  border: 1px solid #ef4444;
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+.entry-playable {
+  font-size: 12px;
+  color: #22c55e;
+  font-weight: 600;
+}
+
+.ac-ready {
+  color: #22c55e;
+  font-size: 10px;
+}
+
+.song-link-ready {
+  font-size: 10px;
+  color: #22c55e;
+  margin-left: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.entry-data {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.entry-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(31, 41, 55, 0.5);
+  font-size: 13px;
+}
+
+.entry-key {
+  color: var(--muted);
+}
+
+.entry-val {
+  color: var(--text);
+  text-align: right;
+  word-break: break-word;
+}
+
+.entry-sub {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #cbd5e1;
+  letter-spacing: 0.3px;
+}
+
+.entry-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.entry-section {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  padding: 4px 8px;
+  background: #0b1324;
+  border-radius: 6px;
+}
+
+.entry-section-meta {
+  color: var(--muted);
+}
+
+.entry-link {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--accent);
 }

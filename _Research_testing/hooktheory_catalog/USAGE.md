@@ -39,7 +39,7 @@ node cli/update.js --mode quick --enrich-limit 5
 node cli/export.js --format json
 ```
 
-Web UI: start `web-player/server.js`, open `/catalog.html`. Uses `/api/catalog/*` routes backed by `web/api.js`.
+Web UI: start the player with `python launch_player.py` (or `node web-player/server.js`). The **Song Selector** panel (right column of `index.html`) uses `/api/library`. Catalog admin page: `/catalog.html` via `/api/catalog/*`.
 
 ---
 
@@ -111,6 +111,16 @@ node cli/catalogDaemon.js [--phase auto|discover|enrich]
 
 Stop gracefully: create `data/.catalog_stop` or run `.\stop-daemon.ps1`. Logs: `data/daemon.log`. State: `data/daemon_state.json`, PID: `data/daemon.pid`.
 
+### `cli/backfill-cache.js`
+
+Register all `.hooktheory_cache/` songs in the catalog DB (URL slug join from each folder's `_metadata.json`). Sets `cache_dir`, `processed_at`, and promotes cache-only rows to `enriched` with minimal stats so the Song Selector **Load** gate passes.
+
+```
+node cli/backfill-cache.js
+```
+
+Run after bulk extracts or when cache songs are missing from selector search.
+
 ### `cli/export.js`
 
 ```
@@ -174,6 +184,7 @@ Scripts delegate to `scripts/` and read/write `data/` for PID, stop file, and lo
 
 - **File:** `data/hooktheory_catalog.db` (WAL mode)
 - **Tables:** `songs`, `song_metrics`, `song_stats`, `song_details`, `song_sections`, `discovery_runs`
+- **Pipeline columns on `songs`:** `cache_dir`, `processed_at`, `oracle_tested_at` — link catalog rows to `.hooktheory_cache/` and oracle test state
 - **Song status:** `pending` → `enriched` | `error` | `dead`
 - **Field reference:** [DATA_FIELDS.md](./DATA_FIELDS.md) — which API/HTML fields are stored vs deferred
 
@@ -194,6 +205,8 @@ Or require individual `lib/*` modules.
 
 ## Web-player integration
 
+### Catalog admin (`/catalog.html`)
+
 | Route | Handler |
 |-------|---------|
 | `GET /api/catalog/status` | DB totals + top songs + update/daemon state |
@@ -201,6 +214,18 @@ Or require individual `lib/*` modules.
 | `GET /api/catalog/daemon/status` | Daemon state |
 | `POST /api/catalog/daemon/start?phase=auto` | Spawn `cli/catalogDaemon.js` |
 | `POST /api/catalog/daemon/stop` | Write `data/.catalog_stop` |
+| `GET /api/catalog/songs` | Minimal song list (legacy) |
+| `GET /api/catalog/song?slug=` | Song detail (legacy) |
+
+### Unified library (Song Selector)
+
+| Route | Handler |
+|-------|---------|
+| `GET /api/library` | Catalog + `playable`, `cacheKey`, pipeline `flags` (auto-syncs cache on first call) |
+| `GET /api/library/song?slug=` | Detail + `canLoad` / `loadGateMissing` |
+| `POST /api/library/load?slug=` | Validate gate; return `{ cacheKey }` for `player.js` |
+
+Pipeline flags: **catalogued** (row exists), **metadata** (`status = enriched`), **processed** (`cache_dir` + `processed_at`), **tested** (`oracle_tested_at`). Load requires the first three.
 
 `web-player/catalogApi.js` re-exports `hooktheory_catalog/web/api.js`.
 

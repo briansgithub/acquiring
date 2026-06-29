@@ -2,7 +2,7 @@ const http = require("http");
 const path = require("path");
 const fs = require("fs");
 const url = require("url");
-const { handleCatalogStatus, handleCatalogUpdate, handleDaemonStatus, handleDaemonStart, handleDaemonStop } = require("./catalogApi");
+const { handleCatalogStatus, handleCatalogUpdate, handleDaemonStatus, handleDaemonStart, handleDaemonStop, handleCatalogSongs, handleCatalogSongDetail, handleLibraryList, handleLibrarySong, handleLibraryLoad } = require("./catalogApi");
 
 const PORT = process.env.PORT || 3000;
 const CACHE_ROOT = path.resolve(__dirname, "..", ".hooktheory_cache");
@@ -142,8 +142,21 @@ const server = http.createServer((req, res) => {
     res.end("ok");
     return;
   }
+  if (reqUrl.pathname === "/api/shutdown" && req.method === "POST") {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ ok: true }));
+    setTimeout(() => {
+      server.close(() => process.exit(0));
+    }, 50);
+    return;
+  }
   if (reqUrl.pathname === "/api/songs") return handleApiSongs(res);
   if (reqUrl.pathname === "/api/song") return handleApiSong(reqUrl, res);
+  if (reqUrl.pathname === "/api/catalog/songs") return handleCatalogSongs(res);
+  if (reqUrl.pathname === "/api/catalog/song") return handleCatalogSongDetail(reqUrl, res);
+  if (reqUrl.pathname === "/api/library") return handleLibraryList(res);
+  if (reqUrl.pathname === "/api/library/song") return handleLibrarySong(reqUrl, res);
+  if (reqUrl.pathname === "/api/library/load" && req.method === "POST") return handleLibraryLoad(reqUrl, res);
   if (reqUrl.pathname === "/api/catalog/status") return handleCatalogStatus(res);
   if (reqUrl.pathname === "/api/catalog/update" && req.method === "POST") return handleCatalogUpdate(reqUrl, res);
   if (reqUrl.pathname === "/api/catalog/daemon/status") return handleDaemonStatus(res);

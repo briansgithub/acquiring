@@ -15,9 +15,18 @@
     <div id="controls-pane" class="pane controls"></div>
     <div id="indicator-pane" class="pane indicator"></div>
     <div id="ring-pane" class="pane ring"></div>
+    <div id="selector-pane" class="pane selector"></div>
   </div>
+  <button type="button" id="quit-player" class="quit-btn" title="Stop server and close tab">Quit</button>
   <script type="module" src="./player.js"></script>
   <script>
+    document.getElementById("quit-player").addEventListener("click", async () => {
+      try {
+        await fetch("/api/shutdown", { method: "POST" });
+      } catch (_) {}
+      window.close();
+    });
+
     // Poll server health and close tab when server stops
     (function () {
       const POLL_INTERVAL = 1000; // Check every 3 seconds

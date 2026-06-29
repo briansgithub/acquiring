@@ -18,6 +18,10 @@ function loadCatalogDb() {
   return { openDb, getCatalogStatus, listSongs };
 }
 
+function loadQueries() {
+  return require('../lib/queries');
+}
+
 function readJsonFile(file, fallback) {
   if (!fs.existsSync(file)) return fallback;
   try {
@@ -146,6 +150,119 @@ function handleDaemonStop(res) {
   res.end(JSON.stringify({ ok: true, message: 'Stop signal written' }));
 }
 
+function handleCatalogSongs(res) {
+  try {
+    const { openDb } = loadCatalogDb();
+    const { listAllSongsMinimal } = loadQueries();
+    const db = openDb();
+    const songs = listAllSongsMinimal(db);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ songs }));
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err.message }));
+  }
+}
+
+function handleCatalogSongDetail(reqUrl, res) {
+  const slug = reqUrl.searchParams.get('slug');
+  if (!slug) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'slug query param required' }));
+    return;
+  }
+  try {
+    const { openDb } = loadCatalogDb();
+    const { getSongDetail, listSongSections } = loadQueries();
+    const db = openDb();
+    const song = getSongDetail(db, slug);
+    if (!song) {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'song not found' }));
+      return;
+    }
+    const sections = listSongSections(db, slug);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ song, sections }));
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err.message }));
+  }
+}
+
+function handleLibraryList(res) {
+  try {
+    const { openDb } = loadCatalogDb();
+    const { listLibrary } = require('../lib/library');
+    const db = openDb();
+    const songs = listLibrary(db);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ songs }));
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err.message }));
+  }
+}
+
+function handleLibrarySong(reqUrl, res) {
+  const slug = reqUrl.searchParams.get('slug');
+  if (!slug) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'slug query param required' }));
+    return;
+  }
+  try {
+    const { openDb } = loadCatalogDb();
+    const { getLibrarySong } = require('../lib/library');
+    const db = openDb();
+    const data = getLibrarySong(db, slug);
+    if (!data) {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'song not found' }));
+      return;
+    }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(data));
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err.message }));
+  }
+}
+
+function handleLibraryLoad(reqUrl, res) {
+  const slug = reqUrl.searchParams.get('slug');
+  if (!slug) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'slug query param required' }));
+    return;
+  }
+  try {
+    const { openDb } = loadCatalogDb();
+    const { resolveLoad } = require('../lib/library');
+    const db = openDb();
+    const result = resolveLoad(db, slug);
+    if (!result.ok) {
+      res.writeHead(result.status, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        error: result.error,
+        flags: result.flags,
+        missing: result.missing,
+      }));
+      return;
+    }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      ok: true,
+      slug: result.slug,
+      cacheKey: result.cacheKey,
+      url: result.url,
+    }));
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err.message }));
+  }
+}
+
 module.exports = {
   ROOT,
   handleCatalogStatus,
@@ -153,4 +270,9 @@ module.exports = {
   handleDaemonStatus,
   handleDaemonStart,
   handleDaemonStop,
+  handleCatalogSongs,
+  handleCatalogSongDetail,
+  handleLibraryList,
+  handleLibrarySong,
+  handleLibraryLoad,
 };

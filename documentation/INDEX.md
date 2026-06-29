@@ -19,7 +19,7 @@ Master map of repo documentation. **Read the linked file when your task matches 
 
 | Document | Read when… |
 |----------|------------|
-| [Hooktheory Song Catalog — USAGE](../_Research_testing/hooktheory_catalog/USAGE.md) | You need to **discover, store, enrich, or query TheoryTab songs** from hooktheory.com: SQLite catalog (`data/hooktheory_catalog.db`), Meilisearch discovery, Puppeteer + public API enrichment, Hooktheory SongMetrics / complexity ratings, the background daemon (`cli/catalogDaemon.js`, PS1 scripts), `cli/update.js` / `cli/status.js`, rate probing, web-player `/api/catalog/*` routes, or programmatic access via `hooktheory_catalog/index.js`. Isolated under `_Research_testing/hooktheory_catalog/` (`lib/`, `cli/`, `web/`, `data/`). **Not** the oracle decode harness — that lives in `_Decode_oracle/`. |
+| [Hooktheory Song Catalog — USAGE](../_Research_testing/hooktheory_catalog/USAGE.md) | You need to **discover, store, enrich, or query TheoryTab songs** from hooktheory.com: SQLite catalog (`data/hooktheory_catalog.db`), Meilisearch discovery, Puppeteer + public API enrichment, Hooktheory SongMetrics / complexity ratings, the background daemon (`cli/catalogDaemon.js`, PS1 scripts), `cli/update.js` / `cli/status.js`, rate probing, web-player `/api/catalog/*` and **`/api/library`** routes (Song Selector), or programmatic access via `hooktheory_catalog/index.js`. Isolated under `_Research_testing/hooktheory_catalog/` (`lib/`, `cli/`, `web/`, `data/`). **Not** the oracle decode harness — that lives in `_Decode_oracle/`. |
 | [Hooktheory Song Catalog — CHEATSHEET](../_Research_testing/hooktheory_catalog/CHEATSHEET.md) | You need a **quick command lookup** (copy-paste examples) for catalog CLI, daemon PS1 scripts, rate probe, and web API triggers — no prose, tables only. |
 | [Hooktheory Catalog — DATA_FIELDS](../_Research_testing/hooktheory_catalog/DATA_FIELDS.md) | You need to know **which Hooktheory/API fields are stored in the catalog DB** vs deferred to cache — used vs unused columns, JSON bundles, and intentionally omitted blobs. |
 
@@ -29,7 +29,7 @@ Master map of repo documentation. **Read the linked file when your task matches 
 
 | Path | One-line scope |
 |------|----------------|
-| `web-player/` | Browser UI + Tone.js playback; serves cache and catalog page. See ARCHITECTURE.md. |
+| `web-player/` | Browser UI + Tone.js playback; Song Selector + unified `/api/library`; serves cache. See ARCHITECTURE.md. |
 | `_Decode_oracle/` | Offline scrape → engine → score oracle loop. See ARCHITECTURE.md + `ORACLE_GUIDE/`. |
 | `ORACLE_GUIDE/` | Step-by-step oracle workflow for agents. |
 | `lib/extractor/` | Shared chord JSON extraction (used by oracle and catalog enrich). |
@@ -46,7 +46,7 @@ Task involves chord correctness / regression / scrape-and-compare?
   → ARCHITECTURE.md + _Decode_oracle/
 
 Task involves playback / UI / audio engine?
-  → ARCHITECTURE.md § Web-player
+  → ARCHITECTURE.md § Web-player (Song Selector Load gate)
 
 Known bug or regression?
   → BUGS.md first

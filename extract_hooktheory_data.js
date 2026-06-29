@@ -115,6 +115,18 @@ async function extractFromUrl(url, useNewCache = false) {
       numericId: sections[songId]?.numericId || null
     }))
   });
+
+  try {
+    const pathMod = require('path');
+    const { openDb } = require('./_Research_testing/hooktheory_catalog/lib/db');
+    const { markSongFromCache } = require('./_Research_testing/hooktheory_catalog/lib/cacheSync');
+    const { extractArtistAndSongFromUrl } = require('./lib/parser/urlParser');
+    const { artist } = extractArtistAndSongFromUrl(url);
+    const cacheDirName = pathMod.basename(CacheManager.getSongCacheDir(artist, songTitle));
+    markSongFromCache(openDb(), url, cacheDirName);
+  } catch (_) {
+    // catalog sync is best-effort
+  }
   
   return result;
 }

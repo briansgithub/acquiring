@@ -27,11 +27,14 @@ Naming of `oracle/chord-db-suspensions-truth`: **chord-db** = bucketed regressio
 
 ## 2. Web-player runtime
 
-Entry: [`web-player/player.js`](../web-player/player.js) wires components + audio engine. Served by [`web-player/server.js`](../web-player/server.js) from `.hooktheory_cache/`.
+Entry: [`web-player/player.js`](../web-player/player.js) wires components + audio engine. Served by [`web-player/server.js`](../web-player/server.js) from `.hooktheory_cache/` and the Hooktheory catalog DB.
 
 ```mermaid
 flowchart TD
   cache[".hooktheory_cache/*.json"] --> player[player.js]
+  catalog["hooktheory_catalog.db"] --> libApi["GET /api/library"]
+  libApi --> selector[components/songSelector.js]
+  selector -->|"Load only"| player
   player --> engine[audio/engine.js Tone.js]
   player --> ring[components/chordRing.js]
   player --> note[components/noteIndicator.js]
@@ -41,16 +44,19 @@ flowchart TD
   interp --> sym[lib/jsonToSymbol.js]
 ```
 
+**Song Selector isolation:** browsing/searching the catalog shows metadata only. Chord ring, timeline, and transport update **only** when the user presses **Load** (after catalogued + metadata + processed gates pass). `POST /api/library/load` returns the cache folder key; `player.js` resolves it via `GET /api/songs` and calls `handleSongChange` / `loadSection`.
+
 Key state lives in `player.js`: `currentRawChords`, `currentKey`, `currentChordEvents`, `isArpeggiated`, `forceRootPosition`. Chord/melody events are tick-based (192 PPQ) so tempo changes reschedule cleanly via `engine.rescheduleParts` / `updatePlaybackSettings`.
 
 ### Components
 
 | File | Role |
 |---|---|
-| `components/controls.js` | Play/seek/tempo, melody+chord volume, arpeggiate toggle/speed |
-| `components/chordRing.js` | Circular chord visualizer; manual chord preview on click; transition table |
+| `components/controls.js` | Play/seek/tempo, melody+chord volume, arpeggiate toggle/speed; section picker (song dropdown hidden — load via Song Selector) |
+| `components/chordRing.js` | Circular chord visualizer; manual chord preview on click; transition table; `ResizeObserver` keeps canvas sharp on layout changes |
 | `components/noteIndicator.js` | "Now Playing" Melody + Chord cards (note pills, scale-degree pills, Roman symbol, borrowed tag, root-position checkbox) |
 | `components/timeline.js` | Beat-axis timeline; click-to-preview chords; song URL display |
+| `components/songSelector.js` | Right-panel catalog browser: substring search, artist drill-down, pipeline status buttons, gated **Load** into player |
 
 ---
 
@@ -163,17 +169,36 @@ Fix-by-fix detail: [`_Decode_oracle/DECODE_FIX_LOG.md`](../_Decode_oracle/DECODE
 
 ---
 
-## 7. Hooktheory cache
+## 7. Hooktheory cache + unified library
 
-Song data cached under `.hooktheory_cache/<artist> - <Song_Title>/` by [`extract_hooktheory_data.js`](../extract_hooktheory_data.js) via `lib/cache/cacheManager.js`. One JSON per section (`Section - <numericId> - <stringSongId>.json`) plus `_metadata.json`. The web-player serves from here.
+Song data is cached under `.hooktheory_cache/<artist> - <Song_Title>/` by [`extract_hooktheory_data.js`](../extract_hooktheory_data.js) via `lib/cache/cacheManager.js`. One JSON per section plus `_metadata.json`. The web-player serves playback from here (`GET /api/songs`, `GET /api/song`).
+
+The **catalog DB** (`_Research_testing/hooktheory_catalog/data/hooktheory_catalog.db`) is the search index for the Song Selector. Cache and catalog are joined by TheoryTab URL slug:
+
+| `songs` column | Meaning |
+|---|---|
+| `cache_dir` | Folder name under `.hooktheory_cache/` (e.g. `the-beatles - Hey_Jude`) |
+| `processed_at` | When section JSON was written to cache |
+| `oracle_tested_at` | Oracle ground-truth compare (future) |
+
+**Sync:** `cli/backfill-cache.js` / `lib/cacheSync.js` upserts cache folders into the catalog from `_metadata.json`. Future extracts also call `markSongFromCache` after `saveSongMetadata`.
+
+**Unified API** (Song Selector):
+
+| Route | Role |
+|---|---|
+| `GET /api/library` | All catalog rows + `playable`, `cacheKey`, pipeline `flags` |
+| `GET /api/library/song?slug=` | Detail + load-gate status |
+| `POST /api/library/load?slug=` | Validate gate; return `cacheKey` for player |
 
 Download a song:
 ```bash
 node extract_hooktheory_data.js https://www.hooktheory.com/theorytab/view/<artist>/<song>
 # --newcache to bypass/refresh
+node _Research_testing/hooktheory_catalog/cli/backfill-cache.js  # register in catalog
 ```
 
-Recently added: Gladiolus Rag, Zelda Prologue (ALttP), Littleroot Town (committed `06c3a16`). Library ~19 songs.
+Library ~19 songs in cache. Start player: `python launch_player.py` (frees port 3000, Ctrl+C / Quit stops server).
 
 The page scraper ([`lib/scraper/pageScraper.js`](../lib/scraper/pageScraper.js), Fix 030) discovers sections via `a.tb-section-tab` → `tab-{songId}` containers (Hooktheory removed the old `div.col-md-8` layout).
 
