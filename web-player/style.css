@@ -21,7 +21,7 @@ body {
 
 #app {
   display: grid;
-  grid-template-columns: 260px 280px 1fr 340px;
+  grid-template-columns: 310px 250px 210px 1fr;
   grid-template-rows: 110px 1fr;
   gap: 12px;
   padding: 12px;
@@ -45,7 +45,10 @@ body {
 }
 
 .pane.selector {
-  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
 }
 
 .pane h2 {
@@ -55,19 +58,133 @@ body {
   color: #cbd5e1;
 }
 
+.indicator {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 2px;
+  padding: 8px 10px;
+}
+
 .now-playing-title {
-  margin: 0 0 4px;
+  margin: 0 0 2px;
   text-align: center;
+  font-size: 14px;
 }
 
 .now-playing-key {
   text-align: center;
-  font-size: 28px;
+  font-size: 22px;
   font-weight: 700;
   color: #ffffff;
   letter-spacing: 0.02em;
-  margin: 0 0 12px;
-  line-height: 1.2;
+  margin: 0 0 8px;
+  line-height: 1.15;
+}
+
+.indicator .card {
+  background: #0b1324;
+  border: 1px solid var(--divider);
+  border-radius: 10px;
+  padding: 8px;
+  min-height: 0;
+}
+
+.indicator-card {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.indicator-card[hidden] {
+  display: none !important;
+}
+
+.indicator-card--melody {
+  min-height: 150px;
+}
+
+.indicator-card--chord {
+  min-height: 150px;
+  justify-content: space-between;
+}
+
+.indicator-stack {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 8px;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.indicator-melody-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.indicator-option-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+  color: var(--muted);
+  font-size: 12px;
+  margin: 0;
+}
+
+.indicator-option-toggle input {
+  cursor: pointer;
+}
+
+.indicator-card-label {
+  text-align: center;
+}
+
+.melody-content-wrapper {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-top: 6px;
+  gap: 4px;
+}
+
+.melody-content-wrapper .notes-list {
+  min-height: 32px;
+  justify-content: center;
+}
+
+.tension-badge {
+  margin-top: 4px;
+  padding: 6px;
+  border-radius: 6px;
+  font-size: 12px;
+  text-align: center;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.02);
+  color: #64748b;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 42px;
+}
+
+.tension-title {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.tension-desc {
+  font-size: 9px;
+  font-weight: 400;
+  margin-top: 1px;
+  opacity: 0.8;
 }
 
 .controls .row {
@@ -131,21 +248,6 @@ body {
 .ring canvas {
   width: 100%;
   height: 100%;
-}
-
-.indicator {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 4px;
-}
-
-.indicator .card {
-  background: #0b1324;
-  border: 1px solid var(--divider);
-  border-radius: 10px;
-  padding: 10px;
-  min-height: 60px;
 }
 
 .indicator .label {
@@ -273,59 +375,187 @@ body {
 }
 
 /* ---- Song Selector panel ---- */
-.selector {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  min-height: 0;
-}
-
 .selector-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 8px;
-}
-
-.sel-light-scrape {
-  margin-bottom: 10px;
-  border: 1px solid var(--divider);
-  border-radius: 8px;
-  background: rgba(11, 19, 36, 0.5);
   flex-shrink: 0;
 }
 
-.sel-light-scrape-summary {
+.selector-body {
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.selector-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.selector-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.selector-body::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.35);
+  border-radius: 4px;
+}
+
+.selector-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.55);
+}
+
+.sel-song-nav {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 8px;
+  margin-bottom: 10px;
   padding: 8px 10px;
+  border: 1px solid var(--divider);
+  border-radius: 8px;
+  background: rgba(11, 19, 36, 0.55);
+  flex-shrink: 0;
+}
+
+.sel-song-nav-top {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.sel-song-nav-sort-wrap {
+  flex: 1;
+  min-width: 0;
+  max-width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sel-song-nav-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.sel-back {
+  flex-shrink: 0;
+  margin-left: auto;
+  background: rgba(34, 211, 238, 0.14);
+  color: var(--text);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.08);
+}
+
+.sel-back:hover {
+  background: rgba(34, 211, 238, 0.24);
+  border-color: #67e8f9;
+}
+
+.sel-catalog-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  background: rgba(34, 211, 238, 0.1);
+  color: var(--text);
+  border: 1px solid var(--divider);
+  border-radius: 8px;
+  padding: 7px 12px;
   font-size: 12px;
   font-weight: 600;
-  color: var(--text);
   cursor: pointer;
-  list-style: none;
-  user-select: none;
 }
 
-.sel-light-scrape-summary::-webkit-details-marker {
-  display: none;
+.sel-catalog-open:hover {
+  border-color: var(--accent);
+  background: rgba(34, 211, 238, 0.18);
 }
 
-.sel-light-scrape-summary::before {
-  content: "▸";
-  margin-right: 6px;
-  color: var(--muted);
-  transition: transform 0.15s ease;
+.sel-catalog-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
 }
 
-.sel-light-scrape[open] > .sel-light-scrape-summary::before {
-  transform: rotate(90deg);
+.sel-catalog-modal[hidden] {
+  display: none !important;
 }
 
-.sel-light-scrape-title {
+.sel-catalog-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.72);
+}
+
+.sel-catalog-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(520px, 100%);
+  max-height: min(85vh, 720px);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--divider);
+  border-radius: 10px;
+  background: #0b1324;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+}
+
+.sel-catalog-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--divider);
+  background: rgba(11, 19, 36, 0.85);
+}
+
+.sel-catalog-title {
+  margin: 0;
   flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sel-catalog-close {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--divider);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.sel-catalog-close:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.sel-catalog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  overflow: auto;
 }
 
 .sel-light-scrape-badge {
@@ -336,38 +566,6 @@ body {
   background: rgba(34, 211, 238, 0.15);
   color: #67e8f9;
   border: 1px solid rgba(34, 211, 238, 0.35);
-}
-
-.sel-light-scrape-inner {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 0 10px 10px;
-  border-top: 1px solid var(--divider);
-}
-
-.sel-back {
-  background: #0b1324;
-  color: var(--text);
-  border: 1px solid var(--divider);
-  border-radius: 8px;
-  padding: 4px 10px;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.sel-back:hover {
-  border-color: var(--accent);
-}
-
-.selector-body {
-  flex: 1;
-  overflow-x: hidden;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-height: 0;
 }
 
 .sel-field {
@@ -870,6 +1068,20 @@ body {
   cursor: pointer;
 }
 
+.sel-load-btn--pending {
+  background: #eab308;
+  color: #422006;
+}
+
+.sel-load-btn--pending:hover:not(:disabled) {
+  background: #ca8a04;
+}
+
+.sel-load-btn--pending:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .sel-load-btn--ready {
   background: #22c55e;
   color: #052e16;
@@ -967,4 +1179,10 @@ body {
   margin-top: 6px;
   font-size: 13px;
   color: var(--accent);
+}
+
+.entry-link--top {
+  display: inline-block;
+  margin-top: 4px;
+  margin-bottom: 8px;
 }

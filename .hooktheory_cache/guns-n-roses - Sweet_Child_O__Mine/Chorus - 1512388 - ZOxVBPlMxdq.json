@@ -365,8 +365,163 @@
     ],
     "sections": [],
     "endBeat": 33,
+    "youtube": {
+      "id": "https://www.youtube.com/watch?v=1w7OgIMMRc4&ab_channel=GunsNRosesVEVO",
+      "syncStart": 0.20295439016903202,
+      "syncEnd": 0.25366340882159744,
+      "syncMode": "youtube-sync-mode-test"
+    },
+    "lyrics": {
+      "isOpen": false,
+      "isFocused": false,
+      "values": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "sectionLyrics": [
+        {
+          "sectionName": "Song",
+          "lyrics": [
+            "",
+            "",
+            "",
+            ""
+          ]
+        }
+      ]
+    },
+    "bands": [
+      {
+        "beat": 1,
+        "lead1": [
+          {
+            "mute": false,
+            "octaveOffset": 0,
+            "velocity": 0.5,
+            "specification": "Piano Lead",
+            "midiChannel": 1,
+            "useHookpadOutput": true,
+            "useMIDIOutput": true,
+            "solo": false,
+            "wasMutedBeforeSolo": false,
+            "pan": 0,
+            "timing": 0
+          }
+        ],
+        "lead2": [
+          {
+            "mute": false,
+            "octaveOffset": 0,
+            "velocity": 0.5,
+            "specification": "Piano Lead",
+            "midiChannel": 2,
+            "useHookpadOutput": true,
+            "useMIDIOutput": true,
+            "solo": false,
+            "wasMutedBeforeSolo": false,
+            "pan": 0,
+            "timing": 0
+          }
+        ],
+        "lead3": [
+          {
+            "mute": false,
+            "octaveOffset": 0,
+            "velocity": 0.5,
+            "specification": "Piano Lead",
+            "midiChannel": 3,
+            "useHookpadOutput": true,
+            "useMIDIOutput": true,
+            "solo": false,
+            "wasMutedBeforeSolo": false,
+            "pan": 0,
+            "timing": 0
+          }
+        ],
+        "lead4": [
+          {
+            "mute": false,
+            "octaveOffset": 0,
+            "velocity": 0.5,
+            "specification": "Piano Lead",
+            "midiChannel": 4,
+            "useHookpadOutput": true,
+            "useMIDIOutput": true,
+            "solo": false,
+            "wasMutedBeforeSolo": false,
+            "pan": 0,
+            "timing": 0
+          }
+        ],
+        "harmony": [
+          {
+            "octaveOffset": 0,
+            "velocity": 0.5,
+            "specification": "Piano 1/4s",
+            "midiChannel": 5,
+            "useHookpadOutput": true,
+            "useMIDIOutput": true,
+            "solo": false,
+            "wasMutedBeforeSolo": false,
+            "pan": 0,
+            "timing": 0
+          }
+        ],
+        "bass": [
+          {
+            "octaveOffset": 0,
+            "velocity": 0.5,
+            "specification": "Piano Bass-Dotted",
+            "midiChannel": 9,
+            "useHookpadOutput": true,
+            "useMIDIOutput": false,
+            "solo": false,
+            "wasMutedBeforeSolo": false,
+            "pan": 0,
+            "timing": 0
+          }
+        ],
+        "drums": [
+          {
+            "octaveOffset": 0,
+            "velocity": 0.5,
+            "specification": "Basic Pop",
+            "midiChannel": 10,
+            "useHookpadOutput": false,
+            "useMIDIOutput": false,
+            "solo": false,
+            "wasMutedBeforeSolo": false,
+            "pan": 0,
+            "timing": 0
+          }
+        ]
+      }
+    ],
+    "breaks": [],
+    "keyFrames": [
+      {
+        "beat": 1
+      },
+      {
+        "beat": 33
+      }
+    ],
+    "activeMelodyIndex": 0,
+    "visibleMelodies": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "pickup": false,
+    "fp": "a70a77b6fcc734b3fd21957e76dd24a725a5caa4",
+    "externalMp3Url": null,
+    "externalMp3StartBeat": 1,
+    "externalMp3Duration": 0,
     "numericId": 1512388
   },
   "stringSongId": "ZOxVBPlMxdq",
-  "cachedAt": "2025-12-15T08:19:53.340Z"
+  "cachedAt": "2026-06-29T20:12:06.706Z"
 }

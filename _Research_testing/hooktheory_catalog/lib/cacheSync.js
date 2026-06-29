@@ -1,5 +1,8 @@
 /**
- * Sync .hooktheory_cache folders into the catalog DB (URL slug join).
+ * Scan .hooktheory_cache/ and upsert catalog rows (MANUAL ONLY).
+ *
+ * Not run on library load. Normal workflow: catalog → fetch → test.
+ * Use only for one-off migration: node cli/backfill-cache.js
  */
 
 const fs = require('fs');

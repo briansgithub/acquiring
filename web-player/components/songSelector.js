@@ -1,10 +1,12 @@
 /**
- * Song Selector panel: browse-only catalog + gated Load into player.
- * Browse/click never touches chord ring or transport — only onLoad does.
+ * Song Selector panel: catalog browse + pipeline actions.
+ * Songs with a complete pipeline auto-load into the player on detail view.
  */
 
 import {
   buildSongDetailHtml,
+  isPipelineComplete,
+  pipelineMissing,
   wirePipelineButtons,
 } from "./songSelectorPipeline.js";
 
@@ -31,20 +33,25 @@ function loadTooltip(missing) {
     return "Load into player — updates chord ring, timeline, and audio";
   }
   const labels = {
+    catalogued: "catalogue",
+    harvested: "fetch",
     metadata: "metadata enrich",
     processed: "section extract",
+    tested: "oracle test",
   };
   return `Load blocked — needs: ${missing.map((m) => labels[m] || m).join(", ")}`;
 }
 
-function lightScrapePanelHtml() {
+function catalogModalHtml() {
   return `
-    <details id="sel-light-scrape" class="sel-light-scrape">
-      <summary class="sel-light-scrape-summary">
-        <span class="sel-light-scrape-title">Light catalog</span>
+    <div class="sel-catalog-backdrop" data-close-catalog></div>
+    <div class="sel-catalog-dialog" role="dialog" aria-labelledby="sel-catalog-title">
+      <div class="sel-catalog-header">
+        <h3 id="sel-catalog-title" class="sel-catalog-title">Light catalog</h3>
         <span id="sel-light-scrape-badge" class="sel-light-scrape-badge" hidden></span>
-      </summary>
-      <div class="sel-light-scrape-inner">
+        <button id="sel-catalog-close" type="button" class="sel-catalog-close" aria-label="Close">×</button>
+      </div>
+      <div class="sel-catalog-body">
         <p id="sel-batch-mode-hint" class="sel-batch-note"></p>
         <label class="sel-label" for="sel-batch-mode">Mode</label>
         <select id="sel-batch-mode" class="sel-select sel-batch-mode">
@@ -71,7 +78,7 @@ function lightScrapePanelHtml() {
           </div>
         </div>
       </div>
-    </details>
+    </div>
   `;
 }
 
@@ -79,14 +86,42 @@ export function renderSongSelector(container, options = {}) {
   container.innerHTML = `
     <div class="selector-head">
       <h2 style="margin:0;">Song Selector</h2>
-      <button id="sel-back" class="sel-back" hidden>&larr; Back</button>
+      <button id="sel-catalog-open" type="button" class="sel-catalog-open" hidden>
+        Light catalog
+        <span id="sel-catalog-open-badge" class="sel-light-scrape-badge" hidden></span>
+      </button>
     </div>
-    ${lightScrapePanelHtml()}
+    <div id="sel-song-nav" class="sel-song-nav" hidden>
+      <div class="sel-song-nav-top">
+        <div class="sel-song-nav-sort-wrap">
+          <label class="sel-label" for="sel-nav-playable-sort">Sort by</label>
+          <select id="sel-nav-playable-sort" class="sel-select sel-playable-sort">
+            <option value="complexity" selected>Complexity</option>
+            <option value="alphabetical">Alphabetically</option>
+            <option value="artist">Artist</option>
+          </select>
+        </div>
+        <button id="sel-back" type="button" class="sel-back" hidden>Back</button>
+      </div>
+      <div class="sel-song-nav-picker">
+        <select id="sel-nav-playable-select" class="sel-select sel-playable-select" aria-label="Playable songs">
+          <option value="">Select a song…</option>
+        </select>
+      </div>
+    </div>
+    <div id="sel-catalog-modal" class="sel-catalog-modal" hidden>
+      ${catalogModalHtml()}
+    </div>
     <div id="sel-body" class="selector-body"></div>
   `;
 
   const body = container.querySelector("#sel-body");
+  const songNav = container.querySelector("#sel-song-nav");
   const backBtn = container.querySelector("#sel-back");
+  const catalogOpenBtn = container.querySelector("#sel-catalog-open");
+  const catalogModal = container.querySelector("#sel-catalog-modal");
+  const navPlayableSelect = container.querySelector("#sel-nav-playable-select");
+  const navPlayableSort = container.querySelector("#sel-nav-playable-sort");
 
   // Client-side index from unified library API
   let songs = [];          // [{slug, artist, title, flags, playable, cacheKey, _t, _a}]
@@ -95,6 +130,39 @@ export function renderSongSelector(container, options = {}) {
   let loadError = null;
 
   backBtn.addEventListener("click", () => showSearch());
+
+  function setCatalogButtonVisible(visible) {
+    if (catalogOpenBtn) catalogOpenBtn.hidden = !visible;
+  }
+
+  function openCatalogModal() {
+    if (!catalogModal) return;
+    catalogModal.hidden = false;
+  }
+
+  function closeCatalogModal() {
+    if (!catalogModal) return;
+    catalogModal.hidden = true;
+  }
+
+  function showSongNav({ activeSlug = null, showBack = false } = {}) {
+    if (!songNav) return;
+    songNav.hidden = false;
+    if (navPlayableSort) navPlayableSort.value = playableSortMode;
+    if (backBtn) backBtn.hidden = !showBack;
+    refreshPlayableDropdown(activeSlug);
+  }
+
+  navPlayableSort?.addEventListener("change", () => {
+    playableSortMode = navPlayableSort.value;
+    refreshPlayableDropdown(navPlayableSelect?.value || null);
+  });
+
+  navPlayableSelect?.addEventListener("change", () => {
+    const slug = navPlayableSelect.value;
+    if (!slug) return;
+    showSongDetail(slug);
+  });
 
   async function loadIndex() {
     try {
@@ -167,12 +235,14 @@ export function renderSongSelector(container, options = {}) {
   }
 
   async function refreshBatchPanel() {
-    const panel = container.querySelector("#sel-batch-panel");
+    const panel = catalogModal?.querySelector("#sel-batch-panel");
     if (!panel) return;
     try {
       const res = await fetch("/api/library/catalog/batch/status");
       const data = await res.json();
       if (!res.ok) return;
+
+      const active = Boolean(data.jobActive ?? data.running);
 
       const statusEl = panel.querySelector("#sel-batch-status");
       const detailEl = panel.querySelector("#sel-batch-detail");
@@ -183,12 +253,10 @@ export function renderSongSelector(container, options = {}) {
       const resumeBtn = panel.querySelector("#sel-batch-resume");
       const cancelBtn = panel.querySelector("#sel-batch-cancel");
       const startBtn = panel.querySelector("#sel-batch-start");
-      const modeSel = container.querySelector("#sel-batch-mode");
-      const limitInput = container.querySelector("#sel-batch-limit");
-      const scrapeDetails = container.querySelector("#sel-light-scrape");
-      const scrapeBadge = container.querySelector("#sel-light-scrape-badge");
-
-      const active = Boolean(data.jobActive ?? data.running);
+      const modeSel = catalogModal.querySelector("#sel-batch-mode");
+      const limitInput = catalogModal.querySelector("#sel-batch-limit");
+      const scrapeBadge = catalogModal.querySelector("#sel-light-scrape-badge");
+      const openBadge = container.querySelector("#sel-catalog-open-badge");
       const queue = data.queue_remaining ?? 0;
       const harvested = data.songs_harvested_session ?? 0;
       const failed = data.songs_failed_session ?? 0;
@@ -221,18 +289,16 @@ export function renderSongSelector(container, options = {}) {
         if (cancelBtn) cancelBtn.hidden = true;
       }
 
-      if (scrapeDetails && active) scrapeDetails.open = true;
-      if (scrapeBadge) {
-        if (active) {
-          scrapeBadge.hidden = false;
-          scrapeBadge.textContent = data.paused ? "Paused" : (data.phase || "Running");
-        } else if (queue > 0) {
-          scrapeBadge.hidden = false;
-          scrapeBadge.textContent = `${queue} pending`;
-        } else {
-          scrapeBadge.hidden = true;
-        }
+      const badgeText = active
+        ? (data.paused ? "Paused" : (data.phase || "Running"))
+        : (queue > 0 ? `${queue} pending` : "");
+      const showBadge = Boolean(badgeText);
+      for (const badge of [scrapeBadge, openBadge]) {
+        if (!badge) continue;
+        badge.hidden = !showBadge;
+        if (showBadge) badge.textContent = badgeText;
       }
+      if (active && catalogModal?.hidden) openCatalogModal();
 
       if (logEl && Array.isArray(data.logTail)) {
         logEl.textContent = data.logTail.join("\n") || "No log yet.";
@@ -345,8 +411,7 @@ export function renderSongSelector(container, options = {}) {
   let playableSortMode = "complexity";
 
   function getPlayableSortMode() {
-    const sortSel = body.querySelector("#sel-playable-sort");
-    return sortSel?.value || playableSortMode;
+    return navPlayableSort?.value || playableSortMode;
   }
 
   function formatSongLabel(s, sortBy) {
@@ -373,7 +438,7 @@ export function renderSongSelector(container, options = {}) {
         const aMissing = ca == null;
         const bMissing = cb == null;
         if (aMissing !== bMissing) return aMissing ? 1 : -1;
-        if (!aMissing && cb !== ca) return cb - ca;
+        if (!aMissing && cb !== ca) return ca - cb;
         const byTitle = cmpTitle(a, b);
         if (byTitle !== 0) return byTitle;
         return cmpArtist(a, b);
@@ -393,15 +458,20 @@ export function renderSongSelector(container, options = {}) {
     });
   }
 
-  function refreshPlayableDropdown() {
-    const sel = body.querySelector("#sel-playable-select");
-    if (!sel) return;
+  function refreshPlayableDropdown(activeSlug = null) {
     const sortBy = getPlayableSortMode();
     const playable = playableSongsSorted(sortBy);
-    sel.innerHTML = [
+    const optionsHtml = [
       '<option value="">Select a song…</option>',
       ...playable.map((s) => `<option value="${esc(s.slug)}">${esc(formatSongLabel(s, sortBy))}</option>`),
     ].join("");
+
+    for (const sel of container.querySelectorAll(".sel-playable-select")) {
+      sel.innerHTML = optionsHtml;
+      if (activeSlug && sel.closest("#sel-song-nav")) {
+        sel.value = activeSlug;
+      }
+    }
   }
 
   function matchArtists(q) {
@@ -418,7 +488,8 @@ export function renderSongSelector(container, options = {}) {
 
   // ---- Search view ----
   function showSearch() {
-    backBtn.hidden = true;
+    setCatalogButtonVisible(true);
+    showSongNav({ showBack: false });
     body.innerHTML = `
       <div class="sel-field">
         <label class="sel-label" for="sel-url-input">Add song by URL</label>
@@ -429,20 +500,6 @@ export function renderSongSelector(container, options = {}) {
           <button id="sel-url-add" class="sel-url-add" type="button">Add</button>
         </div>
         <div id="sel-url-status" class="sel-hint"></div>
-      </div>
-      <div class="sel-field">
-        <label class="sel-label" for="sel-playable-sort">Sort by</label>
-        <select id="sel-playable-sort" class="sel-select">
-          <option value="complexity" selected>Complexity</option>
-          <option value="alphabetical">Alphabetically</option>
-          <option value="artist">Artist</option>
-        </select>
-      </div>
-      <div class="sel-field">
-        <label class="sel-label" for="sel-playable-select">Ready to play</label>
-        <select id="sel-playable-select" class="sel-select">
-          <option value="">Select a song…</option>
-        </select>
       </div>
       <div class="sel-field">
         <label class="sel-label" for="sel-song-input">Search by song</label>
@@ -471,27 +528,9 @@ export function renderSongSelector(container, options = {}) {
     const urlInput = body.querySelector("#sel-url-input");
     const urlAddBtn = body.querySelector("#sel-url-add");
     const urlStatus = body.querySelector("#sel-url-status");
-    const playableSelect = body.querySelector("#sel-playable-select");
-    const playableSortSelect = body.querySelector("#sel-playable-sort");
-
-    if (playableSortSelect) {
-      playableSortSelect.value = playableSortMode;
-      playableSortSelect.addEventListener("change", () => {
-        playableSortMode = playableSortSelect.value;
-        refreshPlayableDropdown();
-      });
-    }
 
     updateHint(hint);
-    refreshPlayableDropdown();
     wireAddUrl(urlInput, urlAddBtn, urlStatus);
-
-    playableSelect?.addEventListener("change", () => {
-      const slug = playableSelect.value;
-      if (!slug) return;
-      playableSelect.value = "";
-      showSongDetail(slug);
-    });
 
     const songRun = wireSongInput(songInput, songDrop);
     const artistRun = wireArtistInput(artistInput, artistDrop);
@@ -640,7 +679,8 @@ export function renderSongSelector(container, options = {}) {
 
   // ---- Artist view ----
   function showArtist(artistName) {
-    backBtn.hidden = false;
+    setCatalogButtonVisible(false);
+    showSongNav({ showBack: false });
     const list = songs
       .filter((s) => (s.artist || "") === artistName)
       .sort((a, b) => (a.title || "").localeCompare(b.title || ""));
@@ -665,8 +705,42 @@ export function renderSongSelector(container, options = {}) {
   }
 
   // ---- Song detail view ----
+  async function loadSongIntoPlayer(slug, { auto = false } = {}) {
+    const loadBtn = body.querySelector("#sel-load-btn");
+    const statusEl = body.querySelector("#pipeline-status");
+    if (loadBtn) {
+      loadBtn.disabled = true;
+      loadBtn.textContent = "Loading…";
+    } else if (auto && statusEl) {
+      statusEl.textContent = "Loading into player…";
+    }
+    try {
+      const res = await fetch(`/api/library/load?slug=${encodeURIComponent(slug)}`, { method: "POST" });
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.error || `HTTP ${res.status}`);
+      await options.onLoad?.({ slug, cacheKey: payload.cacheKey });
+      if (loadBtn) {
+        loadBtn.textContent = "Loaded";
+        loadBtn.hidden = true;
+        loadBtn.closest(".entry-load-row")?.remove();
+      } else if (auto && statusEl) {
+        statusEl.textContent = "";
+      }
+    } catch (err) {
+      if (loadBtn) {
+        loadBtn.disabled = false;
+        loadBtn.textContent = "Load";
+        loadBtn.title = err.message;
+      } else if (statusEl) {
+        statusEl.textContent = `Load failed: ${err.message}`;
+      }
+      throw err;
+    }
+  }
+
   async function showSongDetail(slug) {
-    backBtn.hidden = false;
+    setCatalogButtonVisible(false);
+    showSongNav({ activeSlug: slug, showBack: false });
     body.innerHTML = `<div class="sel-hint">Loading song…</div>`;
     let data;
     try {
@@ -681,39 +755,37 @@ export function renderSongSelector(container, options = {}) {
     const flags = s.flags || {};
     const sections = data.sections || [];
     const canLoad = !!s.canLoad;
-    const missing = s.loadGateMissing || [];
+    const complete = isPipelineComplete(flags);
+    const alreadyLoaded = !!s.cacheKey && options.isSongLoaded?.(s.cacheKey);
+    const missing = complete ? (s.loadGateMissing || []) : pipelineMissing(flags);
 
     body.innerHTML = buildSongDetailHtml(s, sections, flags, canLoad, missing, esc, loadTooltip);
+    showSongNav({ activeSlug: slug, showBack: true });
 
     wirePipelineButtons(body, slug, flags, {
       esc,
       loadTooltip,
       reloadIndex: () => loadIndex(),
-      onJobDone: (s) => showSongDetail(s),
+      onJobDone: (jobSlug) => showSongDetail(jobSlug),
     });
 
     const loadBtn = body.querySelector("#sel-load-btn");
     loadBtn?.addEventListener("click", async () => {
       if (!canLoad || loadBtn.disabled) return;
-      loadBtn.disabled = true;
-      loadBtn.textContent = "Loading…";
-      try {
-        const res = await fetch(`/api/library/load?slug=${encodeURIComponent(slug)}`, { method: "POST" });
-        const payload = await res.json();
-        if (!res.ok) throw new Error(payload.error || `HTTP ${res.status}`);
-        options.onLoad?.({ slug, cacheKey: payload.cacheKey });
-        loadBtn.textContent = "Loaded";
-        loadBtn.title = "Song loaded in player";
-      } catch (err) {
-        loadBtn.disabled = false;
-        loadBtn.textContent = "Load";
-        loadBtn.title = err.message;
-      }
+      await loadSongIntoPlayer(slug);
     });
+
+    if (complete && canLoad && !alreadyLoaded) {
+      await loadSongIntoPlayer(slug, { auto: true });
+    }
   }
 
+  catalogOpenBtn?.addEventListener("click", openCatalogModal);
+  catalogModal?.querySelector("#sel-catalog-close")?.addEventListener("click", closeCatalogModal);
+  catalogModal?.querySelector("[data-close-catalog]")?.addEventListener("click", closeCatalogModal);
+  wireCatalogBatch(catalogModal);
+
   // init: render once, load index, refresh hint (don't wipe inputs)
-  wireCatalogBatch(container);
   showSearch();
   loadIndex().then(() => {
     updateHint(body.querySelector("#sel-hint"));

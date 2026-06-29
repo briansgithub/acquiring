@@ -78,7 +78,8 @@ Run from `_Research_testing/hooktheory_catalog/` unless noted. Root shims (`node
 
 ## Cache sync (`lib/cacheSync.js`, `lib/library.js`)
 
-- `syncCacheToCatalog(db)` — scan `.hooktheory_cache/`, upsert by URL slug
+- `lib/cacheSync.js` — `CACHE_ROOT`, `markSongFromCache` (used by fetch/processed only)
+- `cli/backfill-cache.js` — **manual** scan `.hooktheory_cache/` → DB (not auto on library load)
 - `markSongFromCache(db, url, cacheDirName)` — called from `extract_hooktheory_data.js` after each extract
 - `listLibrary(db)` / `getLibrarySong(db, slug)` / `resolveLoad(db, slug)` — unified API helpers
 - `lib/pipelineFlags.js` — `computeFlags`, `canLoad`, `loadGateMissing` (includes `harvested`)
@@ -119,7 +120,7 @@ Run from `_Research_testing/hooktheory_catalog/` unless noted. Root shims (`node
 
 | Command | What it does |
 |---------|----------------|
-| `node cli/backfill-cache.js` | Upsert all `.hooktheory_cache/` songs into catalog DB |
+| `node cli/backfill-cache.js` | **Manual** — upsert `.hooktheory_cache/` into catalog DB (not auto) |
 
 ## Pipeline closed-loop tests
 

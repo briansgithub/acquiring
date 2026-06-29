@@ -111,15 +111,13 @@ node cli/catalogDaemon.js [--phase auto|discover|enrich]
 
 Stop gracefully: create `data/.catalog_stop` or run `.\stop-daemon.ps1`. Logs: `data/daemon.log`. State: `data/daemon_state.json`, PID: `data/daemon.pid`.
 
-### `cli/backfill-cache.js`
+### `cli/backfill-cache.js` (manual migration only)
 
-Register all `.hooktheory_cache/` songs in the catalog DB (URL slug join from each folder's `_metadata.json`). Sets `cache_dir`, `processed_at`, and promotes cache-only rows to `enriched` with minimal stats so the Song Selector **Load** gate passes.
+One-off: register `.hooktheory_cache/` songs in the catalog DB. **Not** run automatically on library load — normal workflow is catalog → fetch → test.
 
 ```
 node cli/backfill-cache.js
 ```
-
-Run after bulk extracts or when cache songs are missing from selector search.
 
 ### `cli/export.js`
 
@@ -221,7 +219,7 @@ Or require individual `lib/*` modules.
 
 | Route | Handler |
 |-------|---------|
-| `GET /api/library` | Catalog + `playable`, `cacheKey`, pipeline `flags` (auto-syncs cache on first call) |
+| `GET /api/library` | Catalog + `playable`, `cacheKey`, pipeline `flags` (DB only — no cache auto-import) |
 | `GET /api/library/song?slug=` | Detail + `canLoad` / `loadGateMissing` + `oracleSummary` (enriched from `report.json` when needed) |
 | `POST /api/library/load?slug=` | Validate gate; return `{ cacheKey }` for `player.js` |
 | `POST /api/library/add` | Body `{ url }` — upsert, Fetch harvest, parallel metadata + processed → `{ jobId, slug }` |

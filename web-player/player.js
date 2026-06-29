@@ -218,6 +218,7 @@ const timeline = renderTimeline(timelinePane, {
 });
 
 const songSelector = renderSongSelector(selectorPane, {
+  isSongLoaded: (cacheKey) => !!cacheKey && cacheKey === loadedCacheKey,
   onLoad: async ({ cacheKey }) => {
     try {
       const res = await fetch("/api/songs");
@@ -227,6 +228,7 @@ const songSelector = renderSongSelector(selectorPane, {
         console.error("Loaded song not found in playback cache:", cacheKey);
         return;
       }
+      loadedCacheKey = cacheKey;
       handleSongChange(String(idx));
     } catch (err) {
       console.error("Selector load failed:", err);
@@ -263,9 +265,12 @@ let arpDebounceTimer = null;
 let tempoDebounceTimer = null;
 let isManualChordPreview = false; // Track when chord is manually clicked
 
+let loadedCacheKey = null;
+
 function resetIdleState() {
   currentSong = null;
   currentSongIdx = 0;
+  loadedCacheKey = null;
   currentSectionIdx = 0;
   currentKey = null;
   songLength = 0;
@@ -350,6 +355,7 @@ async function loadSection(songIndex, sectionIndex) {
     currentSong = data;
     currentSongIdx = songIndex;
     currentSectionIdx = sectionIndex;
+    loadedCacheKey = song.artist;
 
     const key = parseKey(data.metadata);
     currentKey = key;

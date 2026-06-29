@@ -145,13 +145,35 @@ function detailNum(value, digits) {
   return digits != null ? n.toFixed(digits) : String(n);
 }
 
+export function isPipelineComplete(flags) {
+  return !!(
+    flags?.catalogued
+    && flags?.harvested
+    && flags?.metadata
+    && flags?.processed
+    && flags?.tested
+  );
+}
+
+export function pipelineMissing(flags) {
+  const missing = [];
+  if (!flags?.catalogued) missing.push("catalogued");
+  if (!flags?.harvested) missing.push("harvested");
+  if (!flags?.metadata) missing.push("metadata");
+  if (!flags?.processed) missing.push("processed");
+  if (!flags?.tested) missing.push("tested");
+  return missing;
+}
+
 export function buildSongDetailHtml(s, sections, flags, canLoad, missing, esc, loadTooltip) {
+  const showLoadBtn = !isPipelineComplete(flags);
   const keyStr = [s.primary_key_tonic, s.primary_key_scale].filter(Boolean).join(" ");
   const row = (label, value) => detailRow(label, value, esc);
   const num = detailNum;
   return `
     <div class="entry-title">${esc(s.title || "(untitled)")}</div>
     <div class="entry-artist">Artist: ${esc(s.artist || "")}</div>
+    ${s.url ? `<a class="entry-link entry-link--top" href="${esc(s.url)}" target="_blank" rel="noopener">Open on TheoryTab ↗</a>` : ""}
     <div class="entry-btns" aria-label="Pipeline status">
       ${pipelineStatusHtml("catalogued", flags.catalogued, esc)}
       ${pipelineBtnHtml("harvest", flags.harvested, esc)}
@@ -160,12 +182,13 @@ export function buildSongDetailHtml(s, sections, flags, canLoad, missing, esc, l
       ${pipelineBtnHtml("tested", flags.tested, esc, { disabled: !flags.harvested })}
     </div>
     <div id="pipeline-status" class="pipeline-status"></div>
+    ${showLoadBtn ? `
     <div class="entry-load-row">
-      <button id="sel-load-btn" class="sel-load-btn${canLoad ? " sel-load-btn--ready" : " sel-load-btn--blocked"}" type="button"
+      <button id="sel-load-btn" class="sel-load-btn sel-load-btn--pending" type="button"
         ${canLoad ? "" : "disabled"}
         title="${esc(loadTooltip(missing))}">Load</button>
-      ${s.playable ? '<span class="entry-playable">ready to play</span>' : ""}
     </div>
+    ` : ""}
     <div class="entry-data">
       ${row("Status", s.status)}
       ${row("Difficulty", s.difficulty_label)}
@@ -202,7 +225,6 @@ export function buildSongDetailHtml(s, sections, flags, canLoad, missing, esc, l
         `).join("")}
       </div>
     ` : ""}
-    ${s.url ? `<a class="entry-link" href="${esc(s.url)}" target="_blank" rel="noopener">Open on TheoryTab ↗</a>` : ""}
     ${oracleErrorRateHtml(s, flags, esc)}
   `;
 }
@@ -235,17 +257,24 @@ function applyFlagsToButtons(body, flags) {
   }
 }
 
-function applyLoadGate(body, canLoad, missing, esc, loadTooltip) {
+function applyLoadGate(body, flags, canLoad, missing, esc, loadTooltip) {
+  const complete = isPipelineComplete(flags);
+  const loadRow = body.querySelector(".entry-load-row");
   const loadBtn = body.querySelector("#sel-load-btn");
+
+  if (complete) {
+    loadRow?.remove();
+    return;
+  }
+
   if (!loadBtn) return;
+  loadBtn.hidden = false;
   loadBtn.disabled = !canLoad;
-  loadBtn.className = `sel-load-btn${canLoad ? " sel-load-btn--ready" : " sel-load-btn--blocked"}`;
+  loadBtn.className = "sel-load-btn sel-load-btn--pending";
   loadBtn.title = loadTooltip(missing);
-  if (!loadBtn.classList.contains("pipeline-running") && loadBtn.textContent !== "Loaded") {
+  if (!loadBtn.classList.contains("pipeline-running") && loadBtn.textContent !== "Loading…") {
     loadBtn.textContent = "Load";
   }
-  const playable = body.querySelector(".entry-playable");
-  if (playable) playable.hidden = !canLoad;
 }
 
 async function pollJob(jobId) {
@@ -272,7 +301,18 @@ export function wirePipelineButtons(body, slug, flags, callbacks) {
   const refreshFromPayload = (payload) => {
     if (payload.flags) {
       applyFlagsToButtons(body, payload.flags);
-      applyLoadGate(body, payload.canLoad, payload.loadGateMissing || [], esc, loadTooltip);
+      const complete = isPipelineComplete(payload.flags);
+      const missing = complete
+        ? (payload.loadGateMissing || [])
+        : pipelineMissing(payload.flags);
+      applyLoadGate(
+        body,
+        payload.flags,
+        payload.canLoad,
+        missing,
+        esc,
+        loadTooltip,
+      );
     }
   };
 

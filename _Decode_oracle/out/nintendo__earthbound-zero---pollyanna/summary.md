@@ -1,0 +1,16 @@
+# Decode oracle report
+
+**Earthbound Zero - Pollyanna by Nintendo Chords, Melody, and Music Theory Analysis - Hooktheory**
+
+- Chords compared: **50**
+- Roman exact: **100%** (50/50)
+- Roman core (ignoring borrowed/alteration tags): **100%** (50/50)
+- Notes exact (full PC set + bass): **100%** (50/50)
+
+## Sections
+
+| Section | chords | romanExact | romanCore | notesOk | browserOk |
+|---|---|---|---|---|---|
+| Intro | 13 | 100% | 100% | 100% | 0% |
+| Verse | 23 | 100% | 100% | 100% | 0% |
+| Chorus | 14 | 100% | 100% | 100% | 0% |

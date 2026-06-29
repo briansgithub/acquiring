@@ -1,23 +1,12 @@
 /**
  * Unified library: catalog rows + cache/playable pipeline flags.
+ * DB rows are only created/updated by explicit catalog, fetch, or test pipeline ops —
+ * not by scanning .hooktheory_cache/ on library load.
  */
 
 const { computeFlags, canLoad, loadGateMissing } = require('./pipelineFlags');
 const { resolveOracleSummary } = require('./oracleSummary');
-const { syncCacheToCatalog } = require('./cacheSync');
 const { getSongDetail, listSongSections } = require('./queries');
-
-let cacheSynced = false;
-
-function ensureCacheSynced(db) {
-  if (cacheSynced) return;
-  syncCacheToCatalog(db);
-  cacheSynced = true;
-}
-
-function resetCacheSync() {
-  cacheSynced = false;
-}
 
 function mapLibraryRow(row) {
   const flags = computeFlags(row, row.slug);
@@ -34,11 +23,10 @@ function mapLibraryRow(row) {
   };
 }
 
-function listLibrary(db, { syncCache = true } = {}) {
-  if (syncCache) ensureCacheSynced(db);
+function listLibrary(db) {
   const rows = db.prepare(`
     SELECT s.slug, s.artist, s.title, s.status, s.url, s.cache_dir, s.processed_at,
-      s.oracle_tested_at, s.harvest_mode, m.complexity_rating
+      s.oracle_tested_at, s.harvest_mode, s.discovery_source, m.complexity_rating
     FROM songs s
     LEFT JOIN song_metrics m ON m.slug = s.slug
     ORDER BY artist, title
@@ -46,8 +34,7 @@ function listLibrary(db, { syncCache = true } = {}) {
   return rows.map(mapLibraryRow);
 }
 
-function getLibrarySong(db, slug, { syncCache = true } = {}) {
-  if (syncCache) ensureCacheSynced(db);
+function getLibrarySong(db, slug) {
   const song = getSongDetail(db, slug);
   if (!song) return null;
   const flags = computeFlags(song, song.slug);
@@ -69,7 +56,6 @@ function getLibrarySong(db, slug, { syncCache = true } = {}) {
 }
 
 function resolveLoad(db, slug) {
-  ensureCacheSynced(db);
   const row = db.prepare(`
     SELECT slug, url, status, cache_dir, processed_at, oracle_tested_at
     FROM songs WHERE slug = ?
@@ -95,11 +81,12 @@ function resolveLoad(db, slug) {
   };
 }
 
+/** @deprecated No-op — cache folders no longer auto-import into the catalog DB. */
+function resetCacheSync() {}
+
 module.exports = {
   listLibrary,
   getLibrarySong,
   resolveLoad,
-  ensureCacheSynced,
   resetCacheSync,
-  syncCacheToCatalog,
 };

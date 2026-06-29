@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Upsert catalog rows from .hooktheory_cache/_metadata.json (URL slug join).
+ * MANUAL ONLY: upsert catalog rows from .hooktheory_cache/_metadata.json.
+ * Not part of the normal catalog → fetch → test workflow.
  */
 
 const { openDb } = require('../lib/db');

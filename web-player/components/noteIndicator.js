@@ -54,23 +54,25 @@ export function renderNoteIndicator(container, options = {}) {
   container.innerHTML = `
     <h2 class="now-playing-title">Now Playing</h2>
     <div id="now-playing-key" class="now-playing-key">—</div>
-    <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 12px; height: calc(100% - 72px); box-sizing: border-box;">
-      <div class="card" style="position:relative; height: 180px; box-sizing: border-box; display: flex; flex-direction: column;">
-        <div class="label" style="text-align:center;">Melody</div>
-        <label for="show-melody-toggle" style="position:absolute;top:10px;right:10px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;color:#9ca3af;font-size:12px;">
-          <input type="checkbox" id="show-melody-toggle" style="cursor:pointer;" />
+    <div class="indicator-stack">
+      <div class="indicator-melody-section">
+        <label for="show-melody-toggle" class="indicator-option-toggle">
+          <input type="checkbox" id="show-melody-toggle" />
           Show Melody
         </label>
-        <div id="melody-content-wrapper" style="display:none;margin-top:10px;flex:1;flex-direction:column;justify-content:space-between;">
-          <div class="notes-list" id="melody-note-label" style="min-height:32px;margin-top:2px;justify-content:center;"></div>
-          <div class="notes-list" id="melody-scale-degree" style="min-height:32px;margin-top:4px;justify-content:center;"></div>
-          <div id="tension-badge" class="tension-badge" style="margin-top:8px;padding:6px;border-radius:6px;font-size:12px;text-align:center;box-sizing:border-box;border:1px solid rgba(255,255,255,0.05);background:rgba(255,255,255,0.02);color:#64748b;display:flex;flex-direction:column;justify-content:center;height:42px;">
-            <div id="tension-title" style="font-size:11px;font-weight:700;">—</div>
-            <div id="tension-desc" style="font-size:9px;font-weight:400;margin-top:1px;opacity:0.8;">No active melody</div>
+        <div id="melody-card" class="card indicator-card indicator-card--melody" hidden>
+          <div class="label indicator-card-label">Melody</div>
+          <div id="melody-content-wrapper" class="melody-content-wrapper">
+            <div class="notes-list" id="melody-note-label"></div>
+            <div class="notes-list" id="melody-scale-degree"></div>
+            <div id="tension-badge" class="tension-badge">
+              <div id="tension-title" class="tension-title">—</div>
+              <div id="tension-desc" class="tension-desc">No active melody</div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="card" style="position:relative; height: 180px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;">
+      <div class="card indicator-card indicator-card--chord">
         <div>
           <div class="label">Chord</div>
           <label for="root-position-toggle" style="position:absolute;top:10px;right:10px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;color:#9ca3af;font-size:12px;">
@@ -88,7 +90,7 @@ export function renderNoteIndicator(container, options = {}) {
 
   const melodyNoteLabelEl = container.querySelector("#melody-note-label");
   const melodyScaleDegreeEl = container.querySelector("#melody-scale-degree");
-  const melodyContentWrapper = container.querySelector("#melody-content-wrapper");
+  const melodyCard = container.querySelector("#melody-card");
   const showMelodyToggle = container.querySelector("#show-melody-toggle");
   const tensionEl = container.querySelector("#tension-badge");
   const tensionTitleEl = container.querySelector("#tension-title");
@@ -100,13 +102,12 @@ export function renderNoteIndicator(container, options = {}) {
   const chordBorrowedEl = container.querySelector("#chord-borrowed");
   const rootPositionToggle = container.querySelector("#root-position-toggle");
 
-  showMelodyToggle.addEventListener("change", () => {
-    if (showMelodyToggle.checked) {
-      melodyContentWrapper.style.display = "flex";
-    } else {
-      melodyContentWrapper.style.display = "none";
-    }
-  });
+  function syncMelodyVisibility() {
+    melodyCard.hidden = !showMelodyToggle.checked;
+  }
+
+  showMelodyToggle.addEventListener("change", syncMelodyVisibility);
+  syncMelodyVisibility();
 
   rootPositionToggle.addEventListener("change", () => {
     options.onRootPositionChange?.(rootPositionToggle.checked);

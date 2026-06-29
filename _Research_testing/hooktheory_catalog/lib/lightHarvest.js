@@ -99,27 +99,27 @@ function countSongsNeedingLightHarvest(db, { force = false } = {}) {
 }
 
 function listSongsNeedingLightHarvest(db, limit = 50, { force = false, slugs = null } = {}) {
+  const harvestFilter = force
+    ? ''
+    : "AND (s.harvest_mode IS NULL OR s.harvest_mode != 'light')";
+
   if (slugs?.length) {
     const placeholders = slugs.map(() => '?').join(',');
     return db.prepare(`
       SELECT DISTINCT s.slug, s.url, s.artist, s.title
       FROM songs s
       INNER JOIN song_sections ss ON ss.slug = s.slug
-      WHERE s.slug IN (${placeholders}) AND s.url IS NOT NULL
+      WHERE s.slug IN (${placeholders}) AND s.url IS NOT NULL ${harvestFilter}
       ORDER BY s.first_seen_at
       LIMIT ?
     `).all(...slugs, limit);
   }
 
-  const filter = force
-    ? ''
-    : "AND (s.harvest_mode IS NULL OR s.harvest_mode != 'light')";
-
   return db.prepare(`
     SELECT DISTINCT s.slug, s.url, s.artist, s.title
     FROM songs s
     INNER JOIN song_sections ss ON ss.slug = s.slug
-    WHERE s.url IS NOT NULL ${filter}
+    WHERE s.url IS NOT NULL ${harvestFilter}
     ORDER BY s.first_seen_at
     LIMIT ?
   `).all(limit);
