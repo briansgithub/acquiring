@@ -526,6 +526,13 @@ body {
   cursor: not-allowed;
 }
 
+.pipeline-action-btn--disabled,
+.pipeline-action-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .pipeline-action-btn {
   position: relative;
   overflow: hidden;

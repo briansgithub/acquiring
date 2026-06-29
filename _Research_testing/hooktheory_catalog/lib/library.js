@@ -20,7 +20,7 @@ function resetCacheSync() {
 }
 
 function mapLibraryRow(row) {
-  const flags = computeFlags(row);
+  const flags = computeFlags(row, row.slug);
   return {
     slug: row.slug,
     artist: row.artist,
@@ -47,7 +47,7 @@ function getLibrarySong(db, slug, { syncCache = true } = {}) {
   if (syncCache) ensureCacheSynced(db);
   const song = getSongDetail(db, slug);
   if (!song) return null;
-  const flags = computeFlags(song);
+  const flags = computeFlags(song, song.slug);
   const sections = listSongSections(db, slug);
   const oracleSummary = resolveOracleSummary(song);
   return {
@@ -73,7 +73,7 @@ function resolveLoad(db, slug) {
   `).get(slug);
   if (!row) return { ok: false, status: 404, error: 'song not found' };
 
-  const flags = computeFlags(row);
+  const flags = computeFlags(row, row.slug);
   if (!canLoad(flags)) {
     return {
       ok: false,

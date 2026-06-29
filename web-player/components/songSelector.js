@@ -31,7 +31,6 @@ function loadTooltip(missing) {
     return "Load into player — updates chord ring, timeline, and audio";
   }
   const labels = {
-    catalogued: "catalog discovery",
     metadata: "metadata enrich",
     processed: "section extract",
   };
@@ -221,7 +220,7 @@ export function renderSongSelector(container, options = {}) {
       }
       addBtn.disabled = true;
       input.disabled = true;
-      setStatus("Adding — catalog, enrich, extract…");
+      setStatus("Adding — catalog + Fetch (one browser pass)…");
       try {
         const res = await fetch("/api/library/add", {
           method: "POST",

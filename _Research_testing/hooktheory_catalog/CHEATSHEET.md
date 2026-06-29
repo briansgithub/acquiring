@@ -81,12 +81,14 @@ Run from `_Research_testing/hooktheory_catalog/` unless noted. Root shims (`node
 - `syncCacheToCatalog(db)` — scan `.hooktheory_cache/`, upsert by URL slug
 - `markSongFromCache(db, url, cacheDirName)` — called from `extract_hooktheory_data.js` after each extract
 - `listLibrary(db)` / `getLibrarySong(db, slug)` / `resolveLoad(db, slug)` — unified API helpers
-- `lib/pipelineFlags.js` — `computeFlags`, `canLoad`, `loadGateMissing`
-- `lib/pipelineOps.js` — run/clear for `metadata`, `processed`, `tested`
+- `lib/pipelineFlags.js` — `computeFlags`, `canLoad`, `loadGateMissing` (includes `harvested`)
+- `lib/harvest.js` — `harvestSong` (single browser pass → `scrape.json`)
+- `lib/harvestArtifact.js` — harvest path helpers, `loadHarvest`, `isHarvested`
+- `lib/metadataFromHarvest.js` / `lib/processedFromHarvest.js` — local transforms
+- `lib/runLocalsParallel.js` — parallel metadata + processed (+ optional tested worker)
+- `lib/pipelineOps.js` — run/clear for `harvest`, `metadata`, `processed`, `tested`
 - `lib/pipelineJobs.js` — in-memory async jobs (`startJob`, `startAddJob`)
-- `lib/addSongPipeline.js` — `addSongFromUrl` (metadata + processed)
-- `lib/oracleRunner.js` — single-song oracle compare (no browser)
-- `lib/oracleSummary.js` — resolve summary from DB JSON or `report.json` fallback
+- `lib/addSongPipeline.js` — `addSongFromUrl` (upsert + harvest)
 
 ## Web UI (from repo root)
 
@@ -95,10 +97,11 @@ Run from `_Research_testing/hooktheory_catalog/` unless noted. Root shims (`node
 | `python launch_player.py` | Free port 3000, start server, Ctrl+C / Quit stops |
 | `node web-player/server.js` | Start server only |
 | `GET /api/library` | Song Selector index (catalog + cache flags) |
-| `POST /api/library/add` | Body `{ url }` — upsert + metadata + processed job |
-| `POST /api/library/pipeline/metadata?slug=…` | Start enrich job → poll `pipeline/job` |
-| `POST /api/library/pipeline/processed?slug=…` | Start extract job |
-| `POST /api/library/pipeline/tested?slug=…` | Start oracle compare job |
+| `POST /api/library/add` | Body `{ url }` — upsert + Fetch + parallel locals |
+| `POST /api/library/pipeline/harvest?slug=…` | Fetch job (browser + parallel metadata/processed) |
+| `POST /api/library/pipeline/metadata?slug=…` | Local enrich from harvest |
+| `POST /api/library/pipeline/processed?slug=…` | Local cache write from harvest |
+| `POST /api/library/pipeline/tested?slug=…` | Local oracle compare (worker thread) |
 | `POST /api/library/pipeline/:action/clear?slug=…` | Hold-to-clear (sync) |
 | `POST /api/library/load?slug=…` | Gated load — returns `cacheKey` |
 | `POST /api/catalog/update?mode=quick&enrichLimit=5` | Trigger foreground update via HTTP |
@@ -115,8 +118,9 @@ Run from `_Research_testing/hooktheory_catalog/` unless noted. Root shims (`node
 
 | Command | What it does |
 |---------|----------------|
-| `node scripts/pipelineClosedLoopTest.js --tier quick` | Run metadata/processed tests on multiple fixtures (~15 min) |
-| `node scripts/pipelineClosedLoopTest.js --tier full` | Above + oracle tested run/clear on hey-jude |
+| `node scripts/pipelineClosedLoopTest.js --tier quick` | Local harvest + metadata/processed tests (~seconds) |
+| `node scripts/pipelineClosedLoopTest.js --tier full` | Above + tested from harvest worker |
+| `node scripts/pipelineClosedLoopTest.js --case local_harvest` | Parallel locals + harvest gate assertions |
 | `node scripts/pipelineClosedLoopTest.js --case fresh_url` | Single fixture |
 | `node scripts/pipelineClosedLoopTest.js --http` | Add HTTP API spot-check (server on :3000) |
 

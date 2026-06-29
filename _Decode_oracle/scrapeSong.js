@@ -173,7 +173,10 @@ async function scrapeSong(url, outDir, opts = {}) {
   const verbose = opts.verbose !== false;
   const skipScreenshots = opts.skipScreenshots !== false;
   const scrapePiano = opts.scrapePiano !== false;
-  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+  const returnHtml = opts.returnHtml === true;
+  const externalBrowser = opts.browser || null;
+  const ownBrowser = !externalBrowser;
+  const browser = externalBrowser || await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
   const result = { url, title: null, sections: [], errors: [] };
   try {
     const page = await browser.newPage();
@@ -190,15 +193,16 @@ async function scrapeSong(url, outDir, opts = {}) {
     });
 
     const navResp = await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
-    if (navResp && navResp.status() >= 400) { result.errors.push(`HTTP ${navResp.status()}`); await browser.close(); return result; }
+    if (navResp && navResp.status() >= 400) { result.errors.push(`HTTP ${navResp.status()}`); if (ownBrowser) await browser.close(); return result; }
     await sleep(2500);
     result.title = await page.title();
+    if (returnHtml) result.pageHtml = await page.content();
 
     const tabs = await page.$$eval('a.tb-section-tab', (els) =>
       els.map((e) => ({ name: e.textContent.trim(), hash: e.getAttribute('href') }))
     );
     const sectionTabs = tabs.filter((t) => t.name.toLowerCase() !== 'all sections' && t.hash && t.hash !== '#');
-    if (!sectionTabs.length) { result.errors.push('No section tabs found'); await browser.close(); return result; }
+    if (!sectionTabs.length) { result.errors.push('No section tabs found'); if (ownBrowser) await browser.close(); return result; }
 
     for (let i = 0; i < sectionTabs.length; i++) {
       const tab = sectionTabs[i];
@@ -262,11 +266,11 @@ async function scrapeSong(url, outDir, opts = {}) {
       if (verbose) console.log(`  [${tab.name}] songId=${songId} rendered=${sec.renderedCount} jsonNonRest=${sec.jsonNonRestCount} strips=${strips.length}`);
     }
 
-    await browser.close();
+    if (ownBrowser) await browser.close();
     return result;
   } catch (e) {
     result.errors.push(e.message);
-    try { await browser.close(); } catch (_) {}
+    if (ownBrowser) { try { await browser.close(); } catch (_) {} }
     return result;
   }
 }

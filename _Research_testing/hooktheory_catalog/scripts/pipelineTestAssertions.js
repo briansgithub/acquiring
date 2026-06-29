@@ -5,6 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 const { REPO_ROOT } = require('../lib/paths');
+const { harvestDirForSlug, harvestFileForSlug } = require('../lib/harvestArtifact');
 
 function fail(msg, ctx = {}) {
   const err = new Error(msg);
@@ -66,6 +67,53 @@ function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+/** Build scrape.json from .hooktheory_cache for local pipeline tests (no browser). */
+function seedHarvestFromCache(db, slug) {
+  const row = getRow(db, slug);
+  if (!row?.cache_dir || !row.url) fail('seedHarvestFromCache: no cache_dir', { slug });
+  const cacheDir = path.join(REPO_ROOT, '.hooktheory_cache', row.cache_dir);
+  if (!fs.existsSync(cacheDir)) fail('seedHarvestFromCache: cache missing', { cacheDir });
+
+  const metaPath = path.join(cacheDir, '_metadata.json');
+  const meta = fs.existsSync(metaPath)
+    ? JSON.parse(fs.readFileSync(metaPath, 'utf8'))
+    : { sectionMapping: {} };
+
+  const sections = [];
+  for (const file of fs.readdirSync(cacheDir)) {
+    if (!file.endsWith('.json') || file === '_metadata.json') continue;
+    const data = JSON.parse(fs.readFileSync(path.join(cacheDir, file), 'utf8'));
+    const songId = data.songId || data.stringSongId;
+    if (!songId) continue;
+    sections.push({
+      name: data.sectionName || meta.sectionMapping?.[songId] || 'Section',
+      songId,
+      json: {
+        songId: data.numericId,
+        songInfo: data.songInfo,
+        chords: data.chords || [],
+        notes: data.notes ?? null,
+        metadata: data.metadata || {},
+      },
+      rendered: [{ order: 0, raw: 'I', stableX: 0, texts: [] }],
+    });
+  }
+  if (!sections.length) fail('seedHarvestFromCache: no sections', { slug });
+
+  const scrape = {
+    url: row.url,
+    title: meta.songTitle || row.title,
+    sections,
+    errors: [],
+    harvestedAt: new Date().toISOString(),
+    metrics: {},
+  };
+  const outDir = harvestDirForSlug(slug);
+  fs.mkdirSync(outDir, { recursive: true });
+  fs.writeFileSync(harvestFileForSlug(slug), JSON.stringify(scrape, null, 2));
+  return scrape;
+}
+
 module.exports = {
   fail,
   assertFlags,
@@ -74,4 +122,5 @@ module.exports = {
   assertFsExists,
   assertFsMissing,
   sleep,
+  seedHarvestFromCache,
 };

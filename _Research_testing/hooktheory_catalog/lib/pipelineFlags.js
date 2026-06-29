@@ -2,9 +2,13 @@
  * Pipeline flag helpers for unified library rows.
  */
 
-function computeFlags(row) {
+const { isHarvested } = require('./harvestArtifact');
+
+function computeFlags(row, slug) {
+  const harvested = slug ? isHarvested(slug) : false;
   return {
     catalogued: true,
+    harvested,
     metadata: row.status === 'enriched',
     processed: !!(row.cache_dir && row.processed_at),
     tested: !!row.oracle_tested_at,
@@ -17,7 +21,6 @@ function canLoad(flags) {
 
 function loadGateMissing(flags) {
   const missing = [];
-  if (!flags.catalogued) missing.push('catalogued');
   if (!flags.metadata) missing.push('metadata');
   if (!flags.processed) missing.push('processed');
   return missing;

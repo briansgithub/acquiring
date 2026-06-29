@@ -5,17 +5,21 @@
 import { attachPipelineButton } from "./pipelineHold.js";
 
 export const PIPELINE_TIPS = {
+  harvest: {
+    pending: "Click: one browser pass — saves all TheoryTab data locally",
+    done: "Hold: delete harvest artifact (re-fetch required)",
+  },
   metadata: {
-    pending: "Click: enrich from TheoryTab (Puppeteer, ~1–2 min)",
+    pending: "Click: enrich catalog from harvest (local, no network)",
     done: "Hold: clear enrich data and reset status to pending",
   },
   processed: {
-    pending: "Click: extract sections to .hooktheory_cache/",
+    pending: "Click: write .hooktheory_cache/ from harvest (local)",
     done: "Hold: delete cache folder and clear processed flags",
   },
   tested: {
-    pending: "Click: run decode-oracle compare and save report",
-    done: "Hold: delete oracle output folder and clear tested flags",
+    pending: "Click: run decode-oracle compare from harvest (local)",
+    done: "Hold: delete oracle report files and clear tested flags",
   },
 };
 
@@ -33,10 +37,20 @@ export function pipelineStatusHtml(action, done, esc) {
   return `<span class="${cls}" data-action="${action}" title="${esc(title)}">${action}</span>`;
 }
 
-export function pipelineBtnHtml(action, done, esc) {
+const PIPELINE_LABELS = {
+  harvest: "Fetch",
+  metadata: "metadata",
+  processed: "processed",
+  tested: "tested",
+};
+
+export function pipelineBtnHtml(action, done, esc, { disabled = false } = {}) {
   const tips = PIPELINE_TIPS[action];
   const title = done ? tips.done : tips.pending;
-  return `<button type="button" class="${btnClass(done)} pipeline-action-btn" data-action="${action}" data-done="${done ? "1" : "0"}" title="${esc(title)}">${action}</button>`;
+  const label = PIPELINE_LABELS[action] || action;
+  const dis = disabled ? " pipeline-action-btn--disabled" : "";
+  const disAttr = disabled ? " disabled" : "";
+  return `<button type="button" class="${btnClass(done)} pipeline-action-btn${dis}" data-action="${action}" data-done="${done ? "1" : "0"}" title="${esc(title)}"${disAttr}>${label}</button>`;
 }
 
 function pct(ok, total) {
@@ -140,9 +154,10 @@ export function buildSongDetailHtml(s, sections, flags, canLoad, missing, esc, l
     <div class="entry-artist">${esc(s.artist || "")}</div>
     <div class="entry-btns" aria-label="Pipeline status">
       ${pipelineStatusHtml("catalogued", flags.catalogued, esc)}
-      ${pipelineBtnHtml("metadata", flags.metadata, esc)}
-      ${pipelineBtnHtml("processed", flags.processed, esc)}
-      ${pipelineBtnHtml("tested", flags.tested, esc)}
+      ${pipelineBtnHtml("harvest", flags.harvested, esc)}
+      ${pipelineBtnHtml("metadata", flags.metadata, esc, { disabled: !flags.harvested })}
+      ${pipelineBtnHtml("processed", flags.processed, esc, { disabled: !flags.harvested })}
+      ${pipelineBtnHtml("tested", flags.tested, esc, { disabled: !flags.harvested })}
     </div>
     <div id="pipeline-status" class="pipeline-status"></div>
     <div class="entry-load-row">
@@ -206,10 +221,17 @@ function applyFlagsToButtons(body, flags) {
   for (const btn of body.querySelectorAll(".pipeline-action-btn")) {
     const action = btn.dataset.action;
     const done = !!flags[action];
-    btn.className = `${btnClass(done)} pipeline-action-btn`;
+    const needsHarvest = action !== "harvest" && !flags.harvested;
+    btn.className = `${btnClass(done)} pipeline-action-btn${needsHarvest ? " pipeline-action-btn--disabled" : ""}`;
+    btn.disabled = needsHarvest;
     btn.dataset.done = done ? "1" : "0";
     const tips = PIPELINE_TIPS[action];
-    btn.title = done ? tips.done : tips.pending;
+    if (tips) {
+      btn.title = needsHarvest
+        ? "Fetch first — downloads all TheoryTab data in one browser pass"
+        : (done ? tips.done : tips.pending);
+    }
+    btn.textContent = PIPELINE_LABELS[action] || action;
   }
 }
 
@@ -258,6 +280,7 @@ export function wirePipelineButtons(body, slug, flags, callbacks) {
     const action = btn.dataset.action;
     attachPipelineButton(btn, {
       onRun: async () => {
+        if (btn.disabled) return;
         btn.classList.add("pipeline-running");
         const label = btn.textContent;
         btn.textContent = "…";
@@ -286,6 +309,7 @@ export function wirePipelineButtons(body, slug, flags, callbacks) {
         }
       },
       onClear: async () => {
+        if (btn.disabled && action !== "harvest") return;
         setStatus(`Clearing ${action}…`);
         try {
           const res = await fetch(

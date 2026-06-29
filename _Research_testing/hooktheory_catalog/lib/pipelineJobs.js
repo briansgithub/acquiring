@@ -21,6 +21,17 @@ function getJob(jobId) {
   return jobs.get(String(jobId)) || null;
 }
 
+function applyJobResult(job, result) {
+  job.status = result.ok ? 'done' : 'error';
+  job.error = result.error || null;
+  job.flags = result.flags ?? null;
+  job.canLoad = result.canLoad ?? null;
+  job.loadGateMissing = result.loadGateMissing ?? null;
+  job.oracleSummary = result.oracleSummary ?? null;
+  job.oracleOutDir = result.oracleOutDir ?? null;
+  job.deleted = !!result.deleted;
+}
+
 function startJob(slug, action) {
   if (activeBySlug.has(slug)) throw new JobConflictError();
   const jobId = String(nextId++);
@@ -43,16 +54,7 @@ function startJob(slug, action) {
 
   const db = openDb();
   runPipelineAction(db, slug, action)
-    .then((result) => {
-      job.status = result.ok ? 'done' : 'error';
-      job.error = result.error || null;
-      job.flags = result.flags ?? null;
-      job.canLoad = result.canLoad ?? null;
-      job.loadGateMissing = result.loadGateMissing ?? null;
-      job.oracleSummary = result.oracleSummary ?? null;
-      job.oracleOutDir = result.oracleOutDir ?? null;
-      job.deleted = !!result.deleted;
-    })
+    .then((result) => applyJobResult(job, result))
     .catch((err) => {
       job.status = 'error';
       job.error = err.message;
@@ -93,15 +95,7 @@ function startAddJob(url) {
 
   const db = openDb();
   addSongFromUrl(db, url)
-    .then((result) => {
-      job.status = result.ok ? 'done' : 'error';
-      job.error = result.error || null;
-      job.flags = result.flags ?? null;
-      job.canLoad = result.canLoad ?? null;
-      job.loadGateMissing = result.loadGateMissing ?? null;
-      job.oracleSummary = result.oracleSummary ?? null;
-      job.oracleOutDir = result.oracleOutDir ?? null;
-    })
+    .then((result) => applyJobResult(job, result))
     .catch((err) => {
       job.status = 'error';
       job.error = err.message;

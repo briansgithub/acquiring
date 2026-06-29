@@ -46,11 +46,13 @@ flowchart TD
 
 **Song Selector isolation:** browsing/searching the catalog shows metadata only. Chord ring, timeline, and transport update **only** when the user presses **Load** (after catalogued + metadata + processed gates pass). `POST /api/library/load` returns the cache folder key; `player.js` resolves it via `GET /api/songs` and calls `handleSongChange` / `loadSection`.
 
-**Add by URL:** search view has a TheoryTab URL field. `POST /api/library/add` upserts the row then runs **metadata → processed** (no oracle). Poll `GET /api/library/pipeline/job` like other pipeline jobs.
+**Add by URL:** search view has a TheoryTab URL field. `POST /api/library/add` upserts the row, runs **Fetch** (one browser pass), then parallel local **metadata + processed** (no oracle).
 
-**Pipeline buttons** (metadata / processed / tested): red = click to run that step (async job + poll); green = hold ~800ms to clear only that step's data. **catalogued** is a read-only status badge (green when the row exists). Oracle **tested** writes `_Decode_oracle/out/<slug>/` plus `oracle_out_dir` and `oracle_summary_json`; when tested, Song Selector shows an error-rate table (section + attribute breakdown) at the bottom of song detail.
+**Unified harvest:** one Puppeteer session per song writes `_Decode_oracle/out/<slug>/scrape.json` (page SongMetrics + per-section API json + SVG + piano). **Fetch** is the only button that launches the browser. **metadata**, **processed**, and **tested** are local transforms over that artifact (`runLocalsParallel` — `Promise.all` + `worker_threads` for oracle compare).
 
-Backend: `hooktheory_catalog/lib/pipelineOps.js`, `pipelineJobs.js`, `addSongPipeline.js`, `oracleRunner.js`, `oracleSummary.js`; HTTP: `web/pipelineApi.js`, `web/addSongApi.js`. Frontend: `songSelectorPipeline.js`, `pipelineHold.js`.
+**Pipeline buttons:** **catalogued** (read-only) · **Fetch** (harvest) · **metadata** / **processed** / **tested** (local; gated until harvested). Red = run; green hold ~800ms = clear that step only. Oracle **tested** keeps `scrape.json` on clear (report files removed).
+
+Backend: `harvest.js`, `harvestArtifact.js`, `metadataFromHarvest.js`, `processedFromHarvest.js`, `runLocalsParallel.js`, `oracleCompareWorker.js`, `pipelineOps.js`, `pipelineJobs.js`, `addSongPipeline.js`; HTTP: `web/pipelineApi.js`, `web/addSongApi.js`. Frontend: `songSelectorPipeline.js`, `pipelineHold.js`.
 
 Key state lives in `player.js`: `currentRawChords`, `currentKey`, `currentChordEvents`, `isArpeggiated`, `forceRootPosition`. Chord/melody events are tick-based (192 PPQ) so tempo changes reschedule cleanly via `engine.rescheduleParts` / `updatePlaybackSettings`.
 

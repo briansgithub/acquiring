@@ -26,7 +26,10 @@ const {
   assertFsExists,
   assertFsMissing,
   sleep,
+  seedHarvestFromCache,
 } = require('./pipelineTestAssertions');
+const { isHarvested, clearHarvestArtifact } = require('../lib/harvestArtifact');
+const { runLocalsParallel } = require('../lib/runLocalsParallel');
 
 const REPORT_PATH = path.join(DATA_DIR, 'pipeline_closed_loop_report.json');
 
@@ -113,6 +116,50 @@ async function testButtonRunClear(db, caseId, slug, action, runFn, afterRunCheck
   });
 }
 
+async function caseLocalHarvest(db, tier) {
+  const caseId = 'local_harvest';
+  const slug = FIXTURES.cached_full.slug;
+  console.log(`\n=== ${caseId} (${slug}) ===`);
+
+  if (!getRow(db, slug)?.cache_dir) {
+    await step(caseId, 'skip — no hey-jude cache', async () => {
+      throw new Error('hey-jude not in catalog with cache');
+    });
+    return;
+  }
+
+  clearHarvestArtifact(slug);
+  seedHarvestFromCache(db, slug);
+
+  await step(caseId, 'metadata blocked without harvest', async () => {
+    clearHarvestArtifact(slug);
+    const out = await runPipelineAction(db, slug, 'metadata');
+    if (out.ok) throw new Error('expected metadata to fail without harvest');
+    if (out.status !== 409) throw new Error(`expected 409 got ${out.status}`);
+    seedHarvestFromCache(db, slug);
+  });
+
+  await step(caseId, 'parallel locals metadata+processed', async () => {
+    clearPipelineAction(db, slug, 'metadata');
+    clearPipelineAction(db, slug, 'processed');
+    const t0 = Date.now();
+    await runLocalsParallel(db, slug, { includeTested: false });
+    const elapsed = Date.now() - t0;
+    const fp = flagsPayload(db, slug);
+    assertFlags(fp.flags, { harvested: true, metadata: true, processed: true }, 'after parallel locals');
+    if (elapsed > 30000) throw new Error(`locals too slow: ${elapsed}ms`);
+  });
+
+  if (tier === 'full') {
+    await step(caseId, 'tested local from harvest', async () => {
+      clearPipelineAction(db, slug, 'tested');
+      const job = await runJob(slug, 'tested');
+      if (job.status === 'error') throw new Error(job.error);
+      assertFlags(job.flags, { tested: true }, 'tested');
+    });
+  }
+}
+
 async function caseCachedFull(db, tier) {
   const caseId = 'cached_full';
   const slug = FIXTURES.cached_full.slug;
@@ -130,6 +177,7 @@ async function caseCachedFull(db, tier) {
   const cacheRel = cacheDir ? path.join('.hooktheory_cache', cacheDir) : null;
 
   if (tier === 'full' && cacheRel) {
+    if (!isHarvested(slug)) seedHarvestFromCache(db, slug);
     let savedOracleDir = null;
     await testButtonRunClear(
       db, caseId, slug, 'tested',
@@ -157,6 +205,7 @@ async function caseCachedFull(db, tier) {
   }
 
   if (cacheRel && fs.existsSync(path.join(REPO_ROOT, cacheRel))) {
+    if (!isHarvested(slug)) seedHarvestFromCache(db, slug);
     const savedCache = cacheDir;
     await step(caseId, 'processed clear', async () => {
       const out = clearPipelineAction(db, slug, 'processed');
@@ -194,6 +243,7 @@ async function caseCatalogOnly(db) {
   }
 
   const cacheBefore = getRow(db, slug)?.cache_dir;
+  if (!isHarvested(slug)) seedHarvestFromCache(db, slug);
 
   await step(caseId, 'processed run', async () => {
     const job = await runJob(slug, 'processed');
@@ -231,6 +281,7 @@ async function caseFreshUrl(db, tier) {
   const oracleDir = db.prepare('SELECT oracle_out_dir FROM songs WHERE slug = ?').get(slug)?.oracle_out_dir;
 
   await step(caseId, 'setup delete row', async () => {
+    clearHarvestArtifact(slug);
     db.prepare('DELETE FROM songs WHERE slug = ?').run(slug);
     assertRow(db, slug, null, 'deleted');
   });
@@ -240,52 +291,11 @@ async function caseFreshUrl(db, tier) {
     assertRow(db, slug, { url }, 'seeded');
   });
 
-  await step(caseId, 'metadata run', async () => {
-    const job = await runJob(slug, 'metadata');
-    if (job.status === 'error') throw new Error(job.error);
-    assertRow(db, slug, { status: 'enriched', has_metrics: true }, 'enriched');
+  await step(caseId, 'metadata requires harvest', async () => {
+    const out = await runPipelineAction(db, slug, 'metadata');
+    if (out.ok) throw new Error('expected 409 without harvest');
+    if (out.status !== 409) throw new Error(`expected 409 got ${out.status}`);
   });
-
-  await step(caseId, 'metadata clear', async () => {
-    const out = clearPipelineAction(db, slug, 'metadata');
-    assertFlags(out.flags, { metadata: false }, 'metadata clear');
-    assertRow(db, slug, { status: 'pending', has_metrics: false }, 'pending');
-  });
-
-  await step(caseId, 'metadata run again', async () => {
-    const job = await runJob(slug, 'metadata');
-    if (job.status === 'error') throw new Error(job.error);
-  });
-
-  await step(caseId, 'processed run', async () => {
-    const job = await runJob(slug, 'processed');
-    if (job.status === 'error') throw new Error(job.error);
-    const r = getRow(db, slug);
-    assertFsExists(path.join('.hooktheory_cache', r.cache_dir), 'cache');
-  });
-
-  await step(caseId, 'processed clear', async () => {
-    const r = getRow(db, slug);
-    if (!r?.cache_dir) throw new Error('skip clear — no cache_dir after failed run');
-    const dir = r.cache_dir;
-    clearPipelineAction(db, slug, 'processed');
-    assertFsMissing(path.join('.hooktheory_cache', dir), 'cache cleared');
-  });
-
-  if (tier === 'full') {
-    await step(caseId, 'processed run for tested', async () => {
-      const job = await runJob(slug, 'processed');
-      if (job.status === 'error') throw new Error(job.error);
-    });
-    await testButtonRunClear(db, caseId, slug, 'tested', runJob,
-      async (s) => {
-        assertFlags(flagsPayload(db, s).flags, { tested: true }, 'tested');
-      },
-      async (s) => {
-        assertFlags(flagsPayload(db, s).flags, { tested: false }, 'tested clear');
-      },
-    );
-  }
 
   await step(caseId, 'cleanup delete row', async () => {
     db.prepare('DELETE FROM songs WHERE slug = ?').run(slug);
@@ -302,8 +312,12 @@ async function casePendingRow(db) {
   if (!slug) {
     slug = seedRow(db, FIXTURES.fresh_url.url, 'pending');
   }
+  if (!isHarvested(slug) && getRow(db, slug)?.cache_dir) {
+    seedHarvestFromCache(db, slug);
+  }
 
   await step(caseId, 'metadata run', async () => {
+    if (!isHarvested(slug)) throw new Error('no harvest — seed cache or run Fetch first');
     const job = await runJob(slug, 'metadata');
     if (job.status === 'error') throw new Error(job.error);
     assertRow(db, slug, { status: 'enriched', has_metrics: true }, 'enriched');
@@ -342,8 +356,12 @@ async function caseHttpSpotCheck(db) {
   const slug = findPendingSlug(db) || seedRow(db, FIXTURES.fresh_url.url, 'pending');
   console.log(`\n=== ${caseId} (${slug}) ===`);
 
+  const hj = FIXTURES.cached_full.slug;
+  if (getRow(db, hj)?.cache_dir) seedHarvestFromCache(db, hj);
+
   await step(caseId, 'POST metadata → jobId', async () => {
-    const res = await httpRequest('POST', `/api/library/pipeline/metadata?slug=${encodeURIComponent(slug)}`);
+    const target = isHarvested(slug) ? slug : hj;
+    const res = await httpRequest('POST', `/api/library/pipeline/metadata?slug=${encodeURIComponent(target)}`);
     if (res.status !== 202) throw new Error(`expected 202 got ${res.status}`);
     if (!res.body.jobId) throw new Error('no jobId');
     for (let i = 0; i < 300; i++) {
@@ -356,7 +374,8 @@ async function caseHttpSpotCheck(db) {
   });
 
   await step(caseId, 'POST metadata/clear', async () => {
-    const res = await httpRequest('POST', `/api/library/pipeline/metadata/clear?slug=${encodeURIComponent(slug)}`);
+    const target = isHarvested(slug) ? slug : hj;
+    const res = await httpRequest('POST', `/api/library/pipeline/metadata/clear?slug=${encodeURIComponent(target)}`);
     if (res.status !== 200) throw new Error(`clear status ${res.status}`);
     if (!res.body.flags || res.body.flags.metadata !== false) throw new Error('metadata still true');
   });
@@ -384,6 +403,7 @@ async function main() {
   resetCacheSync();
 
   const cases = {
+    local_harvest: () => caseLocalHarvest(db, opts.tier),
     cached_full: () => caseCachedFull(db, opts.tier),
     catalog_only: () => caseCatalogOnly(db),
     fresh_url: () => caseFreshUrl(db, opts.tier),
@@ -398,6 +418,7 @@ async function main() {
     }
     await cases[opts.caseId]();
   } else {
+    await caseLocalHarvest(db, opts.tier);
     await casePendingRow(db);
     await caseCatalogOnly(db);
     await caseFreshUrl(db, opts.tier);

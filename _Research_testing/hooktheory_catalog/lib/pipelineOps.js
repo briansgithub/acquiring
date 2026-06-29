@@ -4,16 +4,18 @@
 
 const fs = require('fs');
 const path = require('path');
-const { spawn } = require('child_process');
 const { REPO_ROOT } = require('./paths');
 const { nowIso } = require('./db');
-const { enrichSong, launchBrowser } = require('./enrich');
-const { CACHE_ROOT, syncCacheToCatalog } = require('./cacheSync');
+const { CACHE_ROOT } = require('./cacheSync');
 const { computeFlags, canLoad, loadGateMissing } = require('./pipelineFlags');
-const { runOracleForUrl } = require('./oracleRunner');
 const { resetCacheSync } = require('./library');
+const { harvestSong } = require('./harvest');
+const { loadHarvest, clearHarvestArtifact, isHarvested } = require('./harvestArtifact');
+const { prepareMetadataFromHarvest, commitMetadata } = require('./metadataFromHarvest');
+const { writeProcessedCacheFromHarvest, commitProcessed } = require('./processedFromHarvest');
+const { runLocalsParallel, runCompareInWorker, commitTested } = require('./runLocalsParallel');
 
-const ACTIONS = new Set(['metadata', 'processed', 'tested']);
+const ACTIONS = new Set(['harvest', 'metadata', 'processed', 'tested']);
 
 function isAction(action) {
   return ACTIONS.has(action);
@@ -32,7 +34,7 @@ function flagsPayload(db, slug) {
   if (!row) {
     return { ok: false, status: 404, error: 'song not found', deleted: true };
   }
-  const flags = computeFlags(row);
+  const flags = computeFlags(row, slug);
   let oracleSummary = null;
   if (row.oracle_summary_json) {
     try {
@@ -68,47 +70,45 @@ function requireSong(db, slug) {
   return row;
 }
 
-function spawnExtract(url) {
-  return new Promise((resolve, reject) => {
-    const script = path.join(REPO_ROOT, 'extract_hooktheory_data.js');
-    const child = spawn(process.execPath, [script, url], {
-      cwd: REPO_ROOT,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
-    let stderr = '';
-    child.stderr.on('data', (d) => { stderr += d; });
-    child.on('close', (code) => {
-      if (code === 0) resolve();
-      else reject(new Error(stderr.trim().slice(-400) || `extract exited ${code}`));
-    });
-  });
+function requireHarvest(slug) {
+  const harvest = loadHarvest(slug);
+  if (!harvest) {
+    return null;
+  }
+  return harvest;
+}
+
+async function runHarvest(db, slug, { rescrape = false } = {}) {
+  const row = requireSong(db, slug);
+  await harvestSong(row.url, { rescrape });
+  const extras = await runLocalsParallel(db, slug, { includeTested: false });
+  return wrapOk(db, slug, extras);
 }
 
 async function runMetadata(db, slug) {
-  const row = requireSong(db, slug);
-  const browser = await launchBrowser();
-  try {
-    const result = await enrichSong(db, row, { browser });
-    if (!result.ok) return wrapErr(db, slug, result.error || 'enrich failed', 500);
-    return wrapOk(db, slug);
-  } finally {
-    await browser.close();
-  }
+  const harvest = requireHarvest(slug);
+  if (!harvest) return wrapErr(db, slug, 'Fetch required — run harvest first', 409);
+  const prep = await prepareMetadataFromHarvest(harvest, db);
+  commitMetadata(db, slug, prep);
+  return wrapOk(db, slug);
 }
 
 async function runProcessed(db, slug) {
-  const row = requireSong(db, slug);
-  await spawnExtract(row.url);
+  const harvest = requireHarvest(slug);
+  if (!harvest) return wrapErr(db, slug, 'Fetch required — run harvest first', 409);
+  const proc = await writeProcessedCacheFromHarvest(harvest);
+  commitProcessed(db, slug, proc);
   resetCacheSync();
-  syncCacheToCatalog(db);
   const updated = getSongRow(db, slug);
   if (!updated?.cache_dir || !updated?.processed_at) {
-    return wrapErr(db, slug, 'extract finished but cache_dir not set', 500);
+    return wrapErr(db, slug, 'processed commit failed — cache_dir not set', 500);
   }
   return wrapOk(db, slug);
 }
 
 async function runTested(db, slug) {
+  const harvest = requireHarvest(slug);
+  if (!harvest) return wrapErr(db, slug, 'Fetch required — run harvest first', 409);
   const row = requireSong(db, slug);
   if (!row.cache_dir || !row.processed_at) {
     return wrapErr(db, slug, 'processed step required before oracle test', 409);
@@ -117,24 +117,29 @@ async function runTested(db, slug) {
   if (!fs.existsSync(cachePath)) {
     return wrapErr(db, slug, 'cache folder missing on disk', 409);
   }
-  const { outDir, summary } = await runOracleForUrl(row.url);
-  const ts = nowIso();
-  db.prepare(`
-    UPDATE songs
-    SET oracle_tested_at = ?, oracle_out_dir = ?, oracle_summary_json = ?
-    WHERE slug = ?
-  `).run(ts, outDir, JSON.stringify(summary), slug);
-  return wrapOk(db, slug, { oracleSummary: summary, oracleOutDir: outDir });
+  const testRep = await runCompareInWorker(harvest.path);
+  commitTested(db, slug, testRep);
+  return wrapOk(db, slug, {
+    oracleSummary: testRep.summary,
+    oracleOutDir: testRep.outDir,
+  });
 }
 
 async function runPipelineAction(db, slug, action) {
   if (!isAction(action)) return wrapErr(db, slug, `unknown action: ${action}`, 400);
   switch (action) {
+    case 'harvest': return runHarvest(db, slug);
     case 'metadata': return runMetadata(db, slug);
     case 'processed': return runProcessed(db, slug);
     case 'tested': return runTested(db, slug);
     default: return wrapErr(db, slug, `unknown action: ${action}`, 400);
   }
+}
+
+function clearHarvest(db, slug) {
+  if (!getSongRow(db, slug)) return wrapErr(db, slug, 'song not found', 404);
+  clearHarvestArtifact(slug);
+  return wrapOk(db, slug);
 }
 
 function clearMetadata(db, slug) {
@@ -168,7 +173,15 @@ function clearTested(db, slug) {
   if (!row) return wrapErr(db, slug, 'song not found', 404);
   if (row.oracle_out_dir) {
     const dir = path.join(REPO_ROOT, row.oracle_out_dir);
-    if (fs.existsSync(dir)) fs.rmSync(dir, { recursive: true, force: true });
+    const keep = new Set(['scrape.json']);
+    if (fs.existsSync(dir)) {
+      for (const f of fs.readdirSync(dir)) {
+        if (keep.has(f)) continue;
+        const p = path.join(dir, f);
+        if (fs.statSync(p).isDirectory()) fs.rmSync(p, { recursive: true, force: true });
+        else fs.unlinkSync(p);
+      }
+    }
   }
   db.prepare(`
     UPDATE songs
@@ -181,6 +194,7 @@ function clearTested(db, slug) {
 function clearPipelineAction(db, slug, action) {
   if (!isAction(action)) return wrapErr(db, slug, `unknown action: ${action}`, 400);
   switch (action) {
+    case 'harvest': return clearHarvest(db, slug);
     case 'metadata': return clearMetadata(db, slug);
     case 'processed': return clearProcessed(db, slug);
     case 'tested': return clearTested(db, slug);
@@ -194,4 +208,5 @@ module.exports = {
   flagsPayload,
   runPipelineAction,
   clearPipelineAction,
+  runHarvest,
 };
