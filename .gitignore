@@ -1,1 +1,16 @@
 node_modules/
+_Research_testing/hooktheory_catalog/data/
+_Research_testing/hooktheory_catalog/hooktheory_catalog.db
+_Research_testing/hooktheory_catalog/hooktheory_catalog.db-*
+_Research_testing/hooktheory_catalog/.meili_auth.json
+_Research_testing/hooktheory_catalog/.update_state.json
+_Research_testing/hooktheory_catalog/.hooktheory_auth.json
+_Research_testing/hooktheory_catalog/.catalog_stop
+_Research_testing/hooktheory_catalog/daemon_state.json
+_Research_testing/hooktheory_catalog/daemon.pid
+_Research_testing/hooktheory_catalog/daemon.log
+_Research_testing/hooktheory_catalog/daemon.err
+_Research_testing/hooktheory_catalog/rate_probe_results.json
+_Research_testing/hooktheory_catalog/catalog_export.*
+_Research_testing/hooktheory_catalog/probe_results.json
+_Research_testing/hooktheory_catalog/sample_page.html

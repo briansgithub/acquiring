@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hooktheory Catalog</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; }
+    body { margin: 0; background: #0b1118; color: #e2e8f0; }
+    header { padding: 16px 20px; border-bottom: 1px solid #1e293b; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    h1 { font-size: 1.1rem; margin: 0; flex: 1; min-width: 200px; }
+    button { background: #2563eb; color: white; border: none; border-radius: 8px; padding: 8px 14px; cursor: pointer; }
+    button.danger { background: #b91c1c; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .stats { display: flex; gap: 16px; padding: 12px 20px; font-size: 0.9rem; color: #94a3b8; flex-wrap: wrap; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th, td { padding: 8px 12px; border-bottom: 1px solid #1e293b; text-align: left; }
+    th { color: #94a3b8; position: sticky; top: 0; background: #0b1118; }
+    a { color: #60a5fa; }
+    .wrap { overflow: auto; max-height: calc(100vh - 140px); }
+    #status-msg { font-size: 0.85rem; color: #fbbf24; width: 100%; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Hooktheory Song Catalog</h1>
+    <button id="btn-daemon-start">Start Daemon</button>
+    <button id="btn-daemon-stop" class="danger">Stop Daemon</button>
+    <button id="btn-update">Quick Update</button>
+    <a href="/">Player</a>
+    <span id="status-msg"></span>
+  </header>
+  <div class="stats" id="stats"></div>
+  <div class="wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Artist</th>
+          <th>Title</th>
+          <th>Unique Chords</th>
+          <th>Transitions</th>
+          <th>Complexity</th>
+          <th>Status</th>
+          <th>Link</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+  <script>
+    const statsEl = document.getElementById('stats');
+    const rowsEl = document.getElementById('rows');
+    const statusMsg = document.getElementById('status-msg');
+    const btnUpdate = document.getElementById('btn-update');
+    const btnStart = document.getElementById('btn-daemon-start');
+    const btnStop = document.getElementById('btn-daemon-stop');
+
+    async function load() {
+      const res = await fetch('/api/catalog/status');
+      const data = await res.json();
+      if (data.error) {
+        statusMsg.textContent = data.error;
+        return;
+      }
+      const t = data.status?.totals || {};
+      const ds = data.daemonState || {};
+      statsEl.textContent = `Total: ${t.total || 0} | Enriched: ${t.enriched || 0} | Pending: ${t.pending || 0} | Errors: ${t.errors || 0} | Daemon: ${data.daemonRunning ? ds.phase || 'running' : 'stopped'}`;
+      const busy = data.daemonRunning || data.updateState?.running;
+      btnUpdate.disabled = busy;
+      btnStart.disabled = data.daemonRunning;
+      btnStop.disabled = !data.daemonRunning;
+      if (!busy) statusMsg.textContent = ds.discovery_complete === false && ds.phase === 'discover' ? '' : '';
+      rowsEl.innerHTML = (data.songs || []).map((s) => `
+        <tr>
+          <td>${esc(s.artist)}</td>
+          <td>${esc(s.title)}</td>
+          <td>${s.unique_chords ?? '—'}</td>
+          <td>${s.unique_transitions ?? '—'}</td>
+          <td>${s.complexity_rating != null ? s.complexity_rating.toFixed(1) : '—'}</td>
+          <td>${esc(s.status)}</td>
+          <td>${s.url ? `<a href="${esc(s.url)}" target="_blank">TheoryTab</a>` : ''}</td>
+        </tr>
+      `).join('');
+    }
+
+    function esc(s) {
+      return String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    btnStart.addEventListener('click', async () => {
+      statusMsg.textContent = 'Starting daemon…';
+      await fetch('/api/catalog/daemon/start?phase=auto', { method: 'POST' });
+      await load();
+    });
+
+    btnStop.addEventListener('click', async () => {
+      statusMsg.textContent = 'Stopping daemon (finishes current song)…';
+      await fetch('/api/catalog/daemon/stop', { method: 'POST' });
+      setTimeout(load, 2000);
+    });
+
+    btnUpdate.addEventListener('click', async () => {
+      btnUpdate.disabled = true;
+      statusMsg.textContent = 'Starting quick update…';
+      await fetch('/api/catalog/update?mode=quick&enrichLimit=5', { method: 'POST' });
+      const poll = setInterval(async () => {
+        await load();
+        const res = await fetch('/api/catalog/status');
+        const data = await res.json();
+        if (!data.updateState?.running) {
+          clearInterval(poll);
+          statusMsg.textContent = 'Quick update finished';
+        }
+      }, 3000);
+    });
+
+    load();
+    setInterval(load, 15000);
+  </script>
+</body>
+</html>

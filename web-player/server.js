@@ -2,6 +2,7 @@ const http = require("http");
 const path = require("path");
 const fs = require("fs");
 const url = require("url");
+const { handleCatalogStatus, handleCatalogUpdate, handleDaemonStatus, handleDaemonStart, handleDaemonStop } = require("./catalogApi");
 
 const PORT = process.env.PORT || 3000;
 const CACHE_ROOT = path.resolve(__dirname, "..", ".hooktheory_cache");
@@ -143,6 +144,11 @@ const server = http.createServer((req, res) => {
   }
   if (reqUrl.pathname === "/api/songs") return handleApiSongs(res);
   if (reqUrl.pathname === "/api/song") return handleApiSong(reqUrl, res);
+  if (reqUrl.pathname === "/api/catalog/status") return handleCatalogStatus(res);
+  if (reqUrl.pathname === "/api/catalog/update" && req.method === "POST") return handleCatalogUpdate(reqUrl, res);
+  if (reqUrl.pathname === "/api/catalog/daemon/status") return handleDaemonStatus(res);
+  if (reqUrl.pathname === "/api/catalog/daemon/start" && req.method === "POST") return handleDaemonStart(reqUrl, res);
+  if (reqUrl.pathname === "/api/catalog/daemon/stop" && req.method === "POST") return handleDaemonStop(res);
   const staticPath = reqUrl.pathname === "/" ? "/index.html" : reqUrl.pathname;
   serveStatic(staticPath, res);
 });
