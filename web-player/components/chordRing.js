@@ -1123,6 +1123,17 @@ export function renderChordRing(container, options = {}) {
 
     transitionTableOverlay.style.display = "block";
 
+    // Build a symbol -> root lookup from currentGroupedChords
+    const symbolToRoot = new Map();
+    for (let root = 1; root <= 7; root++) {
+      const entries = currentGroupedChords[root] || [];
+      for (const entry of entries) {
+        if (!symbolToRoot.has(entry.symbol)) {
+          symbolToRoot.set(entry.symbol, root);
+        }
+      }
+    }
+
     // Convert Map to array and sort by count (highest to lowest)
     const sortedTransitions = Array.from(countsToDisplay.entries())
       .sort((a, b) => b[1] - a[1]);
@@ -1132,9 +1143,50 @@ export function renderChordRing(container, options = {}) {
       row.style.borderBottom = "1px solid rgba(255, 255, 255, 0.1)";
       
       const cell1 = document.createElement("td");
-      cell1.textContent = transition;
       cell1.style.padding = "4px 8px";
       cell1.style.fontFamily = '"Times New Roman", Times, serif';
+
+      // Split "A → B" and color each chord
+      const parts = transition.split(" → ");
+      if (parts.length === 2) {
+        const [fromStr, toStr] = parts;
+
+        const fromSpan = document.createElement("span");
+        fromSpan.textContent = fromStr;
+        const arrowSpan = document.createElement("span");
+        arrowSpan.textContent = " → ";
+        arrowSpan.style.color = "#94a3b8";
+        const toSpan = document.createElement("span");
+        toSpan.textContent = toStr;
+
+        if (showRootOnlyView) {
+          // Root-only: values are numbers like "4 → 5"
+          const fromRoot = parseInt(fromStr, 10);
+          const toRoot = parseInt(toStr, 10);
+          if (fromRoot >= 1 && fromRoot <= 7) {
+            fromSpan.style.color = getScaleDegreeColor(fromRoot, currentKey.scale);
+          }
+          if (toRoot >= 1 && toRoot <= 7) {
+            toSpan.style.color = getScaleDegreeColor(toRoot, currentKey.scale);
+          }
+        } else {
+          // Full transitions: values are chord symbols like "IV → V"
+          const fromRoot = symbolToRoot.get(fromStr);
+          const toRoot = symbolToRoot.get(toStr);
+          if (fromRoot) {
+            fromSpan.style.color = getScaleDegreeColor(fromRoot, currentKey.scale);
+          }
+          if (toRoot) {
+            toSpan.style.color = getScaleDegreeColor(toRoot, currentKey.scale);
+          }
+        }
+
+        cell1.appendChild(fromSpan);
+        cell1.appendChild(arrowSpan);
+        cell1.appendChild(toSpan);
+      } else {
+        cell1.textContent = transition;
+      }
       
       const cell2 = document.createElement("td");
       cell2.textContent = count;
