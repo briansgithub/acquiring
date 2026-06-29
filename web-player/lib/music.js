@@ -758,48 +758,49 @@ function getModifierDifference(actual, diatonic) {
   return "";
 }
 
-export function chordInterpreter(chord, key) {
+export function chordInterpreter(chord, key, opts = {}) {
+  const effective = opts.forceRootPosition ? { ...chord, inversion: 0 } : chord;
   const defaultChordOctave = 3;
-  const borrowed = chord.borrowed || null;
-  const chordType = chord.type || 5; // Default to triad (5) if type not specified
-  const inversion = chord.inversion || 0; // Default to root position (0) if inversion not specified
-  const suspensions = chord.suspensions || [];
+  const borrowed = effective.borrowed || null;
+  const chordType = effective.type || 5;
+  const inversion = effective.inversion || 0;
+  const suspensions = effective.suspensions || [];
 
   // Handle Applied Chords (Secondary Dominants/Functions)
   // HOOKTHEORY DATA MODEL: `applied` is the NUMERATOR chord degree; `root` is the
   // tonicization TARGET (denominator). The tonicized key's tonic is the note at degree
   // `root` in the original key, treated as MAJOR; the chord is then degree `applied` of it.
-  if (chord.applied && chord.applied !== 0 && chord.applied >= 1 && chord.applied <= 7 && !borrowed) {
+  if (effective.applied && effective.applied !== 0 && effective.applied >= 1 && effective.applied <= 7 && !borrowed) {
     const { key: borrowedKey, scaleChordQualities: parentQualities } = resolveBorrowedScale(key, borrowed);
     const parentChordQualities = getScaleChordQualities(borrowedKey.scale, parentQualities);
-    const targetTonicNote = getNoteLabel(chord.root, borrowedKey);
+    const targetTonicNote = getNoteLabel(effective.root, borrowedKey);
 
-    const targetQual = parentChordQualities[chord.root - 1];
+    const targetQual = parentChordQualities[effective.root - 1];
     const useMinorTonicization = (targetQual === "minor" || targetQual === "diminished")
-      && [2, 3].includes(chord.applied);
+      && [2, 3].includes(effective.applied);
     const appliedScale = useMinorTonicization ? "minor" : "major";
     const appliedKey = { tonic: targetTonicNote, scale: appliedScale };
 
-    const actualRootNote = getNoteLabel(chord.applied, appliedKey);
+    const actualRootNote = getNoteLabel(effective.applied, appliedKey);
     const appliedQualities = getScaleChordQualities(appliedScale);
-    const chordQuality = appliedQualities[chord.applied - 1];
+    const chordQuality = appliedQualities[effective.applied - 1];
 
-    const fullyDiminished = chord.applied === 7 && chordQuality === "diminished";
-    const halfDimApplied = chordType >= 7 && chordQuality === "diminished" && chord.applied !== 7;
-    const useMaj7 = chordType >= 7 && chordQuality === "major" && chord.applied === 4;
+    const fullyDiminished = effective.applied === 7 && chordQuality === "diminished";
+    const halfDimApplied = chordType >= 7 && chordQuality === "diminished" && effective.applied !== 7;
+    const useMaj7 = chordType >= 7 && chordQuality === "major" && effective.applied === 4;
 
     return buildChordFromNoteName(
       actualRootNote, chordQuality, key, defaultChordOctave, chordType, inversion,
       fullyDiminished, suspensions, {
-        ...chord,
+        ...effective,
         useMaj7,
-        halfDim: chord.halfDim || halfDimApplied,
+        halfDim: effective.halfDim || halfDimApplied,
       },
     );
   }
-  
-  const applied = chord.applied || 0;
-  return rootToDiatonicTriad(chord.root, key, defaultChordOctave, borrowed, chordType, inversion, applied, suspensions, chord);
+
+  const applied = effective.applied || 0;
+  return rootToDiatonicTriad(effective.root, key, defaultChordOctave, borrowed, chordType, inversion, applied, suspensions, effective);
 }
 
 // Helper function to build a chord directly from a note name and quality

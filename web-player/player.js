@@ -18,6 +18,16 @@ const engine = new AudioEngine();
 // State variables
 let useRomanNumerals = true; // Track label mode (roman numerals vs letter labels)
 let currentKey = null; // Store current key for event recalculation
+let forceRootPosition = false;
+
+function interpretChord(chord, key) {
+  return chordInterpreter(chord, key, { forceRootPosition });
+}
+
+async function handleRootPositionChange(enabled) {
+  forceRootPosition = enabled;
+  await updatePlaybackSettings();
+}
 
 // Handler function for play/pause
 async function handlePlayPause(shouldPlay) {
@@ -151,6 +161,7 @@ if (chordVolumeSlider) {
 }
 
 const chordRing = renderChordRing(ringPane, {
+  getForceRootPosition: () => forceRootPosition,
   onChordClick: (chordData, arpeggiate = false) => {
     isManualChordPreview = true;
     engine.previewChord(chordData.notes, "4n", arpeggiate);
@@ -178,6 +189,7 @@ const noteIndicator = renderNoteIndicator(indicatorPane, {
   onNoteClick: (note) => {
     engine.previewNote(note, "4n");
   },
+  onRootPositionChange: handleRootPositionChange,
   key: currentKey
 });
 const timeline = renderTimeline(timelinePane, {
@@ -185,7 +197,7 @@ const timeline = renderTimeline(timelinePane, {
   onChordClick: (chord, arpeggiate = false) => {
     if (!currentKey) return;
     isManualChordPreview = true;
-    const chordData = chordInterpreter(chord, currentKey);
+    const chordData = interpretChord(chord, currentKey);
     if (chordData && chordData.notes && chordData.notes.length > 0) {
       engine.previewChord(chordData.notes, "4n", arpeggiate);
       noteIndicator.updateChord(chordData.notes, chord.root, chordData.chordDegrees, chord.borrowed, currentKey, chord);
@@ -383,7 +395,7 @@ async function loadSection(songIndex, sectionIndex) {
     if (currentRawChords && currentRawChords.length > 0) {
       const firstChord = currentRawChords.find(c => !c.isRest);
       if (firstChord && (firstChord.beat === 0 || firstChord.beat === 1)) {
-        const chordData = chordInterpreter(firstChord, currentKey);
+        const chordData = interpretChord(firstChord, currentKey);
         noteIndicator.updateChord(
           chordData.notes,
           firstChord.root,
@@ -595,7 +607,7 @@ function createChordEvents(chordsArray, key) {
   const events = [];
   chordsArray.forEach((chord) => {
     if (chord.isRest) return;
-    const chordData = chordInterpreter(chord, key);
+    const chordData = interpretChord(chord, key);
     const chordNotes = chordData.notes;
     if (!chordNotes.length) return;
 
@@ -818,7 +830,7 @@ function findCurrentChordAtTick(tickPosition) {
         };
       }
       
-      const chordData = chordInterpreter(chord, currentKey);
+      const chordData = interpretChord(chord, currentKey);
       return {
         chord,
         chordData,
