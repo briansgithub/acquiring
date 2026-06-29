@@ -649,10 +649,13 @@ function createChordEvents(chordsArray, key) {
         const thisNote = note;
         const shouldHighlight = arpeggiationSpeed >= 50;
 
+        const durationSeconds = (noteEnd - noteStart) / ticksPerSecond;
+
         const noteEvent = {
           time: Math.round(noteStart) + "i",
-          type: "attack",
-          notes: [thisNote], // Engine expects array
+          type: "arpeggio",
+          note: thisNote,
+          duration: durationSeconds,
           name: chord.root,
           onTrigger: () => {
             if (isFirstNote) {
@@ -670,33 +673,23 @@ function createChordEvents(chordsArray, key) {
         };
         events.push(noteEvent);
 
-        events.push({
-          time: Math.round(noteEnd) + "i",
-          type: "release",
-          notes: [thisNote],
-        });
-
         currentTick += offsetTicks;
         noteIdx++;
       }
 
     } else {
-      // Block Chord (Original Logic)
-      // Note On
       events.push({
         time: Math.round(startTick) + "i",
         type: "attack",
         notes: chordNotes,
-        name: chord.root, // Original prop kept for ref
+        name: chord.root,
         onTrigger: () => {
           noteIndicator.updateChord(chordNotes, chord.root, chordData.chordDegrees, chord.borrowed, currentKey, chord);
           chordRing.update(chord);
-          // Reset manual preview flag when chord changes during playback
           isManualChordPreview = false;
         },
       });
 
-      // Note Off
       events.push({
         time: Math.round(endTick) + "i",
         type: "release",
@@ -705,8 +698,12 @@ function createChordEvents(chordsArray, key) {
     }
   });
 
-  // Events must be sorted by time for Tone.Part
-  events.sort((a, b) => parseInt(a.time) - parseInt(b.time));
+  events.sort((a, b) => {
+    const tickDiff = parseInt(a.time) - parseInt(b.time);
+    if (tickDiff !== 0) return tickDiff;
+    const typeOrder = { release: 0, arpeggio: 1, attack: 2 };
+    return (typeOrder[a.type] ?? 1) - (typeOrder[b.type] ?? 1);
+  });
 
   return events;
 }

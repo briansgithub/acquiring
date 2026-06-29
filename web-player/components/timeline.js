@@ -150,7 +150,7 @@ export function renderTimeline(container, options = {}) {
                 const fontSize = Math.max(16, baseFontSize); // Minimum 16px
                 
                 ctx.fillStyle = "#000";
-                ctx.font = `bold ${fontSize}px 'Times New Roman', serif`;
+                ctx.font = `bold ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 ctx.shadowColor = "rgba(255,255,255,0.5)"; // Light shadow for contrast on dark blocks? Or no shadow?
@@ -164,8 +164,8 @@ export function renderTimeline(container, options = {}) {
                         // Draw symbol higher
                         ctx.fillText(symbol, x + w / 2, y + blockHeight / 2 - fontSize * 0.3);
                         // Draw borrowed text lower (smaller)
-                        const borrowedFontSize = fontSize * 0.5;
-                        ctx.font = `italic ${borrowedFontSize}px 'Times New Roman', serif`;
+                        const borrowedFontSize = fontSize * 0.55;
+                        ctx.font = `500 ${borrowedFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
                         // If borrowed is an array (custom scale), show "(borrowed)"
                         // Otherwise show the mode name
                         const borrowedLabel = Array.isArray(chord.borrowed) ? "(borrowed)" : `(${chord.borrowed})`;

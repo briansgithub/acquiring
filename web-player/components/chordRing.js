@@ -196,6 +196,31 @@ export function renderChordRing(container, options = {}) {
   const DIATONIC_RING_RADIUS = 150; // Radius where diatonic chords sit
   const VARIANT_SPACING = 70; // Spacing between concentric rings
 
+  // Helper function to abbreviate mode/borrowed names (Option B)
+  function getAbbreviatedSubLabel(borrowed) {
+    if (borrowed === null || borrowed === undefined || borrowed === "") {
+      return null;
+    }
+    if (Array.isArray(borrowed) && borrowed.length > 0) {
+      return "(bor.)";
+    }
+    if (typeof borrowed === 'string' && borrowed.length > 0) {
+      const mode = borrowed.toLowerCase().trim();
+      if (mode.includes("mixolydian")) return "(mix.)";
+      if (mode.includes("dorian")) return "(dor.)";
+      if (mode.includes("phrygian")) return "(phr.)";
+      if (mode.includes("lydian")) return "(lyd.)";
+      if (mode.includes("locrian")) return "(loc.)";
+      if (mode.includes("harmonic minor")) return "(h.min)";
+      if (mode.includes("phrygian dominant")) return "(phr.dom)";
+      if (mode.includes("major")) return "(maj.)";
+      if (mode.includes("minor")) return "(min.)";
+      if (mode.includes("borrowed")) return "(bor.)";
+      return borrowed.length > 5 ? `(${borrowed.substring(0, 3)}.)` : `(${borrowed})`;
+    }
+    return null;
+  }
+
   // Helper function to get roman numerals for a scale type
   function getRomanNumeralsForScale(scaleType) {
     if (scaleType === 'minor') {
@@ -320,18 +345,8 @@ export function renderChordRing(container, options = {}) {
 
     if (exactDiatonic) {
       const isActive = isNodeActive(exactDiatonic);
-      let subLabel = null;
       const chord = exactDiatonic.chord;
-      if (chord && chord.borrowed !== undefined && chord.borrowed !== null && chord.borrowed !== "") {
-        // If borrowed is an array (custom scale), show "(borrowed)"
-        // Otherwise show the mode name
-        const borrowed = chord.borrowed;
-        if (Array.isArray(borrowed) && borrowed.length > 0) {
-          subLabel = "(borrowed)";
-        } else if (typeof borrowed === 'string' && borrowed.length > 0) {
-          subLabel = `(${borrowed})`;
-        }
-      }
+      const subLabel = getAbbreviatedSubLabel(chord ? chord.borrowed : null);
       const displayLabel = useRomanNumerals ? exactDiatonic.symbol : getChordLetterName(chord, currentKey);
       drawNode(dx, dy, nodeRadius, color, displayLabel, 1.0, isActive, false, subLabel);
     } else {
@@ -346,19 +361,8 @@ export function renderChordRing(container, options = {}) {
       const vx = centerX + dist * Math.cos(angle);
       const vy = centerY + dist * Math.sin(angle);
       const isActive = isNodeActive(v);
-
-      let subLabel = null;
       const chord = v.chord;
-      if (chord && chord.borrowed !== undefined && chord.borrowed !== null && chord.borrowed !== "") {
-        // If borrowed is an array (custom scale), show "(borrowed)"
-        // Otherwise show the mode name
-        const borrowed = chord.borrowed;
-        if (Array.isArray(borrowed) && borrowed.length > 0) {
-          subLabel = "(borrowed)";
-        } else if (typeof borrowed === 'string' && borrowed.length > 0) {
-          subLabel = `(${borrowed})`;
-        }
-      }
+      const subLabel = getAbbreviatedSubLabel(chord ? chord.borrowed : null);
 
       const displayLabel = useRomanNumerals ? v.symbol : getChordLetterName(v.chord, currentKey);
       drawNode(vx, vy, nodeRadius, color, displayLabel, 0.9, isActive, false, subLabel);
@@ -404,27 +408,62 @@ export function renderChordRing(container, options = {}) {
     ctx.stroke();
     ctx.restore();
 
-    // Text
+    // Text - Option A (Dynamic Scaling) & Option C (Outside placement)
     ctx.save();
-    ctx.globalAlpha = Math.min(1, opacity + 0.4);
+    ctx.globalAlpha = 1.0; // Keep text fully opaque for maximum contrast
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillStyle = isActive ? "#000" : "#000"; // Can change text color if needed, but black is readable on these cols
+    
+    // Choose high-contrast text color based on background color luminance
+    const getTextContrastColor = (hexColor) => {
+      const hex = hexColor.replace("#", "");
+      const r = parseInt(hex.substring(0, 2), 16) || 0;
+      const g = parseInt(hex.substring(2, 4), 16) || 0;
+      const b = parseInt(hex.substring(4, 6), 16) || 0;
+      const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+      return luminance > 0.5 ? "#111827" : "#ffffff";
+    };
+    
+    ctx.fillStyle = isPlaceholder ? "#ffffff" : getTextContrastColor(color);
+    
     // Scale text with node size
-    const fontSize = isActive ? Math.max(16, 22 * zoom) : Math.max(12, 16 * zoom);
-    ctx.font = `bold ${fontSize}px "Times New Roman", Times, serif`;
+    let labelFontSize = isActive ? Math.max(16, 22 * zoom) : Math.max(12, 16 * zoom);
+    ctx.font = `bold ${labelFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
 
-    if (subLabel) {
-      // Draw label higher
-      ctx.fillText(label, x, y - (fontSize * 0.4));
-      // Draw subLabel lower
-      const subFontSize = fontSize * 0.7;
-      ctx.font = `italic ${subFontSize}px "Times New Roman", Times, serif`;
-      ctx.fillText(subLabel, x, y + (fontSize * 0.5));
-    } else {
-      ctx.fillText(label, x, y);
+    // Option A: Measure and scale down main label if it exceeds 1.5 * effectiveRadius
+    const maxTextWidth = effectiveRadius * 1.5;
+    while (ctx.measureText(label).width > maxTextWidth && labelFontSize > 8) {
+      labelFontSize -= 0.5;
+      ctx.font = `bold ${labelFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
     }
+
+    ctx.fillText(label, x, y);
     ctx.restore();
+
+    // Option C: Draw subLabel outside the circular node (below the border)
+    if (subLabel) {
+      ctx.save();
+      // Keep sub-label text slightly translucent but highly legible
+      ctx.globalAlpha = Math.min(1, opacity + 0.3);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "top";
+      ctx.fillStyle = "#e2e8f0"; // Light gray/silver text that matches the app theme
+      
+      const baseSubFontSize = isActive ? Math.max(16, 22 * zoom) : Math.max(12, 16 * zoom);
+      let subFontSize = baseSubFontSize * 0.75;
+      ctx.font = `600 ${subFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+      
+      // Auto-scale subLabel too if needed
+      const maxSubWidth = effectiveRadius * 2.2;
+      while (ctx.measureText(subLabel).width > maxSubWidth && subFontSize > 8) {
+        subFontSize -= 0.5;
+        ctx.font = `600 ${subFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+      }
+      
+      // Draw subLabel below the circle node border (with small offset)
+      ctx.fillText(subLabel, x, y + effectiveRadius + 6 * zoom);
+      ctx.restore();
+    }
   }
 
   function drawCenterRing(cx, cy, r, key) {
@@ -436,7 +475,7 @@ export function renderChordRing(container, options = {}) {
 
     // Center Label (white text)
     ctx.fillStyle = "#ffffff";
-    ctx.font = `${Math.max(14, 18 * zoom)}px "Times New Roman", Times, serif`;
+    ctx.font = `bold ${Math.max(14, 18 * zoom)}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(`${key.tonic} ${key.scale}`, cx, cy);

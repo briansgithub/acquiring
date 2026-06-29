@@ -1,0 +1,38 @@
+# Project Memory
+
+High-signal context for agents and contributors working on this repo.
+
+## What this project is
+
+**Sacred Ring** is a music-theory visualization and playback system built around Hooktheory-style song data (chords, melody, key, sections). The primary interactive surface is the **web player** (`web-player/`), which renders a circular chord ring, note indicator, timeline, and transport controls while playing back sections via Tone.js.
+
+A separate **`_Decode_oracle`** pipeline validates and analyzes chord interpretation against corpus data; its outputs live under `_Decode_oracle/out/`.
+
+## Key conventions
+
+- Song/section JSON lives in `.hooktheory_cache/`; the web player loads it via `web-player/server.js` (`GET /api/song`).
+- Timing uses **192 ticks per beat** (Tone.js transport ticks). Events are scheduled as `"<tick>i"` strings.
+- Chord voicing and scale logic live in `web-player/lib/` (`music.js`, `chordVoicing.js`, etc.).
+- Debug/research scripts go in `_Debug_testing` and `_Research_testing` respectively (per project rules).
+- Source files should stay under **400 lines**; consult before exceeding 300.
+
+## Audio playback model
+
+| Synth | Role |
+|-------|------|
+| `melodySynth` | Monophonic melody (`Tone.Synth`) |
+| `chordSynth` | Block chords (`Tone.PolySynth`) |
+| `arpeggioSynth` | Arpeggiated chords only (`Tone.Synth`, one note at a time) |
+| `previewSynth` | UI chord/note previews, isolated from playback |
+
+**Important:** `Tone.Synth` (monophonic) uses `triggerRelease(time)` — not `triggerRelease(note, time)`. PolySynth uses `triggerRelease(notes, time)`.
+
+## Arpeggio mode
+
+When arpeggio is enabled, `createChordEvents()` in `player.js` emits `type: "arpeggio"` events with `note` and `duration` (seconds). The engine plays them via `arpeggioSynth.triggerAttackRelease()`. Block-chord mode still uses paired `attack` / `release` events on `chordSynth`.
+
+## Related docs
+
+- [ARCHITECTURE.md](./ARCHITECTURE.md) — system layout
+- [BUGS.md](./BUGS.md) — resolved and known issues
+- [TODO.md](./TODO.md) — planned work
