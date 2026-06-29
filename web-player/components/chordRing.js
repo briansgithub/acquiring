@@ -256,6 +256,7 @@ export function renderChordRing(container, options = {}) {
   let lastMouseY = 0;
   let activeChordSymbol = null; // Track currently playing chord symbol
   let activeChord = null; // Track currently playing chord object
+  let previousChord = null; // Track previously playing chord object
 
   // External Data
   let currentKey = { tonic: "C", scale: "major" };
@@ -576,12 +577,63 @@ export function renderChordRing(container, options = {}) {
     ctx.lineWidth = 2 * zoom;
     ctx.stroke();
 
-    // Center Label (white text)
-    ctx.fillStyle = "#ffffff";
-    ctx.font = `bold ${Math.max(14, 18 * zoom)}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+    // 1. Draw Key name (e.g. C major) - small bold text at top of center circle
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = `bold ${Math.max(10, 12 * zoom)}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(`${key.tonic} ${key.scale}`, cx, cy);
+    ctx.fillText(`${key.tonic} ${key.scale}`, cx, cy - 12 * zoom);
+
+    // 2. Draw Chord Transition at bottom of center circle
+    if (activeChord) {
+      const currSymbol = activeChordSymbol || "";
+      const currName = currSymbol.replace(/\([a-z.]+\)$/i, "");
+      const currColor = getScaleDegreeColor(activeChord.root, key.scale) || "#ffffff";
+
+      if (previousChord) {
+        const prevSymbol = getChordSymbol(previousChord, key) || "";
+        const prevName = prevSymbol.replace(/\([a-z.]+\)$/i, "");
+        const prevColor = getScaleDegreeColor(previousChord.root, key.scale) || "#ffffff";
+
+        // Setup font for measuring and drawing
+        ctx.font = `bold ${Math.max(12, 16 * zoom)}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+        ctx.textBaseline = "middle";
+
+        const wPrev = ctx.measureText(prevName).width;
+        const wArrow = ctx.measureText(" → ").width;
+        const wCurr = ctx.measureText(currName).width;
+        const totalW = wPrev + wArrow + wCurr;
+        const startX = cx - totalW / 2;
+        const textY = cy + 12 * zoom;
+
+        // Draw previous chord name in its color
+        ctx.textAlign = "left";
+        ctx.fillStyle = prevColor;
+        ctx.fillText(prevName, startX, textY);
+
+        // Draw arrow in white/light-gray
+        ctx.fillStyle = "#cbd5e1";
+        ctx.fillText(" → ", startX + wPrev, textY);
+
+        // Draw current chord name in its color
+        ctx.fillStyle = currColor;
+        ctx.fillText(currName, startX + wPrev + wArrow, textY);
+      } else {
+        // No previous chord - draw current chord centered
+        ctx.font = `bold ${Math.max(14, 18 * zoom)}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = currColor;
+        ctx.fillText(currName, cx, cy + 12 * zoom);
+      }
+    } else {
+      // No active chord - draw placeholder
+      ctx.font = `bold ${Math.max(14, 18 * zoom)}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "#64748b";
+      ctx.fillText("—", cx, cy + 12 * zoom);
+    }
   }
 
   // --- INTERACTION ---
@@ -1029,12 +1081,16 @@ export function renderChordRing(container, options = {}) {
 
   return {
     update(chord) {
-      if (!chord) {
+      if (!chord || chord.isRest) {
         activeChordSymbol = null;
         activeChord = null;
       } else {
-        // Store both symbol and chord object for accurate matching
-        activeChordSymbol = getChordSymbol(chord, currentKey);
+        const sym = getChordSymbol(chord, currentKey);
+        // If it's a new chord (different root or type), shift the current to previous!
+        if (activeChord && !chordsMatch(activeChord, chord)) {
+          previousChord = activeChord;
+        }
+        activeChordSymbol = sym;
         activeChord = chord;
       }
       draw();
@@ -1060,6 +1116,9 @@ export function renderChordRing(container, options = {}) {
     },
 
     setSongData(chords, key) {
+      previousChord = null;
+      activeChord = null;
+      activeChordSymbol = null;
       if (key) {
         currentKey = key;
       }
