@@ -132,9 +132,16 @@ const controls = renderControls(controlsPane, {
     currentBpm = tempo;
     currentSecondsPerBeat = 60 / tempo;
     engine.setTempo(tempo);
-    // Reschedule events to keep arpeggio speed constant in milliseconds
-    // The arpeggio speed setting (ms) stays the same, but tick offsets are recalculated
-    updatePlaybackSettings();
+    // If not arpeggiated, we don't need to reschedule events at all.
+    // Tone.js natively adjusts playback speed for tick-scheduled events seamlessly.
+    // If arpeggiated, we debounce rescheduling to keep arpeggio speed constant in ms
+    // without cutting off sounding audio repeatedly while dragging the slider.
+    if (isArpeggiated) {
+      if (tempoDebounceTimer) clearTimeout(tempoDebounceTimer);
+      tempoDebounceTimer = setTimeout(() => {
+        updatePlaybackSettings();
+      }, 250);
+    }
   },
   onArpeggiateToggle: (enabled) => {
     isArpeggiated = enabled;
@@ -231,6 +238,7 @@ let isLoading = false;
 let isArpeggiated = false;
 let arpeggiationSpeed = 100; // ms
 let arpDebounceTimer = null;
+let tempoDebounceTimer = null;
 let isManualChordPreview = false; // Track when chord is manually clicked
 
 init();
