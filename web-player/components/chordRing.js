@@ -1084,10 +1084,11 @@ export function renderChordRing(container, options = {}) {
       if (!chord || chord.isRest) {
         activeChordSymbol = null;
         activeChord = null;
+        previousChord = null;
       } else {
         const sym = getChordSymbol(chord, currentKey);
-        // If it's a new chord (different root or type), shift the current to previous!
-        if (activeChord && !chordsMatch(activeChord, chord)) {
+        // If it's a new chord event, shift the current to previous!
+        if (activeChord && activeChord !== chord) {
           previousChord = activeChord;
         }
         activeChordSymbol = sym;
