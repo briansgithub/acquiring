@@ -1,0 +1,20 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/akito-nakatsuka/zelda-ii---the-adventure-of-link---village",
+  "songTitle": "Zelda II - The Adventure of Link - Village",
+  "artist": "akito-nakatsuka",
+  "timestamp": "2026-06-29T19:40:29.022Z",
+  "songIds": [
+    "Abm_Dl_Lgak"
+  ],
+  "sectionMapping": {
+    "Abm_Dl_Lgak": "Intro"
+  },
+  "sections": [
+    {
+      "index": 0,
+      "songId": "Abm_Dl_Lgak",
+      "sectionName": "Intro",
+      "numericId": 259365
+    }
+  ]
+}

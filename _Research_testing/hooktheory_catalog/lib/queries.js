@@ -17,7 +17,7 @@ function getSongDetail(db, slug) {
       s.slug, s.artist, s.title, s.url, s.status, s.difficulty_label,
       s.discovery_source, s.first_seen_at, s.last_checked_at, s.error_message,
       s.cache_dir, s.processed_at, s.oracle_tested_at,
-      s.oracle_out_dir, s.oracle_summary_json,
+      s.oracle_out_dir, s.oracle_summary_json, s.harvest_mode,
       m.complexity_rating, m.chord_complexity_ht, m.melodic_complexity_ht,
       m.chord_melody_tension_ht, m.chord_progression_novelty_ht, m.chord_bass_melody_ht,
       m.metrics_source,

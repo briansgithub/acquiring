@@ -1,13 +1,9 @@
-export function renderControls(container, { hideSongSelect = false, onPlayPause, onRestart, onSeek, onSongChange, onSectionChange, onMelodyVolumeChange, onChordVolumeChange, onTempoChange, onArpeggiateToggle, onArpeggiateSpeedChange }) {
+export function renderControls(container, { onPlayPause, onRestart, onSectionChange, onMelodyVolumeChange, onChordVolumeChange, onTempoChange, onArpeggiateToggle, onArpeggiateSpeedChange }) {
   container.innerHTML = `
     <h2>Controls</h2>
     <div class="row">
       <button id="play-toggle">Play</button>
       <button id="restart-btn">Restart</button>
-    </div>
-    <div class="row song-select-row"${hideSongSelect ? ' hidden' : ''}>
-      <label for="song-select" style="font-size:18px;color:#9ca3af;width:60px;">Song:</label>
-      <select id="song-select" class="select"></select>
     </div>
     <div class="row">
       <label for="section-select" style="font-size:18px;color:#9ca3af;width:60px;">Section:</label>
@@ -15,15 +11,6 @@ export function renderControls(container, { hideSongSelect = false, onPlayPause,
     </div>
     <div class="row" style="justify-content:center;margin:10px 0;">
       <div id="song-title" style="font-size:24px;font-weight:bold;color:#ffffff;text-align:center;">-</div>
-    </div>
-    <div class="row" style="justify-content:center;margin:0 0 10px 0;">
-      <div id="song-key" style="font-size:20px;color:#9ca3af;text-align:center;">-</div>
-    </div>
-    <div class="row">
-      <div class="progress" id="progress-bar">
-        <div class="fill" id="progress-fill"></div>
-      </div>
-      <span id="progress-label" style="font-size:12px;color:#9ca3af;width:42px;text-align:right;">0%</span>
     </div>
     <div class="row">
       <label for="tempo-slider" style="font-size:12px;color:#9ca3af;width:60px;">Tempo:</label>
@@ -53,10 +40,6 @@ export function renderControls(container, { hideSongSelect = false, onPlayPause,
 
   const playBtn = container.querySelector("#play-toggle");
   const restartBtn = container.querySelector("#restart-btn");
-  const progress = container.querySelector("#progress-bar");
-  const fill = container.querySelector("#progress-fill");
-  const label = container.querySelector("#progress-label");
-  const songSelect = container.querySelector("#song-select");
   const sectionSelect = container.querySelector("#section-select");
   const tempoSlider = container.querySelector("#tempo-slider");
   const tempoLabel = container.querySelector("#tempo-label");
@@ -65,7 +48,6 @@ export function renderControls(container, { hideSongSelect = false, onPlayPause,
   const chordVolumeSlider = container.querySelector("#chord-volume");
   const chordVolumeLabel = container.querySelector("#chord-volume-label");
   const songTitle = container.querySelector("#song-title");
-  const songKey = container.querySelector("#song-key");
   const arpToggle = container.querySelector("#arpeggiate-toggle");
   const arpSpeedSlider = container.querySelector("#arp-speed");
   const arpSpeedLabel = container.querySelector("#arp-speed-label");
@@ -80,16 +62,6 @@ export function renderControls(container, { hideSongSelect = false, onPlayPause,
 
   restartBtn.addEventListener("click", () => {
     onRestart?.();
-  });
-
-  progress.addEventListener("click", (e) => {
-    const rect = progress.getBoundingClientRect();
-    const ratio = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
-    onSeek?.(ratio);
-  });
-
-  songSelect.addEventListener("change", (e) => {
-    onSongChange?.(e.target.value);
   });
 
   sectionSelect.addEventListener("change", (e) => {
@@ -108,7 +80,7 @@ export function renderControls(container, { hideSongSelect = false, onPlayPause,
     onChordVolumeChange?.(volume);
   });
 
-  let baseTempo = 120; // Store the original tempo for percentage calculation
+  let baseTempo = 120;
 
   tempoSlider.addEventListener("input", (e) => {
     const percentage = Number(e.target.value);
@@ -126,7 +98,6 @@ export function renderControls(container, { hideSongSelect = false, onPlayPause,
 
   arpSpeedSlider.addEventListener("input", (e) => {
     const ms = Number(e.target.value);
-    // Display in seconds if >= 1000ms, otherwise in milliseconds
     if (ms >= 1000) {
       arpSpeedLabel.textContent = `${(ms / 1000).toFixed(1)}s`;
     } else {
@@ -138,40 +109,20 @@ export function renderControls(container, { hideSongSelect = false, onPlayPause,
   return {
     setTempo(bpm, originalBpm) {
       baseTempo = originalBpm || bpm;
-      // Convert BPM to percentage: percentage = (currentBPM / originalBPM) * 100
       const percentage = Math.round((bpm / baseTempo) * 100);
       tempoSlider.value = Math.max(1, Math.min(100, percentage));
       tempoLabel.textContent = `${tempoSlider.value}%`;
     },
-    setSongs(songs) {
-      console.log("setSongs called with:", songs);
-      if (!Array.isArray(songs) || !songs.length) {
-        console.warn("setSongs: empty or invalid songs array");
-        songSelect.innerHTML = '<option value="">No songs</option>';
-        return;
-      }
-      songSelect.innerHTML = songs
-        .map((s, idx) => `<option value="${idx}">${s.title || s.artist || `Song ${idx + 1}`}</option>`)
-        .join("");
-      console.log("Song dropdown populated with", songs.length, "options");
-    },
     setSections(sections) {
-      console.log("setSections called with:", sections);
       if (!Array.isArray(sections) || !sections.length) {
-        console.warn("setSections: empty or invalid sections array");
         sectionSelect.innerHTML = '<option value="">No sections</option>';
         return;
       }
       sectionSelect.innerHTML = sections
         .map((s, idx) => `<option value="${idx}">${s.sectionName || `Section ${idx + 1}`}</option>`)
         .join("");
-      console.log("Section dropdown populated with", sections.length, "options");
     },
-    updateProgress(ratio) {
-      const pct = Math.round(ratio * 100);
-      fill.style.width = `${pct}%`;
-      label.textContent = `${pct}%`;
-    },
+    updateProgress() {},
     resetPlayState() {
       playBtn.dataset.state = "paused";
       playBtn.textContent = "Play";
@@ -181,16 +132,5 @@ export function renderControls(container, { hideSongSelect = false, onPlayPause,
         songTitle.textContent = title || "-";
       }
     },
-    setSongKey(key) {
-      if (songKey) {
-        if (key && key.tonic && key.scale) {
-          const scaleName = key.scale.charAt(0).toUpperCase() + key.scale.slice(1);
-          songKey.textContent = `${key.tonic} ${scaleName}`;
-        } else {
-          songKey.textContent = "-";
-        }
-      }
-    },
   };
 }
-

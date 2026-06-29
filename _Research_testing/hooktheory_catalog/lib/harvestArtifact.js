@@ -24,7 +24,11 @@ function harvestFileForSlug(slug) {
 
 function harvestOk(scrape) {
   return scrape && scrape.sections && scrape.sections.length > 0
-    && scrape.sections.some((s) => (s.rendered || []).length > 0 || s.json);
+    && scrape.sections.some((s) => s.json || ((s.rendered || []).length > 0));
+}
+
+function isLightHarvest(scrape) {
+  return scrape?.harvestMode === 'light';
 }
 
 function loadHarvest(slug) {
@@ -61,5 +65,6 @@ module.exports = {
   harvestOk,
   loadHarvest,
   isHarvested,
+  isLightHarvest,
   clearHarvestArtifact,
 };

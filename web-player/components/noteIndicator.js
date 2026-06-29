@@ -52,11 +52,9 @@ function analyzeMelodyTension(melodyNote, chordNotes, chordRootSd) {
 
 export function renderNoteIndicator(container, options = {}) {
   container.innerHTML = `
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-      <h2 style="margin: 0;">Now Playing</h2>
-      <span id="now-playing-key" style="font-size: 13px; font-weight: 600; color: #9ca3af;">Key: —</span>
-    </div>
-    <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 12px; height: calc(100% - 40px); box-sizing: border-box;">
+    <h2 class="now-playing-title">Now Playing</h2>
+    <div id="now-playing-key" class="now-playing-key">—</div>
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 12px; height: calc(100% - 72px); box-sizing: border-box;">
       <div class="card" style="position:relative; height: 180px; box-sizing: border-box; display: flex; flex-direction: column;">
         <div class="label" style="text-align:center;">Melody</div>
         <label for="show-melody-toggle" style="position:absolute;top:10px;right:10px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;color:#9ca3af;font-size:12px;">
@@ -114,9 +112,17 @@ export function renderNoteIndicator(container, options = {}) {
     options.onRootPositionChange?.(rootPositionToggle.checked);
   });
   
-  let currentKey = options.key || { tonic: "C", scale: "major" };
-  if (keyIndicatorEl && currentKey) {
-    keyIndicatorEl.textContent = `Key: ${currentKey.tonic} ${currentKey.scale}`;
+  let currentKey = options.key || null;
+  updateKeyDisplay(currentKey);
+
+  function updateKeyDisplay(key) {
+    if (!keyIndicatorEl) return;
+    if (key?.tonic && key?.scale) {
+      const scaleName = key.scale.charAt(0).toUpperCase() + key.scale.slice(1);
+      keyIndicatorEl.textContent = `${key.tonic} ${scaleName}`;
+    } else {
+      keyIndicatorEl.textContent = "—";
+    }
   }
   
   // Store current state for redrawing
@@ -328,9 +334,7 @@ export function renderNoteIndicator(container, options = {}) {
       // Update currentKey
       if (key) {
         currentKey = key;
-        if (keyIndicatorEl) {
-          keyIndicatorEl.textContent = `Key: ${key.tonic} ${key.scale}`;
-        }
+        updateKeyDisplay(key);
       }
       
       // Update chord symbol (always use roman numeral) with "Chord: " prefix
@@ -388,12 +392,16 @@ export function renderNoteIndicator(container, options = {}) {
     reset() {
       currentMelodyData = { absoluteLabel: null, relativeLabel: null };
       currentChordData = { notes: null, chordDegrees: null, root: null, borrowed: null, key: null, chordObj: null };
-      updateMelodyDisplay(); // This will show empty gray pills
+      updateMelodyDisplay();
       chordRootEl.textContent = "";
       chordRootEl.style.visibility = "hidden";
       updateChordNotesDisplay();
       chordBorrowedEl.textContent = "";
       chordBorrowedEl.style.visibility = "hidden";
+    },
+    setKey(key) {
+      currentKey = key;
+      updateKeyDisplay(key);
     },
     setRootPositionChecked(checked) {
       rootPositionToggle.checked = !!checked;

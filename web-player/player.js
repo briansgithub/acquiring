@@ -37,6 +37,10 @@ async function handlePlayPause(shouldPlay) {
     console.warn("Cannot toggle playback while loading...");
     return;
   }
+  if (!currentSong || songLength <= 0) {
+    if (shouldPlay) console.warn("No song loaded — use Load in Song Selector");
+    return;
+  }
   if (shouldPlay) {
     // If a chord was manually previewed, revert to current chord at playback position
     if (isManualChordPreview) {
@@ -98,9 +102,9 @@ async function handlePlayPause(shouldPlay) {
 }
 
 const controls = renderControls(controlsPane, {
-  hideSongSelect: true,
   onPlayPause: handlePlayPause,
   onRestart: async () => {
+    if (!currentSong || songLength <= 0) return;
     // Release all notes first to prevent stuck notes when restarting during playback
     engine.releaseAllNotes();
     engine.stop();
@@ -122,8 +126,6 @@ const controls = renderControls(controlsPane, {
       timeline.updateProgress(0);
       setupProgressTracking();
   },
-  onSeek: handleSeek,
-  onSongChange: handleSongChange,
   onSectionChange: handleSectionChange,
   onMelodyVolumeChange: (volume) => {
     engine.setMelodyVolume(volume);
@@ -225,7 +227,6 @@ const songSelector = renderSongSelector(selectorPane, {
         console.error("Loaded song not found in playback cache:", cacheKey);
         return;
       }
-      controls.setSongs(library);
       handleSongChange(String(idx));
     } catch (err) {
       console.error("Selector load failed:", err);
@@ -262,7 +263,29 @@ let arpDebounceTimer = null;
 let tempoDebounceTimer = null;
 let isManualChordPreview = false; // Track when chord is manually clicked
 
-init();
+function resetIdleState() {
+  currentSong = null;
+  currentSongIdx = 0;
+  currentSectionIdx = 0;
+  currentKey = null;
+  songLength = 0;
+  currentRawNotes = [];
+  currentRawChords = [];
+  currentMelodyEvents = [];
+  currentChordEvents = [];
+  engine.stop();
+  controls.setSections([]);
+  controls.setSongTitle("-");
+  controls.resetPlayState();
+  noteIndicator.reset();
+  noteIndicator.setKey(null);
+  chordRing.setSongData([], null);
+  chordRing.update(null, null, null);
+  chordRing.updateTransitions([], []);
+  timeline.setSongData([], null, 0);
+  timeline.setSongUrl(null);
+  timeline.updateProgress(0);
+}
 
 async function init() {
   try {
@@ -273,23 +296,15 @@ async function init() {
       }
       return r.json();
     });
-    console.info("Loaded library", library);
-    if (!Array.isArray(library) || !library.length) {
-      throw new Error("No songs found in cache");
-    }
-    if (!library[0].sections?.length) {
-      throw new Error("Library has no sections for first song");
-    }
-    // Populate dropdowns immediately
-    controls.setSongs(library);
-    controls.setSections(library[0].sections);
-    loadSection(0, 0);
+    console.info("Loaded library", library.length, "songs");
   } catch (err) {
-    console.error("Failed to load library", err);
-    alert(`Unable to load songs/sections: ${err.message}`);
-    controls.setSections([]);
+    console.warn("Playback library not ready:", err.message);
+    library = [];
   }
+  resetIdleState();
 }
+
+init();
 
 async function loadSection(songIndex, sectionIndex) {
   if (isLoading) return;
@@ -391,17 +406,12 @@ async function loadSection(songIndex, sectionIndex) {
     engine.scheduleMelody(melodyEvents);
     engine.scheduleChords(chordEvents);
 
-    // Ensure dropdowns are set
     controls.setSections(song.sections);
-    // Set the selected values
-    const songSelect = document.getElementById("song-select");
     const sectionSelect = document.getElementById("section-select");
-    if (songSelect) songSelect.value = songIndex;
     if (sectionSelect) sectionSelect.value = sectionIndex;
 
-    // Update song title and key display
     controls.setSongTitle(song.title || song.artist || "Unknown Song");
-    controls.setSongKey(key);
+    noteIndicator.setKey(key);
     // Update tempo slider to match loaded section's tempo (100% = original tempo)
     controls.setTempo(bpm, originalBpm);
     // Reset progress to 0 for both controls and timeline
@@ -517,6 +527,7 @@ function setupProgressTracking() {
 }
 
 function handleSeek(ratio) {
+  if (!currentSong || songLength <= 0) return;
   // Store current playback state
   const wasPlaying = Tone.Transport.state === "started";
   

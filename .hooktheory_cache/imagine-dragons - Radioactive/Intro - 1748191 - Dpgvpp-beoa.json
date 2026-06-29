@@ -1,0 +1,459 @@
+{
+  "songId": "Dpgvpp-beoa",
+  "numericId": 1748191,
+  "sectionName": "Intro",
+  "songInfo": "Radioactive",
+  "chords": [
+    {
+      "root": 1,
+      "beat": 1,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 3,
+      "beat": 5,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 7,
+      "beat": 9,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 1,
+      "beat": 17,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 3,
+      "beat": 21,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 7,
+      "beat": 25,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 1,
+      "beat": 33,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 3,
+      "beat": 37,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 7,
+      "beat": 41,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "root": 1,
+      "beat": 49,
+      "duration": 16,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    }
+  ],
+  "notes": [
+    {
+      "sd": "1",
+      "octave": -1,
+      "beat": 1,
+      "duration": 6,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "2",
+      "octave": -1,
+      "beat": 7,
+      "duration": 2,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "7",
+      "octave": -2,
+      "beat": 9,
+      "duration": 4,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "1",
+      "octave": -1,
+      "beat": 17,
+      "duration": 6,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "2",
+      "octave": -1,
+      "beat": 23,
+      "duration": 2,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "7",
+      "octave": -2,
+      "beat": 25,
+      "duration": 4,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "1",
+      "octave": -1,
+      "beat": 33,
+      "duration": 6,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "2",
+      "octave": -1,
+      "beat": 39,
+      "duration": 2,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "7",
+      "octave": -2,
+      "beat": 41,
+      "duration": 4,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    {
+      "sd": "1",
+      "octave": -1,
+      "beat": 49,
+      "duration": 12,
+      "isRest": false,
+      "recordingEndBeat": null
+    }
+  ],
+  "metadata": {
+    "version": "2.34.3",
+    "keys": [
+      {
+        "beat": 1,
+        "scale": "dorian",
+        "tonic": "B"
+      }
+    ],
+    "tempos": [
+      {
+        "beat": 1,
+        "bpm": 136,
+        "swingFactor": 0,
+        "swingBeat": 0.5
+      }
+    ],
+    "meters": [
+      {
+        "beat": 1,
+        "numBeats": 4,
+        "beatUnit": 1
+      }
+    ],
+    "sections": [],
+    "endBeat": 65,
+    "youtube": {
+      "id": "w3viBe2Q0P8",
+      "syncStart": 0.0011289773328099825,
+      "syncEnd": 0.15306448866640499,
+      "syncMode": "youtube-sync-mode-test"
+    },
+    "lyrics": {
+      "isOpen": false,
+      "isFocused": false,
+      "rerender": 0.186512644188356,
+      "values": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "sectionLyrics": [
+        {
+          "sectionName": "Song",
+          "lyrics": [
+            "",
+            "",
+            "",
+            ""
+          ]
+        }
+      ]
+    },
+    "bands": [
+      {
+        "beat": 1,
+        "lead1": [
+          {
+            "mute": false,
+            "octaveOffset": 0,
+            "velocity": 0.5,
+            "specification": "Piano Lead",
+            "midiChannel": 1,
+            "useHookpadOutput": true,
+            "useMIDIOutput": true,
+            "solo": false,
+            "wasMutedBeforeSolo": false,
+            "pan": 0,
+            "timing": 0
+          }
+        ],
+        "lead2": [
+          {
+            "mute": false,
+            "octaveOffset": 0,
+            "velocity": 0.5,
+            "specification": "Piano Lead",
+            "midiChannel": 2,
+            "useHookpadOutput": true,
+            "useMIDIOutput": true,
+            "solo": false,
+            "wasMutedBeforeSolo": false,
+            "pan": 0,
+            "timing": 0
+          }
+        ],
+        "lead3": [
+          {
+            "mute": false,
+            "octaveOffset": 0,
+            "velocity": 0.5,
+            "specification": "Piano Lead",
+            "midiChannel": 3,
+            "useHookpadOutput": true,
+            "useMIDIOutput": true,
+            "solo": false,
+            "wasMutedBeforeSolo": false,
+            "pan": 0,
+            "timing": 0
+          }
+        ],
+        "lead4": [
+          {
+            "mute": false,
+            "octaveOffset": 0,
+            "velocity": 0.5,
+            "specification": "Piano Lead",
+            "midiChannel": 4,
+            "useHookpadOutput": true,
+            "useMIDIOutput": true,
+            "solo": false,
+            "wasMutedBeforeSolo": false,
+            "pan": 0,
+            "timing": 0
+          }
+        ],
+        "harmony": [
+          {
+            "octaveOffset": 0,
+            "velocity": 0.5,
+            "specification": "Piano 1/4s",
+            "midiChannel": 5,
+            "useHookpadOutput": true,
+            "useMIDIOutput": true,
+            "solo": false,
+            "wasMutedBeforeSolo": false,
+            "pan": 0,
+            "timing": 0,
+            "speed": "normal"
+          }
+        ],
+        "bass": [
+          {
+            "octaveOffset": 0,
+            "velocity": 0.5,
+            "specification": "Piano Bass-Dotted",
+            "midiChannel": 9,
+            "useHookpadOutput": true,
+            "useMIDIOutput": false,
+            "solo": false,
+            "wasMutedBeforeSolo": false,
+            "pan": 0,
+            "timing": 0,
+            "speed": "normal"
+          }
+        ],
+        "drums": [
+          {
+            "octaveOffset": 0,
+            "velocity": 0.5,
+            "specification": "Basic Pop 22",
+            "midiChannel": 10,
+            "useHookpadOutput": false,
+            "useMIDIOutput": false,
+            "solo": false,
+            "wasMutedBeforeSolo": false,
+            "pan": 0,
+            "timing": 0,
+            "speed": "normal"
+          }
+        ]
+      }
+    ],
+    "breaks": [],
+    "keyFrames": [
+      {
+        "beat": 1
+      },
+      {
+        "beat": 65
+      }
+    ],
+    "activeMelodyIndex": 0,
+    "visibleMelodies": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "pickup": false,
+    "fp": "ef92366161cef8fc12cab25cbbafdf2a2cc2ab74",
+    "externalMp3Url": null,
+    "externalMp3StartBeat": null,
+    "externalMp3Duration": null,
+    "numericId": 1748191
+  },
+  "stringSongId": "Dpgvpp-beoa",
+  "cachedAt": "2026-06-29T19:41:04.707Z"
+}

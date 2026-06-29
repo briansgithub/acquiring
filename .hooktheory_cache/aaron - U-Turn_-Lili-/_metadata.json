@@ -1,0 +1,27 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/aaron/u-turn--lili-",
+  "songTitle": "U-Turn -Lili-",
+  "artist": "aaron",
+  "timestamp": "2026-06-29T19:37:11.417Z",
+  "songIds": [
+    "AQodXkzqoDl",
+    "AQodXkzqoDl"
+  ],
+  "sectionMapping": {
+    "AQodXkzqoDl": "Chorus"
+  },
+  "sections": [
+    {
+      "index": 0,
+      "songId": "AQodXkzqoDl",
+      "sectionName": "Intro and Verse",
+      "numericId": 707967
+    },
+    {
+      "index": 1,
+      "songId": "AQodXkzqoDl",
+      "sectionName": "Chorus",
+      "numericId": 707967
+    }
+  ]
+}

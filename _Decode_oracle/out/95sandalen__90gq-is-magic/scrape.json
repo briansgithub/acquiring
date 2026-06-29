@@ -1,15 +1,11 @@
 {
   "url": "https://www.hooktheory.com/theorytab/view/95sandalen/90gq-is-magic",
-  "title": "90gQ Is Magic by 95sandalen Chords, Melody, and Music Theory Analysis - Hooktheory",
+  "title": null,
+  "harvestMode": "light",
   "sections": [
     {
       "name": "Verse",
-      "hash": "#verse",
       "songId": "bWgMzJLzxlX",
-      "containerId": "tab-bWgMzJLzxlX",
-      "renderedCount": 16,
-      "jsonChordCount": 16,
-      "jsonNonRestCount": 16,
       "json": {
         "songId": 389996,
         "songInfo": "90gQ Is Magic",
@@ -698,655 +694,173 @@
             }
           ],
           "sections": [],
-          "endBeat": 33
+          "endBeat": 33,
+          "youtube": {
+            "id": "Zrk9M3rj_qc",
+            "syncStart": 0,
+            "syncEnd": 0.05522687071183534,
+            "syncMode": "youtube-sync-mode-test"
+          },
+          "lyrics": {
+            "isOpen": false,
+            "isFocused": false,
+            "rerender": 0.28067515334152815,
+            "values": [
+              "",
+              "",
+              "",
+              ""
+            ],
+            "sectionLyrics": [
+              {
+                "sectionName": "Song",
+                "lyrics": [
+                  "",
+                  "",
+                  "",
+                  ""
+                ]
+              }
+            ]
+          },
+          "bands": [
+            {
+              "beat": 1,
+              "lead1": [
+                {
+                  "mute": false,
+                  "octaveOffset": 0,
+                  "velocity": 0.8,
+                  "specification": "Piano Lead",
+                  "midiChannel": 1,
+                  "useHookpadOutput": true,
+                  "useMIDIOutput": true,
+                  "solo": false,
+                  "wasMutedBeforeSolo": false,
+                  "pan": 0,
+                  "timing": 0
+                }
+              ],
+              "lead2": [
+                {
+                  "mute": false,
+                  "specification": "Lead Piano-legato",
+                  "midiChannel": 2,
+                  "useHookpadOutput": true,
+                  "useMIDIOutput": true,
+                  "solo": false,
+                  "wasMutedBeforeSolo": false,
+                  "pan": 0,
+                  "timing": 0
+                }
+              ],
+              "lead3": [
+                {
+                  "mute": false,
+                  "specification": "Lead Piano-legato",
+                  "midiChannel": 3,
+                  "useHookpadOutput": true,
+                  "useMIDIOutput": true,
+                  "solo": false,
+                  "wasMutedBeforeSolo": false,
+                  "pan": 0,
+                  "timing": 0
+                }
+              ],
+              "lead4": [
+                {
+                  "mute": false,
+                  "specification": "Lead Piano-legato",
+                  "midiChannel": 4,
+                  "useHookpadOutput": true,
+                  "useMIDIOutput": true,
+                  "solo": false,
+                  "wasMutedBeforeSolo": false,
+                  "pan": 0,
+                  "timing": 0
+                }
+              ],
+              "harmony": [
+                {
+                  "octaveOffset": 0,
+                  "velocity": 0.8,
+                  "specification": "Piano 1/4s",
+                  "midiChannel": 5,
+                  "useHookpadOutput": true,
+                  "useMIDIOutput": true,
+                  "solo": false,
+                  "wasMutedBeforeSolo": false,
+                  "pan": 0,
+                  "timing": 0,
+                  "speed": "normal"
+                }
+              ],
+              "bass": [
+                {
+                  "octaveOffset": 0,
+                  "velocity": 0.8,
+                  "specification": "Piano Bass-Dotted",
+                  "midiChannel": 9,
+                  "useHookpadOutput": true,
+                  "useMIDIOutput": false,
+                  "solo": false,
+                  "wasMutedBeforeSolo": false,
+                  "pan": 0,
+                  "timing": 0,
+                  "speed": "normal"
+                }
+              ],
+              "drums": [
+                {
+                  "octaveOffset": 0,
+                  "velocity": 0,
+                  "specification": "Basic Pop 22",
+                  "midiChannel": 10,
+                  "useHookpadOutput": true,
+                  "useMIDIOutput": true,
+                  "solo": false,
+                  "wasMutedBeforeSolo": false,
+                  "pan": 0,
+                  "timing": 0,
+                  "speed": "normal"
+                }
+              ]
+            }
+          ],
+          "breaks": [],
+          "keyFrames": [
+            {
+              "beat": 1
+            },
+            {
+              "beat": 33
+            }
+          ],
+          "activeMelodyIndex": 0,
+          "visibleMelodies": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "pickup": false,
+          "fp": "addbb3c4311af8d123961d99e9b7755b919b078c",
+          "externalMp3Url": null,
+          "externalMp3StartBeat": null,
+          "externalMp3Duration": null
         }
       },
-      "rendered": [
-        {
-          "order": 0,
-          "raw": "iam",
-          "stableX": 39,
-          "texts": [
-            {
-              "s": "i",
-              "relX": 31,
-              "y": 687,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "am",
-              "relX": 23,
-              "y": 726,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 39,
-              "sd": "1",
-              "octave": "0",
-              "cy": 662
-            },
-            {
-              "stableX": 57,
-              "sd": "3",
-              "octave": "0",
-              "cy": 640
-            }
-          ],
-          "pianoNotes": [
-            "A3",
-            "C4"
-          ]
-        },
-        {
-          "order": 1,
-          "raw": "VIIG",
-          "stableX": 111,
-          "texts": [
-            {
-              "s": "VII",
-              "relX": 16,
-              "y": 687,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "G",
-              "relX": 29,
-              "y": 726,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 93,
-              "sd": "4",
-              "octave": "0",
-              "cy": 629
-            },
-            {
-              "stableX": 111,
-              "sd": "2",
-              "octave": "0",
-              "cy": 651
-            }
-          ],
-          "pianoNotes": [
-            "B3",
-            "D4"
-          ]
-        },
-        {
-          "order": 2,
-          "raw": "VIF",
-          "stableX": 183,
-          "texts": [
-            {
-              "s": "VI",
-              "relX": 20,
-              "y": 687,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "F",
-              "relX": 30,
-              "y": 726,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 183,
-              "sd": "1",
-              "octave": "0",
-              "cy": 662
-            },
-            {
-              "stableX": 201,
-              "sd": "3",
-              "octave": "0",
-              "cy": 640
-            }
-          ],
-          "pianoNotes": [
-            "A3",
-            "C4"
-          ]
-        },
-        {
-          "order": 3,
-          "raw": "VIIG",
-          "stableX": 255,
-          "texts": [
-            {
-              "s": "VII",
-              "relX": 16,
-              "y": 687,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "G",
-              "relX": 29,
-              "y": 726,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 237,
-              "sd": "3",
-              "octave": "0",
-              "cy": 640
-            },
-            {
-              "stableX": 255,
-              "sd": "4",
-              "octave": "0",
-              "cy": 629
-            }
-          ],
-          "pianoNotes": [
-            "C4",
-            "D4"
-          ]
-        },
-        {
-          "order": 4,
-          "raw": "iam",
-          "stableX": 327,
-          "texts": [
-            {
-              "s": "i",
-              "relX": 31,
-              "y": 687,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "am",
-              "relX": 23,
-              "y": 726,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 327,
-              "sd": "1",
-              "octave": "0",
-              "cy": 662
-            },
-            {
-              "stableX": 345,
-              "sd": "3",
-              "octave": "0",
-              "cy": 640
-            }
-          ],
-          "pianoNotes": [
-            "A3",
-            "C4"
-          ]
-        },
-        {
-          "order": 5,
-          "raw": "VIIG",
-          "stableX": 399,
-          "texts": [
-            {
-              "s": "VII",
-              "relX": 16,
-              "y": 687,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "G",
-              "relX": 29,
-              "y": 726,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 381,
-              "sd": "4",
-              "octave": "0",
-              "cy": 629
-            },
-            {
-              "stableX": 390,
-              "sd": "3",
-              "octave": "0",
-              "cy": 640
-            },
-            {
-              "stableX": 399,
-              "sd": "2",
-              "octave": "0",
-              "cy": 651
-            }
-          ],
-          "pianoNotes": [
-            "B3",
-            "C4",
-            "D4"
-          ]
-        },
-        {
-          "order": 6,
-          "raw": "#vi°(dor)f#oo",
-          "stableX": 471,
-          "texts": [
-            {
-              "s": "#vi",
-              "relX": 20,
-              "y": 688,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "°",
-              "relX": 45,
-              "y": 692,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "(dor)",
-              "relX": 25,
-              "y": 707,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "f#o",
-              "relX": 26,
-              "y": 726,
-              "fill": "#dae0e6"
-            },
-            {
-              "s": "o",
-              "relX": 41,
-              "y": 725,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 471,
-              "sd": "1",
-              "octave": "0",
-              "cy": 662
-            },
-            {
-              "stableX": 489,
-              "sd": "3",
-              "octave": "0",
-              "cy": 640
-            }
-          ],
-          "pianoNotes": [
-            "A3",
-            "C4"
-          ]
-        },
-        {
-          "order": 7,
-          "raw": "VIF",
-          "stableX": 543,
-          "texts": [
-            {
-              "s": "VI",
-              "relX": 20,
-              "y": 687,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "F",
-              "relX": 30,
-              "y": 726,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 525,
-              "sd": "3",
-              "octave": "0",
-              "cy": 640
-            },
-            {
-              "stableX": 543,
-              "sd": "4",
-              "octave": "0",
-              "cy": 629
-            }
-          ],
-          "pianoNotes": [
-            "C4",
-            "D4"
-          ]
-        },
-        {
-          "order": 8,
-          "raw": "iam",
-          "stableX": 615,
-          "texts": [
-            {
-              "s": "i",
-              "relX": 31,
-              "y": 687,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "am",
-              "relX": 23,
-              "y": 726,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 615,
-              "sd": "1",
-              "octave": "0",
-              "cy": 662
-            },
-            {
-              "stableX": 633,
-              "sd": "3",
-              "octave": "0",
-              "cy": 640
-            }
-          ],
-          "pianoNotes": [
-            "A3",
-            "C4"
-          ]
-        },
-        {
-          "order": 9,
-          "raw": "VIIG",
-          "stableX": 687,
-          "texts": [
-            {
-              "s": "VII",
-              "relX": 16,
-              "y": 687,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "G",
-              "relX": 29,
-              "y": 726,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 669,
-              "sd": "4",
-              "octave": "0",
-              "cy": 629
-            },
-            {
-              "stableX": 687,
-              "sd": "2",
-              "octave": "0",
-              "cy": 651
-            }
-          ],
-          "pianoNotes": [
-            "B3",
-            "D4"
-          ]
-        },
-        {
-          "order": 10,
-          "raw": "VIF",
-          "stableX": 759,
-          "texts": [
-            {
-              "s": "VI",
-              "relX": 20,
-              "y": 687,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "F",
-              "relX": 30,
-              "y": 726,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 759,
-              "sd": "1",
-              "octave": "0",
-              "cy": 662
-            },
-            {
-              "stableX": 777,
-              "sd": "3",
-              "octave": "0",
-              "cy": 640
-            }
-          ],
-          "pianoNotes": [
-            "A3",
-            "C4"
-          ]
-        },
-        {
-          "order": 11,
-          "raw": "VIIG",
-          "stableX": 831,
-          "texts": [
-            {
-              "s": "VII",
-              "relX": 16,
-              "y": 687,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "G",
-              "relX": 29,
-              "y": 726,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 813,
-              "sd": "3",
-              "octave": "0",
-              "cy": 640
-            },
-            {
-              "stableX": 831,
-              "sd": "4",
-              "octave": "0",
-              "cy": 629
-            }
-          ],
-          "pianoNotes": [
-            "C4",
-            "D4"
-          ]
-        },
-        {
-          "order": 12,
-          "raw": "iam",
-          "stableX": 903,
-          "texts": [
-            {
-              "s": "i",
-              "relX": 31,
-              "y": 687,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "am",
-              "relX": 23,
-              "y": 726,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 903,
-              "sd": "1",
-              "octave": "0",
-              "cy": 662
-            },
-            {
-              "stableX": 921,
-              "sd": "3",
-              "octave": "0",
-              "cy": 640
-            }
-          ],
-          "pianoNotes": [
-            "A3",
-            "C4"
-          ]
-        },
-        {
-          "order": 13,
-          "raw": "VIIG",
-          "stableX": 975,
-          "texts": [
-            {
-              "s": "VII",
-              "relX": 16,
-              "y": 687,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "G",
-              "relX": 29,
-              "y": 726,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 957,
-              "sd": "4",
-              "octave": "0",
-              "cy": 629
-            },
-            {
-              "stableX": 966,
-              "sd": "3",
-              "octave": "0",
-              "cy": 640
-            },
-            {
-              "stableX": 975,
-              "sd": "2",
-              "octave": "0",
-              "cy": 651
-            }
-          ],
-          "pianoNotes": [
-            "B3",
-            "C4",
-            "D4"
-          ]
-        },
-        {
-          "order": 14,
-          "raw": "#vi°(dor)f#oo",
-          "stableX": 1047,
-          "texts": [
-            {
-              "s": "#vi",
-              "relX": 20,
-              "y": 688,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "°",
-              "relX": 45,
-              "y": 692,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "(dor)",
-              "relX": 25,
-              "y": 707,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "f#o",
-              "relX": 26,
-              "y": 726,
-              "fill": "#dae0e6"
-            },
-            {
-              "s": "o",
-              "relX": 41,
-              "y": 725,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 1047,
-              "sd": "1",
-              "octave": "0",
-              "cy": 662
-            },
-            {
-              "stableX": 1065,
-              "sd": "3",
-              "octave": "0",
-              "cy": 640
-            }
-          ],
-          "pianoNotes": [
-            "A3",
-            "C4"
-          ]
-        },
-        {
-          "order": 15,
-          "raw": "VIF",
-          "stableX": 1119,
-          "texts": [
-            {
-              "s": "VI",
-              "relX": 20,
-              "y": 687,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "F",
-              "relX": 30,
-              "y": 726,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 1101,
-              "sd": "3",
-              "octave": "0",
-              "cy": 640
-            },
-            {
-              "stableX": 1119,
-              "sd": "4",
-              "octave": "0",
-              "cy": 629
-            }
-          ],
-          "pianoNotes": [
-            "C4",
-            "D4"
-          ]
-        }
-      ],
+      "rendered": [],
       "strips": []
     }
   ],
-  "errors": []
+  "errors": [],
+  "metrics": {
+    "chord_complexity_ht": 49,
+    "melodic_complexity_ht": 13,
+    "chord_melody_tension_ht": 71,
+    "chord_progression_novelty_ht": 31
+  },
+  "difficulty_label": null,
+  "harvestedAt": "2026-06-29T19:36:47.644Z"
 }

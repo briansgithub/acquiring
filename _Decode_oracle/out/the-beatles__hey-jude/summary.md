@@ -1,16 +1,16 @@
 # Decode oracle report
 
-**Hey Jude by The Beatles Chords, Melody, and Music Theory Analysis - Hooktheory**
+**Hey Jude**
 
-- Chords compared: **41**
-- Roman exact: **100%** (41/41)
-- Roman core (ignoring borrowed/alteration tags): **100%** (41/41)
-- Notes exact (full PC set + bass): **100%** (41/41)
+- Chords compared: **3**
+- Roman exact: **0%** (0/3)
+- Roman core (ignoring borrowed/alteration tags): **0%** (0/3)
+- Notes exact (full PC set + bass): **100%** (3/3)
 
 ## Sections
 
 | Section | chords | romanExact | romanCore | notesOk | browserOk |
 |---|---|---|---|---|---|
-| Verse | 10 | 100% | 100% | 100% | 0% |
-| Chorus | 27 | 100% | 100% | 100% | 0% |
-| Outro | 4 | 100% | 100% | 100% | 0% |
+| Chorus | 1 | 0% | 0% | 100% | 0% |
+| Outro | 1 | 0% | 0% | 100% | 0% |
+| Verse | 1 | 0% | 0% | 100% | 0% |

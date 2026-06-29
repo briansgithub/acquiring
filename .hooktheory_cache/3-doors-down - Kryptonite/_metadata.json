@@ -1,0 +1,41 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/3-doors-down/kryptonite",
+  "songTitle": "Kryptonite",
+  "artist": "3-doors-down",
+  "timestamp": "2026-06-29T19:36:41.150Z",
+  "songIds": [
+    "zngRGVaAxJj",
+    "zngRGVaAxJj",
+    "zngRGVaAxJj",
+    "zngRGVaAxJj"
+  ],
+  "sectionMapping": {
+    "zngRGVaAxJj": "Bridge"
+  },
+  "sections": [
+    {
+      "index": 0,
+      "songId": "zngRGVaAxJj",
+      "sectionName": "Intro",
+      "numericId": 1368403
+    },
+    {
+      "index": 1,
+      "songId": "zngRGVaAxJj",
+      "sectionName": "Pre-Chorus and Chorus",
+      "numericId": 1368403
+    },
+    {
+      "index": 2,
+      "songId": "zngRGVaAxJj",
+      "sectionName": "Chorus",
+      "numericId": 1368403
+    },
+    {
+      "index": 3,
+      "songId": "zngRGVaAxJj",
+      "sectionName": "Bridge",
+      "numericId": 1368403
+    }
+  ]
+}

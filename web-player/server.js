@@ -3,6 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const url = require("url");
 const { handleCatalogStatus, handleCatalogUpdate, handleDaemonStatus, handleDaemonStart, handleDaemonStop, handleCatalogSongs, handleCatalogSongDetail, handleLibraryList, handleLibrarySong, handleLibraryLoad } = require("./catalogApi");
+const { handleBatchStatus, handleBatchStart, handleBatchPause, handleBatchResume, handleBatchCancel, matchCatalogBatchRoute } = require("../_Research_testing/hooktheory_catalog/web/catalogBatchApi");
 const { handlePipelineRun, handlePipelineClear, handlePipelineJob, matchPipelineRoute } = require("../_Research_testing/hooktheory_catalog/web/pipelineApi");
 const { handleAddSong } = require("../_Research_testing/hooktheory_catalog/web/addSongApi");
 
@@ -164,6 +165,12 @@ const server = http.createServer((req, res) => {
   const pipelineRoute = matchPipelineRoute(reqUrl.pathname, req.method);
   if (pipelineRoute === "run") return handlePipelineRun(reqUrl, res);
   if (pipelineRoute === "clear") return handlePipelineClear(reqUrl, res);
+  const batchRoute = matchCatalogBatchRoute(reqUrl.pathname, req.method);
+  if (batchRoute === "status") return handleBatchStatus(res);
+  if (batchRoute === "start") return handleBatchStart(reqUrl, res);
+  if (batchRoute === "pause") return handleBatchPause(res);
+  if (batchRoute === "resume") return handleBatchResume(res);
+  if (batchRoute === "cancel") return handleBatchCancel(res);
   if (reqUrl.pathname === "/api/catalog/status") return handleCatalogStatus(res);
   if (reqUrl.pathname === "/api/catalog/update" && req.method === "POST") return handleCatalogUpdate(reqUrl, res);
   if (reqUrl.pathname === "/api/catalog/daemon/status") return handleDaemonStatus(res);

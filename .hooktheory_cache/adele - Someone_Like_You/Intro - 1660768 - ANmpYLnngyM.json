@@ -619,8 +619,166 @@
     ],
     "sections": [],
     "endBeat": 33,
+    "youtube": {
+      "id": "https://www.youtube.com/watch?v=hLQl3WQQoQ0",
+      "syncStart": 0.0023685663581817524,
+      "syncEnd": 0.05249674349590051,
+      "syncMode": "youtube-sync-mode-test"
+    },
+    "lyrics": {
+      "isOpen": false,
+      "isFocused": false,
+      "values": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "sectionLyrics": [
+        {
+          "sectionName": "Song",
+          "lyrics": [
+            "",
+            "",
+            "",
+            ""
+          ]
+        }
+      ]
+    },
+    "bands": [
+      {
+        "beat": 1,
+        "lead1": [
+          {
+            "mute": false,
+            "octaveOffset": 0,
+            "velocity": 0.5,
+            "specification": "Piano Lead",
+            "midiChannel": 1,
+            "useHookpadOutput": true,
+            "useMIDIOutput": true,
+            "solo": false,
+            "wasMutedBeforeSolo": false,
+            "pan": 0,
+            "timing": 0
+          }
+        ],
+        "lead2": [
+          {
+            "mute": false,
+            "octaveOffset": 0,
+            "velocity": 0.5,
+            "specification": "Piano Lead",
+            "midiChannel": 2,
+            "useHookpadOutput": true,
+            "useMIDIOutput": true,
+            "solo": false,
+            "wasMutedBeforeSolo": false,
+            "pan": 0,
+            "timing": 0
+          }
+        ],
+        "lead3": [
+          {
+            "mute": false,
+            "octaveOffset": 0,
+            "velocity": 0.5,
+            "specification": "Piano Lead",
+            "midiChannel": 3,
+            "useHookpadOutput": true,
+            "useMIDIOutput": true,
+            "solo": false,
+            "wasMutedBeforeSolo": false,
+            "pan": 0,
+            "timing": 0
+          }
+        ],
+        "lead4": [
+          {
+            "mute": false,
+            "octaveOffset": 0,
+            "velocity": 0.5,
+            "specification": "Piano Lead",
+            "midiChannel": 4,
+            "useHookpadOutput": true,
+            "useMIDIOutput": true,
+            "solo": false,
+            "wasMutedBeforeSolo": false,
+            "pan": 0,
+            "timing": 0
+          }
+        ],
+        "harmony": [
+          {
+            "octaveOffset": 0,
+            "velocity": 0.5,
+            "specification": "Piano 1/4s",
+            "midiChannel": 5,
+            "useHookpadOutput": true,
+            "useMIDIOutput": true,
+            "solo": false,
+            "wasMutedBeforeSolo": false,
+            "pan": 0,
+            "timing": 0,
+            "speed": "normal"
+          }
+        ],
+        "bass": [
+          {
+            "octaveOffset": 0,
+            "velocity": 0.5,
+            "specification": "Piano Bass-Dotted",
+            "midiChannel": 9,
+            "useHookpadOutput": true,
+            "useMIDIOutput": false,
+            "solo": false,
+            "wasMutedBeforeSolo": false,
+            "pan": 0,
+            "timing": 0,
+            "speed": "normal"
+          }
+        ],
+        "drums": [
+          {
+            "octaveOffset": 0,
+            "velocity": 0.5,
+            "specification": "Basic Pop 22",
+            "midiChannel": 10,
+            "useHookpadOutput": false,
+            "useMIDIOutput": false,
+            "solo": false,
+            "wasMutedBeforeSolo": false,
+            "pan": 0,
+            "timing": 0,
+            "speed": "normal"
+          }
+        ]
+      }
+    ],
+    "breaks": [],
+    "keyFrames": [
+      {
+        "beat": 1
+      },
+      {
+        "beat": 33
+      }
+    ],
+    "activeMelodyIndex": 0,
+    "visibleMelodies": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "pickup": false,
+    "fp": "729966c44f334311023064e6f82f1d327ee20045",
+    "externalMp3Url": null,
+    "externalMp3StartBeat": 1,
+    "externalMp3Duration": 0,
     "numericId": 1660768
   },
   "stringSongId": "ANmpYLnngyM",
-  "cachedAt": "2026-06-27T09:43:19.967Z"
+  "cachedAt": "2026-06-29T19:37:26.370Z"
 }

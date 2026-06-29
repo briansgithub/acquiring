@@ -1,0 +1,41 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/adele/hello",
+  "songTitle": "Hello",
+  "artist": "adele",
+  "timestamp": "2026-06-29T19:37:22.654Z",
+  "songIds": [
+    "zngReBXemJj",
+    "zngReBXemJj",
+    "zngReBXemJj",
+    "zngReBXemJj"
+  ],
+  "sectionMapping": {
+    "zngReBXemJj": "Bridge"
+  },
+  "sections": [
+    {
+      "index": 0,
+      "songId": "zngReBXemJj",
+      "sectionName": "Intro and Verse",
+      "numericId": 1280403
+    },
+    {
+      "index": 1,
+      "songId": "zngReBXemJj",
+      "sectionName": "Verse and Pre-Chorus",
+      "numericId": 1280403
+    },
+    {
+      "index": 2,
+      "songId": "zngReBXemJj",
+      "sectionName": "Chorus",
+      "numericId": 1280403
+    },
+    {
+      "index": 3,
+      "songId": "zngReBXemJj",
+      "sectionName": "Bridge",
+      "numericId": 1280403
+    }
+  ]
+}

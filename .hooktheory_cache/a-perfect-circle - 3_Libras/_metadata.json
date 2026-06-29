@@ -1,0 +1,36 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/a-perfect-circle/3-libras",
+  "songTitle": "3 Libras",
+  "artist": "a-perfect-circle",
+  "timestamp": "2026-06-29T19:36:51.443Z",
+  "songIds": [
+    "nZgWjaekVmr",
+    "zngRLnvMoJj",
+    "yvmrQWkyloO"
+  ],
+  "sectionMapping": {
+    "nZgWjaekVmr": "Intro",
+    "zngRLnvMoJj": "Verse",
+    "yvmrQWkyloO": "Pre-Chorus and Chorus"
+  },
+  "sections": [
+    {
+      "index": 0,
+      "songId": "nZgWjaekVmr",
+      "sectionName": "Intro",
+      "numericId": 1720230
+    },
+    {
+      "index": 1,
+      "songId": "zngRLnvMoJj",
+      "sectionName": "Verse",
+      "numericId": 1543175
+    },
+    {
+      "index": 2,
+      "songId": "yvmrQWkyloO",
+      "sectionName": "Pre-Chorus and Chorus",
+      "numericId": 1720238
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/imagine-dragons/radioactive",
+  "songTitle": "Radioactive",
+  "artist": "imagine-dragons",
+  "timestamp": "2026-06-29T19:41:04.713Z",
+  "songIds": [
+    "Dpgvpp-beoa",
+    "YAg-QQPAAgl",
+    "ZbgOGGRvbgn"
+  ],
+  "sectionMapping": {
+    "Dpgvpp-beoa": "Intro",
+    "YAg-QQPAAgl": "Verse",
+    "ZbgOGGRvbgn": "Chorus"
+  },
+  "sections": [
+    {
+      "index": 0,
+      "songId": "Dpgvpp-beoa",
+      "sectionName": "Intro",
+      "numericId": 1748191
+    },
+    {
+      "index": 1,
+      "songId": "YAg-QQPAAgl",
+      "sectionName": "Verse",
+      "numericId": 1748192
+    },
+    {
+      "index": 2,
+      "songId": "ZbgOGGRvbgn",
+      "sectionName": "Chorus",
+      "numericId": 1748194
+    }
+  ]
+}

@@ -1,15 +1,11 @@
 {
   "url": "https://www.hooktheory.com/theorytab/view/akito-nakatsuka/zelda-ii---the-adventure-of-link---village",
-  "title": "Zelda II - The Adventure of Link - Village by Akito Nakatsuka Chords, Melody, and Music Theory Analysis - Hooktheory",
+  "title": null,
+  "harvestMode": "light",
   "sections": [
     {
       "name": "Intro",
-      "hash": "#intro",
       "songId": "Abm_Dl_Lgak",
-      "containerId": "tab-Abm_Dl_Lgak",
-      "renderedCount": 3,
-      "jsonChordCount": 3,
-      "jsonNonRestCount": 3,
       "json": {
         "songId": 259365,
         "songInfo": "Zelda II - The Adventure of Link - Village",
@@ -152,127 +148,173 @@
             }
           ],
           "sections": [],
-          "endBeat": 9
+          "endBeat": 9,
+          "youtube": {
+            "id": "RT4XtffirjE",
+            "syncStart": 0.30469794175696546,
+            "syncEnd": 0.30819949083144643,
+            "syncMode": "youtube-sync-mode-test"
+          },
+          "lyrics": {
+            "isOpen": false,
+            "isFocused": false,
+            "rerender": 0.8589587298601598,
+            "values": [
+              "",
+              "",
+              "",
+              ""
+            ],
+            "sectionLyrics": [
+              {
+                "sectionName": "Song",
+                "lyrics": [
+                  "",
+                  "",
+                  "",
+                  ""
+                ]
+              }
+            ]
+          },
+          "bands": [
+            {
+              "beat": 1,
+              "lead1": [
+                {
+                  "mute": false,
+                  "octaveOffset": 0,
+                  "velocity": 0.8,
+                  "specification": "Piano Lead",
+                  "midiChannel": 1,
+                  "useHookpadOutput": true,
+                  "useMIDIOutput": true,
+                  "solo": false,
+                  "wasMutedBeforeSolo": false,
+                  "pan": 0,
+                  "timing": 0
+                }
+              ],
+              "lead2": [
+                {
+                  "mute": false,
+                  "specification": "Lead Piano-legato",
+                  "midiChannel": 2,
+                  "useHookpadOutput": true,
+                  "useMIDIOutput": true,
+                  "solo": false,
+                  "wasMutedBeforeSolo": false,
+                  "pan": 0,
+                  "timing": 0
+                }
+              ],
+              "lead3": [
+                {
+                  "mute": false,
+                  "specification": "Lead Piano-legato",
+                  "midiChannel": 3,
+                  "useHookpadOutput": true,
+                  "useMIDIOutput": true,
+                  "solo": false,
+                  "wasMutedBeforeSolo": false,
+                  "pan": 0,
+                  "timing": 0
+                }
+              ],
+              "lead4": [
+                {
+                  "mute": false,
+                  "specification": "Lead Piano-legato",
+                  "midiChannel": 4,
+                  "useHookpadOutput": true,
+                  "useMIDIOutput": true,
+                  "solo": false,
+                  "wasMutedBeforeSolo": false,
+                  "pan": 0,
+                  "timing": 0
+                }
+              ],
+              "harmony": [
+                {
+                  "octaveOffset": 0,
+                  "velocity": 0.8,
+                  "specification": "Piano 1/4s",
+                  "midiChannel": 5,
+                  "useHookpadOutput": true,
+                  "useMIDIOutput": true,
+                  "solo": false,
+                  "wasMutedBeforeSolo": false,
+                  "pan": 0,
+                  "timing": 0,
+                  "speed": "normal"
+                }
+              ],
+              "bass": [
+                {
+                  "octaveOffset": 0,
+                  "velocity": 0.8,
+                  "specification": "Piano Bass-Dotted",
+                  "midiChannel": 9,
+                  "useHookpadOutput": true,
+                  "useMIDIOutput": false,
+                  "solo": false,
+                  "wasMutedBeforeSolo": false,
+                  "pan": 0,
+                  "timing": 0,
+                  "speed": "normal"
+                }
+              ],
+              "drums": [
+                {
+                  "octaveOffset": 0,
+                  "velocity": 0,
+                  "specification": "Basic Pop 22",
+                  "midiChannel": 10,
+                  "useHookpadOutput": true,
+                  "useMIDIOutput": true,
+                  "solo": false,
+                  "wasMutedBeforeSolo": false,
+                  "pan": 0,
+                  "timing": 0,
+                  "speed": "normal"
+                }
+              ]
+            }
+          ],
+          "breaks": [],
+          "keyFrames": [
+            {
+              "beat": 1
+            },
+            {
+              "beat": 9
+            }
+          ],
+          "activeMelodyIndex": 0,
+          "visibleMelodies": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "pickup": false,
+          "fp": "5b4c967737b520d28454c6b8b24f151c8b925de4",
+          "externalMp3Url": null,
+          "externalMp3StartBeat": null,
+          "externalMp3Duration": null
         }
       },
-      "rendered": [
-        {
-          "order": 0,
-          "raw": "I6C/E",
-          "stableX": 39,
-          "texts": [
-            {
-              "s": "I",
-              "relX": 63,
-              "y": 709,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "6",
-              "relX": 72,
-              "y": 713,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "C",
-              "relX": 55,
-              "y": 748,
-              "fill": "#dae0e6"
-            },
-            {
-              "s": "/E",
-              "relX": 66,
-              "y": 748,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 39,
-              "sd": "3",
-              "octave": "0",
-              "cy": 662
-            }
-          ],
-          "pianoNotes": null
-        },
-        {
-          "order": 1,
-          "raw": "IVF",
-          "stableX": 183,
-          "texts": [
-            {
-              "s": "IV",
-              "relX": 12,
-              "y": 709,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "F",
-              "relX": 21,
-              "y": 748,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 183,
-              "sd": "4",
-              "octave": "0",
-              "cy": 651
-            },
-            {
-              "stableX": 201,
-              "sd": "5",
-              "octave": "0",
-              "cy": 640
-            }
-          ],
-          "pianoNotes": [
-            "F3",
-            "G3"
-          ]
-        },
-        {
-          "order": 2,
-          "raw": "VG",
-          "stableX": 237,
-          "texts": [
-            {
-              "s": "V",
-              "relX": 34,
-              "y": 709,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "G",
-              "relX": 38,
-              "y": 748,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 219,
-              "sd": "6",
-              "octave": "0",
-              "cy": 629
-            },
-            {
-              "stableX": 237,
-              "sd": "5",
-              "octave": "0",
-              "cy": 640
-            }
-          ],
-          "pianoNotes": [
-            "A3",
-            "G3"
-          ]
-        }
-      ],
+      "rendered": [],
       "strips": []
     }
   ],
-  "errors": []
+  "errors": [],
+  "metrics": {
+    "chord_complexity_ht": 31,
+    "melodic_complexity_ht": 14,
+    "chord_melody_tension_ht": 15,
+    "chord_progression_novelty_ht": 13
+  },
+  "difficulty_label": null,
+  "harvestedAt": "2026-06-29T19:40:28.949Z"
 }

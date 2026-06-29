@@ -1,0 +1,20 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/aisel/x-my-heart",
+  "songTitle": "X My Heart",
+  "artist": "aisel",
+  "timestamp": "2026-06-29T19:37:40.469Z",
+  "songIds": [
+    "ROmNbWDQmNw"
+  ],
+  "sectionMapping": {
+    "ROmNbWDQmNw": "Chorus"
+  },
+  "sections": [
+    {
+      "index": 0,
+      "songId": "ROmNbWDQmNw",
+      "sectionName": "Chorus",
+      "numericId": 1312390
+    }
+  ]
+}

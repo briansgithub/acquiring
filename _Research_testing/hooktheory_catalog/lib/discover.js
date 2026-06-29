@@ -5,7 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 const puppeteer = require('puppeteer');
-const { openDb, upsertSong } = require('./db');
+const { openDb, upsertSong, upsertMeiliSectionStub } = require('./db');
 const { paginateAll } = require('./meiliClient');
 const {
   BASE,
@@ -111,10 +111,11 @@ async function discoverFromSearchQueries(queries) {
  * @param {number} startOffset resume pagination offset
  * @param {function} [onPage] callback({ page, offset, batch, uniqueCount })
  */
-async function discoverFromMeili(maxPages = 0, startOffset = 0, onPage = null) {
+async function discoverFromMeili(maxPages = 0, startOffset = 0, onPage = null, db = null) {
   const found = [];
-  const seen = new Set();
+  const seenSongs = new Set();
   let lastOffset = startOffset;
+  let totalEstimate = null;
 
   for await (const { hits, offset, page } of paginateAll({
     pageSize: 200,
@@ -124,17 +125,35 @@ async function discoverFromMeili(maxPages = 0, startOffset = 0, onPage = null) {
   })) {
     lastOffset = offset + hits.length;
     for (const hit of hits) {
-      const key = `${hit.artist}::${hit.song}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
+      const songKey = `${hit.artist}::${hit.song}`;
       const entry = entryFromArtistSong(hit.artist, hit.song, 'meilisearch');
-      if (entry) found.push(entry);
+      if (!entry) continue;
+
+      if (db) {
+        upsertSong(db, entry);
+        if (hit.id && hit.section) {
+          upsertMeiliSectionStub(db, entry.slug, hit.section, String(hit.id));
+        }
+      }
+
+      if (!seenSongs.has(songKey)) {
+        seenSongs.add(songKey);
+        found.push(entry);
+      }
     }
-    if (onPage) onPage({ page, offset: lastOffset, batch: hits.length, uniqueCount: found.length });
-    console.log(`[discover] meili page=${page} offset=${lastOffset} batch=${hits.length} unique=${found.length}`);
+    if (onPage) {
+      onPage({
+        page,
+        offset: lastOffset,
+        batch: hits.length,
+        uniqueCount: seenSongs.size,
+        totalEstimate,
+      });
+    }
+    console.log(`[discover] meili page=${page} offset=${lastOffset} batch=${hits.length} unique=${seenSongs.size}`);
   }
 
-  return { entries: found, finalOffset: lastOffset, complete: true };
+  return { entries: found, finalOffset: lastOffset, complete: true, uniqueSongs: seenSongs.size };
 }
 
 function loadLegacyDiscovered() {
@@ -175,6 +194,7 @@ async function discoverUrls(opts = {}) {
       meiliPages,
       opts.resumeOffset || 0,
       opts.onMeiliPage,
+      opts.write !== false ? db : null,
     );
     entries.push(...meiliResult.entries);
   }

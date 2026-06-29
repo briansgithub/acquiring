@@ -104,6 +104,13 @@ Run from `_Research_testing/hooktheory_catalog/` unless noted. Root shims (`node
 | `POST /api/library/pipeline/tested?slug=…` | Local oracle compare (worker thread) |
 | `POST /api/library/pipeline/:action/clear?slug=…` | Hold-to-clear (sync) |
 | `POST /api/library/load?slug=…` | Gated load — returns `cacheKey` |
+| `GET /api/library/catalog/batch/status` | Light catalog batch progress + log tail |
+| `POST /api/library/catalog/batch/start?mode=db-only&limit=50` | Start light catalog (modes: db-only, discover-harvest, full) |
+| `POST /api/library/catalog/batch/pause` | Pause light catalog worker |
+| `POST /api/library/catalog/batch/resume` | Resume light catalog worker |
+| `POST /api/library/catalog/batch/cancel` | Cancel light catalog worker |
+| `node cli/lightCatalog.js --harvest-only --limit 50` | CLI: database-only light harvest |
+| `node scripts/lightCatalogQueueTest.js` | Queue + harvestOk unit test (no network) |
 | `POST /api/catalog/update?mode=quick&enrichLimit=5` | Trigger foreground update via HTTP |
 | `POST /api/catalog/daemon/start?phase=auto` | Start daemon via HTTP |
 | `POST /api/catalog/daemon/stop` | Write stop file via HTTP |

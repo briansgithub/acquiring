@@ -151,7 +151,7 @@ export function buildSongDetailHtml(s, sections, flags, canLoad, missing, esc, l
   const num = detailNum;
   return `
     <div class="entry-title">${esc(s.title || "(untitled)")}</div>
-    <div class="entry-artist">${esc(s.artist || "")}</div>
+    <div class="entry-artist">Artist: ${esc(s.artist || "")}</div>
     <div class="entry-btns" aria-label="Pipeline status">
       ${pipelineStatusHtml("catalogued", flags.catalogued, esc)}
       ${pipelineBtnHtml("harvest", flags.harvested, esc)}
@@ -173,14 +173,14 @@ export function buildSongDetailHtml(s, sections, flags, canLoad, missing, esc, l
       ${row("BPM", num(s.bpm, 0))}
       ${row("Time sig", s.time_sig)}
       ${row("Complexity", num(s.complexity_rating, 1))}
-      ${row("Unique chords", num(s.unique_chords))}
       ${row("Unique transitions", num(s.unique_transitions))}
+      ${row("Unique chords", num(s.unique_chords))}
       ${row("Total chords", num(s.total_chords))}
+      ${row("Borrowed chords", num(s.borrowed_chord_count))}
+      ${row("Key changes", num(s.key_change_count))}
       ${row("Sections", num(s.section_count != null ? s.section_count : sections.length))}
       ${row("Has melody", s.has_melody ? "yes" : (s.has_melody === 0 ? "no" : ""))}
       ${row("Total notes", num(s.total_notes))}
-      ${row("Key changes", num(s.key_change_count))}
-      ${row("Borrowed chords", num(s.borrowed_chord_count))}
       ${row("Applied chords", num(s.applied_chord_count))}
       ${row("Modified chords", num(s.modified_chord_count))}
       ${row("Metrics source", s.metrics_source)}

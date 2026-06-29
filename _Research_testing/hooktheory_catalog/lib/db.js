@@ -117,6 +117,27 @@ function upsertSong(db, entry) {
   return !existing;
 }
 
+function upsertMeiliSectionStub(db, slug, sectionName, songId) {
+  if (!slug || !sectionName || !songId) return;
+  db.prepare(`
+    INSERT INTO song_sections (slug, section_name, song_id, hooktheory_id)
+    VALUES (?, ?, ?, ?)
+    ON CONFLICT(slug, section_name) DO UPDATE SET
+      song_id = excluded.song_id,
+      hooktheory_id = COALESCE(excluded.hooktheory_id, song_sections.hooktheory_id)
+  `).run(slug, sectionName, songId, songId);
+}
+
+function setHarvestMode(db, slug, mode) {
+  db.prepare('UPDATE songs SET harvest_mode = ? WHERE slug = ?').run(mode, slug);
+}
+
+function listSectionsForSlug(db, slug) {
+  return db.prepare(`
+    SELECT section_name, song_id FROM song_sections WHERE slug = ? ORDER BY rowid
+  `).all(slug);
+}
+
 function saveMetrics(db, slug, metrics, rating, source) {
   const ts = nowIso();
   db.prepare(`
@@ -338,6 +359,9 @@ module.exports = {
   DB_PATH,
   openDb,
   upsertSong,
+  upsertMeiliSectionStub,
+  setHarvestMode,
+  listSectionsForSlug,
   saveMetrics,
   saveStats,
   saveDetails,

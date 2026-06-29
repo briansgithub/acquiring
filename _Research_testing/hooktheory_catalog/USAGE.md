@@ -269,6 +269,47 @@ Ad-hoc research scripts — not part of normal operation:
 
 ---
 
+## Light catalog batch (API-only, script-gated)
+
+Respectful bulk ingest without Puppeteer per song:
+
+1. **Discover** via Meilisearch pagination (stores `song_sections.song_id` from index hits).
+2. **Light harvest** via `fetchSongData` per section + optional `fetchHtml` for SongMetrics.
+3. **Locals** — `runLocalsParallel` writes metadata + `.hooktheory_cache/` (`harvest_mode = light`).
+
+**Does not** populate oracle SVG/piano — use full **Fetch** for `tested`.
+
+### Activation (Song Selector UI)
+
+Open the player → **Song Selector** → **Bulk light catalog**:
+
+| Mode | What it does |
+|------|----------------|
+| **Database only** | Light-harvest songs already in SQLite (no Meili discover). Default for incremental work. |
+| **Discover new + harvest** | Limited Meili pages, then harvest up to the limit. |
+| **Full discover + harvest** | All Meili pages + every pending song (confirm dialog). |
+
+Set **Harvest limit** for the first two modes. **Start** spawns a background worker; the panel shows phase, queue, log tail, and pause/resume/cancel.
+
+CLI equivalent: `node cli/lightCatalog.js --harvest-only --limit 50` (db-only) or `--limit 50 --meili-pages 25` or `--all`
+
+### Live progress
+
+Song Selector polls `GET /api/library/catalog/batch/status` every 2s while a job runs. Start via `POST /api/library/catalog/batch/start?mode=db-only&limit=50`.
+
+### Rate limits
+
+- Public API: ~20 req/10s — pooled at 80% utilization (`CATALOG_API_UTILIZATION`).
+- Meili: ~200 hits/page; auth cached 12h in `data/.meili_auth.json`.
+- Default inter-song delay: `LIGHT_CATALOG_INTERVAL_MS` (default 4000).
+- **Trends API** (10 req/10s) is not used for enumeration.
+
+### Delta queue
+
+Only songs with `harvest_mode IS NULL OR != 'light'` and at least one `song_sections` row are harvested.
+
+---
+
 ## Typical workflows
 
 **Incremental local update**

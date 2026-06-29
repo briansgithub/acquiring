@@ -23,7 +23,7 @@ function isAction(action) {
 
 function getSongRow(db, slug) {
   return db.prepare(`
-    SELECT slug, url, status, cache_dir, processed_at, discovery_source,
+    SELECT slug, url, status, cache_dir, processed_at, discovery_source, harvest_mode,
       oracle_tested_at, oracle_out_dir, oracle_summary_json
     FROM songs WHERE slug = ?
   `).get(slug);

@@ -9,6 +9,7 @@ function computeFlags(row, slug) {
   return {
     catalogued: true,
     harvested,
+    harvestMode: row.harvest_mode || null,
     metadata: row.status === 'enriched',
     processed: !!(row.cache_dir && row.processed_at),
     tested: !!row.oracle_tested_at,

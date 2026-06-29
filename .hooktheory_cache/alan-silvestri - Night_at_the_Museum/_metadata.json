@@ -1,0 +1,34 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/alan-silvestri/night-at-the-museum",
+  "songTitle": "Night at the Museum",
+  "artist": "alan-silvestri",
+  "timestamp": "2026-06-29T19:40:35.185Z",
+  "songIds": [
+    "ANmpGJnnoyM",
+    "ANmpGJnnoyM",
+    "ANmpGJnnoyM"
+  ],
+  "sectionMapping": {
+    "ANmpGJnnoyM": "Verse and Pre-Chorus"
+  },
+  "sections": [
+    {
+      "index": 0,
+      "songId": "ANmpGJnnoyM",
+      "sectionName": "Intro",
+      "numericId": 235168
+    },
+    {
+      "index": 1,
+      "songId": "ANmpGJnnoyM",
+      "sectionName": "Intro and Verse",
+      "numericId": 235168
+    },
+    {
+      "index": 2,
+      "songId": "ANmpGJnnoyM",
+      "sectionName": "Verse and Pre-Chorus",
+      "numericId": 235168
+    }
+  ]
+}

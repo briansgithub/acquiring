@@ -1,15 +1,11 @@
 {
   "url": "https://www.hooktheory.com/theorytab/view/aisel/x-my-heart",
-  "title": "X My Heart by Aisel Chords, Melody, and Music Theory Analysis - Hooktheory",
+  "title": null,
+  "harvestMode": "light",
   "sections": [
     {
       "name": "Chorus",
-      "hash": "#chorus",
       "songId": "ROmNbWDQmNw",
-      "containerId": "tab-ROmNbWDQmNw",
-      "renderedCount": 6,
-      "jsonChordCount": 6,
-      "jsonNonRestCount": 6,
       "json": {
         "songId": 1312390,
         "songInfo": "X My Heart",
@@ -342,199 +338,176 @@
             }
           ],
           "sections": [],
-          "endBeat": 33
+          "endBeat": 33,
+          "youtube": {
+            "id": "https://www.youtube.com/watch?v=kWomOdDGwMM",
+            "syncStart": 0.300569298623301,
+            "syncEnd": 0.3840735160875285,
+            "syncMode": "youtube-sync-mode-test"
+          },
+          "lyrics": {
+            "isOpen": false,
+            "isFocused": false,
+            "rerender": 0,
+            "values": [
+              "",
+              "",
+              "",
+              ""
+            ],
+            "sectionLyrics": [
+              {
+                "sectionName": "Song",
+                "lyrics": [
+                  "",
+                  "",
+                  "",
+                  ""
+                ]
+              }
+            ]
+          },
+          "bands": [
+            {
+              "beat": 1,
+              "lead1": [
+                {
+                  "mute": false,
+                  "octaveOffset": 0,
+                  "velocity": 0.5,
+                  "specification": "Piano Lead",
+                  "midiChannel": 1,
+                  "useHookpadOutput": true,
+                  "useMIDIOutput": true,
+                  "solo": false,
+                  "wasMutedBeforeSolo": false,
+                  "pan": 0,
+                  "timing": 0
+                }
+              ],
+              "lead2": [
+                {
+                  "mute": false,
+                  "octaveOffset": 0,
+                  "velocity": 0.5,
+                  "specification": "Piano Lead",
+                  "midiChannel": 2,
+                  "useHookpadOutput": true,
+                  "useMIDIOutput": true,
+                  "solo": false,
+                  "wasMutedBeforeSolo": false,
+                  "pan": 0,
+                  "timing": 0
+                }
+              ],
+              "lead3": [
+                {
+                  "mute": false,
+                  "octaveOffset": 0,
+                  "velocity": 0.5,
+                  "specification": "Piano Lead",
+                  "midiChannel": 3,
+                  "useHookpadOutput": true,
+                  "useMIDIOutput": true,
+                  "solo": false,
+                  "wasMutedBeforeSolo": false,
+                  "pan": 0,
+                  "timing": 0
+                }
+              ],
+              "lead4": [
+                {
+                  "mute": false,
+                  "octaveOffset": 0,
+                  "velocity": 0.5,
+                  "specification": "Piano Lead",
+                  "midiChannel": 4,
+                  "useHookpadOutput": true,
+                  "useMIDIOutput": true,
+                  "solo": false,
+                  "wasMutedBeforeSolo": false,
+                  "pan": 0,
+                  "timing": 0
+                }
+              ],
+              "harmony": [
+                {
+                  "octaveOffset": 0,
+                  "velocity": 0.5,
+                  "specification": "Piano 1/4s",
+                  "midiChannel": 5,
+                  "useHookpadOutput": true,
+                  "useMIDIOutput": true,
+                  "solo": false,
+                  "wasMutedBeforeSolo": false,
+                  "pan": 0,
+                  "timing": 0
+                }
+              ],
+              "bass": [
+                {
+                  "octaveOffset": 0,
+                  "velocity": 0.5,
+                  "specification": "Piano Bass-Dotted",
+                  "midiChannel": 9,
+                  "useHookpadOutput": true,
+                  "useMIDIOutput": false,
+                  "solo": false,
+                  "wasMutedBeforeSolo": false,
+                  "pan": 0,
+                  "timing": 0
+                }
+              ],
+              "drums": [
+                {
+                  "octaveOffset": 0,
+                  "velocity": 0.5,
+                  "specification": "Basic Pop 22",
+                  "midiChannel": 10,
+                  "useHookpadOutput": false,
+                  "useMIDIOutput": false,
+                  "solo": false,
+                  "wasMutedBeforeSolo": false,
+                  "pan": 0,
+                  "timing": 0
+                }
+              ]
+            }
+          ],
+          "breaks": [],
+          "keyFrames": [
+            {
+              "beat": 1
+            },
+            {
+              "beat": 33
+            }
+          ],
+          "activeMelodyIndex": 0,
+          "visibleMelodies": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "pickup": false,
+          "fp": "3f167c91fdbe4aac3cf40b87c87273d4df4a3e4b",
+          "externalMp3Url": null,
+          "externalMp3StartBeat": 1,
+          "externalMp3Duration": 0
         }
       },
-      "rendered": [
-        {
-          "order": 0,
-          "raw": "icm",
-          "stableX": 39,
-          "texts": [
-            {
-              "s": "i",
-              "relX": 67,
-              "y": 687,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "cm",
-              "relX": 59,
-              "y": 726,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 39,
-              "sd": "3",
-              "octave": "0",
-              "cy": 640
-            }
-          ],
-          "pianoNotes": null
-        },
-        {
-          "order": 1,
-          "raw": "VIAb",
-          "stableX": 183,
-          "texts": [
-            {
-              "s": "VI",
-              "relX": 56,
-              "y": 687,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "Ab",
-              "relX": 61,
-              "y": 726,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 165,
-              "sd": "6",
-              "octave": "0",
-              "cy": 607
-            }
-          ],
-          "pianoNotes": null
-        },
-        {
-          "order": 2,
-          "raw": "IIIEb",
-          "stableX": 327,
-          "texts": [
-            {
-              "s": "III",
-              "relX": 130,
-              "y": 687,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "Eb",
-              "relX": 134,
-              "y": 726,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 309,
-              "sd": "6",
-              "octave": "0",
-              "cy": 607
-            }
-          ],
-          "pianoNotes": null
-        },
-        {
-          "order": 3,
-          "raw": "icm",
-          "stableX": 615,
-          "texts": [
-            {
-              "s": "i",
-              "relX": 67,
-              "y": 687,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "cm",
-              "relX": 59,
-              "y": 726,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 597,
-              "sd": "4",
-              "octave": "0",
-              "cy": 629
-            },
-            {
-              "stableX": 615,
-              "sd": "3",
-              "octave": "0",
-              "cy": 640
-            }
-          ],
-          "pianoNotes": [
-            "Eb3",
-            "F3"
-          ]
-        },
-        {
-          "order": 4,
-          "raw": "VIAb",
-          "stableX": 759,
-          "texts": [
-            {
-              "s": "VI",
-              "relX": 56,
-              "y": 687,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "Ab",
-              "relX": 61,
-              "y": 726,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 741,
-              "sd": "6",
-              "octave": "0",
-              "cy": 607
-            }
-          ],
-          "pianoNotes": null
-        },
-        {
-          "order": 5,
-          "raw": "IIIEb",
-          "stableX": 903,
-          "texts": [
-            {
-              "s": "III",
-              "relX": 130,
-              "y": 687,
-              "fill": "#ffffff"
-            },
-            {
-              "s": "Eb",
-              "relX": 134,
-              "y": 726,
-              "fill": "#dae0e6"
-            }
-          ],
-          "pianoRaw": [
-            {
-              "stableX": 885,
-              "sd": "7",
-              "octave": "0",
-              "cy": 596
-            },
-            {
-              "stableX": 903,
-              "sd": "6",
-              "octave": "0",
-              "cy": 607
-            }
-          ],
-          "pianoNotes": [
-            "Ab3",
-            "Bb3"
-          ]
-        }
-      ],
+      "rendered": [],
       "strips": []
     }
   ],
-  "errors": []
+  "errors": [],
+  "metrics": {
+    "chord_complexity_ht": 5,
+    "melodic_complexity_ht": 8,
+    "chord_melody_tension_ht": 26,
+    "chord_progression_novelty_ht": 14
+  },
+  "difficulty_label": null,
+  "harvestedAt": "2026-06-29T19:37:40.419Z"
 }

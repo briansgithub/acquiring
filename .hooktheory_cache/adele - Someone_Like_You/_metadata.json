@@ -2,18 +2,15 @@
   "url": "https://www.hooktheory.com/theorytab/view/adele/someone-like-you",
   "songTitle": "Someone Like You",
   "artist": "adele",
-  "timestamp": "2026-06-27T09:43:19.972Z",
+  "timestamp": "2026-06-29T19:37:26.372Z",
   "songIds": [
     "ANmpYLnngyM",
-    "KexEMdOex_B",
-    "nJmBbdjEmAV",
-    "zngRveEegJj"
+    "ANmpYLnngyM",
+    "ANmpYLnngyM",
+    "ANmpYLnngyM"
   ],
   "sectionMapping": {
-    "ANmpYLnngyM": "Intro",
-    "KexEMdOex_B": "Verse",
-    "nJmBbdjEmAV": "Pre-Chorus",
-    "zngRveEegJj": "Chorus"
+    "ANmpYLnngyM": "Chorus"
   },
   "sections": [
     {
@@ -24,21 +21,21 @@
     },
     {
       "index": 1,
-      "songId": "KexEMdOex_B",
+      "songId": "ANmpYLnngyM",
       "sectionName": "Verse",
-      "numericId": 879305
+      "numericId": 1660768
     },
     {
       "index": 2,
-      "songId": "nJmBbdjEmAV",
+      "songId": "ANmpYLnngyM",
       "sectionName": "Pre-Chorus",
-      "numericId": 879298
+      "numericId": 1660768
     },
     {
       "index": 3,
-      "songId": "zngRveEegJj",
+      "songId": "ANmpYLnngyM",
       "sectionName": "Chorus",
-      "numericId": 1202103
+      "numericId": 1660768
     }
   ]
 }

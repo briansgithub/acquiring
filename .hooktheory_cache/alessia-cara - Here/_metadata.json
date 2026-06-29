@@ -1,0 +1,27 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/alessia-cara/here",
+  "songTitle": "Here",
+  "artist": "alessia-cara",
+  "timestamp": "2026-06-29T19:40:43.497Z",
+  "songIds": [
+    "Abm_LkEDgak",
+    "Abm_LkEDgak"
+  ],
+  "sectionMapping": {
+    "Abm_LkEDgak": "Verse and Pre-Chorus"
+  },
+  "sections": [
+    {
+      "index": 0,
+      "songId": "Abm_LkEDgak",
+      "sectionName": "Verse",
+      "numericId": 988565
+    },
+    {
+      "index": 1,
+      "songId": "Abm_LkEDgak",
+      "sectionName": "Verse and Pre-Chorus",
+      "numericId": 988565
+    }
+  ]
+}
