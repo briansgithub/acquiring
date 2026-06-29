@@ -148,9 +148,13 @@ export function getNoteLabel(sd, key, customIntervals = null) {
 
   let diatonicNames;
   if(key.scale === "major") {
-    diatonicNames = MAJOR_SCALE_LABELS[key.tonic];
+    // Theoretical/enharmonic tonics (e.g. D# major, borrowed-minor flat keys) are absent
+    // from the hardcoded label tables; fall back to dynamic generation so they don't crash.
+    diatonicNames = MAJOR_SCALE_LABELS[key.tonic]
+      ?? generateScaleLabels(key.tonic, MAJOR_SCALE_SPECIFIC_INTERVALS);
   } else if (key.scale === "minor") {
-    diatonicNames = MINOR_SCALE_LABELS[key.tonic];
+    diatonicNames = MINOR_SCALE_LABELS[key.tonic]
+      ?? generateScaleLabels(key.tonic, MINOR_SCALE_SPECIFIC_INTERVALS);
   } else {
     // For other modes or custom scales, generate labels dynamically
     let intervals;
@@ -186,7 +190,7 @@ function getAbsoluteOctave(sd, relativeOctave, key, baseOctave, customIntervals 
   // We need to use the MODIFIED interval (accounting for accidentals) for accurate semitone calculation
   // The modifier affects both the note label AND the actual pitch/semitone distance
   // For example, "b3" means minor third (3 semitones), not major third (4 semitones)
-  const tonicSemitone = NOTE_NAME_TO_INTEGER_NOTATION[key.tonic];
+  const tonicSemitone = NOTE_NAME_TO_INTEGER_NOTATION[key.tonic] ?? noteToPcLocal(key.tonic);
   const modifiedSD_SpecificInterval = scaleDegreeToSpecificInterval(sd, key.scale, customIntervals);
   
   /* The note name and octave must be calculated together to properly handle the B--C boundary.
@@ -463,6 +467,7 @@ function borrowedModeDimSeventhDegree(chordRootSD, scale, chordQuality, chordTyp
   if (scale === "lydian" && chordRootSD === 4) return "bb7";
   if (scale === "minor" && chordRootSD === 2) return "bb7";
   if (scale === "phrygian" && chordRootSD === 5) return "bb7";
+  if (scale === "locrian" && chordRootSD === 1) return "bb7";
   return null;
 }
 
@@ -677,13 +682,20 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
           ? "bb7"
         : customDimMaj7
           ? "7"
-          : (triadQuality === "diminished" && hasSharp5)
+          : ((triadQuality === "diminished" && hasSharp5) || sharp5Minor)
             ? "b7"
             : borrowedModeDimSeventhDegree(chordRootSD, modifiedKey.scale, chordQuality, chordType)
               ?? diatonicSeventhDegreeStr(chordRootSD, modifiedKey, customScaleIntervals);
     addSeventhNote(toneJSNames, degreeIndices, chordRootNoteName, baseOctave, seventhDegree);
   } else if (omitTriad35 && chordType >= 7) {
-    const seventh = effModifierChord?.halfDim ? "bb7" : "b7";
+    // 3rd+5th omitted: the seventh still follows the prevailing scale quality so
+    // maj7 frames (I△9, IV△9) keep their natural 7th instead of collapsing to b7.
+    const seventh = effModifierChord?.halfDim
+      ? "bb7"
+      : useSusFrame
+        ? "b7"
+        : borrowedModeDimSeventhDegree(chordRootSD, modifiedKey.scale, chordQuality, chordType)
+          ?? diatonicSeventhDegreeStr(chordRootSD, modifiedKey, customScaleIntervals);
     addSeventhNote(toneJSNames, degreeIndices, chordRootNoteName, baseOctave, seventh);
   } else if (
     chordQuality === "diminished" &&

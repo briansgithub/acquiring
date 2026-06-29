@@ -56,9 +56,18 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
 
     if (key === "b5" || key === "#5") {
       if (key === "b5" && chord?.halfDim && chord?.flattenHalfDimB5) {
-        const b7Pc = (rootPc + 10) % 12;
+        // ø with an explicit (b5) renders as a full diminished seventh: force the
+        // fifth to dim5 (in case the triad came out perfect) and the m7 down to dim7.
+        const perfectFifthPc = (rootPc + 7) % 12;
+        const minorSeventhPc = (rootPc + 10) % 12;
         for (let i = 0; i < toneJSNames.length; i++) {
-          if (noteNameToPc(toneJSNames[i]) === b7Pc) {
+          if (noteNameToPc(toneJSNames[i]) === perfectFifthPc) {
+            toneJSNames[i] = shiftNoteBySemitones(toneJSNames[i], -1);
+            break;
+          }
+        }
+        for (let i = 0; i < toneJSNames.length; i++) {
+          if (noteNameToPc(toneJSNames[i]) === minorSeventhPc) {
             toneJSNames[i] = shiftNoteBySemitones(toneJSNames[i], -1);
             break;
           }

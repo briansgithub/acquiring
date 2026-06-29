@@ -126787,6 +126787,5481 @@
     "compositeKey": null
   },
   {
+    "id": "stevie-wonder__superstition/Intro/5",
+    "song": "stevie-wonder__superstition",
+    "section": "Intro",
+    "beat": 5,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 5,
+      "duration": 16,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/5",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 5,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 5,
+      "duration": 1.25,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": [
+      "D3",
+      "Eb3",
+      "G3"
+    ],
+    "pianoPcs": [
+      2,
+      3,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/6.25",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 6.25,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 6.25,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/7",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 7,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 7,
+      "duration": 0.75,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i9",
+    "truthLetter": "ebm9",
+    "truthPcs": [
+      1,
+      3,
+      5,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁹",
+    "engLetter": "Ebm9",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4",
+      "F4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      5,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/7.75",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 7.75,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 7.75,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/8.5",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 8.5,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 8.5,
+      "duration": 2.75,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/11.25",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 11.25,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 11.25,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": [
+      "Bb2",
+      "D3"
+    ],
+    "pianoPcs": [
+      2,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/11.75",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 11.75,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 11.75,
+      "duration": 1.25,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/13",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 13,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 13,
+      "duration": 1.25,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/14.25",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 14.25,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 14.25,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/15",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 15,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 15,
+      "duration": 0.75,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i9",
+    "truthLetter": "ebm9",
+    "truthPcs": [
+      1,
+      3,
+      5,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁹",
+    "engLetter": "Ebm9",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4",
+      "F4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      5,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/15.75",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 15.75,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 15.75,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/16.5",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 16.5,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 16.5,
+      "duration": 2.75,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/19.25",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 19.25,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 19.25,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": [
+      "D3",
+      "Eb3"
+    ],
+    "pianoPcs": [
+      2,
+      3
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/19.75",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 19.75,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 19.75,
+      "duration": 1.25,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/21",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 21,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 21,
+      "duration": 1.25,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/22.25",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 22.25,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 22.25,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/23",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 23,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 23,
+      "duration": 0.75,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i9",
+    "truthLetter": "ebm9",
+    "truthPcs": [
+      1,
+      3,
+      5,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁹",
+    "engLetter": "Ebm9",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4",
+      "F4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      5,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/23.75",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 23.75,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 23.75,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/24.5",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 24.5,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 24.5,
+      "duration": 2.75,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/27.25",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 27.25,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 27.25,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": [
+      "Ab2",
+      "Bb2",
+      "D3"
+    ],
+    "pianoPcs": [
+      2,
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/27.75",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 27.75,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 27.75,
+      "duration": 1.25,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": [
+      "G2",
+      "Ab2",
+      "Bb2"
+    ],
+    "pianoPcs": [
+      7,
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/29",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 29,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 29,
+      "duration": 1.25,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/30.25",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 30.25,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 30.25,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/31",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 31,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 31,
+      "duration": 0.75,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i9",
+    "truthLetter": "ebm9",
+    "truthPcs": [
+      1,
+      3,
+      5,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁹",
+    "engLetter": "Ebm9",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4",
+      "F4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      5,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/31.75",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 31.75,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 31.75,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/32.5",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 32.5,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 32.5,
+      "duration": 2.75,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/35.25",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 35.25,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 35.25,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Verse/35.75",
+    "song": "stevie-wonder__superstition",
+    "section": "Verse",
+    "beat": 35.75,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 35.75,
+      "duration": 1.25,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/1",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 1,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 1,
+      "duration": 1.25,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/2.25",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 2.25,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 2.25,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/3",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 3,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 3,
+      "duration": 0.75,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i9",
+    "truthLetter": "ebm9",
+    "truthPcs": [
+      1,
+      3,
+      5,
+      6,
+      10
+    ],
+    "pianoNotes": [
+      "G3",
+      "Ab3",
+      "Bb3"
+    ],
+    "pianoPcs": [
+      7,
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i⁹",
+    "engLetter": "Ebm9",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4",
+      "F4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      5,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/3.75",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 3.75,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 3.75,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": [
+      "Ab3",
+      "Bb3",
+      "D4"
+    ],
+    "pianoPcs": [
+      2,
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/4.5",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 4.5,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 4.5,
+      "duration": 2.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": [
+      "Bb3",
+      "D4",
+      "Eb4"
+    ],
+    "pianoPcs": [
+      2,
+      3,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/7",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 7,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 7,
+      "duration": 0.25,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": [
+      "D4",
+      "G4",
+      "Bb4"
+    ],
+    "pianoPcs": [
+      2,
+      7,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/7.25",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 7.25,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 7.25,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": [
+      "D4",
+      "G4",
+      "Bb4"
+    ],
+    "pianoPcs": [
+      2,
+      7,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/7.75",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 7.75,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 7.75,
+      "duration": 1.25,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/9",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 9,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 9,
+      "duration": 1.25,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/10.25",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 10.25,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 10.25,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/11",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 11,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 11,
+      "duration": 0.75,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i9",
+    "truthLetter": "ebm9",
+    "truthPcs": [
+      1,
+      3,
+      5,
+      6,
+      10
+    ],
+    "pianoNotes": [
+      "G3",
+      "Ab3",
+      "Bb3"
+    ],
+    "pianoPcs": [
+      7,
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i⁹",
+    "engLetter": "Ebm9",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4",
+      "F4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      5,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/11.75",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 11.75,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 11.75,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": [
+      "Ab3",
+      "Bb3",
+      "D4"
+    ],
+    "pianoPcs": [
+      2,
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/12.5",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 12.5,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 12.5,
+      "duration": 2.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": [
+      "Bb3",
+      "D4",
+      "Eb4"
+    ],
+    "pianoPcs": [
+      2,
+      3,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/15",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 15,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 15,
+      "duration": 0.25,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": [
+      "D4",
+      "G4",
+      "Bb4"
+    ],
+    "pianoPcs": [
+      2,
+      7,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/15.25",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 15.25,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 15.25,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": [
+      "D4",
+      "G4",
+      "Bb4"
+    ],
+    "pianoPcs": [
+      2,
+      7,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/15.75",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 15.75,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 15.75,
+      "duration": 1.25,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/17",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 17,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 17,
+      "duration": 1.25,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/18.25",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 18.25,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 18.25,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/19",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 19,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 19,
+      "duration": 0.75,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i9",
+    "truthLetter": "ebm9",
+    "truthPcs": [
+      1,
+      3,
+      5,
+      6,
+      10
+    ],
+    "pianoNotes": [
+      "G3",
+      "Ab3",
+      "Bb3"
+    ],
+    "pianoPcs": [
+      7,
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i⁹",
+    "engLetter": "Ebm9",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4",
+      "F4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      5,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/19.75",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 19.75,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 19.75,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": [
+      "Ab3",
+      "Bb3",
+      "D4"
+    ],
+    "pianoPcs": [
+      2,
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/20.5",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 20.5,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 20.5,
+      "duration": 2.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": [
+      "Bb3",
+      "D4",
+      "Eb4"
+    ],
+    "pianoPcs": [
+      2,
+      3,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/23",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 23,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 23,
+      "duration": 0.25,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": [
+      "D4",
+      "G4",
+      "Bb4"
+    ],
+    "pianoPcs": [
+      2,
+      7,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/23.25",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 23.25,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 23.25,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": [
+      "D4",
+      "G4",
+      "Bb4"
+    ],
+    "pianoPcs": [
+      2,
+      7,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/23.75",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 23.75,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 23.75,
+      "duration": 1.25,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/25",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 25,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 25,
+      "duration": 1.25,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/26.25",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 26.25,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 26.25,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/27",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 27,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 27,
+      "duration": 0.75,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i9",
+    "truthLetter": "ebm9",
+    "truthPcs": [
+      1,
+      3,
+      5,
+      6,
+      10
+    ],
+    "pianoNotes": [
+      "G3",
+      "Ab3",
+      "Bb3"
+    ],
+    "pianoPcs": [
+      7,
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i⁹",
+    "engLetter": "Ebm9",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4",
+      "F4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      5,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/27.75",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 27.75,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 27.75,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": [
+      "Ab3",
+      "Bb3",
+      "D4"
+    ],
+    "pianoPcs": [
+      2,
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/28.5",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 28.5,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 28.5,
+      "duration": 2.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": [
+      "Bb3",
+      "D4",
+      "Eb4"
+    ],
+    "pianoPcs": [
+      2,
+      3,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/31",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 31,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 31,
+      "duration": 0.25,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": [
+      "D4",
+      "G4",
+      "Bb4"
+    ],
+    "pianoPcs": [
+      2,
+      7,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/31.25",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 31.25,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 31.25,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(add6)",
+    "truthLetter": "ebm6",
+    "truthPcs": [
+      0,
+      3,
+      6
+    ],
+    "pianoNotes": [
+      "D4",
+      "G4",
+      "Bb4"
+    ],
+    "pianoPcs": [
+      2,
+      7,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(add6)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Pre-Chorus/31.75",
+    "song": "stevie-wonder__superstition",
+    "section": "Pre-Chorus",
+    "beat": 31.75,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 31.75,
+      "duration": 1.25,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Chorus/5",
+    "song": "stevie-wonder__superstition",
+    "section": "Chorus",
+    "beat": 5,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 5,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(maj)",
+    "truthLetter": "Bb7",
+    "truthPcs": [
+      2,
+      5,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(maj)",
+    "engLetter": "Bb7",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Chorus/9",
+    "song": "stevie-wonder__superstition",
+    "section": "Chorus",
+    "beat": 9,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 9,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(maj)",
+    "truthLetter": "Bb7",
+    "truthPcs": [
+      2,
+      5,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(maj)",
+    "engLetter": "Bb7",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Chorus/13",
+    "song": "stevie-wonder__superstition",
+    "section": "Chorus",
+    "beat": 13,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 13,
+      "duration": 4,
+      "type": 11,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV11",
+    "truthLetter": "Ab11",
+    "truthPcs": [
+      0,
+      1,
+      3,
+      6,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV¹¹",
+    "engLetter": "Ab11",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4",
+      "Gb4",
+      "Bb4",
+      "Db5"
+    ],
+    "engPcs": [
+      0,
+      1,
+      3,
+      6,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=11",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Chorus/17",
+    "song": "stevie-wonder__superstition",
+    "section": "Chorus",
+    "beat": 17,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 17,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#5"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V+(#5)(maj)",
+    "truthLetter": "Bb++(#5)",
+    "truthPcs": [
+      2,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V+(#5)(maj)",
+    "engLetter": "Bb+",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "Gb4"
+    ],
+    "engPcs": [
+      2,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major",
+      "alterations=#5"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Chorus/21",
+    "song": "stevie-wonder__superstition",
+    "section": "Chorus",
+    "beat": 21,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 21,
+      "duration": 8,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i7",
+    "truthLetter": "ebm7",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": [
+      "Eb2",
+      "G2",
+      "Ab2"
+    ],
+    "pianoPcs": [
+      3,
+      7,
+      8
+    ],
+    "pianoValidated": false,
+    "engRoman": "i⁷",
+    "engLetter": "Ebm7",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bb3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Chorus Lead-Out/5",
+    "song": "stevie-wonder__superstition",
+    "section": "Chorus Lead-Out",
+    "beat": 5,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 5,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bII9(b5)/V(∆-sub)(maj)",
+    "truthLetter": "Cb9(b5)",
+    "truthPcs": [
+      3,
+      5,
+      9,
+      11
+    ],
+    "pianoNotes": [
+      "F3",
+      "C4",
+      "Bb3",
+      "A3",
+      "D4",
+      "Eb3",
+      "D3",
+      "Bb2"
+    ],
+    "pianoPcs": [
+      0,
+      2,
+      3,
+      5,
+      9,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "V⁷(b5)(maj)",
+    "engLetter": "Bb7",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "E4",
+      "Ab4"
+    ],
+    "engPcs": [
+      2,
+      4,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": false,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
     "id": "the-beatles__blackbird/Verse/1",
     "song": "the-beatles__blackbird",
     "section": "Verse",
@@ -141411,6 +146886,2762 @@
     "buckets": [
       "type=5",
       "inversion=2",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Intro and Verse/1",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Intro and Verse",
+    "beat": 1,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 1,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V",
+    "truthLetter": "F",
+    "truthPcs": [
+      0,
+      5,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V",
+    "engLetter": "F",
+    "engNotes": [
+      "F3",
+      "A3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Intro and Verse/3",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Intro and Verse",
+    "beat": 3,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 3,
+      "duration": 2,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "lydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vii64(lyd)",
+    "truthLetter": "am/E",
+    "truthPcs": [
+      0,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vii⁶₄(lyd)",
+    "engLetter": "Am/E",
+    "engNotes": [
+      "E4",
+      "A4",
+      "C5"
+    ],
+    "engPcs": [
+      0,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=lydian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Intro and Verse/5",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Intro and Verse",
+    "beat": 5,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 5,
+      "duration": 2,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vii°64",
+    "truthLetter": "a°/Eb",
+    "truthPcs": [
+      0,
+      3,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vii°⁶₄",
+    "engLetter": "A°/Eb",
+    "engNotes": [
+      "Eb4",
+      "A4",
+      "C5"
+    ],
+    "engPcs": [
+      0,
+      3,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Intro and Verse/7",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Intro and Verse",
+    "beat": 7,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 7,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV",
+    "truthLetter": "Eb",
+    "truthPcs": [
+      3,
+      7,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV",
+    "engLetter": "Eb",
+    "engNotes": [
+      "Eb3",
+      "G3",
+      "Bb3"
+    ],
+    "engPcs": [
+      3,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Intro and Verse/8",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Intro and Verse",
+    "beat": 8,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 8,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": [
+        -1,
+        1,
+        3,
+        5,
+        6,
+        8,
+        10
+      ],
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iv°(bor)",
+    "truthLetter": "eb°",
+    "truthPcs": [
+      3,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "iv°(bor)",
+    "engLetter": "Eb",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bbb3"
+    ],
+    "engPcs": [
+      3,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=custom-array"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Intro and Verse/9",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Intro and Verse",
+    "beat": 9,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 9,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi",
+    "truthLetter": "gm",
+    "truthPcs": [
+      2,
+      7,
+      10
+    ],
+    "pianoNotes": [
+      "B2",
+      "E3"
+    ],
+    "pianoPcs": [
+      4,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "vi",
+    "engLetter": "Gm",
+    "engNotes": [
+      "G3",
+      "Bb3",
+      "D4"
+    ],
+    "engPcs": [
+      2,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Intro and Verse/11",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Intro and Verse",
+    "beat": 11,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 11,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V",
+    "truthLetter": "F",
+    "truthPcs": [
+      0,
+      5,
+      9
+    ],
+    "pianoNotes": [
+      "G2",
+      "C3"
+    ],
+    "pianoPcs": [
+      0,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "V",
+    "engLetter": "F",
+    "engNotes": [
+      "F3",
+      "A3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Intro and Verse/13",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Intro and Verse",
+    "beat": 13,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 13,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV",
+    "truthLetter": "Eb",
+    "truthPcs": [
+      3,
+      7,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV",
+    "engLetter": "Eb",
+    "engNotes": [
+      "Eb3",
+      "G3",
+      "Bb3"
+    ],
+    "engPcs": [
+      3,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Intro and Verse/14",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Intro and Verse",
+    "beat": 14,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 14,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I",
+    "truthLetter": "Bb",
+    "truthPcs": [
+      2,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I",
+    "engLetter": "Bb",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Verse/1",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Verse",
+    "beat": 1,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 1,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V",
+    "truthLetter": "F",
+    "truthPcs": [
+      0,
+      5,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V",
+    "engLetter": "F",
+    "engNotes": [
+      "F3",
+      "A3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Verse/3",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Verse",
+    "beat": 3,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 3,
+      "duration": 2,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "lydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vii64(lyd)",
+    "truthLetter": "am/E",
+    "truthPcs": [
+      0,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vii⁶₄(lyd)",
+    "engLetter": "Am/E",
+    "engNotes": [
+      "E4",
+      "A4",
+      "C5"
+    ],
+    "engPcs": [
+      0,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=lydian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Verse/5",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Verse",
+    "beat": 5,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 5,
+      "duration": 2,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vii°64",
+    "truthLetter": "a°/Eb",
+    "truthPcs": [
+      0,
+      3,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vii°⁶₄",
+    "engLetter": "A°/Eb",
+    "engNotes": [
+      "Eb4",
+      "A4",
+      "C5"
+    ],
+    "engPcs": [
+      0,
+      3,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Verse/7",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Verse",
+    "beat": 7,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 7,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV",
+    "truthLetter": "Eb",
+    "truthPcs": [
+      3,
+      7,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV",
+    "engLetter": "Eb",
+    "engNotes": [
+      "Eb3",
+      "G3",
+      "Bb3"
+    ],
+    "engPcs": [
+      3,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Verse/8",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Verse",
+    "beat": 8,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 8,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "minor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iv°(b5)(min)",
+    "truthLetter": "eb°(b5)",
+    "truthPcs": [
+      3,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "iv(b5)(min)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bbb3",
+      "Bbb3"
+    ],
+    "engPcs": [
+      3,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=minor",
+      "alterations=b5"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Verse/9",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Verse",
+    "beat": 9,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 9,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi",
+    "truthLetter": "gm",
+    "truthPcs": [
+      2,
+      7,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vi",
+    "engLetter": "Gm",
+    "engNotes": [
+      "G3",
+      "Bb3",
+      "D4"
+    ],
+    "engPcs": [
+      2,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Verse/11",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Verse",
+    "beat": 11,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 11,
+      "duration": 2,
+      "type": 7,
+      "inversion": 3,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi42",
+    "truthLetter": "gm/F",
+    "truthPcs": [
+      2,
+      5,
+      7,
+      10
+    ],
+    "pianoNotes": [
+      "G2",
+      "A2",
+      "B2"
+    ],
+    "pianoPcs": [
+      7,
+      9,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "vi⁴²",
+    "engLetter": "Gm7/F",
+    "engNotes": [
+      "F4",
+      "G4",
+      "Bb4",
+      "D5"
+    ],
+    "engPcs": [
+      2,
+      5,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=3",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Verse/13",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Verse",
+    "beat": 13,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 13,
+      "duration": 6,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV",
+    "truthLetter": "Eb",
+    "truthPcs": [
+      3,
+      7,
+      10
+    ],
+    "pianoNotes": [
+      "C2",
+      "D2",
+      "Eb2"
+    ],
+    "pianoPcs": [
+      0,
+      2,
+      3
+    ],
+    "pianoValidated": false,
+    "engRoman": "IV",
+    "engLetter": "Eb",
+    "engNotes": [
+      "Eb3",
+      "G3",
+      "Bb3"
+    ],
+    "engPcs": [
+      3,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Verse/19",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Verse",
+    "beat": 19,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 19,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V",
+    "truthLetter": "F",
+    "truthPcs": [
+      0,
+      5,
+      9
+    ],
+    "pianoNotes": [
+      "D2",
+      "E2"
+    ],
+    "pianoPcs": [
+      2,
+      4
+    ],
+    "pianoValidated": false,
+    "engRoman": "V",
+    "engLetter": "F",
+    "engNotes": [
+      "F3",
+      "A3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Verse/21",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Verse",
+    "beat": 21,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 21,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I",
+    "truthLetter": "Bb",
+    "truthPcs": [
+      2,
+      5,
+      10
+    ],
+    "pianoNotes": [
+      "Bb2",
+      "D3"
+    ],
+    "pianoPcs": [
+      2,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "I",
+    "engLetter": "Bb",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Verse/22",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Verse",
+    "beat": 22,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 22,
+      "duration": 1,
+      "type": 7,
+      "inversion": 3,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I△42",
+    "truthLetter": "Bb/A",
+    "truthPcs": [
+      2,
+      5,
+      9,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I△⁴²",
+    "engLetter": "Bbmaj7/A",
+    "engNotes": [
+      "A4",
+      "Bb4",
+      "D5",
+      "F5"
+    ],
+    "engPcs": [
+      2,
+      5,
+      9,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=3",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Verse/23",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Verse",
+    "beat": 23,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 23,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi",
+    "truthLetter": "gm",
+    "truthPcs": [
+      2,
+      7,
+      10
+    ],
+    "pianoNotes": [
+      "E2",
+      "F#2",
+      "G2"
+    ],
+    "pianoPcs": [
+      4,
+      6,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "vi",
+    "engLetter": "Gm",
+    "engNotes": [
+      "G3",
+      "Bb3",
+      "D4"
+    ],
+    "engPcs": [
+      2,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Verse/24",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Verse",
+    "beat": 24,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 24,
+      "duration": 1,
+      "type": 7,
+      "inversion": 3,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vi42",
+    "truthLetter": "gm/F",
+    "truthPcs": [
+      2,
+      5,
+      7,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vi⁴²",
+    "engLetter": "Gm7/F",
+    "engNotes": [
+      "F4",
+      "G4",
+      "Bb4",
+      "D5"
+    ],
+    "engPcs": [
+      2,
+      5,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=3",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Verse/25",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Verse",
+    "beat": 25,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 25,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV",
+    "truthLetter": "Eb",
+    "truthPcs": [
+      3,
+      7,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV",
+    "engLetter": "Eb",
+    "engNotes": [
+      "Eb3",
+      "G3",
+      "Bb3"
+    ],
+    "engPcs": [
+      3,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Verse/27",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Verse",
+    "beat": 27,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 27,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V",
+    "truthLetter": "F",
+    "truthPcs": [
+      0,
+      5,
+      9
+    ],
+    "pianoNotes": [
+      "F2",
+      "G2"
+    ],
+    "pianoPcs": [
+      5,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "V",
+    "engLetter": "F",
+    "engNotes": [
+      "F3",
+      "A3",
+      "C4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Verse/29",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Verse",
+    "beat": 29,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 29,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV",
+    "truthLetter": "Eb",
+    "truthPcs": [
+      3,
+      7,
+      10
+    ],
+    "pianoNotes": [
+      "D2",
+      "Eb2"
+    ],
+    "pianoPcs": [
+      2,
+      3
+    ],
+    "pianoValidated": false,
+    "engRoman": "IV",
+    "engLetter": "Eb",
+    "engNotes": [
+      "Eb3",
+      "G3",
+      "Bb3"
+    ],
+    "engPcs": [
+      3,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Verse/31",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Verse",
+    "beat": 31,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 31,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I",
+    "truthLetter": "Bb",
+    "truthPcs": [
+      2,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I",
+    "engLetter": "Bb",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Chorus/1",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Chorus",
+    "beat": 1,
+    "key": {
+      "tonic": "Bb",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 1,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I",
+    "truthLetter": "Bb",
+    "truthPcs": [
+      2,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I",
+    "engLetter": "Bb",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Chorus/9",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Chorus",
+    "beat": 9,
+    "key": {
+      "tonic": "Bb",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 9,
+      "duration": 8,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "v7",
+    "truthLetter": "fm7",
+    "truthPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "v⁷",
+    "engLetter": "Fm7",
+    "engNotes": [
+      "F3",
+      "Ab3",
+      "C4",
+      "Eb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Chorus/17",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Chorus",
+    "beat": 17,
+    "key": {
+      "tonic": "Bb",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 17,
+      "duration": 8,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": [
+        1,
+        2,
+        4,
+        6,
+        7,
+        9,
+        11
+      ],
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VI7(bor)",
+    "truthLetter": "G7",
+    "truthPcs": [
+      2,
+      5,
+      7,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VI⁷(bor)",
+    "engLetter": "Gm7",
+    "engNotes": [
+      "G3",
+      "B3",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      7,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=custom-array"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Chorus/25",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Chorus",
+    "beat": 25,
+    "key": {
+      "tonic": "Bb",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 25,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV",
+    "truthLetter": "Eb",
+    "truthPcs": [
+      3,
+      7,
+      10
+    ],
+    "pianoNotes": [
+      "Bb1",
+      "Ab2",
+      "Bb2"
+    ],
+    "pianoPcs": [
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "IV",
+    "engLetter": "Eb",
+    "engNotes": [
+      "Eb3",
+      "G3",
+      "Bb3"
+    ],
+    "engPcs": [
+      3,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Chorus/27",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Chorus",
+    "beat": 27,
+    "key": {
+      "tonic": "Bb",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 27,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": [
+        1,
+        2,
+        4,
+        6,
+        7,
+        9,
+        11
+      ],
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VI7(bor)",
+    "truthLetter": "G7",
+    "truthPcs": [
+      2,
+      5,
+      7,
+      11
+    ],
+    "pianoNotes": [
+      "G#2",
+      "A2",
+      "B2"
+    ],
+    "pianoPcs": [
+      8,
+      9,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "VI⁷(bor)",
+    "engLetter": "Gm7",
+    "engNotes": [
+      "G3",
+      "B3",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      7,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=custom-array"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Chorus/31",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Chorus",
+    "beat": 31,
+    "key": {
+      "tonic": "Bb",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 31,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV",
+    "truthLetter": "Eb",
+    "truthPcs": [
+      3,
+      7,
+      10
+    ],
+    "pianoNotes": [
+      "Eb2",
+      "G2"
+    ],
+    "pianoPcs": [
+      3,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "IV",
+    "engLetter": "Eb",
+    "engNotes": [
+      "Eb3",
+      "G3",
+      "Bb3"
+    ],
+    "engPcs": [
+      3,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Chorus/32.5",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Chorus",
+    "beat": 32.5,
+    "key": {
+      "tonic": "Bb",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 32.5,
+      "duration": 1,
+      "type": 7,
+      "inversion": 3,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV△42",
+    "truthLetter": "Eb/D",
+    "truthPcs": [
+      2,
+      3,
+      7,
+      10
+    ],
+    "pianoNotes": [
+      "C2",
+      "Eb2",
+      "G2"
+    ],
+    "pianoPcs": [
+      0,
+      3,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "IV△⁴²",
+    "engLetter": "Ebmaj7/D",
+    "engNotes": [
+      "D4",
+      "Eb4",
+      "G4",
+      "Bb4"
+    ],
+    "engPcs": [
+      2,
+      3,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=3",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Chorus/33.5",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Chorus",
+    "beat": 33.5,
+    "key": {
+      "tonic": "Bb",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 33.5,
+      "duration": 0.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "ii7",
+    "truthLetter": "cm7",
+    "truthPcs": [
+      0,
+      3,
+      7,
+      10
+    ],
+    "pianoNotes": [
+      "G1",
+      "C2",
+      "D2"
+    ],
+    "pianoPcs": [
+      0,
+      2,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "ii⁷",
+    "engLetter": "Cm7",
+    "engNotes": [
+      "C3",
+      "Eb3",
+      "G3",
+      "Bb3"
+    ],
+    "engPcs": [
+      0,
+      3,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Chorus/34",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Chorus",
+    "beat": 34,
+    "key": {
+      "tonic": "Bb",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 34,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I",
+    "truthLetter": "Bb",
+    "truthPcs": [
+      2,
+      5,
+      10
+    ],
+    "pianoNotes": [
+      "F2",
+      "Bb2",
+      "C3"
+    ],
+    "pianoPcs": [
+      0,
+      5,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "I",
+    "engLetter": "Bb",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
       "applied=no",
       "borrowed=none"
     ],

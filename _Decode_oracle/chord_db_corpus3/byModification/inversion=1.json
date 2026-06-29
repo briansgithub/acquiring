@@ -12404,6 +12404,243 @@
     "compositeKey": "adds=6+suspensions=2"
   },
   {
+    "id": "ella-langley__choosin-texas/Chorus/1",
+    "song": "ella-langley__choosin-texas",
+    "section": "Chorus",
+    "beat": 1,
+    "key": {
+      "tonic": "Db",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 1,
+      "duration": 4,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "ii65",
+    "truthLetter": "Gb6",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii⁶⁵",
+    "engLetter": "Ebm7/Gb",
+    "engNotes": [
+      "Gb3",
+      "Bb3",
+      "Db4",
+      "Eb4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ella-langley__choosin-texas/Chorus/5",
+    "song": "ella-langley__choosin-texas",
+    "section": "Chorus",
+    "beat": 5,
+    "key": {
+      "tonic": "Db",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 5,
+      "duration": 4,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "ii65",
+    "truthLetter": "Gb6",
+    "truthPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii⁶⁵",
+    "engLetter": "Ebm7/Gb",
+    "engNotes": [
+      "Gb3",
+      "Bb3",
+      "Db4",
+      "Eb4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ella-langley__i-cant-love-you-anymore-%28with-morgan-wallen%29/Pre-Chorus and Chorus/61",
+    "song": "ella-langley__i-cant-love-you-anymore-%28with-morgan-wallen%29",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 61,
+    "key": {
+      "tonic": "Bb",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 61,
+      "duration": 4,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "III6",
+    "truthLetter": "Db/F",
+    "truthPcs": [
+      1,
+      5,
+      8
+    ],
+    "pianoNotes": [
+      "F3",
+      "Gb3"
+    ],
+    "pianoPcs": [
+      5,
+      6
+    ],
+    "pianoValidated": false,
+    "engRoman": "III⁶",
+    "engLetter": "Db/F",
+    "engNotes": [
+      "F3",
+      "Ab3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
     "id": "elton-john__rocket-man/Verse/16.25",
     "song": "elton-john__rocket-man",
     "section": "Verse",
@@ -14558,6 +14795,312 @@
     "compositeKey": null
   },
   {
+    "id": "frank-sinatra__o-little-town-of-bethlehem/Verse/5",
+    "song": "frank-sinatra__o-little-town-of-bethlehem",
+    "section": "Verse",
+    "beat": 5,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 5,
+      "duration": 1,
+      "type": 5,
+      "inversion": 1,
+      "applied": 7,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vii°6/ii",
+    "truthLetter": "e°/G",
+    "truthPcs": [
+      4,
+      7,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vii°⁶/ii",
+    "engLetter": "E°/G",
+    "engNotes": [
+      "G2",
+      "Bb3",
+      "E3"
+    ],
+    "engPcs": [
+      4,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=yes",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "frank-sinatra__o-little-town-of-bethlehem/Verse/6",
+    "song": "frank-sinatra__o-little-town-of-bethlehem",
+    "section": "Verse",
+    "beat": 6,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 6,
+      "duration": 3,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "ii6",
+    "truthLetter": "fm/Ab",
+    "truthPcs": [
+      0,
+      5,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii⁶",
+    "engLetter": "Fm/Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "F4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "frank-sinatra__o-little-town-of-bethlehem/Verse/23",
+    "song": "frank-sinatra__o-little-town-of-bethlehem",
+    "section": "Verse",
+    "beat": 23,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 23,
+      "duration": 2,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "ii6",
+    "truthLetter": "fm/Ab",
+    "truthPcs": [
+      0,
+      5,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii⁶",
+    "engLetter": "Fm/Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "F4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "frank-sinatra__o-little-town-of-bethlehem/Verse/27",
+    "song": "frank-sinatra__o-little-town-of-bethlehem",
+    "section": "Verse",
+    "beat": 27,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 27,
+      "duration": 1,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iii6",
+    "truthLetter": "gm/Bb",
+    "truthPcs": [
+      2,
+      7,
+      10
+    ],
+    "pianoNotes": [
+      "G3",
+      "B3"
+    ],
+    "pianoPcs": [
+      7,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "iii⁶",
+    "engLetter": "Gm/Bb",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "G4"
+    ],
+    "engPcs": [
+      2,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
     "id": "george-gershwin__summertime/Chorus/5",
     "song": "george-gershwin__summertime",
     "section": "Chorus",
@@ -15466,6 +16009,239 @@
       "inversion=1",
       "applied=no",
       "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "hall-and-oates__maneater/Verse/13",
+    "song": "hall-and-oates__maneater",
+    "section": "Verse",
+    "beat": 13,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 13,
+      "duration": 8,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V6",
+    "truthLetter": "A/C#",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": [
+      "F#3",
+      "B3"
+    ],
+    "pianoPcs": [
+      6,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "V⁶",
+    "engLetter": "A/C#",
+    "engNotes": [
+      "C#4",
+      "E4",
+      "A4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "hall-and-oates__maneater/Verse/77",
+    "song": "hall-and-oates__maneater",
+    "section": "Verse",
+    "beat": 77,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 77,
+      "duration": 8,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V6",
+    "truthLetter": "A/C#",
+    "truthPcs": [
+      1,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁶",
+    "engLetter": "A/C#",
+    "engNotes": [
+      "C#4",
+      "E4",
+      "A4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "hall-and-oates__maneater/Chorus/29",
+    "song": "hall-and-oates__maneater",
+    "section": "Chorus",
+    "beat": 29,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 29,
+      "duration": 2,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V65(hmin)",
+    "truthLetter": "F#7/A#",
+    "truthPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁶⁵(hmin)",
+    "engLetter": "F#7/A#",
+    "engNotes": [
+      "A#3",
+      "C#4",
+      "E4",
+      "F#4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=1",
+      "applied=no",
+      "borrowed=harmonicMinor"
     ],
     "compositeKey": null
   },
@@ -16440,6 +17216,462 @@
       2,
       5,
       10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29/Chorus/70",
+    "song": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29",
+    "section": "Chorus",
+    "beat": 70,
+    "key": {
+      "tonic": "F#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 70,
+      "duration": 3,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VII6",
+    "truthLetter": "E/G#",
+    "truthPcs": [
+      4,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VII⁶",
+    "engLetter": "E/G#",
+    "engNotes": [
+      "G#3",
+      "B3",
+      "E4"
+    ],
+    "engPcs": [
+      4,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29/Bridge/72",
+    "song": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29",
+    "section": "Bridge",
+    "beat": 72,
+    "key": {
+      "tonic": "F#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 72,
+      "duration": 1,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i6",
+    "truthLetter": "f#m/A",
+    "truthPcs": [
+      1,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁶",
+    "engLetter": "F#m/A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "F#4"
+    ],
+    "engPcs": [
+      1,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29/Instrumental/24",
+    "song": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29",
+    "section": "Instrumental",
+    "beat": 24,
+    "key": {
+      "tonic": "F#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 24,
+      "duration": 1,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i6",
+    "truthLetter": "f#m/A",
+    "truthPcs": [
+      1,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁶",
+    "engLetter": "F#m/A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "F#4"
+    ],
+    "engPcs": [
+      1,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29/Instrumental/48",
+    "song": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29",
+    "section": "Instrumental",
+    "beat": 48,
+    "key": {
+      "tonic": "F#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 48,
+      "duration": 1,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i6",
+    "truthLetter": "f#m/A",
+    "truthPcs": [
+      1,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁶",
+    "engLetter": "F#m/A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "F#4"
+    ],
+    "engPcs": [
+      1,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29/Pre-Outro/6",
+    "song": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29",
+    "section": "Pre-Outro",
+    "beat": 6,
+    "key": {
+      "tonic": "F#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 6,
+      "duration": 1,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i6",
+    "truthLetter": "f#m/A",
+    "truthPcs": [
+      1,
+      6,
+      9
+    ],
+    "pianoNotes": [
+      "E#3",
+      "F#3"
+    ],
+    "pianoPcs": [
+      5,
+      6
+    ],
+    "pianoValidated": false,
+    "engRoman": "i⁶",
+    "engLetter": "F#m/A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "F#4"
+    ],
+    "engPcs": [
+      1,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29/Pre-Outro/47",
+    "song": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29",
+    "section": "Pre-Outro",
+    "beat": 47,
+    "key": {
+      "tonic": "F#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 47,
+      "duration": 1,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i6",
+    "truthLetter": "f#m/A",
+    "truthPcs": [
+      1,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i⁶",
+    "engLetter": "F#m/A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "F#4"
+    ],
+    "engPcs": [
+      1,
+      6,
+      9
     ],
     "flags": {
       "romanExact": true,
@@ -18604,6 +19836,312 @@
       4,
       8,
       11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "michael-jackson__human-nature/Chorus/20.25",
+    "song": "michael-jackson__human-nature",
+    "section": "Chorus",
+    "beat": 20.25,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 20.25,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I6",
+    "truthLetter": "D/F#",
+    "truthPcs": [
+      2,
+      6,
+      9
+    ],
+    "pianoNotes": [
+      "A2",
+      "B2"
+    ],
+    "pianoPcs": [
+      9,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "I⁶",
+    "engLetter": "D/F#",
+    "engNotes": [
+      "F#3",
+      "A3",
+      "D4"
+    ],
+    "engPcs": [
+      2,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "michael-jackson__human-nature/Chorus/36.25",
+    "song": "michael-jackson__human-nature",
+    "section": "Chorus",
+    "beat": 36.25,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 36.25,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I6",
+    "truthLetter": "D/F#",
+    "truthPcs": [
+      2,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I⁶",
+    "engLetter": "D/F#",
+    "engNotes": [
+      "F#3",
+      "A3",
+      "D4"
+    ],
+    "engPcs": [
+      2,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "michael-jackson__human-nature/Chorus/40.25",
+    "song": "michael-jackson__human-nature",
+    "section": "Chorus",
+    "beat": 40.25,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 40.25,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I6",
+    "truthLetter": "D/F#",
+    "truthPcs": [
+      2,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I⁶",
+    "engLetter": "D/F#",
+    "engNotes": [
+      "F#3",
+      "A3",
+      "D4"
+    ],
+    "engPcs": [
+      2,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "michael-jackson__human-nature/Chorus/44.25",
+    "song": "michael-jackson__human-nature",
+    "section": "Chorus",
+    "beat": 44.25,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 44.25,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I6",
+    "truthLetter": "D/F#",
+    "truthPcs": [
+      2,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I⁶",
+    "engLetter": "D/F#",
+    "engNotes": [
+      "F#3",
+      "A3",
+      "D4"
+    ],
+    "engPcs": [
+      2,
+      6,
+      9
     ],
     "flags": {
       "romanExact": true,
@@ -32714,6 +34252,950 @@
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "tlc__creep/Intro and Verse/21",
+    "song": "tlc__creep",
+    "section": "Intro and Verse",
+    "beat": 21,
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 21,
+      "duration": 1.5,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iv65",
+    "truthLetter": "Ab6",
+    "truthPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "iv⁶⁵",
+    "engLetter": "Fm7/Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4",
+      "F4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "tlc__creep/Intro and Verse/22.5",
+    "song": "tlc__creep",
+    "section": "Intro and Verse",
+    "beat": 22.5,
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 22.5,
+      "duration": 2.5,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iv65",
+    "truthLetter": "Ab6",
+    "truthPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "iv⁶⁵",
+    "engLetter": "Fm7/Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4",
+      "F4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "tlc__creep/Intro and Verse/29",
+    "song": "tlc__creep",
+    "section": "Intro and Verse",
+    "beat": 29,
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 29,
+      "duration": 1.5,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iv65",
+    "truthLetter": "Ab6",
+    "truthPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "iv⁶⁵",
+    "engLetter": "Fm7/Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4",
+      "F4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "tlc__creep/Intro and Verse/30.5",
+    "song": "tlc__creep",
+    "section": "Intro and Verse",
+    "beat": 30.5,
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 30.5,
+      "duration": 2.5,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iv65",
+    "truthLetter": "Ab6",
+    "truthPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "iv⁶⁵",
+    "engLetter": "Fm7/Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4",
+      "F4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "tlc__creep/Intro and Verse/37",
+    "song": "tlc__creep",
+    "section": "Intro and Verse",
+    "beat": 37,
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 37,
+      "duration": 1.5,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iv65",
+    "truthLetter": "Ab6",
+    "truthPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "iv⁶⁵",
+    "engLetter": "Fm7/Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4",
+      "F4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "tlc__creep/Intro and Verse/38.5",
+    "song": "tlc__creep",
+    "section": "Intro and Verse",
+    "beat": 38.5,
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 38.5,
+      "duration": 2.5,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iv65",
+    "truthLetter": "Ab6",
+    "truthPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "iv⁶⁵",
+    "engLetter": "Fm7/Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4",
+      "F4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "tlc__creep/Intro and Verse/45",
+    "song": "tlc__creep",
+    "section": "Intro and Verse",
+    "beat": 45,
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 45,
+      "duration": 1.5,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iv65",
+    "truthLetter": "Ab6",
+    "truthPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "iv⁶⁵",
+    "engLetter": "Fm7/Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4",
+      "F4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "tlc__creep/Intro and Verse/46.5",
+    "song": "tlc__creep",
+    "section": "Intro and Verse",
+    "beat": 46.5,
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 46.5,
+      "duration": 2.5,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iv65",
+    "truthLetter": "Ab6",
+    "truthPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "iv⁶⁵",
+    "engLetter": "Fm7/Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4",
+      "F4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "tlc__creep/Intro and Verse/53",
+    "song": "tlc__creep",
+    "section": "Intro and Verse",
+    "beat": 53,
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 53,
+      "duration": 1.5,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iv65",
+    "truthLetter": "Ab6",
+    "truthPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "iv⁶⁵",
+    "engLetter": "Fm7/Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4",
+      "F4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "tlc__creep/Intro and Verse/54.5",
+    "song": "tlc__creep",
+    "section": "Intro and Verse",
+    "beat": 54.5,
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 54.5,
+      "duration": 2.5,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iv65",
+    "truthLetter": "Ab6",
+    "truthPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "pianoNotes": [
+      "A2",
+      "Bb2",
+      "B2"
+    ],
+    "pianoPcs": [
+      9,
+      10,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "iv⁶⁵",
+    "engLetter": "Fm7/Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4",
+      "F4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "tlc__creep/Intro and Verse/61",
+    "song": "tlc__creep",
+    "section": "Intro and Verse",
+    "beat": 61,
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 61,
+      "duration": 1.5,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iv65",
+    "truthLetter": "Ab6",
+    "truthPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "iv⁶⁵",
+    "engLetter": "Fm7/Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4",
+      "F4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "tlc__creep/Intro and Verse/62.5",
+    "song": "tlc__creep",
+    "section": "Intro and Verse",
+    "beat": 62.5,
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 62.5,
+      "duration": 2.5,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iv65",
+    "truthLetter": "Ab6",
+    "truthPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "iv⁶⁵",
+    "engLetter": "Fm7/Ab",
+    "engNotes": [
+      "Ab3",
+      "C4",
+      "Eb4",
+      "F4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
       "rootInPcs": true,
       "bassInNotes": true,
       "pcsExact": true,

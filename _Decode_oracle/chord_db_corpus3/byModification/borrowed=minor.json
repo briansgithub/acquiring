@@ -1015,6 +1015,162 @@
     "compositeKey": null
   },
   {
+    "id": "hall-and-oates__maneater/Verse/21",
+    "song": "hall-and-oates__maneater",
+    "section": "Verse",
+    "beat": 21,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 21,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "minor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bVII(min)",
+    "truthLetter": "C",
+    "truthPcs": [
+      0,
+      4,
+      7
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭VII(min)",
+    "engLetter": "C",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3"
+    ],
+    "engPcs": [
+      0,
+      4,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=minor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "hall-and-oates__maneater/Verse/85",
+    "song": "hall-and-oates__maneater",
+    "section": "Verse",
+    "beat": 85,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 85,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "minor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bVII(min)",
+    "truthLetter": "C",
+    "truthPcs": [
+      0,
+      4,
+      7
+    ],
+    "pianoNotes": [
+      "C3",
+      "D3"
+    ],
+    "pianoPcs": [
+      0,
+      2
+    ],
+    "pianoValidated": false,
+    "engRoman": "♭VII(min)",
+    "engLetter": "C",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3"
+    ],
+    "engPcs": [
+      0,
+      4,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=minor"
+    ],
+    "compositeKey": null
+  },
+  {
     "id": "lynyrd-skynyrd__sweet-home-alabama/Verse/7",
     "song": "lynyrd-skynyrd__sweet-home-alabama",
     "section": "Verse",
@@ -1683,6 +1839,162 @@
       6,
       9,
       11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=minor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "michael-jackson__human-nature/Bridge/9",
+    "song": "michael-jackson__human-nature",
+    "section": "Bridge",
+    "beat": 9,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 9,
+      "duration": 1.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "minor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bIII△7(min)",
+    "truthLetter": "Fmaj7",
+    "truthPcs": [
+      0,
+      4,
+      5,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭III△⁷(min)",
+    "engLetter": "Fmaj7",
+    "engNotes": [
+      "F3",
+      "A3",
+      "C4",
+      "E4"
+    ],
+    "engPcs": [
+      0,
+      4,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=minor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "michael-jackson__human-nature/Bridge/17",
+    "song": "michael-jackson__human-nature",
+    "section": "Bridge",
+    "beat": 17,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 17,
+      "duration": 1.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "minor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bIII△7(min)",
+    "truthLetter": "Fmaj7",
+    "truthPcs": [
+      0,
+      4,
+      5,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭III△⁷(min)",
+    "engLetter": "Fmaj7",
+    "engNotes": [
+      "F3",
+      "A3",
+      "C4",
+      "E4"
+    ],
+    "engPcs": [
+      0,
+      4,
+      5,
+      9
     ],
     "flags": {
       "romanExact": true,
@@ -7066,6 +7378,84 @@
       "inversion=0",
       "applied=no",
       "borrowed=minor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Verse/8",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Verse",
+    "beat": 8,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 8,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "minor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iv°(b5)(min)",
+    "truthLetter": "eb°(b5)",
+    "truthPcs": [
+      3,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "iv(b5)(min)",
+    "engLetter": "Ebm",
+    "engNotes": [
+      "Eb3",
+      "Gb3",
+      "Bbb3",
+      "Bbb3"
+    ],
+    "engPcs": [
+      3,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=minor",
+      "alterations=b5"
     ],
     "compositeKey": null
   }

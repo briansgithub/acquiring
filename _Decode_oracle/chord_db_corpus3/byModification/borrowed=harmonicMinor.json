@@ -2223,6 +2223,387 @@
     "compositeKey": null
   },
   {
+    "id": "hall-and-oates__maneater/Chorus/25",
+    "song": "hall-and-oates__maneater",
+    "section": "Chorus",
+    "beat": 25,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 25,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(hmin)",
+    "truthLetter": "F#",
+    "truthPcs": [
+      1,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(hmin)",
+    "engLetter": "F#",
+    "engNotes": [
+      "F#3",
+      "A#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "hall-and-oates__maneater/Chorus/29",
+    "song": "hall-and-oates__maneater",
+    "section": "Chorus",
+    "beat": 29,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 29,
+      "duration": 2,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V65(hmin)",
+    "truthLetter": "F#7/A#",
+    "truthPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁶⁵(hmin)",
+    "engLetter": "F#7/A#",
+    "engNotes": [
+      "A#3",
+      "C#4",
+      "E4",
+      "F#4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=1",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "hall-and-oates__maneater/Chorus/31",
+    "song": "hall-and-oates__maneater",
+    "section": "Chorus",
+    "beat": 31,
+    "key": {
+      "tonic": "B",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 31,
+      "duration": 2,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V43(hmin)",
+    "truthLetter": "F#7/C#",
+    "truthPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁴³(hmin)",
+    "engLetter": "F#7/C#",
+    "engNotes": [
+      "C#4",
+      "E4",
+      "F#4",
+      "A#4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=2",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29/Pre-Outro/37",
+    "song": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29",
+    "section": "Pre-Outro",
+    "beat": 37,
+    "key": {
+      "tonic": "F#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 37,
+      "duration": 3,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(hmin)",
+    "truthLetter": "C#7",
+    "truthPcs": [
+      1,
+      5,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(hmin)",
+    "engLetter": "C#7",
+    "engNotes": [
+      "C#3",
+      "E#3",
+      "G#3",
+      "B3"
+    ],
+    "engPcs": [
+      1,
+      5,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29/Pre-Outro/40",
+    "song": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29",
+    "section": "Pre-Outro",
+    "beat": 40,
+    "key": {
+      "tonic": "F#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 40,
+      "duration": 3,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "#vii°(hmin)",
+    "truthLetter": "e#°",
+    "truthPcs": [
+      5,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♯vii°(hmin)",
+    "engLetter": "E#°",
+    "engNotes": [
+      "E#3",
+      "G#3",
+      "B3"
+    ],
+    "engPcs": [
+      5,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=harmonicMinor"
+    ],
+    "compositeKey": null
+  },
+  {
     "id": "miles-davis__blue-in-green/Intro/7",
     "song": "miles-davis__blue-in-green",
     "section": "Intro",

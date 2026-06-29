@@ -267,10 +267,23 @@ export function generateScaleLabels(tonic, intervals) {
   const tonicBase = tonic.replace(/[#bx]+/g, "").replace(/b+/g, "");
   const tonicIndex = noteOrder.indexOf(tonicBase);
   
-  // Get tonic semitone value
-  const tonicSemitone = NOTE_NAME_TO_INTEGER_NOTATION[tonic];
+  // Get tonic semitone value. Double-accidental tonics (Bbb, F##) that arise from
+  // borrowed/applied resolution in remote keys are not in the lookup table, so compute
+  // their pitch class arithmetically instead of crashing.
+  let tonicSemitone = NOTE_NAME_TO_INTEGER_NOTATION[tonic];
   if (tonicSemitone === undefined) {
-    throw new Error(`Invalid tonic: ${tonic}`);
+    const BASE_PC = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+    const base = BASE_PC[tonicBase];
+    if (base === undefined) {
+      throw new Error(`Invalid tonic: ${tonic}`);
+    }
+    let acc = 0;
+    for (const ch of tonic.slice(1)) {
+      if (ch === '#') acc += 1;
+      else if (ch === 'x') acc += 2;
+      else if (ch === 'b') acc -= 1;
+    }
+    tonicSemitone = (((base + acc) % 12) + 12) % 12;
   }
   
   const labels = [];

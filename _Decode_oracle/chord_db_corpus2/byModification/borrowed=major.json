@@ -1803,5 +1803,419 @@
       "borrowed=major"
     ],
     "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Chorus/5",
+    "song": "stevie-wonder__superstition",
+    "section": "Chorus",
+    "beat": 5,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 5,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(maj)",
+    "truthLetter": "Bb7",
+    "truthPcs": [
+      2,
+      5,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(maj)",
+    "engLetter": "Bb7",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Chorus/7",
+    "song": "stevie-wonder__superstition",
+    "section": "Chorus",
+    "beat": 7,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 7,
+      "duration": 2,
+      "type": 9,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "substitutions": [
+        "tri"
+      ],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bII9(b5)/V(∆-sub)(maj)",
+    "truthLetter": "Cb9(b5)",
+    "truthPcs": [
+      1,
+      3,
+      5,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁹(b5)/v",
+    "engLetter": "F9",
+    "engNotes": [
+      "F3",
+      "A3",
+      "B3",
+      "Eb4",
+      "G4"
+    ],
+    "engPcs": [
+      3,
+      5,
+      7,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "engine",
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=yes",
+      "borrowed=major",
+      "alterations=b5"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Chorus/9",
+    "song": "stevie-wonder__superstition",
+    "section": "Chorus",
+    "beat": 9,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 9,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(maj)",
+    "truthLetter": "Bb7",
+    "truthPcs": [
+      2,
+      5,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(maj)",
+    "engLetter": "Bb7",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "F4",
+      "Ab4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Chorus/17",
+    "song": "stevie-wonder__superstition",
+    "section": "Chorus",
+    "beat": 17,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 17,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#5"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V+(#5)(maj)",
+    "truthLetter": "Bb++(#5)",
+    "truthPcs": [
+      2,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V+(#5)(maj)",
+    "engLetter": "Bb+",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "Gb4"
+    ],
+    "engPcs": [
+      2,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major",
+      "alterations=#5"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "stevie-wonder__superstition/Chorus Lead-Out/5",
+    "song": "stevie-wonder__superstition",
+    "section": "Chorus Lead-Out",
+    "beat": 5,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 5,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bII9(b5)/V(∆-sub)(maj)",
+    "truthLetter": "Cb9(b5)",
+    "truthPcs": [
+      3,
+      5,
+      9,
+      11
+    ],
+    "pianoNotes": [
+      "F3",
+      "C4",
+      "Bb3",
+      "A3",
+      "D4",
+      "Eb3",
+      "D3",
+      "Bb2"
+    ],
+    "pianoPcs": [
+      0,
+      2,
+      3,
+      5,
+      9,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "V⁷(b5)(maj)",
+    "engLetter": "Bb7",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "E4",
+      "Ab4"
+    ],
+    "engPcs": [
+      2,
+      4,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": false,
+      "bassPcMatch": false,
+      "rootInPcs": false,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major"
+    ],
+    "compositeKey": null
   }
 ]

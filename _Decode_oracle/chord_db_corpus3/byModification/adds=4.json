@@ -1287,6 +1287,437 @@
     "compositeKey": null
   },
   {
+    "id": "goo-goo-dolls__iris/Chorus/4",
+    "song": "goo-goo-dolls__iris",
+    "section": "Chorus",
+    "beat": 4,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 4,
+      "duration": 3,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(add4)",
+    "truthLetter": "A(add4)",
+    "truthPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "pianoNotes": [
+      "D4",
+      "E4"
+    ],
+    "pianoPcs": [
+      2,
+      4
+    ],
+    "pianoValidated": false,
+    "engRoman": "V(add4)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "D4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "goo-goo-dolls__iris/Chorus/16",
+    "song": "goo-goo-dolls__iris",
+    "section": "Chorus",
+    "beat": 16,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 16,
+      "duration": 3,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(add4)",
+    "truthLetter": "A(add4)",
+    "truthPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add4)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "D4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "goo-goo-dolls__iris/Chorus/28",
+    "song": "goo-goo-dolls__iris",
+    "section": "Chorus",
+    "beat": 28,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 28,
+      "duration": 3,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(add4)",
+    "truthLetter": "A(add4)",
+    "truthPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add4)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "D4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "goo-goo-dolls__iris/Chorus/40",
+    "song": "goo-goo-dolls__iris",
+    "section": "Chorus",
+    "beat": 40,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 40,
+      "duration": 3,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(add4)",
+    "truthLetter": "A(add4)",
+    "truthPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "pianoNotes": [
+      "B3",
+      "B#4"
+    ],
+    "pianoPcs": [
+      0,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "V(add4)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "D4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "goo-goo-dolls__iris/Solo 1/4",
+    "song": "goo-goo-dolls__iris",
+    "section": "Solo 1",
+    "beat": 4,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 4,
+      "duration": 3,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V(add4)",
+    "truthLetter": "A(add4)",
+    "truthPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "pianoNotes": [
+      "F#4",
+      "E4",
+      "D#4",
+      "B3",
+      "C#4",
+      "Cx4"
+    ],
+    "pianoPcs": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "V(add4)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "D4",
+      "E4"
+    ],
+    "engPcs": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=4"
+    ],
+    "compositeKey": null
+  },
+  {
     "id": "john-coltrane__giant-steps/Chorus/61",
     "song": "john-coltrane__giant-steps",
     "section": "Chorus",

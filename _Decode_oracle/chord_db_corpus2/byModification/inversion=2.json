@@ -5745,6 +5745,302 @@
     "compositeKey": null
   },
   {
+    "id": "the-beatles__strawberry-fields-forever/Intro and Verse/3",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Intro and Verse",
+    "beat": 3,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 3,
+      "duration": 2,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "lydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vii64(lyd)",
+    "truthLetter": "am/E",
+    "truthPcs": [
+      0,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vii⁶₄(lyd)",
+    "engLetter": "Am/E",
+    "engNotes": [
+      "E4",
+      "A4",
+      "C5"
+    ],
+    "engPcs": [
+      0,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=lydian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Intro and Verse/5",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Intro and Verse",
+    "beat": 5,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 5,
+      "duration": 2,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vii°64",
+    "truthLetter": "a°/Eb",
+    "truthPcs": [
+      0,
+      3,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vii°⁶₄",
+    "engLetter": "A°/Eb",
+    "engNotes": [
+      "Eb4",
+      "A4",
+      "C5"
+    ],
+    "engPcs": [
+      0,
+      3,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Verse/3",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Verse",
+    "beat": 3,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 3,
+      "duration": 2,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "lydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vii64(lyd)",
+    "truthLetter": "am/E",
+    "truthPcs": [
+      0,
+      4,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vii⁶₄(lyd)",
+    "engLetter": "Am/E",
+    "engNotes": [
+      "E4",
+      "A4",
+      "C5"
+    ],
+    "engPcs": [
+      0,
+      4,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=lydian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-beatles__strawberry-fields-forever/Verse/5",
+    "song": "the-beatles__strawberry-fields-forever",
+    "section": "Verse",
+    "beat": 5,
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 5,
+      "duration": 2,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vii°64",
+    "truthLetter": "a°/Eb",
+    "truthPcs": [
+      0,
+      3,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "vii°⁶₄",
+    "engLetter": "A°/Eb",
+    "engNotes": [
+      "Eb4",
+      "A4",
+      "C5"
+    ],
+    "engPcs": [
+      0,
+      3,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
     "id": "the-beatles__while-my-guitar-gently-weeps/Chorus/4",
     "song": "the-beatles__while-my-guitar-gently-weeps",
     "section": "Chorus",

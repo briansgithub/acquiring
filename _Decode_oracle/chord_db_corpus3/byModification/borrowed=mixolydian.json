@@ -645,6 +645,84 @@
     "compositeKey": null
   },
   {
+    "id": "frank-sinatra__o-little-town-of-bethlehem/Verse/18",
+    "song": "frank-sinatra__o-little-town-of-bethlehem",
+    "section": "Verse",
+    "beat": 18,
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 18,
+      "duration": 1,
+      "type": 7,
+      "inversion": 3,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "mixolydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I42(mix)",
+    "truthLetter": "Eb/Db",
+    "truthPcs": [
+      1,
+      3,
+      7,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I⁴²(mix)",
+    "engLetter": "Eb7/Db",
+    "engNotes": [
+      "Db4",
+      "Eb4",
+      "G4",
+      "Bb4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=3",
+      "applied=no",
+      "borrowed=mixolydian"
+    ],
+    "compositeKey": null
+  },
+  {
     "id": "herbie-hancock__watermelon-man/Chorus/1",
     "song": "herbie-hancock__watermelon-man",
     "section": "Chorus",

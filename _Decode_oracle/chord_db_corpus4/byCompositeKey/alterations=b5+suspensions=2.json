@@ -43,14 +43,24 @@
     "pianoValidated": false,
     "engRoman": "V⁷sus2(b5)/III",
     "engLetter": "F#7sus2",
-    "engNotes": null,
-    "engPcs": null,
+    "engNotes": [
+      "G3",
+      "A3",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      7,
+      9
+    ],
     "flags": {
       "romanExact": false,
       "romanCore": false,
       "rootPcMatch": false,
       "bassPcMatch": false,
-      "rootInPcs": false,
+      "rootInPcs": true,
       "bassInNotes": true,
       "pcsExact": false,
       "pianoExact": false,
@@ -117,14 +127,24 @@
     "pianoValidated": false,
     "engRoman": "V⁷sus2(b5)/III",
     "engLetter": "F#7sus2",
-    "engNotes": null,
-    "engPcs": null,
+    "engNotes": [
+      "G3",
+      "A3",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      2,
+      5,
+      7,
+      9
+    ],
     "flags": {
       "romanExact": false,
       "romanCore": false,
       "rootPcMatch": false,
       "bassPcMatch": false,
-      "rootInPcs": false,
+      "rootInPcs": true,
       "bassInNotes": true,
       "pcsExact": false,
       "pianoExact": false,

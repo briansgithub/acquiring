@@ -1016,6 +1016,84 @@
     "compositeKey": null
   },
   {
+    "id": "stevie-wonder__superstition/Chorus/17",
+    "song": "stevie-wonder__superstition",
+    "section": "Chorus",
+    "beat": 17,
+    "key": {
+      "tonic": "Eb",
+      "scale": "dorian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 17,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#5"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V+(#5)(maj)",
+    "truthLetter": "Bb++(#5)",
+    "truthPcs": [
+      2,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V+(#5)(maj)",
+    "engLetter": "Bb+",
+    "engNotes": [
+      "Bb3",
+      "D4",
+      "Gb4"
+    ],
+    "engPcs": [
+      2,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major",
+      "alterations=#5"
+    ],
+    "compositeKey": null
+  },
+  {
     "id": "the-beatles__something/Bridge/16",
     "song": "the-beatles__something",
     "section": "Bridge",

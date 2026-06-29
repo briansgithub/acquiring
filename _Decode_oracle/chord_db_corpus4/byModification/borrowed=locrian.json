@@ -2381,14 +2381,14 @@
     "engNotes": [
       "F3",
       "Ab3",
-      "C4",
+      "Cb4",
       "D4"
     ],
     "engPcs": [
-      0,
       2,
       5,
-      8
+      8,
+      11
     ],
     "flags": {
       "romanExact": true,
@@ -2397,17 +2397,17 @@
       "bassPcMatch": false,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
       "orderOk": true
     },
-    "notesOk": false,
+    "notesOk": true,
     "orderOk": true,
     "romanExact": true,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=7",
       "inversion=1",
@@ -2459,14 +2459,14 @@
     "engNotes": [
       "F3",
       "Ab3",
-      "C4",
+      "Cb4",
       "D4"
     ],
     "engPcs": [
-      0,
       2,
       5,
-      8
+      8,
+      11
     ],
     "flags": {
       "romanExact": true,
@@ -2475,17 +2475,17 @@
       "bassPcMatch": false,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
       "orderOk": true
     },
-    "notesOk": false,
+    "notesOk": true,
     "orderOk": true,
     "romanExact": true,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=7",
       "inversion=1",
@@ -3309,12 +3309,12 @@
       "G3",
       "Db4",
       "Db4",
-      "F4",
+      "Fb4",
       "Bb4"
     ],
     "engPcs": [
       1,
-      5,
+      4,
       7,
       10
     ],
@@ -3325,17 +3325,17 @@
       "bassPcMatch": false,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
       "orderOk": true
     },
-    "notesOk": false,
+    "notesOk": true,
     "orderOk": true,
     "romanExact": false,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=7",
       "inversion=0",
@@ -3467,12 +3467,12 @@
       "G3",
       "Db4",
       "Db4",
-      "F4",
+      "Fb4",
       "Bb4"
     ],
     "engPcs": [
       1,
-      5,
+      4,
       7,
       10
     ],
@@ -3483,17 +3483,17 @@
       "bassPcMatch": false,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
       "orderOk": true
     },
-    "notesOk": false,
+    "notesOk": true,
     "orderOk": true,
     "romanExact": false,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=7",
       "inversion=0",
@@ -7022,12 +7022,12 @@
     "engNotes": [
       "E3",
       "Bb3",
-      "D4",
+      "Db4",
       "G4",
       "Bb4"
     ],
     "engPcs": [
-      2,
+      1,
       4,
       7,
       10
@@ -7039,17 +7039,17 @@
       "bassPcMatch": false,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
       "orderOk": true
     },
-    "notesOk": false,
+    "notesOk": true,
     "orderOk": true,
     "romanExact": false,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=7",
       "inversion=0",
@@ -7100,12 +7100,12 @@
     "engNotes": [
       "E3",
       "Bb3",
-      "D4",
+      "Db4",
       "G4",
       "Bb4"
     ],
     "engPcs": [
-      2,
+      1,
       4,
       7,
       10
@@ -7117,17 +7117,17 @@
       "bassPcMatch": false,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
       "orderOk": true
     },
-    "notesOk": false,
+    "notesOk": true,
     "orderOk": true,
     "romanExact": false,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=7",
       "inversion=0",

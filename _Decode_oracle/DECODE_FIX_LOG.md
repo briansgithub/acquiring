@@ -712,6 +712,52 @@ node _Decode_oracle/buildChordDb.js --corpus _Decode_oracle/corpus2.json --db-di
 
 ---
 
+## Fix 036 — Corpus4-driven engine fixes (hardest properties: inversions, altered 5ths, extended/omit, borrowed 7ths, null crashes)
+
+**When:** Corpus4 phase (500 songs, 14,603 chords). Baseline 98.3% notesOk, 244 failing, 110 unique engine bugs.
+**Method:** Built `_Debug_testing/diffSignature.cjs` to dump `truthPcs` vs `engPcs` per chord signature against `chord_db_corpus4` (no scraping); iterated fix → `buildChordDb.js --corpus corpus4.json` rebuild → recheck.
+
+**036a — Extended chord with 3rd+5th omitted collapsed maj7 to b7.**
+Symptom: `I△9(no3no5)` truth `[0,2,11]` vs eng `[0,2,10]` (10 failures).
+Cause: `rootToDiatonicTriad` `omitTriad35` branch hardcoded the seventh as `b7`.
+Fix: derive the seventh from the prevailing scale (`borrowedModeDimSeventhDegree ?? diatonicSeventhDegreeStr`), keeping `b7` only for sus frames and `bb7` for half-dim. `web-player/lib/music.js`.
+
+**036b — `ø(b5)` did not render as a full diminished seventh.**
+Symptom: `iø6(b5)5` truth `[1,4,7,10]` vs eng `[1,4,8,10]` (perfect 5th kept; ~5 failures across judith/dress-down).
+Cause: `flattenHalfDimB5` branch only tried to flatten a `b7` (often absent), leaving a perfect 5th.
+Fix: lower the perfect 5th to dim5 AND the m7 to dim7 when `halfDim && flattenHalfDimB5`. `web-player/lib/chordAlterations.js`.
+
+**036c — `#5` on borrowed diminished sevenths corrupted the 7th.**
+Symptom: `#iv7(#5)(lyd)` truth `[1,4,9,11]` vs eng `[1,4,9,10]` (bb7 instead of b7; dj-nagureo/leslie-odom).
+Cause: when `sharp5Minor` rewrote the triad to minor, the seventh still picked `bb7` via `borrowedModeDimSeventhDegree`.
+Fix: force `b7` when `sharp5Minor` (or diminished+`#5`). `web-player/lib/music.js`.
+
+**036d — Locrian `iø7` voiced half-dim instead of dim7.**
+Symptom: `iø7(loc)` truth `[1,4,7,10]` (dim7) vs eng `[1,5,7,10]`/`[1,4,7,10]+b7` (mars/mel-han/gabriel).
+Cause: `borrowedModeDimSeventhDegree` lacked the locrian degree-1 case.
+Fix: `if (scale === "locrian" && chordRootSD === 1) return "bb7"`. `web-player/lib/music.js`.
+
+**036e — `chordInterpreter` threw (engPcs=null) for remote/theoretical keys.**
+Symptom: `bVI(min)` in Db, `vii°/i` applied in G# minor, `#iii7(maj)` in D# minor, `V7(b5)sus2/#iii` — all returned null (11 nulls; 8 real + 3 scrape noise).
+Cause chain: (1) `MAJOR_SCALE_LABELS`/`MINOR_SCALE_LABELS` lack theoretical tonics (Db minor, D# major) → `diatonicNames[…]` crashed; (2) `generateScaleLabels` rejected double-accidental tonics (`Bbb`, `F##`); (3) `getAbsoluteOctave` produced `NaN` octaves for tonics absent from `NOTE_NAME_TO_INTEGER_NOTATION`.
+Fix: fall back to `generateScaleLabels(tonic, MAJOR/MINOR_SCALE_SPECIFIC_INTERVALS)` for missing label tables; compute tonic pitch class arithmetically for double-accidental tonics; fall back to `noteToPcLocal` for the octave-math tonic semitone. `web-player/lib/music.js`, `web-player/lib/scales.js`.
+
+**Corpus DB after all 036 fixes:**
+
+| Corpus | Chords | notesOk | Fail | engine |
+|---|---:|---:|---:|---:|
+| 2 (`chord_db_corpus2`) | 2451 | **99.9%** | 3 | 0 |
+| 3 (`chord_db_corpus3`) | 7416 | **99.6%** | 30 | — |
+| 4 (`chord_db_corpus4`) | 14603 | **98.5%** (was 98.3) | 212 (was 244) | 80 (was 110) |
+
+No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or improved.
+
+**Deferred (single-song / unimplemented):** Mars `ii°△`/`i°11` custom-array symmetric-dim7 bass disambiguation; tritone substitutions (`∆-sub`, `substitutions:["tri"]`, not implemented); caravan-palace custom-array `bvi` off-by-one; applied `vii°(#5)` semitone (fiona/haim); 3 hertzdevil `truth:undefined` scrape-noise nulls.
+
+**Helper:** `_Debug_testing/diffSignature.cjs` (`node … [tokens] [--all] [--db NAME]`).
+
+---
+
 ## Agent onboarding
 
-Permanent session summary for future agents: [`AGENT_WORK_RECORD.md`](./AGENT_WORK_RECORD.md)
+Single source of truth for the full workflow: [`ORACLE_GUIDE/README.md`](../ORACLE_GUIDE/README.md) (read `01`–`05` + `reference.md` in order).

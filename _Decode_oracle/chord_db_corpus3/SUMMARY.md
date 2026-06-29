@@ -1,15 +1,65 @@
 # Chord DB — modification pass rates
 
-Built: 2026-06-27T11:05:13.142Z | Updated: 2026-06-27T11:05:13.143Z | Sources: 179 songs | Unique chords: 6740
+Built: 2026-06-29T08:40:44.410Z | Updated: 2026-06-29T08:40:44.411Z | Sources: 195 songs | Unique chords: 7416
 
-- **notesOk (unique):** 99.8% (6726/6740)
-- **romanExact (unique):** 93.8% (6323/6740)
-- **Chords below 99% target:** 14 failing (0.2% of corpus)
-- **Buckets below 99%:** 4 / 41
+- **notesOk (unique):** 99.6% (7386/7416)
+- **romanExact (unique):** 94.0% (6970/7416)
+- **Chords below 99% target:** 30 failing (0.4% of corpus)
+- **Buckets below 99%:** 5 / 41
 
 ## Worst buckets (engine fix priority)
 
-### `borrowed=custom-array` — 90.0% (18/20)
+### `alterations=b5` — 91.3% (21/23)
+
+Failure mix: engine=2, harness=0, piano_noise=0
+
+Example:
+```json
+{
+  "id": "stevie-wonder__superstition/Chorus/7",
+  "truthRoman": "bII9(b5)/V(∆-sub)(maj)",
+  "engRoman": "V⁹(b5)/v",
+  "truthPcs": [
+    1,
+    3,
+    5,
+    9,
+    11
+  ],
+  "engPcs": [
+    3,
+    5,
+    7,
+    9,
+    11
+  ],
+  "chord": {
+    "root": 5,
+    "beat": 7,
+    "duration": 2,
+    "type": 9,
+    "inversion": 0,
+    "applied": 5,
+    "adds": [],
+    "omits": [],
+    "alterations": [
+      "b5"
+    ],
+    "suspensions": [],
+    "substitutions": [
+      "tri"
+    ],
+    "pedal": null,
+    "alternate": "",
+    "borrowed": "major",
+    "isRest": false,
+    "recordingEndBeat": null
+  },
+  "failureClass": "engine"
+}
+```
+
+### `borrowed=custom-array` — 91.7% (22/24)
 
 Failure mix: engine=0, harness=0, piano_noise=2
 
@@ -61,51 +111,57 @@ Example:
 }
 ```
 
-### `borrowed=locrian` — 97.7% (43/44)
+### `borrowed=major` — 97.8% (88/90)
 
-Failure mix: engine=0, harness=0, piano_noise=1
+Failure mix: engine=1, harness=1, piano_noise=0
 
 Example:
 ```json
 {
-  "id": "whitney-houston__i-will-always-love-you/Chorus/23.75",
-  "truthRoman": "iø7(loc)",
-  "engRoman": "iø⁷(b5)(loc)",
+  "id": "stevie-wonder__superstition/Chorus/7",
+  "truthRoman": "bII9(b5)/V(∆-sub)(maj)",
+  "engRoman": "V⁹(b5)/v",
   "truthPcs": [
-    0,
+    1,
     3,
-    6,
-    9
+    5,
+    9,
+    11
   ],
   "engPcs": [
-    0,
     3,
+    5,
     7,
-    9
+    9,
+    11
   ],
   "chord": {
-    "root": 1,
-    "beat": 23.75,
-    "duration": 0.25,
-    "type": 7,
+    "root": 5,
+    "beat": 7,
+    "duration": 2,
+    "type": 9,
     "inversion": 0,
-    "applied": 0,
+    "applied": 5,
     "adds": [],
     "omits": [],
-    "alterations": [],
+    "alterations": [
+      "b5"
+    ],
     "suspensions": [],
-    "substitutions": [],
+    "substitutions": [
+      "tri"
+    ],
     "pedal": null,
     "alternate": "",
-    "borrowed": "locrian",
+    "borrowed": "major",
     "isRest": false,
     "recordingEndBeat": null
   },
-  "failureClass": "piano_noise"
+  "failureClass": "engine"
 }
 ```
 
-### `inversion=3` — 98.4% (179/182)
+### `inversion=3` — 98.6% (215/218)
 
 Failure mix: engine=0, harness=3, piano_noise=0
 
@@ -149,50 +205,53 @@ Example:
 }
 ```
 
-### `adds=6` — 98.7% (78/79)
+### `type=9` — 98.8% (165/167)
 
-Failure mix: engine=0, harness=1, piano_noise=0
+Failure mix: engine=2, harness=0, piano_noise=0
 
 Example:
 ```json
 {
-  "id": "the-kinks__waterloo-sunset/Bridge/41",
-  "truthRoman": "iiiø4(add13)2",
-  "engRoman": "iiiø⁴²(add13)(add13)",
+  "id": "stevie-wonder__superstition/Chorus/7",
+  "truthRoman": "bII9(b5)/V(∆-sub)(maj)",
+  "engRoman": "V⁹(b5)/v",
   "truthPcs": [
-    0,
-    3,
-    6,
-    9
-  ],
-  "engPcs": [
-    0,
     1,
     3,
-    6,
-    9
+    5,
+    9,
+    11
+  ],
+  "engPcs": [
+    3,
+    5,
+    7,
+    9,
+    11
   ],
   "chord": {
-    "root": 3,
-    "beat": 41,
+    "root": 5,
+    "beat": 7,
     "duration": 2,
-    "type": 7,
-    "inversion": 3,
-    "applied": 0,
-    "adds": [
-      6
-    ],
+    "type": 9,
+    "inversion": 0,
+    "applied": 5,
+    "adds": [],
     "omits": [],
-    "alterations": [],
+    "alterations": [
+      "b5"
+    ],
     "suspensions": [],
-    "substitutions": [],
+    "substitutions": [
+      "tri"
+    ],
     "pedal": null,
     "alternate": "",
-    "borrowed": "",
+    "borrowed": "major",
     "isRest": false,
     "recordingEndBeat": null
   },
-  "failureClass": "harness"
+  "failureClass": "engine"
 }
 ```
 
@@ -200,37 +259,37 @@ Example:
 
 | Modification | count | notesOk | romanExact | failing | engine | harness | piano | example |
 |---|---:|---:|---:|---:|---:|---:|---:|---|
-| borrowed=custom-array | 20 | 90.0% | 65.0% | 2 | 0 | 0 | 2 | `the-beach-boys__god-only-knows/Verse/29` #iø7(bor)→♯iø⁷(b5)(bor) |
-| borrowed=locrian | 44 | 97.7% | 75.0% | 1 | 0 | 0 | 1 | `whitney-houston__i-will-always-love-you/Chorus/23.75` iø7(loc)→iø⁷(b5)(loc) |
-| inversion=3 | 182 | 98.4% | 89.6% | 3 | 0 | 3 | 0 | `the-beatles__penny-lane/Verse/6` vi7→I△⁴² |
-| adds=6 | 79 | 98.7% | 53.2% | 1 | 0 | 1 | 0 | `the-kinks__waterloo-sunset/Bridge/41` iiiø4(add13)2→iiiø⁴²(add13)(add13) |
-| inversion=2 | 323 | 99.4% | 92.6% | 2 | 0 | 2 | 0 | `the-beatles__penny-lane/Verse/8` ii65→I⁶₄ |
-| type=7 | 1730 | 99.4% | 93.6% | 10 | 0 | 7 | 3 | `the-beach-boys__god-only-knows/Verse/29` #iø7(bor)→♯iø⁷(b5)(bor) |
-| applied=no | 6520 | 99.8% | 94.5% | 14 | 0 | 11 | 3 | `the-beach-boys__god-only-knows/Verse/29` #iø7(bor)→♯iø⁷(b5)(bor) |
-| borrowed=none | 6287 | 99.8% | 94.4% | 11 | 0 | 11 | 0 | `the-beatles__penny-lane/Verse/4.5` I△42→I |
-| inversion=0 | 5813 | 99.8% | 93.8% | 9 | 0 | 6 | 3 | `the-beach-boys__god-only-knows/Verse/29` #iø7(bor)→♯iø⁷(b5)(bor) |
-| type=5 | 4745 | 99.9% | 94.1% | 4 | 0 | 4 | 0 | `the-beatles__penny-lane/Verse/4.5` I△42→I |
-| inversion=1 | 422 | 100.0% | 96.9% | 0 | 0 | 0 | 0 |  |
-| applied=yes | 220 | 100.0% | 74.1% | 0 | 0 | 0 | 0 |  |
+| alterations=b5 | 23 | 91.3% | 52.2% | 2 | 2 | 0 | 0 | `stevie-wonder__superstition/Chorus/7` bII9(b5)/V(∆-sub)(maj)→V⁹(b5)/v |
+| borrowed=custom-array | 24 | 91.7% | 70.8% | 2 | 0 | 0 | 2 | `the-beach-boys__god-only-knows/Verse/29` #iø7(bor)→♯iø⁷(b5)(bor) |
+| borrowed=major | 90 | 97.8% | 93.3% | 2 | 1 | 1 | 0 | `stevie-wonder__superstition/Chorus/7` bII9(b5)/V(∆-sub)(maj)→V⁹(b5)/v |
+| inversion=3 | 218 | 98.6% | 91.3% | 3 | 0 | 3 | 0 | `the-beatles__penny-lane/Verse/6` vi7→I△⁴² |
+| type=9 | 167 | 98.8% | 94.0% | 2 | 2 | 0 | 0 | `stevie-wonder__superstition/Chorus/7` bII9(b5)/V(∆-sub)(maj)→V⁹(b5)/v |
+| adds=6 | 105 | 99.0% | 64.8% | 1 | 0 | 1 | 0 | `the-kinks__waterloo-sunset/Bridge/41` iiiø4(add13)2→iiiø⁴²(add13)(add13) |
+| applied=yes | 229 | 99.1% | 74.2% | 2 | 2 | 0 | 0 | `stevie-wonder__superstition/Chorus/7` bII9(b5)/V(∆-sub)(maj)→V⁹(b5)/v |
+| type=7 | 1965 | 99.3% | 94.1% | 14 | 0 | 12 | 2 | `faith-evans__love-like-this/Chorus/6.5` i→IV⁷ |
+| inversion=2 | 351 | 99.4% | 91.7% | 2 | 0 | 2 | 0 | `the-beatles__penny-lane/Verse/8` ii65→I⁶₄ |
+| inversion=0 | 6393 | 99.6% | 94.0% | 25 | 2 | 21 | 2 | `faith-evans__love-like-this/Chorus/6.5` i→IV⁷ |
+| applied=no | 7187 | 99.6% | 94.6% | 28 | 0 | 26 | 2 | `faith-evans__love-like-this/Chorus/6.5` i→IV⁷ |
+| borrowed=none | 6936 | 99.6% | 94.6% | 26 | 1 | 25 | 0 | `faith-evans__love-like-this/Chorus/6.5` i→IV⁷ |
+| type=5 | 5154 | 99.7% | 94.2% | 14 | 0 | 14 | 0 | `faith-evans__love-like-this/Chorus/9` IV7→i |
+| inversion=1 | 454 | 100.0% | 97.1% | 0 | 0 | 0 | 0 |  |
 | omits=3+5 | 196 | 100.0% | 0.0% | 0 | 0 | 0 | 0 |  |
-| type=9 | 154 | 100.0% | 94.8% | 0 | 0 | 0 | 0 |  |
-| suspensions=4 | 149 | 100.0% | 91.3% | 0 | 0 | 0 | 0 |  |
-| suspensions=2 | 128 | 100.0% | 93.0% | 0 | 0 | 0 | 0 |  |
-| adds=9 | 114 | 100.0% | 93.0% | 0 | 0 | 0 | 0 |  |
-| adds=4 | 96 | 100.0% | 69.8% | 0 | 0 | 0 | 0 |  |
-| borrowed=minor | 90 | 100.0% | 83.3% | 0 | 0 | 0 | 0 |  |
-| omits=3 | 89 | 100.0% | 91.0% | 0 | 0 | 0 | 0 |  |
-| borrowed=major | 85 | 100.0% | 95.3% | 0 | 0 | 0 | 0 |  |
-| borrowed=dorian | 73 | 100.0% | 82.2% | 0 | 0 | 0 | 0 |  |
-| type=11 | 70 | 100.0% | 78.6% | 0 | 0 | 0 | 0 |  |
+| suspensions=4 | 162 | 100.0% | 91.4% | 0 | 0 | 0 | 0 |  |
+| suspensions=2 | 129 | 100.0% | 92.2% | 0 | 0 | 0 | 0 |  |
+| adds=9 | 121 | 100.0% | 92.6% | 0 | 0 | 0 | 0 |  |
+| adds=4 | 101 | 100.0% | 71.3% | 0 | 0 | 0 | 0 |  |
+| omits=3 | 96 | 100.0% | 91.7% | 0 | 0 | 0 | 0 |  |
+| borrowed=minor | 95 | 100.0% | 83.2% | 0 | 0 | 0 | 0 |  |
+| type=11 | 89 | 100.0% | 78.7% | 0 | 0 | 0 | 0 |  |
+| borrowed=dorian | 77 | 100.0% | 83.1% | 0 | 0 | 0 | 0 |  |
 | omits=5 | 69 | 100.0% | 84.1% | 0 | 0 | 0 | 0 |  |
-| borrowed=harmonicMinor | 43 | 100.0% | 88.4% | 0 | 0 | 0 | 0 |  |
-| borrowed=mixolydian | 42 | 100.0% | 85.7% | 0 | 0 | 0 | 0 |  |
+| borrowed=harmonicMinor | 48 | 100.0% | 89.6% | 0 | 0 | 0 | 0 |  |
+| borrowed=locrian | 45 | 100.0% | 75.6% | 0 | 0 | 0 | 0 |  |
+| borrowed=mixolydian | 43 | 100.0% | 86.0% | 0 | 0 | 0 | 0 |  |
 | type=13 | 41 | 100.0% | 90.2% | 0 | 0 | 0 | 0 |  |
-| borrowed=lydian | 25 | 100.0% | 96.0% | 0 | 0 | 0 | 0 |  |
+| borrowed=lydian | 27 | 100.0% | 96.3% | 0 | 0 | 0 | 0 |  |
 | borrowed=phrygian | 23 | 100.0% | 91.3% | 0 | 0 | 0 | 0 |  |
-| alterations=b5 | 20 | 100.0% | 60.0% | 0 | 0 | 0 | 0 |  |
-| alterations=#5 | 14 | 100.0% | 78.6% | 0 | 0 | 0 | 0 |  |
+| alterations=#5 | 15 | 100.0% | 80.0% | 0 | 0 | 0 | 0 |  |
 | alterations=b9 | 12 | 100.0% | 100.0% | 0 | 0 | 0 | 0 |  |
 | alterations=#9 | 9 | 100.0% | 55.6% | 0 | 0 | 0 | 0 |  |
 | borrowed=phrygianDominant | 8 | 100.0% | 87.5% | 0 | 0 | 0 | 0 |  |

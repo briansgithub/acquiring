@@ -1,7 +1,7 @@
 {
   "meta": {
-    "built": "2026-06-29T08:06:42.104Z",
-    "lastUpdated": "2026-06-29T08:06:42.105Z",
+    "built": "2026-06-29T08:40:12.976Z",
+    "lastUpdated": "2026-06-29T08:40:12.977Z",
     "sources": [
       "a-perfect-circle__3-libras",
       "a-perfect-circle__judith",
@@ -514,21 +514,21 @@
       }
     ],
     "useReports": false,
-    "notesOkPct": 98.3
+    "notesOkPct": 98.5
   },
   "bucketIndex": {
     "type=5": {
       "file": "byModification/type=5.json",
       "total": 11091,
-      "notesOk": 10964,
+      "notesOk": 10967,
       "notesOkPct": 98.9,
       "orderOk": 11091,
       "orderOkPct": 100,
       "romanExact": 10439,
       "romanExactPct": 94.1,
-      "failing": 127,
+      "failing": 124,
       "byClass": {
-        "engine": 18,
+        "engine": 15,
         "harness": 93,
         "piano_noise": 16,
         "unknown": 0
@@ -537,51 +537,51 @@
     "inversion=0": {
       "file": "byModification/inversion=0.json",
       "total": 12569,
-      "notesOk": 12396,
-      "notesOkPct": 98.6,
+      "notesOk": 12422,
+      "notesOkPct": 98.8,
       "orderOk": 12569,
       "orderOkPct": 100,
       "romanExact": 11691,
       "romanExactPct": 93,
-      "failing": 173,
+      "failing": 147,
       "byClass": {
-        "engine": 54,
+        "engine": 30,
         "harness": 106,
-        "piano_noise": 13,
+        "piano_noise": 11,
         "unknown": 0
       }
     },
     "applied=no": {
       "file": "byModification/applied=no.json",
       "total": 14018,
-      "notesOk": 13811,
-      "notesOkPct": 98.5,
+      "notesOk": 13840,
+      "notesOkPct": 98.7,
       "orderOk": 14018,
       "orderOkPct": 100,
       "romanExact": 13189,
       "romanExactPct": 94.1,
-      "failing": 207,
+      "failing": 178,
       "byClass": {
-        "engine": 78,
+        "engine": 51,
         "harness": 108,
-        "piano_noise": 21,
+        "piano_noise": 19,
         "unknown": 0
       }
     },
     "borrowed=none": {
       "file": "byModification/borrowed=none.json",
       "total": 13110,
-      "notesOk": 12921,
-      "notesOkPct": 98.6,
+      "notesOk": 12939,
+      "notesOkPct": 98.7,
       "orderOk": 13110,
       "orderOkPct": 100,
       "romanExact": 12359,
       "romanExactPct": 94.3,
-      "failing": 189,
+      "failing": 171,
       "byClass": {
-        "engine": 70,
+        "engine": 54,
         "harness": 106,
-        "piano_noise": 13,
+        "piano_noise": 11,
         "unknown": 0
       }
     },
@@ -605,32 +605,32 @@
     "type=9": {
       "file": "byModification/type=9.json",
       "total": 239,
-      "notesOk": 219,
-      "notesOkPct": 91.6,
+      "notesOk": 232,
+      "notesOkPct": 97.1,
       "orderOk": 239,
       "orderOkPct": 100,
       "romanExact": 217,
       "romanExactPct": 90.8,
-      "failing": 20,
+      "failing": 7,
       "byClass": {
-        "engine": 16,
+        "engine": 5,
         "harness": 1,
-        "piano_noise": 3,
+        "piano_noise": 1,
         "unknown": 0
       }
     },
     "borrowed=major": {
       "file": "byModification/borrowed=major.json",
       "total": 469,
-      "notesOk": 454,
-      "notesOkPct": 96.8,
+      "notesOk": 455,
+      "notesOkPct": 97,
       "orderOk": 469,
       "orderOkPct": 100,
       "romanExact": 409,
       "romanExactPct": 87.2,
-      "failing": 15,
+      "failing": 14,
       "byClass": {
-        "engine": 11,
+        "engine": 10,
         "harness": 3,
         "piano_noise": 1,
         "unknown": 0
@@ -656,15 +656,15 @@
     "borrowed=minor": {
       "file": "byModification/borrowed=minor.json",
       "total": 242,
-      "notesOk": 239,
-      "notesOkPct": 98.8,
+      "notesOk": 242,
+      "notesOkPct": 100,
       "orderOk": 242,
       "orderOkPct": 100,
       "romanExact": 212,
       "romanExactPct": 87.6,
-      "failing": 3,
+      "failing": 0,
       "byClass": {
-        "engine": 3,
+        "engine": 0,
         "harness": 0,
         "piano_noise": 0,
         "unknown": 0
@@ -673,15 +673,15 @@
     "type=7": {
       "file": "byModification/type=7.json",
       "total": 3046,
-      "notesOk": 2956,
-      "notesOkPct": 97,
+      "notesOk": 2972,
+      "notesOkPct": 97.6,
       "orderOk": 3046,
       "orderOkPct": 100,
       "romanExact": 2756,
       "romanExactPct": 90.5,
-      "failing": 90,
+      "failing": 74,
       "byClass": {
-        "engine": 69,
+        "engine": 53,
         "harness": 16,
         "piano_noise": 5,
         "unknown": 0
@@ -741,15 +741,15 @@
     "alterations=b5": {
       "file": "byModification/alterations=b5.json",
       "total": 59,
-      "notesOk": 44,
-      "notesOkPct": 74.6,
+      "notesOk": 49,
+      "notesOkPct": 83.1,
       "orderOk": 59,
       "orderOkPct": 100,
       "romanExact": 28,
       "romanExactPct": 47.5,
-      "failing": 15,
+      "failing": 10,
       "byClass": {
-        "engine": 15,
+        "engine": 10,
         "harness": 0,
         "piano_noise": 0,
         "unknown": 0
@@ -809,15 +809,15 @@
     "borrowed=locrian": {
       "file": "byModification/borrowed=locrian.json",
       "total": 94,
-      "notesOk": 88,
-      "notesOkPct": 93.6,
+      "notesOk": 94,
+      "notesOkPct": 100,
       "orderOk": 94,
       "orderOkPct": 100,
       "romanExact": 76,
       "romanExactPct": 80.9,
-      "failing": 6,
+      "failing": 0,
       "byClass": {
-        "engine": 6,
+        "engine": 0,
         "harness": 0,
         "piano_noise": 0,
         "unknown": 0
@@ -826,15 +826,15 @@
     "inversion=1": {
       "file": "byModification/inversion=1.json",
       "total": 1065,
-      "notesOk": 1042,
-      "notesOkPct": 97.8,
+      "notesOk": 1048,
+      "notesOkPct": 98.4,
       "orderOk": 1065,
       "orderOkPct": 100,
       "romanExact": 1018,
       "romanExactPct": 95.6,
-      "failing": 23,
+      "failing": 17,
       "byClass": {
-        "engine": 16,
+        "engine": 10,
         "harness": 0,
         "piano_noise": 7,
         "unknown": 0
@@ -894,32 +894,32 @@
     "omits=3+5": {
       "file": "byModification/omits=3+5.json",
       "total": 160,
-      "notesOk": 146,
-      "notesOkPct": 91.3,
+      "notesOk": 158,
+      "notesOkPct": 98.8,
       "orderOk": 160,
       "orderOkPct": 100,
       "romanExact": 0,
       "romanExactPct": 0,
-      "failing": 14,
+      "failing": 2,
       "byClass": {
-        "engine": 10,
+        "engine": 0,
         "harness": 1,
-        "piano_noise": 3,
+        "piano_noise": 1,
         "unknown": 0
       }
     },
     "alterations=#5": {
       "file": "byModification/alterations=#5.json",
       "total": 78,
-      "notesOk": 66,
-      "notesOkPct": 84.6,
+      "notesOk": 69,
+      "notesOkPct": 88.5,
       "orderOk": 78,
       "orderOkPct": 100,
       "romanExact": 33,
       "romanExactPct": 42.3,
-      "failing": 12,
+      "failing": 9,
       "byClass": {
-        "engine": 9,
+        "engine": 6,
         "harness": 1,
         "piano_noise": 2,
         "unknown": 0
@@ -962,15 +962,15 @@
     "applied=yes": {
       "file": "byModification/applied=yes.json",
       "total": 585,
-      "notesOk": 548,
-      "notesOkPct": 93.7,
+      "notesOk": 551,
+      "notesOkPct": 94.2,
       "orderOk": 585,
       "orderOkPct": 100,
       "romanExact": 375,
       "romanExactPct": 64.1,
-      "failing": 37,
+      "failing": 34,
       "byClass": {
-        "engine": 32,
+        "engine": 29,
         "harness": 2,
         "piano_noise": 3,
         "unknown": 0
@@ -996,15 +996,15 @@
     "borrowed=lydian": {
       "file": "byModification/borrowed=lydian.json",
       "total": 133,
-      "notesOk": 129,
-      "notesOkPct": 97,
+      "notesOk": 133,
+      "notesOkPct": 100,
       "orderOk": 133,
       "orderOkPct": 100,
       "romanExact": 94,
       "romanExactPct": 70.7,
-      "failing": 4,
+      "failing": 0,
       "byClass": {
-        "engine": 4,
+        "engine": 0,
         "harness": 0,
         "piano_noise": 0,
         "unknown": 0

@@ -87,5 +87,89 @@
       "adds=9"
     ],
     "compositeKey": "adds=9+suspensions=4"
+  },
+  {
+    "id": "ella-langley__choosin-texas/Chorus/28.5",
+    "song": "ella-langley__choosin-texas",
+    "section": "Chorus",
+    "beat": 28.5,
+    "key": {
+      "tonic": "Db",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 28.5,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "Vsus4(add9)",
+    "truthLetter": "Ab(add9)sus4",
+    "truthPcs": [
+      1,
+      3,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V(add9)sus4",
+    "engLetter": "Absus4",
+    "engNotes": [
+      "Ab3",
+      "Db4",
+      "Eb4",
+      "Bb4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "adds=9"
+    ],
+    "compositeKey": "adds=9+suspensions=4"
   }
 ]
