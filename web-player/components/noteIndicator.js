@@ -52,7 +52,10 @@ function analyzeMelodyTension(melodyNote, chordNotes, chordRootSd) {
 
 export function renderNoteIndicator(container, options = {}) {
   container.innerHTML = `
-    <h2>Now Playing</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <h2 style="margin: 0;">Now Playing</h2>
+      <span id="now-playing-key" style="font-size: 13px; font-weight: 600; color: #9ca3af;">Key: —</span>
+    </div>
     <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 12px; height: calc(100% - 40px); box-sizing: border-box;">
       <div class="card" style="position:relative; height: 180px; box-sizing: border-box; display: flex; flex-direction: column;">
         <div class="label" style="text-align:center;">Melody</div>
@@ -92,6 +95,7 @@ export function renderNoteIndicator(container, options = {}) {
   const tensionEl = container.querySelector("#tension-badge");
   const tensionTitleEl = container.querySelector("#tension-title");
   const tensionDescEl = container.querySelector("#tension-desc");
+  const keyIndicatorEl = container.querySelector("#now-playing-key");
   const chordRootEl = container.querySelector("#chord-root");
   const chordList = container.querySelector("#chord-notes");
   const chordDegreesPillsList = container.querySelector("#chord-degrees-pills");
@@ -111,6 +115,9 @@ export function renderNoteIndicator(container, options = {}) {
   });
   
   let currentKey = options.key || { tonic: "C", scale: "major" };
+  if (keyIndicatorEl && currentKey) {
+    keyIndicatorEl.textContent = `Key: ${currentKey.tonic} ${currentKey.scale}`;
+  }
   
   // Store current state for redrawing
   let currentMelodyData = { absoluteLabel: null, relativeLabel: null };
@@ -321,6 +328,9 @@ export function renderNoteIndicator(container, options = {}) {
       // Update currentKey
       if (key) {
         currentKey = key;
+        if (keyIndicatorEl) {
+          keyIndicatorEl.textContent = `Key: ${key.tonic} ${key.scale}`;
+        }
       }
       
       // Update chord symbol (always use roman numeral) with "Chord: " prefix

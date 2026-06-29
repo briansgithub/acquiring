@@ -577,14 +577,7 @@ export function renderChordRing(container, options = {}) {
     ctx.lineWidth = 2 * zoom;
     ctx.stroke();
 
-    // 1. Draw Key name (e.g. C major) - small bold text at top of center circle
-    ctx.fillStyle = "#94a3b8";
-    ctx.font = `bold ${Math.max(10, 12 * zoom)}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(`${key.tonic} ${key.scale}`, cx, cy - 12 * zoom);
-
-    // 2. Draw Chord Transition at bottom of center circle
+    // Draw Chord Transition in the center of the circle (vertically aligned to cy)
     if (activeChord) {
       const currSymbol = activeChordSymbol || "";
       const currName = currSymbol.replace(/\([a-z.]+\)$/i, "");
@@ -595,8 +588,8 @@ export function renderChordRing(container, options = {}) {
         const prevName = prevSymbol.replace(/\([a-z.]+\)$/i, "");
         const prevColor = getScaleDegreeColor(previousChord.root, key.scale) || "#ffffff";
 
-        // Setup font for measuring and drawing
-        ctx.font = `bold ${Math.max(12, 16 * zoom)}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+        // Setup a larger font for measuring and drawing transitions
+        ctx.font = `bold ${Math.max(18, 22 * zoom)}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
         ctx.textBaseline = "middle";
 
         const wPrev = ctx.measureText(prevName).width;
@@ -604,35 +597,34 @@ export function renderChordRing(container, options = {}) {
         const wCurr = ctx.measureText(currName).width;
         const totalW = wPrev + wArrow + wCurr;
         const startX = cx - totalW / 2;
-        const textY = cy + 12 * zoom;
 
         // Draw previous chord name in its color
         ctx.textAlign = "left";
         ctx.fillStyle = prevColor;
-        ctx.fillText(prevName, startX, textY);
+        ctx.fillText(prevName, startX, cy);
 
         // Draw arrow in white/light-gray
         ctx.fillStyle = "#cbd5e1";
-        ctx.fillText(" → ", startX + wPrev, textY);
+        ctx.fillText(" → ", startX + wPrev, cy);
 
         // Draw current chord name in its color
         ctx.fillStyle = currColor;
-        ctx.fillText(currName, startX + wPrev + wArrow, textY);
+        ctx.fillText(currName, startX + wPrev + wArrow, cy);
       } else {
         // No previous chord - draw current chord centered
-        ctx.font = `bold ${Math.max(14, 18 * zoom)}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+        ctx.font = `bold ${Math.max(20, 26 * zoom)}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillStyle = currColor;
-        ctx.fillText(currName, cx, cy + 12 * zoom);
+        ctx.fillText(currName, cx, cy);
       }
     } else {
       // No active chord - draw placeholder
-      ctx.font = `bold ${Math.max(14, 18 * zoom)}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+      ctx.font = `bold ${Math.max(20, 26 * zoom)}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillStyle = "#64748b";
-      ctx.fillText("—", cx, cy + 12 * zoom);
+      ctx.fillText("—", cx, cy);
     }
   }
 
