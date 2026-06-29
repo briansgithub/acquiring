@@ -43,16 +43,31 @@
             8,
             11
           ],
+          "truthPcs": [
+            4,
+            8,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 4.5,
@@ -88,16 +103,31 @@
             6,
             11
           ],
+          "truthPcs": [
+            3,
+            6,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 8.5,
@@ -133,16 +163,31 @@
             4,
             8
           ],
+          "truthPcs": [
+            1,
+            4,
+            8
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 12.5,
@@ -178,16 +223,31 @@
             4,
             9
           ],
+          "truthPcs": [
+            1,
+            4,
+            9
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 16.5,
@@ -223,16 +283,31 @@
             8,
             11
           ],
+          "truthPcs": [
+            4,
+            8,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 20.5,
@@ -268,16 +343,31 @@
             6,
             11
           ],
+          "truthPcs": [
+            3,
+            6,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 24.5,
@@ -313,16 +403,31 @@
             8,
             11
           ],
+          "truthPcs": [
+            3,
+            8,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 28.5,
@@ -358,16 +463,31 @@
             4,
             9
           ],
+          "truthPcs": [
+            1,
+            4,
+            9
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         }
       ]
     },
@@ -411,16 +531,31 @@
             8,
             11
           ],
+          "truthPcs": [
+            4,
+            8,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 4.5,
@@ -455,16 +590,31 @@
             6,
             11
           ],
+          "truthPcs": [
+            3,
+            6,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 9,
@@ -499,16 +649,31 @@
             4,
             8
           ],
+          "truthPcs": [
+            1,
+            4,
+            8
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 12.5,
@@ -543,16 +708,31 @@
             4,
             9
           ],
+          "truthPcs": [
+            1,
+            4,
+            9
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 17,
@@ -587,16 +767,31 @@
             8,
             11
           ],
+          "truthPcs": [
+            4,
+            8,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 20.5,
@@ -631,16 +826,31 @@
             6,
             11
           ],
+          "truthPcs": [
+            3,
+            6,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 25,
@@ -675,16 +885,31 @@
             8,
             11
           ],
+          "truthPcs": [
+            3,
+            8,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 28.5,
@@ -719,16 +944,31 @@
             4,
             9
           ],
+          "truthPcs": [
+            1,
+            4,
+            9
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         }
       ]
     },
@@ -774,16 +1014,32 @@
             9,
             11
           ],
+          "truthPcs": [
+            3,
+            6,
+            9,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
             "bassPcMatch": true,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 2.5,
@@ -818,16 +1074,31 @@
             4,
             9
           ],
+          "truthPcs": [
+            1,
+            4,
+            9
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 5,
@@ -864,16 +1135,32 @@
             9,
             11
           ],
+          "truthPcs": [
+            3,
+            6,
+            9,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
             "bassPcMatch": true,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 6.5,
@@ -910,16 +1197,32 @@
             8,
             9
           ],
+          "truthPcs": [
+            1,
+            4,
+            8,
+            9
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 9,
@@ -956,16 +1259,32 @@
             9,
             11
           ],
+          "truthPcs": [
+            3,
+            6,
+            9,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
             "bassPcMatch": true,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 9.5,
@@ -995,26 +1314,42 @@
           "engLetter": "Emaj7sus4sus2",
           "engNotes": [
             "E3",
-            "G#3",
+            "A3",
             "B3",
-            "D#4"
+            "D4"
           ],
           "engPcs": [
-            3,
+            2,
             4,
-            8,
+            9,
             11
           ],
+          "truthPcs": [
+            2,
+            4,
+            9,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": false,
             "romanCore": false,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": false,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 10.5,
@@ -1049,16 +1384,31 @@
             8,
             11
           ],
+          "truthPcs": [
+            4,
+            8,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 13,
@@ -1088,26 +1438,42 @@
           "engLetter": "Emaj7sus4sus2",
           "engNotes": [
             "E3",
-            "G#3",
+            "A3",
             "B3",
-            "D#4"
+            "D4"
           ],
           "engPcs": [
-            3,
+            2,
             4,
-            8,
+            9,
             11
           ],
+          "truthPcs": [
+            2,
+            4,
+            9,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 14.5,
@@ -1142,16 +1508,31 @@
             8,
             11
           ],
+          "truthPcs": [
+            4,
+            8,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 17,
@@ -1188,16 +1569,32 @@
             9,
             11
           ],
+          "truthPcs": [
+            3,
+            6,
+            9,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
             "bassPcMatch": true,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 18.5,
@@ -1232,16 +1629,31 @@
             4,
             9
           ],
+          "truthPcs": [
+            1,
+            4,
+            9
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 21,
@@ -1278,16 +1690,32 @@
             9,
             11
           ],
+          "truthPcs": [
+            3,
+            6,
+            9,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
             "bassPcMatch": true,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 22.5,
@@ -1324,16 +1752,32 @@
             8,
             9
           ],
+          "truthPcs": [
+            1,
+            4,
+            8,
+            9
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 25,
@@ -1368,16 +1812,31 @@
             6,
             11
           ],
+          "truthPcs": [
+            3,
+            6,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 26.5,
@@ -1406,24 +1865,39 @@
           "engLetter": "Esus2",
           "engNotes": [
             "E3",
-            "G#3",
+            "F#3",
             "B3"
           ],
           "engPcs": [
             4,
-            8,
+            6,
             11
           ],
+          "truthPcs": [
+            4,
+            6,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 29,
@@ -1458,16 +1932,31 @@
             6,
             11
           ],
+          "truthPcs": [
+            3,
+            6,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 30,
@@ -1502,16 +1991,31 @@
             4,
             9
           ],
+          "truthPcs": [
+            1,
+            4,
+            9
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
             "bassPcMatch": true,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 30.5,
@@ -1546,16 +2050,31 @@
             4,
             9
           ],
+          "truthPcs": [
+            1,
+            4,
+            9
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         }
       ]
     },
@@ -1599,16 +2118,31 @@
             8,
             11
           ],
+          "truthPcs": [
+            4,
+            8,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 4.5,
@@ -1643,16 +2177,31 @@
             6,
             11
           ],
+          "truthPcs": [
+            3,
+            6,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 8.5,
@@ -1687,16 +2236,31 @@
             4,
             8
           ],
+          "truthPcs": [
+            1,
+            4,
+            8
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 12.5,
@@ -1731,16 +2295,31 @@
             4,
             9
           ],
+          "truthPcs": [
+            1,
+            4,
+            9
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 17,
@@ -1775,16 +2354,31 @@
             8,
             11
           ],
+          "truthPcs": [
+            4,
+            8,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 20.5,
@@ -1819,16 +2413,31 @@
             6,
             11
           ],
+          "truthPcs": [
+            3,
+            6,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 24.5,
@@ -1863,16 +2472,31 @@
             8,
             11
           ],
+          "truthPcs": [
+            3,
+            8,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 28.5,
@@ -1907,16 +2531,31 @@
             4,
             9
           ],
+          "truthPcs": [
+            1,
+            4,
+            9
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         }
       ]
     },
@@ -1960,16 +2599,31 @@
             8,
             11
           ],
+          "truthPcs": [
+            4,
+            8,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 4.5,
@@ -2004,16 +2658,31 @@
             6,
             11
           ],
+          "truthPcs": [
+            3,
+            6,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 8.5,
@@ -2048,16 +2717,31 @@
             4,
             8
           ],
+          "truthPcs": [
+            1,
+            4,
+            8
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 12.5,
@@ -2092,16 +2776,31 @@
             4,
             9
           ],
+          "truthPcs": [
+            1,
+            4,
+            9
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 17,
@@ -2136,16 +2835,31 @@
             8,
             11
           ],
+          "truthPcs": [
+            4,
+            8,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 20.5,
@@ -2180,16 +2894,31 @@
             6,
             11
           ],
+          "truthPcs": [
+            3,
+            6,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 24.5,
@@ -2224,16 +2953,31 @@
             8,
             11
           ],
+          "truthPcs": [
+            3,
+            8,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         },
         {
           "beat": 28.5,
@@ -2268,16 +3012,31 @@
             4,
             9
           ],
+          "truthPcs": [
+            1,
+            4,
+            9
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
           "flags": {
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
-            "bassInNotes": true
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
-          "engineError": null
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
         }
       ]
     }

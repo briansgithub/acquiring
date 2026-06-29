@@ -1,0 +1,86 @@
+[
+  {
+    "id": "gooseworx__your-new-home-%28the-amazing-digital-circus-ost%29/Outro/16",
+    "song": "gooseworx__your-new-home-%28the-amazing-digital-circus-ost%29",
+    "section": "Outro",
+    "beat": 16,
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 16,
+      "duration": 1,
+      "type": 7,
+      "inversion": 1,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#11"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V6(#11)5/iii",
+    "truthLetter": "G7(#11)/B",
+    "truthPcs": [
+      1,
+      2,
+      5,
+      7,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁶⁵(#11)/iii",
+    "engLetter": "G7/B",
+    "engNotes": [
+      "B2",
+      "D5",
+      "F5",
+      "C#5",
+      "G5"
+    ],
+    "engPcs": [
+      1,
+      2,
+      5,
+      7,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=1",
+      "applied=yes",
+      "borrowed=none",
+      "alterations=#11"
+    ],
+    "compositeKey": null
+  }
+]

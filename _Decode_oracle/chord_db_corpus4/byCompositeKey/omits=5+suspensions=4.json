@@ -1,0 +1,7207 @@
+[
+  {
+    "id": "a-perfect-circle__judith/Solo/40",
+    "song": "a-perfect-circle__judith",
+    "section": "Solo",
+    "beat": 40,
+    "key": {
+      "tonic": "C#",
+      "scale": "phrygian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 40,
+      "duration": 3,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "Isus4(maj)(no5)",
+    "truthLetter": "C#(n°5)sus4",
+    "truthPcs": [
+      1,
+      6
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(no5)sus4(maj)",
+    "engLetter": "C#sus4",
+    "engNotes": [
+      "C#3",
+      "F#3"
+    ],
+    "engPcs": [
+      1,
+      6
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "a-perfect-circle__judith/Solo/88",
+    "song": "a-perfect-circle__judith",
+    "section": "Solo",
+    "beat": 88,
+    "key": {
+      "tonic": "C#",
+      "scale": "phrygian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 88,
+      "duration": 3,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "Isus4(maj)(no5)",
+    "truthLetter": "C#(n°5)sus4",
+    "truthPcs": [
+      1,
+      6
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(no5)sus4(maj)",
+    "engLetter": "C#sus4",
+    "engNotes": [
+      "C#3",
+      "F#3"
+    ],
+    "engPcs": [
+      1,
+      6
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "a-perfect-circle__judith/Solo/136",
+    "song": "a-perfect-circle__judith",
+    "section": "Solo",
+    "beat": 136,
+    "key": {
+      "tonic": "C#",
+      "scale": "phrygian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 136,
+      "duration": 3,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "Isus4(maj)(no5)",
+    "truthLetter": "C#(n°5)sus4",
+    "truthPcs": [
+      1,
+      6
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(no5)sus4(maj)",
+    "engLetter": "C#sus4",
+    "engNotes": [
+      "C#3",
+      "F#3"
+    ],
+    "engPcs": [
+      1,
+      6
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "a-perfect-circle__judith/Solo/148",
+    "song": "a-perfect-circle__judith",
+    "section": "Solo",
+    "beat": 148,
+    "key": {
+      "tonic": "C#",
+      "scale": "phrygian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 148,
+      "duration": 3,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "Isus4(maj)(no5)",
+    "truthLetter": "C#(n°5)sus4",
+    "truthPcs": [
+      1,
+      6
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(no5)sus4(maj)",
+    "engLetter": "C#sus4",
+    "engNotes": [
+      "C#3",
+      "F#3"
+    ],
+    "engPcs": [
+      1,
+      6
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "a-perfect-circle__judith/Solo/160",
+    "song": "a-perfect-circle__judith",
+    "section": "Solo",
+    "beat": 160,
+    "key": {
+      "tonic": "C#",
+      "scale": "phrygian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 160,
+      "duration": 3,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "Isus4(maj)(no5)",
+    "truthLetter": "C#(n°5)sus4",
+    "truthPcs": [
+      1,
+      6
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(no5)sus4(maj)",
+    "engLetter": "C#sus4",
+    "engNotes": [
+      "C#3",
+      "F#3"
+    ],
+    "engPcs": [
+      1,
+      6
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "a-perfect-circle__judith/Solo/172",
+    "song": "a-perfect-circle__judith",
+    "section": "Solo",
+    "beat": 172,
+    "key": {
+      "tonic": "C#",
+      "scale": "phrygian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 172,
+      "duration": 3,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "Isus4(maj)(no5)",
+    "truthLetter": "C#(n°5)sus4",
+    "truthPcs": [
+      1,
+      6
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(no5)sus4(maj)",
+    "engLetter": "C#sus4",
+    "engNotes": [
+      "C#3",
+      "F#3"
+    ],
+    "engPcs": [
+      1,
+      6
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "a-perfect-circle__judith/Solo/177",
+    "song": "a-perfect-circle__judith",
+    "section": "Solo",
+    "beat": 177,
+    "key": {
+      "tonic": "C#",
+      "scale": "phrygian"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 177,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "Isus4(maj)(no5)",
+    "truthLetter": "C#(n°5)sus4",
+    "truthPcs": [
+      1,
+      6
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(no5)sus4(maj)",
+    "engLetter": "C#sus4",
+    "engNotes": [
+      "C#3",
+      "F#3"
+    ],
+    "engPcs": [
+      1,
+      6
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "hitoshi-sakimoto__main-theme---bubble-ghost/Intro/17",
+    "song": "hitoshi-sakimoto__main-theme---bubble-ghost",
+    "section": "Intro",
+    "beat": 17,
+    "key": {
+      "tonic": "C",
+      "scale": "lydian"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 17,
+      "duration": 16,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bII7(no5)sus4(phr)",
+    "truthLetter": "Db7(n°5)sus#4",
+    "truthPcs": [
+      1,
+      6,
+      11
+    ],
+    "pianoNotes": [
+      "Db3",
+      "Ab3",
+      "Db4"
+    ],
+    "pianoPcs": [
+      1,
+      8
+    ],
+    "pianoValidated": false,
+    "engRoman": "♭II⁷(no5)sus4(phr)",
+    "engLetter": "Dbmaj7sus4",
+    "engNotes": [
+      "Db3",
+      "Gb3",
+      "Cb4"
+    ],
+    "engPcs": [
+      1,
+      6,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=phrygian",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Pre-Chorus and Chorus/33.75",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 33.75,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 33.75,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Pre-Chorus and Chorus/35.25",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 35.25,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 35.25,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": [
+      "E#3",
+      "F##3"
+    ],
+    "pianoPcs": [
+      5,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Pre-Chorus and Chorus/36.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 36.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 36.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": [
+      "A#2",
+      "D#3",
+      "E#3"
+    ],
+    "pianoPcs": [
+      3,
+      5,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Pre-Chorus and Chorus/37",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 37,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 37,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": [
+      "B#3",
+      "F##3"
+    ],
+    "pianoPcs": [
+      0,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Pre-Chorus and Chorus/38.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 38.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 38.5,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Pre-Chorus and Chorus/39.25",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 39.25,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 39.25,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Pre-Chorus and Chorus/40",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 40,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 40,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Pre-Chorus and Chorus/40.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 40.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 40.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Pre-Chorus and Chorus/41",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 41,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 41,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Pre-Chorus and Chorus/41.75",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 41.75,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 41.75,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Pre-Chorus and Chorus/42.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 42.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 42.5,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": [
+      "F##3",
+      "G##3"
+    ],
+    "pianoPcs": [
+      7,
+      9
+    ],
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Pre-Chorus and Chorus/43.25",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 43.25,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 43.25,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": [
+      "E#3",
+      "G##3"
+    ],
+    "pianoPcs": [
+      5,
+      9
+    ],
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Pre-Chorus and Chorus/44",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 44,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 44,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": [
+      "D#3",
+      "E#3"
+    ],
+    "pianoPcs": [
+      3,
+      5
+    ],
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Pre-Chorus and Chorus/46.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 46.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 46.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Pre-Chorus and Chorus/57",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 57,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 57,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": [
+      "G#3",
+      "A#3"
+    ],
+    "pianoPcs": [
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Pre-Chorus and Chorus/57.75",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 57.75,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 57.75,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Pre-Chorus and Chorus/58.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 58.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 58.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Pre-Chorus and Chorus/59.25",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 59.25,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 59.25,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Pre-Chorus and Chorus/60",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 60,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 60,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Pre-Chorus and Chorus/60.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 60.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 60.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus/33.75",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus",
+    "beat": 33.75,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 33.75,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus/35.25",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus",
+    "beat": 35.25,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 35.25,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": [
+      "E#3",
+      "F##3"
+    ],
+    "pianoPcs": [
+      5,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus/36.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus",
+    "beat": 36.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 36.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": [
+      "A#2",
+      "D#3",
+      "E#3"
+    ],
+    "pianoPcs": [
+      3,
+      5,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus/37",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus",
+    "beat": 37,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 37,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": [
+      "B#3",
+      "F##3"
+    ],
+    "pianoPcs": [
+      0,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus/38.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus",
+    "beat": 38.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 38.5,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus/39.25",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus",
+    "beat": 39.25,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 39.25,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus/40",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus",
+    "beat": 40,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 40,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus/40.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus",
+    "beat": 40.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 40.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus/41",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus",
+    "beat": 41,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 41,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus/41.75",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus",
+    "beat": 41.75,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 41.75,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus/42.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus",
+    "beat": 42.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 42.5,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": [
+      "F##3",
+      "G##3"
+    ],
+    "pianoPcs": [
+      7,
+      9
+    ],
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus/43.25",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus",
+    "beat": 43.25,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 43.25,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": [
+      "E#3",
+      "G##3"
+    ],
+    "pianoPcs": [
+      5,
+      9
+    ],
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus/44",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus",
+    "beat": 44,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 44,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": [
+      "D#3",
+      "E#3"
+    ],
+    "pianoPcs": [
+      3,
+      5
+    ],
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus/46.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus",
+    "beat": 46.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 46.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus/57",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus",
+    "beat": 57,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 57,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": [
+      "G#3",
+      "A#3"
+    ],
+    "pianoPcs": [
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus/57.75",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus",
+    "beat": 57.75,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 57.75,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus/58.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus",
+    "beat": 58.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 58.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus/59.25",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus",
+    "beat": 59.25,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 59.25,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus/60",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus",
+    "beat": 60,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 60,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus/60.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus",
+    "beat": 60.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 60.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus Lead-Out/33.75",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus Lead-Out",
+    "beat": 33.75,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 33.75,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus Lead-Out/35.25",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus Lead-Out",
+    "beat": 35.25,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 35.25,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": [
+      "E#3",
+      "F##3"
+    ],
+    "pianoPcs": [
+      5,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus Lead-Out/36.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus Lead-Out",
+    "beat": 36.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 36.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": [
+      "A#2",
+      "D#3",
+      "E#3"
+    ],
+    "pianoPcs": [
+      3,
+      5,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus Lead-Out/37",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus Lead-Out",
+    "beat": 37,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 37,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": [
+      "B#3",
+      "F##3"
+    ],
+    "pianoPcs": [
+      0,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus Lead-Out/38.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus Lead-Out",
+    "beat": 38.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 38.5,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus Lead-Out/39.25",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus Lead-Out",
+    "beat": 39.25,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 39.25,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus Lead-Out/40",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus Lead-Out",
+    "beat": 40,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 40,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus Lead-Out/40.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus Lead-Out",
+    "beat": 40.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 40.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus Lead-Out/41",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus Lead-Out",
+    "beat": 41,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 41,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus Lead-Out/41.75",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus Lead-Out",
+    "beat": 41.75,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 41.75,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus Lead-Out/42.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus Lead-Out",
+    "beat": 42.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 42.5,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": [
+      "F##3",
+      "G##3"
+    ],
+    "pianoPcs": [
+      7,
+      9
+    ],
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus Lead-Out/43.25",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus Lead-Out",
+    "beat": 43.25,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 43.25,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": [
+      "E#3",
+      "G##3"
+    ],
+    "pianoPcs": [
+      5,
+      9
+    ],
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus Lead-Out/44",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus Lead-Out",
+    "beat": 44,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 44,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": [
+      "D#3",
+      "E#3"
+    ],
+    "pianoPcs": [
+      3,
+      5
+    ],
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus Lead-Out/46.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus Lead-Out",
+    "beat": 46.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 46.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus Lead-Out/57",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus Lead-Out",
+    "beat": 57,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 57,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": [
+      "G#3",
+      "A#3"
+    ],
+    "pianoPcs": [
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus Lead-Out/57.75",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus Lead-Out",
+    "beat": 57.75,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 57.75,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus Lead-Out/58.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus Lead-Out",
+    "beat": 58.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 58.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus Lead-Out/59.25",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus Lead-Out",
+    "beat": 59.25,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 59.25,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus Lead-Out/60",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus Lead-Out",
+    "beat": 60,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 60,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus Lead-Out/60.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus Lead-Out",
+    "beat": 60.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 60.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Bridge/33.75",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Bridge",
+    "beat": 33.75,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 33.75,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Bridge/35.25",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Bridge",
+    "beat": 35.25,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 35.25,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": [
+      "E#3",
+      "F##3"
+    ],
+    "pianoPcs": [
+      5,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Bridge/36.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Bridge",
+    "beat": 36.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 36.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": [
+      "A#2",
+      "D#3",
+      "E#3"
+    ],
+    "pianoPcs": [
+      3,
+      5,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Bridge/37",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Bridge",
+    "beat": 37,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 37,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": [
+      "B#3",
+      "F##3"
+    ],
+    "pianoPcs": [
+      0,
+      7
+    ],
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Bridge/38.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Bridge",
+    "beat": 38.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 38.5,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Bridge/39.25",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Bridge",
+    "beat": 39.25,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 39.25,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Bridge/40",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Bridge",
+    "beat": 40,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 40,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Bridge/40.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Bridge",
+    "beat": 40.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 40.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Bridge/41",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Bridge",
+    "beat": 41,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 41,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Bridge/41.75",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Bridge",
+    "beat": 41.75,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 41.75,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Bridge/42.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Bridge",
+    "beat": 42.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 42.5,
+      "duration": 0.75,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": [
+      "F##3",
+      "G##3"
+    ],
+    "pianoPcs": [
+      7,
+      9
+    ],
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Bridge/43.25",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Bridge",
+    "beat": 43.25,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 43.25,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": [
+      "E#3",
+      "G##3"
+    ],
+    "pianoPcs": [
+      5,
+      9
+    ],
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Bridge/44",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Bridge",
+    "beat": 44,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 44,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iisus4(no5)",
+    "truthLetter": "a#(n°5)sus4",
+    "truthPcs": [
+      3,
+      10
+    ],
+    "pianoNotes": [
+      "D#3",
+      "E#3"
+    ],
+    "pianoPcs": [
+      3,
+      5
+    ],
+    "pianoValidated": false,
+    "engRoman": "ii(no5)sus4",
+    "engLetter": "A#°sus4",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E4"
+    ],
+    "engPcs": [
+      3,
+      4,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": false,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "harness",
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Bridge/46.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Bridge",
+    "beat": 46.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 46.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Bridge/57",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Bridge",
+    "beat": 57,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 57,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": [
+      "G#3",
+      "A#3"
+    ],
+    "pianoPcs": [
+      8,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Bridge/57.75",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Bridge",
+    "beat": 57.75,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 57.75,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Bridge/58.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Bridge",
+    "beat": 58.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 58.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Bridge/59.25",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Bridge",
+    "beat": 59.25,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 59.25,
+      "duration": 0.25,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Bridge/60",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Bridge",
+    "beat": 60,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 60,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Bridge/60.5",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Bridge",
+    "beat": 60.5,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 60.5,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "isus4(no5)",
+    "truthLetter": "g#(n°5)sus4",
+    "truthPcs": [
+      1,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i(no5)sus4",
+    "engLetter": "G#msus4",
+    "engNotes": [
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  },
+  {
+    "id": "misterwives__reflections/Chorus/27",
+    "song": "misterwives__reflections",
+    "section": "Chorus",
+    "beat": 27,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 27,
+      "duration": 2,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "ii9(no5)sus4",
+    "truthLetter": "e9(n°5)sus4",
+    "truthPcs": [
+      2,
+      4,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "ii⁹(no5)sus4",
+    "engLetter": "Em9sus4",
+    "engNotes": [
+      "E3",
+      "A3",
+      "D4",
+      "F#4"
+    ],
+    "engPcs": [
+      2,
+      4,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=4",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=4"
+  }
+]

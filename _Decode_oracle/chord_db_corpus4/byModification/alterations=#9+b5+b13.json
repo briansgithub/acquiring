@@ -1,0 +1,90 @@
+[
+  {
+    "id": "jamiroquai__time-wont-wait/Chorus/31",
+    "song": "jamiroquai__time-wont-wait",
+    "section": "Chorus",
+    "beat": 31,
+    "key": {
+      "tonic": "F",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 31,
+      "duration": 2,
+      "type": 7,
+      "inversion": 2,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9",
+        "b5",
+        "b13"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V4(#9b5b13)3/i(maj)",
+    "truthLetter": "C7(#9b5b13)/Gb",
+    "truthPcs": [
+      0,
+      3,
+      4,
+      6,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁴³(#9)(b5)(b13)/i",
+    "engLetter": "C7/G",
+    "engNotes": [
+      "Gb2",
+      "Bb4",
+      "D#4",
+      "Ab4",
+      "C4",
+      "E4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      4,
+      6,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=2",
+      "applied=yes",
+      "borrowed=none",
+      "alterations=#9+b5+b13"
+    ],
+    "compositeKey": null
+  }
+]

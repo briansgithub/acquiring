@@ -4,20 +4,20 @@
 - truth: `Vsus47/iii` (C#7sus4) | engine: `V⁷sus4/iii` (C#7sus4)
 - engine notes: ["C#3","F#3","G#3","B3"] | truth PCs: [1,6,8,11] | engine PCs: [1,6,8,11]
 - json: root=3 applied=5 type=7 inv=0 sus=[4]
-- failing: romanExact, romanCore, pianoExact, pianoPcsExact, pianoValidated, usePiano
+- failing: romanExact, romanCore, bassPcMatch, pianoExact, pianoPcsExact, pianoValidated, usePiano
 
 ## Verse beat 11
 - truth: `i°△4(b5)3(hmin)` (dmmaj7(b5)/A) | engine: `i△⁴³(b5)(hmin)` (Dmmaj7/A)
-- engine notes: ["Ab3","C#4","D4","F4"] | truth PCs: [2,5,8,11] | engine PCs: [1,2,5,8]
+- engine notes: ["Ab3","Cb4","Ab3","D4","F4"] | truth PCs: [2,5,8,11] | engine PCs: [2,5,8,11]
 - json: root=1 applied=0 type=7 inv=2 borrowed="harmonicMinor" alt=["b5"]
-- failing: romanExact, romanCore, bassInNotes, pcsExact, pianoExact, pianoPcsExact, pianoValidated, usePiano
+- failing: romanExact, romanCore, bassInNotes, pianoExact, pianoPcsExact, pianoValidated, usePiano
 
 ## Chorus beat 19
 - truth: `vii°/iii` (gx°) | engine: `vii°/iii` (G##°)
 - engine notes: null | truth PCs: [0,3,9] | engine PCs: []
 - piano scrape: ["A#4","D#4"] | piano PCs: [3,10]
 - json: root=3 applied=7 type=5 inv=0
-- failing: rootInPcs, bassInNotes, pcsExact, pianoExact, pianoPcsExact, pianoValidated, usePiano
+- failing: bassPcMatch, rootInPcs, pcsExact, pianoExact, pianoPcsExact, pianoValidated, usePiano
 - engine error: Cannot read properties of undefined (reading '0')
 
 ## Chorus beat 22

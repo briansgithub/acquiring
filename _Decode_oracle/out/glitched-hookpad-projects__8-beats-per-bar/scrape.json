@@ -1,0 +1,92 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/glitched-hookpad-projects/8-beats-per-bar",
+  "title": "8 beats per bar by Glitched Hookpad Projects Chords, Melody, and Music Theory Analysis - Hooktheory",
+  "sections": [
+    {
+      "name": "Instrumental",
+      "hash": "#instrumental",
+      "songId": "kwxAdAAQgKG",
+      "containerId": "tab-kwxAdAAQgKG",
+      "renderedCount": 1,
+      "jsonChordCount": 1,
+      "jsonNonRestCount": 1,
+      "json": {
+        "songId": 1401033,
+        "songInfo": "8 beats per bar",
+        "chords": [
+          {
+            "root": 1,
+            "beat": 1,
+            "duration": 32,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "substitutions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          }
+        ],
+        "notes": [],
+        "metadata": {
+          "version": "2.24.3",
+          "keys": [
+            {
+              "beat": 1,
+              "scale": "major",
+              "tonic": "C"
+            }
+          ],
+          "tempos": [
+            {
+              "beat": 1,
+              "bpm": 158,
+              "swingFactor": 0,
+              "swingBeat": 0.5
+            }
+          ],
+          "meters": [
+            {
+              "beat": 1,
+              "numBeats": 8,
+              "beatUnit": 1
+            }
+          ],
+          "sections": [],
+          "endBeat": 33
+        }
+      },
+      "rendered": [
+        {
+          "order": 0,
+          "raw": "IC",
+          "stableX": 39,
+          "texts": [
+            {
+              "s": "I",
+              "relX": 283,
+              "y": 618,
+              "fill": "#ffffff"
+            },
+            {
+              "s": "C",
+              "relX": 281,
+              "y": 657,
+              "fill": "#dae0e6"
+            }
+          ],
+          "pianoRaw": [],
+          "pianoNotes": null
+        }
+      ],
+      "strips": []
+    }
+  ],
+  "errors": []
+}

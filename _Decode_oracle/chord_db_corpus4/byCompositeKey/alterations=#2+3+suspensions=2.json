@@ -1,0 +1,166 @@
+[
+  {
+    "id": "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/15.5",
+    "song": "kazumi-totaka__9am---animal-crossing-new-horizons",
+    "section": "Intro and Verse",
+    "beat": 15.5,
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 15.5,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#2",
+        "3"
+      ],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "locrian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bV6(#23)sus2(loc)",
+    "truthLetter": "Db(#23)sus2/Eb",
+    "truthPcs": [
+      1,
+      3,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭V⁶sus2(#23)(#2)(3)(loc)",
+    "engLetter": "Dbsus2/F",
+    "engNotes": [
+      "Eb3",
+      "Ab3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=locrian",
+      "suspensions=2",
+      "alterations=#2+3"
+    ],
+    "compositeKey": "alterations=#2+3+suspensions=2"
+  },
+  {
+    "id": "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/47.5",
+    "song": "kazumi-totaka__9am---animal-crossing-new-horizons",
+    "section": "Intro and Verse",
+    "beat": 47.5,
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 47.5,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#2",
+        "3"
+      ],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "locrian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bV6(#23)sus2(loc)",
+    "truthLetter": "Db(#23)sus2/Eb",
+    "truthPcs": [
+      1,
+      3,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♭V⁶sus2(#23)(#2)(3)(loc)",
+    "engLetter": "Dbsus2/F",
+    "engNotes": [
+      "Eb3",
+      "Ab3",
+      "Db4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=locrian",
+      "suspensions=2",
+      "alterations=#2+3"
+    ],
+    "compositeKey": "alterations=#2+3+suspensions=2"
+  }
+]

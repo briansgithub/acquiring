@@ -29,7 +29,8 @@ const OUT = path.join(__dirname, 'out');
 
 function slugForUrl(url) {
   const m = url.match(/theorytab\/view\/([^/]+)\/([^/?#]+)/);
-  return m ? `${m[1]}__${m[2]}` : url.replace(/[^a-z0-9]+/gi, '_').slice(0, 60);
+  const raw = m ? `${m[1]}__${m[2]}` : url.replace(/[^a-z0-9]+/gi, '_').slice(0, 60);
+  return raw.replace(/[:*?"<>|]/g, '-');
 }
 
 function pct(n, d) { return d ? ((100 * n) / d).toFixed(0) + '%' : '-'; }
@@ -40,7 +41,10 @@ async function scrapeWithCache(url, { rescrape = false, rescrapeTruth = false } 
   fs.mkdirSync(dir, { recursive: true });
   const scrapeFile = path.join(dir, 'scrape.json');
   if (!rescrape && !rescrapeTruth && fs.existsSync(scrapeFile)) {
-    return { slug, dir, scrape: JSON.parse(fs.readFileSync(scrapeFile, 'utf8')), cached: true };
+    const cached = JSON.parse(fs.readFileSync(scrapeFile, 'utf8'));
+    if (scrapeOk(cached)) {
+      return { slug, dir, scrape: cached, cached: true };
+    }
   }
   if (rescrapeTruth && fs.existsSync(scrapeFile) && !rescrape) {
     try { fs.unlinkSync(scrapeFile); } catch (_) {}

@@ -57,14 +57,15 @@
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
             "bassInNotes": true,
             "pcsExact": true,
             "pianoExact": false,
             "pianoPcsExact": false,
             "pianoValidated": false,
-            "usePiano": false
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
           "notesOk": true,
@@ -122,14 +123,15 @@
             "romanExact": false,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
             "bassInNotes": true,
             "pcsExact": true,
             "pianoExact": false,
             "pianoPcsExact": false,
             "pianoValidated": false,
-            "usePiano": false
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": false,
           "notesOk": true,
@@ -192,14 +194,15 @@
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": false,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
             "bassInNotes": true,
             "pcsExact": true,
             "pianoExact": false,
             "pianoPcsExact": false,
             "pianoValidated": false,
-            "usePiano": false
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
           "notesOk": true,
@@ -254,14 +257,15 @@
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
             "bassInNotes": true,
             "pcsExact": true,
             "pianoExact": false,
             "pianoPcsExact": false,
             "pianoValidated": false,
-            "usePiano": false
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
           "notesOk": true,
@@ -294,8 +298,8 @@
           "engLetter": "G#",
           "engNotes": [
             "G#3",
-            "B#4",
-            "D#4"
+            "D#4",
+            "B#4"
           ],
           "engPcs": [
             0,
@@ -319,14 +323,15 @@
             "romanExact": true,
             "romanCore": true,
             "rootPcMatch": true,
-            "bassPcMatch": true,
+            "bassPcMatch": false,
             "rootInPcs": true,
             "bassInNotes": true,
             "pcsExact": true,
             "pianoExact": false,
             "pianoPcsExact": false,
             "pianoValidated": false,
-            "usePiano": false
+            "usePiano": false,
+            "orderOk": true
           },
           "ok": true,
           "notesOk": true,

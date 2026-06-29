@@ -31,7 +31,7 @@ body {
 #timeline-pane {
   grid-column: 1 / -1;
   background: var(--panel);
-  /* The pane class already provides border/radius/shadow */
+  overflow: visible !important;
 }
 
 .pane {

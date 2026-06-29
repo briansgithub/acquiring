@@ -1,0 +1,2911 @@
+{
+  "generated": "2026-06-29T06:03:46.840Z",
+  "total": 500,
+  "scraped": 179,
+  "pending": 321,
+  "byTier": {
+    "1": 12,
+    "2": 71,
+    "3": 75,
+    "4": 86,
+    "5": 77
+  },
+  "bySource": {
+    "corpus2.json": 26,
+    "seed": 278,
+    "corpus.json": 11,
+    "discovered": 5,
+    "cache": 1
+  },
+  "songs": [
+    {
+      "rank": 5,
+      "tier": 1,
+      "slug": "green-day__good-riddance-time-of-your-life",
+      "artist": "green day",
+      "title": "good riddance time of your life",
+      "url": "https://www.hooktheory.com/theorytab/view/green-day/good-riddance-time-of-your-life",
+      "source": "corpus2.json"
+    },
+    {
+      "rank": 17,
+      "tier": 1,
+      "slug": "tom-petty__i-wont-back-down",
+      "artist": "tom petty",
+      "title": "i wont back down",
+      "url": "https://www.hooktheory.com/theorytab/view/tom-petty/i-wont-back-down",
+      "source": "corpus2.json:alt"
+    },
+    {
+      "rank": 18,
+      "tier": 1,
+      "slug": "acdc__back-in-black",
+      "artist": "acdc",
+      "title": "back in black",
+      "url": "https://www.hooktheory.com/theorytab/view/acdc/back-in-black",
+      "source": "seed:tier1"
+    },
+    {
+      "rank": 62,
+      "tier": 1,
+      "slug": "olivia-rodrigo__ballad-of-a-homeschool-girl",
+      "artist": "olivia rodrigo",
+      "title": "ballad of a homeschool girl",
+      "url": "https://www.hooktheory.com/theorytab/view/olivia-rodrigo/ballad-of-a-homeschool-girl",
+      "source": "seed:tier1"
+    },
+    {
+      "rank": 63,
+      "tier": 1,
+      "slug": "olivia-rodrigo__caught-off-guard",
+      "artist": "olivia rodrigo",
+      "title": "caught off guard",
+      "url": "https://www.hooktheory.com/theorytab/view/olivia-rodrigo/caught-off-guard",
+      "source": "seed:tier1"
+    },
+    {
+      "rank": 65,
+      "tier": 1,
+      "slug": "olivia-rodrigo__enemy",
+      "artist": "olivia rodrigo",
+      "title": "enemy",
+      "url": "https://www.hooktheory.com/theorytab/view/olivia-rodrigo/enemy",
+      "source": "seed:tier1"
+    },
+    {
+      "rank": 71,
+      "tier": 1,
+      "slug": "olivia-rodrigo__love-etc",
+      "artist": "olivia rodrigo",
+      "title": "love etc",
+      "url": "https://www.hooktheory.com/theorytab/view/olivia-rodrigo/love-etc",
+      "source": "seed:tier1"
+    },
+    {
+      "rank": 76,
+      "tier": 1,
+      "slug": "olivia-rodrigo__strange",
+      "artist": "olivia rodrigo",
+      "title": "strange",
+      "url": "https://www.hooktheory.com/theorytab/view/olivia-rodrigo/strange",
+      "source": "seed:tier1"
+    },
+    {
+      "rank": 77,
+      "tier": 1,
+      "slug": "olivia-rodrigo__teenage-drama-queen",
+      "artist": "olivia rodrigo",
+      "title": "teenage drama queen",
+      "url": "https://www.hooktheory.com/theorytab/view/olivia-rodrigo/teenage-drama-queen",
+      "source": "seed:tier1"
+    },
+    {
+      "rank": 81,
+      "tier": 1,
+      "slug": "post-malone__i-had-some-help",
+      "artist": "post malone",
+      "title": "i had some help",
+      "url": "https://www.hooktheory.com/theorytab/view/post-malone/i-had-some-help",
+      "source": "seed:tier1"
+    },
+    {
+      "rank": 86,
+      "tier": 1,
+      "slug": "taylor-swift__blank-space",
+      "artist": "taylor swift",
+      "title": "blank space",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/blank-space",
+      "source": "seed:tier1"
+    },
+    {
+      "rank": 88,
+      "tier": 1,
+      "slug": "taylor-swift__shake-it-off",
+      "artist": "taylor swift",
+      "title": "shake it off",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/shake-it-off",
+      "source": "seed:tier1"
+    },
+    {
+      "rank": 118,
+      "tier": 2,
+      "slug": "r-e-m__losing-my-religion",
+      "artist": "r e m",
+      "title": "losing my religion",
+      "url": "https://www.hooktheory.com/theorytab/view/r-e-m/losing-my-religion",
+      "source": "corpus2.json:alt"
+    },
+    {
+      "rank": 119,
+      "tier": 2,
+      "slug": "the-eagles__hotel-california",
+      "artist": "the eagles",
+      "title": "hotel california",
+      "url": "https://www.hooktheory.com/theorytab/view/the-eagles/hotel-california",
+      "source": "corpus2.json:alt"
+    },
+    {
+      "rank": 132,
+      "tier": 2,
+      "slug": "djo__end-of-beginning",
+      "artist": "djo",
+      "title": "end of beginning",
+      "url": "https://www.hooktheory.com/theorytab/view/djo/end-of-beginning",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 133,
+      "tier": 2,
+      "slug": "dua-lipa__dont-start-now",
+      "artist": "dua lipa",
+      "title": "dont start now",
+      "url": "https://www.hooktheory.com/theorytab/view/dua-lipa/dont-start-now",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 134,
+      "tier": 2,
+      "slug": "dua-lipa__new-rules",
+      "artist": "dua lipa",
+      "title": "new rules",
+      "url": "https://www.hooktheory.com/theorytab/view/dua-lipa/new-rules",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 135,
+      "tier": 2,
+      "slug": "ed-sheeran__castle-on-the-hill",
+      "artist": "ed sheeran",
+      "title": "castle on the hill",
+      "url": "https://www.hooktheory.com/theorytab/view/ed-sheeran/castle-on-the-hill",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 136,
+      "tier": 2,
+      "slug": "ed-sheeran__shape-of-you",
+      "artist": "ed sheeran",
+      "title": "shape of you",
+      "url": "https://www.hooktheory.com/theorytab/view/ed-sheeran/shape-of-you",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 137,
+      "tier": 2,
+      "slug": "ed-sheeran__thinking-out-loud",
+      "artist": "ed sheeran",
+      "title": "thinking out loud",
+      "url": "https://www.hooktheory.com/theorytab/view/ed-sheeran/thinking-out-loud",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 138,
+      "tier": 2,
+      "slug": "ella-langley__choosin-texas",
+      "artist": "ella langley",
+      "title": "choosin texas",
+      "url": "https://www.hooktheory.com/theorytab/view/ella-langley/choosin-texas",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 139,
+      "tier": 2,
+      "slug": "ella-langley__i-cant-love-you-anymore-%28with-morgan-wallen%29",
+      "artist": "ella langley",
+      "title": "i cant love you anymore %28with morgan wallen%29",
+      "url": "https://www.hooktheory.com/theorytab/view/ella-langley/i-cant-love-you-anymore-%28with-morgan-wallen%29",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 140,
+      "tier": 2,
+      "slug": "goo-goo-dolls__iris",
+      "artist": "goo goo dolls",
+      "title": "iris",
+      "url": "https://www.hooktheory.com/theorytab/view/goo-goo-dolls/iris",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 141,
+      "tier": 2,
+      "slug": "hall-and-oates__maneater",
+      "artist": "hall and oates",
+      "title": "maneater",
+      "url": "https://www.hooktheory.com/theorytab/view/hall-and-oates/maneater",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 142,
+      "tier": 2,
+      "slug": "huntrx__golden",
+      "artist": "huntrx",
+      "title": "golden",
+      "url": "https://www.hooktheory.com/theorytab/view/huntrx/golden",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 143,
+      "tier": 2,
+      "slug": "james-arthur__say-you-wont-let-go",
+      "artist": "james arthur",
+      "title": "say you wont let go",
+      "url": "https://www.hooktheory.com/theorytab/view/james-arthur/say-you-wont-let-go",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 144,
+      "tier": 2,
+      "slug": "justin-bieber__love-yourself",
+      "artist": "justin bieber",
+      "title": "love yourself",
+      "url": "https://www.hooktheory.com/theorytab/view/justin-bieber/love-yourself",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 145,
+      "tier": 2,
+      "slug": "justin-bieber__peaches",
+      "artist": "justin bieber",
+      "title": "peaches",
+      "url": "https://www.hooktheory.com/theorytab/view/justin-bieber/peaches",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 146,
+      "tier": 2,
+      "slug": "justin-bieber__sorry",
+      "artist": "justin bieber",
+      "title": "sorry",
+      "url": "https://www.hooktheory.com/theorytab/view/justin-bieber/sorry",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 147,
+      "tier": 2,
+      "slug": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29",
+      "artist": "lady gaga",
+      "title": "die with a smile %28with bruno mars%29",
+      "url": "https://www.hooktheory.com/theorytab/view/lady-gaga/die-with-a-smile-%28with-bruno-mars%29",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 148,
+      "tier": 2,
+      "slug": "lewis-capaldi__someone-you-loved",
+      "artist": "lewis capaldi",
+      "title": "someone you loved",
+      "url": "https://www.hooktheory.com/theorytab/view/lewis-capaldi/someone-you-loved",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 149,
+      "tier": 2,
+      "slug": "michael-jackson__beat-it",
+      "artist": "michael jackson",
+      "title": "beat it",
+      "url": "https://www.hooktheory.com/theorytab/view/michael-jackson/beat-it",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 150,
+      "tier": 2,
+      "slug": "michael-jackson__human-nature",
+      "artist": "michael jackson",
+      "title": "human nature",
+      "url": "https://www.hooktheory.com/theorytab/view/michael-jackson/human-nature",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 151,
+      "tier": 2,
+      "slug": "michael-jackson__man-in-the-mirror",
+      "artist": "michael jackson",
+      "title": "man in the mirror",
+      "url": "https://www.hooktheory.com/theorytab/view/michael-jackson/man-in-the-mirror",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 152,
+      "tier": 2,
+      "slug": "michael-jackson__smooth-criminal",
+      "artist": "michael jackson",
+      "title": "smooth criminal",
+      "url": "https://www.hooktheory.com/theorytab/view/michael-jackson/smooth-criminal",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 153,
+      "tier": 2,
+      "slug": "michael-jackson__thriller",
+      "artist": "michael jackson",
+      "title": "thriller",
+      "url": "https://www.hooktheory.com/theorytab/view/michael-jackson/thriller",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 154,
+      "tier": 2,
+      "slug": "olivia-dean__man-i-need",
+      "artist": "olivia dean",
+      "title": "man i need",
+      "url": "https://www.hooktheory.com/theorytab/view/olivia-dean/man-i-need",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 155,
+      "tier": 2,
+      "slug": "olivia-rodrigo__begged",
+      "artist": "olivia rodrigo",
+      "title": "begged",
+      "url": "https://www.hooktheory.com/theorytab/view/olivia-rodrigo/begged",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 156,
+      "tier": 2,
+      "slug": "olivia-rodrigo__drop-dead",
+      "artist": "olivia rodrigo",
+      "title": "drop dead",
+      "url": "https://www.hooktheory.com/theorytab/view/olivia-rodrigo/drop-dead",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 157,
+      "tier": 2,
+      "slug": "olivia-rodrigo__less",
+      "artist": "olivia rodrigo",
+      "title": "less",
+      "url": "https://www.hooktheory.com/theorytab/view/olivia-rodrigo/less",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 158,
+      "tier": 2,
+      "slug": "olivia-rodrigo__stupid-song",
+      "artist": "olivia rodrigo",
+      "title": "stupid song",
+      "url": "https://www.hooktheory.com/theorytab/view/olivia-rodrigo/stupid-song",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 159,
+      "tier": 2,
+      "slug": "olivia-rodrigo__the-cure",
+      "artist": "olivia rodrigo",
+      "title": "the cure",
+      "url": "https://www.hooktheory.com/theorytab/view/olivia-rodrigo/the-cure",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 160,
+      "tier": 2,
+      "slug": "rose__apt-%28with-bruno-mars%29",
+      "artist": "rose",
+      "title": "apt %28with bruno mars%29",
+      "url": "https://www.hooktheory.com/theorytab/view/rose/apt-%28with-bruno-mars%29",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 161,
+      "tier": 2,
+      "slug": "sam-smith__stay-with-me",
+      "artist": "sam smith",
+      "title": "stay with me",
+      "url": "https://www.hooktheory.com/theorytab/view/sam-smith/stay-with-me",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 162,
+      "tier": 2,
+      "slug": "sam-smith__too-good-at-goodbyes",
+      "artist": "sam smith",
+      "title": "too good at goodbyes",
+      "url": "https://www.hooktheory.com/theorytab/view/sam-smith/too-good-at-goodbyes",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 163,
+      "tier": 2,
+      "slug": "shawn-mendes__stitches",
+      "artist": "shawn mendes",
+      "title": "stitches",
+      "url": "https://www.hooktheory.com/theorytab/view/shawn-mendes/stitches",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 164,
+      "tier": 2,
+      "slug": "shawn-mendes__treat-you-better",
+      "artist": "shawn mendes",
+      "title": "treat you better",
+      "url": "https://www.hooktheory.com/theorytab/view/shawn-mendes/treat-you-better",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 165,
+      "tier": 2,
+      "slug": "sombr__back-to-friends",
+      "artist": "sombr",
+      "title": "back to friends",
+      "url": "https://www.hooktheory.com/theorytab/view/sombr/back-to-friends",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 166,
+      "tier": 2,
+      "slug": "tame-impala__dracula",
+      "artist": "tame impala",
+      "title": "dracula",
+      "url": "https://www.hooktheory.com/theorytab/view/tame-impala/dracula",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 167,
+      "tier": 2,
+      "slug": "tame-impala__let-it-happen",
+      "artist": "tame impala",
+      "title": "let it happen",
+      "url": "https://www.hooktheory.com/theorytab/view/tame-impala/let-it-happen",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 168,
+      "tier": 2,
+      "slug": "taylor-swift__all-too-well",
+      "artist": "taylor swift",
+      "title": "all too well",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/all-too-well",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 169,
+      "tier": 2,
+      "slug": "taylor-swift__anti-hero",
+      "artist": "taylor swift",
+      "title": "anti hero",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/anti-hero",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 170,
+      "tier": 2,
+      "slug": "taylor-swift__august",
+      "artist": "taylor swift",
+      "title": "august",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/august",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 171,
+      "tier": 2,
+      "slug": "taylor-swift__betty",
+      "artist": "taylor swift",
+      "title": "betty",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/betty",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 172,
+      "tier": 2,
+      "slug": "taylor-swift__cardigan",
+      "artist": "taylor swift",
+      "title": "cardigan",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/cardigan",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 173,
+      "tier": 2,
+      "slug": "taylor-swift__champagne-problems",
+      "artist": "taylor swift",
+      "title": "champagne problems",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/champagne-problems",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 174,
+      "tier": 2,
+      "slug": "taylor-swift__closure",
+      "artist": "taylor swift",
+      "title": "closure",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/closure",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 175,
+      "tier": 2,
+      "slug": "taylor-swift__coney-island",
+      "artist": "taylor swift",
+      "title": "coney island",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/coney-island",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 176,
+      "tier": 2,
+      "slug": "taylor-swift__cowboy-like-me",
+      "artist": "taylor swift",
+      "title": "cowboy like me",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/cowboy-like-me",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 177,
+      "tier": 2,
+      "slug": "taylor-swift__cruel-summer",
+      "artist": "taylor swift",
+      "title": "cruel summer",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/cruel-summer",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 178,
+      "tier": 2,
+      "slug": "taylor-swift__dorothea",
+      "artist": "taylor swift",
+      "title": "dorothea",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/dorothea",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 179,
+      "tier": 2,
+      "slug": "taylor-swift__epiphany",
+      "artist": "taylor swift",
+      "title": "epiphany",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/epiphany",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 180,
+      "tier": 2,
+      "slug": "taylor-swift__evermore",
+      "artist": "taylor swift",
+      "title": "evermore",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/evermore",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 181,
+      "tier": 2,
+      "slug": "taylor-swift__exile",
+      "artist": "taylor swift",
+      "title": "exile",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/exile",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 182,
+      "tier": 2,
+      "slug": "taylor-swift__gold-rush",
+      "artist": "taylor swift",
+      "title": "gold rush",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/gold-rush",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 183,
+      "tier": 2,
+      "slug": "taylor-swift__happiness",
+      "artist": "taylor swift",
+      "title": "happiness",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/happiness",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 184,
+      "tier": 2,
+      "slug": "taylor-swift__illicit-affairs",
+      "artist": "taylor swift",
+      "title": "illicit affairs",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/illicit-affairs",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 185,
+      "tier": 2,
+      "slug": "taylor-swift__invisible-string",
+      "artist": "taylor swift",
+      "title": "invisible string",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/invisible-string",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 186,
+      "tier": 2,
+      "slug": "taylor-swift__ivy",
+      "artist": "taylor swift",
+      "title": "ivy",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/ivy",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 187,
+      "tier": 2,
+      "slug": "taylor-swift__karma",
+      "artist": "taylor swift",
+      "title": "karma",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/karma",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 188,
+      "tier": 2,
+      "slug": "taylor-swift__lavender-haze",
+      "artist": "taylor swift",
+      "title": "lavender haze",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/lavender-haze",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 189,
+      "tier": 2,
+      "slug": "taylor-swift__long-story-short",
+      "artist": "taylor swift",
+      "title": "long story short",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/long-story-short",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 190,
+      "tier": 2,
+      "slug": "taylor-swift__mad-woman",
+      "artist": "taylor swift",
+      "title": "mad woman",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/mad-woman",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 191,
+      "tier": 2,
+      "slug": "taylor-swift__marjorie",
+      "artist": "taylor swift",
+      "title": "marjorie",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/marjorie",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 192,
+      "tier": 2,
+      "slug": "taylor-swift__mirrorball",
+      "artist": "taylor swift",
+      "title": "mirrorball",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/mirrorball",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 193,
+      "tier": 2,
+      "slug": "taylor-swift__my-tears-ricochet",
+      "artist": "taylor swift",
+      "title": "my tears ricochet",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/my-tears-ricochet",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 194,
+      "tier": 2,
+      "slug": "taylor-swift__no-body-no-crime",
+      "artist": "taylor swift",
+      "title": "no body no crime",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/no-body-no-crime",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 195,
+      "tier": 2,
+      "slug": "taylor-swift__seven",
+      "artist": "taylor swift",
+      "title": "seven",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/seven",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 196,
+      "tier": 2,
+      "slug": "taylor-swift__the-1",
+      "artist": "taylor swift",
+      "title": "the 1",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/the-1",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 197,
+      "tier": 2,
+      "slug": "taylor-swift__this-is-me-trying",
+      "artist": "taylor swift",
+      "title": "this is me trying",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/this-is-me-trying",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 198,
+      "tier": 2,
+      "slug": "taylor-swift__tis-the-damn-season",
+      "artist": "taylor swift",
+      "title": "tis the damn season",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/tis-the-damn-season",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 199,
+      "tier": 2,
+      "slug": "taylor-swift__tolerate-it",
+      "artist": "taylor swift",
+      "title": "tolerate it",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/tolerate-it",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 200,
+      "tier": 2,
+      "slug": "taylor-swift__willow",
+      "artist": "taylor swift",
+      "title": "willow",
+      "url": "https://www.hooktheory.com/theorytab/view/taylor-swift/willow",
+      "source": "seed:tier2"
+    },
+    {
+      "rank": 215,
+      "tier": 3,
+      "slug": "the-jackson-5__i-want-you-back",
+      "artist": "the jackson 5",
+      "title": "i want you back",
+      "url": "https://www.hooktheory.com/theorytab/view/the-jackson-5/i-want-you-back",
+      "source": "corpus2.json"
+    },
+    {
+      "rank": 216,
+      "tier": 3,
+      "slug": "carole-king__you-ve-got-a-friend",
+      "artist": "carole king",
+      "title": "you ve got a friend",
+      "url": "https://www.hooktheory.com/theorytab/view/carole-king/you-ve-got-a-friend",
+      "source": "corpus2.json:alt"
+    },
+    {
+      "rank": 217,
+      "tier": 3,
+      "slug": "elton-john__tiny-dancer",
+      "artist": "elton john",
+      "title": "tiny dancer",
+      "url": "https://www.hooktheory.com/theorytab/view/elton-john/tiny-dancer",
+      "source": "corpus2.json:alt"
+    },
+    {
+      "rank": 218,
+      "tier": 3,
+      "slug": "queen__killer-queen",
+      "artist": "queen",
+      "title": "killer queen",
+      "url": "https://www.hooktheory.com/theorytab/view/queen/killer-queen",
+      "source": "corpus.json:alt"
+    },
+    {
+      "rank": 219,
+      "tier": 3,
+      "slug": "simon-and-garfunkel__mrs-robinson",
+      "artist": "simon and garfunkel",
+      "title": "mrs robinson",
+      "url": "https://www.hooktheory.com/theorytab/view/simon-and-garfunkel/mrs-robinson",
+      "source": "corpus2.json:alt"
+    },
+    {
+      "rank": 220,
+      "tier": 3,
+      "slug": "stevie-wonder__superstition",
+      "artist": "stevie wonder",
+      "title": "superstition",
+      "url": "https://www.hooktheory.com/theorytab/view/stevie-wonder/superstition",
+      "source": "corpus2.json:alt"
+    },
+    {
+      "rank": 221,
+      "tier": 3,
+      "slug": "the-beatles__eight-days-a-week",
+      "artist": "the beatles",
+      "title": "eight days a week",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/eight-days-a-week",
+      "source": "corpus.json:alt"
+    },
+    {
+      "rank": 222,
+      "tier": 3,
+      "slug": "queen__bohemian-rhapsody",
+      "artist": "queen",
+      "title": "bohemian rhapsody",
+      "url": "https://www.hooktheory.com/theorytab/view/queen/bohemian-rhapsody",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 223,
+      "tier": 3,
+      "slug": "the-beatles__a-day-in-the-life",
+      "artist": "the beatles",
+      "title": "a day in the life",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/a-day-in-the-life",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 224,
+      "tier": 3,
+      "slug": "the-beatles__across-the-universe",
+      "artist": "the beatles",
+      "title": "across the universe",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/across-the-universe",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 225,
+      "tier": 3,
+      "slug": "the-beatles__all-you-need-is-love",
+      "artist": "the beatles",
+      "title": "all you need is love",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/all-you-need-is-love",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 226,
+      "tier": 3,
+      "slug": "the-beatles__and-i-love-her",
+      "artist": "the beatles",
+      "title": "and i love her",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/and-i-love-her",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 227,
+      "tier": 3,
+      "slug": "the-beatles__baby-youre-a-rich-man",
+      "artist": "the beatles",
+      "title": "baby youre a rich man",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/baby-youre-a-rich-man",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 228,
+      "tier": 3,
+      "slug": "the-beatles__back-in-the-ussr",
+      "artist": "the beatles",
+      "title": "back in the ussr",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/back-in-the-ussr",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 229,
+      "tier": 3,
+      "slug": "the-beatles__being-for-the-benefit-of-mr-kite",
+      "artist": "the beatles",
+      "title": "being for the benefit of mr kite",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/being-for-the-benefit-of-mr-kite",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 230,
+      "tier": 3,
+      "slug": "the-beatles__birthday",
+      "artist": "the beatles",
+      "title": "birthday",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/birthday",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 231,
+      "tier": 3,
+      "slug": "the-beatles__carry-that-weight",
+      "artist": "the beatles",
+      "title": "carry that weight",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/carry-that-weight",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 232,
+      "tier": 3,
+      "slug": "the-beatles__come-together",
+      "artist": "the beatles",
+      "title": "come together",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/come-together",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 233,
+      "tier": 3,
+      "slug": "the-beatles__cry-baby-cry",
+      "artist": "the beatles",
+      "title": "cry baby cry",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/cry-baby-cry",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 234,
+      "tier": 3,
+      "slug": "the-beatles__dear-prudence",
+      "artist": "the beatles",
+      "title": "dear prudence",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/dear-prudence",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 235,
+      "tier": 3,
+      "slug": "the-beatles__dont-pass-me-by",
+      "artist": "the beatles",
+      "title": "dont pass me by",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/dont-pass-me-by",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 236,
+      "tier": 3,
+      "slug": "the-beatles__every-little-thing",
+      "artist": "the beatles",
+      "title": "every little thing",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/every-little-thing",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 237,
+      "tier": 3,
+      "slug": "the-beatles__everybodys-got-something-to-hide-except-me-and-my-monkey",
+      "artist": "the beatles",
+      "title": "everybodys got something to hide except me and my monkey",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/everybodys-got-something-to-hide-except-me-and-my-monkey",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 238,
+      "tier": 3,
+      "slug": "the-beatles__fixing-a-hole",
+      "artist": "the beatles",
+      "title": "fixing a hole",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/fixing-a-hole",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 239,
+      "tier": 3,
+      "slug": "the-beatles__get-back",
+      "artist": "the beatles",
+      "title": "get back",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/get-back",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 240,
+      "tier": 3,
+      "slug": "the-beatles__getting-better",
+      "artist": "the beatles",
+      "title": "getting better",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/getting-better",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 241,
+      "tier": 3,
+      "slug": "the-beatles__glass-onion",
+      "artist": "the beatles",
+      "title": "glass onion",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/glass-onion",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 242,
+      "tier": 3,
+      "slug": "the-beatles__golden-slumbers",
+      "artist": "the beatles",
+      "title": "golden slumbers",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/golden-slumbers",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 243,
+      "tier": 3,
+      "slug": "the-beatles__good-morning-good-morning",
+      "artist": "the beatles",
+      "title": "good morning good morning",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/good-morning-good-morning",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 244,
+      "tier": 3,
+      "slug": "the-beatles__happiness-is-a-warm-gun",
+      "artist": "the beatles",
+      "title": "happiness is a warm gun",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/happiness-is-a-warm-gun",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 245,
+      "tier": 3,
+      "slug": "the-beatles__help",
+      "artist": "the beatles",
+      "title": "help",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/help",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 246,
+      "tier": 3,
+      "slug": "the-beatles__helter-skelter",
+      "artist": "the beatles",
+      "title": "helter skelter",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/helter-skelter",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 247,
+      "tier": 3,
+      "slug": "the-beatles__here-comes-the-sun",
+      "artist": "the beatles",
+      "title": "here comes the sun",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/here-comes-the-sun",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 248,
+      "tier": 3,
+      "slug": "the-beatles__hey-bulldog",
+      "artist": "the beatles",
+      "title": "hey bulldog",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/hey-bulldog",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 249,
+      "tier": 3,
+      "slug": "the-beatles__honey-dont",
+      "artist": "the beatles",
+      "title": "honey dont",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/honey-dont",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 250,
+      "tier": 3,
+      "slug": "the-beatles__honey-pie",
+      "artist": "the beatles",
+      "title": "honey pie",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/honey-pie",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 251,
+      "tier": 3,
+      "slug": "the-beatles__i-feel-fine",
+      "artist": "the beatles",
+      "title": "i feel fine",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/i-feel-fine",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 252,
+      "tier": 3,
+      "slug": "the-beatles__i-will",
+      "artist": "the beatles",
+      "title": "i will",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/i-will",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 253,
+      "tier": 3,
+      "slug": "the-beatles__im-a-loser",
+      "artist": "the beatles",
+      "title": "im a loser",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/im-a-loser",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 254,
+      "tier": 3,
+      "slug": "the-beatles__im-so-tired",
+      "artist": "the beatles",
+      "title": "im so tired",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/im-so-tired",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 255,
+      "tier": 3,
+      "slug": "the-beatles__in-my-life",
+      "artist": "the beatles",
+      "title": "in my life",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/in-my-life",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 256,
+      "tier": 3,
+      "slug": "the-beatles__julia",
+      "artist": "the beatles",
+      "title": "julia",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/julia",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 257,
+      "tier": 3,
+      "slug": "the-beatles__kansas-city",
+      "artist": "the beatles",
+      "title": "kansas city",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/kansas-city",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 258,
+      "tier": 3,
+      "slug": "the-beatles__lovely-rita",
+      "artist": "the beatles",
+      "title": "lovely rita",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/lovely-rita",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 259,
+      "tier": 3,
+      "slug": "the-beatles__martha-my-dear",
+      "artist": "the beatles",
+      "title": "martha my dear",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/martha-my-dear",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 260,
+      "tier": 3,
+      "slug": "the-beatles__mother-natures-son",
+      "artist": "the beatles",
+      "title": "mother natures son",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/mother-natures-son",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 261,
+      "tier": 3,
+      "slug": "the-beatles__mr-moonlight",
+      "artist": "the beatles",
+      "title": "mr moonlight",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/mr-moonlight",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 262,
+      "tier": 3,
+      "slug": "the-beatles__no-reply",
+      "artist": "the beatles",
+      "title": "no reply",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/no-reply",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 263,
+      "tier": 3,
+      "slug": "the-beatles__norwegian-wood",
+      "artist": "the beatles",
+      "title": "norwegian wood",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/norwegian-wood",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 264,
+      "tier": 3,
+      "slug": "the-beatles__ob-la-di-ob-la-da",
+      "artist": "the beatles",
+      "title": "ob la di ob la da",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/ob-la-di-ob-la-da",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 265,
+      "tier": 3,
+      "slug": "the-beatles__oh-darling",
+      "artist": "the beatles",
+      "title": "oh darling",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/oh-darling",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 266,
+      "tier": 3,
+      "slug": "the-beatles__paperback-writer",
+      "artist": "the beatles",
+      "title": "paperback writer",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/paperback-writer",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 267,
+      "tier": 3,
+      "slug": "the-beatles__piggies",
+      "artist": "the beatles",
+      "title": "piggies",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/piggies",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 268,
+      "tier": 3,
+      "slug": "the-beatles__revolution",
+      "artist": "the beatles",
+      "title": "revolution",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/revolution",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 269,
+      "tier": 3,
+      "slug": "the-beatles__revolution-1",
+      "artist": "the beatles",
+      "title": "revolution 1",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/revolution-1",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 270,
+      "tier": 3,
+      "slug": "the-beatles__rock-and-roll-music",
+      "artist": "the beatles",
+      "title": "rock and roll music",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/rock-and-roll-music",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 271,
+      "tier": 3,
+      "slug": "the-beatles__rocky-raccoon",
+      "artist": "the beatles",
+      "title": "rocky raccoon",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/rocky-raccoon",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 272,
+      "tier": 3,
+      "slug": "the-beatles__sexy-sadie",
+      "artist": "the beatles",
+      "title": "sexy sadie",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/sexy-sadie",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 273,
+      "tier": 3,
+      "slug": "the-beatles__sgt-peppers-lonely-hearts-club-band",
+      "artist": "the beatles",
+      "title": "sgt peppers lonely hearts club band",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/sgt-peppers-lonely-hearts-club-band",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 274,
+      "tier": 3,
+      "slug": "the-beatles__shes-a-woman",
+      "artist": "the beatles",
+      "title": "shes a woman",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/shes-a-woman",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 275,
+      "tier": 3,
+      "slug": "the-beatles__shes-leaving-home",
+      "artist": "the beatles",
+      "title": "shes leaving home",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/shes-leaving-home",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 276,
+      "tier": 3,
+      "slug": "the-beatles__the-continuing-story-of-bungalow-bill",
+      "artist": "the beatles",
+      "title": "the continuing story of bungalow bill",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/the-continuing-story-of-bungalow-bill",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 277,
+      "tier": 3,
+      "slug": "the-beatles__the-end",
+      "artist": "the beatles",
+      "title": "the end",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/the-end",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 278,
+      "tier": 3,
+      "slug": "the-beatles__the-long-and-winding-road",
+      "artist": "the beatles",
+      "title": "the long and winding road",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/the-long-and-winding-road",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 279,
+      "tier": 3,
+      "slug": "the-beatles__ticket-to-ride",
+      "artist": "the beatles",
+      "title": "ticket to ride",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/ticket-to-ride",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 280,
+      "tier": 3,
+      "slug": "the-beatles__we-can-work-it-out",
+      "artist": "the beatles",
+      "title": "we can work it out",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/we-can-work-it-out",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 281,
+      "tier": 3,
+      "slug": "the-beatles__what-youre-doing",
+      "artist": "the beatles",
+      "title": "what youre doing",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/what-youre-doing",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 282,
+      "tier": 3,
+      "slug": "the-beatles__when-im-sixty-four",
+      "artist": "the beatles",
+      "title": "when im sixty four",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/when-im-sixty-four",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 283,
+      "tier": 3,
+      "slug": "the-beatles__why-dont-we-do-it-in-the-road",
+      "artist": "the beatles",
+      "title": "why dont we do it in the road",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/why-dont-we-do-it-in-the-road",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 284,
+      "tier": 3,
+      "slug": "the-beatles__wild-honey-pie",
+      "artist": "the beatles",
+      "title": "wild honey pie",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/wild-honey-pie",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 285,
+      "tier": 3,
+      "slug": "the-beatles__with-a-little-help-from-my-friends",
+      "artist": "the beatles",
+      "title": "with a little help from my friends",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/with-a-little-help-from-my-friends",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 286,
+      "tier": 3,
+      "slug": "the-beatles__within-you-without-you",
+      "artist": "the beatles",
+      "title": "within you without you",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/within-you-without-you",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 287,
+      "tier": 3,
+      "slug": "the-beatles__words-of-love",
+      "artist": "the beatles",
+      "title": "words of love",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/words-of-love",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 288,
+      "tier": 3,
+      "slug": "the-beatles__yesterday",
+      "artist": "the beatles",
+      "title": "yesterday",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/yesterday",
+      "source": "seed:tier3"
+    },
+    {
+      "rank": 295,
+      "tier": 3,
+      "slug": "pink-floyd__breathe",
+      "artist": "pink floyd",
+      "title": "breathe",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/breathe",
+      "source": "corpus2.json"
+    },
+    {
+      "rank": 305,
+      "tier": 4,
+      "slug": "amy-winehouse__rehab",
+      "artist": "amy winehouse",
+      "title": "rehab",
+      "url": "https://www.hooktheory.com/theorytab/view/amy-winehouse/rehab",
+      "source": "corpus2.json:alt"
+    },
+    {
+      "rank": 306,
+      "tier": 4,
+      "slug": "daft-punk__get-lucky",
+      "artist": "daft punk",
+      "title": "get lucky",
+      "url": "https://www.hooktheory.com/theorytab/view/daft-punk/get-lucky",
+      "source": "corpus.json:alt"
+    },
+    {
+      "rank": 307,
+      "tier": 4,
+      "slug": "david-bowie__life-on-mars",
+      "artist": "david bowie",
+      "title": "life on mars",
+      "url": "https://www.hooktheory.com/theorytab/view/david-bowie/life-on-mars",
+      "source": "corpus2.json:alt"
+    },
+    {
+      "rank": 308,
+      "tier": 4,
+      "slug": "red-hot-chili-peppers__californication",
+      "artist": "red hot chili peppers",
+      "title": "californication",
+      "url": "https://www.hooktheory.com/theorytab/view/red-hot-chili-peppers/californication",
+      "source": "corpus2.json:alt"
+    },
+    {
+      "rank": 309,
+      "tier": 4,
+      "slug": "simon-and-garfunkel__the-sound-of-silence",
+      "artist": "simon and garfunkel",
+      "title": "the sound of silence",
+      "url": "https://www.hooktheory.com/theorytab/view/simon-and-garfunkel/the-sound-of-silence",
+      "source": "corpus.json:alt"
+    },
+    {
+      "rank": 310,
+      "tier": 4,
+      "slug": "the-beatles__strawberry-fields-forever",
+      "artist": "the beatles",
+      "title": "strawberry fields forever",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/strawberry-fields-forever",
+      "source": "corpus2.json:alt"
+    },
+    {
+      "rank": 311,
+      "tier": 4,
+      "slug": "the-doors__riders-on-the-storm",
+      "artist": "the doors",
+      "title": "riders on the storm",
+      "url": "https://www.hooktheory.com/theorytab/view/the-doors/riders-on-the-storm",
+      "source": "corpus2.json:alt"
+    },
+    {
+      "rank": 312,
+      "tier": 4,
+      "slug": "david-bowie__heroes",
+      "artist": "david bowie",
+      "title": "heroes",
+      "url": "https://www.hooktheory.com/theorytab/view/david-bowie/heroes",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 313,
+      "tier": 4,
+      "slug": "lady-gaga__bad-romance",
+      "artist": "lady gaga",
+      "title": "bad romance",
+      "url": "https://www.hooktheory.com/theorytab/view/lady-gaga/bad-romance",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 314,
+      "tier": 4,
+      "slug": "pink-floyd__another-brick-in-the-wall",
+      "artist": "pink floyd",
+      "title": "another brick in the wall",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/another-brick-in-the-wall",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 315,
+      "tier": 4,
+      "slug": "pink-floyd__another-brick-in-the-wall-part-2",
+      "artist": "pink floyd",
+      "title": "another brick in the wall part 2",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/another-brick-in-the-wall-part-2",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 316,
+      "tier": 4,
+      "slug": "pink-floyd__brain-damage",
+      "artist": "pink floyd",
+      "title": "brain damage",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/brain-damage",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 317,
+      "tier": 4,
+      "slug": "pink-floyd__bring-the-boys-back-home",
+      "artist": "pink floyd",
+      "title": "bring the boys back home",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/bring-the-boys-back-home",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 318,
+      "tier": 4,
+      "slug": "pink-floyd__comfortably-numb",
+      "artist": "pink floyd",
+      "title": "comfortably numb",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/comfortably-numb",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 319,
+      "tier": 4,
+      "slug": "pink-floyd__dont-leave-me-now",
+      "artist": "pink floyd",
+      "title": "dont leave me now",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/dont-leave-me-now",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 320,
+      "tier": 4,
+      "slug": "pink-floyd__eclipse",
+      "artist": "pink floyd",
+      "title": "eclipse",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/eclipse",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 321,
+      "tier": 4,
+      "slug": "pink-floyd__empty-spaces",
+      "artist": "pink floyd",
+      "title": "empty spaces",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/empty-spaces",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 322,
+      "tier": 4,
+      "slug": "pink-floyd__goodbye-blue-sky",
+      "artist": "pink floyd",
+      "title": "goodbye blue sky",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/goodbye-blue-sky",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 323,
+      "tier": 4,
+      "slug": "pink-floyd__goodbye-cruel-world",
+      "artist": "pink floyd",
+      "title": "goodbye cruel world",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/goodbye-cruel-world",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 324,
+      "tier": 4,
+      "slug": "pink-floyd__great-gig-in-the-sky",
+      "artist": "pink floyd",
+      "title": "great gig in the sky",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/great-gig-in-the-sky",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 325,
+      "tier": 4,
+      "slug": "pink-floyd__hey-you",
+      "artist": "pink floyd",
+      "title": "hey you",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/hey-you",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 326,
+      "tier": 4,
+      "slug": "pink-floyd__in-the-flesh",
+      "artist": "pink floyd",
+      "title": "in the flesh",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/in-the-flesh",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 327,
+      "tier": 4,
+      "slug": "pink-floyd__is-there-anybody-out-there",
+      "artist": "pink floyd",
+      "title": "is there anybody out there",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/is-there-anybody-out-there",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 328,
+      "tier": 4,
+      "slug": "pink-floyd__mother",
+      "artist": "pink floyd",
+      "title": "mother",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/mother",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 329,
+      "tier": 4,
+      "slug": "pink-floyd__nobody-home",
+      "artist": "pink floyd",
+      "title": "nobody home",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/nobody-home",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 330,
+      "tier": 4,
+      "slug": "pink-floyd__on-the-run",
+      "artist": "pink floyd",
+      "title": "on the run",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/on-the-run",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 331,
+      "tier": 4,
+      "slug": "pink-floyd__one-of-my-turns",
+      "artist": "pink floyd",
+      "title": "one of my turns",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/one-of-my-turns",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 332,
+      "tier": 4,
+      "slug": "pink-floyd__outside-the-wall",
+      "artist": "pink floyd",
+      "title": "outside the wall",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/outside-the-wall",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 333,
+      "tier": 4,
+      "slug": "pink-floyd__run-like-hell",
+      "artist": "pink floyd",
+      "title": "run like hell",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/run-like-hell",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 334,
+      "tier": 4,
+      "slug": "pink-floyd__shine-on-you-crazy-diamond",
+      "artist": "pink floyd",
+      "title": "shine on you crazy diamond",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/shine-on-you-crazy-diamond",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 335,
+      "tier": 4,
+      "slug": "pink-floyd__speak-to-me",
+      "artist": "pink floyd",
+      "title": "speak to me",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/speak-to-me",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 336,
+      "tier": 4,
+      "slug": "pink-floyd__stop",
+      "artist": "pink floyd",
+      "title": "stop",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/stop",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 337,
+      "tier": 4,
+      "slug": "pink-floyd__the-show-must-go-on",
+      "artist": "pink floyd",
+      "title": "the show must go on",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/the-show-must-go-on",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 338,
+      "tier": 4,
+      "slug": "pink-floyd__the-thin-ice",
+      "artist": "pink floyd",
+      "title": "the thin ice",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/the-thin-ice",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 339,
+      "tier": 4,
+      "slug": "pink-floyd__the-trial",
+      "artist": "pink floyd",
+      "title": "the trial",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/the-trial",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 340,
+      "tier": 4,
+      "slug": "pink-floyd__time",
+      "artist": "pink floyd",
+      "title": "time",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/time",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 341,
+      "tier": 4,
+      "slug": "pink-floyd__us-and-them",
+      "artist": "pink floyd",
+      "title": "us and them",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/us-and-them",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 342,
+      "tier": 4,
+      "slug": "pink-floyd__vera",
+      "artist": "pink floyd",
+      "title": "vera",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/vera",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 343,
+      "tier": 4,
+      "slug": "pink-floyd__waiting-for-the-worms",
+      "artist": "pink floyd",
+      "title": "waiting for the worms",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/waiting-for-the-worms",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 344,
+      "tier": 4,
+      "slug": "pink-floyd__wish-you-were-here",
+      "artist": "pink floyd",
+      "title": "wish you were here",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/wish-you-were-here",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 345,
+      "tier": 4,
+      "slug": "pink-floyd__young-lust",
+      "artist": "pink floyd",
+      "title": "young lust",
+      "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/young-lust",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 346,
+      "tier": 4,
+      "slug": "radiohead__2-2-5",
+      "artist": "radiohead",
+      "title": "2 2 5",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/2-2-5",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 347,
+      "tier": 4,
+      "slug": "radiohead__airbag",
+      "artist": "radiohead",
+      "title": "airbag",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/airbag",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 348,
+      "tier": 4,
+      "slug": "radiohead__all-i-need",
+      "artist": "radiohead",
+      "title": "all i need",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/all-i-need",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 349,
+      "tier": 4,
+      "slug": "radiohead__bodysnatchers",
+      "artist": "radiohead",
+      "title": "bodysnatchers",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/bodysnatchers",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 350,
+      "tier": 4,
+      "slug": "radiohead__everything-in-its-right-place",
+      "artist": "radiohead",
+      "title": "everything in its right place",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/everything-in-its-right-place",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 351,
+      "tier": 4,
+      "slug": "radiohead__exit-music",
+      "artist": "radiohead",
+      "title": "exit music",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/exit-music",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 352,
+      "tier": 4,
+      "slug": "radiohead__fake-plastic-trees",
+      "artist": "radiohead",
+      "title": "fake plastic trees",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/fake-plastic-trees",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 353,
+      "tier": 4,
+      "slug": "radiohead__faust-arpeggi",
+      "artist": "radiohead",
+      "title": "faust arpeggi",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/faust-arpeggi",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 354,
+      "tier": 4,
+      "slug": "radiohead__high-and-dry",
+      "artist": "radiohead",
+      "title": "high and dry",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/high-and-dry",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 355,
+      "tier": 4,
+      "slug": "radiohead__house-of-cards",
+      "artist": "radiohead",
+      "title": "house of cards",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/house-of-cards",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 356,
+      "tier": 4,
+      "slug": "radiohead__how-to-disappear-completely",
+      "artist": "radiohead",
+      "title": "how to disappear completely",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/how-to-disappear-completely",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 357,
+      "tier": 4,
+      "slug": "radiohead__idioteque",
+      "artist": "radiohead",
+      "title": "idioteque",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/idioteque",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 358,
+      "tier": 4,
+      "slug": "radiohead__jigsaw-falling-into-place",
+      "artist": "radiohead",
+      "title": "jigsaw falling into place",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/jigsaw-falling-into-place",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 359,
+      "tier": 4,
+      "slug": "radiohead__just",
+      "artist": "radiohead",
+      "title": "just",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/just",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 360,
+      "tier": 4,
+      "slug": "radiohead__knives-out",
+      "artist": "radiohead",
+      "title": "knives out",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/knives-out",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 361,
+      "tier": 4,
+      "slug": "radiohead__let-down",
+      "artist": "radiohead",
+      "title": "let down",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/let-down",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 362,
+      "tier": 4,
+      "slug": "radiohead__life-in-a-glasshouse",
+      "artist": "radiohead",
+      "title": "life in a glasshouse",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/life-in-a-glasshouse",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 363,
+      "tier": 4,
+      "slug": "radiohead__morning-bell",
+      "artist": "radiohead",
+      "title": "morning bell",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/morning-bell",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 364,
+      "tier": 4,
+      "slug": "radiohead__motion-picture-soundtrack",
+      "artist": "radiohead",
+      "title": "motion picture soundtrack",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/motion-picture-soundtrack",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 365,
+      "tier": 4,
+      "slug": "radiohead__my-iron-lung",
+      "artist": "radiohead",
+      "title": "my iron lung",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/my-iron-lung",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 366,
+      "tier": 4,
+      "slug": "radiohead__no-surprises",
+      "artist": "radiohead",
+      "title": "no surprises",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/no-surprises",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 367,
+      "tier": 4,
+      "slug": "radiohead__nude",
+      "artist": "radiohead",
+      "title": "nude",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/nude",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 368,
+      "tier": 4,
+      "slug": "radiohead__optimistic",
+      "artist": "radiohead",
+      "title": "optimistic",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/optimistic",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 369,
+      "tier": 4,
+      "slug": "radiohead__paranoid-android",
+      "artist": "radiohead",
+      "title": "paranoid android",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/paranoid-android",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 370,
+      "tier": 4,
+      "slug": "radiohead__pyramid-song",
+      "artist": "radiohead",
+      "title": "pyramid song",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/pyramid-song",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 371,
+      "tier": 4,
+      "slug": "radiohead__reckoner",
+      "artist": "radiohead",
+      "title": "reckoner",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/reckoner",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 372,
+      "tier": 4,
+      "slug": "radiohead__street-spirit",
+      "artist": "radiohead",
+      "title": "street spirit",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/street-spirit",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 373,
+      "tier": 4,
+      "slug": "radiohead__subterranean-homesick-alien",
+      "artist": "radiohead",
+      "title": "subterranean homesick alien",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/subterranean-homesick-alien",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 374,
+      "tier": 4,
+      "slug": "radiohead__the-bends",
+      "artist": "radiohead",
+      "title": "the bends",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/the-bends",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 375,
+      "tier": 4,
+      "slug": "radiohead__videotape",
+      "artist": "radiohead",
+      "title": "videotape",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/videotape",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 376,
+      "tier": 4,
+      "slug": "radiohead__weird-fishes",
+      "artist": "radiohead",
+      "title": "weird fishes",
+      "url": "https://www.hooktheory.com/theorytab/view/radiohead/weird-fishes",
+      "source": "seed:tier4"
+    },
+    {
+      "rank": 377,
+      "tier": 4,
+      "slug": "tlc__creep",
+      "artist": "tlc",
+      "title": "creep",
+      "url": "https://www.hooktheory.com/theorytab/view/tlc/creep",
+      "source": "discovered"
+    },
+    {
+      "rank": 378,
+      "tier": 4,
+      "slug": "antonio-carlos-jobim__corcovado",
+      "artist": "antonio carlos jobim",
+      "title": "corcovado",
+      "url": "https://www.hooktheory.com/theorytab/view/antonio-carlos-jobim/corcovado",
+      "source": "corpus.json:alt"
+    },
+    {
+      "rank": 379,
+      "tier": 4,
+      "slug": "antonio-carlos-jobim__the-girl-from-ipanema",
+      "artist": "antonio carlos jobim",
+      "title": "the girl from ipanema",
+      "url": "https://www.hooktheory.com/theorytab/view/antonio-carlos-jobim/the-girl-from-ipanema",
+      "source": "corpus.json"
+    },
+    {
+      "rank": 380,
+      "tier": 4,
+      "slug": "antonio-carlos-jobim__wave",
+      "artist": "antonio carlos jobim",
+      "title": "wave",
+      "url": "https://www.hooktheory.com/theorytab/view/antonio-carlos-jobim/wave",
+      "source": "corpus2.json:alt"
+    },
+    {
+      "rank": 381,
+      "tier": 4,
+      "slug": "bill-evans__waltz-for-debby",
+      "artist": "bill evans",
+      "title": "waltz for debby",
+      "url": "https://www.hooktheory.com/theorytab/view/bill-evans/waltz-for-debby",
+      "source": "corpus2.json"
+    },
+    {
+      "rank": 382,
+      "tier": 4,
+      "slug": "chick-corea__spain",
+      "artist": "chick corea",
+      "title": "spain",
+      "url": "https://www.hooktheory.com/theorytab/view/chick-corea/spain",
+      "source": "corpus2.json"
+    },
+    {
+      "rank": 383,
+      "tier": 4,
+      "slug": "claude-debussy__clair-de-lune",
+      "artist": "claude debussy",
+      "title": "clair de lune",
+      "url": "https://www.hooktheory.com/theorytab/view/claude-debussy/clair-de-lune",
+      "source": "corpus.json:alt"
+    },
+    {
+      "rank": 388,
+      "tier": 4,
+      "slug": "frederic-chopin__nocturne-op-9-no-2",
+      "artist": "frederic chopin",
+      "title": "nocturne op 9 no 2",
+      "url": "https://www.hooktheory.com/theorytab/view/frederic-chopin/nocturne-op-9-no-2",
+      "source": "corpus.json"
+    },
+    {
+      "rank": 390,
+      "tier": 4,
+      "slug": "herbie-hancock__cantaloupe-island",
+      "artist": "herbie hancock",
+      "title": "cantaloupe island",
+      "url": "https://www.hooktheory.com/theorytab/view/herbie-hancock/cantaloupe-island",
+      "source": "corpus.json:alt"
+    },
+    {
+      "rank": 392,
+      "tier": 4,
+      "slug": "joe-henderson__recorda-me",
+      "artist": "joe henderson",
+      "title": "recorda me",
+      "url": "https://www.hooktheory.com/theorytab/view/joe-henderson/recorda-me",
+      "source": "corpus2.json:alt"
+    },
+    {
+      "rank": 394,
+      "tier": 4,
+      "slug": "john-coltrane__naima",
+      "artist": "john coltrane",
+      "title": "naima",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/naima",
+      "source": "corpus2.json"
+    },
+    {
+      "rank": 395,
+      "tier": 4,
+      "slug": "joseph-kosma__autumn-leaves",
+      "artist": "joseph kosma",
+      "title": "autumn leaves",
+      "url": "https://www.hooktheory.com/theorytab/view/joseph-kosma/autumn-leaves",
+      "source": "corpus.json"
+    },
+    {
+      "rank": 398,
+      "tier": 4,
+      "slug": "pat-metheny__spain",
+      "artist": "pat metheny",
+      "title": "spain",
+      "url": "https://www.hooktheory.com/theorytab/view/pat-metheny/spain",
+      "source": "corpus2.json:alt"
+    },
+    {
+      "rank": 400,
+      "tier": 4,
+      "slug": "sonny-rollins__st-thomas",
+      "artist": "sonny rollins",
+      "title": "st thomas",
+      "url": "https://www.hooktheory.com/theorytab/view/sonny-rollins/st-thomas",
+      "source": "corpus2.json:alt"
+    },
+    {
+      "rank": 402,
+      "tier": 5,
+      "slug": "vince-guaraldi__linus-and-lucy",
+      "artist": "vince guaraldi",
+      "title": "linus and lucy",
+      "url": "https://www.hooktheory.com/theorytab/view/vince-guaraldi/linus-and-lucy",
+      "source": "corpus2.json:alt"
+    },
+    {
+      "rank": 403,
+      "tier": 5,
+      "slug": "wes-montgomery__four-on-six",
+      "artist": "wes montgomery",
+      "title": "four on six",
+      "url": "https://www.hooktheory.com/theorytab/view/wes-montgomery/four-on-six",
+      "source": "corpus2.json"
+    },
+    {
+      "rank": 404,
+      "tier": 5,
+      "slug": "duke-ellington__caravan",
+      "artist": "duke ellington",
+      "title": "caravan",
+      "url": "https://www.hooktheory.com/theorytab/view/duke-ellington/caravan",
+      "source": "corpus2.json:alt"
+    },
+    {
+      "rank": 405,
+      "tier": 5,
+      "slug": "miles-davis__freddie-freeloader",
+      "artist": "miles davis",
+      "title": "freddie freeloader",
+      "url": "https://www.hooktheory.com/theorytab/view/miles-davis/freddie-freeloader",
+      "source": "corpus2.json:alt"
+    },
+    {
+      "rank": 406,
+      "tier": 5,
+      "slug": "the-beatles__michelle",
+      "artist": "the beatles",
+      "title": "michelle",
+      "url": "https://www.hooktheory.com/theorytab/view/the-beatles/michelle",
+      "source": "corpus.json:alt"
+    },
+    {
+      "rank": 407,
+      "tier": 5,
+      "slug": "billie-holiday__god-bless-the-child",
+      "artist": "billie holiday",
+      "title": "god bless the child",
+      "url": "https://www.hooktheory.com/theorytab/view/billie-holiday/god-bless-the-child",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 408,
+      "tier": 5,
+      "slug": "billie-holiday__strange-fruit",
+      "artist": "billie holiday",
+      "title": "strange fruit",
+      "url": "https://www.hooktheory.com/theorytab/view/billie-holiday/strange-fruit",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 409,
+      "tier": 5,
+      "slug": "charlie-parker__all-the-things-you-are",
+      "artist": "charlie parker",
+      "title": "all the things you are",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/all-the-things-you-are",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 410,
+      "tier": 5,
+      "slug": "charlie-parker__anthropology",
+      "artist": "charlie parker",
+      "title": "anthropology",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/anthropology",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 411,
+      "tier": 5,
+      "slug": "charlie-parker__au-privave",
+      "artist": "charlie parker",
+      "title": "au privave",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/au-privave",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 412,
+      "tier": 5,
+      "slug": "charlie-parker__barbara",
+      "artist": "charlie parker",
+      "title": "barbara",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/barbara",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 413,
+      "tier": 5,
+      "slug": "charlie-parker__billies-bounce",
+      "artist": "charlie parker",
+      "title": "billies bounce",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/billies-bounce",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 414,
+      "tier": 5,
+      "slug": "charlie-parker__bloomdido",
+      "artist": "charlie parker",
+      "title": "bloomdido",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/bloomdido",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 415,
+      "tier": 5,
+      "slug": "charlie-parker__blue-bird",
+      "artist": "charlie parker",
+      "title": "blue bird",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/blue-bird",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 416,
+      "tier": 5,
+      "slug": "charlie-parker__cherokee",
+      "artist": "charlie parker",
+      "title": "cherokee",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/cherokee",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 417,
+      "tier": 5,
+      "slug": "charlie-parker__confirmation",
+      "artist": "charlie parker",
+      "title": "confirmation",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/confirmation",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 418,
+      "tier": 5,
+      "slug": "charlie-parker__constellation",
+      "artist": "charlie parker",
+      "title": "constellation",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/constellation",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 419,
+      "tier": 5,
+      "slug": "charlie-parker__cool-blues",
+      "artist": "charlie parker",
+      "title": "cool blues",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/cool-blues",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 420,
+      "tier": 5,
+      "slug": "charlie-parker__dewey-square",
+      "artist": "charlie parker",
+      "title": "dewey square",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/dewey-square",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 421,
+      "tier": 5,
+      "slug": "charlie-parker__donna-lee",
+      "artist": "charlie parker",
+      "title": "donna lee",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/donna-lee",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 422,
+      "tier": 5,
+      "slug": "charlie-parker__embraceable-you",
+      "artist": "charlie parker",
+      "title": "embraceable you",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/embraceable-you",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 423,
+      "tier": 5,
+      "slug": "charlie-parker__how-high-the-moon",
+      "artist": "charlie parker",
+      "title": "how high the moon",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/how-high-the-moon",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 424,
+      "tier": 5,
+      "slug": "charlie-parker__i-got-rhythm",
+      "artist": "charlie parker",
+      "title": "i got rhythm",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/i-got-rhythm",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 425,
+      "tier": 5,
+      "slug": "charlie-parker__kc-blues",
+      "artist": "charlie parker",
+      "title": "kc blues",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/kc-blues",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 426,
+      "tier": 5,
+      "slug": "charlie-parker__ko-ko",
+      "artist": "charlie parker",
+      "title": "ko ko",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/ko-ko",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 427,
+      "tier": 5,
+      "slug": "charlie-parker__little-willow",
+      "artist": "charlie parker",
+      "title": "little willow",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/little-willow",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 428,
+      "tier": 5,
+      "slug": "charlie-parker__marmaduke",
+      "artist": "charlie parker",
+      "title": "marmaduke",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/marmaduke",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 429,
+      "tier": 5,
+      "slug": "charlie-parker__maybeck",
+      "artist": "charlie parker",
+      "title": "maybeck",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/maybeck",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 430,
+      "tier": 5,
+      "slug": "charlie-parker__moose-the-mooche",
+      "artist": "charlie parker",
+      "title": "moose the mooche",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/moose-the-mooche",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 431,
+      "tier": 5,
+      "slug": "charlie-parker__my-little-suede-shoes",
+      "artist": "charlie parker",
+      "title": "my little suede shoes",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/my-little-suede-shoes",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 432,
+      "tier": 5,
+      "slug": "charlie-parker__nows-the-time",
+      "artist": "charlie parker",
+      "title": "nows the time",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/nows-the-time",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 433,
+      "tier": 5,
+      "slug": "charlie-parker__ornithology",
+      "artist": "charlie parker",
+      "title": "ornithology",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/ornithology",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 434,
+      "tier": 5,
+      "slug": "charlie-parker__out-of-nowhere",
+      "artist": "charlie parker",
+      "title": "out of nowhere",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/out-of-nowhere",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 435,
+      "tier": 5,
+      "slug": "charlie-parker__parker-mood",
+      "artist": "charlie parker",
+      "title": "parker mood",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/parker-mood",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 436,
+      "tier": 5,
+      "slug": "charlie-parker__relaxin-at-camarillo",
+      "artist": "charlie parker",
+      "title": "relaxin at camarillo",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/relaxin-at-camarillo",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 437,
+      "tier": 5,
+      "slug": "charlie-parker__scrapple-from-the-apple",
+      "artist": "charlie parker",
+      "title": "scrapple from the apple",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/scrapple-from-the-apple",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 438,
+      "tier": 5,
+      "slug": "charlie-parker__shaw-nuff",
+      "artist": "charlie parker",
+      "title": "shaw nuff",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/shaw-nuff",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 439,
+      "tier": 5,
+      "slug": "charlie-parker__sly",
+      "artist": "charlie parker",
+      "title": "sly",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/sly",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 440,
+      "tier": 5,
+      "slug": "charlie-parker__steeplechase",
+      "artist": "charlie parker",
+      "title": "steeplechase",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/steeplechase",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 441,
+      "tier": 5,
+      "slug": "charlie-parker__stella-by-starlight",
+      "artist": "charlie parker",
+      "title": "stella by starlight",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/stella-by-starlight",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 442,
+      "tier": 5,
+      "slug": "charlie-parker__the-hymn",
+      "artist": "charlie parker",
+      "title": "the hymn",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/the-hymn",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 443,
+      "tier": 5,
+      "slug": "charlie-parker__visa",
+      "artist": "charlie parker",
+      "title": "visa",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/visa",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 444,
+      "tier": 5,
+      "slug": "charlie-parker__warming-up-a-riff",
+      "artist": "charlie parker",
+      "title": "warming up a riff",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/warming-up-a-riff",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 445,
+      "tier": 5,
+      "slug": "charlie-parker__yarbird-suite",
+      "artist": "charlie parker",
+      "title": "yarbird suite",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/yarbird-suite",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 446,
+      "tier": 5,
+      "slug": "charlie-parker__yardbird-suite",
+      "artist": "charlie parker",
+      "title": "yardbird suite",
+      "url": "https://www.hooktheory.com/theorytab/view/charlie-parker/yardbird-suite",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 447,
+      "tier": 5,
+      "slug": "chet-baker__my-funny-valentine",
+      "artist": "chet baker",
+      "title": "my funny valentine",
+      "url": "https://www.hooktheory.com/theorytab/view/chet-baker/my-funny-valentine",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 448,
+      "tier": 5,
+      "slug": "ella-fitzgerald__summertime",
+      "artist": "ella fitzgerald",
+      "title": "summertime",
+      "url": "https://www.hooktheory.com/theorytab/view/ella-fitzgerald/summertime",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 449,
+      "tier": 5,
+      "slug": "john-coltrane__26-2",
+      "artist": "john coltrane",
+      "title": "26 2",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/26-2",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 450,
+      "tier": 5,
+      "slug": "john-coltrane__afro-blue",
+      "artist": "john coltrane",
+      "title": "afro blue",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/afro-blue",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 451,
+      "tier": 5,
+      "slug": "john-coltrane__after-the-carnival",
+      "artist": "john coltrane",
+      "title": "after the carnival",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/after-the-carnival",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 452,
+      "tier": 5,
+      "slug": "john-coltrane__after-the-rain",
+      "artist": "john coltrane",
+      "title": "after the rain",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/after-the-rain",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 453,
+      "tier": 5,
+      "slug": "john-coltrane__bessies-blues",
+      "artist": "john coltrane",
+      "title": "bessies blues",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/bessies-blues",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 454,
+      "tier": 5,
+      "slug": "john-coltrane__big-nick",
+      "artist": "john coltrane",
+      "title": "big nick",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/big-nick",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 455,
+      "tier": 5,
+      "slug": "john-coltrane__blue-train",
+      "artist": "john coltrane",
+      "title": "blue train",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/blue-train",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 456,
+      "tier": 5,
+      "slug": "john-coltrane__central-park-west",
+      "artist": "john coltrane",
+      "title": "central park west",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/central-park-west",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 457,
+      "tier": 5,
+      "slug": "john-coltrane__countdown",
+      "artist": "john coltrane",
+      "title": "countdown",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/countdown",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 458,
+      "tier": 5,
+      "slug": "john-coltrane__crescent",
+      "artist": "john coltrane",
+      "title": "crescent",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/crescent",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 459,
+      "tier": 5,
+      "slug": "john-coltrane__dear-lord",
+      "artist": "john coltrane",
+      "title": "dear lord",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/dear-lord",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 460,
+      "tier": 5,
+      "slug": "john-coltrane__equinox",
+      "artist": "john coltrane",
+      "title": "equinox",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/equinox",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 461,
+      "tier": 5,
+      "slug": "john-coltrane__impressions",
+      "artist": "john coltrane",
+      "title": "impressions",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/impressions",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 462,
+      "tier": 5,
+      "slug": "john-coltrane__lazy-bird",
+      "artist": "john coltrane",
+      "title": "lazy bird",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/lazy-bird",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 463,
+      "tier": 5,
+      "slug": "john-coltrane__like-sonny",
+      "artist": "john coltrane",
+      "title": "like sonny",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/like-sonny",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 464,
+      "tier": 5,
+      "slug": "john-coltrane__locomotion",
+      "artist": "john coltrane",
+      "title": "locomotion",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/locomotion",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 465,
+      "tier": 5,
+      "slug": "john-coltrane__moment-s-notice",
+      "artist": "john coltrane",
+      "title": "moment s notice",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/moment-s-notice",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 466,
+      "tier": 5,
+      "slug": "john-coltrane__mr-pc",
+      "artist": "john coltrane",
+      "title": "mr pc",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/mr-pc",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 467,
+      "tier": 5,
+      "slug": "john-coltrane__some-other-blues",
+      "artist": "john coltrane",
+      "title": "some other blues",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/some-other-blues",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 468,
+      "tier": 5,
+      "slug": "john-coltrane__spiral",
+      "artist": "john coltrane",
+      "title": "spiral",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/spiral",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 469,
+      "tier": 5,
+      "slug": "john-coltrane__syeedas-song-flute",
+      "artist": "john coltrane",
+      "title": "syeedas song flute",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/syeedas-song-flute",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 470,
+      "tier": 5,
+      "slug": "john-coltrane__the-night-has-a-thousand-eyes",
+      "artist": "john coltrane",
+      "title": "the night has a thousand eyes",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/the-night-has-a-thousand-eyes",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 471,
+      "tier": 5,
+      "slug": "john-coltrane__tunji",
+      "artist": "john coltrane",
+      "title": "tunji",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/tunji",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 472,
+      "tier": 5,
+      "slug": "john-coltrane__wise-one",
+      "artist": "john coltrane",
+      "title": "wise one",
+      "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/wise-one",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 473,
+      "tier": 5,
+      "slug": "nat-king-cole__unchained-melody",
+      "artist": "nat king cole",
+      "title": "unchained melody",
+      "url": "https://www.hooktheory.com/theorytab/view/nat-king-cole/unchained-melody",
+      "source": "seed:tier5"
+    },
+    {
+      "rank": 474,
+      "tier": 5,
+      "slug": "arctic-monkeys__505",
+      "artist": "arctic monkeys",
+      "title": "505",
+      "url": "https://www.hooktheory.com/theorytab/view/arctic-monkeys/505",
+      "source": "discovered"
+    },
+    {
+      "rank": 475,
+      "tier": 5,
+      "slug": "arctic-monkeys__r-u-mine",
+      "artist": "arctic monkeys",
+      "title": "r u mine",
+      "url": "https://www.hooktheory.com/theorytab/view/arctic-monkeys/r-u-mine",
+      "source": "discovered"
+    },
+    {
+      "rank": 476,
+      "tier": 5,
+      "slug": "faith-evans__love-like-this",
+      "artist": "faith evans",
+      "title": "love like this",
+      "url": "https://www.hooktheory.com/theorytab/view/faith-evans/love-like-this",
+      "source": "discovered"
+    },
+    {
+      "rank": 477,
+      "tier": 5,
+      "slug": "frank-sinatra__o-little-town-of-bethlehem",
+      "artist": "frank sinatra",
+      "title": "o little town of bethlehem",
+      "url": "https://www.hooktheory.com/theorytab/view/frank-sinatra/o-little-town-of-bethlehem",
+      "source": "discovered"
+    },
+    {
+      "rank": 478,
+      "tier": 5,
+      "slug": "nintendo__earthbound-zero---pollyanna",
+      "artist": "nintendo",
+      "title": "earthbound zero   pollyanna",
+      "url": "https://www.hooktheory.com/theorytab/view/nintendo/earthbound-zero---pollyanna",
+      "source": "cache"
+    }
+  ]
+}

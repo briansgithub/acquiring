@@ -1,0 +1,938 @@
+[
+  {
+    "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+    "song": "gustav-holst__mars---bringer-of-war",
+    "section": "Pre-Chorus",
+    "beat": 18,
+    "key": {
+      "tonic": "C",
+      "scale": "phrygianDominant"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 18,
+      "duration": 1.5,
+      "type": 11,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "lydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I△11(#9)(lyd)",
+    "truthLetter": "Cmaj7(#9#11)",
+    "truthPcs": [
+      0,
+      3,
+      4,
+      6,
+      7,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I△¹¹(#9)(#11)(lyd)",
+    "engLetter": "Cmaj11",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3",
+      "B3",
+      "Eb4",
+      "Gb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      4,
+      6,
+      7,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=11",
+      "inversion=0",
+      "applied=no",
+      "borrowed=lydian",
+      "alterations=#9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/28",
+    "song": "gustav-holst__mars---bringer-of-war",
+    "section": "Pre-Chorus",
+    "beat": 28,
+    "key": {
+      "tonic": "C",
+      "scale": "phrygianDominant"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 28,
+      "duration": 1.5,
+      "type": 11,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "lydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I△11(#9)(lyd)",
+    "truthLetter": "Cmaj7(#9#11)",
+    "truthPcs": [
+      0,
+      3,
+      4,
+      6,
+      7,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I△¹¹(#9)(#11)(lyd)",
+    "engLetter": "Cmaj11",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3",
+      "B3",
+      "Eb4",
+      "Gb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      4,
+      6,
+      7,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=11",
+      "inversion=0",
+      "applied=no",
+      "borrowed=lydian",
+      "alterations=#9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/40",
+    "song": "gustav-holst__mars---bringer-of-war",
+    "section": "Pre-Chorus",
+    "beat": 40,
+    "key": {
+      "tonic": "C",
+      "scale": "phrygianDominant"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 40,
+      "duration": 1,
+      "type": 11,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "lydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I△11(#9)(lyd)",
+    "truthLetter": "Cmaj7(#9#11)",
+    "truthPcs": [
+      0,
+      3,
+      4,
+      6,
+      7,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I△¹¹(#9)(#11)(lyd)",
+    "engLetter": "Cmaj11",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3",
+      "B3",
+      "Eb4",
+      "Gb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      4,
+      6,
+      7,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=11",
+      "inversion=0",
+      "applied=no",
+      "borrowed=lydian",
+      "alterations=#9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/49",
+    "song": "gustav-holst__mars---bringer-of-war",
+    "section": "Pre-Chorus",
+    "beat": 49,
+    "key": {
+      "tonic": "C",
+      "scale": "phrygianDominant"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 49,
+      "duration": 1.5,
+      "type": 11,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "lydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I△11(#9)(lyd)",
+    "truthLetter": "Cmaj7(#9#11)",
+    "truthPcs": [
+      0,
+      3,
+      4,
+      6,
+      7,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I△¹¹(#9)(#11)(lyd)",
+    "engLetter": "Cmaj11",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3",
+      "B3",
+      "Eb4",
+      "Gb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      4,
+      6,
+      7,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=11",
+      "inversion=0",
+      "applied=no",
+      "borrowed=lydian",
+      "alterations=#9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/53",
+    "song": "gustav-holst__mars---bringer-of-war",
+    "section": "Pre-Chorus",
+    "beat": 53,
+    "key": {
+      "tonic": "C",
+      "scale": "phrygianDominant"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 53,
+      "duration": 1.5,
+      "type": 11,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "lydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I△11(#9)(lyd)",
+    "truthLetter": "Cmaj7(#9#11)",
+    "truthPcs": [
+      0,
+      3,
+      4,
+      6,
+      7,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I△¹¹(#9)(#11)(lyd)",
+    "engLetter": "Cmaj11",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3",
+      "B3",
+      "Eb4",
+      "Gb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      4,
+      6,
+      7,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=11",
+      "inversion=0",
+      "applied=no",
+      "borrowed=lydian",
+      "alterations=#9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/63",
+    "song": "gustav-holst__mars---bringer-of-war",
+    "section": "Pre-Chorus",
+    "beat": 63,
+    "key": {
+      "tonic": "C",
+      "scale": "phrygianDominant"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 63,
+      "duration": 1.5,
+      "type": 11,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "lydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I△11(#9)(lyd)",
+    "truthLetter": "Cmaj7(#9#11)",
+    "truthPcs": [
+      0,
+      3,
+      4,
+      6,
+      7,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I△¹¹(#9)(#11)(lyd)",
+    "engLetter": "Cmaj11",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3",
+      "B3",
+      "Eb4",
+      "Gb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      4,
+      6,
+      7,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=11",
+      "inversion=0",
+      "applied=no",
+      "borrowed=lydian",
+      "alterations=#9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/75",
+    "song": "gustav-holst__mars---bringer-of-war",
+    "section": "Pre-Chorus",
+    "beat": 75,
+    "key": {
+      "tonic": "C",
+      "scale": "phrygianDominant"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 75,
+      "duration": 1,
+      "type": 11,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "lydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I△11(#9)(lyd)",
+    "truthLetter": "Cmaj7(#9#11)",
+    "truthPcs": [
+      0,
+      3,
+      4,
+      6,
+      7,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I△¹¹(#9)(#11)(lyd)",
+    "engLetter": "Cmaj11",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3",
+      "B3",
+      "Eb4",
+      "Gb4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      4,
+      6,
+      7,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=11",
+      "inversion=0",
+      "applied=no",
+      "borrowed=lydian",
+      "alterations=#9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/122.5",
+    "song": "gustav-holst__mars---bringer-of-war",
+    "section": "Pre-Chorus",
+    "beat": 122.5,
+    "key": {
+      "tonic": "C",
+      "scale": "phrygianDominant"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 122.5,
+      "duration": 0.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "mixolydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I7(#9)(mix)",
+    "truthLetter": "C7(#9)",
+    "truthPcs": [
+      0,
+      3,
+      4,
+      7,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I⁷(#9)(mix)",
+    "engLetter": "C7",
+    "engNotes": [
+      "C3",
+      "E3",
+      "G3",
+      "Bb3",
+      "D#4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      4,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=mixolydian",
+      "alterations=#9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "gustav-holst__mars---bringer-of-war/Chorus/116",
+    "song": "gustav-holst__mars---bringer-of-war",
+    "section": "Chorus",
+    "beat": 116,
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 116,
+      "duration": 10,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "lydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "#ivø4(#9)3(lyd)",
+    "truthLetter": "f#m7(#9b5)/C",
+    "truthPcs": [
+      0,
+      3,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♯ivø⁴³(#9)(b5)(lyd)",
+    "engLetter": "F#°7/C",
+    "engNotes": [
+      "C4",
+      "Eb4",
+      "C4",
+      "F#4",
+      "A4"
+    ],
+    "engPcs": [
+      0,
+      3,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=2",
+      "applied=no",
+      "borrowed=lydian",
+      "alterations=#9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "the-monkees__im-a-believer/Chorus/53",
+    "song": "the-monkees__im-a-believer",
+    "section": "Chorus",
+    "beat": 53,
+    "key": {
+      "tonic": "G",
+      "scale": "mixolydian"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 53,
+      "duration": 8,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(#9)(maj)",
+    "truthLetter": "D7(#9)",
+    "truthPcs": [
+      0,
+      2,
+      5,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V⁷(#9)(maj)",
+    "engLetter": "D7",
+    "engNotes": [
+      "D3",
+      "F#3",
+      "A3",
+      "C4",
+      "E#4"
+    ],
+    "engPcs": [
+      0,
+      2,
+      5,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=7",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major",
+      "alterations=#9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "wolfgang-amadeus-mozart__k387-string-quartet-no14-in-g-major/Solo 1/19",
+    "song": "wolfgang-amadeus-mozart__k387-string-quartet-no14-in-g-major",
+    "section": "Solo 1",
+    "beat": 19,
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 19,
+      "duration": 1,
+      "type": 11,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I△11(#9)",
+    "truthLetter": "Gmaj11(#9)",
+    "truthPcs": [
+      0,
+      2,
+      6,
+      7,
+      10,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I△¹¹(#9)",
+    "engLetter": "Gmaj11",
+    "engNotes": [
+      "G3",
+      "B3",
+      "D4",
+      "F#4",
+      "Bb4",
+      "C5"
+    ],
+    "engPcs": [
+      0,
+      2,
+      6,
+      7,
+      10,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=11",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "alterations=#9"
+    ],
+    "compositeKey": null
+  }
+]

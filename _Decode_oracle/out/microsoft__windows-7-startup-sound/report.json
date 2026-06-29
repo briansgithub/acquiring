@@ -1,0 +1,144 @@
+{
+  "url": "https://www.hooktheory.com/theorytab/view/microsoft/windows-7-startup-sound",
+  "title": "Windows 7 Startup Sound by Microsoft Chords, Melody, and Music Theory Analysis - Hooktheory",
+  "sections": [
+    {
+      "name": "Instrumental",
+      "songId": "QLgnG-qvx-V",
+      "countMatch": true,
+      "truthCount": 2,
+      "engCount": 2,
+      "rows": [
+        {
+          "beat": 2,
+          "chord": {
+            "root": 2,
+            "beat": 2,
+            "duration": 4,
+            "type": 7,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [
+              4
+            ],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "ii7(add11)",
+          "engRoman": "ii⁷(add11)(add11)",
+          "truthLetter": "f#m7(add11)",
+          "engLetter": "F#m7",
+          "engNotes": [
+            "F#3",
+            "A3",
+            "C#4",
+            "E4",
+            "B4"
+          ],
+          "engPcs": [
+            1,
+            4,
+            6,
+            9,
+            11
+          ],
+          "truthPcs": [
+            1,
+            4,
+            6,
+            9,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
+          "flags": {
+            "romanExact": false,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": false,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
+          },
+          "ok": false,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        },
+        {
+          "beat": 6,
+          "chord": {
+            "root": 1,
+            "beat": 6,
+            "duration": 3,
+            "type": 5,
+            "inversion": 0,
+            "applied": 0,
+            "adds": [],
+            "omits": [],
+            "alterations": [],
+            "suspensions": [
+              2,
+              4
+            ],
+            "pedal": null,
+            "alternate": "",
+            "borrowed": "",
+            "isRest": false,
+            "recordingEndBeat": null
+          },
+          "truthRoman": "Isus2sus4",
+          "engRoman": "Isus2sus4",
+          "truthLetter": "Esus2sus4",
+          "engLetter": "Esus2sus4",
+          "engNotes": [
+            "E3",
+            "A3",
+            "B3"
+          ],
+          "engPcs": [
+            4,
+            9,
+            11
+          ],
+          "truthPcs": [
+            4,
+            9,
+            11
+          ],
+          "pianoNotes": null,
+          "pianoPcs": null,
+          "flags": {
+            "romanExact": true,
+            "romanCore": true,
+            "rootPcMatch": true,
+            "bassPcMatch": false,
+            "rootInPcs": true,
+            "bassInNotes": true,
+            "pcsExact": true,
+            "pianoExact": false,
+            "pianoPcsExact": false,
+            "pianoValidated": false,
+            "usePiano": false,
+            "orderOk": true
+          },
+          "ok": true,
+          "notesOk": true,
+          "engineError": null,
+          "browserOk": null
+        }
+      ]
+    }
+  ]
+}

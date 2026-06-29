@@ -101,6 +101,94 @@ export function renderChordRing(container, options = {}) {
   
   wrapper.appendChild(transitionTableOverlay);
 
+  // Inject style rules for JSON sub-popup and trigger
+  if (!document.getElementById("chord-tooltip-styles")) {
+    const styleTag = document.createElement("style");
+    styleTag.id = "chord-tooltip-styles";
+    styleTag.textContent = `
+      .chord-tooltip-json-trigger {
+        position: relative;
+        font-size: 11px;
+        font-family: ui-monospace, monospace;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 2px 6px;
+        border-radius: 4px;
+        cursor: help;
+        color: #38bdf8;
+        user-select: none;
+        transition: background 0.2s, border-color 0.2s;
+        margin-top: -2px;
+      }
+      .chord-tooltip-json-trigger:hover {
+        background: rgba(56, 189, 248, 0.18);
+        border-color: rgba(56, 189, 248, 0.4);
+      }
+      .chord-tooltip-json-popup {
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        top: 130%; /* Show strictly below the JSON text / main bubble */
+        left: 50%;
+        transform: translateX(-50%) translateY(8px);
+        background: #090d16;
+        border: 1px solid rgba(56, 189, 248, 0.35);
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 11px;
+        line-height: 1.4;
+        color: #e2e8f0;
+        white-space: pre;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
+        text-align: left;
+        z-index: 200;
+        pointer-events: none;
+        transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+      }
+      .chord-tooltip-json-trigger:hover .chord-tooltip-json-popup {
+        visibility: visible;
+        opacity: 1;
+        transform: translateX(-50%) translateY(4px);
+      }
+      .json-key { color: #f43f5e; font-weight: 600; }
+      .json-string { color: #10b981; }
+      .json-number { color: #fbbf24; }
+      .json-boolean { color: #3b82f6; }
+      .json-null { color: #94a3b8; }
+    `;
+    document.head.appendChild(styleTag);
+  }
+
+  // Create the hover bubble tooltip
+  const tooltip = document.createElement("div");
+  tooltip.style.position = "absolute";
+  tooltip.style.display = "none";
+  tooltip.style.pointerEvents = "auto"; // Essential for hovering over JSON trigger inside bubble
+  tooltip.style.background = "rgba(15, 23, 42, 0.96)"; // Sleek dark slate
+  tooltip.style.border = "1px solid rgba(255, 255, 255, 0.15)";
+  tooltip.style.borderRadius = "12px";
+  tooltip.style.padding = "10px 14px";
+  tooltip.style.boxShadow = "0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5)";
+  tooltip.style.color = "#ffffff";
+  tooltip.style.fontFamily = "system-ui, -apple-system, sans-serif";
+  tooltip.style.fontSize = "13px";
+  tooltip.style.zIndex = "100";
+  tooltip.style.minWidth = "180px";
+  tooltip.style.transition = "opacity 0.12s ease, transform 0.12s ease";
+  tooltip.style.opacity = "0";
+  tooltip.style.transform = "translate(-50%, -100%) translateY(-10px)";
+  wrapper.appendChild(tooltip);
+
+  let isMouseOverTooltip = false;
+  tooltip.addEventListener("mouseenter", () => {
+    isMouseOverTooltip = true;
+  });
+  tooltip.addEventListener("mouseleave", () => {
+    isMouseOverTooltip = false;
+    updateHoverState();
+  });
+
   const transitionTable = document.createElement("table");
   transitionTable.style.width = "100%";
   transitionTable.style.borderCollapse = "collapse";
@@ -175,6 +263,8 @@ export function renderChordRing(container, options = {}) {
   let transitionCounts = new Map(); // Store full transition counts
   let rootOnlyTransitionCounts = new Map(); // Store root-only transition counts
   let showRootOnlyView = false; // Toggle for root-only view
+  let currentHoveredNode = null; // Declared here to avoid Temporal Dead Zone errors during initial resize/draw
+  let hideTimeout = null;
   
   // Set initial checkbox state
   romanNumeralToggle.checked = useRomanNumerals;
@@ -310,6 +400,11 @@ export function renderChordRing(container, options = {}) {
     for (let i = 1; i <= 7; i++) {
       drawScaleDegreeNodes(i, centerX, centerY);
     }
+
+    // Update tooltip position if visible
+    if (typeof updateTooltipPosition === "function") {
+      updateTooltipPosition();
+    }
   }
 
   function drawScaleDegreeNodes(degree, centerX, centerY) {
@@ -347,7 +442,10 @@ export function renderChordRing(container, options = {}) {
       const isActive = isNodeActive(exactDiatonic);
       const chord = exactDiatonic.chord;
       const subLabel = getAbbreviatedSubLabel(chord ? chord.borrowed : null);
-      const displayLabel = useRomanNumerals ? exactDiatonic.symbol : getChordLetterName(chord, currentKey);
+      let displayLabel = useRomanNumerals ? exactDiatonic.symbol : getChordLetterName(chord, currentKey);
+      if (useRomanNumerals && typeof displayLabel === 'string') {
+        displayLabel = displayLabel.replace(/\([a-z.]+\)$/i, "");
+      }
       drawNode(dx, dy, nodeRadius, color, displayLabel, 1.0, isActive, false, subLabel);
     } else {
       // Placeholder
@@ -364,7 +462,10 @@ export function renderChordRing(container, options = {}) {
       const chord = v.chord;
       const subLabel = getAbbreviatedSubLabel(chord ? chord.borrowed : null);
 
-      const displayLabel = useRomanNumerals ? v.symbol : getChordLetterName(v.chord, currentKey);
+      let displayLabel = useRomanNumerals ? v.symbol : getChordLetterName(v.chord, currentKey);
+      if (useRomanNumerals && typeof displayLabel === 'string') {
+        displayLabel = displayLabel.replace(/\([a-z.]+\)$/i, "");
+      }
       drawNode(vx, vy, nodeRadius, color, displayLabel, 0.9, isActive, false, subLabel);
     });
   }
@@ -408,7 +509,7 @@ export function renderChordRing(container, options = {}) {
     ctx.stroke();
     ctx.restore();
 
-    // Text - Option A (Dynamic Scaling) & Option C (Outside placement)
+    // Text - Option A (Dynamic Scaling) & Vertical Stacking inside the circle
     ctx.save();
     ctx.globalAlpha = 1.0; // Keep text fully opaque for maximum contrast
     ctx.textAlign = "center";
@@ -428,42 +529,44 @@ export function renderChordRing(container, options = {}) {
     
     // Scale text with node size
     let labelFontSize = isActive ? Math.max(16, 22 * zoom) : Math.max(12, 16 * zoom);
-    ctx.font = `bold ${labelFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+    const maxTextWidth = effectiveRadius * 1.45; // Safe padding inside the circular boundary
 
-    // Option A: Measure and scale down main label if it exceeds 1.5 * effectiveRadius
-    const maxTextWidth = effectiveRadius * 1.5;
-    while (ctx.measureText(label).width > maxTextWidth && labelFontSize > 8) {
-      labelFontSize -= 0.5;
-      ctx.font = `bold ${labelFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-    }
-
-    ctx.fillText(label, x, y);
-    ctx.restore();
-
-    // Option C: Draw subLabel outside the circular node (below the border)
     if (subLabel) {
-      ctx.save();
-      // Keep sub-label text slightly translucent but highly legible
-      ctx.globalAlpha = Math.min(1, opacity + 0.3);
-      ctx.textAlign = "center";
-      ctx.textBaseline = "top";
-      ctx.fillStyle = "#e2e8f0"; // Light gray/silver text that matches the app theme
+      let subFontSize = labelFontSize * 0.75;
       
-      const baseSubFontSize = isActive ? Math.max(16, 22 * zoom) : Math.max(12, 16 * zoom);
-      let subFontSize = baseSubFontSize * 0.75;
-      ctx.font = `600 ${subFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+      const checkFit = () => {
+        // Measure main label with current main font
+        ctx.font = `bold ${labelFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+        const mainWidth = ctx.measureText(label).width;
+        
+        // Measure subLabel with current sub font
+        ctx.font = `500 ${subFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+        const subWidth = ctx.measureText(subLabel).width;
+        
+        return mainWidth <= maxTextWidth && subWidth <= maxTextWidth;
+      };
       
-      // Auto-scale subLabel too if needed
-      const maxSubWidth = effectiveRadius * 2.2;
-      while (ctx.measureText(subLabel).width > maxSubWidth && subFontSize > 8) {
-        subFontSize -= 0.5;
-        ctx.font = `600 ${subFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+      while (!checkFit() && labelFontSize > 8) {
+        labelFontSize -= 0.5;
+        subFontSize = labelFontSize * 0.75;
       }
       
-      // Draw subLabel below the circle node border (with small offset)
-      ctx.fillText(subLabel, x, y + effectiveRadius + 6 * zoom);
-      ctx.restore();
+      // Draw main label higher
+      ctx.font = `bold ${labelFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+      ctx.fillText(label, x, y - (labelFontSize * 0.35));
+      
+      // Draw subLabel lower (using the same fill color for visual coherence)
+      ctx.font = `500 ${subFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+      ctx.fillText(subLabel, x, y + (labelFontSize * 0.55));
+    } else {
+      ctx.font = `bold ${labelFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+      while (ctx.measureText(label).width > maxTextWidth && labelFontSize > 8) {
+        labelFontSize -= 0.5;
+        ctx.font = `bold ${labelFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+      }
+      ctx.fillText(label, x, y);
     }
+    ctx.restore();
   }
 
   function drawCenterRing(cx, cy, r, key) {
@@ -532,6 +635,253 @@ export function renderChordRing(container, options = {}) {
       }
     }
     isDragging = false;
+  });
+
+  // --- HOVER INTERACTION FOR TOOLTIP BUBBLE ---
+  const ROMAN_MAP = { 1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI", 7: "VII" };
+
+  function getNodeAt(mx, my) {
+    const centerX = canvas.width / 2 + panX;
+    const centerY = canvas.height / 2 + panY;
+    const baseNodeRadius = NODE_RADIUS * zoom;
+
+    const diatonicLabels = getRomanNumeralsForScale(currentKey.scale);
+
+    for (let i = 1; i <= 7; i++) {
+      const angle = (i - 1) * (2 * Math.PI / 7) - (Math.PI / 2);
+      const degreeChords = currentGroupedChords[i] || [];
+      const expectedDiatonicLabel = diatonicLabels[i - 1];
+
+      const exactDiatonic = degreeChords.find(c => 
+        c.symbol === expectedDiatonicLabel && 
+        (!c.chord.borrowed || c.chord.borrowed === "" || c.chord.borrowed === null)
+      );
+      
+      const variants = degreeChords.filter(c => {
+        const isBorrowed = c.chord.borrowed && c.chord.borrowed !== "" && c.chord.borrowed !== null;
+        return c.symbol !== expectedDiatonicLabel || isBorrowed;
+      });
+
+      // Check Variants first (outer rings)
+      for (let vIdx = 0; vIdx < variants.length; vIdx++) {
+        const v = variants[vIdx];
+        const vDist = (DIATONIC_RING_RADIUS + VARIANT_SPACING * (vIdx + 1)) * zoom;
+        const vx = centerX + vDist * Math.cos(angle);
+        const vy = centerY + vDist * Math.sin(angle);
+        
+        const isActive = isNodeActive(v);
+        const effectiveRadius = isActive ? baseNodeRadius * 1.3 : baseNodeRadius;
+
+        if (Math.hypot(mx - vx, my - vy) <= effectiveRadius) {
+          return { 
+            type: 'chord', 
+            chord: v.chord, 
+            symbol: v.symbol, 
+            x: vx, 
+            y: vy, 
+            degree: i, 
+            color: getScaleDegreeColor(i, currentKey.scale),
+            isVariant: true,
+            variantIndex: vIdx + 1
+          };
+        }
+      }
+
+      // Check Diatonic
+      const dDist = DIATONIC_RING_RADIUS * zoom;
+      const dx = centerX + dDist * Math.cos(angle);
+      const dy = centerY + dDist * Math.sin(angle);
+      
+      let effectiveRadius = baseNodeRadius;
+      if (exactDiatonic) {
+        const isActive = isNodeActive(exactDiatonic);
+        effectiveRadius = isActive ? baseNodeRadius * 1.3 : baseNodeRadius;
+      }
+
+      if (Math.hypot(mx - dx, my - dy) <= effectiveRadius) {
+        if (exactDiatonic) {
+          return { 
+            type: 'chord', 
+            chord: exactDiatonic.chord, 
+            symbol: exactDiatonic.symbol, 
+            x: dx, 
+            y: dy, 
+            degree: i, 
+            color: getScaleDegreeColor(i, currentKey.scale),
+            isVariant: false
+          };
+        }
+      }
+    }
+    return null;
+  }
+
+  function formatChordJson(chord) {
+    // Create a new object with consistent key order
+    const orderedChord = {
+      root: chord.root !== undefined ? chord.root : null,
+      type: chord.type !== undefined ? chord.type : null,
+      inversion: chord.inversion !== undefined ? chord.inversion : 0,
+      applied: chord.applied !== undefined ? chord.applied : 0,
+      borrowed: chord.borrowed !== undefined ? chord.borrowed : null
+    };
+
+    // Include other properties if any (excluding functions)
+    for (const key in chord) {
+      if (!(key in orderedChord) && typeof chord[key] !== 'function') {
+        orderedChord[key] = chord[key];
+      }
+    }
+
+    let lines = [];
+    lines.push('<span style="color: #64748b;">{</span>');
+    
+    for (const [key, value] of Object.entries(orderedChord)) {
+      let valHtml = '';
+      if (value === null) {
+        valHtml = '<span class="json-null">null</span>';
+      } else if (typeof value === 'string') {
+        valHtml = `<span class="json-string">"${value}"</span>`;
+      } else if (typeof value === 'number') {
+        valHtml = `<span class="json-number">${value}</span>`;
+      } else if (typeof value === 'boolean') {
+        valHtml = `<span class="json-boolean">${value}</span>`;
+      } else {
+        valHtml = `<span class="json-string">${JSON.stringify(value)}</span>`;
+      }
+      
+      lines.push(`  <span class="json-key">${key}</span><span style="color: #64748b;">:</span> ${valHtml}<span style="color: #64748b;">,</span>`);
+    }
+    
+    // Remove trailing comma from last property line
+    if (lines.length > 1) {
+      lines[lines.length - 1] = lines[lines.length - 1].replace(/<span style="color: #64748b;">,<\/span>$/, '');
+    }
+    
+    lines.push('<span style="color: #64748b;">}</span>');
+    return lines.join('\n');
+  }
+
+  function showTooltip(node) {
+    let displayLabel = useRomanNumerals ? node.symbol : getChordLetterName(node.chord, currentKey);
+    let alternateLabel = useRomanNumerals ? getChordLetterName(node.chord, currentKey) : node.symbol;
+    
+    // Strip trailing mixture tags (e.g. "(mix)") from Roman numerals for clean text display
+    if (typeof displayLabel === 'string') {
+      displayLabel = displayLabel.replace(/\([a-z.]+\)$/i, "");
+    }
+    if (typeof alternateLabel === 'string') {
+      alternateLabel = alternateLabel.replace(/\([a-z.]+\)$/i, "");
+    }
+    
+    const formattedJson = formatChordJson(node.chord);
+    
+    let contextHtml = `
+      <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 11px; color: #cbd5e1; display: flex; flex-direction: column; gap: 4px; text-align: center;">
+        <div><span style="color: #64748b;">Scale Degree:</span> <strong style="color: ${node.color};">${ROMAN_MAP[node.degree] || node.degree}</strong></div>
+    `;
+    
+    if (node.chord.borrowed) {
+      const borrowedText = Array.isArray(node.chord.borrowed) ? "Custom scale" : node.chord.borrowed;
+      contextHtml += `<div><span style="color: #64748b;">Borrowed:</span> <span style="color: #fbbf24; font-weight: 600;">${borrowedText}</span></div>`;
+    }
+    if (node.chord.applied && node.chord.applied !== 0 && node.chord.applied !== "0") {
+      contextHtml += `<div><span style="color: #64748b;">Applied:</span> <span style="color: #60a5fa; font-weight: 600;">Tonicizing ${ROMAN_MAP[node.chord.root] || node.chord.root}</span></div>`;
+    }
+    
+    contextHtml += `</div>`;
+
+    tooltip.innerHTML = `
+      <div style="text-align: center; margin-bottom: 6px;">
+        <div style="font-size: 18px; font-weight: 800; color: #ffffff; line-height: 1.2;">${displayLabel}</div>
+        <div style="font-size: 11px; color: #94a3b8; font-weight: 500; margin-top: 2px;">${alternateLabel}</div>
+      </div>
+      ${contextHtml}
+      <div style="margin-top: 10px; display: flex; justify-content: center; width: 100%;">
+        <div class="chord-tooltip-json-trigger">
+          JSON
+          <div class="chord-tooltip-json-popup">${formattedJson}</div>
+        </div>
+      </div>
+    `;
+    
+    tooltip.style.left = `${node.x}px`;
+    tooltip.style.top = `${node.y}px`;
+    tooltip.style.display = "block";
+    
+    // Trigger CSS fade in
+    setTimeout(() => {
+      tooltip.style.opacity = "1";
+      tooltip.style.transform = "translate(-50%, -100%) translateY(-10px)";
+    }, 10);
+  }
+
+  function hideTooltip() {
+    tooltip.style.opacity = "0";
+    tooltip.style.transform = "translate(-50%, -100%) translateY(-2px)";
+    // Hide display after transition completes
+    setTimeout(() => {
+      if (tooltip.style.opacity === "0") {
+        tooltip.style.display = "none";
+      }
+    }, 120);
+  }
+
+  function updateTooltipPosition() {
+    if (currentHoveredNode && tooltip.style.display !== "none") {
+      const centerX = canvas.width / 2 + panX;
+      const centerY = canvas.height / 2 + panY;
+      const baseNodeRadius = NODE_RADIUS * zoom;
+      const angle = (currentHoveredNode.degree - 1) * (2 * Math.PI / 7) - (Math.PI / 2);
+      
+      let dist = DIATONIC_RING_RADIUS * zoom;
+      
+      if (currentHoveredNode.isVariant) {
+        dist = (DIATONIC_RING_RADIUS + VARIANT_SPACING * currentHoveredNode.variantIndex) * zoom;
+      }
+      
+      const vx = centerX + dist * Math.cos(angle);
+      const vy = centerY + dist * Math.sin(angle);
+      
+      tooltip.style.left = `${vx}px`;
+      tooltip.style.top = `${vy}px`;
+    }
+  }
+
+  function updateHoverState(mx, my) {
+    let node = null;
+    if (mx !== undefined && my !== undefined) {
+      node = getNodeAt(mx, my);
+    }
+    
+    if (node) {
+      currentHoveredNode = node;
+      clearTimeout(hideTimeout);
+      showTooltip(node);
+    } else {
+      currentHoveredNode = null;
+      // Delay hiding slightly to allow the mouse to move to the tooltip
+      clearTimeout(hideTimeout);
+      hideTimeout = setTimeout(() => {
+        if (!currentHoveredNode && !isMouseOverTooltip) {
+          hideTooltip();
+        }
+      }, 150);
+    }
+  }
+
+  canvas.addEventListener("mousemove", e => {
+    if (!isDragging) {
+      const pos = getEventPos(e);
+      updateHoverState(pos.x, pos.y);
+    } else {
+      clearTimeout(hideTimeout);
+      hideTooltip();
+    }
+  });
+
+  canvas.addEventListener("mouseleave", () => {
+    updateHoverState();
   });
 
   canvas.addEventListener("wheel", e => {

@@ -5,12 +5,12 @@
 - Chords compared: **37**
 - Roman exact: **100%** (37/37)
 - Roman core (ignoring borrowed/alteration tags): **100%** (37/37)
-- Notes consistent (root in pcs + bass agree): **100%** (37/37)
+- Notes exact (full PC set + bass): **100%** (37/37)
 
 ## Sections
 
-| Section | chords | romanExact | romanCore | notesOk |
-|---|---|---|---|---|
-| Verse | 9 | 100% | 100% | 100% |
-| Pre-Chorus and Chorus | 27 | 100% | 100% | 100% |
-| Solo | 1 | 100% | 100% | 100% |
+| Section | chords | romanExact | romanCore | notesOk | browserOk |
+|---|---|---|---|---|---|
+| Verse | 9 | 100% | 100% | 100% | 0% |
+| Pre-Chorus and Chorus | 27 | 100% | 100% | 100% | 0% |
+| Solo | 1 | 100% | 100% | 100% | 0% |

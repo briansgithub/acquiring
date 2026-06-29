@@ -24,7 +24,7 @@ function loadCorpusSlugs(corpusFile) {
   const entries = JSON.parse(fs.readFileSync(corpusFile, 'utf8'));
   const slugs = new Set();
   for (const e of entries) {
-    slugs.add(slugForUrl(e.url));
+    slugs.add(e.slug || slugForUrl(e.url));
     for (const alt of e.alternates || []) slugs.add(slugForUrl(alt));
   }
   return slugs;

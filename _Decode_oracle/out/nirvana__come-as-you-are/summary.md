@@ -5,7 +5,7 @@
 - Chords compared: **34**
 - Roman exact: **100%** (34/34)
 - Roman core (ignoring borrowed/alteration tags): **100%** (34/34)
-- Notes exact (full PC set + bass): **88%** (30/34)
+- Notes exact (full PC set + bass): **100%** (34/34)
 
 ## Sections
 
@@ -13,5 +13,5 @@
 |---|---|---|---|---|---|
 | Intro | 2 | 100% | 100% | 100% | 0% |
 | Verse | 16 | 100% | 100% | 100% | 0% |
-| Pre-Chorus | 8 | 100% | 100% | 50% | 0% |
+| Pre-Chorus | 8 | 100% | 100% | 100% | 0% |
 | Chorus | 8 | 100% | 100% | 100% | 0% |

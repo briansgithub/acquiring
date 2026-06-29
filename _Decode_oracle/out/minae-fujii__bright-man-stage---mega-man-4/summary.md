@@ -1,0 +1,15 @@
+# Decode oracle report
+
+**Bright Man Stage - Mega Man 4 by Minae Fujii Chords, Melody, and Music Theory Analysis - Hooktheory**
+
+- Chords compared: **26**
+- Roman exact: **100%** (26/26)
+- Roman core (ignoring borrowed/alteration tags): **100%** (26/26)
+- Notes exact (full PC set + bass): **92%** (24/26)
+
+## Sections
+
+| Section | chords | romanExact | romanCore | notesOk | browserOk |
+|---|---|---|---|---|---|
+| Intro and Verse | 11 | 100% | 100% | 100% | 0% |
+| Chorus | 15 | 100% | 100% | 87% | 0% |

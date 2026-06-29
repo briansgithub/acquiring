@@ -1,0 +1,80 @@
+[
+  {
+    "id": "olivia-rodrigo__making-the-bed/Outro/11",
+    "song": "olivia-rodrigo__making-the-bed",
+    "section": "Outro",
+    "beat": 11,
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 11,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "Isus2(no5)",
+    "truthLetter": "G(n°5)sus2",
+    "truthPcs": [
+      7,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I(no5)sus2",
+    "engLetter": "Gsus2",
+    "engNotes": [
+      "G3",
+      "A3"
+    ],
+    "engPcs": [
+      7,
+      9
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=2",
+      "omits=5"
+    ],
+    "compositeKey": "omits=5+suspensions=2"
+  }
+]

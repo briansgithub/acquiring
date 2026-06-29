@@ -1,7 +1,7 @@
 
 
 import { getScaleDegreeColor } from "../lib/scales.js";
-import { getChordSymbol } from "../lib/jsonToSymbol.js";
+import { getChordSymbol, getChordLetterName } from "../lib/jsonToSymbol.js";
 
 export function renderTimeline(container, options = {}) {
     // Set container to flex column layout
@@ -97,6 +97,10 @@ export function renderTimeline(container, options = {}) {
     let logicalHeight = 0;
     let firstBeat = 1;
     let numBeats = 4; // Default to 4/4 time
+    
+    // Hover state variables declared here to avoid Temporal Dead Zone errors during initial draw
+    let currentHoveredChord = null;
+    let hideTimeout = null;
 
     function resize() {
         const dpr = window.devicePixelRatio || 1;
@@ -156,7 +160,10 @@ export function renderTimeline(container, options = {}) {
                 ctx.shadowColor = "rgba(255,255,255,0.5)"; // Light shadow for contrast on dark blocks? Or no shadow?
                 ctx.shadowBlur = 0; // Removing shadow for clean look with black text
 
-                const symbol = getChordSymbol(chord, currentKey);
+                let symbol = getChordSymbol(chord, currentKey);
+                if (typeof symbol === 'string') {
+                    symbol = symbol.replace(/\([a-z.]+\)$/i, "");
+                }
                 // Hide if text fits? Simply clip or verify width.
                 const metrics = ctx.measureText(symbol);
                 if (metrics.width < w - 4) {
@@ -250,6 +257,10 @@ export function renderTimeline(container, options = {}) {
         ctx.lineTo(progressX + 5, 0);
         ctx.lineTo(progressX, 8);
         ctx.fill();
+
+        if (typeof updateTooltipPosition === "function") {
+            updateTooltipPosition();
+        }
     }
 
     // Helper function to find chord at a given beat position
@@ -264,6 +275,278 @@ export function renderTimeline(container, options = {}) {
         }
         return null;
     }
+
+    // Inject style rules for JSON sub-popup and trigger
+    if (!document.getElementById("chord-tooltip-styles")) {
+        const styleTag = document.createElement("style");
+        styleTag.id = "chord-tooltip-styles";
+        styleTag.textContent = `
+            .chord-tooltip-json-trigger {
+                position: relative;
+                font-size: 11px;
+                font-family: ui-monospace, monospace;
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                padding: 2px 6px;
+                border-radius: 4px;
+                cursor: help;
+                color: #38bdf8;
+                user-select: none;
+                transition: background 0.2s, border-color 0.2s;
+                margin-top: -2px;
+            }
+            .chord-tooltip-json-trigger:hover {
+                background: rgba(56, 189, 248, 0.18);
+                border-color: rgba(56, 189, 248, 0.4);
+            }
+            .chord-tooltip-json-popup {
+                visibility: hidden;
+                opacity: 0;
+                position: absolute;
+                top: 130%; /* Show strictly below the JSON text / main bubble */
+                left: 50%;
+                transform: translateX(-50%) translateY(8px);
+                background: #090d16;
+                border: 1px solid rgba(56, 189, 248, 0.35);
+                border-radius: 8px;
+                padding: 10px 14px;
+                font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+                font-size: 11px;
+                line-height: 1.4;
+                color: #e2e8f0;
+                white-space: pre;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
+                text-align: left;
+                z-index: 200;
+                pointer-events: none;
+                transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+            }
+            .chord-tooltip-json-trigger:hover .chord-tooltip-json-popup {
+                visibility: visible;
+                opacity: 1;
+                transform: translateX(-50%) translateY(4px);
+            }
+            .json-key { color: #f43f5e; font-weight: 600; }
+            .json-string { color: #10b981; }
+            .json-number { color: #fbbf24; }
+            .json-boolean { color: #3b82f6; }
+            .json-null { color: #94a3b8; }
+        `;
+        document.head.appendChild(styleTag);
+    }
+
+    // Create the hover bubble tooltip
+    const tooltip = document.createElement("div");
+    tooltip.style.position = "absolute";
+    tooltip.style.display = "none";
+    tooltip.style.pointerEvents = "auto";
+    tooltip.style.background = "rgba(15, 23, 42, 0.96)";
+    tooltip.style.border = "1px solid rgba(255, 255, 255, 0.15)";
+    tooltip.style.borderRadius = "12px";
+    tooltip.style.padding = "10px 14px";
+    tooltip.style.boxShadow = "0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5)";
+    tooltip.style.color = "#ffffff";
+    tooltip.style.fontFamily = "system-ui, -apple-system, sans-serif";
+    tooltip.style.fontSize = "13px";
+    tooltip.style.zIndex = "100";
+    tooltip.style.minWidth = "180px";
+    tooltip.style.transition = "opacity 0.12s ease, transform 0.12s ease";
+    tooltip.style.opacity = "0";
+    tooltip.style.transform = "translate(-50%, 0) translateY(2px)";
+    canvasWrapper.appendChild(tooltip);
+
+    let isMouseOverTooltip = false;
+    tooltip.addEventListener("mouseenter", () => {
+        isMouseOverTooltip = true;
+    });
+    tooltip.addEventListener("mouseleave", () => {
+        isMouseOverTooltip = false;
+        updateHoverState();
+    });
+
+    const ROMAN_MAP = { 1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI", 7: "VII" };
+
+    function getChordAtCoordinates(mx, my) {
+        if (!currentChords.length || !songLengthBeats) return null;
+        
+        const pixelsPerBeat = logicalWidth / songLengthBeats;
+        const axisHeight = 18;
+        const blockHeight = (logicalHeight - axisHeight) * 0.8;
+        const blockY = (logicalHeight - axisHeight - blockHeight) / 2;
+        
+        if (my < blockY || my > blockY + blockHeight) return null;
+        
+        for (const chord of currentChords) {
+            if (chord.isRest) continue;
+            
+            const chordX = (chord.beat - firstBeat) * pixelsPerBeat;
+            const chordW = chord.duration * pixelsPerBeat;
+            
+            if (mx >= chordX && mx < chordX + chordW) {
+                return {
+                    chord: chord,
+                    x: chordX + chordW / 2,
+                    y: blockY + blockHeight
+                };
+            }
+        }
+        return null;
+    }
+
+    function formatChordJson(chord) {
+        const orderedChord = {
+            root: chord.root !== undefined ? chord.root : null,
+            type: chord.type !== undefined ? chord.type : null,
+            inversion: chord.inversion !== undefined ? chord.inversion : 0,
+            applied: chord.applied !== undefined ? chord.applied : 0,
+            borrowed: chord.borrowed !== undefined ? chord.borrowed : null
+        };
+
+        for (const key in chord) {
+            if (!(key in orderedChord) && typeof chord[key] !== 'function') {
+                orderedChord[key] = chord[key];
+            }
+        }
+
+        let lines = [];
+        lines.push('<span style="color: #64748b;">{</span>');
+        
+        for (const [key, value] of Object.entries(orderedChord)) {
+            let valHtml = '';
+            if (value === null) {
+                valHtml = '<span class="json-null">null</span>';
+            } else if (typeof value === 'string') {
+                valHtml = `<span class="json-string">"${value}"</span>`;
+            } else if (typeof value === 'number') {
+                valHtml = `<span class="json-number">${value}</span>`;
+            } else if (typeof value === 'boolean') {
+                valHtml = `<span class="json-boolean">${value}</span>`;
+            } else {
+                valHtml = `<span class="json-string">${JSON.stringify(value)}</span>`;
+            }
+            
+            lines.push(`  <span class="json-key">${key}</span><span style="color: #64748b;">:</span> ${valHtml}<span style="color: #64748b;">,</span>`);
+        }
+        
+        if (lines.length > 1) {
+            lines[lines.length - 1] = lines[lines.length - 1].replace(/<span style="color: #64748b;">,<\/span>$/, '');
+        }
+        
+        lines.push('<span style="color: #64748b;">}</span>');
+        return lines.join('\n');
+    }
+
+    function showTooltip(node) {
+        let displayLabel = getChordSymbol(node.chord, currentKey);
+        let alternateLabel = getChordLetterName(node.chord, currentKey);
+        
+        // Strip trailing mixture tags (e.g. "(mix)") from Roman numerals for clean text display
+        if (typeof displayLabel === 'string') {
+            displayLabel = displayLabel.replace(/\([a-z.]+\)$/i, "");
+        }
+        if (typeof alternateLabel === 'string') {
+            alternateLabel = alternateLabel.replace(/\([a-z.]+\)$/i, "");
+        }
+        
+        const formattedJson = formatChordJson(node.chord);
+        const nodeColor = getScaleDegreeColor(node.chord.root, currentKey.scale) || "#888";
+        
+        let contextHtml = `
+            <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 11px; color: #cbd5e1; display: flex; flex-direction: column; gap: 4px; text-align: center;">
+                <div><span style="color: #64748b;">Scale Degree:</span> <strong style="color: ${nodeColor};">${ROMAN_MAP[node.chord.root] || node.chord.root}</strong></div>
+        `;
+        
+        if (node.chord.borrowed) {
+            const borrowedText = Array.isArray(node.chord.borrowed) ? "Custom scale" : node.chord.borrowed;
+            contextHtml += `<div><span style="color: #64748b;">Borrowed:</span> <span style="color: #fbbf24; font-weight: 600;">${borrowedText}</span></div>`;
+        }
+        if (node.chord.applied && node.chord.applied !== 0 && node.chord.applied !== "0") {
+            contextHtml += `<div><span style="color: #64748b;">Applied:</span> <span style="color: #60a5fa; font-weight: 600;">Tonicizing ${ROMAN_MAP[node.chord.root] || node.chord.root}</span></div>`;
+        }
+        
+        contextHtml += `</div>`;
+
+        tooltip.innerHTML = `
+            <div style="text-align: center; margin-bottom: 6px;">
+                <div style="font-size: 18px; font-weight: 800; color: #ffffff; line-height: 1.2;">${displayLabel}</div>
+                <div style="font-size: 11px; color: #94a3b8; font-weight: 500; margin-top: 2px;">${alternateLabel}</div>
+            </div>
+            ${contextHtml}
+            <div style="margin-top: 10px; display: flex; justify-content: center; width: 100%;">
+                <div class="chord-tooltip-json-trigger">
+                    JSON
+                    <div class="chord-tooltip-json-popup">${formattedJson}</div>
+                </div>
+            </div>
+        `;
+        
+        tooltip.style.left = `${node.x}px`;
+        tooltip.style.top = `${node.y}px`;
+        tooltip.style.display = "block";
+        
+        // Trigger CSS fade in
+        setTimeout(() => {
+            tooltip.style.opacity = "1";
+            tooltip.style.transform = "translate(-50%, 0) translateY(10px)";
+        }, 10);
+    }
+
+    function hideTooltip() {
+        tooltip.style.opacity = "0";
+        tooltip.style.transform = "translate(-50%, 0) translateY(2px)";
+        setTimeout(() => {
+            if (tooltip.style.opacity === "0") {
+                tooltip.style.display = "none";
+            }
+        }, 120);
+    }
+
+    function updateTooltipPosition() {
+        if (currentHoveredChord && tooltip.style.display !== "none") {
+            const pixelsPerBeat = logicalWidth / songLengthBeats;
+            const axisHeight = 18;
+            const blockHeight = (logicalHeight - axisHeight) * 0.8;
+            const blockY = (logicalHeight - axisHeight - blockHeight) / 2;
+            
+            const chordX = (currentHoveredChord.beat - firstBeat) * pixelsPerBeat;
+            const chordW = currentHoveredChord.duration * pixelsPerBeat;
+            
+            tooltip.style.left = `${chordX + chordW / 2}px`;
+            tooltip.style.top = `${blockY + blockHeight}px`;
+        }
+    }
+
+    function updateHoverState(mx, my) {
+        let node = null;
+        if (mx !== undefined && my !== undefined) {
+            node = getChordAtCoordinates(mx, my);
+        }
+        
+        if (node) {
+            currentHoveredChord = node.chord;
+            clearTimeout(hideTimeout);
+            showTooltip(node);
+        } else {
+            currentHoveredChord = null;
+            clearTimeout(hideTimeout);
+            hideTimeout = setTimeout(() => {
+                if (!currentHoveredChord && !isMouseOverTooltip) {
+                    hideTooltip();
+                }
+            }, 150);
+        }
+    }
+
+    canvas.addEventListener("mousemove", e => {
+        const rect = canvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+        updateHoverState(mx, my);
+    });
+
+    canvas.addEventListener("mouseleave", () => {
+        updateHoverState();
+    });
 
     // Interaction
     canvas.addEventListener("click", e => {

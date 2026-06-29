@@ -1,0 +1,14 @@
+# Decode oracle report
+
+**3 Words (ft william) by Cheryl Cole Chords, Melody, and Music Theory Analysis - Hooktheory**
+
+- Chords compared: **4**
+- Roman exact: **100%** (4/4)
+- Roman core (ignoring borrowed/alteration tags): **100%** (4/4)
+- Notes exact (full PC set + bass): **100%** (4/4)
+
+## Sections
+
+| Section | chords | romanExact | romanCore | notesOk | browserOk |
+|---|---|---|---|---|---|
+| Chorus | 4 | 100% | 100% | 100% | 0% |

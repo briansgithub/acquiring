@@ -1,0 +1,441 @@
+[
+  {
+    "id": "wolfgang-amadeus-mozart__a-little-night-music---1st-movement/Verse and Pre-Chorus/5",
+    "song": "wolfgang-amadeus-mozart__a-little-night-music---1st-movement",
+    "section": "Verse and Pre-Chorus",
+    "beat": 5,
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 5,
+      "duration": 4,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "3"
+      ],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vii6(3)sus2",
+    "truthLetter": "f#(3)susb2/G",
+    "truthPcs": [
+      1,
+      6,
+      8
+    ],
+    "pianoNotes": [
+      "E#4",
+      "F#4",
+      "G#4"
+    ],
+    "pianoPcs": [
+      5,
+      6,
+      8
+    ],
+    "pianoValidated": false,
+    "engRoman": "vii⁶sus2(3)",
+    "engLetter": "F#°sus2/A",
+    "engNotes": [
+      "G#3",
+      "C#4",
+      "F#4"
+    ],
+    "engPcs": [
+      1,
+      6,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=2",
+      "alterations=3"
+    ],
+    "compositeKey": "alterations=3+suspensions=2"
+  },
+  {
+    "id": "wolfgang-amadeus-mozart__a-little-night-music---1st-movement/Verse and Pre-Chorus/13",
+    "song": "wolfgang-amadeus-mozart__a-little-night-music---1st-movement",
+    "section": "Verse and Pre-Chorus",
+    "beat": 13,
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 13,
+      "duration": 4,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "3"
+      ],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vii6(3)sus2",
+    "truthLetter": "f#(3)susb2/G",
+    "truthPcs": [
+      1,
+      6,
+      8
+    ],
+    "pianoNotes": [
+      "E#4",
+      "F#4",
+      "G#4"
+    ],
+    "pianoPcs": [
+      5,
+      6,
+      8
+    ],
+    "pianoValidated": false,
+    "engRoman": "vii⁶sus2(3)",
+    "engLetter": "F#°sus2/A",
+    "engNotes": [
+      "G#3",
+      "C#4",
+      "F#4"
+    ],
+    "engPcs": [
+      1,
+      6,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=2",
+      "alterations=3"
+    ],
+    "compositeKey": "alterations=3+suspensions=2"
+  },
+  {
+    "id": "wolfgang-amadeus-mozart__a-little-night-music---1st-movement/Verse and Pre-Chorus/64",
+    "song": "wolfgang-amadeus-mozart__a-little-night-music---1st-movement",
+    "section": "Verse and Pre-Chorus",
+    "beat": 64,
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 64,
+      "duration": 1,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "3"
+      ],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vii6(3)sus2",
+    "truthLetter": "f#(3)susb2/G",
+    "truthPcs": [
+      1,
+      6,
+      8
+    ],
+    "pianoNotes": [
+      "D#4",
+      "E#4"
+    ],
+    "pianoPcs": [
+      3,
+      5
+    ],
+    "pianoValidated": false,
+    "engRoman": "vii⁶sus2(3)",
+    "engLetter": "F#°sus2/A",
+    "engNotes": [
+      "G#3",
+      "C#4",
+      "F#4"
+    ],
+    "engPcs": [
+      1,
+      6,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=2",
+      "alterations=3"
+    ],
+    "compositeKey": "alterations=3+suspensions=2"
+  },
+  {
+    "id": "wolfgang-amadeus-mozart__a-little-night-music---1st-movement/Verse and Pre-Chorus/71",
+    "song": "wolfgang-amadeus-mozart__a-little-night-music---1st-movement",
+    "section": "Verse and Pre-Chorus",
+    "beat": 71,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 71,
+      "duration": 2,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "3"
+      ],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vii6(3)sus2",
+    "truthLetter": "c#(3)susb2/D",
+    "truthPcs": [
+      1,
+      3,
+      8
+    ],
+    "pianoNotes": [
+      "G#4",
+      "B#5"
+    ],
+    "pianoPcs": [
+      0,
+      8
+    ],
+    "pianoValidated": false,
+    "engRoman": "vii⁶sus2(3)",
+    "engLetter": "C#°sus2/E",
+    "engNotes": [
+      "D#3",
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=2",
+      "alterations=3"
+    ],
+    "compositeKey": "alterations=3+suspensions=2"
+  },
+  {
+    "id": "wolfgang-amadeus-mozart__a-little-night-music---1st-movement/Verse and Pre-Chorus/75",
+    "song": "wolfgang-amadeus-mozart__a-little-night-music---1st-movement",
+    "section": "Verse and Pre-Chorus",
+    "beat": 75,
+    "key": {
+      "tonic": "D",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 7,
+      "beat": 75,
+      "duration": 2,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "3"
+      ],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "vii6(3)sus2",
+    "truthLetter": "c#(3)susb2/D",
+    "truthPcs": [
+      1,
+      3,
+      8
+    ],
+    "pianoNotes": [
+      "G#4",
+      "B#5"
+    ],
+    "pianoPcs": [
+      0,
+      8
+    ],
+    "pianoValidated": false,
+    "engRoman": "vii⁶sus2(3)",
+    "engLetter": "C#°sus2/E",
+    "engNotes": [
+      "D#3",
+      "G#3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      3,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=2",
+      "alterations=3"
+    ],
+    "compositeKey": "alterations=3+suspensions=2"
+  }
+]

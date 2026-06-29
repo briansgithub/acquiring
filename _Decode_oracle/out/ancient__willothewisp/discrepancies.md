@@ -11,5 +11,5 @@
 - engine notes: ["Eb3","Gb3","Bb3"] | truth PCs: [3,6,10] | engine PCs: [3,6,10]
 - piano scrape: ["G3","Gb3"] | piano PCs: [6,7]
 - json: root=6 applied=0 type=5 inv=0 borrowed=[-1,1,3,5,6,8,10]
-- failing: romanExact, romanCore, pianoExact, pianoPcsExact, pianoValidated, usePiano
+- failing: romanExact, romanCore, bassPcMatch, pianoExact, pianoPcsExact, pianoValidated, usePiano
 

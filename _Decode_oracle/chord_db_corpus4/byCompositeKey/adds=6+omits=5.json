@@ -1,0 +1,89 @@
+[
+  {
+    "id": "hitoshi-sakimoto__main-theme---bubble-ghost/Intro/7",
+    "song": "hitoshi-sakimoto__main-theme---bubble-ghost",
+    "section": "Intro",
+    "beat": 7,
+    "key": {
+      "tonic": "C",
+      "scale": "lydian"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 7,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iii(add6)(no5)",
+    "truthLetter": "em(add6)(n°5)",
+    "truthPcs": [
+      1,
+      4,
+      7
+    ],
+    "pianoNotes": [
+      "E3",
+      "B3",
+      "E4"
+    ],
+    "pianoPcs": [
+      4,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "iii(add6)(no5)",
+    "engLetter": "Em",
+    "engNotes": [
+      "E3",
+      "G3",
+      "C#4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      7
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=6",
+      "omits=5"
+    ],
+    "compositeKey": "adds=6+omits=5"
+  }
+]

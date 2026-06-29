@@ -50,7 +50,7 @@ function slugsFromCorpus(corpusFile) {
   const entries = JSON.parse(fs.readFileSync(corpusFile, 'utf8'));
   const slugs = [];
   for (const e of entries) {
-    const slug = slugForUrl(e.url);
+    const slug = e.slug || slugForUrl(e.url);
     if (fs.existsSync(path.join(OUT, slug, 'scrape.json'))) slugs.push(slug);
   }
   return [...new Set(slugs)];

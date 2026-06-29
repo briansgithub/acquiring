@@ -1,0 +1,14 @@
+# Decode oracle report
+
+**Der Koenig In Thule by Franz Schubert Chords, Melody, and Music Theory Analysis - Hooktheory**
+
+- Chords compared: **39**
+- Roman exact: **72%** (28/39)
+- Roman core (ignoring borrowed/alteration tags): **100%** (39/39)
+- Notes exact (full PC set + bass): **100%** (39/39)
+
+## Sections
+
+| Section | chords | romanExact | romanCore | notesOk | browserOk |
+|---|---|---|---|---|---|
+| Verse | 39 | 72% | 100% | 100% | 0% |

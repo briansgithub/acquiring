@@ -1,0 +1,245 @@
+[
+  {
+    "id": "a-perfect-circle__judith/Chorus/4",
+    "song": "a-perfect-circle__judith",
+    "section": "Chorus",
+    "beat": 4,
+    "key": {
+      "tonic": "C#",
+      "scale": "phrygian"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 4,
+      "duration": 3,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iv6(add6)4sus2",
+    "truthLetter": "f#(add6)sus2/C#",
+    "truthPcs": [
+      3,
+      6,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "iv⁶₄(add6)sus2",
+    "engLetter": "F#msus2/C#",
+    "engNotes": [
+      "D#4",
+      "F#4",
+      "G#4"
+    ],
+    "engPcs": [
+      3,
+      6,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=2",
+      "adds=6"
+    ],
+    "compositeKey": "adds=6+suspensions=2"
+  },
+  {
+    "id": "a-perfect-circle__judith/Chorus/16",
+    "song": "a-perfect-circle__judith",
+    "section": "Chorus",
+    "beat": 16,
+    "key": {
+      "tonic": "C#",
+      "scale": "phrygian"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 16,
+      "duration": 3,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iv6(add6)4sus2",
+    "truthLetter": "f#(add6)sus2/C#",
+    "truthPcs": [
+      3,
+      6,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "iv⁶₄(add6)sus2",
+    "engLetter": "F#msus2/C#",
+    "engNotes": [
+      "D#4",
+      "F#4",
+      "G#4"
+    ],
+    "engPcs": [
+      3,
+      6,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=2",
+      "adds=6"
+    ],
+    "compositeKey": "adds=6+suspensions=2"
+  },
+  {
+    "id": "a-perfect-circle__judith/Chorus/28",
+    "song": "a-perfect-circle__judith",
+    "section": "Chorus",
+    "beat": 28,
+    "key": {
+      "tonic": "C#",
+      "scale": "phrygian"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 28,
+      "duration": 3,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iv6(add6)4sus2",
+    "truthLetter": "f#(add6)sus2/C#",
+    "truthPcs": [
+      3,
+      6,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "iv⁶₄(add6)sus2",
+    "engLetter": "F#msus2/C#",
+    "engNotes": [
+      "D#4",
+      "F#4",
+      "G#4"
+    ],
+    "engPcs": [
+      3,
+      6,
+      8
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none",
+      "suspensions=2",
+      "adds=6"
+    ],
+    "compositeKey": "adds=6+suspensions=2"
+  }
+]

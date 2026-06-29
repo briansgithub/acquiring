@@ -1,0 +1,254 @@
+[
+  {
+    "id": "a-perfect-circle__judith/Solo/55",
+    "song": "a-perfect-circle__judith",
+    "section": "Solo",
+    "beat": 55,
+    "key": {
+      "tonic": "C#",
+      "scale": "phrygian"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 55,
+      "duration": 3,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [
+        "#5"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "#ii6(add4)(#5)(dor)",
+    "truthLetter": "d#m(add4)(#5)/F#",
+    "truthPcs": [
+      3,
+      6,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♯ii+⁶(add4)(#5)(dor)",
+    "engLetter": "D#m/F#",
+    "engNotes": [
+      "F#3",
+      "B3",
+      "G#3",
+      "D#4"
+    ],
+    "engPcs": [
+      3,
+      6,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=dorian",
+      "alterations=#5",
+      "adds=4"
+    ],
+    "compositeKey": "adds=4+alterations=#5"
+  },
+  {
+    "id": "a-perfect-circle__judith/Solo/67",
+    "song": "a-perfect-circle__judith",
+    "section": "Solo",
+    "beat": 67,
+    "key": {
+      "tonic": "C#",
+      "scale": "phrygian"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 67,
+      "duration": 3,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [
+        "#5"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "#ii6(add4)(#5)(dor)",
+    "truthLetter": "d#m(add4)(#5)/F#",
+    "truthPcs": [
+      3,
+      6,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♯ii+⁶(add4)(#5)(dor)",
+    "engLetter": "D#m/F#",
+    "engNotes": [
+      "F#3",
+      "B3",
+      "G#3",
+      "D#4"
+    ],
+    "engPcs": [
+      3,
+      6,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=dorian",
+      "alterations=#5",
+      "adds=4"
+    ],
+    "compositeKey": "adds=4+alterations=#5"
+  },
+  {
+    "id": "a-perfect-circle__judith/Solo/79",
+    "song": "a-perfect-circle__judith",
+    "section": "Solo",
+    "beat": 79,
+    "key": {
+      "tonic": "C#",
+      "scale": "phrygian"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 79,
+      "duration": 3,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [
+        "#5"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "#ii6(add4)(#5)(dor)",
+    "truthLetter": "d#m(add4)(#5)/F#",
+    "truthPcs": [
+      3,
+      6,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "♯ii+⁶(add4)(#5)(dor)",
+    "engLetter": "D#m/F#",
+    "engNotes": [
+      "F#3",
+      "B3",
+      "G#3",
+      "D#4"
+    ],
+    "engPcs": [
+      3,
+      6,
+      8,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=1",
+      "applied=no",
+      "borrowed=dorian",
+      "alterations=#5",
+      "adds=4"
+    ],
+    "compositeKey": "adds=4+alterations=#5"
+  }
+]

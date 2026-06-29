@@ -5,11 +5,11 @@
 - Chords compared: **38**
 - Roman exact: **100%** (38/38)
 - Roman core (ignoring borrowed/alteration tags): **100%** (38/38)
-- Notes exact (full PC set + bass): **71%** (27/38)
+- Notes exact (full PC set + bass): **100%** (38/38)
 
 ## Sections
 
 | Section | chords | romanExact | romanCore | notesOk | browserOk |
 |---|---|---|---|---|---|
-| Intro | 21 | 100% | 100% | 71% | 0% |
-| Chorus | 17 | 100% | 100% | 71% | 0% |
+| Intro | 21 | 100% | 100% | 100% | 0% |
+| Chorus | 17 | 100% | 100% | 100% | 0% |
