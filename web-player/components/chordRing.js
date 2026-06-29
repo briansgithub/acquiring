@@ -588,31 +588,109 @@ export function renderChordRing(container, options = {}) {
         const prevName = prevSymbol.replace(/\([a-z.]+\)$/i, "");
         const prevColor = getScaleDegreeColor(previousChord.root, key.scale) || "#ffffff";
 
-        // Setup a larger font for measuring and drawing transitions
-        ctx.font = `bold ${Math.max(18, 22 * zoom)}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-        ctx.textBaseline = "middle";
+        // Try single line first
+        const maxSingleLineFont = 42 * zoom;
+        const minSingleLineFont = 18 * zoom;
+        const targetW = r * 1.65; // 82.5% of diameter
 
-        const wPrev = ctx.measureText(prevName).width;
-        const wArrow = ctx.measureText(" → ").width;
-        const wCurr = ctx.measureText(currName).width;
-        const totalW = wPrev + wArrow + wCurr;
-        const startX = cx - totalW / 2;
+        let fontSize = maxSingleLineFont;
+        let fitsSingleLine = false;
 
-        // Draw previous chord name in its color
-        ctx.textAlign = "left";
-        ctx.fillStyle = prevColor;
-        ctx.fillText(prevName, startX, cy);
+        while (fontSize >= minSingleLineFont) {
+          ctx.font = `bold ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+          const wPrev = ctx.measureText(prevName).width;
+          const wArrow = ctx.measureText(" → ").width;
+          const wCurr = ctx.measureText(currName).width;
+          const totalW = wPrev + wArrow + wCurr;
+          if (totalW <= targetW) {
+            fitsSingleLine = true;
+            break;
+          }
+          fontSize -= 1;
+        }
 
-        // Draw arrow in white/light-gray
-        ctx.fillStyle = "#cbd5e1";
-        ctx.fillText(" → ", startX + wPrev, cy);
+        if (fitsSingleLine) {
+          // Draw single line centered at cy
+          ctx.font = `bold ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+          ctx.textBaseline = "middle";
 
-        // Draw current chord name in its color
-        ctx.fillStyle = currColor;
-        ctx.fillText(currName, startX + wPrev + wArrow, cy);
+          const wPrev = ctx.measureText(prevName).width;
+          const wArrow = ctx.measureText(" → ").width;
+          const wCurr = ctx.measureText(currName).width;
+          const totalW = wPrev + wArrow + wCurr;
+          const startX = cx - totalW / 2;
+
+          ctx.textAlign = "left";
+          ctx.fillStyle = prevColor;
+          ctx.fillText(prevName, startX, cy);
+
+          ctx.fillStyle = "#cbd5e1";
+          ctx.fillText(" → ", startX + wPrev, cy);
+
+          ctx.fillStyle = currColor;
+          ctx.fillText(currName, startX + wPrev + wArrow, cy);
+        } else {
+          // Exceeds single line -> Draw multi-line
+          // Line 1: [prevName] →
+          // Line 2: [currName]
+          const maxMultiLineFont = 34 * zoom;
+          const minMultiLineFont = 14 * zoom;
+          const targetWTwoLine = r * 1.45; // smaller target width for safety off-center
+
+          let multiFontSize = maxMultiLineFont;
+          while (multiFontSize >= minMultiLineFont) {
+            ctx.font = `bold ${multiFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+            const wLine1 = ctx.measureText(prevName + " →").width;
+            const wLine2 = ctx.measureText(currName).width;
+            if (wLine1 <= targetWTwoLine && wLine2 <= targetWTwoLine) {
+              break;
+            }
+            multiFontSize -= 1;
+          }
+
+          ctx.font = `bold ${multiFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+          ctx.textBaseline = "middle";
+
+          const vOffset = Math.max(10 * zoom, multiFontSize * 0.65);
+          const y1 = cy - vOffset;
+          const y2 = cy + vOffset;
+
+          // Measure Line 1 elements to center them horizontally
+          const wPrev = ctx.measureText(prevName).width;
+          const wArrow = ctx.measureText(" →").width;
+          const totalW1 = wPrev + wArrow;
+          const startX1 = cx - totalW1 / 2;
+
+          // Draw Line 1 (prevName + arrow)
+          ctx.textAlign = "left";
+          ctx.fillStyle = prevColor;
+          ctx.fillText(prevName, startX1, y1);
+
+          ctx.fillStyle = "#cbd5e1";
+          ctx.fillText(" →", startX1 + wPrev, y1);
+
+          // Draw Line 2 (currName)
+          ctx.textAlign = "center";
+          ctx.fillStyle = currColor;
+          ctx.fillText(currName, cx, y2);
+        }
       } else {
-        // No previous chord - draw current chord centered
-        ctx.font = `bold ${Math.max(20, 26 * zoom)}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+        // No previous chord - draw current chord centered, scaling to fill
+        const maxSingleFont = 48 * zoom;
+        const minSingleFont = 18 * zoom;
+        const targetW = r * 1.55;
+
+        let fontSize = maxSingleFont;
+        while (fontSize >= minSingleFont) {
+          ctx.font = `bold ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+          const w = ctx.measureText(currName).width;
+          if (w <= targetW) {
+            break;
+          }
+          fontSize -= 1;
+        }
+
+        ctx.font = `bold ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillStyle = currColor;
@@ -620,7 +698,7 @@ export function renderChordRing(container, options = {}) {
       }
     } else {
       // No active chord - draw placeholder
-      ctx.font = `bold ${Math.max(20, 26 * zoom)}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+      ctx.font = `bold ${Math.max(20, 28 * zoom)}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillStyle = "#64748b";
