@@ -46,6 +46,12 @@ flowchart TD
 
 **Song Selector isolation:** browsing/searching the catalog shows metadata only. Chord ring, timeline, and transport update **only** when the user presses **Load** (after catalogued + metadata + processed gates pass). `POST /api/library/load` returns the cache folder key; `player.js` resolves it via `GET /api/songs` and calls `handleSongChange` / `loadSection`.
 
+**Add by URL:** search view has a TheoryTab URL field. `POST /api/library/add` upserts the row then runs **metadata → processed** (no oracle). Poll `GET /api/library/pipeline/job` like other pipeline jobs.
+
+**Pipeline buttons** (metadata / processed / tested): red = click to run that step (async job + poll); green = hold ~800ms to clear only that step's data. **catalogued** is a read-only status badge (green when the row exists). Oracle **tested** writes `_Decode_oracle/out/<slug>/` plus `oracle_out_dir` and `oracle_summary_json`; when tested, Song Selector shows an error-rate table (section + attribute breakdown) at the bottom of song detail.
+
+Backend: `hooktheory_catalog/lib/pipelineOps.js`, `pipelineJobs.js`, `addSongPipeline.js`, `oracleRunner.js`, `oracleSummary.js`; HTTP: `web/pipelineApi.js`, `web/addSongApi.js`. Frontend: `songSelectorPipeline.js`, `pipelineHold.js`.
+
 Key state lives in `player.js`: `currentRawChords`, `currentKey`, `currentChordEvents`, `isArpeggiated`, `forceRootPosition`. Chord/melody events are tick-based (192 PPQ) so tempo changes reschedule cleanly via `engine.rescheduleParts` / `updatePlaybackSettings`.
 
 ### Components
@@ -56,7 +62,9 @@ Key state lives in `player.js`: `currentRawChords`, `currentKey`, `currentChordE
 | `components/chordRing.js` | Circular chord visualizer; manual chord preview on click; transition table; `ResizeObserver` keeps canvas sharp on layout changes |
 | `components/noteIndicator.js` | "Now Playing" Melody + Chord cards (note pills, scale-degree pills, Roman symbol, borrowed tag, root-position checkbox) |
 | `components/timeline.js` | Beat-axis timeline; click-to-preview chords; song URL display |
-| `components/songSelector.js` | Right-panel catalog browser: substring search, artist drill-down, pipeline status buttons, gated **Load** into player |
+| `components/songSelector.js` | Right-panel catalog browser: add-by-URL, substring search, artist drill-down, pipeline buttons, gated **Load** into player |
+| `components/songSelectorPipeline.js` | Pipeline button HTML, hold-to-clear wiring, oracle error-rate tables |
+| `components/pipelineHold.js` | 800ms hold-to-clear with progress bar on green pipeline buttons |
 
 ---
 

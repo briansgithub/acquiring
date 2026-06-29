@@ -3,6 +3,11 @@
  * Browse/click never touches chord ring or transport — only onLoad does.
  */
 
+import {
+  buildSongDetailHtml,
+  wirePipelineButtons,
+} from "./songSelectorPipeline.js";
+
 const MIN_CHARS = 3;
 const MAX_SUGGESTIONS = 10;
 const DEBOUNCE_MS = 120;
@@ -19,35 +24,6 @@ function debounce(fn, ms) {
     if (t) clearTimeout(t);
     t = setTimeout(() => fn(...args), ms);
   };
-}
-
-const PIPELINE_TIPS = {
-  catalogued: {
-    done: "Catalogued — song is indexed in the catalog database",
-    pending: "Will discover and index this song in the catalog",
-  },
-  metadata: {
-    done: "Metadata fetched — TheoryTab enrich completed",
-    pending: "Will fetch TheoryTab metadata (complexity, key, BPM, sections)",
-  },
-  processed: {
-    done: "Processed — chord sections extracted to .hooktheory_cache/",
-    pending: "Will extract chord/melody sections to .hooktheory_cache/",
-  },
-  tested: {
-    done: "Tested — compared against oracle ground truth",
-    pending: "Will run oracle ground-truth comparison",
-  },
-};
-
-function btnClass(done) {
-  return done ? "entry-btn entry-btn--done" : "entry-btn entry-btn--pending";
-}
-
-function pipelineBtn(action, done) {
-  const tips = PIPELINE_TIPS[action];
-  const title = done ? tips.done : tips.pending;
-  return `<button type="button" class="${btnClass(done)}" data-action="${action}" disabled title="${esc(title)}">${action}</button>`;
 }
 
 function loadTooltip(missing) {
@@ -166,6 +142,16 @@ export function renderSongSelector(container, options = {}) {
     backBtn.hidden = true;
     body.innerHTML = `
       <div class="sel-field">
+        <label class="sel-label" for="sel-url-input">Add song by URL</label>
+        <div class="sel-url-row">
+          <input id="sel-url-input" class="sel-input" type="url"
+            placeholder="https://www.hooktheory.com/theorytab/view/artist/song"
+            autocomplete="off" spellcheck="false" />
+          <button id="sel-url-add" class="sel-url-add" type="button">Add</button>
+        </div>
+        <div id="sel-url-status" class="sel-hint"></div>
+      </div>
+      <div class="sel-field">
         <label class="sel-label" for="sel-song-input">Song title</label>
         <div class="autocomplete">
           <input id="sel-song-input" class="sel-input" type="text"
@@ -189,8 +175,12 @@ export function renderSongSelector(container, options = {}) {
     const artistInput = body.querySelector("#sel-artist-input");
     const artistDrop = body.querySelector("#sel-artist-drop");
     const hint = body.querySelector("#sel-hint");
+    const urlInput = body.querySelector("#sel-url-input");
+    const urlAddBtn = body.querySelector("#sel-url-add");
+    const urlStatus = body.querySelector("#sel-url-status");
 
     updateHint(hint);
+    wireAddUrl(urlInput, urlAddBtn, urlStatus);
 
     const songRun = wireSongInput(songInput, songDrop);
     const artistRun = wireArtistInput(artistInput, artistDrop);
@@ -203,6 +193,65 @@ export function renderSongSelector(container, options = {}) {
   function closeDrop(drop) {
     drop.hidden = true;
     drop.innerHTML = "";
+  }
+
+  async function pollAddJob(jobId) {
+    for (;;) {
+      const res = await fetch(`/api/library/pipeline/job?id=${encodeURIComponent(jobId)}`);
+      const job = await res.json();
+      if (!res.ok) throw new Error(job.error || `HTTP ${res.status}`);
+      if (job.status === "running") {
+        await new Promise((r) => setTimeout(r, 1500));
+        continue;
+      }
+      return job;
+    }
+  }
+
+  function wireAddUrl(input, addBtn, statusEl) {
+    const setStatus = (msg) => {
+      if (statusEl) statusEl.textContent = msg || "";
+    };
+
+    const run = async () => {
+      const url = input.value.trim();
+      if (!url) {
+        setStatus("Paste a Hooktheory TheoryTab URL");
+        return;
+      }
+      addBtn.disabled = true;
+      input.disabled = true;
+      setStatus("Adding — catalog, enrich, extract…");
+      try {
+        const res = await fetch("/api/library/add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+        const job = await pollAddJob(data.jobId);
+        if (job.status === "error") throw new Error(job.error || "add pipeline failed");
+        await loadIndex();
+        updateHint(body.querySelector("#sel-hint"));
+        setStatus(`Added ${data.slug} — opening detail`);
+        input.value = "";
+        showSongDetail(data.slug);
+      } catch (err) {
+        setStatus(err.message);
+      } finally {
+        addBtn.disabled = false;
+        input.disabled = false;
+      }
+    };
+
+    addBtn.addEventListener("click", run);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        run();
+      }
+    });
   }
 
   function wireSongInput(input, drop) {
@@ -305,18 +354,6 @@ export function renderSongSelector(container, options = {}) {
   }
 
   // ---- Song detail view ----
-  function row(label, value) {
-    if (value === null || value === undefined || value === "") return "";
-    return `<div class="entry-row"><span class="entry-key">${esc(label)}</span><span class="entry-val">${esc(value)}</span></div>`;
-  }
-
-  function num(value, digits) {
-    if (value === null || value === undefined) return "";
-    const n = Number(value);
-    if (Number.isNaN(n)) return "";
-    return digits != null ? n.toFixed(digits) : String(n);
-  }
-
   async function showSongDetail(slug) {
     backBtn.hidden = false;
     body.innerHTML = `<div class="sel-hint">Loading song…</div>`;
@@ -332,63 +369,17 @@ export function renderSongSelector(container, options = {}) {
     const s = data.song || {};
     const flags = s.flags || {};
     const sections = data.sections || [];
-    const keyStr = [s.primary_key_tonic, s.primary_key_scale].filter(Boolean).join(" ");
     const canLoad = !!s.canLoad;
     const missing = s.loadGateMissing || [];
 
-    body.innerHTML = `
-      <div class="entry-title">${esc(s.title || "(untitled)")}</div>
-      <div class="entry-artist">${esc(s.artist || "")}</div>
-      <div class="entry-btns" aria-label="Pipeline status">
-        ${pipelineBtn("catalogued", flags.catalogued)}
-        ${pipelineBtn("metadata", flags.metadata)}
-        ${pipelineBtn("processed", flags.processed)}
-        ${pipelineBtn("tested", flags.tested)}
-      </div>
-      <div class="entry-load-row">
-        <button id="sel-load-btn" class="sel-load-btn${canLoad ? " sel-load-btn--ready" : " sel-load-btn--blocked"}" type="button"
-          ${canLoad ? "" : "disabled"}
-          title="${esc(loadTooltip(missing))}">Load</button>
-        ${s.playable ? '<span class="entry-playable">ready to play</span>' : ""}
-      </div>
-      <div class="entry-data">
-        ${row("Status", s.status)}
-        ${row("Difficulty", s.difficulty_label)}
-        ${row("Key", keyStr)}
-        ${row("BPM", num(s.bpm, 0))}
-        ${row("Time sig", s.time_sig)}
-        ${row("Complexity", num(s.complexity_rating, 1))}
-        ${row("Unique chords", num(s.unique_chords))}
-        ${row("Unique transitions", num(s.unique_transitions))}
-        ${row("Total chords", num(s.total_chords))}
-        ${row("Sections", num(s.section_count != null ? s.section_count : sections.length))}
-        ${row("Has melody", s.has_melody ? "yes" : (s.has_melody === 0 ? "no" : ""))}
-        ${row("Total notes", num(s.total_notes))}
-        ${row("Key changes", num(s.key_change_count))}
-        ${row("Borrowed chords", num(s.borrowed_chord_count))}
-        ${row("Applied chords", num(s.applied_chord_count))}
-        ${row("Modified chords", num(s.modified_chord_count))}
-        ${row("Metrics source", s.metrics_source)}
-        ${row("Discovery source", s.discovery_source)}
-        ${row("Cache", s.cache_dir)}
-        ${row("YouTube", s.youtube_id)}
-      </div>
-      ${sections.length ? `
-        <div class="entry-sub">Sections</div>
-        <div class="entry-sections">
-          ${sections.map((sec) => `
-            <div class="entry-section">
-              <span>${esc(sec.section_name)}</span>
-              <span class="entry-section-meta">${esc([
-                sec.chord_count != null ? `${sec.chord_count} chords` : "",
-                [sec.key_tonic, sec.key_scale].filter(Boolean).join(" "),
-              ].filter(Boolean).join(" · "))}</span>
-            </div>
-          `).join("")}
-        </div>
-      ` : ""}
-      ${s.url ? `<a class="entry-link" href="${esc(s.url)}" target="_blank" rel="noopener">Open on TheoryTab ↗</a>` : ""}
-    `;
+    body.innerHTML = buildSongDetailHtml(s, sections, flags, canLoad, missing, esc, loadTooltip);
+
+    wirePipelineButtons(body, slug, flags, {
+      esc,
+      loadTooltip,
+      reloadIndex: () => loadIndex(),
+      onJobDone: (s) => showSongDetail(s),
+    });
 
     const loadBtn = body.querySelector("#sel-load-btn");
     loadBtn?.addEventListener("click", async () => {

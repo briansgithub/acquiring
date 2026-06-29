@@ -222,10 +222,21 @@ Or require individual `lib/*` modules.
 | Route | Handler |
 |-------|---------|
 | `GET /api/library` | Catalog + `playable`, `cacheKey`, pipeline `flags` (auto-syncs cache on first call) |
-| `GET /api/library/song?slug=` | Detail + `canLoad` / `loadGateMissing` |
+| `GET /api/library/song?slug=` | Detail + `canLoad` / `loadGateMissing` + `oracleSummary` (enriched from `report.json` when needed) |
 | `POST /api/library/load?slug=` | Validate gate; return `{ cacheKey }` for `player.js` |
+| `POST /api/library/add` | Body `{ url }` — upsert TheoryTab URL, run metadata + processed → `{ jobId, slug }` |
 
-Pipeline flags: **catalogued** (row exists), **metadata** (`status = enriched`), **processed** (`cache_dir` + `processed_at`), **tested** (`oracle_tested_at`). Load requires the first three.
+### Pipeline actions (Song Selector buttons)
+
+| Route | Handler |
+|-------|---------|
+| `POST /api/library/pipeline/:action?slug=` | Start async job (`metadata`, `processed`, `tested`) → `{ jobId }` |
+| `GET /api/library/pipeline/job?id=` | Poll job status + updated `flags` |
+| `POST /api/library/pipeline/:action/clear?slug=` | Sync clear for that step only; returns fresh `flags` |
+
+Red button **click** runs the forward step. Green button **hold ~800ms** clears that step's data. **catalogued** is display-only (not an API action). Load still never runs from pipeline buttons.
+
+Pipeline flags: **catalogued** (row exists), **metadata** (`status = enriched`), **processed** (`cache_dir` + `processed_at`), **tested** (`oracle_tested_at`). Load requires the first three. After **tested**, Song Selector renders oracle error-rate tables (overall, per-section, per-attribute) at the bottom of song detail.
 
 `web-player/catalogApi.js` re-exports `hooktheory_catalog/web/api.js`.
 

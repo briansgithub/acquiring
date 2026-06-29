@@ -3,6 +3,8 @@ const path = require("path");
 const fs = require("fs");
 const url = require("url");
 const { handleCatalogStatus, handleCatalogUpdate, handleDaemonStatus, handleDaemonStart, handleDaemonStop, handleCatalogSongs, handleCatalogSongDetail, handleLibraryList, handleLibrarySong, handleLibraryLoad } = require("./catalogApi");
+const { handlePipelineRun, handlePipelineClear, handlePipelineJob, matchPipelineRoute } = require("../_Research_testing/hooktheory_catalog/web/pipelineApi");
+const { handleAddSong } = require("../_Research_testing/hooktheory_catalog/web/addSongApi");
 
 const PORT = process.env.PORT || 3000;
 const CACHE_ROOT = path.resolve(__dirname, "..", ".hooktheory_cache");
@@ -157,6 +159,11 @@ const server = http.createServer((req, res) => {
   if (reqUrl.pathname === "/api/library") return handleLibraryList(res);
   if (reqUrl.pathname === "/api/library/song") return handleLibrarySong(reqUrl, res);
   if (reqUrl.pathname === "/api/library/load" && req.method === "POST") return handleLibraryLoad(reqUrl, res);
+  if (reqUrl.pathname === "/api/library/add" && req.method === "POST") return handleAddSong(req, res);
+  if (reqUrl.pathname === "/api/library/pipeline/job" && req.method === "GET") return handlePipelineJob(reqUrl, res);
+  const pipelineRoute = matchPipelineRoute(reqUrl.pathname, req.method);
+  if (pipelineRoute === "run") return handlePipelineRun(reqUrl, res);
+  if (pipelineRoute === "clear") return handlePipelineClear(reqUrl, res);
   if (reqUrl.pathname === "/api/catalog/status") return handleCatalogStatus(res);
   if (reqUrl.pathname === "/api/catalog/update" && req.method === "POST") return handleCatalogUpdate(reqUrl, res);
   if (reqUrl.pathname === "/api/catalog/daemon/status") return handleDaemonStatus(res);

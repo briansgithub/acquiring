@@ -3,6 +3,7 @@
  */
 
 const { computeFlags, canLoad, loadGateMissing } = require('./pipelineFlags');
+const { resolveOracleSummary } = require('./oracleSummary');
 const { syncCacheToCatalog } = require('./cacheSync');
 const { getSongDetail, listSongSections } = require('./queries');
 
@@ -48,6 +49,7 @@ function getLibrarySong(db, slug, { syncCache = true } = {}) {
   if (!song) return null;
   const flags = computeFlags(song);
   const sections = listSongSections(db, slug);
+  const oracleSummary = resolveOracleSummary(song);
   return {
     song: {
       ...song,
@@ -56,6 +58,8 @@ function getLibrarySong(db, slug, { syncCache = true } = {}) {
       flags,
       canLoad: canLoad(flags),
       loadGateMissing: loadGateMissing(flags),
+      oracleSummary,
+      oracleOutDir: song.oracle_out_dir || null,
     },
     sections,
   };

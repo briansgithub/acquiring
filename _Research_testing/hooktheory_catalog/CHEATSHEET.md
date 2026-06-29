@@ -82,6 +82,11 @@ Run from `_Research_testing/hooktheory_catalog/` unless noted. Root shims (`node
 - `markSongFromCache(db, url, cacheDirName)` — called from `extract_hooktheory_data.js` after each extract
 - `listLibrary(db)` / `getLibrarySong(db, slug)` / `resolveLoad(db, slug)` — unified API helpers
 - `lib/pipelineFlags.js` — `computeFlags`, `canLoad`, `loadGateMissing`
+- `lib/pipelineOps.js` — run/clear for `metadata`, `processed`, `tested`
+- `lib/pipelineJobs.js` — in-memory async jobs (`startJob`, `startAddJob`)
+- `lib/addSongPipeline.js` — `addSongFromUrl` (metadata + processed)
+- `lib/oracleRunner.js` — single-song oracle compare (no browser)
+- `lib/oracleSummary.js` — resolve summary from DB JSON or `report.json` fallback
 
 ## Web UI (from repo root)
 
@@ -90,6 +95,11 @@ Run from `_Research_testing/hooktheory_catalog/` unless noted. Root shims (`node
 | `python launch_player.py` | Free port 3000, start server, Ctrl+C / Quit stops |
 | `node web-player/server.js` | Start server only |
 | `GET /api/library` | Song Selector index (catalog + cache flags) |
+| `POST /api/library/add` | Body `{ url }` — upsert + metadata + processed job |
+| `POST /api/library/pipeline/metadata?slug=…` | Start enrich job → poll `pipeline/job` |
+| `POST /api/library/pipeline/processed?slug=…` | Start extract job |
+| `POST /api/library/pipeline/tested?slug=…` | Start oracle compare job |
+| `POST /api/library/pipeline/:action/clear?slug=…` | Hold-to-clear (sync) |
 | `POST /api/library/load?slug=…` | Gated load — returns `cacheKey` |
 | `POST /api/catalog/update?mode=quick&enrichLimit=5` | Trigger foreground update via HTTP |
 | `POST /api/catalog/daemon/start?phase=auto` | Start daemon via HTTP |
@@ -100,6 +110,17 @@ Run from `_Research_testing/hooktheory_catalog/` unless noted. Root shims (`node
 | Command | What it does |
 |---------|----------------|
 | `node cli/backfill-cache.js` | Upsert all `.hooktheory_cache/` songs into catalog DB |
+
+## Pipeline closed-loop tests
+
+| Command | What it does |
+|---------|----------------|
+| `node scripts/pipelineClosedLoopTest.js --tier quick` | Run metadata/processed tests on multiple fixtures (~15 min) |
+| `node scripts/pipelineClosedLoopTest.js --tier full` | Above + oracle tested run/clear on hey-jude |
+| `node scripts/pipelineClosedLoopTest.js --case fresh_url` | Single fixture |
+| `node scripts/pipelineClosedLoopTest.js --http` | Add HTTP API spot-check (server on :3000) |
+
+Report: `data/pipeline_closed_loop_report.json`
 
 ## Monitor & troubleshoot
 

@@ -27,7 +27,9 @@ Maps every field available from Hooktheory enrichment (page HTML + public API `?
 | `discovery_source` | Discover phase | Yes — provenance |
 | `cache_dir` | Cache sync / extract | Yes — Song Selector `cacheKey`, processed flag |
 | `processed_at` | Cache sync / extract | Yes — processed pipeline flag |
-| `oracle_tested_at` | Oracle harness (future) | Yes — tested pipeline flag |
+| `oracle_tested_at` | Oracle harness | Yes — tested pipeline flag |
+| `oracle_out_dir` | Oracle run | Yes — relative path to `_Decode_oracle/out/<slug>/` |
+| `oracle_summary_json` | Oracle `buildReport` summary + `sections` / `attributes` stats | Yes — Song Selector oracle error-rate tables |
 
 ---
 

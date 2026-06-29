@@ -141,7 +141,24 @@ function buildReport(compareResult, scrape, outDir) {
   }
   fs.writeFileSync(path.join(outDir, 'discrepancies.md'), dm);
 
-  return { total, romanExact, romanCore, notesOk, browserOk, discrepancies: discrepancies.length, discrepancyList: discrepancies, matrix };
+  const sectionStats = compareResult.sections.map((sec) => {
+    let st = { name: sec.name, total: 0, romanExact: 0, romanCore: 0, notesOk: 0, browserOk: 0 };
+    sec.rows.forEach((r) => {
+      st.total++;
+      const m = rowMetrics(r);
+      if (m.romanExact) st.romanExact++;
+      if (m.romanCore) st.romanCore++;
+      if (m.notesOk) st.notesOk++;
+      if (m.browserOk) st.browserOk++;
+    });
+    return st;
+  });
+  const attributeStats = [...matrix.entries()].sort().map(([key, e]) => ({ key, ...e }));
+
+  return {
+    total, romanExact, romanCore, notesOk, browserOk, discrepancies: discrepancies.length,
+    discrepancyList: discrepancies, matrix, sectionStats, attributeStats,
+  };
 }
 
 function pctExport(n, d) { return pct(n, d); }
