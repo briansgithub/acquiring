@@ -8,7 +8,9 @@ High-signal context for agents and contributors working on this repo.
 
 A separate **`_Decode_oracle`** pipeline validates and analyzes chord interpretation against corpus data; its outputs live under `_Decode_oracle/out/`.
 
-A **`_Research_testing/hooktheory_catalog`** module indexes TheoryTab songs in SQLite. The web-player **Song Selector** searches via `GET /api/library` (catalog + `.hooktheory_cache/` pipeline flags). Playback still loads section JSON from cache; **Load** is the only action that updates the chord ring / timeline.
+A **`_Research_testing/hooktheory_catalog`** module indexes TheoryTab songs in SQLite. The web-player **Song Selector** (left column) searches via `GET /api/library` (catalog + pipeline flags). Playback loads section JSON from `.hooktheory_cache/`; complete pipeline songs **auto-load** into the player on detail view.
+
+**Planned:** bulky data (SQLite DB, `.hooktheory_cache/`, per-song harvest under `_Decode_oracle/out/`) will move to a separate portable data root — see [HANDOFF.md](../HANDOFF.md).
 
 ## Key conventions
 

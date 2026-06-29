@@ -44,7 +44,7 @@ flowchart TD
   interp --> sym[lib/jsonToSymbol.js]
 ```
 
-**Song Selector isolation:** browsing/searching the catalog shows metadata only. Chord ring, timeline, and transport update **only** when the user presses **Load** (after catalogued + metadata + processed gates pass). `POST /api/library/load` returns the cache folder key; `player.js` resolves it via `GET /api/songs` and calls `handleSongChange` / `loadSection`.
+**Song Selector:** browsing shows metadata; chord ring/timeline update when a **pipeline-complete** song is opened (auto-load) or when **Load** is clicked for incomplete songs. `POST /api/library/load` returns the cache folder key; `player.js` resolves it via `GET /api/songs`.
 
 **Add by URL:** search view has a TheoryTab URL field. `POST /api/library/add` upserts the row, runs **Fetch** (one browser pass), then parallel local **metadata + processed** (no oracle).
 
@@ -64,7 +64,7 @@ Key state lives in `player.js`: `currentRawChords`, `currentKey`, `currentChordE
 | `components/chordRing.js` | Circular chord visualizer; manual chord preview on click; transition table; `ResizeObserver` keeps canvas sharp on layout changes |
 | `components/noteIndicator.js` | "Now Playing" Melody + Chord cards (note pills, scale-degree pills, Roman symbol, borrowed tag, root-position checkbox) |
 | `components/timeline.js` | Beat-axis timeline; click-to-preview chords; song URL display |
-| `components/songSelector.js` | Right-panel catalog browser: add-by-URL, substring search, artist drill-down, pipeline buttons, gated **Load** into player |
+| `components/songSelector.js` | Left-panel catalog browser: add-by-URL, playable dropdown, light-catalog modal, pipeline buttons, auto-load when pipeline complete |
 | `components/songSelectorPipeline.js` | Pipeline button HTML, hold-to-clear wiring, oracle error-rate tables |
 | `components/pipelineHold.js` | 800ms hold-to-clear with progress bar on green pipeline buttons |
 
@@ -191,9 +191,9 @@ The **catalog DB** (`_Research_testing/hooktheory_catalog/data/hooktheory_catalo
 | `processed_at` | When section JSON was written to cache |
 | `oracle_tested_at` | Oracle ground-truth compare (future) |
 
-**Sync:** `cli/backfill-cache.js` / `lib/cacheSync.js` upserts cache folders into the catalog from `_metadata.json`. Future extracts also call `markSongFromCache` after `saveSongMetadata`.
+**Sync:** `cli/backfill-cache.js` / `lib/cacheSync.js` can upsert cache folders into the catalog (**manual only** — not on `GET /api/library`). Normal workflow: catalog → Fetch → metadata → processed → tested.
 
-**Unified API** (Song Selector):
+**Working set (2026-06):** six fetch+tested songs in `.hooktheory_cache/` (see [HANDOFF.md](../HANDOFF.md)). **Planned:** move DB + cache + harvest outputs to a portable data root outside git.
 
 | Route | Role |
 |---|---|
@@ -208,7 +208,7 @@ node extract_hooktheory_data.js https://www.hooktheory.com/theorytab/view/<artis
 node _Research_testing/hooktheory_catalog/cli/backfill-cache.js  # register in catalog
 ```
 
-Library ~19 songs in cache. Start player: `python launch_player.py` (frees port 3000, Ctrl+C / Quit stops server).
+Library: six fetch+tested songs in cache (see HANDOFF.md). Start player: `python launch_player.py` (frees port 3000, Ctrl+C / Quit stops server).
 
 The page scraper ([`lib/scraper/pageScraper.js`](../lib/scraper/pageScraper.js), Fix 030) discovers sections via `a.tb-section-tab` → `tab-{songId}` containers (Hooktheory removed the old `div.col-md-8` layout).
 
@@ -220,4 +220,4 @@ The page scraper ([`lib/scraper/pageScraper.js`](../lib/scraper/pageScraper.js),
 - Distinguish engine vs harness failures before "fixing" voicing — check `countMatch` / `orderOk` first.
 - Use `--db-dir` when testing corpus2/3 so corpus1 `chord_db/` is not overwritten.
 - Log new engine/harness fixes as a numbered entry in `DECODE_FIX_LOG.md`.
-- Commit only when asked. Cache JSON is committed to `main`; `_Research_testing/` probes are typically left untracked.
+- Commit only when asked. Song cache JSON is currently tracked on `main`; modularization will gitignore it — see HANDOFF.md.

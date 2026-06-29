@@ -39,7 +39,9 @@ node cli/update.js --mode quick --enrich-limit 5
 node cli/export.js --format json
 ```
 
-Web UI: start the player with `python launch_player.py` (or `node web-player/server.js`). The **Song Selector** panel (right column of `index.html`) uses `/api/library`. Catalog admin page: `/catalog.html` via `/api/catalog/*`.
+Web UI: start the player with `python launch_player.py` (or `node web-player/server.js`). The **Song Selector** panel (left column of `index.html`) uses `/api/library`. Catalog admin page: `/catalog.html` via `/api/catalog/*`.
+
+**Data layout note:** catalog SQLite lives in `data/` (gitignored). Playback cache is at repo root `.hooktheory_cache/` (currently tracked in git). Harvest artifacts live in `_Decode_oracle/out/<slug>/`. A planned refactor will move all bulky data to a portable external root — see [HANDOFF.md](../../HANDOFF.md).
 
 ---
 
@@ -235,7 +237,7 @@ Or require individual `lib/*` modules.
 
 **Fetch** is the only step that opens Hooktheory in a browser. Other steps read `_Decode_oracle/out/<slug>/scrape.json` locally. **metadata** / **processed** / **tested** return 409 if harvest artifact is missing.
 
-Pipeline flags: **catalogued** (row exists), **harvested** (`scrape.json` valid), **metadata** (`status = enriched`), **processed** (`cache_dir` + `processed_at`), **tested** (`oracle_tested_at`). Load requires metadata + processed.
+Pipeline flags: **catalogued** (row exists), **harvested** (`scrape.json` valid), **metadata** (`status = enriched`), **processed** (`cache_dir` + `processed_at`), **tested** (`oracle_tested_at`). API `canLoad` requires metadata + processed; Song Selector **auto-load** requires all five flags.
 
 `web-player/catalogApi.js` re-exports `hooktheory_catalog/web/api.js`.
 

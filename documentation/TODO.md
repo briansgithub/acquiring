@@ -27,4 +27,5 @@
 
 ## Housekeeping
 
+- [ ] **Modularize data from code** — portable `SACRED_RING_DATA` root; gitignore cache + harvest blobs; see [HANDOFF.md](../HANDOFF.md)
 - [ ] Keep `engine.js` and `player.js` under 400-line limit — split if they grow further
