@@ -20,12 +20,30 @@ body {
 }
 
 #app {
+  --selector-width: 310px;
+  --controls-width: 250px;
   display: grid;
-  grid-template-columns: 310px 250px 210px 1fr;
+  grid-template-columns: var(--selector-width) var(--controls-width) 290px 1fr;
   grid-template-rows: 110px 1fr;
   gap: 12px;
   padding: 12px;
   height: 100vh;
+  transition: grid-template-columns 0.22s ease;
+}
+
+#selector-pane,
+#controls-pane {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+#app.selector-collapsed {
+  --selector-width: 36px;
+}
+
+#app.controls-collapsed {
+  --controls-width: 36px;
 }
 
 #timeline-pane {
@@ -107,7 +125,8 @@ body {
 
 .indicator-card--chord {
   min-height: 150px;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 4px;
 }
 
 .indicator-stack {
@@ -277,6 +296,211 @@ body {
   gap: 6px;
   justify-content: center;
   line-height: 32px;
+}
+
+.notes-list--chord {
+  flex-wrap: nowrap;
+}
+
+.chord-arpeggio-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--divider);
+}
+
+.chord-arpeggio-toggle {
+  justify-content: center;
+}
+
+.arp-speed-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.arp-speed-label {
+  font-size: 12px;
+  color: var(--muted);
+  flex-shrink: 0;
+  width: 52px;
+}
+
+.arp-speed-slider {
+  flex: 1;
+  min-width: 0;
+}
+
+.arp-speed-value {
+  font-size: 12px;
+  color: var(--muted);
+  flex-shrink: 0;
+  width: 40px;
+  text-align: right;
+}
+
+.timeline-footer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+  border-top: 1px solid var(--divider);
+}
+
+.timeline-song-title-row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 0 12px;
+  pointer-events: none;
+}
+
+.timeline-song-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  padding: 2px 10px;
+  border-radius: 6px;
+  background: rgba(17, 24, 39, 0.82);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.timeline-footer-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+}
+
+.collapsible-pane {
+  position: relative;
+  min-width: 0;
+}
+
+.collapsible-pane .pane-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.collapsible-pane.is-collapsed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 8px 2px;
+  overflow: hidden;
+}
+
+.collapsible-pane.is-collapsed .pane-content {
+  display: none !important;
+}
+
+.pane-collapse-toggle {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 5;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid var(--divider);
+  border-radius: 6px;
+  background: rgba(11, 19, 36, 0.9);
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: none;
+  transform: none;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+/* Beat .controls button so collapse arrows match in both panels */
+.controls .pane-collapse-toggle,
+.pane.selector .pane-collapse-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: rgba(11, 19, 36, 0.9);
+  color: var(--muted);
+  border: 1px solid var(--divider);
+  font-weight: 400;
+  box-shadow: none;
+  transform: none;
+}
+
+.collapsible-pane.is-collapsed .pane-collapse-toggle {
+  position: static;
+  margin-top: 4px;
+}
+
+.pane-collapse-toggle:hover,
+.controls .pane-collapse-toggle:hover,
+.pane.selector .pane-collapse-toggle:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgba(34, 211, 238, 0.1);
+  box-shadow: none;
+  transform: none;
+}
+
+.pane-collapsed-label {
+  display: none;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  user-select: none;
+  text-align: center;
+  line-height: 1.2;
+  flex: 1;
+  overflow: hidden;
+}
+
+.collapsible-pane.is-collapsed .pane-collapsed-label {
+  display: block;
+}
+
+.pane.selector .pane-content,
+.pane.controls .pane-content {
+  flex: 1;
+  min-height: 0;
+  padding-top: 28px;
+}
+
+.pane.selector.collapsible-pane,
+.pane.controls.collapsible-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .pill {

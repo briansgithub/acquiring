@@ -12,6 +12,14 @@ export function renderTimeline(container, options = {}) {
     const canvasWrapper = document.createElement("div");
     canvasWrapper.style.cssText = "flex: 1; position: relative; min-height: 0;";
     
+    const songTitleRow = document.createElement("div");
+    songTitleRow.className = "timeline-song-title-row";
+
+    const songTitleEl = document.createElement("div");
+    songTitleEl.className = "timeline-song-title";
+    songTitleRow.appendChild(songTitleEl);
+    canvasWrapper.appendChild(songTitleRow);
+
     const canvas = document.createElement("canvas");
     canvas.style.width = "100%";
     canvas.style.height = "100%";
@@ -19,9 +27,11 @@ export function renderTimeline(container, options = {}) {
     container.appendChild(canvasWrapper);
     const ctx = canvas.getContext("2d");
     
-    // Create checkbox container at the bottom
+    const footer = document.createElement("div");
+    footer.className = "timeline-footer";
+
     const checkboxContainer = document.createElement("div");
-    checkboxContainer.style.cssText = "display: flex; align-items: center; gap: 12px; padding: 0px 12px; border-top: 1px solid var(--divider, #1f2937); flex-shrink: 0;";
+    checkboxContainer.className = "timeline-footer-controls";
     
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
@@ -71,23 +81,9 @@ export function renderTimeline(container, options = {}) {
     checkboxContainer.appendChild(label);
     checkboxContainer.appendChild(arpCheckbox);
     checkboxContainer.appendChild(arpLabel);
-    
-    // Create URL link element
-    const urlLink = document.createElement("a");
-    urlLink.href = "#";
-    urlLink.target = "_blank";
-    urlLink.rel = "noopener noreferrer";
-    urlLink.style.cssText = "font-size: 12px; color: #00AAFF; text-decoration: underline; opacity: 0.7; transition: opacity 0.2s;";
-    urlLink.style.display = "none"; // Hidden by default, shown when URL is set
-    urlLink.addEventListener("mouseenter", () => {
-        urlLink.style.opacity = "1";
-    });
-    urlLink.addEventListener("mouseleave", () => {
-        urlLink.style.opacity = "0.7";
-    });
-    checkboxContainer.appendChild(urlLink);
-    
-    container.appendChild(checkboxContainer);
+
+    footer.appendChild(checkboxContainer);
+    container.appendChild(footer);
 
     let currentChords = [];
     let currentKey = { tonic: "C", scale: "major" };
@@ -102,6 +98,24 @@ export function renderTimeline(container, options = {}) {
     let currentHoveredChord = null;
     let hideTimeout = null;
 
+    const AXIS_HEIGHT = 18;
+
+    function layoutMetrics() {
+        if (logicalHeight === 0) return { measuresBottom: 0 };
+        const blockHeight = (logicalHeight - AXIS_HEIGHT) * 0.8;
+        const y = (logicalHeight - AXIS_HEIGHT - blockHeight) / 2;
+        const axisY = y + blockHeight + 4;
+        // Beat labels sit at axisY + 5 with 10px font
+        const measuresBottom = axisY + 16;
+        return { measuresBottom };
+    }
+
+    function updateSongTitlePosition() {
+        if (logicalHeight === 0) return;
+        const { measuresBottom } = layoutMetrics();
+        songTitleRow.style.top = `${measuresBottom + 4}px`;
+    }
+
     function resize() {
         const dpr = window.devicePixelRatio || 1;
         const canvasRect = canvas.getBoundingClientRect();
@@ -112,6 +126,7 @@ export function renderTimeline(container, options = {}) {
         canvas.height = logicalHeight * dpr;
         ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform
         ctx.scale(dpr, dpr);
+        updateSongTitlePosition();
         draw();
     }
     window.addEventListener("resize", resize);
@@ -127,7 +142,7 @@ export function renderTimeline(container, options = {}) {
         if (!currentChords.length) return;
 
         const pixelsPerBeat = logicalWidth / songLengthBeats;
-        const axisHeight = 18; // Space reserved for axis below rectangles
+        const axisHeight = AXIS_HEIGHT;
         const blockHeight = (logicalHeight - axisHeight) * 0.8;
         const y = (logicalHeight - axisHeight - blockHeight) / 2;
 
@@ -590,13 +605,16 @@ export function renderTimeline(container, options = {}) {
             draw();
         },
 
-        setSongUrl(url) {
-            if (url) {
-                urlLink.href = url;
-                urlLink.textContent = url;
-                urlLink.style.display = "block";
+        setSongInfo(title, artist) {
+            if (title || artist) {
+                const t = title || "Unknown Song";
+                const a = artist || "Unknown Artist";
+                songTitleEl.textContent = `${t} by ${a}`;
+                songTitleRow.style.display = "flex";
+                updateSongTitlePosition();
             } else {
-                urlLink.style.display = "none";
+                songTitleEl.textContent = "";
+                songTitleRow.style.display = "none";
             }
         },
 

@@ -1,5 +1,6 @@
 import { AudioEngine } from "./audio/engine.js";
 import { renderControls } from "./components/controls.js";
+import { makeCollapsible } from "./components/collapsiblePane.js";
 import { renderChordRing } from "./components/chordRing.js";
 import { renderNoteIndicator } from "./components/noteIndicator.js";
 import { renderTimeline } from "./components/timeline.js";
@@ -148,18 +149,6 @@ const controls = renderControls(controlsPane, {
       }, 250);
     }
   },
-  onArpeggiateToggle: (enabled) => {
-    isArpeggiated = enabled;
-    updatePlaybackSettings();
-  },
-  onArpeggiateSpeedChange: (speedMs) => {
-    arpeggiationSpeed = speedMs;
-    // Debounce to prevent rapid re-scheduling/audio glitches
-    if (arpDebounceTimer) clearTimeout(arpDebounceTimer);
-    arpDebounceTimer = setTimeout(() => {
-      updatePlaybackSettings();
-    }, 150);
-  },
 });
 
 // Initialize volumes with default slider values
@@ -202,6 +191,17 @@ const noteIndicator = renderNoteIndicator(indicatorPane, {
     engine.previewNote(note, "4n");
   },
   onRootPositionChange: handleRootPositionChange,
+  onArpeggiateToggle: (enabled) => {
+    isArpeggiated = enabled;
+    updatePlaybackSettings();
+  },
+  onArpeggiateSpeedChange: (speedMs) => {
+    arpeggiationSpeed = speedMs;
+    if (arpDebounceTimer) clearTimeout(arpDebounceTimer);
+    arpDebounceTimer = setTimeout(() => {
+      updatePlaybackSettings();
+    }, 150);
+  },
   key: currentKey
 });
 const timeline = renderTimeline(timelinePane, {
@@ -235,6 +235,9 @@ const songSelector = renderSongSelector(selectorPane, {
     }
   },
 });
+
+makeCollapsible(selectorPane, { collapseClass: "selector", label: "Songs", expandedWidth: 310 });
+makeCollapsible(controlsPane, { collapseClass: "controls", label: "Controls", expandedWidth: 250 });
 
 // Add keyboard support for spacebar to toggle play/pause
 document.addEventListener("keydown", (event) => {
@@ -280,7 +283,6 @@ function resetIdleState() {
   currentChordEvents = [];
   engine.stop();
   controls.setSections([]);
-  controls.setSongTitle("-");
   controls.resetPlayState();
   noteIndicator.reset();
   noteIndicator.setKey(null);
@@ -288,7 +290,7 @@ function resetIdleState() {
   chordRing.update(null, null, null);
   chordRing.updateTransitions([], []);
   timeline.setSongData([], null, 0);
-  timeline.setSongUrl(null);
+  timeline.setSongInfo(null, null);
   timeline.updateProgress(0);
 }
 
@@ -375,6 +377,10 @@ async function loadSection(songIndex, sectionIndex) {
     currentRawNotes = notesArray;
     currentRawChords = data.chords || [];
 
+    // #region agent log
+    fetch('http://127.0.0.1:7355/ingest/9027d9a5-7140-4ebc-92e0-0d781f81d4e6',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'14a874'},body:JSON.stringify({sessionId:'14a874',location:'player.js:loadSection',message:'section loaded',hypothesisId:'H-C',data:{songIndex,sectionIndex,sectionName:section.sectionName,relPath:section.relPath,fileSongId:section.songId,chordCount:currentRawChords.length,firstChordRoot:currentRawChords[0]?.root,allSectionLabels:song.sections?.map((s,i)=>({i,name:s.sectionName,id:s.songId}))},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+
     const melodyEvents = createMelodyEvents(notesArray, key);
     const chordEvents = createChordEvents(currentRawChords, key);
 
@@ -416,7 +422,6 @@ async function loadSection(songIndex, sectionIndex) {
     const sectionSelect = document.getElementById("section-select");
     if (sectionSelect) sectionSelect.value = sectionIndex;
 
-    controls.setSongTitle(song.title || song.artist || "Unknown Song");
     noteIndicator.setKey(key);
     // Update tempo slider to match loaded section's tempo (100% = original tempo)
     controls.setTempo(bpm, originalBpm);
@@ -428,7 +433,7 @@ async function loadSection(songIndex, sectionIndex) {
     chordRing.setSongData(currentRawChords, currentKey);
     chordRing.update(null, null, null);
     timeline.setSongData(currentRawChords, currentKey, songLength, data.metadata);
-    timeline.setSongUrl(song.url || null);
+    timeline.setSongInfo(song.title, song.artist);
     noteIndicator.reset();
     
     // Compute all chord transitions for the entire section

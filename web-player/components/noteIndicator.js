@@ -81,8 +81,19 @@ export function renderNoteIndicator(container, options = {}) {
           </label>
           <div class="chord-root" id="chord-root" style="min-height:24px;"></div>
         </div>
-        <div class="notes-list" id="chord-notes" style="min-height:32px;margin-top:2px;"></div>
-        <div class="notes-list" id="chord-degrees-pills" style="min-height:32px;margin-top:4px;"></div>
+        <div class="notes-list notes-list--chord" id="chord-notes" style="min-height:32px;margin-top:2px;"></div>
+        <div class="notes-list notes-list--chord" id="chord-degrees-pills" style="min-height:32px;margin-top:4px;"></div>
+        <div class="chord-arpeggio-controls" id="chord-arpeggio-controls">
+          <label for="arpeggiate-toggle" class="indicator-option-toggle chord-arpeggio-toggle">
+            <input type="checkbox" id="arpeggiate-toggle" />
+            Arpeggiate Chords
+          </label>
+          <div class="arp-speed-row" id="arp-speed-row">
+            <label for="arp-speed" class="arp-speed-label">Arp Spd:</label>
+            <input type="range" id="arp-speed" min="10" max="1000" value="100" step="10" class="volume-slider arp-speed-slider" />
+            <span id="arp-speed-label" class="arp-speed-value">100ms</span>
+          </div>
+        </div>
         <div class="chord-borrowed" id="chord-borrowed" style="position:absolute;top:34px;right:10px;font-style:italic;color:#9ca3af;font-size:0.9em;visibility:hidden;"></div>
       </div>
     </div>
@@ -101,6 +112,10 @@ export function renderNoteIndicator(container, options = {}) {
   const chordDegreesPillsList = container.querySelector("#chord-degrees-pills");
   const chordBorrowedEl = container.querySelector("#chord-borrowed");
   const rootPositionToggle = container.querySelector("#root-position-toggle");
+  const arpToggle = container.querySelector("#arpeggiate-toggle");
+  const arpSpeedSlider = container.querySelector("#arp-speed");
+  const arpSpeedLabel = container.querySelector("#arp-speed-label");
+  const arpSpeedRow = container.querySelector("#arp-speed-row");
 
   function syncMelodyVisibility() {
     melodyCard.hidden = !showMelodyToggle.checked;
@@ -111,6 +126,26 @@ export function renderNoteIndicator(container, options = {}) {
 
   rootPositionToggle.addEventListener("change", () => {
     options.onRootPositionChange?.(rootPositionToggle.checked);
+  });
+
+  arpSpeedRow.style.opacity = "0.5";
+  arpSpeedRow.style.pointerEvents = "none";
+
+  arpToggle.addEventListener("change", (e) => {
+    const isChecked = e.target.checked;
+    arpSpeedRow.style.opacity = isChecked ? "1" : "0.5";
+    arpSpeedRow.style.pointerEvents = isChecked ? "auto" : "none";
+    options.onArpeggiateToggle?.(isChecked);
+  });
+
+  arpSpeedSlider.addEventListener("input", (e) => {
+    const ms = Number(e.target.value);
+    if (ms >= 1000) {
+      arpSpeedLabel.textContent = `${(ms / 1000).toFixed(1)}s`;
+    } else {
+      arpSpeedLabel.textContent = `${ms}ms`;
+    }
+    options.onArpeggiateSpeedChange?.(ms);
   });
   
   let currentKey = options.key || null;
@@ -235,7 +270,7 @@ export function renderNoteIndicator(container, options = {}) {
     
     if (isRest) {
       // Show empty gray pills for rest
-      const numPills = 3; // Show 3 empty pills
+      const numPills = 4;
       for (let i = 0; i < numPills; i++) {
         const pill = document.createElement("span");
         pill.className = "pill";
