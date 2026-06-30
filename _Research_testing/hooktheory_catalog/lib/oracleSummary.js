@@ -4,7 +4,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { REPO_ROOT } = require('./paths');
+const { resolveDataPath } = require('../../../lib/dataRoot');
 const { attrBuckets, rowMetrics } = require('../../../_Decode_oracle/report');
 
 function statsFromReportSections(sections) {
@@ -76,7 +76,9 @@ function resolveOracleSummary(song) {
   const rel = song.oracle_out_dir;
   if (!rel) return summary;
 
-  const reportPath = path.join(REPO_ROOT, rel, 'report.json');
+  const harvestDir = resolveDataPath(rel);
+  if (!harvestDir) return summary;
+  const reportPath = path.join(harvestDir, 'report.json');
   if (!fs.existsSync(reportPath)) return summary;
 
   try {

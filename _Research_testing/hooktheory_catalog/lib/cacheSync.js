@@ -7,11 +7,11 @@
 
 const fs = require('fs');
 const path = require('path');
-const { REPO_ROOT } = require('./paths');
+const { getPlaybackCacheDir } = require('../../../lib/dataRoot');
 const { parseTheoryTabUrl } = require('./catalogUtils');
 const { upsertSong, nowIso, saveStats } = require('./db');
 
-const CACHE_ROOT = path.join(REPO_ROOT, '.hooktheory_cache');
+const CACHE_ROOT = getPlaybackCacheDir();
 
 function promoteCacheMetadata(db, slug, cacheDirName) {
   const row = db.prepare('SELECT status FROM songs WHERE slug = ?').get(slug);

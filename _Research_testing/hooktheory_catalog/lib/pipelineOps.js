@@ -4,7 +4,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { REPO_ROOT } = require('./paths');
+const { resolveDataPath } = require('../../../lib/dataRoot');
 const { nowIso } = require('./db');
 const { CACHE_ROOT } = require('./cacheSync');
 const { computeFlags, canLoad, loadGateMissing } = require('./pipelineFlags');
@@ -172,7 +172,7 @@ function clearTested(db, slug) {
   const row = getSongRow(db, slug);
   if (!row) return wrapErr(db, slug, 'song not found', 404);
   if (row.oracle_out_dir) {
-    const dir = path.join(REPO_ROOT, row.oracle_out_dir);
+    const dir = resolveDataPath(row.oracle_out_dir);
     const keep = new Set(['scrape.json']);
     if (fs.existsSync(dir)) {
       for (const f of fs.readdirSync(dir)) {

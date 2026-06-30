@@ -20,12 +20,13 @@
 
 const fs = require('fs');
 const path = require('path');
+const { getHarvestRoot } = require('../lib/dataRoot');
 const { scrapeSong } = require('./scrapeSong');
 const { compareSong } = require('./compare');
 const { buildReport } = require('./report');
 const { verifyBrowser } = require('./browserVerify');
 
-const OUT = path.join(__dirname, 'out');
+const OUT = getHarvestRoot();
 
 function slugForUrl(url) {
   const m = url.match(/theorytab\/view\/([^/]+)\/([^/?#]+)/);

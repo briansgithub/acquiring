@@ -4,7 +4,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { REPO_ROOT } = require('../lib/paths');
+const { getPlaybackCacheDir, resolveDataPath } = require('../../../lib/dataRoot');
 const { harvestDirForSlug, harvestFileForSlug } = require('../lib/harvestArtifact');
 
 function fail(msg, ctx = {}) {
@@ -54,13 +54,13 @@ function assertRow(db, slug, expected, label) {
 }
 
 function assertFsExists(relPath, label) {
-  const abs = path.isAbsolute(relPath) ? relPath : path.join(REPO_ROOT, relPath);
-  if (!fs.existsSync(abs)) fail(`${label}: path missing ${relPath}`);
+  const abs = path.isAbsolute(relPath) ? relPath : resolveDataPath(relPath);
+  if (!abs || !fs.existsSync(abs)) fail(`${label}: path missing ${relPath}`);
 }
 
 function assertFsMissing(relPath, label) {
-  const abs = path.isAbsolute(relPath) ? relPath : path.join(REPO_ROOT, relPath);
-  if (fs.existsSync(abs)) fail(`${label}: path should be gone ${relPath}`);
+  const abs = path.isAbsolute(relPath) ? relPath : resolveDataPath(relPath);
+  if (abs && fs.existsSync(abs)) fail(`${label}: path should be gone ${relPath}`);
 }
 
 function sleep(ms) {
@@ -71,7 +71,7 @@ function sleep(ms) {
 function seedHarvestFromCache(db, slug) {
   const row = getRow(db, slug);
   if (!row?.cache_dir || !row.url) fail('seedHarvestFromCache: no cache_dir', { slug });
-  const cacheDir = path.join(REPO_ROOT, '.hooktheory_cache', row.cache_dir);
+  const cacheDir = path.join(getPlaybackCacheDir(), row.cache_dir);
   if (!fs.existsSync(cacheDir)) fail('seedHarvestFromCache: cache missing', { cacheDir });
 
   const metaPath = path.join(cacheDir, '_metadata.json');

@@ -17,7 +17,9 @@ const KEEP_SLUGS = new Set([
   'queen__bohemian-rhapsody',
 ]);
 
-const CACHE_ROOT = path.join(__dirname, '..', '.hooktheory_cache');
+const { getPlaybackCacheDir } = require('../lib/dataRoot');
+
+const CACHE_ROOT = getPlaybackCacheDir();
 
 function rmDir(dir) {
   fs.rmSync(dir, { recursive: true, force: true });

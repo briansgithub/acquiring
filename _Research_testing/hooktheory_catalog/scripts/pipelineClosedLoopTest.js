@@ -19,6 +19,7 @@ const {
 const { startJob, getJob } = require('../lib/pipelineJobs');
 const { resetCacheSync } = require('../lib/library');
 const { DATA_DIR, REPO_ROOT } = require('../lib/paths');
+const { getPlaybackCacheDir, resolveDataPath } = require('../../../lib/dataRoot');
 const {
   assertFlags,
   assertRow,
@@ -174,7 +175,7 @@ async function caseCachedFull(db, tier) {
 
   const row = getRow(db, slug);
   const cacheDir = row.cache_dir;
-  const cacheRel = cacheDir ? path.join('.hooktheory_cache', cacheDir) : null;
+  const cacheRel = cacheDir ? path.join('playback', '.hooktheory_cache', cacheDir) : null;
 
   if (tier === 'full' && cacheRel) {
     if (!isHarvested(slug)) seedHarvestFromCache(db, slug);
@@ -204,7 +205,7 @@ async function caseCachedFull(db, tier) {
     );
   }
 
-  if (cacheRel && fs.existsSync(path.join(REPO_ROOT, cacheRel))) {
+  if (cacheRel && fs.existsSync(resolveDataPath(cacheRel))) {
     if (!isHarvested(slug)) seedHarvestFromCache(db, slug);
     const savedCache = cacheDir;
     await step(caseId, 'processed clear', async () => {
@@ -219,7 +220,7 @@ async function caseCachedFull(db, tier) {
       const fp = flagsPayload(db, slug);
       assertFlags(fp.flags, { processed: true }, 'processed run');
       const r = getRow(db, slug);
-      assertFsExists(path.join('.hooktheory_cache', r.cache_dir), 'cache after extract');
+      assertFsExists(path.join('playback', '.hooktheory_cache', r.cache_dir), 'cache after extract');
     });
     void savedCache;
   }

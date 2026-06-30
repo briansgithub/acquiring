@@ -4,9 +4,10 @@
 
 const fs = require('fs');
 const path = require('path');
+const { getCatalogDir, getRepoRoot } = require('../../../lib/dataRoot');
 
 const ROOT = path.join(__dirname, '..');
-const DATA_DIR = path.join(ROOT, 'data');
+const DATA_DIR = getCatalogDir();
 const LIB_DIR = path.join(ROOT, 'lib');
 const CLI_DIR = path.join(ROOT, 'cli');
 const WEB_DIR = path.join(ROOT, 'web');
@@ -42,7 +43,7 @@ module.exports = {
   PROBES_DIR,
   SCRIPTS_DIR,
   RESEARCH_DIR: path.join(ROOT, '..'),
-  REPO_ROOT: path.join(ROOT, '..', '..'),
+  REPO_ROOT: getRepoRoot(),
   LEGACY_DISCOVERED: path.join(ROOT, '..', 'discovered_urls.json'),
   ensureDataDir,
   migrateLegacyFile,

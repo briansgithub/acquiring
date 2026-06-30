@@ -8,9 +8,9 @@
 
 ## 1. What the next task is
 
-**Modularize data vs code** so the codebase can go to GitHub without bulky local databases, caches, and harvest artifacts. The data bundle must be **copy-paste portable** (flash drive) and clearly separated from engine, player, and docs.
+**Data modularization is complete** (2026-06-30). Bulky runtime data lives in `sacred_ring_data/` (or `SACRED_RING_DATA` env). See [data/README.md](data/README.md).
 
-The user's intended starting prompt is in [§8](#8-suggested-prompt-for-next-agent). This file is the bridge between that prompt and the repo's actual state.
+If you are picking up a new task unrelated to data layout, read [Documentation/INDEX.md](Documentation/INDEX.md) for routing.
 
 ---
 
@@ -79,83 +79,32 @@ Helper scripts (in `_Research_testing/`):
 
 ---
 
-## 3. Where data lives today (coupling problem)
+## 3. Where data lives (modular layout)
 
-All paths assume **repo root** via `REPO_ROOT` in `_Research_testing/hooktheory_catalog/lib/paths.js`:
+Resolved by `lib/dataRoot.js` — env `SACRED_RING_DATA`, or `sacred_ring_data.config.json`, or default `<repo>/sacred_ring_data/`.
 
-```
-REPO_ROOT = <repo>/
-```
+| Data | Path under data root | Git status |
+|------|----------------------|------------|
+| SQLite catalog | `catalog/hooktheory_catalog.db` (+ WAL/SHM) | **gitignored** |
+| Catalog runtime | `catalog/.meili_auth.json`, daemon logs, etc. | gitignored |
+| Playback cache | `playback/.hooktheory_cache/` | **gitignored** |
+| Harvest artifacts | `harvest/<slug>/` (`scrape.json`, `report.json`, …) | **gitignored** |
+| Oracle regression DBs | `_Decode_oracle/chord_db/` (in code repo) | tracked |
 
-| Data | Current path | Git status |
-|------|--------------|------------|
-| SQLite catalog | `_Research_testing/hooktheory_catalog/data/hooktheory_catalog.db` | **gitignored** (`data/` in `.gitignore`) |
-| Catalog runtime | `data/.meili_auth.json`, daemon logs, etc. | gitignored |
-| Playback cache | **`<repo>/.hooktheory_cache/`** | **tracked in git** (~40 JSON files for 6 songs) |
-| Harvest artifacts | **`<repo>/_Decode_oracle/out/<slug>/`** | mix: six songs + many legacy dirs; large |
-| Oracle regression DBs | `_Decode_oracle/chord_db/`, `chord_db_corpus2/`, etc. | tracked (engine test corpora, not song library) |
+Legacy in-repo paths (`.hooktheory_cache/`, `_Decode_oracle/out/`, `hooktheory_catalog/data/`) are migrated on first load and remain gitignored.
 
-### Hardcoded path touchpoints (non-exhaustive — grep before refactor)
+### Path resolver touchpoints
 
-| File | What it pins |
-|------|----------------|
-| `web-player/server.js` | `CACHE_ROOT = ../.hooktheory_cache` |
-| `hooktheory_catalog/lib/cacheSync.js` | `CACHE_ROOT` under `REPO_ROOT` |
-| `hooktheory_catalog/lib/harvestArtifact.js` | `HARVEST_ROOT = REPO_ROOT/_Decode_oracle/out` |
-| `hooktheory_catalog/lib/paths.js` | `DATA_DIR` under catalog module |
-| `hooktheory_catalog/lib/oracleSummary.js` | `report.json` under `REPO_ROOT` |
-| `extract_hooktheory_data.js` | cache writer (legacy extract path) |
+| File | Role |
+|------|------|
+| `lib/dataRoot.js` | `resolveDataRoot()`, `getCatalogDir()`, `getPlaybackCacheDir()`, `getHarvestRoot()` |
+| `hooktheory_catalog/lib/paths.js` | `DATA_DIR` → `catalog/` |
+| `web-player/server.js` | Serves `playback/.hooktheory_cache/` |
+| `hooktheory_catalog/lib/harvestArtifact.js` | `harvest/<slug>/` |
+| `hooktheory_catalog/lib/cacheSync.js` | Playback cache root |
+| `hooktheory_catalog/lib/oracleSummary.js` | `resolveDataPath()` for `report.json` |
 
-`web-player/catalogApi.js` is a thin re-export of `hooktheory_catalog/web/api.js` — catalog logic is **not** inside `web-player/` but is reached through it.
-
----
-
-## 4. Proposed modularization (for next agent to plan & execute)
-
-**Goal:** one portable **data root** (flash-drive friendly), code repo without bulky blobs.
-
-### Suggested data root layout
-
-```
-<sacred_ring_data>/          # SACRED_RING_DATA env var or sacred_ring_data.config.json
-  catalog/
-    hooktheory_catalog.db    # + WAL/SHM alongside
-    .meili_auth.json
-    daemon.log               # optional runtime
-  playback/
-    .hooktheory_cache/       # section JSON + _metadata.json per song
-  harvest/
-    <slug>/                  # scrape.json, report.json, oracle markdown
-      scrape.json
-      report.json
-      ...
-  README.txt                 # "Copy this folder to SACRED_RING_DATA on another PC"
-```
-
-### Code changes (high level)
-
-1. **Single config resolver** — `resolveDataRoot()` used by catalog, server, harvest, oracle runner. Env: `SACRED_RING_DATA` (absolute path). Fallback: `./sacred_ring_data` next to repo for dev.
-2. **Move catalog module** out of `_Research_testing/` → e.g. `packages/catalog/` or top-level `catalog/` (it's production, not research).
-3. **Update `.gitignore`** — ignore entire data root + stop tracking `.hooktheory_cache/` and per-song `_Decode_oracle/out/*` (keep oracle **code** and **chord_db corpora** policy explicit — user may want corpora in repo or separate).
-4. **`git rm --cached`** for already-tracked cache/oracle song outputs before first GitHub push.
-5. **Document** copy procedure: clone code → copy data folder → set env → `python launch_player.py`.
-6. **Optional:** `data/README.md` template inside repo (not the actual DB) explaining structure.
-
-### What probably stays in the code repo
-
-- `web-player/` engine + UI
-- `_Decode_oracle/*.js` harness **code**
-- `_Decode_oracle/chord_db*` regression corpora (unless user wants those portable too)
-- `Documentation/`, `ORACLE_GUIDE/`
-- `_Research_testing/` scripts that are **tools**, not runtime data
-
-### Risks / gotchas
-
-- **`cache_dir` column** stores folder name relative to playback cache root (e.g. `the-beatles - Hey_Jude`), not slug.
-- **Player load** matches `GET /api/songs` entries by `artist` field === `cacheKey` (folder name) — see `player.js` `onLoad`.
-- **WAL mode:** copy DB only when server/daemon stopped, or copy `.db` + `-wal` + `-shm` together.
-- **Path separators:** flash drive may be Windows → use `path.join`, document forward slashes in config.
-- **ARCHITECTURE.md §7** still says cache auto-sync and ~19 songs — stale; trust this handoff.
+`oracle_out_dir` column stores paths **relative to the data root** (e.g. `harvest/scott-joplin__maple-leaf-rag`).
 
 ---
 

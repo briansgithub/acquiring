@@ -1,4 +1,14 @@
 node_modules/
+
+# Portable data root (catalog DB, playback cache, harvest artifacts)
+sacred_ring_data/
+sacred_ring_data.config.json
+
+# Legacy in-repo data paths (migrated to sacred_ring_data/)
+.hooktheory_cache/
+_Decode_oracle/out/
+
+# Catalog runtime (legacy module path — also mirrored under sacred_ring_data/catalog/)
 _Research_testing/hooktheory_catalog/data/
 _Research_testing/hooktheory_catalog/hooktheory_catalog.db
 _Research_testing/hooktheory_catalog/hooktheory_catalog.db-*

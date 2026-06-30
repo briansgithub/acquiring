@@ -1,12 +1,12 @@
 /**
- * Unified harvest artifact paths and validation (_Decode_oracle/out/<slug>/scrape.json).
+ * Unified harvest artifact paths and validation (SACRED_RING_DATA/harvest/<slug>/scrape.json).
  */
 
 const fs = require('fs');
 const path = require('path');
-const { REPO_ROOT } = require('./paths');
+const { getHarvestRoot } = require('../../../lib/dataRoot');
 
-const HARVEST_ROOT = path.join(REPO_ROOT, '_Decode_oracle', 'out');
+const HARVEST_ROOT = getHarvestRoot();
 
 function slugForUrl(url) {
   const m = String(url).match(/theorytab\/view\/([^/]+)\/([^/?#]+)/);

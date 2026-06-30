@@ -41,7 +41,7 @@ node cli/export.js --format json
 
 Web UI: start the player with `python launch_player.py` (or `node web-player/server.js`). The **Song Selector** panel (left column of `index.html`) uses `/api/library`. Catalog admin page: `/catalog.html` via `/api/catalog/*`.
 
-**Data layout note:** catalog SQLite lives in `data/` (gitignored). Playback cache is at repo root `.hooktheory_cache/` (currently tracked in git). Harvest artifacts live in `_Decode_oracle/out/<slug>/`. A planned refactor will move all bulky data to a portable external root — see [HANDOFF.md](../../HANDOFF.md).
+**Data layout note:** bulky runtime data lives in `sacred_ring_data/` (or `SACRED_RING_DATA` env) — see [data/README.md](../../data/README.md). Catalog SQLite is under `catalog/`; playback cache under `playback/.hooktheory_cache/`; harvest artifacts under `harvest/<slug>/`.
 
 ---
 

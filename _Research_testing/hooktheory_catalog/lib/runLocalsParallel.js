@@ -4,7 +4,6 @@
 
 const path = require('path');
 const { Worker } = require('worker_threads');
-const { REPO_ROOT } = require('./paths');
 const { loadHarvest } = require('./harvestArtifact');
 const { prepareMetadataFromHarvest, commitMetadata } = require('./metadataFromHarvest');
 const { writeProcessedCacheFromHarvest, commitProcessed } = require('./processedFromHarvest');
@@ -15,7 +14,7 @@ function runCompareInWorker(scrapePath) {
   return new Promise((resolve, reject) => {
     const workerPath = path.join(__dirname, 'oracleCompareWorker.js');
     const worker = new Worker(workerPath, {
-      workerData: { scrapePath, repoRoot: REPO_ROOT },
+      workerData: { scrapePath },
     });
     worker.on('message', (msg) => {
       if (!msg.ok) reject(new Error(msg.error || 'oracle compare failed'));

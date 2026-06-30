@@ -6,9 +6,10 @@ const { handleCatalogStatus, handleCatalogUpdate, handleDaemonStatus, handleDaem
 const { handleBatchStatus, handleBatchStart, handleBatchPause, handleBatchResume, handleBatchCancel, matchCatalogBatchRoute } = require("../_Research_testing/hooktheory_catalog/web/catalogBatchApi");
 const { handlePipelineRun, handlePipelineClear, handlePipelineJob, matchPipelineRoute } = require("../_Research_testing/hooktheory_catalog/web/pipelineApi");
 const { handleAddSong } = require("../_Research_testing/hooktheory_catalog/web/addSongApi");
+const { getPlaybackCacheDir } = require("../lib/dataRoot");
 
 const PORT = process.env.PORT || 3000;
-const CACHE_ROOT = path.resolve(__dirname, "..", ".hooktheory_cache");
+const CACHE_ROOT = getPlaybackCacheDir();
 const STATIC_ROOT = __dirname;
 
 const sendJson = (res, data, status = 200) => {

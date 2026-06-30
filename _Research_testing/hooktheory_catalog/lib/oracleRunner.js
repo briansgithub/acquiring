@@ -3,7 +3,7 @@
  */
 
 const path = require('path');
-const { REPO_ROOT } = require('./paths');
+const { relFromDataRoot } = require('../../../lib/dataRoot');
 const { scrapeWithCache, runResolvedSong, scrapeOk } = require('../../../_Decode_oracle/run');
 
 async function runOracleForUrl(url) {
@@ -12,7 +12,7 @@ async function runOracleForUrl(url) {
     throw new Error('Oracle scrape found no chord data');
   }
   const { result, rep } = await runResolvedSong(resolved, { browser: false });
-  const relOut = path.relative(REPO_ROOT, resolved.dir).split(path.sep).join('/');
+  const relOut = relFromDataRoot(resolved.dir);
   const summary = {
     total: rep.total,
     notesOk: rep.notesOk,

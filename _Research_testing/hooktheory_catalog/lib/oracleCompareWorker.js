@@ -8,13 +8,15 @@ const path = require('path');
 const { compareSong } = require('../../../_Decode_oracle/compare');
 const { buildReport } = require('../../../_Decode_oracle/report');
 
+const { relFromDataRoot } = require('../../../lib/dataRoot');
+
 async function run() {
-  const { scrapePath, repoRoot } = workerData;
+  const { scrapePath } = workerData;
   const scrape = JSON.parse(fs.readFileSync(scrapePath, 'utf8'));
   const cmp = await compareSong(scrape);
   const outDir = path.dirname(scrapePath);
   const rep = buildReport(cmp, scrape, outDir);
-  const relOut = path.relative(repoRoot, outDir).split(path.sep).join('/');
+  const relOut = relFromDataRoot(outDir);
   const summary = {
     total: rep.total,
     notesOk: rep.notesOk,
