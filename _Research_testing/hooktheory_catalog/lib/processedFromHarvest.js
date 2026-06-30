@@ -6,7 +6,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const CacheManager = require('../../../lib/cache/cacheManager');
 const { extractArtistAndSongFromUrl } = require('../../../lib/parser/urlParser');
-const { markSongFromCache } = require('./cacheSync');
+const { commitProcessedCache } = require('./cacheSync');
 const { nowIso } = require('./db');
 
 function songTitleFromHarvest(scrape) {
@@ -84,7 +84,7 @@ async function writeProcessedCacheFromHarvest(harvest) {
 }
 
 function commitProcessed(db, slug, procResult) {
-  markSongFromCache(db, procResult.url, procResult.cacheDirName, nowIso());
+  commitProcessedCache(db, slug, procResult.cacheDirName, nowIso());
 }
 
 module.exports = { writeProcessedCacheFromHarvest, commitProcessed, songTitleFromHarvest };

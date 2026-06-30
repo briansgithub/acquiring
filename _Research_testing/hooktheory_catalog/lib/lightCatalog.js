@@ -10,6 +10,7 @@ const {
   countSongsNeedingLightHarvest,
   listSongsNeedingLightHarvest,
 } = require('./lightHarvest');
+const { launchBrowser } = require('./theoryTabSections');
 const {
   readState,
   writeState,
@@ -105,51 +106,63 @@ async function runHarvestPhase(db, opts) {
 
   let harvested = 0;
   let failed = 0;
+  const skipSlugs = new Set();
+  let browser = null;
 
-  while (!shouldStop()) {
-    await waitWhilePaused();
+  try {
+    browser = await launchBrowser();
 
-    const remaining = countSongsNeedingLightHarvest(db, { force: opts.force });
-    writeState({ queue_remaining: remaining });
+    while (!shouldStop()) {
+      await waitWhilePaused();
 
-    if (opts.limit > 0 && harvested >= opts.limit) {
-      appendLog(`[light-catalog] harvest limit reached (${opts.limit})`);
-      break;
-    }
-    if (remaining === 0) {
-      appendLog('[light-catalog] no songs left in light harvest queue');
-      break;
-    }
+      const remaining = countSongsNeedingLightHarvest(db, { force: opts.force });
+      writeState({ queue_remaining: remaining });
 
-    const batchLimit = opts.limit > 0 ? Math.min(remaining, opts.limit - harvested) : remaining;
-    const queue = listSongsNeedingLightHarvest(db, Math.max(1, batchLimit), {
-      force: opts.force,
-      slugs: opts.slugs,
-    });
-    if (!queue.length) break;
+      if (opts.limit > 0 && harvested >= opts.limit) {
+        appendLog(`[light-catalog] harvest limit reached (${opts.limit})`);
+        break;
+      }
+      if (remaining === 0) {
+        appendLog('[light-catalog] no songs left in light harvest queue');
+        break;
+      }
 
-    const song = queue[0];
-    writeState({ current_slug: song.slug, queue_remaining: remaining });
-
-    try {
-      await harvestLightSong(db, song.slug, song.url);
-      harvested++;
-      writeState({
-        songs_harvested_session: harvested,
-        last_error: null,
+      const batchLimit = opts.limit > 0 ? Math.min(remaining, opts.limit - harvested) : remaining;
+      const queue = listSongsNeedingLightHarvest(db, Math.max(1, batchLimit), {
+        force: opts.force,
+        slugs: opts.slugs,
+        skipSlugs: [...skipSlugs],
       });
-      appendLog(`[light-catalog] harvested ${song.slug} (${harvested} ok)`);
-    } catch (e) {
-      failed++;
-      writeState({
-        songs_failed_session: failed,
-        last_error: `${song.slug}: ${e.message}`,
-      });
-      appendLog(`[light-catalog] failed ${song.slug}: ${e.message}`);
-    }
+      if (!queue.length) break;
 
-    if (shouldStop()) break;
-    await sleep(jitteredDelay());
+      const song = queue[0];
+      writeState({ current_slug: song.slug, queue_remaining: remaining });
+
+      try {
+        await harvestLightSong(db, song.slug, song.url, { browser });
+        harvested++;
+        writeState({
+          songs_harvested_session: harvested,
+          last_error: null,
+        });
+        appendLog(`[light-catalog] harvested ${song.slug} (${harvested} ok)`);
+      } catch (e) {
+        failed++;
+        skipSlugs.add(song.slug);
+        writeState({
+          songs_failed_session: failed,
+          last_error: `${song.slug}: ${e.message}`,
+        });
+        appendLog(`[light-catalog] failed ${song.slug}: ${e.message}`);
+      }
+
+      if (shouldStop()) break;
+      await sleep(jitteredDelay());
+    }
+  } finally {
+    if (browser) {
+      try { await browser.close(); } catch (_) {}
+    }
   }
 
   appendLog(`[light-catalog] harvest done ok=${harvested} failed=${failed}`);

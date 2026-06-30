@@ -131,9 +131,8 @@ async function discoverFromMeili(maxPages = 0, startOffset = 0, onPage = null, d
 
       if (db) {
         upsertSong(db, entry);
-        if (hit.id && hit.section) {
-          upsertMeiliSectionStub(db, entry.slug, hit.section, String(hit.id));
-        }
+        // Meili hit.id is an index row id, NOT the public API song id — sections
+        // are resolved from the TheoryTab page at light-harvest time (sectionResolve.js).
       }
 
       if (!seenSongs.has(songKey)) {
@@ -157,13 +156,8 @@ async function discoverFromMeili(maxPages = 0, startOffset = 0, onPage = null, d
 }
 
 function loadLegacyDiscovered() {
-  if (!fs.existsSync(LEGACY_DISCOVERED)) return [];
-  try {
-    const data = JSON.parse(fs.readFileSync(LEGACY_DISCOVERED, 'utf8'));
-    return (data.urls || []).map((url) => entryFromUrl(url, 'legacy_discovered_urls')).filter(Boolean);
-  } catch (_) {
-    return [];
-  }
+  // Removed: catalog songs must enter via discover / add-by-URL / light catalog only.
+  return [];
 }
 
 function searchQueriesForMode(mode) {
@@ -180,7 +174,6 @@ async function discoverUrls(opts = {}) {
   let meiliResult = null;
 
   if (!opts.meiliOnly) {
-    if (!opts.skipLegacy) entries.push(...loadLegacyDiscovered());
     if (!opts.skipRecent) entries.push(...await discoverFromRecent(mode === 'full' ? 5 : 2));
     if (!opts.skipSearch) {
       entries.push(...await discoverFromSearchQueries(searchQueriesForMode(mode)));

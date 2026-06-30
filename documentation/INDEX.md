@@ -11,7 +11,7 @@ Master map of repo documentation. **Read the linked file when your task matches 
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | You need the big picture: web-player engine, oracle closed-loop harness, repo/worktree layout, chord interpretation pipeline, and how scraped Hooktheory JSON flows into playback. |
 | [TODO.md](./TODO.md) | You need the current prioritized work queue or open feature/fix items. |
 | [MEMORY.md](./MEMORY.md) | You need durable project decisions, conventions, or context carried across sessions. |
-| [HANDOFF.md](../HANDOFF.md) | **Starting a new session** — current repo state, six-song data set, Song Selector behavior, and the planned data/code modularization task. |
+| [HANDOFF.md](../HANDOFF.md) | **Starting a new session** — current repo state, Song Selector behavior, catalog/data layout. |
 | [BUGS.md](./BUGS.md) | You are fixing a known bug or checking whether an issue is already tracked. |
 
 ---

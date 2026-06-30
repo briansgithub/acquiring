@@ -78,9 +78,7 @@ Run from `_Research_testing/hooktheory_catalog/` unless noted. Root shims (`node
 
 ## Cache sync (`lib/cacheSync.js`, `lib/library.js`)
 
-- `lib/cacheSync.js` — `CACHE_ROOT`, `markSongFromCache` (used by fetch/processed only)
-- `cli/backfill-cache.js` — **manual** scan `.hooktheory_cache/` → DB (not auto on library load)
-- `markSongFromCache(db, url, cacheDirName)` — called from `extract_hooktheory_data.js` after each extract
+- `lib/cacheSync.js` — `CACHE_ROOT`, `commitProcessedCache` (processed pipeline step only; no cache→DB import)
 - `listLibrary(db)` / `getLibrarySong(db, slug)` / `resolveLoad(db, slug)` — unified API helpers
 - `lib/pipelineFlags.js` — `computeFlags`, `canLoad`, `loadGateMissing` (includes `harvested`)
 - `lib/harvest.js` — `harvestSong` (single browser pass → `scrape.json`)
@@ -116,11 +114,11 @@ Run from `_Research_testing/hooktheory_catalog/` unless noted. Root shims (`node
 | `POST /api/catalog/daemon/start?phase=auto` | Start daemon via HTTP |
 | `POST /api/catalog/daemon/stop` | Write stop file via HTTP |
 
-## Cache backfill
+## Catalog purge
 
 | Command | What it does |
 |---------|----------------|
-| `node cli/backfill-cache.js` | **Manual** — upsert `.hooktheory_cache/` into catalog DB (not auto) |
+| `node cli/purge-catalog.js --yes` | Wipe all catalog song rows (cache/harvest files untouched) |
 
 ## Pipeline closed-loop tests
 

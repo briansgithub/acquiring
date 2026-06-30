@@ -83,7 +83,7 @@ node cli/discover.js [--mode quick|full] [--pages N] [--meili-pages N]
                      [--resume-offset N] [--dry-run]
 ```
 
-Sources (unless resumed mid-Meili): legacy `_Research_testing/discovered_urls.json`, `/theorytab/recent`, alphabet search crawl, Meilisearch index `theorytabs`.
+Sources (unless resumed mid-Meili): `/theorytab/recent`, alphabet search crawl, Meilisearch index `theorytabs`. (Legacy `discovered_urls.json` is no longer used for catalog.)
 
 ### `cli/enrich.js`
 
@@ -113,13 +113,15 @@ node cli/catalogDaemon.js [--phase auto|discover|enrich]
 
 Stop gracefully: create `data/.catalog_stop` or run `.\stop-daemon.ps1`. Logs: `data/daemon.log`. State: `data/daemon_state.json`, PID: `data/daemon.pid`.
 
-### `cli/backfill-cache.js` (manual migration only)
+### `cli/purge-catalog.js`
 
-One-off: register `.hooktheory_cache/` songs in the catalog DB. **Not** run automatically on library load — normal workflow is catalog → fetch → test.
+Wipe all catalog song rows (requires `--yes`). Does not delete playback cache or harvest artifacts.
 
 ```
-node cli/backfill-cache.js
+node cli/purge-catalog.js --yes
 ```
+
+Legacy `cli/backfill-cache.js` was removed — cache folders never create catalog rows.
 
 ### `cli/export.js`
 

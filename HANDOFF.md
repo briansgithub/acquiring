@@ -53,9 +53,9 @@ Start player: `python launch_player.py` or `node web-player/server.js` (port 300
 - **Fetch** is the only step that opens Hooktheory in a browser (Puppeteer).
 - **metadata / processed / tested** are local transforms over `scrape.json`.
 
-### Six-song working set
+### Six-song working set (historical reference)
 
-Cache and DB were pruned to **6 playable, fetch+tested songs**:
+Previously used for manual testing; no hardcoded seed scripts remain. Repopulate via discover + light catalog or add-by-URL.
 
 | Title | Slug | Cache folder |
 |-------|------|--------------|
@@ -66,16 +66,11 @@ Cache and DB were pruned to **6 playable, fetch+tested songs**:
 | Pollyanna | `nintendo__earthbound-zero---pollyanna` | `nintendo - Earthbound_Zero_-_Pollyanna` |
 | Bohemian Rhapsody | `queen__bohemian-rhapsody` | `queen - Bohemian_Rhapsody` |
 
-Helper scripts (in `_Research_testing/`):
-
-- `prune_to_six_songs.cjs` — delete other cache dirs + DB rows
-- `fetch_test_six_songs.cjs` — wipe DB, fetch+test six songs
-- `run_tested_six.cjs` — run tested step on six
-- `playable_songs_snapshot.json` — export of 39 formerly-playable songs (reference only)
+---
 
 ### Important behavioral change
 
-**`GET /api/library` no longer auto-imports** from `.hooktheory_cache/`. DB rows are created/updated only by explicit catalog, fetch, add-by-URL, light catalog, or manual `cli/backfill-cache.js`. See `lib/library.js` comment and updated USAGE.md.
+**`GET /api/library` never auto-imports** from `.hooktheory_cache/`. Catalog rows are created only by **discover** (Meili / recent / search crawl), **add-by-URL**, or **light-catalog discover** — then harvest / metadata / processed / tested.
 
 ---
 
@@ -217,8 +212,7 @@ Do not push to GitHub unless I ask.
 
 ## 9. Open issues / known gotchas (not blocking modularization)
 
-- Meili section stubs can store bad `song_id` → light catalog worker may retry forever.
-- `promoteCacheMetadata` in cache sync can mark enriched without full metrics (only matters for manual `backfill-cache.js`).
+- Meili section stubs can store bad `song_id` → light catalog worker may retry forever (fixed via page resolve in `sectionResolve.js`).
 - ARCHITECTURE.md still describes old grid (selector on right), manual-only Load, auto cache sync — update after modularization PR.
 
 ---

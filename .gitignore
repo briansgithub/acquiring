@@ -23,4 +23,6 @@ _Research_testing/hooktheory_catalog/daemon.err
 _Research_testing/hooktheory_catalog/rate_probe_results.json
 _Research_testing/hooktheory_catalog/catalog_export.*
 _Research_testing/hooktheory_catalog/probe_results.json
-_Research_testing/hooktheory_catalog/sample_page.html
+_Research_testing/discovered_urls.json
+_Research_testing/playable_songs_snapshot.json
+_Debug_testing/light_harvest_corpus2_report.json

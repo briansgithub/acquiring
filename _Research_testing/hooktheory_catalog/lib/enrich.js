@@ -2,7 +2,6 @@
  * Enrich catalog songs: resolve songIds, fetch API chord data, parse SongMetrics.
  */
 
-const puppeteer = require('puppeteer');
 const { fetchSongData } = require('./api/hooktheoryApi');
 const { extractChordAndMelodyObjects } = require('./dataExtractor');
 const {
@@ -17,73 +16,7 @@ const {
 const { parseMetricsFromHtml } = require('./metricsParse');
 const { parseSectionPayload, aggregateSongFromSections } = require('./songDataAggregate');
 const { resolveComplexityRating, getCorpusBounds } = require('./complexity');
-
-const BROWSER_ARGS = ['--no-sandbox', '--disable-setuid-sandbox'];
-
-async function launchBrowser() {
-  return puppeteer.launch({ headless: 'new', args: BROWSER_ARGS });
-}
-
-async function loadTheoryTabPage(url, browser = null) {
-  const ownBrowser = !browser;
-  const activeBrowser = browser || await launchBrowser();
-  try {
-    const page = await activeBrowser.newPage();
-    const responses = new Map();
-    page.on('response', async (resp) => {
-      const u = resp.url();
-      if (!u.includes('/v1/songs/public/')) return;
-      const m = u.match(/public\/([A-Za-z0-9_-]+)/);
-      if (!m) return;
-      try {
-        responses.set(m[1], await resp.json());
-      } catch (_) {}
-    });
-
-    const nav = await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
-    if (nav && nav.status() >= 400) {
-      const err = new Error(`HTTP ${nav.status()}`);
-      err.status = nav.status();
-      throw err;
-    }
-    await new Promise((r) => setTimeout(r, 2000));
-    const html = await page.content();
-
-    const tabs = await page.$$eval('a.tb-section-tab', (els) =>
-      els.map((e) => e.textContent.trim()).filter((n) => n.toLowerCase() !== 'all sections'),
-    );
-
-    const sections = [];
-    for (const name of tabs) {
-      await page.evaluate((tabName) => {
-        const a = Array.from(document.querySelectorAll('a.tb-section-tab'))
-          .find((x) => x.textContent.trim() === tabName);
-        if (a) a.click();
-      }, name);
-      await new Promise((r) => setTimeout(r, 800));
-      const cid = await page.evaluate(() => {
-        for (const c of document.querySelectorAll('[id^="tab-"]')) {
-          const disp = getComputedStyle(c).display;
-          if (disp !== 'none' && c.querySelector('g.chord-view')) return c.id;
-        }
-        return null;
-      });
-      const songId = cid ? cid.replace(/^tab-/, '') : null;
-      if (songId) sections.push({ section_name: name, song_id: songId });
-    }
-
-    if (!sections.length) {
-      for (const [songId] of responses) {
-        sections.push({ section_name: songId, song_id: songId });
-      }
-    }
-
-    await page.close();
-    return { html, sections, prefetched: responses };
-  } finally {
-    if (ownBrowser) await activeBrowser.close();
-  }
-}
+const { launchBrowser, loadTheoryTabPage } = require('./theoryTabSections');
 
 async function fetchSectionData(songId, prefetched) {
   const body = prefetched?.get(songId) || await fetchSongData(songId);

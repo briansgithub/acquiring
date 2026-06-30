@@ -191,7 +191,7 @@ The **catalog DB** (`_Research_testing/hooktheory_catalog/data/hooktheory_catalo
 | `processed_at` | When section JSON was written to cache |
 | `oracle_tested_at` | Oracle ground-truth compare (future) |
 
-**Sync:** `cli/backfill-cache.js` / `lib/cacheSync.js` can upsert cache folders into the catalog (**manual only** — not on `GET /api/library`). Normal workflow: catalog → Fetch → metadata → processed → tested.
+**Processed step:** `lib/cacheSync.js` `commitProcessedCache` sets `cache_dir` / `processed_at` on an **existing** catalog row only (no cache→DB import). Normal workflow: discover or add-by-URL → Fetch/light harvest → metadata → processed → tested.
 
 **Working set (2026-06):** six fetch+tested songs in `.hooktheory_cache/` (see [HANDOFF.md](../HANDOFF.md)). **Planned:** move DB + cache + harvest outputs to a portable data root outside git.
 
@@ -205,7 +205,7 @@ Download a song:
 ```bash
 node extract_hooktheory_data.js https://www.hooktheory.com/theorytab/view/<artist>/<song>
 # --newcache to bypass/refresh
-node _Research_testing/hooktheory_catalog/cli/backfill-cache.js  # register in catalog
+node _Research_testing/hooktheory_catalog/cli/discover.js --mode quick  # discover songs into catalog
 ```
 
 Library: six fetch+tested songs in cache (see HANDOFF.md). Start player: `python launch_player.py` (frees port 3000, Ctrl+C / Quit stops server).

@@ -168,7 +168,7 @@ async function caseCachedFull(db, tier) {
 
   if (!getRow(db, slug)) {
     await step(caseId, 'setup skip', async () => {
-      throw new Error('hey-jude not in catalog — run backfill-cache first');
+      throw new Error('hey-jude not in catalog — seed via discover or pipeline test setup');
     });
     return;
   }

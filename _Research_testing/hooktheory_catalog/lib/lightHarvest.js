@@ -6,23 +6,31 @@ const fs = require('fs');
 const { fetchSongData, fetchHtml } = require('./api/hooktheoryApi');
 const { extractChordAndMelodyObjects } = require('./dataExtractor');
 const { parseMetricsFromHtml } = require('./metricsParse');
-const { listSectionsForSlug, setHarvestMode } = require('./db');
+const { listSectionsForSlug, setHarvestMode, markLightHarvestBlocked } = require('./db');
+const { isJunkUrl } = require('./catalogUtils');
 const {
   harvestDirForSlug,
   harvestFileForSlug,
   harvestOk,
 } = require('./harvestArtifact');
 const { runLocalsParallel } = require('./runLocalsParallel');
+const { ensureSectionsResolved, isPublicSongId } = require('./sectionResolve');
 
 async function fetchSectionJson(songId) {
   const body = await fetchSongData(songId);
   return extractChordAndMelodyObjects(body);
 }
 
-async function harvestLightSong(db, slug, url, { fetchMetrics = true } = {}) {
-  const sections = listSectionsForSlug(db, slug);
+async function harvestLightSong(db, slug, url, { fetchMetrics = true, browser = null } = {}) {
+  if (!url || isJunkUrl(url)) {
+    markLightHarvestBlocked(db, slug, 'invalid or junk URL');
+    throw Object.assign(new Error('invalid or junk URL'), { permanent: true });
+  }
+
+  const sections = await ensureSectionsResolved(db, slug, url, { browser });
   if (!sections.length) {
-    throw new Error(`no section song_ids for ${slug} — run Meili discovery first`);
+    markLightHarvestBlocked(db, slug, 'no resolvable sections');
+    throw Object.assign(new Error('no resolvable sections'), { permanent: true });
   }
 
   const dir = harvestDirForSlug(slug);
@@ -37,6 +45,10 @@ async function harvestLightSong(db, slug, url, { fetchMetrics = true } = {}) {
   };
 
   for (const sec of sections) {
+    if (!isPublicSongId(sec.song_id)) {
+      scrape.errors.push(`${sec.section_name}: invalid stub id ${sec.song_id}`);
+      continue;
+    }
     try {
       const json = await fetchSectionJson(sec.song_id);
       scrape.sections.push({
@@ -52,7 +64,9 @@ async function harvestLightSong(db, slug, url, { fetchMetrics = true } = {}) {
   }
 
   if (!scrape.sections.length) {
-    throw new Error(scrape.errors.join('; ') || 'no sections fetched');
+    const err = scrape.errors.join('; ') || 'no sections fetched';
+    markLightHarvestBlocked(db, slug, err);
+    throw new Error(err);
   }
 
   if (fetchMetrics && url) {
@@ -71,58 +85,71 @@ async function harvestLightSong(db, slug, url, { fetchMetrics = true } = {}) {
   fs.writeFileSync(scrapeFile, JSON.stringify(scrape, null, 2));
 
   if (!harvestOk(scrape)) {
+    markLightHarvestBlocked(db, slug, 'light harvest artifact invalid');
     throw new Error('light harvest artifact invalid');
   }
 
   setHarvestMode(db, slug, 'light');
   await runLocalsParallel(db, slug, { includeTested: false });
 
-  return { slug, path: scrapeFile, sectionCount: scrape.sections.length };
+  return { slug, path: scrapeFile, sectionCount: scrape.sections.length, errors: scrape.errors };
 }
+
+const HARVEST_QUEUE_FILTER = `
+  AND s.url IS NOT NULL
+  AND (s.status IS NULL OR s.status != 'dead')
+  AND (s.harvest_mode IS NULL OR s.harvest_mode NOT IN ('light', 'blocked'))
+`;
 
 function countSongsNeedingLightHarvest(db, { force = false } = {}) {
   if (force) {
     return db.prepare(`
-      SELECT COUNT(DISTINCT s.slug) AS n
-      FROM songs s
-      INNER JOIN song_sections ss ON ss.slug = s.slug
+      SELECT COUNT(*) AS n FROM songs s
       WHERE s.url IS NOT NULL
+        AND (s.status IS NULL OR s.status != 'dead')
+        AND (s.harvest_mode IS NULL OR s.harvest_mode != 'light')
     `).get().n;
   }
   return db.prepare(`
-    SELECT COUNT(DISTINCT s.slug) AS n
-    FROM songs s
-    INNER JOIN song_sections ss ON ss.slug = s.slug
-    WHERE s.url IS NOT NULL
-      AND (s.harvest_mode IS NULL OR s.harvest_mode != 'light')
+    SELECT COUNT(*) AS n FROM songs s
+    WHERE 1=1 ${HARVEST_QUEUE_FILTER}
   `).get().n;
 }
 
-function listSongsNeedingLightHarvest(db, limit = 50, { force = false, slugs = null } = {}) {
+function listSongsNeedingLightHarvest(db, limit = 50, { force = false, slugs = null, skipSlugs = null } = {}) {
   const harvestFilter = force
-    ? ''
-    : "AND (s.harvest_mode IS NULL OR s.harvest_mode != 'light')";
+    ? "AND (s.harvest_mode IS NULL OR s.harvest_mode != 'light')"
+    : "AND (s.harvest_mode IS NULL OR s.harvest_mode NOT IN ('light', 'blocked'))";
+
+  const skip = skipSlugs?.length ? skipSlugs : [];
+  const skipClause = skip.length
+    ? `AND s.slug NOT IN (${skip.map(() => '?').join(',')})`
+    : '';
 
   if (slugs?.length) {
     const placeholders = slugs.map(() => '?').join(',');
     return db.prepare(`
-      SELECT DISTINCT s.slug, s.url, s.artist, s.title
+      SELECT s.slug, s.url, s.artist, s.title
       FROM songs s
-      INNER JOIN song_sections ss ON ss.slug = s.slug
-      WHERE s.slug IN (${placeholders}) AND s.url IS NOT NULL ${harvestFilter}
+      WHERE s.slug IN (${placeholders}) AND s.url IS NOT NULL
+        AND (s.status IS NULL OR s.status != 'dead')
+        ${harvestFilter}
+        ${skipClause}
       ORDER BY s.first_seen_at
       LIMIT ?
-    `).all(...slugs, limit);
+    `).all(...slugs, ...skip, limit);
   }
 
   return db.prepare(`
-    SELECT DISTINCT s.slug, s.url, s.artist, s.title
+    SELECT s.slug, s.url, s.artist, s.title
     FROM songs s
-    INNER JOIN song_sections ss ON ss.slug = s.slug
-    WHERE s.url IS NOT NULL ${harvestFilter}
+    WHERE s.url IS NOT NULL
+      AND (s.status IS NULL OR s.status != 'dead')
+      ${harvestFilter}
+      ${skipClause}
     ORDER BY s.first_seen_at
     LIMIT ?
-  `).all(limit);
+  `).all(...skip, limit);
 }
 
 module.exports = {

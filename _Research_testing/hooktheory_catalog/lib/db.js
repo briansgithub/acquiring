@@ -132,6 +132,20 @@ function setHarvestMode(db, slug, mode) {
   db.prepare('UPDATE songs SET harvest_mode = ? WHERE slug = ?').run(mode, slug);
 }
 
+function markLightHarvestBlocked(db, slug, reason) {
+  db.prepare(`
+    UPDATE songs
+    SET harvest_mode = 'blocked', error_message = ?, last_checked_at = ?
+    WHERE slug = ?
+  `).run(reason, nowIso(), slug);
+}
+
+function clearLightHarvestBlocked(db, slug) {
+  db.prepare(`
+    UPDATE songs SET harvest_mode = NULL, error_message = NULL WHERE slug = ? AND harvest_mode = 'blocked'
+  `).run(slug);
+}
+
 function listSectionsForSlug(db, slug) {
   return db.prepare(`
     SELECT section_name, song_id FROM song_sections WHERE slug = ? ORDER BY rowid
@@ -361,6 +375,8 @@ module.exports = {
   upsertSong,
   upsertMeiliSectionStub,
   setHarvestMode,
+  markLightHarvestBlocked,
+  clearLightHarvestBlocked,
   listSectionsForSlug,
   saveMetrics,
   saveStats,
