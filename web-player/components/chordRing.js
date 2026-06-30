@@ -180,7 +180,7 @@ export function renderChordRing(container, options = {}) {
   tooltip.style.minWidth = "180px";
   tooltip.style.transition = "opacity 0.12s ease, transform 0.12s ease";
   tooltip.style.opacity = "0";
-  tooltip.style.transform = "translate(-50%, -100%) translateY(-10px)";
+  tooltip.style.transform = "translate(-50%, -100%)";
   wrapper.appendChild(tooltip);
 
   let isMouseOverTooltip = false;
@@ -379,8 +379,8 @@ export function renderChordRing(container, options = {}) {
   }
 
   function resize() {
-    const w = container.clientWidth;
-    const h = container.clientHeight;
+    const w = wrapper.clientWidth;
+    const h = wrapper.clientHeight;
     if (w < 1 || h < 1) return;
     if (canvas.width === w && canvas.height === h) return;
     canvas.width = w;
@@ -390,7 +390,7 @@ export function renderChordRing(container, options = {}) {
   window.addEventListener("resize", resize);
   if (typeof ResizeObserver !== "undefined") {
     const ro = new ResizeObserver(() => resize());
-    ro.observe(container);
+    ro.observe(wrapper);
   }
 
   // Initial Resize
@@ -812,6 +812,7 @@ export function renderChordRing(container, options = {}) {
             symbol: v.symbol, 
             x: vx, 
             y: vy, 
+            radius: effectiveRadius,
             degree: i, 
             color: getScaleDegreeColor(i, currentKey.scale),
             isVariant: true,
@@ -839,6 +840,7 @@ export function renderChordRing(container, options = {}) {
             symbol: exactDiatonic.symbol, 
             x: dx, 
             y: dy, 
+            radius: effectiveRadius,
             degree: i, 
             color: getScaleDegreeColor(i, currentKey.scale),
             isVariant: false
@@ -895,6 +897,33 @@ export function renderChordRing(container, options = {}) {
     return lines.join('\n');
   }
 
+  function getNodeEffectiveRadius(node) {
+    const baseNodeRadius = NODE_RADIUS * zoom;
+    const isActive = activeChordSymbol !== null && node.symbol === activeChordSymbol;
+    return isActive ? baseNodeRadius * 1.3 : baseNodeRadius;
+  }
+
+  function positionTooltip(node) {
+    if (!node) return;
+    const centerX = canvas.width / 2 + panX;
+    const centerY = canvas.height / 2 + panY;
+    const angle = (node.degree - 1) * (2 * Math.PI / 7) - (Math.PI / 2);
+    let dist = DIATONIC_RING_RADIUS * zoom;
+    if (node.isVariant) {
+      dist = (DIATONIC_RING_RADIUS + VARIANT_SPACING * node.variantIndex) * zoom;
+    }
+    const x = centerX + dist * Math.cos(angle);
+    const y = centerY + dist * Math.sin(angle);
+    const radius = getNodeEffectiveRadius(node);
+    const anchorY = y - radius;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width > 0 ? rect.width / canvas.width : 1;
+    const scaleY = canvas.height > 0 ? rect.height / canvas.height : 1;
+    tooltip.style.left = `${x * scaleX}px`;
+    tooltip.style.top = `${anchorY * scaleY}px`;
+    tooltip.style.transform = "translate(-50%, -100%)";
+  }
+
   function showTooltip(node) {
     let displayLabel = useRomanNumerals ? node.symbol : getChordLetterName(node.chord, currentKey);
     let alternateLabel = useRomanNumerals ? getChordLetterName(node.chord, currentKey) : node.symbol;
@@ -938,20 +967,20 @@ export function renderChordRing(container, options = {}) {
       </div>
     `;
     
-    tooltip.style.left = `${node.x}px`;
-    tooltip.style.top = `${node.y}px`;
     tooltip.style.display = "block";
+    positionTooltip(node);
     
-    // Trigger CSS fade in
-    setTimeout(() => {
+    // Trigger CSS fade in after layout so -100% height is correct
+    requestAnimationFrame(() => {
+      positionTooltip(node);
       tooltip.style.opacity = "1";
-      tooltip.style.transform = "translate(-50%, -100%) translateY(-10px)";
-    }, 10);
+      tooltip.style.transform = "translate(-50%, -100%)";
+    });
   }
 
   function hideTooltip() {
     tooltip.style.opacity = "0";
-    tooltip.style.transform = "translate(-50%, -100%) translateY(-2px)";
+    tooltip.style.transform = "translate(-50%, -100%) translateY(4px)";
     // Hide display after transition completes
     setTimeout(() => {
       if (tooltip.style.opacity === "0") {
@@ -962,22 +991,7 @@ export function renderChordRing(container, options = {}) {
 
   function updateTooltipPosition() {
     if (currentHoveredNode && tooltip.style.display !== "none") {
-      const centerX = canvas.width / 2 + panX;
-      const centerY = canvas.height / 2 + panY;
-      const baseNodeRadius = NODE_RADIUS * zoom;
-      const angle = (currentHoveredNode.degree - 1) * (2 * Math.PI / 7) - (Math.PI / 2);
-      
-      let dist = DIATONIC_RING_RADIUS * zoom;
-      
-      if (currentHoveredNode.isVariant) {
-        dist = (DIATONIC_RING_RADIUS + VARIANT_SPACING * currentHoveredNode.variantIndex) * zoom;
-      }
-      
-      const vx = centerX + dist * Math.cos(angle);
-      const vy = centerY + dist * Math.sin(angle);
-      
-      tooltip.style.left = `${vx}px`;
-      tooltip.style.top = `${vy}px`;
+      positionTooltip(currentHoveredNode);
     }
   }
 
