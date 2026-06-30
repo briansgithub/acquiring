@@ -6,16 +6,9 @@ import { attachPipelineButton } from "./pipelineHold.js";
 
 export const PIPELINE_TIPS = {
   harvest: {
-    pending: "Click: one browser pass — saves all TheoryTab data locally",
+    pending: "Click: full browser scrape — saves all TheoryTab data locally",
+    lightOnly: "Light catalog only — click for full Fetch (browser scrape)",
     done: "Hold: delete harvest artifact (re-fetch required)",
-  },
-  metadata: {
-    pending: "Click: enrich catalog from harvest (local, no network)",
-    done: "Hold: clear enrich data and reset status to pending",
-  },
-  processed: {
-    pending: "Click: write .hooktheory_cache/ from harvest (local)",
-    done: "Hold: delete cache folder and clear processed flags",
   },
   tested: {
     pending: "Click: run decode-oracle compare from harvest (local)",
@@ -39,14 +32,12 @@ export function pipelineStatusHtml(action, done, esc) {
 
 const PIPELINE_LABELS = {
   harvest: "Fetch",
-  metadata: "metadata",
-  processed: "processed",
   tested: "tested",
 };
 
-export function pipelineBtnHtml(action, done, esc, { disabled = false } = {}) {
+export function pipelineBtnHtml(action, done, esc, { disabled = false, titleOverride = null } = {}) {
   const tips = PIPELINE_TIPS[action];
-  const title = done ? tips.done : tips.pending;
+  const title = titleOverride ?? (done ? tips.done : tips.pending);
   const label = PIPELINE_LABELS[action] || action;
   const dis = disabled ? " pipeline-action-btn--disabled" : "";
   const disAttr = disabled ? " disabled" : "";
@@ -159,8 +150,6 @@ export function pipelineMissing(flags) {
   const missing = [];
   if (!flags?.catalogued) missing.push("catalogued");
   if (!flags?.harvested) missing.push("harvested");
-  if (!flags?.metadata) missing.push("metadata");
-  if (!flags?.processed) missing.push("processed");
   if (!flags?.tested) missing.push("tested");
   return missing;
 }
@@ -176,10 +165,12 @@ export function buildSongDetailHtml(s, sections, flags, canLoad, missing, esc, l
     ${s.url ? `<a class="entry-link entry-link--top" href="${esc(s.url)}" target="_blank" rel="noopener">Open on TheoryTab ↗</a>` : ""}
     <div class="entry-btns" aria-label="Pipeline status">
       ${pipelineStatusHtml("catalogued", flags.catalogued, esc)}
-      ${pipelineBtnHtml("harvest", flags.harvested, esc)}
-      ${pipelineBtnHtml("metadata", flags.metadata, esc, { disabled: !flags.harvested })}
-      ${pipelineBtnHtml("processed", flags.processed, esc, { disabled: !flags.harvested })}
-      ${pipelineBtnHtml("tested", flags.tested, esc, { disabled: !flags.harvested })}
+      ${pipelineBtnHtml("harvest", flags.harvested, esc, {
+        titleOverride: !flags.harvested && flags.scrapeReady
+          ? PIPELINE_TIPS.harvest.lightOnly
+          : null,
+      })}
+      ${pipelineBtnHtml("tested", flags.tested, esc, { disabled: !flags.scrapeReady })}
     </div>
     <div id="pipeline-status" class="pipeline-status"></div>
     ${showLoadBtn ? `
@@ -243,15 +234,19 @@ function applyFlagsToButtons(body, flags) {
   for (const btn of body.querySelectorAll(".pipeline-action-btn")) {
     const action = btn.dataset.action;
     const done = !!flags[action];
-    const needsHarvest = action !== "harvest" && !flags.harvested;
-    btn.className = `${btnClass(done)} pipeline-action-btn${needsHarvest ? " pipeline-action-btn--disabled" : ""}`;
-    btn.disabled = needsHarvest;
+    const needsScrape = action === "tested" && !flags.scrapeReady;
+    btn.className = `${btnClass(done)} pipeline-action-btn${needsScrape ? " pipeline-action-btn--disabled" : ""}`;
+    btn.disabled = needsScrape;
     btn.dataset.done = done ? "1" : "0";
     const tips = PIPELINE_TIPS[action];
     if (tips) {
-      btn.title = needsHarvest
-        ? "Fetch first — downloads all TheoryTab data in one browser pass"
-        : (done ? tips.done : tips.pending);
+      if (needsScrape) {
+        btn.title = "Harvest required — light catalog or full Fetch";
+      } else if (action === "harvest" && !done && flags.scrapeReady) {
+        btn.title = tips.lightOnly;
+      } else {
+        btn.title = done ? tips.done : tips.pending;
+      }
     }
     btn.textContent = PIPELINE_LABELS[action] || action;
   }

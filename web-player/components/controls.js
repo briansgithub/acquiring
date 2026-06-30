@@ -1,6 +1,8 @@
 export function renderControls(container, { onPlayPause, onRestart, onSectionChange, onMelodyVolumeChange, onChordVolumeChange, onTempoChange }) {
   container.innerHTML = `
-    <h2>Controls</h2>
+    <div class="pane-panel-head controls-head">
+      <h2 class="pane-panel-title">Controls</h2>
+    </div>
     <div class="row">
       <button id="play-toggle">Play</button>
       <button id="restart-btn">Restart</button>

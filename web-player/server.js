@@ -7,6 +7,7 @@ const { handleBatchStatus, handleBatchStart, handleBatchPause, handleBatchResume
 const { handlePipelineRun, handlePipelineClear, handlePipelineJob, matchPipelineRoute } = require("../_Research_testing/hooktheory_catalog/web/pipelineApi");
 const { handleAddSong } = require("../_Research_testing/hooktheory_catalog/web/addSongApi");
 const { getPlaybackCacheDir } = require("../lib/dataRoot");
+const { debugLog } = require("../_Research_testing/hooktheory_catalog/lib/debugLog");
 
 const PORT = process.env.PORT || 3000;
 const CACHE_ROOT = getPlaybackCacheDir();
@@ -36,39 +37,74 @@ async function loadLibrary() {
       // Ignore metadata load errors, fall back to numericId sorting
     }
     
-    const sections = files
-      .filter((f) => f.endsWith(".json") && f !== "_metadata.json")
-      .map((file) => {
-        const parts = file.split(" - ");
-        const sectionName = parts[0] || "Unknown";
-        const numericId = parts[1] ? parseInt(parts[1], 10) : 0;
-        // Extract songId from filename (format: "SectionName - numericId - songId.json")
-        const songId = parts.length >= 3 ? parts[2].replace(".json", "") : null;
-        const absolutePath = path.join(artistPath, file);
-        const relPath = path.relative(CACHE_ROOT, absolutePath).split(path.sep).join("/");
-        return { sectionName, file, path: absolutePath, relPath, numericId, songId };
-      });
-    
-    // Sort sections by webpage order (top to bottom) if metadata exists
-    if (metadata && metadata.sections && Array.isArray(metadata.sections)) {
-      // Create a map of songId to index (order from top to bottom on webpage)
-      const orderMap = new Map();
-      metadata.sections.forEach((section) => {
-        if (section.songId && section.index !== undefined) {
-          orderMap.set(section.songId, section.index);
-        }
-      });
-      
-      sections.sort((a, b) => {
-        const aOrder = a.songId ? (orderMap.get(a.songId) ?? 999999) : 999999;
-        const bOrder = b.songId ? (orderMap.get(b.songId) ?? 999999) : 999999;
-        // Sort by webpage order (index), not by songId value
-        return aOrder - bOrder;
-      });
+    const sectionJsonFiles = files.filter((f) => f.endsWith(".json") && f !== "_metadata.json");
+
+    function sectionEntryFromFile(file) {
+      const parts = file.split(" - ");
+      const sectionName = parts[0] || "Unknown";
+      const numericId = parts[1] ? parseInt(parts[1], 10) : 0;
+      const songId = parts.length >= 3 ? parts[2].replace(".json", "") : null;
+      const absolutePath = path.join(artistPath, file);
+      const relPath = path.relative(CACHE_ROOT, absolutePath).split(path.sep).join("/");
+      return { sectionName, file, path: absolutePath, relPath, numericId, songId };
+    }
+
+    function findFileForMeta(meta) {
+      const byId = sectionJsonFiles.filter((f) => f.endsWith(` - ${meta.songId}.json`));
+      if (!byId.length) return null;
+      if (meta.sectionName) {
+        const want = meta.sectionName.toLowerCase();
+        const named = byId.find((f) => f.split(" - ")[0].toLowerCase() === want);
+        if (named) return named;
+      }
+      return byId[0];
+    }
+
+    let sections;
+    if (metadata?.sections?.length) {
+      const seenSongIds = new Set();
+      sections = [];
+      const sortedMeta = [...metadata.sections].sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
+      for (const meta of sortedMeta) {
+        if (!meta.songId || seenSongIds.has(meta.songId)) continue;
+        seenSongIds.add(meta.songId);
+        const file = findFileForMeta(meta);
+        if (!file) continue;
+        const entry = sectionEntryFromFile(file);
+        entry.sectionName = meta.sectionName || entry.sectionName;
+        entry.numericId = meta.numericId ?? entry.numericId;
+        sections.push(entry);
+      }
     } else {
-      // Fall back to numericId sorting if no metadata
+      sections = sectionJsonFiles.map(sectionEntryFromFile);
+    }
+    
+    if (!metadata?.sections?.length) {
       sections.sort((a, b) => (a.numericId || 0) - (b.numericId || 0));
     }
+
+    const songIds = sections.map((s) => s.songId);
+    const uniqueSongIds = new Set(songIds.filter(Boolean));
+    // #region agent log
+    debugLog({
+      location: 'server.js:loadLibrary',
+      message: 'library song sections',
+      hypothesisId: uniqueSongIds.size < sections.length ? 'H-E' : 'H-B',
+      data: {
+        artistDir: artistEntry.name,
+        sectionCount: sections.length,
+        uniqueSongIds: uniqueSongIds.size,
+        metadataSectionCount: metadata?.sections?.length ?? 0,
+        sections: sections.map((s, idx) => ({
+          idx,
+          sectionName: s.sectionName,
+          file: s.file,
+          songId: s.songId,
+          numericId: s.numericId,
+        })),
+      },
+    });
+    // #endregion
     
     library.push({
       artist: artistEntry.name,

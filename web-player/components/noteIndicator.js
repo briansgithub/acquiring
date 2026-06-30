@@ -56,13 +56,12 @@ export function renderNoteIndicator(container, options = {}) {
     <div id="now-playing-key" class="now-playing-key">—</div>
     <div class="indicator-stack">
       <div class="indicator-melody-section">
-        <label for="show-melody-toggle" class="indicator-option-toggle">
-          <input type="checkbox" id="show-melody-toggle" />
-          Show Melody
-        </label>
-        <div id="melody-card" class="card indicator-card indicator-card--melody" hidden>
-          <div class="label indicator-card-label">Melody</div>
-          <div id="melody-content-wrapper" class="melody-content-wrapper">
+        <div id="melody-section" class="card indicator-card indicator-card--melody is-collapsed">
+          <div class="melody-section-header">
+            <div class="label indicator-card-label melody-section-title">Melody</div>
+            <button type="button" class="melody-collapse-toggle" id="melody-collapse-toggle" aria-expanded="false" aria-label="Expand melody"><span class="melody-collapse-caret">▼</span></button>
+          </div>
+          <div id="melody-content-wrapper" class="melody-content-wrapper" hidden>
             <div class="notes-list" id="melody-note-label"></div>
             <div class="notes-list" id="melody-scale-degree"></div>
             <div id="tension-badge" class="tension-badge">
@@ -101,8 +100,9 @@ export function renderNoteIndicator(container, options = {}) {
 
   const melodyNoteLabelEl = container.querySelector("#melody-note-label");
   const melodyScaleDegreeEl = container.querySelector("#melody-scale-degree");
-  const melodyCard = container.querySelector("#melody-card");
-  const showMelodyToggle = container.querySelector("#show-melody-toggle");
+  const melodySection = container.querySelector("#melody-section");
+  const melodyContentWrapper = container.querySelector("#melody-content-wrapper");
+  const melodyCollapseToggle = container.querySelector("#melody-collapse-toggle");
   const tensionEl = container.querySelector("#tension-badge");
   const tensionTitleEl = container.querySelector("#tension-title");
   const tensionDescEl = container.querySelector("#tension-desc");
@@ -117,12 +117,21 @@ export function renderNoteIndicator(container, options = {}) {
   const arpSpeedLabel = container.querySelector("#arp-speed-label");
   const arpSpeedRow = container.querySelector("#arp-speed-row");
 
-  function syncMelodyVisibility() {
-    melodyCard.hidden = !showMelodyToggle.checked;
+  function setMelodyExpanded(expanded) {
+    melodySection.classList.toggle("is-collapsed", !expanded);
+    melodyContentWrapper.hidden = !expanded;
+    const caret = melodyCollapseToggle.querySelector(".melody-collapse-caret");
+    if (caret) caret.textContent = expanded ? "▲" : "▼";
+    melodyCollapseToggle.setAttribute("aria-expanded", String(expanded));
+    melodyCollapseToggle.setAttribute("aria-label", expanded ? "Collapse melody" : "Expand melody");
+    melodyCollapseToggle.title = expanded ? "Collapse melody" : "Expand melody";
   }
 
-  showMelodyToggle.addEventListener("change", syncMelodyVisibility);
-  syncMelodyVisibility();
+  melodyCollapseToggle.addEventListener("click", () => {
+    setMelodyExpanded(melodySection.classList.contains("is-collapsed"));
+  });
+
+  setMelodyExpanded(false);
 
   rootPositionToggle.addEventListener("change", () => {
     options.onRootPositionChange?.(rootPositionToggle.checked);

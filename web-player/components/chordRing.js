@@ -14,12 +14,13 @@ import { getChordSymbol, getChordLetterName } from "../lib/jsonToSymbol.js";
 import { rootToDiatonicTriad, getNoteLabel, chordInterpreter } from "../lib/music.js";
 
 export function renderChordRing(container, options = {}) {
-  // Create wrapper for canvas and overlay controls
+  const header = document.createElement("div");
+  header.className = "pane-panel-head ring-panel-head";
+  header.innerHTML = `<h2 class="pane-panel-title">Chord Ring</h2>`;
+  container.appendChild(header);
+
   const wrapper = document.createElement("div");
-  wrapper.style.position = "relative";
-  wrapper.style.width = "100%";
-  wrapper.style.height = "100%";
-  container.appendChild(wrapper);
+  wrapper.className = "ring-canvas-wrap";
   
   const canvas = document.createElement("canvas");
   wrapper.appendChild(canvas);
@@ -68,6 +69,8 @@ export function renderChordRing(container, options = {}) {
   overlay.appendChild(arpLabel);
   
   wrapper.appendChild(overlay);
+  
+  container.appendChild(wrapper);
   
   const romanNumeralToggle = romanCheckbox;
 

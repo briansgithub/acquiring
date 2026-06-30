@@ -1,7 +1,25 @@
 
-
 import { getScaleDegreeColor } from "../lib/scales.js";
 import { getChordSymbol, getChordLetterName } from "../lib/jsonToSymbol.js";
+
+function stripSongFromArtist(title, artist) {
+    const t = title?.trim();
+    const a = artist?.trim();
+    if (!a) return "";
+    if (!t) return a;
+
+    const lowerArtist = a.toLowerCase();
+    const lowerTitle = t.toLowerCase();
+    const idx = lowerArtist.indexOf(lowerTitle);
+    if (idx === -1) return a;
+
+    let cleaned = (a.slice(0, idx) + a.slice(idx + t.length))
+        .replace(/^[\s\-–—|,]+|[\s\-–—|,]+$/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+
+    return cleaned || a;
+}
 
 export function renderTimeline(container, options = {}) {
     // Set container to flex column layout
@@ -608,7 +626,7 @@ export function renderTimeline(container, options = {}) {
         setSongInfo(title, artist) {
             if (title || artist) {
                 const t = title || "Unknown Song";
-                const a = artist || "Unknown Artist";
+                const a = stripSongFromArtist(t, artist) || artist || "Unknown Artist";
                 songTitleEl.textContent = `${t} by ${a}`;
                 songTitleRow.style.display = "flex";
                 updateSongTitlePosition();
