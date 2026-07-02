@@ -6,15 +6,16 @@ const { parseTheoryTabUrl } = require('./catalogUtils');
 const { upsertSong } = require('./db');
 const { runHarvest } = require('./pipelineOps');
 
-async function addSongFromUrl(db, url) {
+async function addSongFromUrl(db, url, { onProgress = null } = {}) {
   const parsed = parseTheoryTabUrl(url);
   if (!parsed) return { ok: false, status: 400, error: 'invalid TheoryTab URL' };
+  onProgress?.('Adding to catalog…');
   upsertSong(db, {
     ...parsed,
     status: 'pending',
     discovery_source: 'user_url',
   });
-  return runHarvest(db, parsed.slug);
+  return runHarvest(db, parsed.slug, { onProgress });
 }
 
 module.exports = { addSongFromUrl };

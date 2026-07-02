@@ -6,6 +6,7 @@ import { verifyScaleDegrees } from "../lib/scaleDegreeVerifier.js";
 import { CONTROL_DEFAULTS } from "./controls.js";
 import { ARP_SLIDER_MAX, ARP_SLIDER_MIN, formatArpCyclesLabel } from "../lib/timing.js";
 import { formatVolumePercent } from "../lib/volume.js";
+import { rootToDiatonicTriad } from "../lib/music.js";
 
 const VERIFY_DEGREES = typeof window !== "undefined"
   && new URLSearchParams(window.location.search).get("verifyDegrees") === "1";
@@ -21,9 +22,21 @@ function noteNameToPitchClass(noteName) {
   return NOTE_NAME_TO_INTEGER_NOTATION[name] ?? NOTE_PC[name] ?? null;
 }
 
-function analyzeMelodyTension(melodyNote, chordNotes, chordRootSd) {
-  if (!melodyNote || !chordNotes?.length) {
-    return { type: "rest", label: "—", description: "No melody or chord", color: "#6b7280" };
+function analyzeMelodyTension(melodyNote, chordNotes, chordRootSd, key) {
+  if (!melodyNote) {
+    return { type: "rest", label: "—", description: "No active melody", color: "#6b7280" };
+  }
+
+  // If the chord is a rest, fall back to analyzing the melody against the tonic triad
+  // for the current key signature (degree 1 in the active key).
+  if (!chordNotes?.length) {
+    if (key?.tonic && key?.scale) {
+      const tonicTriad = rootToDiatonicTriad(1, key, 3);
+      chordNotes = normalizeToneNotes(tonicTriad.notes);
+      chordRootSd = 1;
+    } else {
+      return { type: "rest", label: "—", description: "No chord context", color: "#6b7280" };
+    }
   }
   const melodyPc = noteNameToPitchClass(melodyNote);
   if (melodyPc === null) {
@@ -67,7 +80,7 @@ export function renderNoteIndicator(container, options = {}) {
     <div class="indicator-stack">
       <div class="indicator-melody-section">
         <div class="indicator-volume-row melody-volume-row">
-          <label for="melody-volume" class="indicator-volume-label">Melody volume:</label>
+          <label for="melody-volume" class="indicator-volume-label">Melody Vol.:</label>
           <input type="range" id="melody-volume" min="0" max="100" value="${CONTROL_DEFAULTS.melodyVolume}" step="1" class="volume-slider indicator-volume-slider">
           <span id="melody-volume-label" class="indicator-volume-value">${formatVolumePercent(CONTROL_DEFAULTS.melodyVolume)}</span>
         </div>
@@ -100,7 +113,7 @@ export function renderNoteIndicator(container, options = {}) {
         <div class="notes-list notes-list--chord" id="chord-notes" style="min-height:32px;margin-top:2px;"></div>
         <div class="notes-list notes-list--chord" id="chord-degrees-pills" style="min-height:32px;margin-top:4px;"></div>
         <div class="indicator-volume-row">
-          <label for="chord-volume" class="indicator-volume-label">Chord volume:</label>
+          <label for="chord-volume" class="indicator-volume-label">Chord Vol.:</label>
           <input type="range" id="chord-volume" min="0" max="100" value="${CONTROL_DEFAULTS.chordVolume}" step="1" class="volume-slider indicator-volume-slider">
           <span id="chord-volume-label" class="indicator-volume-value">${formatVolumePercent(CONTROL_DEFAULTS.chordVolume)}</span>
         </div>
@@ -317,8 +330,8 @@ export function renderNoteIndicator(container, options = {}) {
 
     // Melody vs Chord tension analysis
     const chordNotes = currentChordData.notes;
-    if (absoluteLabel && chordNotes && chordNotes.length > 0) {
-      const t = analyzeMelodyTension(absoluteLabel, chordNotes, currentChordData.root);
+    if (absoluteLabel) {
+      const t = analyzeMelodyTension(absoluteLabel, chordNotes, currentChordData.root, currentChordData.key || currentKey);
       tensionEl.style.background = `${t.color}15`;
       tensionEl.style.color = t.color;
       tensionEl.style.border = `1px solid ${t.color}44`;

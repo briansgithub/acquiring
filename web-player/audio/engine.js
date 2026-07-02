@@ -276,4 +276,13 @@ export class AudioEngine {
       this.scheduleChords(chordEvents);
     }
   }
+
+  resumeChordAttack(notes) {
+    const Tone = window.Tone;
+    if (!notes?.length) return;
+    const now = Tone.now();
+    this.chordSynth.triggerAttack(notes, now);
+    this.currentChordNotes = notes;
+    notes.forEach((note) => this.activeChordNotes.add(note));
+  }
 }

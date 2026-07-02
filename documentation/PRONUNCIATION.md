@@ -156,4 +156,5 @@ Common pitfalls (already handled — preserve when editing):
 ## Related docs
 
 - [ARCHITECTURE.md](./ARCHITECTURE.md) — chord interpretation pipeline, `jsonToSymbol.js`
+- [ROMAN_NUMERALS.md](./ROMAN_NUMERALS.md) — glyph layout (separate from pronunciation)
 - [BUGS.md](./BUGS.md) — playback regressions (separate from pronunciation)

@@ -1,7 +1,12 @@
 
 import { getScaleDegreeColor } from "../lib/scales.js";
 import { getChordSymbol, getChordLetterName, stripBorrowedTags, borrowedAbbrev } from "../lib/jsonToSymbol.js";
-import { drawRomanNumeral, measureRomanNumeral, romanNumeralToHtml } from "../lib/romanNumeralCanvas.js";
+import {
+    drawRomanNumeral,
+    measureRomanNumeral,
+    romanNumeralToHtml,
+    romanNumeralVerticalExtents,
+} from "../lib/romanNumeralCanvas.js";
 import { getChordPronunciation, pronunciationDisplayHtml } from "../lib/romanNumeralSpeak.js";
 
 function stripSongFromArtist(title, artist) {
@@ -28,17 +33,17 @@ export function renderTimeline(container, options = {}) {
     container.style.display = "flex";
     container.style.flexDirection = "column";
     
-    // Create canvas wrapper that takes up available space
-    const canvasWrapper = document.createElement("div");
-    canvasWrapper.style.cssText = "flex: 1; position: relative; min-height: 0;";
-    
     const songTitleRow = document.createElement("div");
     songTitleRow.className = "timeline-song-title-row";
 
     const songTitleEl = document.createElement("div");
     songTitleEl.className = "timeline-song-title";
     songTitleRow.appendChild(songTitleEl);
-    canvasWrapper.appendChild(songTitleRow);
+    container.appendChild(songTitleRow);
+
+    // Create canvas wrapper that takes up available space
+    const canvasWrapper = document.createElement("div");
+    canvasWrapper.style.cssText = "flex: 1; position: relative; min-height: 0;";
 
     const canvas = document.createElement("canvas");
     canvas.style.width = "100%";
@@ -47,29 +52,6 @@ export function renderTimeline(container, options = {}) {
     container.appendChild(canvasWrapper);
     const ctx = canvas.getContext("2d");
     
-    const footer = document.createElement("div");
-    footer.className = "timeline-footer";
-
-    const checkboxContainer = document.createElement("div");
-    checkboxContainer.className = "timeline-footer-controls";
-    
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.id = "timeline-play-chord-checkbox";
-    checkbox.checked = true; // Checked by default
-    checkbox.style.cssText = "cursor: pointer; width: 16px; height: 16px;";
-    
-    const label = document.createElement("label");
-    label.htmlFor = "timeline-play-chord-checkbox";
-    label.textContent = "Play chord tone on click";
-    label.style.cssText = "cursor: pointer; font-size: 12px; color: var(--text, #e5e7eb); user-select: none;";
-    
-    checkboxContainer.appendChild(checkbox);
-    checkboxContainer.appendChild(label);
-
-    footer.appendChild(checkboxContainer);
-    container.appendChild(footer);
-
     let currentChords = [];
     let currentKey = { tonic: "C", scale: "major" };
     let songLengthBeats = 1;
@@ -84,22 +66,8 @@ export function renderTimeline(container, options = {}) {
     let hideTimeout = null;
 
     const AXIS_HEIGHT = 18;
-
-    function layoutMetrics() {
-        if (logicalHeight === 0) return { measuresBottom: 0 };
-        const blockHeight = (logicalHeight - AXIS_HEIGHT) * 0.8;
-        const y = (logicalHeight - AXIS_HEIGHT - blockHeight) / 2;
-        const axisY = y + blockHeight + 4;
-        // Beat labels sit at axisY + 5 with 10px font
-        const measuresBottom = axisY + 16;
-        return { measuresBottom };
-    }
-
-    function updateSongTitlePosition() {
-        if (logicalHeight === 0) return;
-        const { measuresBottom } = layoutMetrics();
-        songTitleRow.style.top = `${measuresBottom + 4}px`;
-    }
+    const BLOCK_HEIGHT_RATIO = 0.88;
+    const CHORD_LABEL_PAD = { x: 8, y: 6 };
 
     function resize() {
         const dpr = window.devicePixelRatio || 1;
@@ -111,7 +79,6 @@ export function renderTimeline(container, options = {}) {
         canvas.height = logicalHeight * dpr;
         ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform
         ctx.scale(dpr, dpr);
-        updateSongTitlePosition();
         draw();
     }
     window.addEventListener("resize", resize);
@@ -128,7 +95,7 @@ export function renderTimeline(container, options = {}) {
 
         const pixelsPerBeat = logicalWidth / songLengthBeats;
         const axisHeight = AXIS_HEIGHT;
-        const blockHeight = (logicalHeight - axisHeight) * 0.8;
+        const blockHeight = (logicalHeight - axisHeight) * BLOCK_HEIGHT_RATIO;
         const y = (logicalHeight - axisHeight - blockHeight) / 2;
 
         // Draw Chords
@@ -137,6 +104,8 @@ export function renderTimeline(container, options = {}) {
 
             const x = (chord.beat - firstBeat) * pixelsPerBeat;
             const w = chord.duration * pixelsPerBeat;
+            const innerW = w - CHORD_LABEL_PAD.x * 2;
+            const innerH = blockHeight - CHORD_LABEL_PAD.y * 2;
 
             ctx.fillStyle = getScaleDegreeColor(chord.root, currentKey.scale) || "#888";
             ctx.fillRect(x, y, w, blockHeight);
@@ -147,36 +116,44 @@ export function renderTimeline(container, options = {}) {
             ctx.strokeRect(x, y, w, blockHeight);
 
             // Label
-            if (w > 20) { // Only draw if wide enough
-                // Scale font size based on block dimensions
-                // Use the smaller dimension to ensure text fits, but prioritize height for readability
-                const baseFontSize = Math.min(blockHeight * 0.6, w * 0.3);
-                const fontSize = Math.max(16, baseFontSize); // Minimum 16px
-                
-                ctx.fillStyle = "#000";
-                ctx.font = `bold ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.shadowColor = "rgba(255,255,255,0.5)"; // Light shadow for contrast on dark blocks? Or no shadow?
-                ctx.shadowBlur = 0; // Removing shadow for clean look with black text
-
+            if (innerW > 12 && innerH > 12) {
                 const fullSymbol = getChordSymbol(chord, currentKey);
                 const symbol = stripBorrowedTags(fullSymbol);
                 const borrowedLabel = borrowedAbbrev(chord.borrowed);
-                const metricsWidth = measureRomanNumeral(ctx, symbol, fontSize);
-                if (metricsWidth < w - 4) {
+                let fontSize = Math.min(innerH * 0.6, innerW * 0.3);
+                fontSize = Math.max(12, fontSize);
+
+                const fitLabel = (size) => {
+                    const extents = romanNumeralVerticalExtents(symbol, size);
+                    const metricsWidth = measureRomanNumeral(ctx, symbol, size);
+                    return (
+                        metricsWidth <= innerW &&
+                        extents.above + extents.below <= innerH
+                    );
+                };
+
+                while (fontSize > 12 && !fitLabel(fontSize)) {
+                    fontSize -= 1;
+                }
+
+                if (fitLabel(fontSize)) {
+                    ctx.fillStyle = "#000";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.shadowBlur = 0;
+
+                    const centerX = x + w / 2;
+                    const centerY = y + blockHeight / 2;
+
                     if (borrowedLabel) {
-                        drawRomanNumeral(ctx, symbol, x + w / 2, y + blockHeight / 2 - fontSize * 0.3, fontSize);
+                        drawRomanNumeral(ctx, symbol, centerX, centerY - fontSize * 0.3, fontSize);
                         const borrowedFontSize = fontSize * 0.55;
                         ctx.font = `500 ${borrowedFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-                        ctx.textAlign = "center";
-                        ctx.textBaseline = "middle";
-                        ctx.fillText(borrowedLabel, x + w / 2, y + blockHeight / 2 + fontSize * 0.3);
+                        ctx.fillText(borrowedLabel, centerX, centerY + fontSize * 0.3);
                     } else {
-                        drawRomanNumeral(ctx, symbol, x + w / 2, y + blockHeight / 2, fontSize);
+                        drawRomanNumeral(ctx, symbol, centerX, centerY, fontSize);
                     }
                 }
-                ctx.shadowBlur = 0;
             }
         });
 
@@ -366,7 +343,7 @@ export function renderTimeline(container, options = {}) {
         
         const pixelsPerBeat = logicalWidth / songLengthBeats;
         const axisHeight = 18;
-        const blockHeight = (logicalHeight - axisHeight) * 0.8;
+        const blockHeight = (logicalHeight - axisHeight) * BLOCK_HEIGHT_RATIO;
         const blockY = (logicalHeight - axisHeight - blockHeight) / 2;
         
         if (my < blockY || my > blockY + blockHeight) return null;
@@ -496,7 +473,7 @@ export function renderTimeline(container, options = {}) {
         if (currentHoveredChord && tooltip.style.display !== "none") {
             const pixelsPerBeat = logicalWidth / songLengthBeats;
             const axisHeight = 18;
-            const blockHeight = (logicalHeight - axisHeight) * 0.8;
+            const blockHeight = (logicalHeight - axisHeight) * BLOCK_HEIGHT_RATIO;
             const blockY = (logicalHeight - axisHeight - blockHeight) / 2;
             
             const chordX = (currentHoveredChord.beat - firstBeat) * pixelsPerBeat;
@@ -553,12 +530,9 @@ export function renderTimeline(container, options = {}) {
             options.onSeek(ratio);
         }
 
-        // Play after seek so handleSeek's releaseAllNotes doesn't cut off the preview
-        if (checkbox.checked) {
-            const chord = findChordAtBeat(clickedBeat);
-            if (chord && options.onChordClick) {
-                options.onChordClick(chord, options.getArpeggiated?.() ?? false);
-            }
+        const chord = findChordAtBeat(clickedBeat);
+        if (chord && options.onChordClick) {
+            options.onChordClick(chord, options.getArpeggiated?.() ?? false);
         }
     });
 
@@ -603,7 +577,6 @@ export function renderTimeline(container, options = {}) {
                 }
 
                 songTitleRow.style.display = "flex";
-                updateSongTitlePosition();
             } else {
                 songTitleRow.style.display = "none";
                 songTitleRow.style.pointerEvents = "none";

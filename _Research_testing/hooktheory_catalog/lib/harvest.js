@@ -14,14 +14,18 @@ const {
   loadHarvest,
 } = require('./harvestArtifact');
 
-async function harvestSong(url, { rescrape = false } = {}) {
+async function harvestSong(url, { rescrape = false, onProgress = null } = {}) {
+  const report = (msg) => onProgress?.(msg);
   const slug = slugForUrl(url);
   const dir = harvestDirForSlug(slug);
   const scrapeFile = harvestFileForSlug(slug);
 
   if (!rescrape) {
     const existing = loadHarvest(slug);
-    if (existing) return { ...existing, cached: true };
+    if (existing) {
+      report('Using cached harvest');
+      return { ...existing, cached: true };
+    }
   }
 
   fs.mkdirSync(dir, { recursive: true });
@@ -30,8 +34,10 @@ async function harvestSong(url, { rescrape = false } = {}) {
     skipScreenshots: true,
     scrapePiano: true,
     returnHtml: true,
+    onProgress: report,
   });
 
+  report('Parsing SongMetrics…');
   if (scrape.pageHtml) {
     const { metrics, difficulty_label } = parseMetricsFromHtml(scrape.pageHtml);
     scrape.metrics = metrics;
@@ -44,6 +50,7 @@ async function harvestSong(url, { rescrape = false } = {}) {
     throw Object.assign(new Error(err), { status: 500 });
   }
 
+  report('Saving harvest artifact…');
   scrape.harvestedAt = new Date().toISOString();
   delete scrape.harvestMode;
   fs.writeFileSync(scrapeFile, JSON.stringify(scrape, null, 2));

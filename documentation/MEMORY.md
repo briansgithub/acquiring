@@ -38,5 +38,7 @@ When arpeggio is enabled, `createChordEvents()` in `player.js` emits `type: "arp
 ## Related docs
 
 - [ARCHITECTURE.md](./ARCHITECTURE.md) — system layout
+- [ROMAN_NUMERALS.md](./ROMAN_NUMERALS.md) — roman symbol display (HTML + canvas)
+- [PRONUNCIATION.md](./PRONUNCIATION.md) — spoken chord readings
 - [BUGS.md](./BUGS.md) — resolved and known issues
 - [TODO.md](./TODO.md) — planned work

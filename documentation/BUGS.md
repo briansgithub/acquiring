@@ -140,3 +140,35 @@ User confirmed fix after hard refresh. Pre-fix logs showed missing attack for `E
 - `web-player/audio/engine.js` — `scheduleChords()`, tuple `partEvents`, `releaseAll` on release
 - `web-player/player.js` — `getLastReleaseTick()`, `createChordEvents()`, `setupProgressTracking()`
 - `documentation/BUGS.md` — BUG-001 (related arpeggio / `triggerRelease` lessons)
+
+---
+
+## BUG-003: Song Selector load did nothing (missing `noteIndicator.setKey`)
+
+| Field | Detail |
+|-------|--------|
+| **Date reported** | 2026-07-02 |
+| **Date resolved** | 2026-07-02 |
+| **Severity** | High — selecting a song from Song Selector appeared to do nothing |
+| **Affected area** | `web-player/player.js`, `web-player/components/noteIndicator.js` |
+| **Repro** | Open Song Selector, pick any song, click Load (or auto-load a pipeline-complete song). Player UI does not update; section does not load. |
+| **Status** | **Resolved** |
+| **Commit** | `e57dc72` |
+
+### Symptom
+
+After the Now Playing / note-indicator refactor, loading a song from Song Selector no longer populated the chord card or started playback setup. No obvious UI error.
+
+### Root cause
+
+`player.js` calls `noteIndicator.setKey(key)` in `loadSection()` and `resetIdleState()`. The method had been removed from `noteIndicator.js` during the refactor. The resulting `TypeError` was caught by the load handler and swallowed, so the load failed silently.
+
+### Final solution
+
+Restored `setKey(key)` on the note indicator — updates internal `currentKey` used by pronunciation and display logic. No change to load flow otherwise.
+
+### References
+
+- `web-player/player.js` — `loadSection`, `resetIdleState`
+- `web-player/components/noteIndicator.js` — `setKey()`
+- [ROMAN_NUMERALS.md](./ROMAN_NUMERALS.md) — other changes in same commit

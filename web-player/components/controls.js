@@ -1,3 +1,5 @@
+export const TEMPO_MAX_PERCENT = 200;
+
 export const CONTROL_DEFAULTS = {
   tempoPercent: 100,
   melodyVolume: 16,
@@ -34,8 +36,20 @@ export function renderControls({ topContainer, tempoContainer, footerContainer, 
     tempoContainer.innerHTML = `
       <div class="row now-playing-tempo-row">
         <label for="tempo-slider" class="now-playing-tempo-label">Tempo:</label>
-        <input type="range" id="tempo-slider" min="1" max="100" value="100" step="1" class="volume-slider">
+        <input type="range" id="tempo-slider" min="1" max="${TEMPO_MAX_PERCENT}" value="100" step="1" class="volume-slider">
         <span id="tempo-label" class="now-playing-tempo-value">100%</span>
+        <button
+          type="button"
+          id="tempo-reset-btn"
+          class="tempo-reset-btn"
+          title="Reset tempo to 100%"
+          aria-label="Reset tempo to 100%"
+        >
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+            <path d="M3 3v5h5" />
+          </svg>
+        </button>
       </div>
     `;
   }
@@ -49,6 +63,7 @@ export function renderControls({ topContainer, tempoContainer, footerContainer, 
   const sectionSelect = topContainer.querySelector("#section-select");
   const tempoSlider = (tempoContainer ?? topContainer).querySelector("#tempo-slider");
   const tempoLabel = (tempoContainer ?? topContainer).querySelector("#tempo-label");
+  const tempoResetBtn = (tempoContainer ?? topContainer).querySelector("#tempo-reset-btn");
   const resetDefaultsBtn = footerContainer.querySelector("#reset-defaults-btn");
 
   resetDefaultsBtn.addEventListener("click", () => {
@@ -76,11 +91,20 @@ export function renderControls({ topContainer, tempoContainer, footerContainer, 
 
   let baseTempo = 120;
 
+  function applyTempoPercent(percentage) {
+    if (!tempoSlider || !tempoLabel) return;
+    const pct = Math.max(1, Math.min(TEMPO_MAX_PERCENT, percentage));
+    tempoSlider.value = pct;
+    tempoLabel.textContent = `${pct}%`;
+    onTempoChange?.((pct / 100) * baseTempo);
+  }
+
   tempoSlider?.addEventListener("input", (e) => {
-    const percentage = Number(e.target.value);
-    tempoLabel.textContent = `${percentage}%`;
-    const actualBpm = (percentage / 100) * baseTempo;
-    onTempoChange?.(actualBpm);
+    applyTempoPercent(Number(e.target.value));
+  });
+
+  tempoResetBtn?.addEventListener("click", () => {
+    applyTempoPercent(CONTROL_DEFAULTS.tempoPercent);
   });
 
   return {
@@ -92,7 +116,7 @@ export function renderControls({ topContainer, tempoContainer, footerContainer, 
       if (!tempoSlider || !tempoLabel) return;
       baseTempo = originalBpm || bpm;
       const percentage = Math.round((bpm / baseTempo) * 100);
-      tempoSlider.value = Math.max(1, Math.min(100, percentage));
+      tempoSlider.value = Math.max(1, Math.min(TEMPO_MAX_PERCENT, percentage));
       tempoLabel.textContent = `${tempoSlider.value}%`;
     },
     setSections(sections) {
@@ -112,16 +136,11 @@ export function renderControls({ topContainer, tempoContainer, footerContainer, 
       setPlayButtonState(!!playing);
     },
     setTempoPercent(percentage) {
-      if (!tempoSlider || !tempoLabel) return;
-      const pct = Math.max(1, Math.min(100, percentage));
-      tempoSlider.value = pct;
-      tempoLabel.textContent = `${pct}%`;
-      onTempoChange?.((pct / 100) * baseTempo);
+      applyTempoPercent(percentage);
     },
     resetSlidersToDefaults() {
       if (!tempoSlider || !tempoLabel) return;
-      const d = CONTROL_DEFAULTS;
-      const pct = Math.max(1, Math.min(100, d.tempoPercent));
+      const pct = Math.max(1, Math.min(TEMPO_MAX_PERCENT, CONTROL_DEFAULTS.tempoPercent));
       tempoSlider.value = pct;
       tempoLabel.textContent = `${pct}%`;
     },

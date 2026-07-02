@@ -62,7 +62,7 @@ Key state lives in `player.js`: `currentRawChords`, `currentKey`, `currentChordE
 |---|---|
 | `components/controls.js` | Play/seek/tempo, melody+chord volume, arpeggiate toggle/speed; section picker (song dropdown hidden — load via Song Selector) |
 | `components/chordRing.js` | Circular chord visualizer; manual chord preview on click; transition table; `ResizeObserver` keeps canvas sharp on layout changes |
-| `components/noteIndicator.js` | "Now Playing" Melody + Chord cards (note pills, scale-degree pills, Roman symbol, borrowed tag, root-position checkbox) |
+| `components/noteIndicator.js` | "Now Playing" Melody + Chord cards (note pills, scale-degree pills, Roman symbol via `romanNumeralToHtml`, pronunciation block, borrowed tag, root-position checkbox) |
 | `components/timeline.js` | Beat-axis timeline; click-to-preview chords; song URL display |
 | `components/songSelector.js` | Left-panel catalog browser: add-by-URL, playable dropdown, light-catalog modal, pipeline buttons, auto-load when pipeline complete |
 | `components/songSelectorPipeline.js` | Pipeline button HTML, hold-to-clear wiring, oracle error-rate tables |
@@ -105,6 +105,10 @@ Because octave choices differ per path, you **cannot reverse** an already-invert
 - `inversion` 0–3; figured-bass slash symbols are derived from it in `jsonToSymbol.js`.
 
 Roman/letter symbols are built independently in [`lib/jsonToSymbol.js`](../web-player/lib/jsonToSymbol.js) (`getChordSymbol`, `getChordLetterName`) — they read `chord.inversion` directly, so they are independent of playback voicing.
+
+**Display** (figured-bass stacks, °/ø quality glyphs, HTML + canvas): [`lib/romanNumeralCanvas.js`](../web-player/lib/romanNumeralCanvas.js) — see [ROMAN_NUMERALS.md](./ROMAN_NUMERALS.md).
+
+**Pronunciation** (spoken readings): [`lib/romanNumeralSpeak.js`](../web-player/lib/romanNumeralSpeak.js) — see [PRONUNCIATION.md](./PRONUNCIATION.md).
 
 ---
 

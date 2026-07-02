@@ -176,10 +176,14 @@ function drawStack(ctx, parts, i, cursor, centerY, fontSize) {
     let topX = cursor;
     ctx.textBaseline = 'middle';
     ctx.font = figuredDigitFont(fontSize);
-    ctx.fillText(parts[i].text, topX, partYOffset({ kind: 'super' }, fontSize, centerY));
+    const topY = partYOffset({ kind: 'super' }, fontSize, centerY);
+    ctx.fillText(parts[i].text, topX, topY);
     topX += ctx.measureText(parts[i].text).width;
     ctx.font = partFont(parts[i + 1], fontSize);
-    ctx.fillText(parts[i + 1].text, topX, partYOffset(parts[i + 1], fontSize, centerY));
+    // In the HTML layout, the suffix lives on the "top row" next to the super digit.
+    // Canvas used to draw the suffix at centerY which is visually "middle-row" and
+    // can overlap/clutter in tight timeline rectangles.
+    ctx.fillText(parts[i + 1].text, topX, topY);
     ctx.font = figuredDigitFont(fontSize);
     ctx.fillText(parts[i + 2].text, cursor, partYOffset({ kind: 'sub' }, fontSize, centerY));
     return width;
@@ -407,6 +411,40 @@ function partYOffset(part, fontSize, centerY) {
   if (part.kind === 'super') return centerY - fontSize * 0.28;
   if (part.kind === 'sub') return centerY + fontSize * 0.16;
   return centerY;
+}
+
+/** Vertical extent above/below centerY for timeline layout padding. */
+export function romanNumeralVerticalExtents(symbol, fontSize) {
+  const parts = tokenizeRomanNumeral(symbol);
+  let above = fontSize * 0.5;
+  let below = fontSize * 0.5;
+  for (let i = 0; i < parts.length; i++) {
+    const span = stackSpan(parts, i);
+    if (span === 2) {
+      above = Math.max(above, fontSize * 0.28 + fontSize * SUPER_SCALE * 0.55);
+      below = Math.max(below, fontSize * 0.16 + fontSize * SUB_SCALE * 0.55);
+      i += 1;
+      continue;
+    }
+    if (span === 3) {
+      above = Math.max(above, fontSize * 0.28 + fontSize * FIGURED_DIGIT_SCALE * 0.55);
+      // span===3 is super + suffix + sub; the suffix is on the top row (not centerY),
+      // so include its height in "above" to prevent oversizing inside tight rectangles.
+      above = Math.max(above, fontSize * 0.28 + fontSize * SUFFIX_SCALE * 0.55);
+      below = Math.max(below, fontSize * 0.16 + fontSize * FIGURED_DIGIT_SCALE * 0.55);
+      i += 2;
+      continue;
+    }
+    const part = parts[i];
+    if (part.kind === 'super') {
+      above = Math.max(above, fontSize * 0.28 + fontSize * SUPER_SCALE * 0.55);
+    } else if (part.kind === 'sub') {
+      below = Math.max(below, fontSize * 0.16 + fontSize * SUB_SCALE * 0.55);
+    } else if (part.kind === 'suffix') {
+      above = Math.max(above, fontSize * SUFFIX_SCALE * 0.45);
+    }
+  }
+  return { above, below };
 }
 
 export function measureRomanNumeral(ctx, symbol, fontSize) {

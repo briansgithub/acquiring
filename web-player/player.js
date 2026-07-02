@@ -232,24 +232,7 @@ const controls = renderControls({
 }, {
   onPlayPause: handlePlayPause,
   onRestart: async () => {
-    if (!currentSong || songLength <= 0) return;
-    engine.releaseAllNotes();
-    engine.stop();
-    currentSecondsPerBeat = 60 / currentBpm;
-    const melodyEvents = createMelodyEvents(currentRawNotes, currentKey);
-    const chordEvents = createChordEvents(currentRawChords, currentKey);
-    currentMelodyEvents = melodyEvents;
-    currentChordEvents = chordEvents;
-    lastReleaseTick = getLastReleaseTick(melodyEvents, chordEvents);
-    await engine.setupTransport(currentBpm);
-    engine.scheduleMelody(melodyEvents);
-    engine.scheduleChords(chordEvents);
-    controls.updateProgress(0);
-    controls.resetPlayState();
-    chordRing.update(null, null, null);
-    noteIndicator.reset();
-    timeline.updateProgress(0);
-    setupProgressTracking();
+    await restartSectionFromBeginning({ autoPlay: false });
   },
   onSectionChange: handleSectionChange,
   onTempoChange: (tempo) => {
@@ -364,6 +347,7 @@ let isLoading = false;
 let arpDebounceTimer = null;
 let tempoDebounceTimer = null;
 let isManualChordPreview = false; // Track when chord is manually clicked
+let sectionLoopInProgress = false;
 
 let loadedCacheKey = null;
 
@@ -566,6 +550,32 @@ async function loadSection(songIndex, sectionIndex) {
   }
 }
 
+async function restartSectionFromBeginning({ autoPlay = false } = {}) {
+  if (!currentSong || songLength <= 0) return;
+  engine.releaseAllNotes();
+  engine.stop();
+  currentSecondsPerBeat = 60 / currentBpm;
+  const melodyEvents = createMelodyEvents(currentRawNotes, currentKey);
+  const chordEvents = createChordEvents(currentRawChords, currentKey);
+  currentMelodyEvents = melodyEvents;
+  currentChordEvents = chordEvents;
+  lastReleaseTick = getLastReleaseTick(melodyEvents, chordEvents);
+  await engine.setupTransport(currentBpm);
+  engine.scheduleMelody(melodyEvents);
+  engine.scheduleChords(chordEvents);
+  controls.updateProgress(0);
+  timeline.updateProgress(0);
+  chordRing.update(null, null, null);
+  noteIndicator.reset();
+  setupProgressTracking();
+  if (autoPlay) {
+    await engine.play();
+    controls.setPlayState(true);
+  } else {
+    controls.resetPlayState();
+  }
+}
+
 function setupProgressTracking() {
   let lastChordId = null; // Track last chord to avoid redundant updates
   let lastMelodyId = null; // Track last melody to avoid redundant updates
@@ -628,11 +638,17 @@ function setupProgressTracking() {
       }
     }
     
-    // Stop playback when section ends
-    if (lastReleaseTick > 0 && currentTicks > lastReleaseTick && Tone.Transport.state === "started") {
-      engine.releaseAllNotes();
-      engine.stop();
-      controls.resetPlayState();
+    // Loop to beginning when section ends
+    if (
+      lastReleaseTick > 0 &&
+      currentTicks > lastReleaseTick &&
+      Tone.Transport.state === "started" &&
+      !sectionLoopInProgress
+    ) {
+      sectionLoopInProgress = true;
+      restartSectionFromBeginning({ autoPlay: true }).finally(() => {
+        sectionLoopInProgress = false;
+      });
     }
   });
 }
@@ -998,6 +1014,28 @@ function findCurrentChordAtTick(tickPosition) {
   return null;
 }
 
+function resumeMidChordPlayback(tickPosition, chordEvents) {
+  const chordInfo = findCurrentChordAtTick(tickPosition);
+  if (!chordInfo?.notes?.length) return;
+
+  const chord = chordInfo.chord;
+  const chordNotes = chordInfo.notes;
+  const normalizedBeat = chord.beat === 0 ? 1 : chord.beat;
+  const endTick = (normalizedBeat - 1) * 192 + chord.duration * 192;
+
+  if (isArpeggiationActive() && chordNotes.length > 1) {
+    const hasUpcomingArp = chordEvents.some(
+      (e) =>
+        e.type === "arpeggio" &&
+        parseInt(e.time, 10) > tickPosition &&
+        parseInt(e.time, 10) < endTick
+    );
+    if (hasUpcomingArp) return;
+  }
+
+  engine.resumeChordAttack(chordNotes);
+}
+
 async function updatePlaybackSettings() {
   if (isLoading || !currentSong) return;
 
@@ -1058,7 +1096,8 @@ async function updatePlaybackSettings() {
   }
 
   if (wasPlaying) {
-    engine.play();
+    await engine.play();
+    resumeMidChordPlayback(currentTicks, chordEvents);
     controls.setPlayState(true);
   } else {
     controls.resetPlayState();

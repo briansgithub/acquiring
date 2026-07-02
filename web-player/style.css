@@ -208,7 +208,7 @@ body {
 .now-playing-tempo-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
   margin: 0;
   padding: 0 2px 2px;
 }
@@ -226,6 +226,32 @@ body {
   flex-shrink: 0;
   width: 35px;
   text-align: right;
+}
+
+.tempo-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid var(--divider);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.tempo-reset-btn:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #374151;
+}
+
+.tempo-reset-btn:active {
+  transform: scale(0.94);
 }
 
 .melody-section-header {
@@ -839,14 +865,11 @@ body {
 }
 
 .timeline-song-title-row {
-  position: absolute;
-  left: 0;
-  right: 0;
-  z-index: 2;
+  flex-shrink: 0;
   display: none;
   justify-content: center;
   align-items: center;
-  padding: 0 12px;
+  padding: 0 0 8px;
   pointer-events: none;
 }
 

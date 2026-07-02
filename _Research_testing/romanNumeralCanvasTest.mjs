@@ -1,5 +1,5 @@
 import { getChordSymbol } from '../web-player/lib/jsonToSymbol.js';
-import { tokenizeRomanNumeral } from '../web-player/lib/romanNumeralCanvas.js';
+import { romanNumeralVerticalExtents, tokenizeRomanNumeral } from '../web-player/lib/romanNumeralCanvas.js';
 
 const key = { tonic: 'F', scale: 'major' };
 const chord = { root: 1, type: 7, inversion: 0, borrowed: null };
@@ -33,12 +33,25 @@ const invCases = [
   { symbol: 'vii°7', expect: [{ kind: 'base', text: 'vii' }, { kind: 'super', text: '°7' }] },
   { symbol: 'vii°42', expect: [{ kind: 'base', text: 'vii' }, { kind: 'super', text: '°4' }, { kind: 'sub', text: '2' }] },
   { symbol: 'iiø43(min)', expect: [{ kind: 'base', text: 'ii' }, { kind: 'super', text: 'ø4' }, { kind: 'sub', text: '3' }, { kind: 'suffix', text: '(min)' }] },
+  { symbol: 'i6(3)sus4', expect: [{ kind: 'base', text: 'i' }, { kind: 'super', text: '6' }, { kind: 'suffix', text: '(3)' }, { kind: 'sub', text: 'sus4' }] },
 ];
 
 for (const { symbol: sym, expect } of invCases) {
   const got = tokenizeRomanNumeral(sym);
   if (JSON.stringify(got) !== JSON.stringify(expect)) {
     throw new Error(`tokenize ${sym}: expected ${JSON.stringify(expect)} got ${JSON.stringify(got)}`);
+  }
+}
+
+// span===3 regression: ensure suffix height is included in above extents.
+// This specifically affects symbols like i6(3)sus4.
+{
+  const fontSize = 20;
+  const { above } = romanNumeralVerticalExtents('i6(3)sus4', fontSize);
+  const SUFFIX_SCALE = 0.72;
+  const minExpectedAbove = fontSize * (0.28 + SUFFIX_SCALE * 0.55);
+  if (above < minExpectedAbove - 0.01) {
+    throw new Error(`vertical extents: expected above >= ${minExpectedAbove.toFixed(2)} got ${above.toFixed(2)}`);
   }
 }
 

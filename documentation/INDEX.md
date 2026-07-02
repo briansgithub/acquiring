@@ -14,6 +14,7 @@ Master map of repo documentation. **Read the linked file when your task matches 
 | [HANDOFF.md](../HANDOFF.md) | **Starting a new session** — current repo state, Song Selector behavior, catalog/data layout. |
 | [BUGS.md](./BUGS.md) | You are fixing a known bug or checking whether an issue is already tracked. |
 | [PRONUNCIATION.md](./PRONUNCIATION.md) | You need chord **spoken readings** (analytic/functional/letter), `romanNumeralSpeak.js`, fixtures, or `npm run test:pronunciation`. |
+| [ROMAN_NUMERALS.md](./ROMAN_NUMERALS.md) | You need **roman symbol display** (figured-bass stacks, °/ø quality glyphs, HTML + canvas rendering), `romanNumeralCanvas.js`, or `npm run test:roman-symbols`. |
 
 ---
 
@@ -55,6 +56,9 @@ Task involves playback / UI / audio engine?
 
 Task involves chord pronunciation / spoken roman readings?
   → PRONUNCIATION.md
+
+Task involves roman numeral display / figured-bass stacking / ° ø glyphs?
+  → ROMAN_NUMERALS.md
 
 Known bug or regression?
   → BUGS.md first

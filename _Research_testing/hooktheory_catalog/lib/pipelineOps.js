@@ -79,17 +79,20 @@ function requireHarvest(slug) {
   return harvest;
 }
 
-async function runHarvest(db, slug, { rescrape = false } = {}) {
+async function runHarvest(db, slug, { rescrape = false, onProgress = null } = {}) {
+  const report = (msg) => onProgress?.(msg);
   const row = requireSong(db, slug);
   const existing = loadHarvest(slug);
   const forceRescrape = rescrape
     || row.harvest_mode === 'light'
     || (existing && isLightHarvest(existing.scrape));
-  const harvested = await harvestSong(row.url, { rescrape: forceRescrape });
+  report(forceRescrape ? 'Starting Fetch…' : 'Checking harvest cache…');
+  const harvested = await harvestSong(row.url, { rescrape: forceRescrape, onProgress: report });
   if (isLightHarvest(harvested.scrape)) {
     return wrapErr(db, slug, 'Full fetch did not complete — scrape is still light harvest', 500);
   }
   setHarvestMode(db, slug, 'full');
+  report('Enriching catalog + building player cache…');
   const extras = await runLocalsParallel(db, slug, { includeTested: false });
   return wrapOk(db, slug, extras);
 }
@@ -134,10 +137,10 @@ async function runTested(db, slug) {
   });
 }
 
-async function runPipelineAction(db, slug, action) {
+async function runPipelineAction(db, slug, action, { onProgress = null } = {}) {
   if (!isAction(action)) return wrapErr(db, slug, `unknown action: ${action}`, 400);
   switch (action) {
-    case 'harvest': return runHarvest(db, slug);
+    case 'harvest': return runHarvest(db, slug, { onProgress });
     case 'metadata': return runMetadata(db, slug);
     case 'processed': return runProcessed(db, slug);
     case 'tested': return runTested(db, slug);

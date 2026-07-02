@@ -21,6 +21,13 @@ function getJob(jobId) {
   return jobs.get(String(jobId)) || null;
 }
 
+function setJobMessage(jobId, message) {
+  const job = jobs.get(String(jobId));
+  if (job && job.status === 'running' && message) {
+    job.message = message;
+  }
+}
+
 function applyJobResult(job, result) {
   job.status = result.ok ? 'done' : 'error';
   job.error = result.error || null;
@@ -40,6 +47,7 @@ function startJob(slug, action) {
     slug,
     action,
     status: 'running',
+    message: null,
     startedAt: new Date().toISOString(),
     error: null,
     flags: null,
@@ -53,7 +61,8 @@ function startJob(slug, action) {
   activeBySlug.set(slug, jobId);
 
   const db = openDb();
-  runPipelineAction(db, slug, action)
+  const onProgress = (message) => setJobMessage(jobId, message);
+  runPipelineAction(db, slug, action, { onProgress })
     .then((result) => applyJobResult(job, result))
     .catch((err) => {
       job.status = 'error';
@@ -81,6 +90,7 @@ function startAddJob(url) {
     slug,
     action: 'add',
     status: 'running',
+    message: null,
     startedAt: new Date().toISOString(),
     error: null,
     flags: null,
@@ -94,7 +104,8 @@ function startAddJob(url) {
   activeBySlug.set(slug, jobId);
 
   const db = openDb();
-  addSongFromUrl(db, url)
+  const onProgress = (message) => setJobMessage(jobId, message);
+  addSongFromUrl(db, url, { onProgress })
     .then((result) => applyJobResult(job, result))
     .catch((err) => {
       job.status = 'error';
@@ -107,4 +118,4 @@ function startAddJob(url) {
   return jobId;
 }
 
-module.exports = { JobConflictError, getJob, startJob, startAddJob };
+module.exports = { JobConflictError, getJob, setJobMessage, startJob, startAddJob };

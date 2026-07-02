@@ -90,6 +90,7 @@ function handlePipelineJob(reqUrl, res) {
     slug: job.slug,
     action: job.action,
     status: job.status,
+    message: job.message,
     error: job.error,
     flags: job.flags,
     canLoad: job.canLoad,
