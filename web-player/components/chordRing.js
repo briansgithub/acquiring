@@ -730,21 +730,21 @@ export function renderChordRing(container, options = {}) {
           line1Font -= 1;
         }
 
-        const line2ArrowFont = 42 * zoom;
+        // Keep arrow truly fixed-size so it does not visually resize per chord.
+        const line2CurrMax = 56 * zoom;
         const line2CurrMin = 18 * zoom;
-        let line2CurrFont = line2ArrowFont;
+        let line2CurrFont = line2CurrMax;
 
-        ctx.font = `bold ${line2ArrowFont}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-        const fixedArrowWidth = ctx.measureText("→ ").width;
+        const arrowBlockW = 32 * zoom;
         while (line2CurrFont >= line2CurrMin) {
           const wCurr = measureRomanNumeral(ctx, currSymbol, line2CurrFont);
-          if (fixedArrowWidth + wCurr <= line2TargetW) break;
+          if (arrowBlockW + wCurr <= line2TargetW) break;
           line2CurrFont -= 1;
         }
 
         const topPadding = Math.max(10 * zoom, line1Font * 0.65);
         const y1 = cy - r + topPadding + line1Font * 0.5;
-        const y2 = cy + Math.max(2 * zoom, line2ArrowFont * 0.05);
+        const y2 = cy + Math.max(2 * zoom, line2CurrFont * 0.05);
 
         ctx.textBaseline = "middle";
         ctx.textAlign = "center";
@@ -754,17 +754,31 @@ export function renderChordRing(container, options = {}) {
         drawRomanNumeral(ctx, prevSymbol, cx, y1, line1Font, { align: "center" });
         registerCenterChordHit(previousChord, cx - wPrev / 2, y1, wPrev, line1Font);
 
-        ctx.font = `bold ${line2ArrowFont}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-        const arrowText = "→ ";
-        const wArrow = ctx.measureText(arrowText).width;
         const wCurr = measureRomanNumeral(ctx, currSymbol, line2CurrFont);
         const line2StartX = cx - line2TargetW / 2;
 
         ctx.textAlign = "left";
         ctx.fillStyle = "#cbd5e1";
-        ctx.fillText(arrowText, line2StartX, y2);
+        const arrowY = y2;
+        const arrowStartX = line2StartX + 2 * zoom;
+        const arrowEndX = arrowStartX + 18 * zoom;
+        const arrowHeadSize = 7 * zoom;
+        ctx.lineWidth = 3 * zoom;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(arrowStartX, arrowY);
+        ctx.lineTo(arrowEndX, arrowY);
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(arrowEndX, arrowY);
+        ctx.lineTo(arrowEndX - arrowHeadSize, arrowY - arrowHeadSize * 0.86);
+        ctx.lineTo(arrowEndX - arrowHeadSize, arrowY + arrowHeadSize * 0.86);
+        ctx.closePath();
+        ctx.fillStyle = "#cbd5e1";
+        ctx.fill();
 
-        const currStartX = line2StartX + wArrow;
+        const currStartX = line2StartX + arrowBlockW;
         ctx.fillStyle = currColor;
         drawRomanNumeral(ctx, currSymbol, currStartX, y2, line2CurrFont, { align: "left" });
         registerCenterChordHit(activeChord, currStartX, y2, wCurr, line2CurrFont);
