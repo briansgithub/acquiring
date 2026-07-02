@@ -721,92 +721,53 @@ export function renderChordRing(container, options = {}) {
         const prevSymbol = getCenterDisplayLabel(previousChord);
         const prevColor = getScaleDegreeColor(previousChord.root, key.scale) || "#ffffff";
 
-        // Try single line first
-        const maxSingleLineFont = 42 * zoom;
-        const minSingleLineFont = 18 * zoom;
-        const targetW = r * 1.65; // 82.5% of diameter
+        const line1TargetW = r * 1.35;
+        const line2TargetW = r * 1.55;
 
-        let fontSize = maxSingleLineFont;
-        let fitsSingleLine = false;
-
-        while (fontSize >= minSingleLineFont) {
-          const wPrev = measureRomanNumeral(ctx, prevSymbol, fontSize);
-          ctx.font = `bold ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-          const wArrow = ctx.measureText(" → ").width;
-          const wCurr = measureRomanNumeral(ctx, currSymbol, fontSize);
-          const totalW = wPrev + wArrow + wCurr;
-          if (totalW <= targetW) {
-            fitsSingleLine = true;
-            break;
-          }
-          fontSize -= 1;
+        let line1Font = 24 * zoom;
+        const line1Min = 12 * zoom;
+        while (line1Font >= line1Min && measureRomanNumeral(ctx, prevSymbol, line1Font) > line1TargetW) {
+          line1Font -= 1;
         }
 
-        if (fitsSingleLine) {
-          ctx.textBaseline = "middle";
-          const wPrev = measureRomanNumeral(ctx, prevSymbol, fontSize);
-          ctx.font = `bold ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-          const wArrow = ctx.measureText(" → ").width;
-          const totalW = wPrev + wArrow + measureRomanNumeral(ctx, currSymbol, fontSize);
-          const startX = cx - totalW / 2;
+        const line2ArrowFont = 42 * zoom;
+        const line2CurrMin = 18 * zoom;
+        let line2CurrFont = line2ArrowFont;
 
-          ctx.textAlign = "left";
-          ctx.fillStyle = prevColor;
-          let cursor = startX;
-          cursor += drawRomanNumeral(ctx, prevSymbol, cursor, cy, fontSize, { align: 'left' });
-
-          ctx.fillStyle = "#cbd5e1";
-          ctx.font = `bold ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-          ctx.fillText(" → ", cursor, cy);
-          cursor += wArrow;
-
-          ctx.fillStyle = currColor;
-          const currStartX = cursor;
-          const wCurrSingle = measureRomanNumeral(ctx, currSymbol, fontSize);
-          drawRomanNumeral(ctx, currSymbol, cursor, cy, fontSize, { align: 'left' });
-          registerCenterChordHit(previousChord, startX, cy, wPrev, fontSize);
-          registerCenterChordHit(activeChord, currStartX, cy, wCurrSingle, fontSize);
-        } else {
-          // Exceeds single line -> Draw multi-line
-          const maxMultiLineFont = 34 * zoom;
-          const minMultiLineFont = 14 * zoom;
-          const targetWTwoLine = r * 1.45;
-
-          let multiFontSize = maxMultiLineFont;
-          while (multiFontSize >= minMultiLineFont) {
-            ctx.font = `bold ${multiFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-            const wLine1 = measureRomanNumeral(ctx, prevSymbol, multiFontSize) + ctx.measureText(" →").width;
-            const wLine2 = measureRomanNumeral(ctx, currSymbol, multiFontSize);
-            if (wLine1 <= targetWTwoLine && wLine2 <= targetWTwoLine) {
-              break;
-            }
-            multiFontSize -= 1;
-          }
-
-          ctx.textBaseline = "middle";
-          const vOffset = Math.max(10 * zoom, multiFontSize * 0.65);
-          const y1 = cy - vOffset;
-          const y2 = cy + vOffset;
-
-          ctx.font = `bold ${multiFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-          const wPrev = measureRomanNumeral(ctx, prevSymbol, multiFontSize);
-          const wArrow = ctx.measureText(" →").width;
-          const startX1 = cx - (wPrev + wArrow) / 2;
-
-          ctx.textAlign = "left";
-          ctx.fillStyle = prevColor;
-          let cursor = startX1;
-          cursor += drawRomanNumeral(ctx, prevSymbol, cursor, y1, multiFontSize, { align: 'left' });
-          ctx.fillStyle = "#cbd5e1";
-          ctx.font = `bold ${multiFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-          ctx.fillText(" →", cursor, y1);
-
-          ctx.fillStyle = currColor;
-          const wCurrMulti = measureRomanNumeral(ctx, currSymbol, multiFontSize);
-          drawRomanNumeral(ctx, currSymbol, cx, y2, multiFontSize, { align: 'center' });
-          registerCenterChordHit(previousChord, startX1, y1, wPrev, multiFontSize);
-          registerCenterChordHit(activeChord, cx - wCurrMulti / 2, y2, wCurrMulti, multiFontSize);
+        ctx.font = `bold ${line2ArrowFont}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+        const fixedArrowWidth = ctx.measureText("→ ").width;
+        while (line2CurrFont >= line2CurrMin) {
+          const wCurr = measureRomanNumeral(ctx, currSymbol, line2CurrFont);
+          if (fixedArrowWidth + wCurr <= line2TargetW) break;
+          line2CurrFont -= 1;
         }
+
+        const topPadding = Math.max(10 * zoom, line1Font * 0.65);
+        const y1 = cy - r + topPadding + line1Font * 0.5;
+        const y2 = cy + Math.max(2 * zoom, line2ArrowFont * 0.05);
+
+        ctx.textBaseline = "middle";
+        ctx.textAlign = "center";
+
+        ctx.fillStyle = prevColor;
+        const wPrev = measureRomanNumeral(ctx, prevSymbol, line1Font);
+        drawRomanNumeral(ctx, prevSymbol, cx, y1, line1Font, { align: "center" });
+        registerCenterChordHit(previousChord, cx - wPrev / 2, y1, wPrev, line1Font);
+
+        ctx.font = `bold ${line2ArrowFont}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+        const arrowText = "→ ";
+        const wArrow = ctx.measureText(arrowText).width;
+        const wCurr = measureRomanNumeral(ctx, currSymbol, line2CurrFont);
+        const line2StartX = cx - line2TargetW / 2;
+
+        ctx.textAlign = "left";
+        ctx.fillStyle = "#cbd5e1";
+        ctx.fillText(arrowText, line2StartX, y2);
+
+        const currStartX = line2StartX + wArrow;
+        ctx.fillStyle = currColor;
+        drawRomanNumeral(ctx, currSymbol, currStartX, y2, line2CurrFont, { align: "left" });
+        registerCenterChordHit(activeChord, currStartX, y2, wCurr, line2CurrFont);
       } else {
         const maxSingleFont = 48 * zoom;
         const minSingleFont = 18 * zoom;
