@@ -12,6 +12,15 @@ function joinWords(words) {
   return words.filter(Boolean).join(' ');
 }
 
+function appendDelimitedPhrase(words, delimiter, phrase, value) {
+  if (!phrase || !value) return;
+  const lastIdx = words.length - 1;
+  if (lastIdx >= 0 && words[lastIdx]) {
+    words[lastIdx] = `${words[lastIdx]}${delimiter}`;
+  }
+  words.push(phrase, value);
+}
+
 function borrowedRedundantWithCase(parts) {
   return parts.borrowed && parts.caseQuality && parts.borrowed === parts.caseQuality;
 }
@@ -23,7 +32,7 @@ function appendBorrowed(words, parts) {
 
 function appendBorrowedFunctional(words, parts) {
   if (!parts.borrowed || borrowedRedundantWithCase(parts)) return;
-  words.push('borrowed from', parts.borrowed);
+  appendDelimitedPhrase(words, ',', 'borrowed from', parts.borrowed);
 }
 
 function inversionFunctionalLabel(parts) {
@@ -86,7 +95,7 @@ export function formatFunctional(parts, ctx) {
   if (parts.alterations.length) words.push(...parts.alterations);
 
   if (ctx?.isApplied) {
-    words.push('secondary dominant to', parts.appliedOf || speakDegree(ctx.denominatorDegree));
+    appendDelimitedPhrase(words, ';', 'secondary dominant to', parts.appliedOf || speakDegree(ctx.denominatorDegree));
   }
 
   appendBorrowedFunctional(words, parts);
@@ -145,7 +154,7 @@ export function formatFunctionalLetter(parts, ctx, key, chord) {
   if (parts.alterations.length) words.push(...parts.alterations);
 
   if (ctx?.isApplied) {
-    words.push('secondary dominant to', speakAppliedTargetLetter(ctx, key));
+    appendDelimitedPhrase(words, ';', 'secondary dominant to', speakAppliedTargetLetter(ctx, key));
   }
 
   appendBorrowedFunctional(words, parts);
