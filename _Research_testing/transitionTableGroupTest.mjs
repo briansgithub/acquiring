@@ -62,6 +62,25 @@ function hasAnyRepeatedPhrase(sequence, phraseLength) {
   return false;
 }
 
+function findAllSubstringsWithStarts(sequence, beats) {
+  const counts = new Map();
+  const starts = new Map();
+  if (!Array.isArray(sequence) || sequence.length < 1 || !Array.isArray(beats)) {
+    return { counts, starts };
+  }
+
+  for (let phraseLength = sequence.length; phraseLength >= 1; phraseLength--) {
+    const end = sequence.length - phraseLength;
+    for (let start = 0; start <= end; start++) {
+      const phrase = sequence.slice(start, start + phraseLength).join(" → ");
+      counts.set(phrase, (counts.get(phrase) || 0) + 1);
+      if (!starts.has(phrase)) starts.set(phrase, beats[start] ?? 1);
+    }
+  }
+
+  return { counts, starts };
+}
+
 const counts = new Map([
   ['IV → V', 5],
   ['I → vi', 5],
@@ -96,4 +115,20 @@ if (noRepeat.size !== 1 || noRepeat.get("I → ii → iii → IV") !== 1) {
   throw new Error(`expected full unique sequence when no repeats got ${JSON.stringify(Array.from(noRepeat.entries()))}`);
 }
 
-console.log('OK', { groups, html, longest, tiedGroups, noRepeat });
+const allSubstrings = findAllSubstringsWithStarts(
+  ["I", "ii", "I"],
+  [1, 3, 5]
+);
+if (allSubstrings.counts.get("I") !== 2 || allSubstrings.counts.get("I → ii") !== 1 || allSubstrings.counts.get("I → ii → I") !== 1) {
+  throw new Error(`expected overlapping substring counts got ${JSON.stringify(Array.from(allSubstrings.counts.entries()))}`);
+}
+if (allSubstrings.starts.get("I") !== 1 || allSubstrings.starts.get("ii") !== 3 || allSubstrings.starts.get("I → ii → I") !== 1) {
+  throw new Error(`expected earliest first starts got ${JSON.stringify(Array.from(allSubstrings.starts.entries()))}`);
+}
+
+const allSubGroups = groupTransitions(allSubstrings.counts);
+if (allSubGroups[0].count !== 2 || !allSubGroups[0].transitions.includes("I")) {
+  throw new Error(`expected grouped substring counts got ${JSON.stringify(allSubGroups)}`);
+}
+
+console.log('OK', { groups, html, longest, tiedGroups, noRepeat, allSubstrings: allSubstrings.counts, allSubGroups });

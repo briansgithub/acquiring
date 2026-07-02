@@ -536,7 +536,11 @@ async function loadSection(songIndex, sectionIndex) {
       transitionData.fullPhraseFirstBeats,
       transitionData.rootPhraseFirstBeats,
       transitionData.fullTransitionFirstBeats,
-      transitionData.rootTransitionFirstBeats
+      transitionData.rootTransitionFirstBeats,
+      transitionData.fullAllSubstringCounts,
+      transitionData.rootAllSubstringCounts,
+      transitionData.fullAllSubstringFirstBeats,
+      transitionData.rootAllSubstringFirstBeats
     );
 
     // Update indicator immediately with the first chord if it starts at beat 0 or 1
@@ -966,6 +970,10 @@ function computeChordTransitions(chordsArray, key) {
       rootPhraseFirstBeats: new Map(),
       fullTransitionFirstBeats,
       rootTransitionFirstBeats,
+      fullAllSubstringCounts: new Map(),
+      rootAllSubstringCounts: new Map(),
+      fullAllSubstringFirstBeats: new Map(),
+      rootAllSubstringFirstBeats: new Map(),
     };
   }
   
@@ -990,6 +998,8 @@ function computeChordTransitions(chordsArray, key) {
       rootPhraseFirstBeats: new Map(),
       fullTransitionFirstBeats,
       rootTransitionFirstBeats,
+      ...findAllSubstringsWithStarts(fullSequence, validChords, "full"),
+      ...findAllSubstringsWithStarts(rootSequence, validChords, "root"),
     }; // Need at least 2 chords for a transition
   }
   
@@ -1035,6 +1045,8 @@ function computeChordTransitions(chordsArray, key) {
     ...findLongestRepeatedPhrasesWithStarts(rootSequence, validChords, "root"),
     fullTransitionFirstBeats,
     rootTransitionFirstBeats,
+    ...findAllSubstringsWithStarts(fullSequence, validChords, "full"),
+    ...findAllSubstringsWithStarts(rootSequence, validChords, "root"),
   };
 }
 
@@ -1105,6 +1117,33 @@ function hasAnyRepeatedPhrase(sequence, phraseLength) {
   }
 
   return false;
+}
+
+function findAllSubstringsWithStarts(sequence, validChords, mode) {
+  const counts = new Map();
+  const starts = new Map();
+  if (!Array.isArray(sequence) || sequence.length < 1 || !Array.isArray(validChords)) {
+    return mode === "root"
+      ? { rootAllSubstringCounts: counts, rootAllSubstringFirstBeats: starts }
+      : { fullAllSubstringCounts: counts, fullAllSubstringFirstBeats: starts };
+  }
+
+  for (let phraseLength = sequence.length; phraseLength >= 1; phraseLength--) {
+    const end = sequence.length - phraseLength;
+    for (let start = 0; start <= end; start++) {
+      const phrase = sequence.slice(start, start + phraseLength).join(" → ");
+      counts.set(phrase, (counts.get(phrase) || 0) + 1);
+      if (!starts.has(phrase)) {
+        const phraseStartBeat = validChords[start]?.beat === 0 ? 1 : (validChords[start]?.beat ?? 1);
+        starts.set(phrase, phraseStartBeat);
+      }
+    }
+  }
+
+  if (mode === "root") {
+    return { rootAllSubstringCounts: counts, rootAllSubstringFirstBeats: starts };
+  }
+  return { fullAllSubstringCounts: counts, fullAllSubstringFirstBeats: starts };
 }
 
 function getMeasureStartBeatForBeat(targetBeat, metadata) {

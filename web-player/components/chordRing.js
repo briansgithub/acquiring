@@ -116,6 +116,10 @@ export function renderChordRing(container, options = {}) {
   rootOnlyCheckboxContainer.style.marginTop = "8px";
   rootOnlyCheckboxContainer.style.paddingTop = "8px";
   rootOnlyCheckboxContainer.style.borderTop = "1px solid rgba(255, 255, 255, 0.2)";
+  rootOnlyCheckboxContainer.style.display = "flex";
+  rootOnlyCheckboxContainer.style.flexDirection = "column";
+  rootOnlyCheckboxContainer.style.alignItems = "flex-start";
+  rootOnlyCheckboxContainer.style.gap = "6px";
 
   const rootOnlyLabel = document.createElement("label");
   rootOnlyLabel.style.cssText = "display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;color:#ffffff;font-size:11px;white-space:nowrap;";
@@ -131,7 +135,7 @@ export function renderChordRing(container, options = {}) {
   rootOnlyCheckboxContainer.appendChild(rootOnlyLabel);
 
   const longestPhraseLabel = document.createElement("label");
-  longestPhraseLabel.style.cssText = "display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;color:#ffffff;font-size:11px;white-space:nowrap;margin-left:10px;";
+  longestPhraseLabel.style.cssText = "display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;color:#ffffff;font-size:11px;white-space:nowrap;";
   const longestPhraseCheckbox = document.createElement("input");
   longestPhraseCheckbox.type = "checkbox";
   longestPhraseCheckbox.id = "longest-phrase-toggle";
@@ -142,6 +146,19 @@ export function renderChordRing(container, options = {}) {
   longestPhraseLabel.appendChild(longestPhraseCheckbox);
   longestPhraseLabel.appendChild(longestPhraseSpan);
   rootOnlyCheckboxContainer.appendChild(longestPhraseLabel);
+
+  const redundantSubstringLabel = document.createElement("label");
+  redundantSubstringLabel.style.cssText = "display:none;align-items:center;gap:6px;cursor:pointer;user-select:none;color:#ffffff;font-size:11px;white-space:nowrap;";
+  const redundantSubstringCheckbox = document.createElement("input");
+  redundantSubstringCheckbox.type = "checkbox";
+  redundantSubstringCheckbox.id = "redundant-substring-toggle";
+  redundantSubstringCheckbox.checked = false;
+  redundantSubstringCheckbox.style.cssText = "cursor:pointer;";
+  const redundantSubstringSpan = document.createElement("span");
+  redundantSubstringSpan.textContent = "Include redundant substrings";
+  redundantSubstringLabel.appendChild(redundantSubstringCheckbox);
+  redundantSubstringLabel.appendChild(redundantSubstringSpan);
+  rootOnlyCheckboxContainer.appendChild(redundantSubstringLabel);
   transitionTableOverlay.appendChild(rootOnlyCheckboxContainer);
 
   wrapper.appendChild(transitionTableOverlay);
@@ -277,6 +294,15 @@ export function renderChordRing(container, options = {}) {
   });
   longestPhraseCheckbox.addEventListener("change", (e) => {
     showLongestPhraseView = e.target.checked;
+    if (!showLongestPhraseView) {
+      includeRedundantSubstrings = false;
+      redundantSubstringCheckbox.checked = false;
+    }
+    redundantSubstringLabel.style.display = showLongestPhraseView ? "inline-flex" : "none";
+    updateTransitionTable();
+  });
+  redundantSubstringCheckbox.addEventListener("change", (e) => {
+    includeRedundantSubstrings = e.target.checked;
     updateTransitionTable();
   });
 
@@ -302,10 +328,15 @@ export function renderChordRing(container, options = {}) {
   let rootOnlyLongestPhraseCounts = new Map(); // Store maximal repeated root phrases
   let phraseFirstBeats = new Map(); // Store phrase -> first start beat (full-symbol)
   let rootPhraseFirstBeats = new Map(); // Store phrase -> first start beat (root-only)
+  let allSubstringCounts = new Map(); // Store all unique substring counts (full-symbol)
+  let rootAllSubstringCounts = new Map(); // Store all unique substring counts (root-only)
+  let allSubstringFirstBeats = new Map(); // Store substring -> first start beat (full-symbol)
+  let rootAllSubstringFirstBeats = new Map(); // Store substring -> first start beat (root-only)
   let transitionFirstBeats = new Map(); // Store transition -> first start beat (full-symbol)
   let rootTransitionFirstBeats = new Map(); // Store transition -> first start beat (root-only)
   let showRootOnlyView = false; // Toggle for root-only view
   let showLongestPhraseView = false; // Toggle for phrase-view mode
+  let includeRedundantSubstrings = false; // Toggle for all-substrings mode inside longest-phrase view
   let currentHoveredNode = null; // Declared here to avoid Temporal Dead Zone errors during initial resize/draw
   let hideTimeout = null;
   
@@ -1293,7 +1324,9 @@ export function renderChordRing(container, options = {}) {
     transitionGroupsContainer.innerHTML = "";
 
     const countsToDisplay = showLongestPhraseView
-      ? (showRootOnlyView ? rootOnlyLongestPhraseCounts : longestPhraseCounts)
+      ? (includeRedundantSubstrings
+        ? (showRootOnlyView ? rootAllSubstringCounts : allSubstringCounts)
+        : (showRootOnlyView ? rootOnlyLongestPhraseCounts : longestPhraseCounts))
       : (showRootOnlyView ? rootOnlyTransitionCounts : transitionCounts);
 
     const hasAnyTransitionData = transitionCounts.size > 0 || rootOnlyTransitionCounts.size > 0;
@@ -1330,7 +1363,9 @@ export function renderChordRing(container, options = {}) {
     sortedCounts.forEach((count, groupIdx) => {
       const transitions = byCount.get(count).sort((a, b) => {
         const activeFirstBeats = showLongestPhraseView
-          ? (showRootOnlyView ? rootPhraseFirstBeats : phraseFirstBeats)
+          ? (includeRedundantSubstrings
+            ? (showRootOnlyView ? rootAllSubstringFirstBeats : allSubstringFirstBeats)
+            : (showRootOnlyView ? rootPhraseFirstBeats : phraseFirstBeats))
           : (showRootOnlyView ? rootTransitionFirstBeats : transitionFirstBeats);
         const aBeat = activeFirstBeats?.get(a);
         const bBeat = activeFirstBeats?.get(b);
@@ -1346,7 +1381,7 @@ export function renderChordRing(container, options = {}) {
 
       const summary = document.createElement("summary");
       summary.className = "transition-group-summary";
-      summary.innerHTML = `<span class="transition-group-count">×${count}</span>`;
+      summary.innerHTML = `<span class="transition-group-count">×${count}</span><span style="margin-left:8px;color:#94a3b8;font-size:11px;">Count: ${transitions.length}</span>`;
       details.appendChild(summary);
 
       const list = document.createElement("div");
@@ -1357,19 +1392,21 @@ export function renderChordRing(container, options = {}) {
         row.className = "transition-group-row";
 
         const parts = transition.split(" → ");
-        if (parts.length >= 2) {
-          const activeFirstBeats = showLongestPhraseView
-            ? (showRootOnlyView ? rootPhraseFirstBeats : phraseFirstBeats)
-            : (showRootOnlyView ? rootTransitionFirstBeats : transitionFirstBeats);
-          const firstBeat = activeFirstBeats.get(transition);
-          if (Number.isFinite(firstBeat) && typeof options.onPhraseClick === "function") {
-            row.style.cursor = "pointer";
-            row.title = "Jump to phrase start";
-            row.addEventListener("click", () => {
-              options.onPhraseClick({ phrase: transition, firstBeat, rootOnly: showRootOnlyView });
-            });
-          }
+        const activeFirstBeats = showLongestPhraseView
+          ? (includeRedundantSubstrings
+            ? (showRootOnlyView ? rootAllSubstringFirstBeats : allSubstringFirstBeats)
+            : (showRootOnlyView ? rootPhraseFirstBeats : phraseFirstBeats))
+          : (showRootOnlyView ? rootTransitionFirstBeats : transitionFirstBeats);
+        const firstBeat = activeFirstBeats.get(transition);
+        if (Number.isFinite(firstBeat) && typeof options.onPhraseClick === "function") {
+          row.style.cursor = "pointer";
+          row.title = "Jump to phrase start";
+          row.addEventListener("click", () => {
+            options.onPhraseClick({ phrase: transition, firstBeat, rootOnly: showRootOnlyView });
+          });
+        }
 
+        if (parts.length >= 1) {
           if (showLongestPhraseView) {
             parts.forEach((part, index) => {
               const partSpan = document.createElement("span");
@@ -1469,7 +1506,11 @@ export function renderChordRing(container, options = {}) {
       phraseStarts,
       rootPhraseStarts,
       transitionStarts,
-      rootTransitionStarts
+      rootTransitionStarts,
+      substringCounts,
+      rootSubstringCounts,
+      substringStarts,
+      rootSubstringStarts
     ) {
       transitionCounts = transitions || new Map();
       rootOnlyTransitionCounts = rootOnlyTransitions || new Map();
@@ -1479,6 +1520,10 @@ export function renderChordRing(container, options = {}) {
       rootPhraseFirstBeats = rootPhraseStarts || new Map();
       transitionFirstBeats = transitionStarts || new Map();
       rootTransitionFirstBeats = rootTransitionStarts || new Map();
+      allSubstringCounts = substringCounts || new Map();
+      rootAllSubstringCounts = rootSubstringCounts || new Map();
+      allSubstringFirstBeats = substringStarts || new Map();
+      rootAllSubstringFirstBeats = rootSubstringStarts || new Map();
       updateTransitionTable();
     },
 
