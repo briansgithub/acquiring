@@ -1,4 +1,5 @@
 import { AudioEngine } from "./audio/engine.js";
+import { createLoadingSplash } from "./components/loadingSplash.js";
 import { renderControls, CONTROL_DEFAULTS } from "./components/controls.js";
 import { makeCollapsible } from "./components/collapsiblePane.js";
 import { renderChordRing } from "./components/chordRing.js";
@@ -8,42 +9,77 @@ import { renderSongSelector } from "./components/songSelector.js";
 import { chordInterpreter, getSongLength, parseKey, sdToToneJSNoteName } from "./lib/music.js";
 import { normalizeToneNotes } from "./lib/chordVoicing.js";
 import { getChordSymbol } from "./lib/jsonToSymbol.js";
+import {
+  arpOffsetTicks,
+  arpStepMs,
+  isArpeggiationActive as arpActive,
+  sliderIndexToCyclesPerBeat,
+  TICKS_PER_BEAT,
+} from "./lib/timing.js";
 
 const Tone = window.Tone;
 
-const controlsPane = document.getElementById("controls-pane");
 const ringPane = document.getElementById("ring-pane");
 const indicatorPane = document.getElementById("indicator-pane");
 const timelinePane = document.getElementById("timeline-pane");
 const selectorPane = document.getElementById("selector-pane");
 
 const engine = new AudioEngine();
+const loadingSplash = createLoadingSplash();
 
 // State variables
 let useRomanNumerals = true; // Track label mode (roman numerals vs letter labels)
 let currentKey = null; // Store current key for event recalculation
 let forceRootPosition = false;
 let isArpeggiated = CONTROL_DEFAULTS.arpeggiated;
-let arpeggiationSpeed = CONTROL_DEFAULTS.arpeggiationSpeed;
+let arpeggiationSlider = CONTROL_DEFAULTS.arpeggiationSlider;
+let arpFixedSpeed = CONTROL_DEFAULTS.arpFixedSpeed;
+let arpUnlockFromTempo = CONTROL_DEFAULTS.arpUnlockFromTempo;
 
 const ARP_HIGHLIGHT_MIN_MS = 50;
 
-function shouldHighlightArpeggioNote() {
-  return arpeggiationSpeed >= ARP_HIGHLIGHT_MIN_MS;
+function getArpeggioBpm() {
+  return arpUnlockFromTempo ? originalBpm : currentBpm;
 }
 
-function highlightArpeggioNote(note) {
-  if (!shouldHighlightArpeggioNote()) return;
-  noteIndicator.highlightNote(note, arpeggiationSpeed);
+function getArpeggioOffsetTicks(noteCount) {
+  let offsetTicks = arpOffsetTicks(getCyclesPerBeat(), noteCount, arpFixedSpeed);
+  if (arpUnlockFromTempo && originalBpm > 0 && currentBpm !== originalBpm) {
+    offsetTicks = Math.max(1, Math.round(offsetTicks * currentBpm / originalBpm));
+  }
+  return offsetTicks;
+}
+
+function getCyclesPerBeat() {
+  return sliderIndexToCyclesPerBeat(arpeggiationSlider);
+}
+
+function isArpeggiationActive() {
+  return arpActive(isArpeggiated);
+}
+
+function getArpeggioStepMs(noteCount) {
+  return arpStepMs(getCyclesPerBeat(), noteCount, getArpeggioBpm(), arpFixedSpeed);
+}
+
+function shouldHighlightArpeggioNote(noteCount) {
+  return isArpeggiationActive() && getArpeggioStepMs(noteCount) >= ARP_HIGHLIGHT_MIN_MS;
+}
+
+function highlightArpeggioNote(note, noteCount) {
+  if (!shouldHighlightArpeggioNote(noteCount)) return;
+  noteIndicator.highlightNote(note, getArpeggioStepMs(noteCount));
 }
 
 function previewChordWithSettings(notes, arpeggiate = false) {
+  const useArp = arpeggiate && isArpeggiationActive() && notes.length > 1;
+  const noteCount = notes.length;
   engine.previewChord(
     notes,
     "4n",
-    arpeggiate,
-    arpeggiationSpeed,
-    arpeggiate ? (note) => highlightArpeggioNote(note) : null
+    useArp,
+    useArp ? getArpeggioStepMs(noteCount) : 100,
+    useArp ? (note) => highlightArpeggioNote(note, noteCount) : null
   );
 }
 
@@ -125,81 +161,12 @@ async function handlePlayPause(shouldPlay) {
   } else {
     engine.pause();
   }
-}
-
-const controls = renderControls(controlsPane, {
-  onPlayPause: handlePlayPause,
-  onRestart: async () => {
-    if (!currentSong || songLength <= 0) return;
-    // Release all notes first to prevent stuck notes when restarting during playback
-    engine.releaseAllNotes();
-    engine.stop();
-    // Recalculate events with current tempo
-    currentSecondsPerBeat = 60 / currentBpm;
-    // Events are now Tick-based, so no need to recreate them on restart unless data changed?
-    // Actually, createMelodyEvents is cheap, so keeping it is fine, but we remove the secondsPerBeat arg.
-    const melodyEvents = createMelodyEvents(currentRawNotes, currentKey);
-    const chordEvents = createChordEvents(currentRawChords, currentKey);
-    currentMelodyEvents = melodyEvents;
-    currentChordEvents = chordEvents;
-    lastReleaseTick = getLastReleaseTick(melodyEvents, chordEvents);
-    await engine.setupTransport(currentBpm);
-    engine.scheduleMelody(melodyEvents);
-    engine.scheduleChords(chordEvents);
-      controls.updateProgress(0);
-      controls.resetPlayState();
-      chordRing.update(null, null, null);
-      noteIndicator.reset();
-      timeline.updateProgress(0);
-      setupProgressTracking();
-  },
-  onSectionChange: handleSectionChange,
-  onMelodyVolumeChange: (volume) => {
-    engine.setMelodyVolume(volume);
-  },
-  onChordVolumeChange: (volume) => {
-    engine.setChordVolume(volume);
-  },
-  onTempoChange: (tempo) => {
-    currentBpm = tempo;
-    currentSecondsPerBeat = 60 / tempo;
-    engine.setTempo(tempo);
-    if (isArpeggiated) {
-      if (tempoDebounceTimer) clearTimeout(tempoDebounceTimer);
-      tempoDebounceTimer = setTimeout(() => {
-        updatePlaybackSettings();
-      }, 250);
-    }
-  },
-  onResetDefaults: () => {
-    isArpeggiated = CONTROL_DEFAULTS.arpeggiated;
-    arpeggiationSpeed = CONTROL_DEFAULTS.arpeggiationSpeed;
-    forceRootPosition = false;
-    noteIndicator.setRootPositionChecked(false);
-    noteIndicator.resetArpToDefaults();
-    controls.resetSlidersToDefaults();
-    engine.setMelodyVolume(CONTROL_DEFAULTS.melodyVolume);
-    engine.setChordVolume(CONTROL_DEFAULTS.chordVolume);
-    currentBpm = originalBpm;
-    currentSecondsPerBeat = 60 / originalBpm;
-    engine.setTempo(currentBpm);
-    updatePlaybackSettings();
-  },
-});
-
-// Initialize volumes with default slider values
-const melodyVolumeSlider = document.getElementById("melody-volume");
-const chordVolumeSlider = document.getElementById("chord-volume");
-if (melodyVolumeSlider) {
-  engine.setMelodyVolume(Number(melodyVolumeSlider.value));
-}
-if (chordVolumeSlider) {
-  engine.setChordVolume(Number(chordVolumeSlider.value));
+  controls.setPlayState(shouldPlay);
 }
 
 const chordRing = renderChordRing(ringPane, {
   getForceRootPosition: () => forceRootPosition,
-  getArpeggiated: () => isArpeggiated,
+  getArpeggiated: () => isArpeggiationActive(),
   onChordClick: (chordData, arpeggiate = false) => {
     isManualChordPreview = true;
     previewChordWithSettings(chordData.notes, arpeggiate);
@@ -237,17 +204,94 @@ const noteIndicator = renderNoteIndicator(indicatorPane, {
     isArpeggiated = enabled;
     updatePlaybackSettings();
   },
-  onArpeggiateSpeedChange: (speedMs) => {
-    arpeggiationSpeed = speedMs;
+  onArpeggiateSliderChange: (sliderIndex) => {
+    arpeggiationSlider = sliderIndex;
     if (arpDebounceTimer) clearTimeout(arpDebounceTimer);
     arpDebounceTimer = setTimeout(() => {
       updatePlaybackSettings();
     }, 150);
   },
+  onArpFixedSpeedChange: (enabled) => {
+    arpFixedSpeed = enabled;
+    updatePlaybackSettings();
+  },
+  onArpUnlockFromTempoChange: (enabled) => {
+    arpUnlockFromTempo = enabled;
+    updatePlaybackSettings();
+  },
+  onMelodyVolumeChange: (volume) => engine.setMelodyVolume(volume),
+  onChordVolumeChange: (volume) => engine.setChordVolume(volume),
   key: currentKey
 });
+
+const controls = renderControls({
+  topContainer: indicatorPane.querySelector("#now-playing-controls"),
+  tempoContainer: indicatorPane.querySelector("#now-playing-tempo"),
+  footerContainer: indicatorPane.querySelector("#now-playing-footer"),
+  playbackContainer: ringPane.querySelector("#ring-playback-controls"),
+}, {
+  onPlayPause: handlePlayPause,
+  onRestart: async () => {
+    if (!currentSong || songLength <= 0) return;
+    engine.releaseAllNotes();
+    engine.stop();
+    currentSecondsPerBeat = 60 / currentBpm;
+    const melodyEvents = createMelodyEvents(currentRawNotes, currentKey);
+    const chordEvents = createChordEvents(currentRawChords, currentKey);
+    currentMelodyEvents = melodyEvents;
+    currentChordEvents = chordEvents;
+    lastReleaseTick = getLastReleaseTick(melodyEvents, chordEvents);
+    await engine.setupTransport(currentBpm);
+    engine.scheduleMelody(melodyEvents);
+    engine.scheduleChords(chordEvents);
+    controls.updateProgress(0);
+    controls.resetPlayState();
+    chordRing.update(null, null, null);
+    noteIndicator.reset();
+    timeline.updateProgress(0);
+    setupProgressTracking();
+  },
+  onSectionChange: handleSectionChange,
+  onTempoChange: (tempo) => {
+    currentBpm = tempo;
+    currentSecondsPerBeat = 60 / tempo;
+    engine.setTempo(tempo);
+    if (isArpeggiationActive() && arpUnlockFromTempo) {
+      if (tempoDebounceTimer) clearTimeout(tempoDebounceTimer);
+      tempoDebounceTimer = setTimeout(() => {
+        updatePlaybackSettings();
+      }, 250);
+    }
+  },
+  onResetDefaults: () => {
+    isArpeggiated = CONTROL_DEFAULTS.arpeggiated;
+    arpeggiationSlider = CONTROL_DEFAULTS.arpeggiationSlider;
+    arpFixedSpeed = CONTROL_DEFAULTS.arpFixedSpeed;
+    arpUnlockFromTempo = CONTROL_DEFAULTS.arpUnlockFromTempo;
+    forceRootPosition = false;
+    noteIndicator.setRootPositionChecked(false);
+    noteIndicator.resetArpToDefaults();
+    controls.resetSlidersToDefaults();
+    engine.setMelodyVolume(CONTROL_DEFAULTS.melodyVolume);
+    engine.setChordVolume(CONTROL_DEFAULTS.chordVolume);
+    currentBpm = originalBpm;
+    currentSecondsPerBeat = 60 / originalBpm;
+    engine.setTempo(currentBpm);
+    updatePlaybackSettings();
+  },
+});
+
+const melodyVolumeSlider = document.getElementById("melody-volume");
+const chordVolumeSlider = document.getElementById("chord-volume");
+if (melodyVolumeSlider) {
+  engine.setMelodyVolume(Number(melodyVolumeSlider.value));
+}
+if (chordVolumeSlider) {
+  engine.setChordVolume(Number(chordVolumeSlider.value));
+}
+
 const timeline = renderTimeline(timelinePane, {
-  getArpeggiated: () => isArpeggiated,
+  getArpeggiated: () => isArpeggiationActive(),
   onSeek: handleSeek,
   onChordClick: (chord, arpeggiate = false) => {
     if (!currentKey) return;
@@ -262,6 +306,15 @@ const timeline = renderTimeline(timelinePane, {
 
 const songSelector = renderSongSelector(selectorPane, {
   isSongLoaded: (cacheKey) => !!cacheKey && cacheKey === loadedCacheKey,
+  onSongPageOpen: () => {
+    clearPlayerState();
+    loadedCacheKey = null;
+  },
+  onLoadStart: () => {
+    clearPlayerState();
+    loadedCacheKey = null;
+    loadingSplash.show();
+  },
   onLoad: async ({ cacheKey }) => {
     try {
       const res = await fetch("/api/songs");
@@ -269,23 +322,19 @@ const songSelector = renderSongSelector(selectorPane, {
       const idx = library.findIndex((s) => s.artist === cacheKey);
       if (idx < 0) {
         console.error("Loaded song not found in playback cache:", cacheKey);
+        loadingSplash.hide();
         return;
       }
       loadedCacheKey = cacheKey;
       handleSongChange(String(idx));
     } catch (err) {
       console.error("Selector load failed:", err);
+      loadingSplash.hide();
     }
   },
 });
 
 makeCollapsible(selectorPane, { collapseClass: "selector", label: "Songs", expandedWidth: 310 });
-const controlsCollapsible = makeCollapsible(controlsPane, {
-  collapseClass: "controls",
-  label: "Controls",
-  expandedWidth: 250,
-  startCollapsed: true,
-});
 
 // Add keyboard support for spacebar to toggle play/pause
 document.addEventListener("keydown", (event) => {
@@ -317,21 +366,22 @@ let isManualChordPreview = false; // Track when chord is manually clicked
 
 let loadedCacheKey = null;
 
-function resetIdleState() {
+function clearPlayerState() {
+  engine.releaseAllNotes();
+  engine.cancelAllParts();
+  engine.stop();
   currentSong = null;
-  currentSongIdx = 0;
-  loadedCacheKey = null;
-  currentSectionIdx = 0;
-  currentKey = null;
   songLength = 0;
   lastReleaseTick = 0;
   currentRawNotes = [];
   currentRawChords = [];
   currentMelodyEvents = [];
   currentChordEvents = [];
-  engine.stop();
-  controls.setSections([]);
+  currentKey = null;
+  isManualChordPreview = false;
+  controls.setPlaybackVisible(false);
   controls.resetPlayState();
+  controls.setSections([]);
   noteIndicator.reset();
   noteIndicator.setKey(null);
   chordRing.setSongData([], null);
@@ -340,7 +390,13 @@ function resetIdleState() {
   timeline.setSongData([], null, 0);
   timeline.setSongInfo(null, null);
   timeline.updateProgress(0);
-  controlsCollapsible.setCollapsed(true);
+}
+
+function resetIdleState() {
+  currentSongIdx = 0;
+  loadedCacheKey = null;
+  currentSectionIdx = 0;
+  clearPlayerState();
 }
 
 async function init() {
@@ -365,37 +421,31 @@ init();
 async function loadSection(songIndex, sectionIndex) {
   if (isLoading) return;
   isLoading = true;
-  // Cancel parts first to prevent any scheduled release events from firing
-  // This is critical for arpeggiated chords which have many scheduled release events
-  engine.cancelAllParts();
-  // Release all notes multiple times with small delays to ensure all arpeggiated notes are caught
-  // This prevents stuck notes when switching songs/sections during playback
-  engine.releaseAllNotes();
-  // Use setTimeout to release notes again after a brief delay to catch notes in attack phase
-  setTimeout(() => {
-    engine.releaseAllNotes();
-  }, 5);
-  engine.stop();
-  // Release notes again after stop to catch any that might have been triggered
-  setTimeout(() => {
-    engine.releaseAllNotes();
-  }, 10);
-
-  const song = library[songIndex];
-  if (!song) {
-    console.warn("No song at index", songIndex);
-    isLoading = false;
-    return;
-  }
-  const section = song?.sections?.[sectionIndex];
-  if (!section) {
-    console.warn("No section at index", sectionIndex, "for song", song);
-    controls.setSections([]);
-    isLoading = false;
-    return;
-  }
+  loadingSplash.show();
 
   try {
+    engine.cancelAllParts();
+    engine.releaseAllNotes();
+    setTimeout(() => {
+      engine.releaseAllNotes();
+    }, 5);
+    engine.stop();
+    setTimeout(() => {
+      engine.releaseAllNotes();
+    }, 10);
+
+    const song = library[songIndex];
+    if (!song) {
+      console.warn("No song at index", songIndex);
+      return;
+    }
+    const section = song?.sections?.[sectionIndex];
+    if (!section) {
+      console.warn("No section at index", sectionIndex, "for song", song);
+      controls.setSections([]);
+      return;
+    }
+
     const data = await fetch(`/api/song?file=${encodeURIComponent(section.relPath)}`).then(async (r) => {
       if (!r.ok) {
         const text = await r.text();
@@ -479,7 +529,7 @@ async function loadSection(songIndex, sectionIndex) {
     chordRing.setSongData(currentRawChords, currentKey);
     chordRing.update(null, null, null);
     timeline.setSongData(currentRawChords, currentKey, songLength, data.metadata);
-    timeline.setSongInfo(song.title, song.artist);
+    timeline.setSongInfo(song.title, song.artist, song.url || data.metadata?.url);
     noteIndicator.reset();
     
     // Compute all chord transitions for the entire section
@@ -505,12 +555,13 @@ async function loadSection(songIndex, sectionIndex) {
     }
 
     setupProgressTracking();
-    controlsCollapsible.setCollapsed(false);
+    controls.setPlaybackVisible(true);
     console.log("Section loaded successfully.");
   } catch (err) {
     console.error("Error during playback setup in loadSection:", err);
   } finally {
     isLoading = false;
+    loadingSplash.hide();
   }
 }
 
@@ -658,6 +709,7 @@ function handleSongChange(songIdx) {
     if (!song?.sections?.length) {
       console.warn("Song has no sections:", song);
       controls.setSections([]);
+      loadingSplash.hide();
       return;
     }
     controls.setSections(song.sections);
@@ -726,46 +778,28 @@ function createChordEvents(chordsArray, key) {
     const startTick = (normalizedBeat - 1) * 192;
     const endTick = startTick + (chord.duration * 192);
 
-    if (isArpeggiated) {
-      // Create individual note events
-      // Calculate offset in ticks to keep arpeggio speed constant in real time (milliseconds)
-      // regardless of tempo changes. We calculate ticks based on the current tempo so that
-      // the arpeggio speed in milliseconds stays constant. When tempo changes, events are
-      // rescheduled with new tick offsets calculated at the new tempo, maintaining the same
-      // millisecond duration.
-      // 1 Beat = 60/BPM seconds. 1 Tick = 1/192 Beat.
-      // TicksPerSecond = (BPM * 192) / 60 = BPM * 3.2
-      // Convert arpeggio speed (ms) to seconds, then to ticks at current tempo
-      const offsetSeconds = arpeggiationSpeed / 1000;
-      const ticksPerSecond = currentBpm * 3.2;
-      let offsetTicks = Math.round(offsetSeconds * ticksPerSecond);
-      
-      // Ensure offsetTicks is at least 1 to prevent division by zero and ensure notes play
-      // At very low tempos with fast arpeggio speeds, offsetTicks can round to 0
-      offsetTicks = Math.max(1, offsetTicks);
+    if (isArpeggiationActive() && chordNotes.length > 1) {
+      const noteCount = chordNotes.length;
+      const offsetTicks = getArpeggioOffsetTicks(noteCount);
+      const ticksPerSecond = currentBpm * (TICKS_PER_BEAT / 60);
 
       let currentTick = Math.round(startTick);
       let noteIdx = 0;
 
-      // Use a dynamic minimum based on offsetTicks, but ensure it's at least 1
-      // For very fast arpeggios at low tempos, we allow shorter notes
-      // For normal cases, we use a minimum to avoid glitchy stub notes at chord end
       const MIN_NOTE_DURATION_TICKS = Math.max(1, Math.min(offsetTicks, 10));
+      const stepMs = getArpeggioStepMs(noteCount);
 
       while (currentTick + MIN_NOTE_DURATION_TICKS < endTick) {
-        const note = chordNotes[noteIdx % chordNotes.length];
+        const note = chordNotes[noteIdx % noteCount];
         const noteStart = currentTick;
 
         let noteEnd = currentTick + offsetTicks;
-        // Ensure we don't play past the chord's end
         if (noteEnd > endTick) noteEnd = endTick;
 
-        // Double check duration (redundant with while loop but safe)
         if (noteEnd - noteStart < MIN_NOTE_DURATION_TICKS) {
           break;
         }
 
-        // Capture closure values
         const isFirstNote = (noteIdx === 0);
         const thisNote = note;
 
@@ -783,8 +817,8 @@ function createChordEvents(chordsArray, key) {
               chordRing.update(chord);
               isManualChordPreview = false;
             }
-            if (shouldHighlightArpeggioNote()) {
-              noteIndicator.highlightNote(thisNote, arpeggiationSpeed);
+            if (shouldHighlightArpeggioNote(noteCount)) {
+              noteIndicator.highlightNote(thisNote, stepMs);
             }
           }
         };
@@ -948,10 +982,11 @@ function findCurrentChordAtTick(tickPosition) {
       }
       
       const chordData = interpretChord(chord, currentKey);
+      const notes = normalizeToneNotes(chordData.notes);
       return {
         chord,
         chordData,
-        notes: chordData.notes,
+        notes,
         root: chord.root,
         degrees: chordData.chordDegrees,
         borrowed: chord.borrowed
@@ -1023,24 +1058,9 @@ async function updatePlaybackSettings() {
 
   if (wasPlaying) {
     engine.play();
+    controls.setPlayState(true);
   } else {
-    // If we were paused/stopped, ensure UI is still correct for current position?
-    // Actually engine.stop() resets things.
-    // If not playing, we probably just want to be ready.
-    // engine.stop() was called, so Transport is at 0 if we don't restore ticks.
-    // restoring ticks is good.
-    // But we are in "paused" state now.
-    controls.resetPlayState(); // "Play" button should show Play
-    // Wait, if it *was* playing, we called engine.play() which sets button to playing?
-    // engine.play() starts transport. We need to sync button state.
-    if (wasPlaying) {
-      // controls.resetPlayState sets to "Play", we want "Pause" (playing state)
-      const playBtn = document.getElementById("play-toggle");
-      if (playBtn) {
-        playBtn.dataset.state = "playing";
-        playBtn.textContent = "Pause";
-      }
-    }
+    controls.resetPlayState();
   }
 }
 

@@ -1,5 +1,10 @@
 node_modules/
 
+# Cursor debug session logs
+.cursor/debug-*.log
+debug-*.log
+_Research_testing/debug-*.log
+
 # Portable data root (catalog DB, playback cache, harvest artifacts)
 sacred_ring_data/
 sacred_ring_data.config.json

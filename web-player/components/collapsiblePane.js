@@ -63,8 +63,15 @@ export function makeCollapsible(paneEl, { collapseClass, label, expandedWidth, s
     window.dispatchEvent(new Event("resize"));
   }
 
-  toggle.addEventListener("click", () => {
+  toggle.addEventListener("click", (e) => {
+    e.stopPropagation();
     setCollapsed(!paneEl.classList.contains("is-collapsed"));
+  });
+
+  paneEl.addEventListener("click", () => {
+    if (paneEl.classList.contains("is-collapsed")) {
+      setCollapsed(false);
+    }
   });
 
   if (startCollapsed) {

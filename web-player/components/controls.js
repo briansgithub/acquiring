@@ -3,61 +3,70 @@ export const CONTROL_DEFAULTS = {
   melodyVolume: -16,
   chordVolume: -9,
   arpeggiated: false,
-  arpeggiationSpeed: 100,
+  arpeggiationSlider: 7,
+  arpFixedSpeed: true,
+  arpUnlockFromTempo: true,
 };
 
-export function formatArpSpeedLabel(ms) {
-  return ms >= 1000 ? `${(ms / 1000).toFixed(1)}s` : `${ms}ms`;
-}
-
-export function renderControls(container, {
+export function renderControls({ topContainer, tempoContainer, footerContainer, playbackContainer }, {
   onPlayPause,
   onRestart,
   onSectionChange,
   onTempoChange,
   onResetDefaults,
 }) {
-  container.innerHTML = `
-    <div class="pane-panel-head controls-head">
-      <h2 class="pane-panel-title">Controls</h2>
-    </div>
-    <div class="row">
-      <button id="play-toggle">Play</button>
-      <button id="restart-btn">Restart</button>
-    </div>
+  if (playbackContainer) {
+    playbackContainer.innerHTML = `
+      <button id="play-toggle" type="button" data-state="paused">Play</button>
+      <button id="restart-btn" type="button">Restart</button>
+    `;
+    playbackContainer.hidden = true;
+  }
+
+  topContainer.innerHTML = `
     <div class="row">
       <label for="section-select" style="font-size:18px;color:#9ca3af;width:60px;">Section:</label>
       <select id="section-select" class="select"></select>
     </div>
-    <div class="row">
-      <label for="tempo-slider" style="font-size:12px;color:#9ca3af;width:60px;">Tempo:</label>
-      <input type="range" id="tempo-slider" min="1" max="100" value="100" step="1" class="volume-slider">
-      <span id="tempo-label" style="font-size:12px;color:#9ca3af;width:35px;text-align:right;">100%</span>
-    </div>
-    <div class="row">
-      <button id="reset-defaults-btn" type="button">Reset to default</button>
-    </div>
   `;
 
-  const playBtn = container.querySelector("#play-toggle");
-  const restartBtn = container.querySelector("#restart-btn");
-  const sectionSelect = container.querySelector("#section-select");
-  const tempoSlider = container.querySelector("#tempo-slider");
-  const tempoLabel = container.querySelector("#tempo-label");
-  const resetDefaultsBtn = container.querySelector("#reset-defaults-btn");
+  if (tempoContainer) {
+    tempoContainer.innerHTML = `
+      <div class="row now-playing-tempo-row">
+        <label for="tempo-slider" class="now-playing-tempo-label">Tempo:</label>
+        <input type="range" id="tempo-slider" min="1" max="100" value="100" step="1" class="volume-slider">
+        <span id="tempo-label" class="now-playing-tempo-value">100%</span>
+      </div>
+    `;
+  }
+
+  footerContainer.innerHTML = `
+    <button id="reset-defaults-btn" type="button">Reset to default</button>
+  `;
+
+  const playBtn = playbackContainer?.querySelector("#play-toggle");
+  const restartBtn = playbackContainer?.querySelector("#restart-btn");
+  const sectionSelect = topContainer.querySelector("#section-select");
+  const tempoSlider = (tempoContainer ?? topContainer).querySelector("#tempo-slider");
+  const tempoLabel = (tempoContainer ?? topContainer).querySelector("#tempo-label");
+  const resetDefaultsBtn = footerContainer.querySelector("#reset-defaults-btn");
 
   resetDefaultsBtn.addEventListener("click", () => {
     onResetDefaults?.();
   });
 
-  playBtn.addEventListener("click", () => {
+  function setPlayButtonState(playing) {
+    if (!playBtn) return;
+    playBtn.dataset.state = playing ? "playing" : "paused";
+    playBtn.textContent = playing ? "Pause" : "Play";
+  }
+
+  playBtn?.addEventListener("click", () => {
     const isPlaying = playBtn.dataset.state === "playing";
-    playBtn.dataset.state = isPlaying ? "paused" : "playing";
-    playBtn.textContent = isPlaying ? "Play" : "Pause";
     onPlayPause?.(!isPlaying);
   });
 
-  restartBtn.addEventListener("click", () => {
+  restartBtn?.addEventListener("click", () => {
     onRestart?.();
   });
 
@@ -67,7 +76,7 @@ export function renderControls(container, {
 
   let baseTempo = 120;
 
-  tempoSlider.addEventListener("input", (e) => {
+  tempoSlider?.addEventListener("input", (e) => {
     const percentage = Number(e.target.value);
     tempoLabel.textContent = `${percentage}%`;
     const actualBpm = (percentage / 100) * baseTempo;
@@ -75,7 +84,12 @@ export function renderControls(container, {
   });
 
   return {
+    setPlaybackVisible(visible) {
+      if (!playbackContainer) return;
+      playbackContainer.hidden = !visible;
+    },
     setTempo(bpm, originalBpm) {
+      if (!tempoSlider || !tempoLabel) return;
       baseTempo = originalBpm || bpm;
       const percentage = Math.round((bpm / baseTempo) * 100);
       tempoSlider.value = Math.max(1, Math.min(100, percentage));
@@ -92,16 +106,20 @@ export function renderControls(container, {
     },
     updateProgress() {},
     resetPlayState() {
-      playBtn.dataset.state = "paused";
-      playBtn.textContent = "Play";
+      setPlayButtonState(false);
+    },
+    setPlayState(playing) {
+      setPlayButtonState(!!playing);
     },
     setTempoPercent(percentage) {
+      if (!tempoSlider || !tempoLabel) return;
       const pct = Math.max(1, Math.min(100, percentage));
       tempoSlider.value = pct;
       tempoLabel.textContent = `${pct}%`;
       onTempoChange?.((pct / 100) * baseTempo);
     },
     resetSlidersToDefaults() {
+      if (!tempoSlider || !tempoLabel) return;
       const d = CONTROL_DEFAULTS;
       const pct = Math.max(1, Math.min(100, d.tempoPercent));
       tempoSlider.value = pct;

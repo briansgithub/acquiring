@@ -19,7 +19,10 @@ export function renderChordRing(container, options = {}) {
   const header = document.createElement("div");
   header.className = "pane-panel-head ring-panel-head";
   header.innerHTML = `
-    <h2 class="pane-panel-title">Chord Ring</h2>
+    <div class="ring-head-row">
+      <div id="ring-playback-controls" class="ring-playback-controls" hidden></div>
+      <h2 class="pane-panel-title ring-panel-title">Chord Ring</h2>
+    </div>
     <div id="chord-ring-key" class="chord-ring-key">—</div>
   `;
   container.appendChild(header);
@@ -208,12 +211,49 @@ export function renderChordRing(container, options = {}) {
   tooltip.style.transform = "translate(-50%, -100%)";
   wrapper.appendChild(tooltip);
 
+  const centerReadingTooltip = document.createElement("div");
+  centerReadingTooltip.className = "center-reading-tooltip";
+  centerReadingTooltip.style.cssText = `
+    position: absolute;
+    display: none;
+    pointer-events: auto;
+    background: rgba(15, 23, 42, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    padding: 8px 12px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    color: #ffffff;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 11px;
+    z-index: 101;
+    min-width: 160px;
+    max-width: 280px;
+    transition: opacity 0.12s ease, transform 0.12s ease;
+    opacity: 0;
+    transform: translate(-50%, -100%);
+  `;
+  wrapper.appendChild(centerReadingTooltip);
+
   let isMouseOverTooltip = false;
+  let isMouseOverCenterReading = false;
+  let centerReadingHideTimeout = null;
+  let currentHoveredCenterChord = null;
+  let centerChordHitRegions = [];
+
   tooltip.addEventListener("mouseenter", () => {
     isMouseOverTooltip = true;
   });
   tooltip.addEventListener("mouseleave", () => {
     isMouseOverTooltip = false;
+    updateHoverState();
+  });
+
+  centerReadingTooltip.addEventListener("mouseenter", () => {
+    isMouseOverCenterReading = true;
+    clearTimeout(centerReadingHideTimeout);
+  });
+  centerReadingTooltip.addEventListener("mouseleave", () => {
+    isMouseOverCenterReading = false;
     updateHoverState();
   });
 
@@ -367,6 +407,22 @@ export function renderChordRing(container, options = {}) {
     if (typeof updateTooltipPosition === "function") {
       updateTooltipPosition();
     }
+    if (typeof updateCenterReadingTooltipPosition === "function") {
+      updateCenterReadingTooltipPosition();
+    }
+  }
+
+  function registerCenterChordHit(chord, x, y, width, fontSize) {
+    if (!chord || chord.isRest || width <= 0) return;
+    const pad = 4 * zoom;
+    const height = fontSize * 1.15;
+    centerChordHitRegions.push({
+      chord,
+      x: x - pad,
+      y: y - height / 2 - pad,
+      w: width + pad * 2,
+      h: height + pad * 2,
+    });
   }
 
   function drawScaleDegreeNodes(degree, centerX, centerY) {
@@ -521,6 +577,7 @@ export function renderChordRing(container, options = {}) {
   }
 
   function drawCenterRing(cx, cy, r, key) {
+    centerChordHitRegions = [];
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, Math.PI * 2);
     ctx.strokeStyle = "#ffffff40";
@@ -576,7 +633,11 @@ export function renderChordRing(container, options = {}) {
           cursor += wArrow;
 
           ctx.fillStyle = currColor;
+          const currStartX = cursor;
+          const wCurrSingle = measureRomanNumeral(ctx, currSymbol, fontSize);
           drawRomanNumeral(ctx, currSymbol, cursor, cy, fontSize, { align: 'left' });
+          registerCenterChordHit(previousChord, startX, cy, wPrev, fontSize);
+          registerCenterChordHit(activeChord, currStartX, cy, wCurrSingle, fontSize);
         } else {
           // Exceeds single line -> Draw multi-line
           const maxMultiLineFont = 34 * zoom;
@@ -613,7 +674,10 @@ export function renderChordRing(container, options = {}) {
           ctx.fillText(" →", cursor, y1);
 
           ctx.fillStyle = currColor;
+          const wCurrMulti = measureRomanNumeral(ctx, currSymbol, multiFontSize);
           drawRomanNumeral(ctx, currSymbol, cx, y2, multiFontSize, { align: 'center' });
+          registerCenterChordHit(previousChord, startX1, y1, wPrev, multiFontSize);
+          registerCenterChordHit(activeChord, cx - wCurrMulti / 2, y2, wCurrMulti, multiFontSize);
         }
       } else {
         const maxSingleFont = 48 * zoom;
@@ -628,7 +692,9 @@ export function renderChordRing(container, options = {}) {
 
         ctx.textBaseline = "middle";
         ctx.fillStyle = currColor;
+        const wSingle = measureRomanNumeral(ctx, currSymbol, fontSize);
         drawRomanNumeral(ctx, currSymbol, cx, cy, fontSize, { align: 'center' });
+        registerCenterChordHit(activeChord, cx - wSingle / 2, cy, wSingle, fontSize);
       }
     } else {
       // No active chord - draw placeholder
@@ -897,6 +963,57 @@ export function renderChordRing(container, options = {}) {
     });
   }
 
+  function hideCenterReadingTooltip() {
+    centerReadingTooltip.style.opacity = "0";
+    centerReadingTooltip.style.transform = "translate(-50%, -100%) translateY(4px)";
+    setTimeout(() => {
+      if (centerReadingTooltip.style.opacity === "0") {
+        centerReadingTooltip.style.display = "none";
+      }
+    }, 120);
+  }
+
+  function positionCenterReadingTooltip(region) {
+    if (!region) return;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width > 0 ? rect.width / canvas.width : 1;
+    const scaleY = canvas.height > 0 ? rect.height / canvas.height : 1;
+    const anchorX = (region.x + region.w / 2) * scaleX;
+    const anchorY = region.y * scaleY;
+    centerReadingTooltip.style.left = `${anchorX}px`;
+    centerReadingTooltip.style.top = `${anchorY}px`;
+    centerReadingTooltip.style.transform = "translate(-50%, -100%)";
+  }
+
+  function showCenterReadingTooltip(chord, region) {
+    const pronunciationHtml = pronunciationDisplayHtml(getChordPronunciation(chord, currentKey));
+    if (!pronunciationHtml) return;
+
+    centerReadingTooltip.innerHTML = pronunciationHtml;
+    centerReadingTooltip.style.display = "block";
+    positionCenterReadingTooltip(region);
+    requestAnimationFrame(() => {
+      positionCenterReadingTooltip(region);
+      centerReadingTooltip.style.opacity = "1";
+      centerReadingTooltip.style.transform = "translate(-50%, -100%)";
+    });
+  }
+
+  function getCenterChordAt(mx, my) {
+    for (const region of centerChordHitRegions) {
+      if (mx >= region.x && mx <= region.x + region.w && my >= region.y && my <= region.y + region.h) {
+        return region;
+      }
+    }
+    return null;
+  }
+
+  function updateCenterReadingTooltipPosition() {
+    if (!currentHoveredCenterChord) return;
+    const region = centerChordHitRegions.find((r) => r.chord === currentHoveredCenterChord);
+    if (region) positionCenterReadingTooltip(region);
+  }
+
   function hideTooltip() {
     tooltip.style.opacity = "0";
     tooltip.style.transform = "translate(-50%, -100%) translateY(4px)";
@@ -916,21 +1033,42 @@ export function renderChordRing(container, options = {}) {
 
   function updateHoverState(mx, my) {
     let node = null;
+    let centerRegion = null;
     if (mx !== undefined && my !== undefined) {
-      node = getNodeAt(mx, my);
+      centerRegion = getCenterChordAt(mx, my);
+      if (!centerRegion) node = getNodeAt(mx, my);
     }
-    
-    if (node) {
+
+    if (centerRegion) {
+      currentHoveredNode = null;
+      currentHoveredCenterChord = centerRegion.chord;
+      clearTimeout(hideTimeout);
+      clearTimeout(centerReadingHideTimeout);
+      hideTooltip();
+      showCenterReadingTooltip(centerRegion.chord, centerRegion);
+      canvas.style.cursor = "help";
+    } else if (node) {
+      currentHoveredCenterChord = null;
+      clearTimeout(centerReadingHideTimeout);
+      hideCenterReadingTooltip();
       currentHoveredNode = node;
       clearTimeout(hideTimeout);
       showTooltip(node);
+      canvas.style.cursor = "pointer";
     } else {
+      canvas.style.cursor = isDragging ? "grabbing" : "default";
       currentHoveredNode = null;
-      // Delay hiding slightly to allow the mouse to move to the tooltip
+      currentHoveredCenterChord = null;
       clearTimeout(hideTimeout);
       hideTimeout = setTimeout(() => {
         if (!currentHoveredNode && !isMouseOverTooltip) {
           hideTooltip();
+        }
+      }, 150);
+      clearTimeout(centerReadingHideTimeout);
+      centerReadingHideTimeout = setTimeout(() => {
+        if (!currentHoveredCenterChord && !isMouseOverCenterReading) {
+          hideCenterReadingTooltip();
         }
       }, 150);
     }
@@ -942,7 +1080,9 @@ export function renderChordRing(container, options = {}) {
       updateHoverState(pos.x, pos.y);
     } else {
       clearTimeout(hideTimeout);
+      clearTimeout(centerReadingHideTimeout);
       hideTooltip();
+      hideCenterReadingTooltip();
     }
   });
 
@@ -1107,7 +1247,6 @@ export function renderChordRing(container, options = {}) {
       const transitions = byCount.get(count).sort();
       const details = document.createElement("details");
       details.className = "transition-group";
-      details.open = true;
 
       const summary = document.createElement("summary");
       summary.className = "transition-group-summary";

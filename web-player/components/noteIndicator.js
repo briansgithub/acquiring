@@ -1,9 +1,10 @@
+import { normalizeToneNotes, noteToMidi } from "../lib/chordVoicing.js";
 import { getScaleDegreeColor, NOTE_NAME_TO_INTEGER_NOTATION } from "../lib/scales.js";
 import { getChordSymbol, stripBorrowedTags, borrowedAbbrev } from "../lib/jsonToSymbol.js";
 import { romanNumeralToHtml } from "../lib/romanNumeralCanvas.js";
-import { getChordPronunciation, pronunciationDisplayHtml } from "../lib/romanNumeralSpeak.js";
 import { verifyScaleDegrees } from "../lib/scaleDegreeVerifier.js";
-import { CONTROL_DEFAULTS, formatArpSpeedLabel } from "./controls.js";
+import { CONTROL_DEFAULTS } from "./controls.js";
+import { ARP_SLIDER_MAX, ARP_SLIDER_MIN, formatArpCyclesLabel } from "../lib/timing.js";
 
 const VERIFY_DEGREES = typeof window !== "undefined"
   && new URLSearchParams(window.location.search).get("verifyDegrees") === "1";
@@ -60,8 +61,15 @@ function analyzeMelodyTension(melodyNote, chordNotes, chordRootSd) {
 export function renderNoteIndicator(container, options = {}) {
   container.innerHTML = `
     <h2 class="now-playing-title">Now Playing</h2>
+    <div id="now-playing-controls" class="now-playing-controls"></div>
+    <div class="now-playing-body">
     <div class="indicator-stack">
       <div class="indicator-melody-section">
+        <div class="indicator-volume-row melody-volume-row">
+          <label for="melody-volume" class="indicator-volume-label">Melody vol:</label>
+          <input type="range" id="melody-volume" min="-30" max="0" value="-16" step="1" class="volume-slider indicator-volume-slider">
+          <span id="melody-volume-label" class="indicator-volume-value">-16dB</span>
+        </div>
         <div id="melody-section" class="card indicator-card indicator-card--melody is-collapsed">
           <div class="melody-section-header">
             <div class="label indicator-card-label melody-section-title">Melody</div>
@@ -70,11 +78,6 @@ export function renderNoteIndicator(container, options = {}) {
           <div id="melody-content-wrapper" class="melody-content-wrapper" hidden>
             <div class="notes-list" id="melody-note-label"></div>
             <div class="notes-list" id="melody-scale-degree"></div>
-            <div class="indicator-volume-row">
-              <label for="melody-volume" class="indicator-volume-label">Volume:</label>
-              <input type="range" id="melody-volume" min="-30" max="0" value="-16" step="1" class="volume-slider indicator-volume-slider">
-              <span id="melody-volume-label" class="indicator-volume-value">-16dB</span>
-            </div>
             <div id="tension-badge" class="tension-badge">
               <div id="tension-title" class="tension-title">—</div>
               <div id="tension-desc" class="tension-desc">No active melody</div>
@@ -83,14 +86,15 @@ export function renderNoteIndicator(container, options = {}) {
         </div>
       </div>
       <div class="card indicator-card indicator-card--chord">
-        <div>
+        <div class="chord-header">
           <div class="label">Chord</div>
-          <label for="root-position-toggle" style="position:absolute;top:10px;right:10px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;color:#9ca3af;font-size:12px;">
-            <input type="checkbox" id="root-position-toggle" style="cursor:pointer;" />
+          <label for="root-position-toggle" class="chord-root-position-toggle">
+            <input type="checkbox" id="root-position-toggle" />
             Root position
           </label>
-          <div class="chord-root" id="chord-root" style="min-height:24px;"></div>
-          <div class="chord-pronunciation" id="chord-pronunciation" hidden></div>
+          <div class="chord-root-slot">
+            <div class="chord-root" id="chord-root"></div>
+          </div>
         </div>
         <div class="notes-list notes-list--chord" id="chord-notes" style="min-height:32px;margin-top:2px;"></div>
         <div class="notes-list notes-list--chord" id="chord-degrees-pills" style="min-height:32px;margin-top:4px;"></div>
@@ -100,19 +104,32 @@ export function renderNoteIndicator(container, options = {}) {
           <span id="chord-volume-label" class="indicator-volume-value">-9dB</span>
         </div>
         <div class="chord-arpeggio-controls">
-          <label for="arpeggiate-toggle" class="indicator-option-toggle chord-arpeggio-toggle">
-            <input type="checkbox" id="arpeggiate-toggle" />
-            Arpeggiate chords
-          </label>
+          <div class="chord-arpeggio-toggles" id="arp-toggles">
+            <label for="arpeggiate-toggle" class="indicator-option-toggle chord-arpeggio-toggle">
+              <input type="checkbox" id="arpeggiate-toggle" />
+              Arpeggiate chords
+            </label>
+            <label for="arp-fixed-speed-toggle" class="indicator-option-toggle chord-arpeggio-toggle arp-fixed-speed-toggle" id="arp-fixed-speed-label">
+              <input type="checkbox" id="arp-fixed-speed-toggle"${CONTROL_DEFAULTS.arpFixedSpeed ? " checked" : ""} />
+              Fixed speed
+            </label>
+            <label for="arp-unlock-tempo-toggle" class="indicator-option-toggle chord-arpeggio-toggle arp-unlock-tempo-toggle" id="arp-unlock-tempo-label">
+              <input type="checkbox" id="arp-unlock-tempo-toggle"${CONTROL_DEFAULTS.arpUnlockFromTempo ? " checked" : ""} />
+              Unlock from tempo
+            </label>
+          </div>
           <div class="arp-speed-row" id="arp-speed-row">
-            <label for="arp-speed" class="arp-speed-label">Arp speed:</label>
-            <input type="range" id="arp-speed" min="10" max="1000" value="100" step="10" class="volume-slider arp-speed-slider">
-            <span id="arp-speed-label" class="arp-speed-value">100ms</span>
+            <label for="arp-speed" class="arp-speed-label">Arp cycles/beat:</label>
+            <input type="range" id="arp-speed" min="${ARP_SLIDER_MIN}" max="${ARP_SLIDER_MAX}" value="${CONTROL_DEFAULTS.arpeggiationSlider}" step="1" class="volume-slider arp-speed-slider">
+            <span id="arp-speed-label" class="arp-speed-value">${formatArpCyclesLabel(CONTROL_DEFAULTS.arpeggiationSlider)}</span>
           </div>
         </div>
         <div class="chord-borrowed" id="chord-borrowed" style="position:absolute;top:34px;right:10px;font-style:italic;color:#9ca3af;font-size:0.9em;visibility:hidden;"></div>
       </div>
+      <div id="now-playing-tempo" class="now-playing-tempo"></div>
     </div>
+    </div>
+    <div id="now-playing-footer" class="now-playing-footer"></div>
   `;
 
   const melodyNoteLabelEl = container.querySelector("#melody-note-label");
@@ -128,7 +145,6 @@ export function renderNoteIndicator(container, options = {}) {
   const chordVolumeSlider = container.querySelector("#chord-volume");
   const chordVolumeLabel = container.querySelector("#chord-volume-label");
   const chordRootEl = container.querySelector("#chord-root");
-  const chordPronunciationEl = container.querySelector("#chord-pronunciation");
   const chordList = container.querySelector("#chord-notes");
   const chordDegreesPillsList = container.querySelector("#chord-degrees-pills");
   const chordBorrowedEl = container.querySelector("#chord-borrowed");
@@ -137,24 +153,42 @@ export function renderNoteIndicator(container, options = {}) {
   const arpSpeedSlider = container.querySelector("#arp-speed");
   const arpSpeedLabel = container.querySelector("#arp-speed-label");
   const arpSpeedRow = container.querySelector("#arp-speed-row");
+  const arpFixedSpeedToggle = container.querySelector("#arp-fixed-speed-toggle");
+  const arpFixedSpeedLabel = container.querySelector("#arp-fixed-speed-label");
+  const arpUnlockTempoToggle = container.querySelector("#arp-unlock-tempo-toggle");
+  const arpUnlockTempoLabel = container.querySelector("#arp-unlock-tempo-label");
 
-  function setArpSpeedRowEnabled(enabled) {
+  function setArpControlsEnabled(enabled) {
     arpSpeedRow.style.opacity = enabled ? "1" : "0.5";
     arpSpeedRow.style.pointerEvents = enabled ? "auto" : "none";
+    arpFixedSpeedToggle.disabled = !enabled;
+    arpFixedSpeedLabel.style.opacity = enabled ? "1" : "0.5";
+    arpFixedSpeedLabel.style.pointerEvents = enabled ? "auto" : "none";
+    arpUnlockTempoToggle.disabled = !enabled;
+    arpUnlockTempoLabel.style.opacity = enabled ? "1" : "0.5";
+    arpUnlockTempoLabel.style.pointerEvents = enabled ? "auto" : "none";
   }
 
-  setArpSpeedRowEnabled(arpToggle.checked);
+  setArpControlsEnabled(arpToggle.checked);
 
   arpToggle.addEventListener("change", (e) => {
     const isChecked = e.target.checked;
-    setArpSpeedRowEnabled(isChecked);
+    setArpControlsEnabled(isChecked);
     options.onArpeggiateToggle?.(isChecked);
   });
 
+  arpFixedSpeedToggle.addEventListener("change", (e) => {
+    options.onArpFixedSpeedChange?.(e.target.checked);
+  });
+
+  arpUnlockTempoToggle.addEventListener("change", (e) => {
+    options.onArpUnlockFromTempoChange?.(e.target.checked);
+  });
+
   arpSpeedSlider.addEventListener("input", (e) => {
-    const ms = Number(e.target.value);
-    arpSpeedLabel.textContent = formatArpSpeedLabel(ms);
-    options.onArpeggiateSpeedChange?.(ms);
+    const sliderIndex = Number(e.target.value);
+    arpSpeedLabel.textContent = formatArpCyclesLabel(sliderIndex);
+    options.onArpeggiateSliderChange?.(sliderIndex);
   });
 
   function setMelodyExpanded(expanded) {
@@ -167,8 +201,15 @@ export function renderNoteIndicator(container, options = {}) {
     melodyCollapseToggle.title = expanded ? "Collapse melody" : "Expand melody";
   }
 
-  melodyCollapseToggle.addEventListener("click", () => {
+  melodyCollapseToggle.addEventListener("click", (e) => {
+    e.stopPropagation();
     setMelodyExpanded(melodySection.classList.contains("is-collapsed"));
+  });
+
+  melodySection.addEventListener("click", () => {
+    if (melodySection.classList.contains("is-collapsed")) {
+      setMelodyExpanded(true);
+    }
   });
 
   setMelodyExpanded(false);
@@ -386,15 +427,35 @@ export function renderNoteIndicator(container, options = {}) {
         chordDegreesPillsList.appendChild(pill);
       });
     }
+
+    if (activeHighlightMidi != null) {
+      applyHighlightToMidi(activeHighlightMidi);
+    }
   }
 
   let highlightClearTimer = null;
+  let activeHighlightMidi = null;
+
+  function applyHighlightToMidi(noteMidi) {
+    const target = Array.from(chordList.querySelectorAll(".pill")).find(
+      (p) => p.textContent && noteToMidi(p.textContent) === noteMidi
+    );
+    if (!target) return false;
+    target.classList.add("highlighted");
+    const noteIndex = Array.from(chordList.querySelectorAll(".pill")).indexOf(target);
+    const degreePills = chordDegreesPillsList.querySelectorAll(".pill");
+    if (degreePills[noteIndex]) {
+      degreePills[noteIndex].classList.add("highlighted");
+    }
+    return true;
+  }
 
   function clearNoteHighlight() {
     if (highlightClearTimer) {
       clearTimeout(highlightClearTimer);
       highlightClearTimer = null;
     }
+    activeHighlightMidi = null;
     const allPills = [...chordList.querySelectorAll(".pill"), ...chordDegreesPillsList.querySelectorAll(".pill")];
     allPills.forEach((p) => p.classList.remove("highlighted"));
   }
@@ -405,8 +466,9 @@ export function renderNoteIndicator(container, options = {}) {
       updateMelodyDisplay();
     },
     updateChord(notes, root, chordDegrees, borrowed, key, chordObj = null) {
+      const displayNotes = notes?.length ? normalizeToneNotes(notes) : notes;
       // Store current chord data
-      currentChordData = { notes, chordDegrees, root, borrowed, key, chordObj };
+      currentChordData = { notes: displayNotes, chordDegrees, root, borrowed, key, chordObj };
       
       if (key) {
         currentKey = key;
@@ -414,28 +476,18 @@ export function renderNoteIndicator(container, options = {}) {
 
       // Update chord symbol (always use roman numeral) with "Chord: " prefix
       if (chordObj?.isRest || !notes?.length) {
-        // Show "Chord: Rest" for rests or empty chords
         chordRootEl.textContent = "Chord: Rest";
         chordRootEl.style.visibility = "visible";
-        chordPronunciationEl.innerHTML = "";
-        chordPronunciationEl.hidden = true;
       } else if (chordObj && key) {
         const symbol = stripBorrowedTags(getChordSymbol(chordObj, key));
         chordRootEl.innerHTML = `Chord: <span class="chord-roman-line">${romanNumeralToHtml(symbol)}</span>`;
         chordRootEl.style.visibility = "visible";
-        const pronunciation = getChordPronunciation(chordObj, key);
-        chordPronunciationEl.innerHTML = pronunciationDisplayHtml(pronunciation);
-        chordPronunciationEl.hidden = !pronunciation.analytic;
       } else if (root) {
         chordRootEl.textContent = `Chord: ${root.toString()}`;
         chordRootEl.style.visibility = "visible";
-        chordPronunciationEl.innerHTML = "";
-        chordPronunciationEl.hidden = true;
       } else {
         chordRootEl.textContent = "";
         chordRootEl.style.visibility = "hidden";
-        chordPronunciationEl.innerHTML = "";
-        chordPronunciationEl.hidden = true;
       }
 
       // Update notes display
@@ -467,15 +519,8 @@ export function renderNoteIndicator(container, options = {}) {
     highlightNote(note, clearAfterMs = null) {
       clearNoteHighlight();
 
-      const target = Array.from(chordList.querySelectorAll(".pill")).find((p) => p.textContent === note);
-      if (target) {
-        target.classList.add("highlighted");
-        const noteIndex = Array.from(chordList.querySelectorAll(".pill")).indexOf(target);
-        const degreePills = chordDegreesPillsList.querySelectorAll(".pill");
-        if (degreePills[noteIndex]) {
-          degreePills[noteIndex].classList.add("highlighted");
-        }
-      }
+      activeHighlightMidi = noteToMidi(note);
+      applyHighlightToMidi(activeHighlightMidi);
 
       if (clearAfterMs != null && clearAfterMs > 0) {
         highlightClearTimer = setTimeout(clearNoteHighlight, clearAfterMs);
@@ -514,16 +559,24 @@ export function renderNoteIndicator(container, options = {}) {
     },
     setArpeggiated(enabled) {
       arpToggle.checked = !!enabled;
-      setArpSpeedRowEnabled(arpToggle.checked);
+      setArpControlsEnabled(arpToggle.checked);
     },
-    setArpeggiationSpeed(ms) {
-      arpSpeedSlider.value = ms;
-      arpSpeedLabel.textContent = formatArpSpeedLabel(ms);
+    setArpFixedSpeedChecked(checked) {
+      arpFixedSpeedToggle.checked = !!checked;
+    },
+    setArpUnlockFromTempoChecked(checked) {
+      arpUnlockTempoToggle.checked = !!checked;
+    },
+    setArpeggiationSlider(sliderIndex) {
+      arpSpeedSlider.value = sliderIndex;
+      arpSpeedLabel.textContent = formatArpCyclesLabel(sliderIndex);
     },
     resetArpToDefaults() {
       const d = CONTROL_DEFAULTS;
       this.setArpeggiated(d.arpeggiated);
-      this.setArpeggiationSpeed(d.arpeggiationSpeed);
+      this.setArpeggiationSlider(d.arpeggiationSlider);
+      this.setArpFixedSpeedChecked(d.arpFixedSpeed);
+      this.setArpUnlockFromTempoChecked(d.arpUnlockFromTempo);
     },
   };
 }

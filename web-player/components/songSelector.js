@@ -465,6 +465,7 @@ export function renderSongSelector(container, options = {}) {
 
   // ---- Song detail view ----
   async function loadSongIntoPlayer(slug, { auto = false } = {}) {
+    options.onLoadStart?.();
     const loadBtn = body.querySelector("#sel-load-btn");
     const statusEl = body.querySelector("#pipeline-status");
     if (loadBtn) {
@@ -497,7 +498,10 @@ export function renderSongSelector(container, options = {}) {
     }
   }
 
-  async function showSongDetail(slug) {
+  async function showSongDetail(slug, { userNavigation = true } = {}) {
+    if (userNavigation) {
+      options.onSongPageOpen?.();
+    }
     showSongNav({ activeSlug: slug, showBack: false });
     body.innerHTML = `<div class="sel-hint">Loading song…</div>`;
     let data;
@@ -524,7 +528,7 @@ export function renderSongSelector(container, options = {}) {
       esc,
       loadTooltip,
       reloadIndex: () => loadIndex(),
-      onJobDone: (jobSlug) => showSongDetail(jobSlug),
+      onJobDone: (jobSlug) => showSongDetail(jobSlug, { userNavigation: false }),
     });
 
     const loadBtn = body.querySelector("#sel-load-btn");

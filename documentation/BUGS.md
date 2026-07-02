@@ -68,3 +68,75 @@ User confirmed fix after hard refresh. Pre-fix logs (session `224523`) showed hy
 - `web-player/audio/engine.js` — `arpeggioSynth`, `scheduleChords()`
 - `web-player/player.js` — `createChordEvents()`, arpeggio branch
 - `documentation/MEMORY.md` — synth roles and API notes
+
+---
+
+## BUG-002: Stuck chord notes at section end (All Star Verse / outros)
+
+| Field | Detail |
+|-------|--------|
+| **Date reported** | 2026-07-01 |
+| **Date resolved** | 2026-07-01 |
+| **Severity** | High — chord tones sustain indefinitely, especially at section end |
+| **Affected area** | `web-player/audio/engine.js`, `web-player/player.js`, `web-player/lib/chordVoicing.js` |
+| **Repro** | Play **Smash Mouth — All Star**, especially **Verse** through beats 36–37 or **Outro** to the end. Final chord(s) hang and keep sounding after they should release. Also reproducible on other sections with fast back-to-back chords or long final holds. |
+| **Status** | **Resolved** |
+| **Commit** | `77a85d5` |
+
+### Symptom
+
+During block-chord playback (arpeggio off), one or more chord notes would get stuck — particularly near the end of a section. Reported on All Star Verse (last chords) and outros with long final chord durations.
+
+### Root cause
+
+Four interacting problems (confirmed with runtime logs, session `ac401b`):
+
+1. **Invalid chord note spellings for Tone.js** — `chordInterpreter` sometimes outputs names Tone cannot attack, e.g. `E#3, G##3, B#4` (All Star Verse beat 36.5, exotic `borrowed` scale). Logs showed `chord-release` for those notes but **no matching `chord-attack`**; the previous chord (`E3, G#3, B3` at beat 36) kept sustaining.
+
+2. **Per-note `triggerRelease` missed PolySynth voices** — `PolySynth.triggerRelease(specificNotes)` could fail to silence voices when spellings didn't match attacked notes or when `activeChordNotes` tracking drifted.
+
+3. **Section-end stop raced the final release** — `songLength` used `(beat - 1) + duration`, one beat short of the true end. `totalTicks` equaled the last chord release tick exactly, so `engine.stop()` on `ratio >= 1` cancelled parts at the same moment as the final release (worst on Outro's 8-beat final chord).
+
+4. **Same-tick attack/release collisions in `Tone.Part`** — Adjacent chords at fractional beats (e.g. beat 36 release and beat 36.5 attack on tick 6816) could drop the attack event when scheduled as object-array events.
+
+### What was tried
+
+| Attempt | Result | Why |
+|---------|--------|-----|
+| **`melodySynth.triggerRelease(event.name, time)`** | **Broke melody** | Invalid for monophonic `Tone.Synth` — zero `melody-release` events in logs; melody stopped playing. |
+| **`releaseAll()` before every chord attack** | **Regressed** | Killed voice state aggressively; long held notes, timeline/progress issues. |
+| **`songLength` via `beat + duration` + stop on `currentTicks > totalTicks`** | **Partial** | Fixed progress freeze but stop timing still wrong without `lastReleaseTick`. |
+| **`normalizeToneNotes()` + `releaseAll` on chord release + `lastReleaseTick` + tuple `Tone.Part` events + +1 tick attack nudge** | **Fixed** | Targeted fix addressing all four root causes. |
+
+### Final solution
+
+**Files changed:** `web-player/audio/engine.js`, `web-player/player.js`, `web-player/lib/chordVoicing.js`
+
+1. **`normalizeToneNotes()`** — MIDI roundtrip in `chordVoicing.js` converts exotic spellings (e.g. `E#3, G##3, B#4` → Tone-safe names) before scheduling in `createChordEvents()`.
+
+2. **Chord release uses `releaseAll(time)`** — `scheduleChords()` calls `chordSynth.releaseAll(time)` on release events instead of per-note `triggerRelease`, then clears `activeChordNotes`.
+
+3. **`lastReleaseTick`** — Derived from max scheduled release event tick; drives progress bar and section-end detection. Stop waits until `currentTicks > lastReleaseTick`, calls `releaseAllNotes()` first, then `stop()`.
+
+4. **`songLength` correction** — Section length uses `beat + duration` (with beat-0 → 1 normalization), not `(beat - 1) + duration`.
+
+5. **Same-tick collision handling** — Chord attacks sharing a tick with any release are nudged +1 tick after sort. `Tone.Part` events passed as `[time, event]` tuples for reliable same-tick scheduling.
+
+### Verification
+
+User confirmed fix after hard refresh. Pre-fix logs showed missing attack for `E#3,G##3,B#4` at Verse end and section-end stop at `currentTicks` equal to or past `lastReleaseTick` with `activeChordCount: 0` but audible sustain. Post-fix: Verse and Outro complete cleanly; no stuck notes at section end.
+
+### Lessons / guardrails
+
+- Normalize chord note names to Tone-compatible spellings **before** `triggerAttack` / `triggerRelease`.
+- Do **not** use `triggerRelease(noteName, time)` on monophonic `Tone.Synth`.
+- Section-end stop must be keyed to **last scheduled release tick**, not `songLength * 192` alone.
+- Prefer `releaseAll()` on chord release over per-note release when PolySynth voice tracking is unreliable.
+- When debugging audio, remove instrumentation after verification; avoid speculative `releaseAll()` on every attack.
+
+### References
+
+- `web-player/lib/chordVoicing.js` — `normalizeToneNotes()`, `midiToToneNote()`
+- `web-player/audio/engine.js` — `scheduleChords()`, tuple `partEvents`, `releaseAll` on release
+- `web-player/player.js` — `getLastReleaseTick()`, `createChordEvents()`, `setupProgressTracking()`
+- `documentation/BUGS.md` — BUG-001 (related arpeggio / `triggerRelease` lessons)
