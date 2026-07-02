@@ -49,20 +49,30 @@ export function renderSongSelector(container, options = {}) {
       <h2 class="pane-panel-title">Song Selector</h2>
     </div>
     <div id="sel-song-nav" class="sel-song-nav" hidden>
-      <div class="sel-song-nav-top">
-        <div class="sel-song-nav-sort-wrap">
-          <label class="sel-label sel-sort-label" for="sel-nav-playable-sort">Sort by:</label>
-          <select id="sel-nav-playable-sort" class="sel-select sel-playable-sort">
-            <option value="complexity" selected>Complexity</option>
-            <option value="alphabetical">Alphabetically</option>
-            <option value="artist">Artist</option>
+      <div id="sel-song-nav-browse">
+        <div class="sel-song-nav-top">
+          <div class="sel-song-nav-sort-wrap">
+            <label class="sel-label sel-sort-label" for="sel-nav-playable-sort">Sort by:</label>
+            <select id="sel-nav-playable-sort" class="sel-select sel-playable-sort">
+              <option value="complexity" selected>Complexity</option>
+              <option value="alphabetical">Alphabetically</option>
+              <option value="artist">Artist</option>
+            </select>
+          </div>
+        </div>
+        <div class="sel-song-nav-picker">
+          <select id="sel-nav-playable-select" class="sel-select sel-playable-select" aria-label="Playable songs">
+            <option value="">Select a song…</option>
           </select>
         </div>
       </div>
-      <div class="sel-song-nav-picker">
-        <select id="sel-nav-playable-select" class="sel-select sel-playable-select" aria-label="Playable songs">
-          <option value="">Select a song…</option>
-        </select>
+      <div id="sel-song-nav-search" class="sel-song-nav-picker" hidden>
+        <label class="sel-label" for="sel-nav-song-input">Search by song</label>
+        <div class="autocomplete">
+          <input id="sel-nav-song-input" class="sel-input" type="text"
+            autocomplete="off" spellcheck="false" />
+          <div id="sel-nav-song-drop" class="autocomplete-drop" hidden></div>
+        </div>
       </div>
     </div>
     <div id="sel-body" class="selector-body"></div>
@@ -81,8 +91,12 @@ export function renderSongSelector(container, options = {}) {
   const body = container.querySelector("#sel-body");
   const songNav = container.querySelector("#sel-song-nav");
   const backBtn = container.querySelector("#sel-back");
+  const songNavBrowse = container.querySelector("#sel-song-nav-browse");
+  const songNavSearch = container.querySelector("#sel-song-nav-search");
   const navPlayableSelect = container.querySelector("#sel-nav-playable-select");
   const navPlayableSort = container.querySelector("#sel-nav-playable-sort");
+  const navSongInput = container.querySelector("#sel-nav-song-input");
+  const navSongDrop = container.querySelector("#sel-nav-song-drop");
   const urlFooter = container.querySelector("#sel-url-footer");
   const urlInput = container.querySelector("#sel-url-input");
   const urlAddBtn = container.querySelector("#sel-url-add");
@@ -100,12 +114,16 @@ export function renderSongSelector(container, options = {}) {
 
   backBtn.addEventListener("click", () => showSearch());
 
-  function showSongNav({ activeSlug = null, showBack = false } = {}) {
+  function showSongNav({ activeSlug = null, showBack = false, mode = "browse" } = {}) {
     if (!songNav) return;
     songNav.hidden = false;
     if (navPlayableSort) navPlayableSort.value = playableSortMode;
     if (backBtn) backBtn.hidden = !showBack;
-    refreshPlayableDropdown(activeSlug);
+    if (songNavBrowse) songNavBrowse.hidden = mode !== "browse";
+    if (songNavSearch) songNavSearch.hidden = mode !== "search";
+    if (mode === "browse") {
+      refreshPlayableDropdown(activeSlug);
+    }
   }
 
   navPlayableSort?.addEventListener("change", () => {
@@ -118,6 +136,10 @@ export function renderSongSelector(container, options = {}) {
     if (!slug) return;
     showSongDetail(slug);
   });
+
+  if (navSongInput && navSongDrop) {
+    wireSongInput(navSongInput, navSongDrop);
+  }
 
   async function loadIndex() {
     try {
@@ -268,7 +290,7 @@ export function renderSongSelector(container, options = {}) {
   // ---- Search view ----
   function showSearch() {
     setUrlFooterVisible(true);
-    showSongNav({ showBack: false });
+    showSongNav({ showBack: false, mode: "browse" });
     body.innerHTML = `
       <div class="sel-field">
         <label class="sel-label" for="sel-song-input">Search by song</label>
@@ -452,7 +474,7 @@ export function renderSongSelector(container, options = {}) {
   // ---- Artist view ----
   function showArtist(artistName) {
     setUrlFooterVisible(true);
-    showSongNav({ showBack: true });
+    showSongNav({ showBack: true, mode: "browse" });
     const list = songs
       .filter((s) => (s.artist || "") === artistName)
       .sort((a, b) => (a.title || "").localeCompare(b.title || ""));
@@ -516,7 +538,7 @@ export function renderSongSelector(container, options = {}) {
       options.onSongPageOpen?.();
     }
     setUrlFooterVisible(false);
-    showSongNav({ activeSlug: slug, showBack: false });
+    showSongNav({ showBack: false, mode: "search" });
     body.innerHTML = `<div class="sel-hint">Loading song…</div>`;
     let data;
     try {
@@ -536,7 +558,7 @@ export function renderSongSelector(container, options = {}) {
     const missing = complete ? (s.loadGateMissing || []) : pipelineMissing(flags);
 
     body.innerHTML = buildSongDetailHtml(s, sections, flags, canLoad, missing, esc, loadTooltip);
-    showSongNav({ activeSlug: slug, showBack: true });
+    showSongNav({ showBack: true, mode: "search" });
 
     wirePipelineButtons(body, slug, flags, {
       esc,

@@ -1414,6 +1414,10 @@ body {
   flex-shrink: 0;
 }
 
+.sel-song-nav[hidden] {
+  display: none;
+}
+
 .sel-song-nav-top {
   display: flex;
   align-items: center;
@@ -1447,6 +1451,12 @@ body {
   flex-direction: column;
   gap: 4px;
   width: 100%;
+}
+
+#sel-song-nav-browse[hidden],
+#sel-song-nav-search[hidden],
+.sel-song-nav-picker[hidden] {
+  display: none !important;
 }
 
 .sel-back {
@@ -1923,6 +1933,10 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.sel-url-footer[hidden] {
+  display: none;
 }
 
 .sel-url-row {
