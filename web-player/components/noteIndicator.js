@@ -1,6 +1,6 @@
 import { normalizeToneNotes, noteToMidi } from "../lib/chordVoicing.js";
 import { getScaleDegreeColor, NOTE_NAME_TO_INTEGER_NOTATION } from "../lib/scales.js";
-import { getChordSymbol, stripBorrowedTags, borrowedAbbrev } from "../lib/jsonToSymbol.js";
+import { getChordSymbol, getChordLetterName, stripBorrowedTags, borrowedAbbrev } from "../lib/jsonToSymbol.js";
 import { romanNumeralToHtml } from "../lib/romanNumeralCanvas.js";
 import { verifyScaleDegrees } from "../lib/scaleDegreeVerifier.js";
 import { CONTROL_DEFAULTS } from "./controls.js";
@@ -105,15 +105,18 @@ export function renderNoteIndicator(container, options = {}) {
         </div>
         <div class="chord-arpeggio-controls">
           <div class="chord-arpeggio-toggles" id="arp-toggles">
-            <label for="arpeggiate-toggle" class="indicator-option-toggle chord-arpeggio-toggle">
+            <label for="arpeggiate-toggle" class="indicator-option-toggle chord-arpeggio-toggle"
+              title="Play chord tones one at a time in sequence instead of all at once.">
               <input type="checkbox" id="arpeggiate-toggle" />
               Arpeggiate chords
             </label>
-            <label for="arp-fixed-speed-toggle" class="indicator-option-toggle chord-arpeggio-toggle arp-fixed-speed-toggle" id="arp-fixed-speed-label">
+            <label for="arp-fixed-speed-toggle" class="indicator-option-toggle chord-arpeggio-toggle arp-fixed-speed-toggle" id="arp-fixed-speed-label"
+              title="Same interval between arp notes for every chord. Off: cycles/beat is divided across all chord tones, so larger chords arpeggiate faster.">
               <input type="checkbox" id="arp-fixed-speed-toggle"${CONTROL_DEFAULTS.arpFixedSpeed ? " checked" : ""} />
               Fixed speed
             </label>
-            <label for="arp-unlock-tempo-toggle" class="indicator-option-toggle chord-arpeggio-toggle arp-unlock-tempo-toggle" id="arp-unlock-tempo-label">
+            <label for="arp-unlock-tempo-toggle" class="indicator-option-toggle chord-arpeggio-toggle arp-unlock-tempo-toggle" id="arp-unlock-tempo-label"
+              title="Keep arpeggio timing at the song's original BPM when the tempo slider changes. Off: arp speed follows the tempo slider.">
               <input type="checkbox" id="arp-unlock-tempo-toggle"${CONTROL_DEFAULTS.arpUnlockFromTempo ? " checked" : ""} />
               Unlock from tempo
             </label>
@@ -231,6 +234,7 @@ export function renderNoteIndicator(container, options = {}) {
   });
 
   let currentKey = options.key || null;
+  let useRomanNumerals = options.labelMode !== false;
 
   // Store current state for redrawing
   let currentMelodyData = { absoluteLabel: null, relativeLabel: null };
@@ -325,6 +329,35 @@ export function renderNoteIndicator(container, options = {}) {
       tensionEl.style.border = "1px solid rgba(255, 255, 255, 0.05)";
       tensionTitleEl.textContent = "—";
       tensionDescEl.textContent = "No active melody";
+    }
+  }
+
+  function updateChordLabelDisplay() {
+    const { notes, root, key, chordObj } = currentChordData;
+    const effKey = key || currentKey;
+
+    if (chordObj?.isRest || !notes?.length) {
+      chordRootEl.textContent = "Chord: Rest";
+      chordRootEl.style.visibility = "visible";
+      return;
+    }
+
+    if (chordObj && effKey) {
+      const symbol = useRomanNumerals
+        ? stripBorrowedTags(getChordSymbol(chordObj, effKey))
+        : getChordLetterName(chordObj, effKey);
+      const labelHtml = useRomanNumerals ? romanNumeralToHtml(symbol) : symbol;
+      chordRootEl.innerHTML = `Chord: <span class="chord-roman-line">${labelHtml}</span>`;
+      chordRootEl.style.visibility = "visible";
+      return;
+    }
+
+    if (root) {
+      chordRootEl.textContent = `Chord: ${root.toString()}`;
+      chordRootEl.style.visibility = "visible";
+    } else {
+      chordRootEl.textContent = "";
+      chordRootEl.style.visibility = "hidden";
     }
   }
   
@@ -474,21 +507,7 @@ export function renderNoteIndicator(container, options = {}) {
         currentKey = key;
       }
 
-      // Update chord symbol (always use roman numeral) with "Chord: " prefix
-      if (chordObj?.isRest || !notes?.length) {
-        chordRootEl.textContent = "Chord: Rest";
-        chordRootEl.style.visibility = "visible";
-      } else if (chordObj && key) {
-        const symbol = stripBorrowedTags(getChordSymbol(chordObj, key));
-        chordRootEl.innerHTML = `Chord: <span class="chord-roman-line">${romanNumeralToHtml(symbol)}</span>`;
-        chordRootEl.style.visibility = "visible";
-      } else if (root) {
-        chordRootEl.textContent = `Chord: ${root.toString()}`;
-        chordRootEl.style.visibility = "visible";
-      } else {
-        chordRootEl.textContent = "";
-        chordRootEl.style.visibility = "hidden";
-      }
+      updateChordLabelDisplay();
 
       // Update notes display
       updateChordNotesDisplay();
@@ -529,6 +548,10 @@ export function renderNoteIndicator(container, options = {}) {
     clearNoteHighlight,
     setKey(key) {
       currentKey = key || null;
+    },
+    setLabelMode(useRoman) {
+      useRomanNumerals = useRoman;
+      updateChordLabelDisplay();
     },
     reset() {
       clearNoteHighlight();

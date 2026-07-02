@@ -7,6 +7,9 @@ const DEFAULT_FONT =
 
 const SUPER_SCALE = 0.68;
 const SUB_SCALE = 0.58;
+const FIGURED_DIGIT_SCALE = 0.58;
+const DIM_GLYPH_CHAR = '○';
+const DIM_GLYPH_SCALE = 0.46;
 const SUFFIX_SCALE = 0.72;
 
 /** Legacy unicode super/sub digits → plain ASCII (for cached symbols). */
@@ -26,7 +29,7 @@ function readBase(symbol, start) {
   while (i < symbol.length && ROMAN_LETTERS.test(symbol[i])) {
     text += symbol[i++];
   }
-  while (i < symbol.length && (symbol[i] === '°' || symbol[i] === 'ø' || symbol[i] === '+')) {
+  while (i < symbol.length && symbol[i] === '+') {
     text += symbol[i++];
   }
   return { text, next: i };
@@ -116,18 +119,27 @@ function stackSpan(parts, i) {
 function measureStack(ctx, parts, i, fontSize) {
   const span = stackSpan(parts, i);
   if (span === 2) {
-    ctx.font = partFont(parts[i], fontSize);
+    const q = splitQualitySuper(parts[i].text);
+    if (q) {
+      const glyphW = measureQualityGlyph(ctx, q.glyph, fontSize);
+      ctx.font = figuredDigitFont(fontSize);
+      const superW = ctx.measureText(q.digit).width;
+      ctx.font = figuredDigitFont(fontSize);
+      const subW = ctx.measureText(parts[i + 1].text).width;
+      return glyphW + Math.max(superW, subW);
+    }
+    ctx.font = figuredDigitFont(fontSize);
     const superW = ctx.measureText(parts[i].text).width;
-    ctx.font = partFont(parts[i + 1], fontSize);
+    ctx.font = figuredDigitFont(fontSize);
     const subW = ctx.measureText(parts[i + 1].text).width;
     return Math.max(superW, subW);
   }
   if (span === 3) {
-    ctx.font = partFont(parts[i], fontSize);
+    ctx.font = figuredDigitFont(fontSize);
     let topW = ctx.measureText(parts[i].text).width;
     ctx.font = partFont(parts[i + 1], fontSize);
     topW += ctx.measureText(parts[i + 1].text).width;
-    ctx.font = partFont(parts[i + 2], fontSize);
+    ctx.font = figuredDigitFont(fontSize);
     const subW = ctx.measureText(parts[i + 2].text).width;
     return Math.max(topW, subW);
   }
@@ -137,25 +149,39 @@ function measureStack(ctx, parts, i, fontSize) {
 function drawStack(ctx, parts, i, cursor, centerY, fontSize) {
   const span = stackSpan(parts, i);
   if (span === 2) {
+    const q = splitQualitySuper(parts[i].text);
+    if (q) {
+      const width = measureStack(ctx, parts, i, fontSize);
+      ctx.textBaseline = 'middle';
+      const superY = partYOffset({ kind: 'super' }, fontSize, centerY);
+      const subY = partYOffset({ kind: 'sub' }, fontSize, centerY);
+      const glyphW = drawQualityGlyph(ctx, q.glyph, cursor, superY, fontSize);
+      const digitX = cursor + glyphW;
+      ctx.font = figuredDigitFont(fontSize);
+      ctx.fillText(q.digit, digitX, superY);
+      ctx.fillText(parts[i + 1].text, digitX, subY);
+      return width;
+    }
     const width = measureStack(ctx, parts, i, fontSize);
-    ctx.font = partFont(parts[i], fontSize);
     ctx.textBaseline = 'middle';
-    ctx.fillText(parts[i].text, cursor, partYOffset(parts[i], fontSize, centerY));
-    ctx.font = partFont(parts[i + 1], fontSize);
-    ctx.fillText(parts[i + 1].text, cursor, partYOffset(parts[i + 1], fontSize, centerY));
+    const superY = partYOffset({ kind: 'super' }, fontSize, centerY);
+    const subY = partYOffset({ kind: 'sub' }, fontSize, centerY);
+    ctx.font = figuredDigitFont(fontSize);
+    ctx.fillText(parts[i].text, cursor, superY);
+    ctx.fillText(parts[i + 1].text, cursor, subY);
     return width;
   }
   if (span === 3) {
     const width = measureStack(ctx, parts, i, fontSize);
     let topX = cursor;
-    ctx.font = partFont(parts[i], fontSize);
     ctx.textBaseline = 'middle';
-    ctx.fillText(parts[i].text, topX, partYOffset(parts[i], fontSize, centerY));
+    ctx.font = figuredDigitFont(fontSize);
+    ctx.fillText(parts[i].text, topX, partYOffset({ kind: 'super' }, fontSize, centerY));
     topX += ctx.measureText(parts[i].text).width;
     ctx.font = partFont(parts[i + 1], fontSize);
     ctx.fillText(parts[i + 1].text, topX, partYOffset(parts[i + 1], fontSize, centerY));
-    ctx.font = partFont(parts[i + 2], fontSize);
-    ctx.fillText(parts[i + 2].text, cursor, partYOffset(parts[i + 2], fontSize, centerY));
+    ctx.font = figuredDigitFont(fontSize);
+    ctx.fillText(parts[i + 2].text, cursor, partYOffset({ kind: 'sub' }, fontSize, centerY));
     return width;
   }
   return 0;
@@ -182,6 +208,110 @@ function digitParts(digits) {
   return [];
 }
 
+function pushQualityGlyphParts(parts, glyph, digits) {
+  const pair = FIGURED_BASS[digits];
+  if (pair) {
+    parts.push({ kind: 'super', text: glyph + pair[0] });
+    parts.push({ kind: 'sub', text: pair[1] });
+    return;
+  }
+  if (digits) parts.push({ kind: 'super', text: glyph + digits });
+  else parts.push({ kind: 'super', text: glyph });
+}
+
+/** Split leading °/ø from a figured-bass superscript (e.g. ø4 → { glyph, digit }). */
+function splitQualitySuper(text) {
+  const m = text.match(/^([°ø])(.*)$/);
+  if (!m) return null;
+  return { glyph: m[1], digit: m[2] };
+}
+
+function qualityGlyphHtml(glyph) {
+  if (glyph === '°') {
+    return `<span class="roman-quality roman-quality--dim">${DIM_GLYPH_CHAR}</span>`;
+  }
+  return `<span class="roman-quality">${glyph}</span>`;
+}
+
+function stackHtml(superDigit, subDigit) {
+  return `<span class="roman-stack"><sup class="roman-figured-digit">${superDigit}</sup><sub class="roman-figured-digit">${subDigit}</sub></span>`;
+}
+
+function qualityStackHtml(glyph, superDigit, subDigit) {
+  return `<span class="roman-stack roman-stack--quality">${qualityGlyphHtml(glyph)}<sup class="roman-figured-digit">${superDigit}</sup><sub class="roman-figured-digit">${subDigit}</sub></span>`;
+}
+
+function renderSuperHtml(text) {
+  if (text === '°' || text === 'ø') {
+    return `<sup class="roman-quality-inline">${qualityGlyphHtml(text)}</sup>`;
+  }
+  const q = splitQualitySuper(text);
+  if (q) {
+    return `<sup class="roman-quality-inline">${qualityGlyphHtml(q.glyph)}<span class="roman-figured-digit">${q.digit}</span></sup>`;
+  }
+  return `<sup>${text}</sup>`;
+}
+
+function figuredDigitFont(fontSize) {
+  return `bold ${fontSize * FIGURED_DIGIT_SCALE}px ${DEFAULT_FONT}`;
+}
+
+function dimGlyphFont(fontSize) {
+  return `bold ${fontSize * DIM_GLYPH_SCALE}px ${DEFAULT_FONT}`;
+}
+
+function measureQualityGlyph(ctx, glyph, fontSize) {
+  if (glyph === '°') {
+    ctx.font = dimGlyphFont(fontSize);
+    return ctx.measureText(DIM_GLYPH_CHAR).width;
+  }
+  ctx.font = partFont({ kind: 'super', text: glyph }, fontSize);
+  return ctx.measureText(glyph).width;
+}
+
+function drawQualityGlyph(ctx, glyph, x, y, fontSize) {
+  if (glyph === '°') {
+    ctx.font = dimGlyphFont(fontSize);
+    ctx.fillText(DIM_GLYPH_CHAR, x, y);
+    return ctx.measureText(DIM_GLYPH_CHAR).width;
+  }
+  ctx.font = partFont({ kind: 'super', text: glyph }, fontSize);
+  ctx.fillText(glyph, x, y);
+  return ctx.measureText(glyph).width;
+}
+
+function measureQualitySuperText(ctx, text, fontSize) {
+  if (text === '°' || text === 'ø') return measureQualityGlyph(ctx, text, fontSize);
+  const q = splitQualitySuper(text);
+  if (!q) {
+    ctx.font = partFont({ kind: 'super', text }, fontSize);
+    return ctx.measureText(text).width;
+  }
+  const glyphW = measureQualityGlyph(ctx, q.glyph, fontSize);
+  if (!q.digit) return glyphW;
+  ctx.font = figuredDigitFont(fontSize);
+  return glyphW + ctx.measureText(q.digit).width;
+}
+
+function drawQualitySuperText(ctx, text, cursor, centerY, fontSize) {
+  if (text === '°' || text === 'ø') {
+    const y = partYOffset({ kind: 'super' }, fontSize, centerY);
+    return drawQualityGlyph(ctx, text, cursor, y, fontSize);
+  }
+  const q = splitQualitySuper(text);
+  if (!q) {
+    ctx.font = partFont({ kind: 'super', text }, fontSize);
+    ctx.fillText(text, cursor, partYOffset({ kind: 'super' }, fontSize, centerY));
+    return ctx.measureText(text).width;
+  }
+  const superY = partYOffset({ kind: 'super' }, fontSize, centerY);
+  const glyphW = drawQualityGlyph(ctx, q.glyph, cursor, superY, fontSize);
+  if (!q.digit) return glyphW;
+  ctx.font = figuredDigitFont(fontSize);
+  ctx.fillText(q.digit, cursor + glyphW, superY);
+  return glyphW + ctx.measureText(q.digit).width;
+}
+
 /** Split a roman numeral symbol into base / superscript / subscript / suffix segments. */
 export function tokenizeRomanNumeral(symbol) {
   const normalized = normalizeSymbolDigits(symbol);
@@ -201,6 +331,14 @@ export function tokenizeRomanNumeral(symbol) {
     if (susCluster) {
       parts.push(...susCluster.parts);
       i = susCluster.next;
+      continue;
+    }
+    if (ch === '°' || ch === 'ø') {
+      const glyph = ch;
+      i += 1;
+      const digits = readDigitRun(normalized, i);
+      pushQualityGlyphParts(parts, glyph, digits.text);
+      i = digits.next;
       continue;
     }
     if (ch === '△') {
@@ -281,6 +419,10 @@ export function measureRomanNumeral(ctx, symbol, fontSize) {
       i += span - 1;
       continue;
     }
+    if (parts[i].kind === 'super') {
+      width += measureQualitySuperText(ctx, parts[i].text, fontSize);
+      continue;
+    }
     ctx.font = partFont(parts[i], fontSize);
     width += ctx.measureText(parts[i].text).width;
   }
@@ -303,6 +445,10 @@ export function drawRomanNumeral(ctx, symbol, centerX, centerY, fontSize, option
       continue;
     }
     const part = parts[i];
+    if (part.kind === 'super') {
+      cursor += drawQualitySuperText(ctx, part.text, cursor, centerY, fontSize);
+      continue;
+    }
     ctx.font = partFont(part, fontSize);
     ctx.textBaseline = 'middle';
     const y = partYOffset(part, fontSize, centerY);
@@ -320,17 +466,22 @@ export function romanNumeralToHtml(symbol) {
   for (let i = 0; i < parts.length; i++) {
     const span = stackSpan(parts, i);
     if (span === 2) {
-      html += `<span class="roman-stack"><sup>${parts[i].text}</sup><sub>${parts[i + 1].text}</sub></span>`;
+      const q = splitQualitySuper(parts[i].text);
+      if (q) {
+        html += qualityStackHtml(q.glyph, q.digit, parts[i + 1].text);
+      } else {
+        html += stackHtml(parts[i].text, parts[i + 1].text);
+      }
       i += 1;
       continue;
     }
     if (span === 3) {
-      html += `<span class="roman-stack"><span class="roman-stack-top"><sup>${parts[i].text}</sup><span class="roman-suffix">${parts[i + 1].text}</span></span><sub>${parts[i + 2].text}</sub></span>`;
+      html += `<span class="roman-stack"><span class="roman-stack-top"><sup class="roman-figured-digit">${parts[i].text}</sup><span class="roman-suffix">${parts[i + 1].text}</span></span><sub class="roman-figured-digit">${parts[i + 2].text}</sub></span>`;
       i += 2;
       continue;
     }
     const part = parts[i];
-    if (part.kind === 'super') html += `<sup>${part.text}</sup>`;
+    if (part.kind === 'super') html += renderSuperHtml(part.text);
     else if (part.kind === 'sub') html += `<sub>${part.text}</sub>`;
     else if (part.kind === 'suffix') html += `<span class="roman-suffix">${part.text}</span>`;
     else html += part.text;

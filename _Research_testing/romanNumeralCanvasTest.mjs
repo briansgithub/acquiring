@@ -27,6 +27,12 @@ const invCases = [
   { symbol: 'V7sus4sus2', expect: [{ kind: 'base', text: 'V' }, { kind: 'super', text: '7' }, { kind: 'sub', text: 'sus4sus2' }] },
   { symbol: 'Vsus4', expect: [{ kind: 'base', text: 'V' }, { kind: 'sub', text: 'sus4' }] },
   { symbol: 'IV6sus2', expect: [{ kind: 'base', text: 'IV' }, { kind: 'super', text: '6' }, { kind: 'sub', text: 'sus2' }] },
+  { symbol: 'viiø42', expect: [{ kind: 'base', text: 'vii' }, { kind: 'super', text: 'ø4' }, { kind: 'sub', text: '2' }] },
+  { symbol: 'viiø43', expect: [{ kind: 'base', text: 'vii' }, { kind: 'super', text: 'ø4' }, { kind: 'sub', text: '3' }] },
+  { symbol: 'viiø65', expect: [{ kind: 'base', text: 'vii' }, { kind: 'super', text: 'ø6' }, { kind: 'sub', text: '5' }] },
+  { symbol: 'vii°7', expect: [{ kind: 'base', text: 'vii' }, { kind: 'super', text: '°7' }] },
+  { symbol: 'vii°42', expect: [{ kind: 'base', text: 'vii' }, { kind: 'super', text: '°4' }, { kind: 'sub', text: '2' }] },
+  { symbol: 'iiø43(min)', expect: [{ kind: 'base', text: 'ii' }, { kind: 'super', text: 'ø4' }, { kind: 'sub', text: '3' }, { kind: 'suffix', text: '(min)' }] },
 ];
 
 for (const { symbol: sym, expect } of invCases) {

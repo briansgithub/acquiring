@@ -14,7 +14,8 @@ Rule-based spoken readings for Hooktheory chord JSON. Converts each chord object
 |-------|----------|---------|
 | `analytic` | **Analytic Reading:** | Left-to-right decomposition of the roman symbol: degree, quality, figured bass, extensions, suspensions, adds/omits, alterations, applied `of` target, borrowed tag. |
 | `functional` | **Functional Reading:** | Theory shorthand: inversion names (`first inversion seventh`), secondary dominants (`secondary dominant to …`), borrowed-scale phrasing (`borrowed from …`), and other context-aware compressions. |
-| `letter` | *(not shown in UI yet)* | Spoken letter-name chord from `getChordLetterName()` via `speakLetterChord()`. Used in letter cross-check tests. |
+| `letter` | **Analytic Reading** (letter-mode tooltips) | Spoken letter-name chord from `getChordLetterName()` via `speakLetterChord()`. |
+| `functionalLetter` | **Functional Reading** (letter-mode tooltips) | Theory shorthand using note names — inversions, secondary dominants, borrowed-scale phrasing. |
 
 Rest chords and chords without `root` return empty analytic/functional strings.
 
@@ -78,7 +79,7 @@ Wired in:
 |-----------|------|
 | `noteIndicator.js` | `#chord-pronunciation` under the roman numeral in Now Playing |
 | `timeline.js` | Chord hover tooltip |
-| `chordRing.js` | Degree-segment hover tooltip |
+| `chordRing.js` | Degree-segment hover tooltip; center reading tooltip; follows Roman Numerals toggle |
 
 Styles: `web-player/style.css` — `.chord-pronunciation`, `.pronunciation-label`, `.pronunciation-text`.
 
@@ -89,9 +90,10 @@ Styles: `web-player/style.css` — `.chord-pronunciation`, `.pronunciation-label
 ```js
 import { getChordPronunciation, speakRomanNumeral, pronunciationDisplayHtml } from './lib/romanNumeralSpeak.js';
 
-const { analytic, functional, letter } = getChordPronunciation(chord, key);
+const { analytic, functional, letter, functionalLetter } = getChordPronunciation(chord, key);
 const analyticOnly = speakRomanNumeral(chord, key);
-const html = pronunciationDisplayHtml({ analytic, functional });
+const html = pronunciationDisplayHtml({ analytic, functional, letter, functionalLetter });
+const letterHtml = pronunciationDisplayHtml({ analytic, functional, letter, functionalLetter }, { useRoman: false });
 ```
 
 `key` shape matches the rest of the player: `{ tonic: 'G', scale: 'major' }` (plus `tonic_sd` when present in section metadata).

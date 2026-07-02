@@ -28,7 +28,8 @@
     },
     "analytic": "five add four add nine",
     "functional": "five add four add nine",
-    "letter": "D"
+    "letter": "D",
+    "functionalLetter": "D add four add nine"
   },
   {
     "id": "adds=4",
@@ -57,7 +58,8 @@
     },
     "analytic": "six minor add four",
     "functional": "six minor add four",
-    "letter": "F sharp minor"
+    "letter": "F sharp minor",
+    "functionalLetter": "F sharp minor add four"
   },
   {
     "id": "adds=6+9",
@@ -88,7 +90,8 @@
     },
     "analytic": "seven six add six add nine",
     "functional": "seven first inversion add six add nine",
-    "letter": "D over F sharp"
+    "letter": "D over F sharp",
+    "functionalLetter": "D first inversion add six add nine"
   },
   {
     "id": "adds=6",
@@ -119,7 +122,8 @@
     },
     "analytic": "four add six flat five",
     "functional": "four add six flat five",
-    "letter": "D"
+    "letter": "D",
+    "functionalLetter": "D add six flat five"
   },
   {
     "id": "adds=9",
@@ -148,7 +152,8 @@
     },
     "analytic": "five add nine",
     "functional": "five add nine",
-    "letter": "E"
+    "letter": "E",
+    "functionalLetter": "E add nine"
   },
   {
     "id": "alterations=#11",
@@ -178,7 +183,8 @@
     },
     "analytic": "five nine sharp eleven of five",
     "functional": "five nine sharp eleven secondary dominant to five",
-    "letter": "D nine"
+    "letter": "D nine",
+    "functionalLetter": "D nine sharp eleven secondary dominant to G"
   },
   {
     "id": "alterations=#5+#9",
@@ -208,7 +214,8 @@
     },
     "analytic": "five augmented seven sharp nine of five minor",
     "functional": "five seven augmented sharp nine secondary dominant to five minor",
-    "letter": "E augmented seven"
+    "letter": "E augmented seven",
+    "functionalLetter": "E seven augmented sharp nine secondary dominant to A minor"
   },
   {
     "id": "alterations=#5",
@@ -237,7 +244,8 @@
     },
     "analytic": "five augmented seven",
     "functional": "five seven augmented",
-    "letter": "D augmented seven"
+    "letter": "D augmented seven",
+    "functionalLetter": "D seven augmented"
   },
   {
     "id": "alterations=#9",
@@ -267,7 +275,8 @@
     },
     "analytic": "one six five sharp nine mixolydian",
     "functional": "one first inversion seventh sharp nine borrowed from mixolydian",
-    "letter": "G sharp seven over B sharp"
+    "letter": "G sharp seven over B sharp",
+    "functionalLetter": "G sharp first inversion seventh sharp nine borrowed from mixolydian"
   },
   {
     "id": "alterations=b5+b9",
@@ -297,7 +306,8 @@
     },
     "analytic": "five seven flat five flat nine major",
     "functional": "five seven flat five flat nine borrowed from major",
-    "letter": "A sharp seven"
+    "letter": "A sharp seven",
+    "functionalLetter": "A sharp seven flat five flat nine borrowed from major"
   },
   {
     "id": "alterations=b5",
@@ -326,7 +336,8 @@
     },
     "analytic": "four major seven flat five",
     "functional": "four major seven flat five",
-    "letter": "D nine"
+    "letter": "D nine",
+    "functionalLetter": "D major seven flat five"
   },
   {
     "id": "alterations=b9",
@@ -356,7 +367,8 @@
     },
     "analytic": "five minor eleven flat nine mixolydian",
     "functional": "five minor eleven flat nine borrowed from mixolydian",
-    "letter": "G minor eleven"
+    "letter": "G minor eleven",
+    "functionalLetter": "G minor eleven flat nine borrowed from mixolydian"
   },
   {
     "id": "applied=no",
@@ -384,7 +396,8 @@
     },
     "analytic": "one",
     "functional": "one",
-    "letter": "A"
+    "letter": "A",
+    "functionalLetter": "A"
   },
   {
     "id": "applied=yes",
@@ -414,7 +427,8 @@
     },
     "analytic": "five nine sharp eleven of five",
     "functional": "five nine sharp eleven secondary dominant to five",
-    "letter": "D nine"
+    "letter": "D nine",
+    "functionalLetter": "D nine sharp eleven secondary dominant to G"
   },
   {
     "id": "borrowed=custom-array",
@@ -449,7 +463,8 @@
     },
     "analytic": "seven custom scale",
     "functional": "seven borrowed from custom scale",
-    "letter": "G diminished"
+    "letter": "G diminished",
+    "functionalLetter": "G borrowed from custom scale"
   },
   {
     "id": "borrowed=dorian",
@@ -476,7 +491,8 @@
     },
     "analytic": "six diminished six four dorian",
     "functional": "six diminished second inversion borrowed from dorian",
-    "letter": "F diminished over C flat"
+    "letter": "F diminished over C flat",
+    "functionalLetter": "F diminished second inversion borrowed from dorian"
   },
   {
     "id": "borrowed=harmonicMinor",
@@ -504,7 +520,8 @@
     },
     "analytic": "five harmonic minor",
     "functional": "five borrowed from harmonic minor",
-    "letter": "E"
+    "letter": "E",
+    "functionalLetter": "E borrowed from harmonic minor"
   },
   {
     "id": "borrowed=locrian",
@@ -531,7 +548,8 @@
     },
     "analytic": "five seven of five",
     "functional": "five seven secondary dominant to five",
-    "letter": "C sharp seven"
+    "letter": "C sharp seven",
+    "functionalLetter": "C sharp seven secondary dominant to F sharp"
   },
   {
     "id": "borrowed=lydian",
@@ -559,7 +577,8 @@
     },
     "analytic": "sharp four minor half-diminished seven lydian",
     "functional": "sharp four minor seven borrowed from lydian",
-    "letter": "A diminished seven"
+    "letter": "A diminished seven",
+    "functionalLetter": "A minor seven borrowed from lydian"
   },
   {
     "id": "borrowed=major",
@@ -586,7 +605,8 @@
     },
     "analytic": "five seven major",
     "functional": "five seven borrowed from major",
-    "letter": "A sharp seven"
+    "letter": "A sharp seven",
+    "functionalLetter": "A sharp seven borrowed from major"
   },
   {
     "id": "borrowed=minor",
@@ -613,7 +633,8 @@
     },
     "analytic": "one minor seven",
     "functional": "one minor seven",
-    "letter": "B minor seven"
+    "letter": "B minor seven",
+    "functionalLetter": "B minor seven"
   },
   {
     "id": "borrowed=mixolydian",
@@ -643,7 +664,8 @@
     },
     "analytic": "one nine add thirteen mixolydian",
     "functional": "one nine add thirteen borrowed from mixolydian",
-    "letter": "C nine"
+    "letter": "C nine",
+    "functionalLetter": "C nine add thirteen borrowed from mixolydian"
   },
   {
     "id": "borrowed=none",
@@ -671,7 +693,8 @@
     },
     "analytic": "one",
     "functional": "one",
-    "letter": "A"
+    "letter": "A",
+    "functionalLetter": "A"
   },
   {
     "id": "borrowed=phrygian",
@@ -699,7 +722,8 @@
     },
     "analytic": "five minor half-diminished seven phrygian",
     "functional": "five minor seven borrowed from phrygian",
-    "letter": "E diminished seven"
+    "letter": "E diminished seven",
+    "functionalLetter": "E minor seven borrowed from phrygian"
   },
   {
     "id": "borrowed=phrygianDominant",
@@ -728,7 +752,8 @@
     },
     "analytic": "four minor add six phrygian dominant",
     "functional": "four minor add six borrowed from phrygian dominant",
-    "letter": "E flat minor"
+    "letter": "E flat minor",
+    "functionalLetter": "E flat minor add six borrowed from phrygian dominant"
   },
   {
     "id": "inversion=0",
@@ -756,7 +781,8 @@
     },
     "analytic": "one",
     "functional": "one",
-    "letter": "A"
+    "letter": "A",
+    "functionalLetter": "A"
   },
   {
     "id": "inversion=1",
@@ -783,7 +809,8 @@
     },
     "analytic": "three major seven six five",
     "functional": "three first inversion seventh",
-    "letter": "F sharp major seven over A sharp"
+    "letter": "F sharp major seven over A sharp",
+    "functionalLetter": "F sharp first inversion seventh"
   },
   {
     "id": "inversion=2",
@@ -811,7 +838,8 @@
     },
     "analytic": "three minor six four",
     "functional": "three minor second inversion",
-    "letter": "C sharp minor over G sharp"
+    "letter": "C sharp minor over G sharp",
+    "functionalLetter": "C sharp minor second inversion"
   },
   {
     "id": "inversion=3",
@@ -838,7 +866,8 @@
     },
     "analytic": "six major seven four two",
     "functional": "six third inversion seventh",
-    "letter": "B major seven over A sharp"
+    "letter": "B major seven over A sharp",
+    "functionalLetter": "B third inversion seventh"
   },
   {
     "id": "omits=3+5",
@@ -869,7 +898,8 @@
     },
     "analytic": "two minor half-diminished eleven no third no fifth",
     "functional": "two minor eleven no third no fifth",
-    "letter": "B diminished eleven"
+    "letter": "B diminished eleven",
+    "functionalLetter": "B minor eleven no third no fifth"
   },
   {
     "id": "omits=3",
@@ -899,7 +929,8 @@
     },
     "analytic": "six minor no third",
     "functional": "six minor no third",
-    "letter": "F sharp minor"
+    "letter": "F sharp minor",
+    "functionalLetter": "F sharp minor no third"
   },
   {
     "id": "omits=5",
@@ -929,7 +960,8 @@
     },
     "analytic": "four no fifth",
     "functional": "four no fifth",
-    "letter": "D flat"
+    "letter": "D flat",
+    "functionalLetter": "D flat no fifth"
   },
   {
     "id": "suspensions=2+4",
@@ -962,7 +994,8 @@
     },
     "analytic": "five seven suspended two suspended four add thirteen",
     "functional": "five seven suspended two suspended four add thirteen",
-    "letter": "G seven suspended two suspended four"
+    "letter": "G seven suspended two suspended four",
+    "functionalLetter": "G seven suspended two suspended four add thirteen"
   },
   {
     "id": "suspensions=2",
@@ -992,7 +1025,8 @@
     },
     "analytic": "four seven suspended two",
     "functional": "four seven suspended two",
-    "letter": "G flat major seven suspended two"
+    "letter": "G flat major seven suspended two",
+    "functionalLetter": "G flat seven suspended two"
   },
   {
     "id": "suspensions=4+2",
@@ -1022,7 +1056,8 @@
     },
     "analytic": "one seven suspended two suspended four",
     "functional": "one seven suspended two suspended four",
-    "letter": "E major seven suspended two suspended four"
+    "letter": "E major seven suspended two suspended four",
+    "functionalLetter": "E seven suspended two suspended four"
   },
   {
     "id": "suspensions=4",
@@ -1052,7 +1087,8 @@
     },
     "analytic": "five suspended four",
     "functional": "five suspended four",
-    "letter": "B flat suspended four"
+    "letter": "B flat suspended four",
+    "functionalLetter": "B flat suspended four"
   },
   {
     "id": "type=11",
@@ -1082,7 +1118,8 @@
     },
     "analytic": "five minor eleven flat nine mixolydian",
     "functional": "five minor eleven flat nine borrowed from mixolydian",
-    "letter": "G minor eleven"
+    "letter": "G minor eleven",
+    "functionalLetter": "G minor eleven flat nine borrowed from mixolydian"
   },
   {
     "id": "type=13",
@@ -1109,7 +1146,8 @@
     },
     "analytic": "five thirteen",
     "functional": "five thirteen",
-    "letter": "B flat thirteen"
+    "letter": "B flat thirteen",
+    "functionalLetter": "B flat thirteen"
   },
   {
     "id": "type=5",
@@ -1137,7 +1175,8 @@
     },
     "analytic": "one",
     "functional": "one",
-    "letter": "A"
+    "letter": "A",
+    "functionalLetter": "A"
   },
   {
     "id": "type=7",
@@ -1164,7 +1203,8 @@
     },
     "analytic": "six minor seven",
     "functional": "six minor seven",
-    "letter": "F sharp minor seven"
+    "letter": "F sharp minor seven",
+    "functionalLetter": "F sharp minor seven"
   },
   {
     "id": "type=9",
@@ -1193,7 +1233,8 @@
     },
     "analytic": "four major seven flat five",
     "functional": "four major seven flat five",
-    "letter": "D nine"
+    "letter": "D nine",
+    "functionalLetter": "D major seven flat five"
   },
   {
     "id": "adds=6+alterations=b5",
@@ -1224,7 +1265,8 @@
     },
     "analytic": "four add six flat five",
     "functional": "four add six flat five",
-    "letter": "D"
+    "letter": "D",
+    "functionalLetter": "D add six flat five"
   },
   {
     "id": "adds=6+suspensions=2+4",
@@ -1257,7 +1299,8 @@
     },
     "analytic": "five seven suspended two suspended four add thirteen",
     "functional": "five seven suspended two suspended four add thirteen",
-    "letter": "G seven suspended two suspended four"
+    "letter": "G seven suspended two suspended four",
+    "functionalLetter": "G seven suspended two suspended four add thirteen"
   },
   {
     "id": "adds=6+suspensions=2",
@@ -1289,7 +1332,8 @@
     },
     "analytic": "four six suspended two add six of four",
     "functional": "four first inversion suspended two add six secondary dominant to four",
-    "letter": "G suspended two over B"
+    "letter": "G suspended two over B",
+    "functionalLetter": "G first inversion suspended two add six secondary dominant to D"
   },
   {
     "id": "adds=6+suspensions=4",
@@ -1321,7 +1365,8 @@
     },
     "analytic": "five nine suspended four add thirteen of four",
     "functional": "five nine suspended four add thirteen secondary dominant to four",
-    "letter": "A nine suspended four"
+    "letter": "A nine suspended four",
+    "functionalLetter": "A nine suspended four add thirteen secondary dominant to D"
   },
   {
     "id": "alterations=b5+suspensions=2",
@@ -1353,7 +1398,8 @@
     },
     "analytic": "flat five seven suspended two flat five locrian",
     "functional": "flat five seven suspended two flat five borrowed from locrian",
-    "letter": "A flat major seven suspended two"
+    "letter": "A flat major seven suspended two",
+    "functionalLetter": "A flat seven suspended two flat five borrowed from locrian"
   },
   {
     "id": "omits=5+suspensions=4",
@@ -1385,7 +1431,8 @@
     },
     "analytic": "five seven suspended four no fifth",
     "functional": "five seven suspended four no fifth",
-    "letter": "D seven suspended four"
+    "letter": "D seven suspended four",
+    "functionalLetter": "D seven suspended four no fifth"
   },
   {
     "id": "adds=9+suspensions=4",
@@ -1416,7 +1463,8 @@
     },
     "analytic": "seven suspended four add nine",
     "functional": "seven suspended four add nine",
-    "letter": "C suspended four"
+    "letter": "C suspended four",
+    "functionalLetter": "C suspended four add nine"
   },
   {
     "id": "omits=5+suspensions=2+4",
@@ -1449,7 +1497,8 @@
     },
     "analytic": "five minor seven suspended two suspended four no fifth",
     "functional": "five minor seven suspended two suspended four no fifth",
-    "letter": "E minor seven suspended two suspended four"
+    "letter": "E minor seven suspended two suspended four",
+    "functionalLetter": "E minor seven suspended two suspended four no fifth"
   },
   {
     "id": "omits=5+suspensions=2",
@@ -1481,7 +1530,8 @@
     },
     "analytic": "one suspended two no fifth",
     "functional": "one suspended two no fifth",
-    "letter": "G suspended two"
+    "letter": "G suspended two",
+    "functionalLetter": "G suspended two no fifth"
   },
   {
     "id": "adds=4+6",
@@ -1512,7 +1562,8 @@
     },
     "analytic": "two add four add six",
     "functional": "two add four add six",
-    "letter": "E flat"
+    "letter": "E flat",
+    "functionalLetter": "E flat add four add six"
   },
   {
     "id": "adds=6+4",
@@ -1542,7 +1593,8 @@
     },
     "analytic": "five seven add thirteen add eleven",
     "functional": "five seven add thirteen add eleven",
-    "letter": "B seven"
+    "letter": "B seven",
+    "functionalLetter": "B seven add thirteen add eleven"
   },
   {
     "id": "adds=9+4",
@@ -1573,7 +1625,8 @@
     },
     "analytic": "one minor add nine add four",
     "functional": "one minor add nine add four",
-    "letter": "E minor"
+    "letter": "E minor",
+    "functionalLetter": "E minor add nine add four"
   },
   {
     "id": "adds=9+6",
@@ -1603,7 +1656,8 @@
     },
     "analytic": "six add nine add six",
     "functional": "six add nine add six",
-    "letter": "A"
+    "letter": "A",
+    "functionalLetter": "A add nine add six"
   },
   {
     "id": "alterations=#11+#9",
@@ -1635,7 +1689,8 @@
     },
     "analytic": "one major seven no third sharp eleven sharp nine major",
     "functional": "one major seven no third sharp eleven sharp nine borrowed from major",
-    "letter": "C major seven"
+    "letter": "C major seven",
+    "functionalLetter": "C major seven no third sharp eleven sharp nine borrowed from major"
   },
   {
     "id": "alterations=#2+3",
@@ -1668,7 +1723,8 @@
     },
     "analytic": "flat five six suspended two sharp two three locrian",
     "functional": "flat five first inversion suspended two sharp two three borrowed from locrian",
-    "letter": "D flat suspended two over F"
+    "letter": "D flat suspended two over F",
+    "functionalLetter": "D flat first inversion suspended two sharp two three borrowed from locrian"
   },
   {
     "id": "alterations=#9+b5+b13",
@@ -1699,7 +1755,8 @@
     },
     "analytic": "five four three sharp nine flat five flat thirteen of one minor",
     "functional": "five second inversion seventh sharp nine flat five flat thirteen secondary dominant to one minor",
-    "letter": "C seven over G"
+    "letter": "C seven over G",
+    "functionalLetter": "C second inversion seventh sharp nine flat five flat thirteen secondary dominant to F minor"
   },
   {
     "id": "alterations=3",
@@ -1731,7 +1788,8 @@
     },
     "analytic": "seven diminished six suspended two three",
     "functional": "seven diminished first inversion suspended two three",
-    "letter": "F sharp diminished suspended two over A"
+    "letter": "F sharp diminished suspended two over A",
+    "functionalLetter": "F sharp diminished first inversion suspended two three"
   },
   {
     "id": "alterations=b9+#5",
@@ -1761,7 +1819,8 @@
     },
     "analytic": "flat six augmented seven flat nine locrian",
     "functional": "flat six seven augmented flat nine borrowed from locrian",
-    "letter": "A flat augmented seven"
+    "letter": "A flat augmented seven",
+    "functionalLetter": "A flat seven augmented flat nine borrowed from locrian"
   },
   {
     "id": "alterations=b9+b13",
@@ -1791,7 +1850,8 @@
     },
     "analytic": "five seven flat nine flat thirteen of five",
     "functional": "five seven flat nine flat thirteen secondary dominant to five",
-    "letter": "F sharp seven"
+    "letter": "F sharp seven",
+    "functionalLetter": "F sharp seven flat nine flat thirteen secondary dominant to B"
   },
   {
     "id": "omits=5+3",
@@ -1821,7 +1881,8 @@
     },
     "analytic": "four no fifth no third",
     "functional": "four no fifth no third",
-    "letter": "D"
+    "letter": "D",
+    "functionalLetter": "D no fifth no third"
   },
   {
     "id": "adds=4+alterations=#5",
@@ -1853,7 +1914,8 @@
     },
     "analytic": "sharp two minor augmented six add four dorian",
     "functional": "sharp two minor first inversion add four borrowed from dorian",
-    "letter": "D sharp minor over F sharp"
+    "letter": "D sharp minor over F sharp",
+    "functionalLetter": "D sharp minor first inversion add four borrowed from dorian"
   },
   {
     "id": "adds=6+alterations=#5+suspensions=4",
@@ -1887,7 +1949,8 @@
     },
     "analytic": "two minor augmented six four suspended four add six major",
     "functional": "two minor second inversion suspended four add six borrowed from major",
-    "letter": "D minor suspended four over A"
+    "letter": "D minor suspended four over A",
+    "functionalLetter": "D minor second inversion suspended four add six borrowed from major"
   },
   {
     "id": "adds=6+omits=5",
@@ -1918,7 +1981,8 @@
     },
     "analytic": "three minor add six no fifth",
     "functional": "three minor add six no fifth",
-    "letter": "E minor"
+    "letter": "E minor",
+    "functionalLetter": "E minor add six no fifth"
   },
   {
     "id": "adds=6+suspensions=4+2",
@@ -1950,7 +2014,8 @@
     },
     "analytic": "five seven suspended two suspended four add thirteen of five",
     "functional": "five seven suspended two suspended four add thirteen secondary dominant to five",
-    "letter": "F sharp seven suspended two suspended four"
+    "letter": "F sharp seven suspended two suspended four",
+    "functionalLetter": "F sharp seven suspended two suspended four add thirteen secondary dominant to B"
   },
   {
     "id": "adds=9+alterations=b5+omits=3",
@@ -1983,7 +2048,8 @@
     },
     "analytic": "four add nine no third flat five",
     "functional": "four add nine no third flat five",
-    "letter": "F"
+    "letter": "F",
+    "functionalLetter": "F add nine no third flat five"
   },
   {
     "id": "adds=9+omits=3",
@@ -2014,7 +2080,8 @@
     },
     "analytic": "flat four add nine no third major",
     "functional": "flat four add nine no third borrowed from major",
-    "letter": "F"
+    "letter": "F",
+    "functionalLetter": "F add nine no third borrowed from major"
   },
   {
     "id": "adds=9+omits=5",
@@ -2046,7 +2113,8 @@
     },
     "analytic": "one minor add nine no fifth phrygian",
     "functional": "one minor add nine no fifth borrowed from phrygian",
-    "letter": "C minor"
+    "letter": "C minor",
+    "functionalLetter": "C minor add nine no fifth borrowed from phrygian"
   },
   {
     "id": "alterations=#11+#9+omits=3",
@@ -2078,7 +2146,8 @@
     },
     "analytic": "one major seven no third sharp eleven sharp nine major",
     "functional": "one major seven no third sharp eleven sharp nine borrowed from major",
-    "letter": "C major seven"
+    "letter": "C major seven",
+    "functionalLetter": "C major seven no third sharp eleven sharp nine borrowed from major"
   },
   {
     "id": "alterations=#2+3+suspensions=2",
@@ -2111,7 +2180,8 @@
     },
     "analytic": "flat five six suspended two sharp two three locrian",
     "functional": "flat five first inversion suspended two sharp two three borrowed from locrian",
-    "letter": "D flat suspended two over F"
+    "letter": "D flat suspended two over F",
+    "functionalLetter": "D flat first inversion suspended two sharp two three borrowed from locrian"
   },
   {
     "id": "alterations=#5+suspensions=2",
@@ -2142,7 +2212,8 @@
     },
     "analytic": "flat two augmented suspended two phrygian",
     "functional": "flat two augmented suspended two borrowed from phrygian",
-    "letter": "C flat augmented suspended two"
+    "letter": "C flat augmented suspended two",
+    "functionalLetter": "C flat augmented suspended two borrowed from phrygian"
   },
   {
     "id": "alterations=3+suspensions=2",
@@ -2174,7 +2245,8 @@
     },
     "analytic": "seven diminished six suspended two three",
     "functional": "seven diminished first inversion suspended two three",
-    "letter": "F sharp diminished suspended two over A"
+    "letter": "F sharp diminished suspended two over A",
+    "functionalLetter": "F sharp diminished first inversion suspended two three"
   },
   {
     "id": "alterations=b9+suspensions=4",
@@ -2205,7 +2277,8 @@
     },
     "analytic": "five seven suspended four flat nine",
     "functional": "five seven suspended four flat nine",
-    "letter": "D seven suspended four"
+    "letter": "D seven suspended four",
+    "functionalLetter": "D seven suspended four flat nine"
   },
   {
     "id": "honesty-I-maj7",
@@ -2222,7 +2295,8 @@
     },
     "analytic": "one major seven",
     "functional": "one major seven",
-    "letter": "F major seven"
+    "letter": "F major seven",
+    "functionalLetter": "F major seven"
   },
   {
     "id": "honesty-Vsus2sus47-V",
@@ -2243,7 +2317,8 @@
     },
     "analytic": "five seven suspended two suspended four of five",
     "functional": "five seven suspended two suspended four secondary dominant to five",
-    "letter": "G seven suspended two suspended four"
+    "letter": "G seven suspended two suspended four",
+    "functionalLetter": "G seven suspended two suspended four secondary dominant to C"
   },
   {
     "id": "honesty-vii-dim7-V",
@@ -2260,7 +2335,8 @@
     },
     "analytic": "seven diminished seven of five",
     "functional": "seven diminished seven secondary dominant to five",
-    "letter": "B diminished seven"
+    "letter": "B diminished seven",
+    "functionalLetter": "B diminished seven secondary dominant to C"
   },
   {
     "id": "honesty-I6-sharp9-5-mix",
@@ -2280,6 +2356,7 @@
     },
     "analytic": "one six five sharp nine mixolydian",
     "functional": "one first inversion seventh sharp nine borrowed from mixolydian",
-    "letter": "G sharp seven over B sharp"
+    "letter": "G sharp seven over B sharp",
+    "functionalLetter": "G sharp first inversion seventh sharp nine borrowed from mixolydian"
   }
 ]

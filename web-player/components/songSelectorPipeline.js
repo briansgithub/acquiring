@@ -276,13 +276,14 @@ function applyLoadGate(body, flags, canLoad, missing, esc, loadTooltip) {
   }
 }
 
-async function pollJob(jobId) {
+async function pollJob(jobId, onRunning) {
   for (;;) {
     const res = await fetch(`/api/library/pipeline/job?id=${encodeURIComponent(jobId)}`);
     const job = await res.json();
     if (!res.ok) throw new Error(job.error || `HTTP ${res.status}`);
     if (job.status === "running") {
-      await new Promise((r) => setTimeout(r, 1000));
+      onRunning?.(job);
+      await new Promise((r) => setTimeout(r, 500));
       continue;
     }
     return job;
@@ -323,7 +324,7 @@ export function wirePipelineButtons(body, slug, flags, callbacks) {
         btn.classList.add("pipeline-running");
         const label = btn.textContent;
         btn.textContent = "…";
-        setStatus(`Running ${action}…`);
+        setStatus(action === "harvest" ? "Starting Fetch…" : `Running ${action}…`);
         try {
           const res = await fetch(
             `/api/library/pipeline/${action}?slug=${encodeURIComponent(slug)}`,
@@ -331,10 +332,12 @@ export function wirePipelineButtons(body, slug, flags, callbacks) {
           );
           const data = await res.json();
           if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-          const job = await pollJob(data.jobId);
+          const job = await pollJob(data.jobId, (running) => {
+            if (running.message) setStatus(running.message);
+          });
           if (job.status === "error") throw new Error(job.error || `${action} failed`);
           refreshFromPayload(job);
-          setStatus(`${action} done`);
+          setStatus(action === "harvest" ? "Fetch done" : `${action} done`);
           reloadIndex?.();
           callbacks.onJobDone?.(slug, action);
         } catch (err) {

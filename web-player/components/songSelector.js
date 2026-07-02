@@ -72,7 +72,7 @@ export function renderSongSelector(container, options = {}) {
       <div class="sel-url-row">
         <input id="sel-url-input" class="sel-input" type="url"
           autocomplete="off" spellcheck="false" />
-        <button id="sel-url-add" class="sel-url-add" type="button">Add</button>
+        <button id="sel-url-add" class="sel-url-add" type="button" disabled>Add</button>
       </div>
       <div id="sel-url-status" class="sel-hint"></div>
     </div>
@@ -304,13 +304,14 @@ export function renderSongSelector(container, options = {}) {
     drop.innerHTML = "";
   }
 
-  async function pollAddJob(jobId) {
+  async function pollAddJob(jobId, onRunning) {
     for (;;) {
       const res = await fetch(`/api/library/pipeline/job?id=${encodeURIComponent(jobId)}`);
       const job = await res.json();
       if (!res.ok) throw new Error(job.error || `HTTP ${res.status}`);
       if (job.status === "running") {
-        await new Promise((r) => setTimeout(r, 1500));
+        onRunning?.(job);
+        await new Promise((r) => setTimeout(r, 500));
         continue;
       }
       return job;
@@ -322,12 +323,14 @@ export function renderSongSelector(container, options = {}) {
       if (statusEl) statusEl.textContent = msg || "";
     };
 
+    const syncAddBtn = () => {
+      if (!addBtn || !input) return;
+      addBtn.disabled = input.disabled || !input.value.trim();
+    };
+
     const run = async () => {
       const url = input.value.trim();
-      if (!url) {
-        setStatus("Paste a Hooktheory TheoryTab URL");
-        return;
-      }
+      if (!url) return;
       addBtn.disabled = true;
       input.disabled = true;
       setStatus("Adding — catalog + Fetch (one browser pass)…");
@@ -339,7 +342,9 @@ export function renderSongSelector(container, options = {}) {
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-        const job = await pollAddJob(data.jobId);
+        const job = await pollAddJob(data.jobId, (running) => {
+          if (running.message) setStatus(running.message);
+        });
         if (job.status === "error") throw new Error(job.error || "add pipeline failed");
         await loadIndex();
         updateHint(body.querySelector("#sel-hint"));
@@ -349,16 +354,18 @@ export function renderSongSelector(container, options = {}) {
       } catch (err) {
         setStatus(err.message);
       } finally {
-        addBtn.disabled = false;
         input.disabled = false;
+        syncAddBtn();
       }
     };
 
+    syncAddBtn();
     addBtn.addEventListener("click", run);
+    input.addEventListener("input", syncAddBtn);
     input.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        run();
+        if (!addBtn.disabled) run();
       }
     });
   }

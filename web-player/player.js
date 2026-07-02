@@ -12,7 +12,7 @@ import { getChordSymbol } from "./lib/jsonToSymbol.js";
 import {
   arpOffsetTicks,
   arpStepMs,
-  ARP_HIGHLIGHT_MAX_SLIDER,
+  ARP_HIGHLIGHT_MAX_CYCLES,
   isArpeggiationActive as arpActive,
   sliderIndexToCyclesPerBeat,
   TICKS_PER_BEAT,
@@ -62,7 +62,7 @@ function getArpeggioStepMs(noteCount) {
 }
 
 function shouldHighlightArpeggioNote() {
-  return isArpeggiationActive() && arpeggiationSlider <= ARP_HIGHLIGHT_MAX_SLIDER;
+  return isArpeggiationActive() && getCyclesPerBeat() <= ARP_HIGHLIGHT_MAX_CYCLES;
 }
 
 function highlightArpeggioNote(note, noteCount) {
@@ -174,7 +174,7 @@ const chordRing = renderChordRing(ringPane, {
   labelMode: useRomanNumerals,
   onLabelModeChange: (useRoman) => {
     useRomanNumerals = useRoman;
-    // Update chord ring with new label mode
+    noteIndicator.setLabelMode(useRomanNumerals);
     if (currentKey) {
       chordRing.setLabelMode(useRomanNumerals, currentKey);
       // Redraw chord ring
@@ -190,6 +190,7 @@ const chordRing = renderChordRing(ringPane, {
   }
 });
 const noteIndicator = renderNoteIndicator(indicatorPane, {
+  labelMode: useRomanNumerals,
   onNoteClick: (note, { isChord = false } = {}) => {
     if (isChord) {
       const durationMs = engine.previewNote(note, "4n");

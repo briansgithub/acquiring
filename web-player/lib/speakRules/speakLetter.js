@@ -4,7 +4,7 @@ const NOTE_NAMES = {
   C: 'C', D: 'D', E: 'E', F: 'F', G: 'G', A: 'A', B: 'B',
 };
 
-function speakNoteName(note) {
+export function speakNoteName(note) {
   if (!note) return '';
   const m = note.match(/^([A-Ga-g])([#bx]*)/);
   if (!m) return note;

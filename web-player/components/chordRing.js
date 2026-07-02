@@ -368,6 +368,49 @@ export function renderChordRing(container, options = {}) {
     return activeChordSymbol !== null && entry.symbol === activeChordSymbol;
   }
 
+  function getCenterDisplayLabel(chord) {
+    if (!chord) return "";
+    return useRomanNumerals
+      ? stripBorrowedTags(getChordSymbol(chord, currentKey) || "")
+      : getChordLetterName(chord, currentKey);
+  }
+
+  function getVariantCountForDegree(degree) {
+    const chords = currentGroupedChords[degree] || [];
+    const diatonicLabels = getRomanNumeralsForScale(currentKey.scale);
+    const expectedDiatonicLabel = diatonicLabels[degree - 1];
+    return chords.filter((c) => {
+      const isBorrowed = c.chord.borrowed && c.chord.borrowed !== "" && c.chord.borrowed !== null;
+      return c.symbol !== expectedDiatonicLabel || isBorrowed;
+    }).length;
+  }
+
+  function getLayoutRadius() {
+    let maxVariantCount = 0;
+    for (let i = 1; i <= 7; i++) {
+      maxVariantCount = Math.max(maxVariantCount, getVariantCountForDegree(i));
+    }
+    const outerDist = DIATONIC_RING_RADIUS + VARIANT_SPACING * maxVariantCount;
+    const nodePad = NODE_RADIUS * 1.3;
+    return Math.max(outerDist + nodePad, CENTER_RING_RADIUS + nodePad);
+  }
+
+  function fitToView() {
+    resize();
+    if (canvas.width < 1 || canvas.height < 1) return;
+
+    panX = 0;
+    panY = 0;
+
+    const layoutRadius = getLayoutRadius();
+    const margin = 16;
+    const availW = canvas.width - margin * 2;
+    const availH = canvas.height - margin * 2;
+    const fitZoom = Math.min(availW, availH) / (2 * layoutRadius);
+    zoom = Math.max(0.1, Math.min(fitZoom, 5));
+    draw();
+  }
+
   function resize() {
     const w = wrapper.clientWidth;
     const h = wrapper.clientHeight;
@@ -586,11 +629,11 @@ export function renderChordRing(container, options = {}) {
 
     // Draw Chord Transition in the center of the circle (vertically aligned to cy)
     if (activeChord) {
-      const currSymbol = activeChordSymbol ? stripBorrowedTags(activeChordSymbol) : "";
+      const currSymbol = getCenterDisplayLabel(activeChord);
       const currColor = getScaleDegreeColor(activeChord.root, key.scale) || "#ffffff";
 
       if (previousChord) {
-        const prevSymbol = stripBorrowedTags(getChordSymbol(previousChord, key) || "");
+        const prevSymbol = getCenterDisplayLabel(previousChord);
         const prevColor = getScaleDegreeColor(previousChord.root, key.scale) || "#ffffff";
 
         // Try single line first
@@ -917,7 +960,10 @@ export function renderChordRing(container, options = {}) {
     const displayLabel = useRomanNumerals ? stripBorrowedTags(node.symbol) : getChordLetterName(node.chord, currentKey);
     const alternateLabel = useRomanNumerals ? getChordLetterName(node.chord, currentKey) : node.symbol;
     const borrowedLabel = borrowedAbbrev(node.chord.borrowed);
-    const pronunciationHtml = pronunciationDisplayHtml(getChordPronunciation(node.chord, currentKey));
+    const pronunciationHtml = pronunciationDisplayHtml(
+      getChordPronunciation(node.chord, currentKey),
+      { useRoman: useRomanNumerals }
+    );
     
     const formattedJson = formatChordJson(node.chord);
     
@@ -986,7 +1032,10 @@ export function renderChordRing(container, options = {}) {
   }
 
   function showCenterReadingTooltip(chord, region) {
-    const pronunciationHtml = pronunciationDisplayHtml(getChordPronunciation(chord, currentKey));
+    const pronunciationHtml = pronunciationDisplayHtml(
+      getChordPronunciation(chord, currentKey),
+      { useRoman: useRomanNumerals }
+    );
     if (!pronunciationHtml) return;
 
     centerReadingTooltip.innerHTML = pronunciationHtml;
@@ -1229,9 +1278,13 @@ export function renderChordRing(container, options = {}) {
     transitionTableOverlay.style.display = "block";
 
     const symbolToRoot = new Map();
+    const symbolToLetter = new Map();
     for (let root = 1; root <= 7; root++) {
       for (const entry of currentGroupedChords[root] || []) {
         if (!symbolToRoot.has(entry.symbol)) symbolToRoot.set(entry.symbol, root);
+        if (!symbolToLetter.has(entry.symbol)) {
+          symbolToLetter.set(entry.symbol, getChordLetterName(entry.chord, currentKey));
+        }
       }
     }
 
@@ -1276,7 +1329,14 @@ export function renderChordRing(container, options = {}) {
             if (fromRoot) fromColor = getScaleDegreeColor(fromRoot, currentKey.scale);
             if (toRoot) toColor = getScaleDegreeColor(toRoot, currentKey.scale);
           }
-          appendTransitionLabel(row, stripBorrowedTags(fromStr), stripBorrowedTags(toStr), fromColor, toColor, !showRootOnlyView);
+          const fromDisplay = showRootOnlyView
+            ? fromStr
+            : (useRomanNumerals ? stripBorrowedTags(fromStr) : (symbolToLetter.get(fromStr) || stripBorrowedTags(fromStr)));
+          const toDisplay = showRootOnlyView
+            ? toStr
+            : (useRomanNumerals ? stripBorrowedTags(toStr) : (symbolToLetter.get(toStr) || stripBorrowedTags(toStr)));
+          const useRomanDisplay = showRootOnlyView ? false : useRomanNumerals;
+          appendTransitionLabel(row, fromDisplay, toDisplay, fromColor, toColor, useRomanDisplay);
         } else {
           row.textContent = transition;
         }
@@ -1319,11 +1379,14 @@ export function renderChordRing(container, options = {}) {
       if (key) {
         currentKey = key;
       }
-      // Recalculate active chord symbol if needed
-      if (activeChordSymbol !== null) {
-        // activeChordSymbol is already set, just redraw
-      }
       draw();
+      updateTransitionTable();
+      if (currentHoveredNode) {
+        showTooltip(currentHoveredNode);
+      } else if (currentHoveredCenterChord) {
+        const region = centerChordHitRegions.find((r) => r.chord === currentHoveredCenterChord);
+        if (region) showCenterReadingTooltip(currentHoveredCenterChord, region);
+      }
     },
 
     setSongData(chords, key) {
@@ -1360,7 +1423,9 @@ export function renderChordRing(container, options = {}) {
           }
         });
       }
-      draw();
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => fitToView());
+      });
     },
 
     setKey(key) {
