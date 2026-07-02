@@ -6,6 +6,7 @@ import { renderNoteIndicator } from "./components/noteIndicator.js";
 import { renderTimeline } from "./components/timeline.js";
 import { renderSongSelector } from "./components/songSelector.js";
 import { chordInterpreter, getSongLength, parseKey, sdToToneJSNoteName } from "./lib/music.js";
+import { normalizeToneNotes } from "./lib/chordVoicing.js";
 import { getChordSymbol } from "./lib/jsonToSymbol.js";
 
 const Tone = window.Tone;
@@ -90,7 +91,7 @@ async function handlePlayPause(shouldPlay) {
     // Check if song has ended and needs to be restarted
     // If parts are empty (song ended and stop() was called) or transport is at/past the end
     // Use Ticks for reliable end-of-song check
-    const totalTicks = songLength * 192;
+    const totalTicks = lastReleaseTick > 0 ? lastReleaseTick : songLength * 192;
     const wasPaused = Tone.Transport.state === "paused";
     
     if (engine.parts.length === 0 || Tone.Transport.ticks >= totalTicks) {
@@ -104,6 +105,7 @@ async function handlePlayPause(shouldPlay) {
       const chordEvents = createChordEvents(currentRawChords, currentKey);
       currentMelodyEvents = melodyEvents;
       currentChordEvents = chordEvents;
+      lastReleaseTick = getLastReleaseTick(melodyEvents, chordEvents);
       await engine.setupTransport(currentBpm);
       engine.scheduleMelody(melodyEvents);
       engine.scheduleChords(chordEvents);
@@ -140,6 +142,7 @@ const controls = renderControls(controlsPane, {
     const chordEvents = createChordEvents(currentRawChords, currentKey);
     currentMelodyEvents = melodyEvents;
     currentChordEvents = chordEvents;
+    lastReleaseTick = getLastReleaseTick(melodyEvents, chordEvents);
     await engine.setupTransport(currentBpm);
     engine.scheduleMelody(melodyEvents);
     engine.scheduleChords(chordEvents);
@@ -299,6 +302,7 @@ let currentSongIdx = 0;
 let currentSong = null;
 let currentSectionIdx = 0;
 let songLength = 0;
+let lastReleaseTick = 0;
 let currentSecondsPerBeat = 0;
 let currentMelodyEvents = [];
 let currentChordEvents = [];
@@ -320,6 +324,7 @@ function resetIdleState() {
   currentSectionIdx = 0;
   currentKey = null;
   songLength = 0;
+  lastReleaseTick = 0;
   currentRawNotes = [];
   currentRawChords = [];
   currentMelodyEvents = [];
@@ -427,8 +432,8 @@ async function loadSection(songIndex, sectionIndex) {
     // Calculate actual section length in BEATS from raw data
     // (metadata length is often just an estimate or in bars)
     const allEventEnds = [
-      ...notesArray.map((n) => (n.beat - 1) + n.duration),
-      ...currentRawChords.map((c) => (c.beat - 1) + c.duration),
+      ...notesArray.map((n) => (n.beat === 0 ? 1 : n.beat) + n.duration),
+      ...currentRawChords.map((c) => (c.beat === 0 ? 1 : c.beat) + c.duration),
     ];
     if (allEventEnds.length > 0) {
       const actualSectionLength = Math.max(...allEventEnds);
@@ -439,6 +444,7 @@ async function loadSection(songIndex, sectionIndex) {
     // Store events for potential restart
     currentMelodyEvents = melodyEvents;
     currentChordEvents = chordEvents;
+    lastReleaseTick = getLastReleaseTick(melodyEvents, chordEvents);
 
     console.log("Scheduling events for new section...");
     // Ensure transport is fully stopped and reset before scheduling new events
@@ -518,9 +524,9 @@ function setupProgressTracking() {
     // Tone.Transport.seconds is unstable/approximated during aggressive tempo ramps.
     const totalTicks = songLength * 192;
     const currentTicks = Tone.Transport.ticks;
+    const progressTicks = lastReleaseTick > 0 ? lastReleaseTick : totalTicks;
 
-    // Use currentTicks directly for a smooth, locked-to-music progress bar
-    const ratio = totalTicks > 0 ? Math.min(1, currentTicks / totalTicks) : 0;
+    const ratio = progressTicks > 0 ? Math.min(1, currentTicks / progressTicks) : 0;
 
     controls.updateProgress(ratio);
     timeline.updateProgress(ratio);
@@ -571,7 +577,8 @@ function setupProgressTracking() {
     }
     
     // Stop playback when section ends
-    if (ratio >= 1 && Tone.Transport.state === "started") {
+    if (lastReleaseTick > 0 && currentTicks > lastReleaseTick && Tone.Transport.state === "started") {
+      engine.releaseAllNotes();
       engine.stop();
       controls.resetPlayState();
     }
@@ -664,6 +671,16 @@ function handleSectionChange(idx) {
   loadSection(currentSongIdx, Number(idx)).catch(err => console.error("LoadSection failed inside section change:", err));
 }
 
+function getLastReleaseTick(melodyEvents, chordEvents) {
+  let max = 0;
+  for (const ev of [...melodyEvents, ...chordEvents]) {
+    if (ev.type === "release") {
+      max = Math.max(max, parseInt(ev.time, 10));
+    }
+  }
+  return max;
+}
+
 function createMelodyEvents(notesArray, key) {
   const events = [];
   notesArray.forEach((note) => {
@@ -700,7 +717,7 @@ function createChordEvents(chordsArray, key) {
   chordsArray.forEach((chord) => {
     if (chord.isRest) return;
     const chordData = interpretChord(chord, key);
-    const chordNotes = chordData.notes;
+    const chordNotes = normalizeToneNotes(chordData.notes);
     if (!chordNotes.length) return;
 
     // Handle beat 0 by treating it as beat 1 (normalize to 1-based indexing)
@@ -804,6 +821,18 @@ function createChordEvents(chordsArray, key) {
     const typeOrder = { release: 0, arpeggio: 1, attack: 2 };
     return (typeOrder[a.type] ?? 1) - (typeOrder[b.type] ?? 1);
   });
+
+  const releaseTicks = new Set(
+    events.filter((e) => e.type === "release").map((e) => parseInt(e.time, 10))
+  );
+  for (const ev of events) {
+    if (ev.type !== "attack") continue;
+    const tick = parseInt(ev.time, 10);
+    if (releaseTicks.has(tick)) {
+      ev.time = `${tick + 1}i`;
+    }
+  }
+  events.sort((a, b) => parseInt(a.time, 10) - parseInt(b.time, 10));
 
   return events;
 }
@@ -949,6 +978,7 @@ async function updatePlaybackSettings() {
 
   currentMelodyEvents = melodyEvents;
   currentChordEvents = chordEvents;
+  lastReleaseTick = getLastReleaseTick(melodyEvents, chordEvents);
 
   await engine.setupTransport(currentBpm);
   engine.scheduleMelody(melodyEvents);

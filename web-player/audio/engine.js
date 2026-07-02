@@ -59,6 +59,7 @@ export class AudioEngine {
 
   scheduleMelody(events) {
     const Tone = window.Tone;
+    const partEvents = events.map((ev) => [ev.time, ev]);
     const part = new Tone.Part((time, event) => {
       if (event.type === "attack") {
         this.melodySynth.triggerAttack(event.name, time);
@@ -66,12 +67,13 @@ export class AudioEngine {
       } else if (event.type === "release") {
         this.melodySynth.triggerRelease(time);
       }
-    }, events).start(0);
+    }, partEvents).start(0);
     this.parts.push(part);
   }
 
   scheduleChords(events) {
     const Tone = window.Tone;
+    const partEvents = events.map((ev) => [ev.time, ev]);
     const part = new Tone.Part((time, event) => {
       if (event.type === "arpeggio") {
         if (!event.note) return;
@@ -88,10 +90,14 @@ export class AudioEngine {
         event.notes.forEach((note) => this.activeChordNotes.add(note));
         event.onTrigger?.();
       } else if (event.type === "release") {
-        this.chordSynth.triggerRelease(event.notes, time);
-        event.notes.forEach((note) => this.activeChordNotes.delete(note));
+        if (typeof this.chordSynth.releaseAll === "function") {
+          this.chordSynth.releaseAll(time);
+        } else {
+          this.chordSynth.triggerRelease(event.notes, time);
+        }
+        this.activeChordNotes.clear();
       }
-    }, events).start(0);
+    }, partEvents).start(0);
     this.parts.push(part);
   }
 

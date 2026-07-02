@@ -3,6 +3,8 @@
  */
 import { shiftNoteBySemitones } from "./chordNoteUtils.js";
 
+const TONE_PC_SPELL = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+
 export function noteToMidi(noteName) {
   const m = String(noteName).match(/^([A-G])([#bx]*|b*)(\d+)$/);
   if (!m) return 0;
@@ -15,6 +17,17 @@ export function noteToMidi(noteName) {
     else if (ch === "b") total -= 1;
   }
   return total;
+}
+
+/** Map MIDI back to a Tone.js-friendly name (no double-sharps etc). */
+export function midiToToneNote(midi) {
+  const octave = Math.floor(midi / 12) - 1;
+  const pc = ((midi % 12) + 12) % 12;
+  return `${TONE_PC_SPELL[pc]}${octave}`;
+}
+
+export function normalizeToneNotes(notes) {
+  return notes.map((n) => midiToToneNote(noteToMidi(n)));
 }
 
 export function sortVoicingByPitch(toneJSNames, degreeIndices) {
