@@ -174,8 +174,11 @@ async function scrapeSong(url, outDir, opts = {}) {
   const skipScreenshots = opts.skipScreenshots !== false;
   const scrapePiano = opts.scrapePiano !== false;
   const returnHtml = opts.returnHtml === true;
+  const onProgress = opts.onProgress || null;
+  const report = (msg) => onProgress?.(msg);
   const externalBrowser = opts.browser || null;
   const ownBrowser = !externalBrowser;
+  report(ownBrowser ? 'Launching browser…' : 'Opening browser page…');
   const browser = externalBrowser || await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
   const result = { url, title: null, sections: [], errors: [] };
   try {
@@ -192,6 +195,7 @@ async function scrapeSong(url, outDir, opts = {}) {
       }
     });
 
+    report('Loading TheoryTab page…');
     const navResp = await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
     if (navResp && navResp.status() >= 400) { result.errors.push(`HTTP ${navResp.status()}`); if (ownBrowser) await browser.close(); return result; }
     await sleep(2500);
@@ -203,9 +207,11 @@ async function scrapeSong(url, outDir, opts = {}) {
     );
     const sectionTabs = tabs.filter((t) => t.name.toLowerCase() !== 'all sections' && t.hash && t.hash !== '#');
     if (!sectionTabs.length) { result.errors.push('No section tabs found'); if (ownBrowser) await browser.close(); return result; }
+    report(`Found ${sectionTabs.length} section${sectionTabs.length === 1 ? '' : 's'}`);
 
     for (let i = 0; i < sectionTabs.length; i++) {
       const tab = sectionTabs[i];
+      report(`Section ${i + 1}/${sectionTabs.length}: ${tab.name}…`);
       // Click the tab by matching its text
       await page.evaluate((name) => {
         const a = Array.from(document.querySelectorAll('a.tb-section-tab')).find((x) => x.textContent.trim() === name);
@@ -266,6 +272,7 @@ async function scrapeSong(url, outDir, opts = {}) {
       if (verbose) console.log(`  [${tab.name}] songId=${songId} rendered=${sec.renderedCount} jsonNonRest=${sec.jsonNonRestCount} strips=${strips.length}`);
     }
 
+    report('Browser scrape complete');
     if (ownBrowser) await browser.close();
     return result;
   } catch (e) {
