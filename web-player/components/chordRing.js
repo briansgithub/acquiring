@@ -423,6 +423,34 @@ export function renderChordRing(container, options = {}) {
     return activeChordSymbol !== null && entry.symbol === activeChordSymbol;
   }
 
+  function resolvePlacementDegreeFromNote(noteName, key) {
+    if (!noteName || !key) return null;
+    for (let degree = 1; degree <= 7; degree++) {
+      if (getNoteLabel(degree, key) === noteName) return degree;
+    }
+    const noteLetter = String(noteName)[0]?.toUpperCase();
+    if (!noteLetter) return null;
+    for (let degree = 1; degree <= 7; degree++) {
+      const diatonic = getNoteLabel(degree, key);
+      if (diatonic && diatonic[0]?.toUpperCase() === noteLetter) return degree;
+    }
+    return null;
+  }
+
+  function getChordPlacementDegree(chord, key) {
+    const rootDegree = Number(chord?.root);
+    if (!Number.isInteger(rootDegree) || rootDegree < 1 || rootDegree > 7) return null;
+    const appliedDegree = Number(chord?.applied);
+    if (!Number.isInteger(appliedDegree) || appliedDegree < 1 || appliedDegree > 7) {
+      return rootDegree;
+    }
+    const targetTonic = getNoteLabel(rootDegree, key);
+    if (!targetTonic) return rootDegree;
+    const appliedKey = { tonic: targetTonic, scale: "major" };
+    const appliedRootNote = getNoteLabel(appliedDegree, appliedKey);
+    return resolvePlacementDegreeFromNote(appliedRootNote, key) ?? rootDegree;
+  }
+
   function getCenterDisplayLabel(chord) {
     if (!chord) return "";
     return useRomanNumerals
@@ -557,11 +585,12 @@ export function renderChordRing(container, options = {}) {
     if (exactDiatonic) {
       const isActive = isNodeActive(exactDiatonic);
       const chord = exactDiatonic.chord;
+      const colorDegree = exactDiatonic.colorDegree ?? degree;
       const subLabel = borrowedAbbrev(chord?.borrowed);
       const displayLabel = useRomanNumerals
         ? (subLabel ? stripBorrowedTags(exactDiatonic.symbol) : exactDiatonic.symbol)
         : getChordLetterName(chord, currentKey);
-      drawNode(dx, dy, nodeRadius, color, displayLabel, 1.0, isActive, false, subLabel);
+      drawNode(dx, dy, nodeRadius, getScaleDegreeColor(colorDegree, currentKey.scale), displayLabel, 1.0, isActive, false, subLabel);
     } else {
       // Placeholder
       const placeholderLabel = useRomanNumerals ? expectedDiatonicLabel : getNoteLabel(degree, currentKey);
@@ -575,11 +604,12 @@ export function renderChordRing(container, options = {}) {
       const vy = centerY + dist * Math.sin(angle);
       const isActive = isNodeActive(v);
       const chord = v.chord;
+      const colorDegree = v.colorDegree ?? degree;
       const subLabel = borrowedAbbrev(chord?.borrowed);
       const displayLabel = useRomanNumerals
         ? (subLabel ? stripBorrowedTags(v.symbol) : v.symbol)
         : getChordLetterName(v.chord, currentKey);
-      drawNode(vx, vy, nodeRadius, color, displayLabel, 0.9, isActive, false, subLabel);
+      drawNode(vx, vy, nodeRadius, getScaleDegreeColor(colorDegree, currentKey.scale), displayLabel, 0.9, isActive, false, subLabel);
     });
   }
 
@@ -900,8 +930,10 @@ export function renderChordRing(container, options = {}) {
             x: vx, 
             y: vy, 
             radius: effectiveRadius,
-            degree: i, 
-            color: getScaleDegreeColor(i, currentKey.scale),
+            degree: i,
+            placementDegree: i,
+            colorDegree: v.colorDegree ?? i,
+            color: getScaleDegreeColor(v.colorDegree ?? i, currentKey.scale),
             isVariant: true,
             variantIndex: vIdx + 1
           };
@@ -928,8 +960,10 @@ export function renderChordRing(container, options = {}) {
             x: dx, 
             y: dy, 
             radius: effectiveRadius,
-            degree: i, 
-            color: getScaleDegreeColor(i, currentKey.scale),
+            degree: i,
+            placementDegree: i,
+            colorDegree: exactDiatonic.colorDegree ?? i,
+            color: getScaleDegreeColor(exactDiatonic.colorDegree ?? i, currentKey.scale),
             isVariant: false
           };
         }
@@ -994,7 +1028,8 @@ export function renderChordRing(container, options = {}) {
     if (!node) return;
     const centerX = canvas.width / 2 + panX;
     const centerY = canvas.height / 2 + panY;
-    const angle = (node.degree - 1) * (2 * Math.PI / 7) - (Math.PI / 2);
+    const placementDegree = node.placementDegree ?? node.degree;
+    const angle = (placementDegree - 1) * (2 * Math.PI / 7) - (Math.PI / 2);
     let dist = DIATONIC_RING_RADIUS * zoom;
     if (node.isVariant) {
       dist = (DIATONIC_RING_RADIUS + VARIANT_SPACING * node.variantIndex) * zoom;
@@ -1024,7 +1059,7 @@ export function renderChordRing(container, options = {}) {
     
     let contextHtml = `
       <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 11px; color: #cbd5e1; display: flex; flex-direction: column; gap: 4px; text-align: center;">
-        <div><span style="color: #64748b;">Scale Degree:</span> <strong style="color: ${node.color};">${ROMAN_MAP[node.degree] || node.degree}</strong></div>
+        <div><span style="color: #64748b;">Scale Degree:</span> <strong style="color: ${node.color};">${ROMAN_MAP[node.colorDegree || node.degree] || (node.colorDegree || node.degree)}</strong></div>
     `;
     
     if (node.chord.borrowed) {
@@ -1343,9 +1378,9 @@ export function renderChordRing(container, options = {}) {
 
     const symbolToRoot = new Map();
     const symbolToLetter = new Map();
-    for (let root = 1; root <= 7; root++) {
-      for (const entry of currentGroupedChords[root] || []) {
-        if (!symbolToRoot.has(entry.symbol)) symbolToRoot.set(entry.symbol, root);
+    for (let placement = 1; placement <= 7; placement++) {
+      for (const entry of currentGroupedChords[placement] || []) {
+        if (!symbolToRoot.has(entry.symbol)) symbolToRoot.set(entry.symbol, entry.colorDegree ?? entry.chord?.root ?? placement);
         if (!symbolToLetter.has(entry.symbol)) {
           symbolToLetter.set(entry.symbol, getChordLetterName(entry.chord, currentKey));
         }
@@ -1378,6 +1413,7 @@ export function renderChordRing(container, options = {}) {
       });
       const details = document.createElement("details");
       details.className = "transition-group";
+      details.open = true;
 
       const summary = document.createElement("summary");
       summary.className = "transition-group-summary";
@@ -1560,19 +1596,24 @@ export function renderChordRing(container, options = {}) {
         const seen = new Set();
         chords.forEach(c => {
           if (c.isRest) return;
-          const r = c.root;
-          if (r < 1 || r > 7) return; // Ignore chromatic roots for now if not scale degrees
+          const colorDegree = Number(c.root);
+          if (colorDegree < 1 || colorDegree > 7) return; // Ignore chromatic roots for now if not scale degrees
 
           const sym = getChordSymbol(c, key);
+          const placementDegree = getChordPlacementDegree(c, key);
+          if (!placementDegree || placementDegree < 1 || placementDegree > 7) return;
           // Include borrowed in unique key to preserve borrowed chords even if symbol is same
           const borrowedKey = c.borrowed ? (Array.isArray(c.borrowed) ? 'borrowed' : String(c.borrowed)) : '';
-          const uniqueKey = `${r}-${sym}-${borrowedKey}`; // Dedupe by Root+Symbol+Borrowed
+          const appliedKey = c.applied ? String(c.applied) : '';
+          const uniqueKey = `${placementDegree}-${colorDegree}-${sym}-${borrowedKey}-${appliedKey}`; // Dedupe by placement+color+symbol+borrowed+applied
 
           if (!seen.has(uniqueKey)) {
             seen.add(uniqueKey);
-            currentGroupedChords[r].push({
+            currentGroupedChords[placementDegree].push({
               symbol: sym,
-              chord: c
+              chord: c,
+              placementDegree,
+              colorDegree,
             });
           }
         });
@@ -1583,12 +1624,16 @@ export function renderChordRing(container, options = {}) {
     },
 
     setKey(key) {
+      const prevKeySig = currentKey ? `${currentKey.tonic || "?"}-${currentKey.scale || "?"}` : "none";
       if (key) {
         currentKey = key;
       }
+      const keySig = `${currentKey?.tonic || "?"}-${currentKey?.scale || "?"}`;
       updateKeyDisplay(key);
       draw();
-      updateTransitionTable();
+      if (keySig !== prevKeySig) {
+        updateTransitionTable();
+      }
     },
   };
 }
