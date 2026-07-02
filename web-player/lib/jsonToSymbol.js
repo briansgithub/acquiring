@@ -153,10 +153,18 @@ function customArraySeventhMajor(arr, degree) {
 // Accidental prefix for a borrowed root: compare the borrowed-scale note at this degree to
 // the major-scale note at the same degree (e.g. bVI in Ab = Fb vs F -> "b").
 function accidentalValue(note) {
-    if (/bb/.test(note)) return -2;
-    if (/x|##/.test(note)) return 2;
-    if (note.includes('b')) return -1;
-    if (note.includes('#')) return 1;
+    const m = String(note || '').match(/^([A-Ga-g])(.*)$/);
+    if (!m) return 0;
+    let value = 0;
+    for (const ch of m[2]) {
+        if (ch === 'b') value -= 1;
+        else if (ch === '#') value += 1;
+        else if (ch === 'x') value += 2;
+    }
+    if (value <= -2) return -2;
+    if (value >= 2) return 2;
+    if (value === -1) return -1;
+    if (value === 1) return 1;
     return 0;
 }
 function borrowedPrefix(degree, key, borrowedScale) {

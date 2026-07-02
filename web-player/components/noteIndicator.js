@@ -16,7 +16,7 @@ const NOTE_PC = Object.fromEntries(
 );
 
 function noteNameToPitchClass(noteName) {
-  const match = noteName?.match(/^([A-G][#b]?)/);
+  const match = noteName?.match(/^([A-G](?:[#x]+|b+)?)/);
   if (!match) return null;
   const name = match[1];
   return NOTE_NAME_TO_INTEGER_NOTATION[name] ?? NOTE_PC[name] ?? null;
@@ -300,7 +300,7 @@ export function renderNoteIndicator(container, options = {}) {
       // Add click handler to play the note
       notePill.addEventListener("click", () => {
         if (options.onNoteClick) {
-          options.onNoteClick(absoluteLabel);
+          options.onNoteClick(normalizeToneNotes([absoluteLabel])[0]);
         }
       });
       
@@ -322,7 +322,7 @@ export function renderNoteIndicator(container, options = {}) {
       // Add click handler to play the corresponding note
       degreePill.addEventListener("click", () => {
         if (options.onNoteClick && absoluteLabel) {
-          options.onNoteClick(absoluteLabel);
+          options.onNoteClick(normalizeToneNotes([absoluteLabel])[0]);
         }
       });
       
@@ -434,7 +434,7 @@ export function renderNoteIndicator(container, options = {}) {
       // Add click handler to play the note
       pill.addEventListener("click", () => {
         if (options.onNoteClick) {
-          options.onNoteClick(n, { isChord: true });
+          options.onNoteClick(normalizeToneNotes([n])[0], { isChord: true });
         }
       });
       
@@ -468,7 +468,7 @@ export function renderNoteIndicator(container, options = {}) {
         // Add click handler to play the corresponding note
         pill.addEventListener("click", () => {
           if (options.onNoteClick && correspondingNote) {
-            options.onNoteClick(correspondingNote, { isChord: true });
+            options.onNoteClick(normalizeToneNotes([correspondingNote])[0], { isChord: true });
           }
         });
         
@@ -514,9 +514,8 @@ export function renderNoteIndicator(container, options = {}) {
       updateMelodyDisplay();
     },
     updateChord(notes, root, chordDegrees, borrowed, key, chordObj = null) {
-      const displayNotes = notes?.length ? normalizeToneNotes(notes) : notes;
       // Store current chord data
-      currentChordData = { notes: displayNotes, chordDegrees, root, borrowed, key, chordObj };
+      currentChordData = { notes, chordDegrees, root, borrowed, key, chordObj };
       
       if (key) {
         currentKey = key;

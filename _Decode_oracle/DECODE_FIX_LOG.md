@@ -758,6 +758,17 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 037 — Gusty Garden borrowed-prefix + spelled-pill display/playback split
+
+**When:** 2026-07-02 (single-song oracle loop: Nintendo `super-mario-galaxy---gusty-garden-galaxy`)  
+**Symptom:** `Verse and Pre-Chorus` / `Chorus` `bII△42(phr)` in Db-major context rendered as `♯II△42(phr)` (engine letter `Dmaj7/Db` instead of Ebb spelling); note pills also collapsed theoretical spellings through `normalizeToneNotes`, hiding double accidentals (`Bbb` displayed as `A`).  
+**Root cause:** `jsonToSymbol.borrowedPrefix()` used coarse accidental detection (`includes('b')`, `includes('#')`) and misread multi-accidental spellings like `Ebb`; UI note pills were fed normalized playback notes, not spelled engine notes.  
+**Fix:** Rewrote accidental parsing in `jsonToSymbol.accidentalValue()` to sum full accidentals (`b/#/x`) and clamp to ±2 for prefix rendering. Extended `NOTE_NAME_TO_INTEGER_NOTATION` with double-accidental spellings (`Ebb`, `Bbb`, `F##`, `Cx`, etc.). Split display vs playback paths: `noteIndicator` now displays spelled notes from `chordInterpreter`, while `player.js` normalizes only at playback boundaries (scheduling/preview/click). Updated note-pill pitch-class regex to accept multi-accidentals.  
+**Files:** `web-player/lib/jsonToSymbol.js`, `web-player/lib/scales.js`, `web-player/components/noteIndicator.js`, `web-player/player.js`  
+**Result (target song):** `run.js --no-browser` improved from `romanExact 76/80, disc=3` to `romanExact 79/80, disc=0`; `notesOk` stayed `80/80`.  
+
+---
+
 ## Agent onboarding
 
 Single source of truth for the full workflow: [`ORACLE_GUIDE/README.md`](../ORACLE_GUIDE/README.md) (read `01`–`05` + `reference.md` in order).

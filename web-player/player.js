@@ -71,10 +71,11 @@ function highlightArpeggioNote(note, noteCount) {
 }
 
 function previewChordWithSettings(notes, arpeggiate = false) {
-  const useArp = arpeggiate && isArpeggiationActive() && notes.length > 1;
-  const noteCount = notes.length;
+  const playbackNotes = normalizeToneNotes(notes || []);
+  const useArp = arpeggiate && isArpeggiationActive() && playbackNotes.length > 1;
+  const noteCount = playbackNotes.length;
   engine.previewChord(
-    notes,
+    playbackNotes,
     "4n",
     useArp,
     useArp ? getArpeggioStepMs(noteCount) : 100,
@@ -808,7 +809,8 @@ function createChordEvents(chordsArray, key) {
   chordsArray.forEach((chord) => {
     if (chord.isRest) return;
     const chordData = interpretChord(chord, key);
-    const chordNotes = normalizeToneNotes(chordData.notes);
+    const displayChordNotes = chordData.notes || [];
+    const chordNotes = normalizeToneNotes(displayChordNotes);
     if (!chordNotes.length) return;
 
     // Handle beat 0 by treating it as beat 1 (normalize to 1-based indexing)
@@ -852,7 +854,7 @@ function createChordEvents(chordsArray, key) {
           name: chord.root,
           onTrigger: () => {
             if (isFirstNote) {
-              noteIndicator.updateChord(chordNotes, chord.root, chordData.chordDegrees, chord.borrowed, currentKey, chord);
+              noteIndicator.updateChord(displayChordNotes, chord.root, chordData.chordDegrees, chord.borrowed, currentKey, chord);
               chordRing.update(chord);
               isManualChordPreview = false;
             }
@@ -874,7 +876,7 @@ function createChordEvents(chordsArray, key) {
         notes: chordNotes,
         name: chord.root,
         onTrigger: () => {
-          noteIndicator.updateChord(chordNotes, chord.root, chordData.chordDegrees, chord.borrowed, currentKey, chord);
+          noteIndicator.updateChord(displayChordNotes, chord.root, chordData.chordDegrees, chord.borrowed, currentKey, chord);
           chordRing.update(chord);
           isManualChordPreview = false;
         },
@@ -1205,7 +1207,7 @@ function findCurrentChordAtTick(tickPosition) {
       }
       
       const chordData = interpretChord(chord, currentKey);
-      const notes = normalizeToneNotes(chordData.notes);
+      const notes = chordData.notes || [];
       return {
         chord,
         chordData,
@@ -1225,7 +1227,7 @@ function resumeMidChordPlayback(tickPosition, chordEvents) {
   if (!chordInfo?.notes?.length) return;
 
   const chord = chordInfo.chord;
-  const chordNotes = chordInfo.notes;
+  const chordNotes = normalizeToneNotes(chordInfo.notes);
   const normalizedBeat = chord.beat === 0 ? 1 : chord.beat;
   const endTick = (normalizedBeat - 1) * 192 + chord.duration * 192;
 
