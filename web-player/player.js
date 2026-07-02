@@ -6,6 +6,7 @@ import { renderChordRing } from "./components/chordRing.js";
 import { renderNoteIndicator } from "./components/noteIndicator.js";
 import { renderTimeline } from "./components/timeline.js";
 import { renderSongSelector } from "./components/songSelector.js";
+import { renderQuizPanel } from "./components/quizPanel.js";
 import { chordInterpreter, getSongLength, parseKey, sdToToneJSNoteName } from "./lib/music.js";
 import { normalizeToneNotes } from "./lib/chordVoicing.js";
 import { getChordSymbol } from "./lib/jsonToSymbol.js";
@@ -385,6 +386,46 @@ let isManualChordPreview = false; // Track when chord is manually clicked
 let sectionLoopInProgress = false;
 
 let loadedCacheKey = null;
+let quizPanel = null;
+
+function buildQuizContext() {
+  if (!currentRawChords?.length || !currentKey) {
+    return { pool: [], stats: { counts: new Map(), transitions: new Map(), total: 1 } };
+  }
+
+  const valid = currentRawChords.filter((chord) => !chord.isRest);
+  const pool = valid
+    .map((chord) => {
+      const beat = chord.beat === 0 ? 1 : chord.beat;
+      const activeKey = activeSectionKeyAtBeat(currentSectionKeys, beat, currentKey);
+      const data = interpretChord(chord, activeKey);
+      const symbol = getChordSymbol(chord, activeKey);
+      const notes = normalizeToneNotes(data.notes || []);
+      const chordDegrees = data.chordDegrees || [];
+      const degreeIdx = chordDegrees.findIndex((d) => /^(b|#)?3$/.test(String(d)));
+      const targetIndex = degreeIdx >= 0 ? degreeIdx : 0;
+      return {
+        chord,
+        symbol,
+        notes,
+        chordDegrees,
+        targetNote: notes[targetIndex],
+        targetDegree: chordDegrees[targetIndex] || "1",
+      };
+    })
+    .filter((entry) => entry.notes?.length);
+
+  const counts = new Map();
+  const transitions = new Map();
+  for (let i = 0; i < pool.length; i++) {
+    counts.set(pool[i].symbol, (counts.get(pool[i].symbol) || 0) + 1);
+    if (i > 0) {
+      const key = `${pool[i - 1].symbol}=>${pool[i].symbol}`;
+      transitions.set(key, (transitions.get(key) || 0) + 1);
+    }
+  }
+  return { pool, stats: { counts, transitions, total: pool.length || 1 } };
+}
 
 function clearPlayerState() {
   engine.releaseAllNotes();
@@ -411,6 +452,7 @@ function clearPlayerState() {
   timeline.setSongData([], null, 0);
   timeline.setSongInfo(null, null);
   timeline.updateProgress(0);
+  quizPanel?.refresh();
 }
 
 function resetIdleState() {
@@ -438,6 +480,17 @@ async function init() {
 }
 
 init();
+const quizMount = document.createElement("div");
+quizMount.id = "quiz-panel-mount";
+indicatorPane.querySelector(".indicator-stack")?.appendChild(quizMount);
+quizPanel = renderQuizPanel(quizMount, {
+  getQuizContext: buildQuizContext,
+  playQuizTarget: (notes) => previewChordWithSettings(notes, false),
+  playQuizReference: (tonicNote, targetNote) => {
+    engine.previewNote(tonicNote, "8n");
+    setTimeout(() => engine.previewNote(targetNote, "8n"), 420);
+  },
+});
 
 async function loadSection(songIndex, sectionIndex) {
   if (isLoading) return;
@@ -598,6 +651,7 @@ async function loadSection(songIndex, sectionIndex) {
 
     setupProgressTracking();
     controls.setPlaybackVisible(true);
+    quizPanel?.refresh();
     console.log("Section loaded successfully.");
   } catch (err) {
     console.error("Error during playback setup in loadSection:", err);
