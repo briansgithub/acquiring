@@ -80,7 +80,7 @@ export function renderNoteIndicator(container, options = {}) {
     <div class="indicator-stack">
       <div class="indicator-melody-section">
         <div class="indicator-volume-row melody-volume-row">
-          <label for="melody-volume" class="indicator-volume-label">Melody Vol.:</label>
+          <label for="melody-volume" class="indicator-volume-label">Melody Vol.</label>
           <input type="range" id="melody-volume" min="0" max="100" value="${CONTROL_DEFAULTS.melodyVolume}" step="1" class="volume-slider indicator-volume-slider">
           <span id="melody-volume-label" class="indicator-volume-value">${formatVolumePercent(CONTROL_DEFAULTS.melodyVolume)}</span>
         </div>
@@ -99,6 +99,7 @@ export function renderNoteIndicator(container, options = {}) {
           </div>
         </div>
       </div>
+      <hr class="indicator-section-divider" />
       <div class="card indicator-card indicator-card--chord">
         <div class="chord-header">
           <div class="label">Chord</div>
@@ -113,7 +114,7 @@ export function renderNoteIndicator(container, options = {}) {
         <div class="notes-list notes-list--chord" id="chord-notes" style="min-height:32px;margin-top:2px;"></div>
         <div class="notes-list notes-list--chord" id="chord-degrees-pills" style="min-height:32px;margin-top:4px;"></div>
         <div class="indicator-volume-row">
-          <label for="chord-volume" class="indicator-volume-label">Chord Vol.:</label>
+          <label for="chord-volume" class="indicator-volume-label">Chord Vol.</label>
           <input type="range" id="chord-volume" min="0" max="100" value="${CONTROL_DEFAULTS.chordVolume}" step="1" class="volume-slider indicator-volume-slider">
           <span id="chord-volume-label" class="indicator-volume-value">${formatVolumePercent(CONTROL_DEFAULTS.chordVolume)}</span>
         </div>

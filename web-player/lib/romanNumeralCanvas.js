@@ -413,6 +413,83 @@ function partYOffset(part, fontSize, centerY) {
   return centerY;
 }
 
+function inkBoundsForText(ctx, text, font, y) {
+  ctx.font = font;
+  const m = ctx.measureText(text);
+  const sizeMatch = /(\d+(?:\.\d+)?)px/.exec(font);
+  const em = sizeMatch ? Number(sizeMatch[1]) : 12;
+  const ascent = m.actualBoundingBoxAscent || em * 0.62;
+  const descent = m.actualBoundingBoxDescent || em * 0.38;
+  return { top: y - ascent, bottom: y + descent };
+}
+
+function mergeInkBounds(bounds, next) {
+  bounds.top = Math.min(bounds.top, next.top);
+  bounds.bottom = Math.max(bounds.bottom, next.bottom);
+}
+
+/** Measured ink box relative to centerY (top <= 0, bottom >= 0). */
+export function romanNumeralInkExtents(ctx, symbol, fontSize, centerY = 0) {
+  const parts = tokenizeRomanNumeral(symbol);
+  const bounds = { top: Infinity, bottom: -Infinity };
+
+  function account(y, text, font) {
+    mergeInkBounds(bounds, inkBoundsForText(ctx, text, font, y));
+  }
+
+  for (let i = 0; i < parts.length; i++) {
+    const span = stackSpan(parts, i);
+    if (span === 2) {
+      const q = splitQualitySuper(parts[i].text);
+      const superY = partYOffset({ kind: 'super' }, fontSize, centerY);
+      const subY = partYOffset({ kind: 'sub' }, fontSize, centerY);
+      if (q) {
+        if (q.glyph === '°') account(superY, DIM_GLYPH_CHAR, dimGlyphFont(fontSize));
+        else account(superY, q.glyph, partFont({ kind: 'super', text: q.glyph }, fontSize));
+        if (q.digit) account(superY, q.digit, figuredDigitFont(fontSize));
+        account(subY, parts[i + 1].text, figuredDigitFont(fontSize));
+      } else {
+        account(superY, parts[i].text, figuredDigitFont(fontSize));
+        account(subY, parts[i + 1].text, figuredDigitFont(fontSize));
+      }
+      i += 1;
+      continue;
+    }
+    if (span === 3) {
+      const superY = partYOffset({ kind: 'super' }, fontSize, centerY);
+      const subY = partYOffset({ kind: 'sub' }, fontSize, centerY);
+      account(superY, parts[i].text, figuredDigitFont(fontSize));
+      account(superY, parts[i + 1].text, partFont(parts[i + 1], fontSize));
+      account(subY, parts[i + 2].text, figuredDigitFont(fontSize));
+      i += 2;
+      continue;
+    }
+    const part = parts[i];
+    const y = partYOffset(part, fontSize, centerY);
+    if (part.kind === 'super') {
+      if (part.text === '°' || part.text === 'ø') {
+        account(y, part.text === '°' ? DIM_GLYPH_CHAR : part.text, part.text === '°' ? dimGlyphFont(fontSize) : partFont(part, fontSize));
+      } else {
+        const q = splitQualitySuper(part.text);
+        if (q) {
+          if (q.glyph === '°') account(y, DIM_GLYPH_CHAR, dimGlyphFont(fontSize));
+          else account(y, q.glyph, partFont({ kind: 'super', text: q.glyph }, fontSize));
+          if (q.digit) account(y, q.digit, figuredDigitFont(fontSize));
+        } else {
+          account(y, part.text, partFont(part, fontSize));
+        }
+      }
+      continue;
+    }
+    account(y, part.text, partFont(part, fontSize));
+  }
+
+  if (!Number.isFinite(bounds.top)) {
+    return { top: -fontSize * 0.5, bottom: fontSize * 0.5 };
+  }
+  return bounds;
+}
+
 /** Vertical extent above/below centerY for timeline layout padding. */
 export function romanNumeralVerticalExtents(symbol, fontSize) {
   const parts = tokenizeRomanNumeral(symbol);

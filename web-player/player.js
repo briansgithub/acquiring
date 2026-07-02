@@ -156,6 +156,9 @@ async function handlePlayPause(shouldPlay) {
       // Restore position after rescheduling
       Tone.Transport.ticks = currentTicks;
     }
+    // Ensure tick tracking is registered even if the section was loaded through a path
+    // that skipped setupProgressTracking (cache/state restore edge cases).
+    setupProgressTracking();
     await engine.play();
   } else {
     engine.pause();
@@ -515,6 +518,8 @@ async function loadSection(songIndex, sectionIndex) {
     chordRing.update(null, null, null);
     timeline.setSongData(currentRawChords, currentKey, songLength, data.metadata);
     timeline.setSongInfo(song.title, song.artist, song.url || data.metadata?.url);
+    timeline.forceRelayout();
+    requestAnimationFrame(() => timeline.forceRelayout());
     noteIndicator.reset();
     
     // Compute all chord transitions for the entire section

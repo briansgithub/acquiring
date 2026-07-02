@@ -5,7 +5,7 @@ import {
     drawRomanNumeral,
     measureRomanNumeral,
     romanNumeralToHtml,
-    romanNumeralVerticalExtents,
+    romanNumeralInkExtents,
 } from "../lib/romanNumeralCanvas.js";
 import { getChordPronunciation, pronunciationDisplayHtml } from "../lib/romanNumeralSpeak.js";
 
@@ -65,9 +65,41 @@ export function renderTimeline(container, options = {}) {
     let currentHoveredChord = null;
     let hideTimeout = null;
 
-    const AXIS_HEIGHT = 18;
-    const BLOCK_HEIGHT_RATIO = 0.88;
-    const CHORD_LABEL_PAD = { x: 8, y: 6 };
+    const AXIS_HEIGHT = 13;
+    const BLOCK_HEIGHT_RATIO = 0.9; // shorter blocks to make vertical room for title row
+    const CHORD_LABEL_PAD = { x: 7, y: 4 };
+    const MIN_CHORD_FONT_SIZE = 8;
+    const MIN_CHORD_TOP_GAP = 4;
+    const CHORD_CENTER_DOWN_SCALE = 0.035; // tiny visual centering tweak
+    const BORROWED_ROW_OFFSET = 0.3;
+    const BORROWED_FONT_SCALE = 0.55;
+    const BORROWED_FONT = `500 ${MIN_CHORD_FONT_SIZE}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+
+    function timelineLabelVerticalSpan(symbol, fontSize, borrowedLabel) {
+        const ink = romanNumeralInkExtents(ctx, symbol, fontSize, 0);
+        if (!borrowedLabel) {
+            return {
+                above: -ink.top,
+                below: ink.bottom,
+            };
+        }
+        const centerOffset = fontSize * BORROWED_ROW_OFFSET;
+        const borrowedFontSize = fontSize * BORROWED_FONT_SCALE;
+        ctx.font = BORROWED_FONT.replace(`${MIN_CHORD_FONT_SIZE}px`, `${borrowedFontSize}px`);
+        const borrowedMetrics = ctx.measureText(borrowedLabel);
+        const borrowedHalf = Math.max(
+            borrowedMetrics.actualBoundingBoxAscent || borrowedFontSize * 0.55,
+            borrowedMetrics.actualBoundingBoxDescent || borrowedFontSize * 0.45
+        );
+        const romanTop = -centerOffset + ink.top;
+        const romanBottom = -centerOffset + ink.bottom;
+        const borrowedTop = centerOffset - borrowedHalf;
+        const borrowedBottom = centerOffset + borrowedHalf;
+        return {
+            above: -Math.min(romanTop, borrowedTop),
+            below: Math.max(romanBottom, borrowedBottom),
+        };
+    }
 
     function resize() {
         const dpr = window.devicePixelRatio || 1;
@@ -120,23 +152,33 @@ export function renderTimeline(container, options = {}) {
                 const fullSymbol = getChordSymbol(chord, currentKey);
                 const symbol = stripBorrowedTags(fullSymbol);
                 const borrowedLabel = borrowedAbbrev(chord.borrowed);
-                let fontSize = Math.min(innerH * 0.6, innerW * 0.3);
-                fontSize = Math.max(12, fontSize);
-
                 const fitLabel = (size) => {
-                    const extents = romanNumeralVerticalExtents(symbol, size);
+                    const span = timelineLabelVerticalSpan(symbol, size, borrowedLabel);
                     const metricsWidth = measureRomanNumeral(ctx, symbol, size);
+                    const verticalSafety = Math.max(2, size * 0.06);
+                    const horizontalSafety = Math.max(1.5, size * 0.06);
                     return (
-                        metricsWidth <= innerW &&
-                        extents.above + extents.below <= innerH
+                        metricsWidth + horizontalSafety <= innerW &&
+                        span.above + MIN_CHORD_TOP_GAP + span.below + verticalSafety <= innerH
                     );
                 };
-
-                while (fontSize > 12 && !fitLabel(fontSize)) {
-                    fontSize -= 1;
+                // Maximize label size while preserving clip-safe margins.
+                let low = MIN_CHORD_FONT_SIZE;
+                let high = Math.min(innerH * 0.9, innerW * 0.58);
+                let best = MIN_CHORD_FONT_SIZE;
+                for (let i = 0; i < 12; i += 1) {
+                    const mid = (low + high) / 2;
+                    if (fitLabel(mid)) {
+                        best = mid;
+                        low = mid;
+                    } else {
+                        high = mid;
+                    }
                 }
+                const fontSize = best;
+                const labelFits = fitLabel(fontSize);
 
-                if (fitLabel(fontSize)) {
+                if (labelFits) {
                     ctx.fillStyle = "#000";
                     ctx.textAlign = "center";
                     ctx.textBaseline = "middle";
@@ -144,21 +186,22 @@ export function renderTimeline(container, options = {}) {
 
                     const centerX = x + w / 2;
                     const centerY = y + blockHeight / 2;
+                    const downShift = fontSize * CHORD_CENTER_DOWN_SCALE;
 
                     if (borrowedLabel) {
-                        drawRomanNumeral(ctx, symbol, centerX, centerY - fontSize * 0.3, fontSize);
-                        const borrowedFontSize = fontSize * 0.55;
+                        drawRomanNumeral(ctx, symbol, centerX, centerY - fontSize * BORROWED_ROW_OFFSET + downShift, fontSize);
+                        const borrowedFontSize = fontSize * BORROWED_FONT_SCALE;
                         ctx.font = `500 ${borrowedFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-                        ctx.fillText(borrowedLabel, centerX, centerY + fontSize * 0.3);
+                        ctx.fillText(borrowedLabel, centerX, centerY + fontSize * BORROWED_ROW_OFFSET + downShift);
                     } else {
-                        drawRomanNumeral(ctx, symbol, centerX, centerY, fontSize);
+                        drawRomanNumeral(ctx, symbol, centerX, centerY + downShift, fontSize);
                     }
                 }
             }
         });
 
         // Draw Beat Axis
-        const axisY = y + blockHeight + 4; // Position axis close below rectangles
+        const axisY = y + blockHeight + 2; // Keep labels inside visible canvas bounds
         
         // Use numBeats as the interval for labels
         const beatInterval = numBeats;
@@ -173,7 +216,7 @@ export function renderTimeline(container, options = {}) {
         
         // Draw tick marks and labels starting from firstBeat
         ctx.fillStyle = "#666";
-        ctx.font = "10px sans-serif";
+        ctx.font = "9px sans-serif";
         ctx.textAlign = "center";
         ctx.textBaseline = "top";
         
@@ -191,7 +234,7 @@ export function renderTimeline(container, options = {}) {
             ctx.stroke();
             
             // Draw beat number
-            ctx.fillText(beat.toString(), tickX, axisY + 5);
+            ctx.fillText(beat.toString(), tickX, axisY + 4);
         }
         
         // Draw minor ticks for beats between labels
@@ -586,6 +629,9 @@ export function renderTimeline(container, options = {}) {
         updateProgress(ratio) {
             currentProgressRatio = ratio;
             draw();
+        },
+        forceRelayout() {
+            resize();
         }
     };
 }
