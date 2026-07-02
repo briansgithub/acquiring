@@ -186,7 +186,7 @@ export function buildSongDetailHtml(s, sections, flags, canLoad, missing, esc, l
           ? PIPELINE_TIPS.harvest.lightOnly
           : null,
       })}
-      ${pipelineBtnHtml("tested", flags.tested, esc, { disabled: !flags.scrapeReady })}
+      ${pipelineBtnHtml("tested", flags.tested, esc, { disabled: !flags.harvested })}
     </div>
     <div id="pipeline-status" class="pipeline-status"></div>
     ${showLoadBtn ? `
@@ -252,14 +252,14 @@ function applyFlagsToButtons(body, flags) {
     const action = btn.dataset.action;
     const flagKey = PIPELINE_FLAG_KEYS[action] || action;
     const done = !!flags[flagKey];
-    const needsScrape = action === "tested" && !flags.scrapeReady;
-    btn.className = `${btnClass(done)} pipeline-action-btn${needsScrape ? " pipeline-action-btn--disabled" : ""}`;
-    btn.disabled = needsScrape;
+    const harvestPending = action === "tested" && !flags.harvested;
+    btn.className = `${btnClass(done)} pipeline-action-btn${harvestPending ? " pipeline-action-btn--disabled" : ""}`;
+    btn.disabled = harvestPending;
     btn.dataset.done = done ? "1" : "0";
     const tips = PIPELINE_TIPS[action];
     if (tips) {
-      if (needsScrape) {
-        btn.title = "Harvest required — light catalog or full Fetch";
+      if (harvestPending) {
+        btn.title = "Fetch required — run Fetch first";
       } else if (action === "harvest" && !done && flags.scrapeReady) {
         btn.title = tips.lightOnly;
       } else {
