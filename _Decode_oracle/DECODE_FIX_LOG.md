@@ -769,6 +769,28 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 038 — V11(min) extension scale-degree mapping + enharmonic modifier diffs
+
+**When:** 2026-07-02 (continued Gusty Garden closed-loop, chord `v11(min)` / `abm11(b9)`)  
+**Symptom:** `Chorus` beat 61 still flagged degree mismatch for `v11(min)` despite matching chord PCs. Pill labels on altered extensions were malformed (e.g. `#6` where the played pitch class implied `b6`), and `degreesOk` failed in closed-loop compare.
+**Root cause:** `calculateScaleDegrees()` only handled triad + a hardcoded seventh, so 9/11/13 extensions collapsed to fallback degree logic. Additionally, `getModifierDifference()` inferred accidentals from accidental text only and assumed same-letter spellings, which breaks on enharmonic letter shifts (`A` vs `Bb`) after extension alterations like `b9`.
+**Fix:** Added explicit extension base-degree mapping by `degreeIndices` (`7/9/11/13` → `7/2/4/6`) so upper extensions resolve correctly in song-key space. Replaced accidental-text delta in `getModifierDifference()` with pitch-class delta (`noteToPcLocal`) normalized to ±6 semitones, then rendered modifier strings (`bb/b/#/##`) from that semitone diff.
+**Files:** `web-player/lib/music.js`  
+**Result (target song):** `v11(min)` now reports valid degree labels (`degreesOk=true`), and Gusty compare no longer flags `degreesOk` for that row. Overall target song remains `notesOk 80/80`, `romanExact 79/80`, `disc=0`.
+
+---
+
+## Fix 039 — Timeline global recontext to currently playing key
+
+**When:** 2026-07-02 (Gusty Garden pre-chorus key-switch debug loop)  
+**Symptom:** timeline chord labels did not match the current playback key context after the pre-chorus key switch. During the switched region, labels were rendered in stale section-start key context rather than the currently playing key context.
+**Root cause:** `timeline.js` rendered symbols with a static key (`currentKey`) or per-chord key assumptions, but did not globally recontextualize all displayed timeline chord labels to the key active at the playback head.
+**Fix:** introduced playback-key state in timeline render flow and routed timeline chord label/tooltip rendering through a single current playback context (`timelineRenderKey`) that updates from beat-aware key resolution on progress ticks.
+**Files:** `web-player/components/timeline.js`
+**Result (target behavior):** while playback is in changed-key spans, **all** timeline chord labels are recontextualized in the current key; when the section restarts, timeline context returns to the section-start key.
+
+---
+
 ## Agent onboarding
 
 Single source of truth for the full workflow: [`ORACLE_GUIDE/README.md`](../ORACLE_GUIDE/README.md) (read `01`–`05` + `reference.md` in order).

@@ -87,6 +87,29 @@ function interpretChord(chord, key) {
   return chordInterpreter(chord, key, { forceRootPosition });
 }
 
+function activeSectionKeyAtBeat(keys, beat, fallbackKey = currentKey) {
+  if (!Array.isArray(keys) || !keys.length) return fallbackKey;
+  let chosen = keys[0];
+  for (const k of keys) {
+    if ((k?.beat ?? 1) <= beat) chosen = k;
+    else break;
+  }
+  if (!chosen) return fallbackKey;
+  const tonic = String(chosen.tonic || fallbackKey?.tonic || "C")
+    .replace(/♭/g, "b")
+    .replace(/♯/g, "#")
+    .replace(/♮/g, "");
+  return { tonic, scale: chosen.scale || fallbackKey?.scale || "major" };
+}
+
+function syncDisplayedKeyAtBeat(beat) {
+  const activeKey = activeSectionKeyAtBeat(currentSectionKeys, beat, currentKey);
+  if (!activeKey) return currentKey;
+  noteIndicator.setKey(activeKey);
+  chordRing.setKey(activeKey);
+  return activeKey;
+}
+
 async function handleRootPositionChange(enabled) {
   forceRootPosition = enabled;
   await updatePlaybackSettings();
@@ -113,7 +136,7 @@ async function handlePlayPause(shouldPlay) {
           currentChordInfo.root,
           currentChordInfo.degrees,
           currentChordInfo.borrowed,
-          currentKey,
+          currentChordInfo.key || currentKey,
           currentChordInfo.chord
         );
         chordRing.update(currentChordInfo.chord);
@@ -137,8 +160,8 @@ async function handlePlayPause(shouldPlay) {
       engine.releaseAllNotes();
       engine.stop();
       currentSecondsPerBeat = 60 / currentBpm;
-      const melodyEvents = createMelodyEvents(currentRawNotes, currentKey);
-      const chordEvents = createChordEvents(currentRawChords, currentKey);
+      const melodyEvents = createMelodyEvents(currentRawNotes, currentKey, currentSectionKeys);
+      const chordEvents = createChordEvents(currentRawChords, currentKey, currentSectionKeys);
       currentMelodyEvents = melodyEvents;
       currentChordEvents = chordEvents;
       lastReleaseTick = getLastReleaseTick(melodyEvents, chordEvents);
@@ -146,6 +169,7 @@ async function handlePlayPause(shouldPlay) {
       engine.scheduleMelody(melodyEvents);
       engine.scheduleChords(chordEvents);
       controls.updateProgress(0);
+      syncDisplayedKeyAtBeat(1);
       chordRing.update(null, null, null);
       noteIndicator.reset();
       timeline.updateProgress(0);
@@ -288,10 +312,12 @@ const timeline = renderTimeline(timelinePane, {
   onChordClick: (chord, arpeggiate = false) => {
     if (!currentKey) return;
     isManualChordPreview = true;
-    const chordData = interpretChord(chord, currentKey);
+    const chordBeat = chord.beat === 0 ? 1 : chord.beat;
+    const activeKey = activeSectionKeyAtBeat(currentSectionKeys, chordBeat, currentKey);
+    const chordData = interpretChord(chord, activeKey);
     if (chordData && chordData.notes && chordData.notes.length > 0) {
       previewChordWithSettings(chordData.notes, arpeggiate);
-      noteIndicator.updateChord(chordData.notes, chord.root, chordData.chordDegrees, chord.borrowed, currentKey, chord);
+      noteIndicator.updateChord(chordData.notes, chord.root, chordData.chordDegrees, chord.borrowed, activeKey, chord);
     }
   }
 });
@@ -351,6 +377,7 @@ let currentBpm = 120;
 let originalBpm = 120; // Store the original tempo from the loaded section
 let currentRawNotes = []; // Store raw note data for tempo recalculation
 let currentRawChords = []; // Store raw chord data for tempo recalculation
+let currentSectionKeys = [];
 let isLoading = false;
 let arpDebounceTimer = null;
 let tempoDebounceTimer = null;
@@ -368,6 +395,7 @@ function clearPlayerState() {
   lastReleaseTick = 0;
   currentRawNotes = [];
   currentRawChords = [];
+  currentSectionKeys = [];
   currentMelodyEvents = [];
   currentChordEvents = [];
   currentKey = null;
@@ -451,6 +479,9 @@ async function loadSection(songIndex, sectionIndex) {
     currentSectionIdx = sectionIndex;
     loadedCacheKey = song.artist;
 
+    currentSectionKeys = Array.isArray(data.metadata?.keys)
+      ? [...data.metadata.keys].sort((a, b) => (a?.beat ?? 1) - (b?.beat ?? 1))
+      : [];
     const key = parseKey(data.metadata);
     currentKey = key;
     const bpm = data.metadata?.tempos?.[0]?.bpm ?? 120;
@@ -469,8 +500,8 @@ async function loadSection(songIndex, sectionIndex) {
     currentRawNotes = notesArray;
     currentRawChords = data.chords || [];
 
-    const melodyEvents = createMelodyEvents(notesArray, key);
-    const chordEvents = createChordEvents(currentRawChords, key);
+    const melodyEvents = createMelodyEvents(notesArray, key, currentSectionKeys);
+    const chordEvents = createChordEvents(currentRawChords, key, currentSectionKeys);
 
     // Calculate actual section length in BEATS from raw data
     // (metadata length is often just an estimate or in bars)
@@ -512,6 +543,7 @@ async function loadSection(songIndex, sectionIndex) {
     if (sectionSelect) sectionSelect.value = sectionIndex;
 
     noteIndicator.setKey(key);
+    chordRing.setKey(key);
     // Update tempo slider to match loaded section's tempo (100% = original tempo)
     controls.setTempo(bpm, originalBpm);
     // Reset progress to 0 for both controls and timeline
@@ -549,13 +581,15 @@ async function loadSection(songIndex, sectionIndex) {
     if (currentRawChords && currentRawChords.length > 0) {
       const firstChord = currentRawChords.find(c => !c.isRest);
       if (firstChord && (firstChord.beat === 0 || firstChord.beat === 1)) {
-        const chordData = interpretChord(firstChord, currentKey);
+        const firstChordBeat = firstChord.beat === 0 ? 1 : firstChord.beat;
+        const activeKey = activeSectionKeyAtBeat(currentSectionKeys, firstChordBeat, currentKey);
+        const chordData = interpretChord(firstChord, activeKey);
         noteIndicator.updateChord(
           chordData.notes,
           firstChord.root,
           chordData.chordDegrees,
           firstChord.borrowed,
-          currentKey,
+          activeKey,
           firstChord
         );
         chordRing.update(firstChord);
@@ -578,8 +612,8 @@ async function restartSectionFromBeginning({ autoPlay = false } = {}) {
   engine.releaseAllNotes();
   engine.stop();
   currentSecondsPerBeat = 60 / currentBpm;
-  const melodyEvents = createMelodyEvents(currentRawNotes, currentKey);
-  const chordEvents = createChordEvents(currentRawChords, currentKey);
+  const melodyEvents = createMelodyEvents(currentRawNotes, currentKey, currentSectionKeys);
+  const chordEvents = createChordEvents(currentRawChords, currentKey, currentSectionKeys);
   currentMelodyEvents = melodyEvents;
   currentChordEvents = chordEvents;
   lastReleaseTick = getLastReleaseTick(melodyEvents, chordEvents);
@@ -588,6 +622,7 @@ async function restartSectionFromBeginning({ autoPlay = false } = {}) {
   engine.scheduleChords(chordEvents);
   controls.updateProgress(0);
   timeline.updateProgress(0);
+  syncDisplayedKeyAtBeat(1);
   chordRing.update(null, null, null);
   noteIndicator.reset();
   setupProgressTracking();
@@ -612,6 +647,8 @@ function setupProgressTracking() {
     const progressTicks = lastReleaseTick > 0 ? lastReleaseTick : totalTicks;
 
     const ratio = progressTicks > 0 ? Math.min(1, currentTicks / progressTicks) : 0;
+    const currentBeat = (currentTicks / 192) + 1;
+    syncDisplayedKeyAtBeat(currentBeat);
 
     controls.updateProgress(ratio);
     timeline.updateProgress(ratio);
@@ -650,7 +687,7 @@ function setupProgressTracking() {
           currentChordInfo.root,
           currentChordInfo.degrees,
           currentChordInfo.borrowed,
-          currentKey,
+          currentChordInfo.key || currentKey,
           currentChordInfo.chord
         );
         chordRing.update(currentChordInfo.chord);
@@ -695,6 +732,8 @@ function handleSeek(ratio) {
   
   // Update note indicator with melody and chord at this position
   const currentTicks = Tone.Transport.ticks;
+  const currentBeat = (currentTicks / 192) + 1;
+  syncDisplayedKeyAtBeat(currentBeat);
   
   // Update melody display
   const currentMelodyInfo = findCurrentMelodyAtTick(currentTicks);
@@ -716,7 +755,7 @@ function handleSeek(ratio) {
         currentChordInfo.root,
         currentChordInfo.degrees,
         currentChordInfo.borrowed,
-        currentKey,
+        currentChordInfo.key || currentKey,
         currentChordInfo.chord
       );
       chordRing.update(currentChordInfo.chord);
@@ -773,11 +812,13 @@ function getLastReleaseTick(melodyEvents, chordEvents) {
   return max;
 }
 
-function createMelodyEvents(notesArray, key) {
+function createMelodyEvents(notesArray, key, sectionKeys = currentSectionKeys) {
   const events = [];
   notesArray.forEach((note) => {
     if (note.isRest) return;
-    const absoluteLabel = sdToToneJSNoteName(note.sd, note.octave, key, 4);
+    const noteBeat = note.beat === 0 ? 1 : note.beat;
+    const activeKey = activeSectionKeyAtBeat(sectionKeys, noteBeat, key);
+    const absoluteLabel = sdToToneJSNoteName(note.sd, note.octave, activeKey, 4);
     const relativeLabel = note.sd;
 
     // Handle beat 0 by treating it as beat 1 (normalize to 1-based indexing)
@@ -804,11 +845,13 @@ function createMelodyEvents(notesArray, key) {
   return events;
 }
 
-function createChordEvents(chordsArray, key) {
+function createChordEvents(chordsArray, key, sectionKeys = currentSectionKeys) {
   const events = [];
   chordsArray.forEach((chord) => {
     if (chord.isRest) return;
-    const chordData = interpretChord(chord, key);
+    const chordBeat = chord.beat === 0 ? 1 : chord.beat;
+    const activeKey = activeSectionKeyAtBeat(sectionKeys, chordBeat, key);
+    const chordData = interpretChord(chord, activeKey);
     const displayChordNotes = chordData.notes || [];
     const chordNotes = normalizeToneNotes(displayChordNotes);
     if (!chordNotes.length) return;
@@ -854,7 +897,7 @@ function createChordEvents(chordsArray, key) {
           name: chord.root,
           onTrigger: () => {
             if (isFirstNote) {
-              noteIndicator.updateChord(displayChordNotes, chord.root, chordData.chordDegrees, chord.borrowed, currentKey, chord);
+              noteIndicator.updateChord(displayChordNotes, chord.root, chordData.chordDegrees, chord.borrowed, activeKey, chord);
               chordRing.update(chord);
               isManualChordPreview = false;
             }
@@ -876,7 +919,7 @@ function createChordEvents(chordsArray, key) {
         notes: chordNotes,
         name: chord.root,
         onTrigger: () => {
-          noteIndicator.updateChord(displayChordNotes, chord.root, chordData.chordDegrees, chord.borrowed, currentKey, chord);
+          noteIndicator.updateChord(displayChordNotes, chord.root, chordData.chordDegrees, chord.borrowed, activeKey, chord);
           chordRing.update(chord);
           isManualChordPreview = false;
         },
@@ -937,7 +980,8 @@ function findCurrentMelodyAtTick(tickPosition) {
         };
       }
       
-      const absoluteLabel = sdToToneJSNoteName(note.sd, note.octave, currentKey, 4);
+      const activeKey = activeSectionKeyAtBeat(currentSectionKeys, currentBeat, currentKey);
+      const absoluteLabel = sdToToneJSNoteName(note.sd, note.octave, activeKey, 4);
       const relativeLabel = note.sd;
       return {
         note,
@@ -1202,11 +1246,13 @@ function findCurrentChordAtTick(tickPosition) {
           notes: null,
           root: null,
           degrees: null,
-          borrowed: null
+          borrowed: null,
+          key: activeSectionKeyAtBeat(currentSectionKeys, currentBeat, currentKey),
         };
       }
       
-      const chordData = interpretChord(chord, currentKey);
+      const activeKey = activeSectionKeyAtBeat(currentSectionKeys, currentBeat, currentKey);
+      const chordData = interpretChord(chord, activeKey);
       const notes = chordData.notes || [];
       return {
         chord,
@@ -1214,7 +1260,8 @@ function findCurrentChordAtTick(tickPosition) {
         notes,
         root: chord.root,
         degrees: chordData.chordDegrees,
-        borrowed: chord.borrowed
+        borrowed: chord.borrowed,
+        key: activeKey,
       };
     }
   }
@@ -1255,8 +1302,8 @@ async function updatePlaybackSettings() {
   noteIndicator.reset();
 
   // Re-create events with new settings (arpeggiation)
-  const melodyEvents = createMelodyEvents(currentRawNotes, currentKey);
-  const chordEvents = createChordEvents(currentRawChords, currentKey);
+  const melodyEvents = createMelodyEvents(currentRawNotes, currentKey, currentSectionKeys);
+  const chordEvents = createChordEvents(currentRawChords, currentKey, currentSectionKeys);
 
   currentMelodyEvents = melodyEvents;
   currentChordEvents = chordEvents;
@@ -1295,7 +1342,7 @@ async function updatePlaybackSettings() {
         currentChordInfo.root,
         currentChordInfo.degrees,
         currentChordInfo.borrowed,
-        currentKey,
+        currentChordInfo.key || currentKey,
         currentChordInfo.chord
       );
       // Also update chord ring if needed

@@ -1587,6 +1587,8 @@ export function renderChordRing(container, options = {}) {
         currentKey = key;
       }
       updateKeyDisplay(key);
+      draw();
+      updateTransitionTable();
     },
   };
 }

@@ -60,6 +60,8 @@ export function renderTimeline(container, options = {}) {
     let logicalHeight = 0;
     let firstBeat = 1;
     let numBeats = 4; // Default to 4/4 time
+    let currentSectionKeys = [];
+    let currentPlaybackKey = null;
     
     // Hover state variables declared here to avoid Temporal Dead Zone errors during initial draw
     let currentHoveredChord = null;
@@ -74,6 +76,30 @@ export function renderTimeline(container, options = {}) {
     const BORROWED_ROW_OFFSET = 0.3;
     const BORROWED_FONT_SCALE = 0.55;
     const BORROWED_FONT = `500 ${MIN_CHORD_FONT_SIZE}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+
+    function normalizeTonic(tonic) {
+        return String(tonic || "C")
+            .replace(/♭/g, "b")
+            .replace(/♯/g, "#")
+            .replace(/♮/g, "");
+    }
+
+    function activeSectionKeyAtBeat(beat) {
+        if (!Array.isArray(currentSectionKeys) || currentSectionKeys.length === 0) return currentKey;
+        let chosen = currentSectionKeys[0];
+        for (const key of currentSectionKeys) {
+            if ((key?.beat ?? 1) <= beat) chosen = key;
+            else break;
+        }
+        return {
+            tonic: normalizeTonic(chosen?.tonic || currentKey?.tonic || "C"),
+            scale: chosen?.scale || currentKey?.scale || "major",
+        };
+    }
+
+    function timelineRenderKey() {
+        return currentPlaybackKey || currentKey;
+    }
 
     function timelineLabelVerticalSpan(symbol, fontSize, borrowedLabel) {
         const ink = romanNumeralInkExtents(ctx, symbol, fontSize, 0);
@@ -139,7 +165,8 @@ export function renderTimeline(container, options = {}) {
             const innerW = w - CHORD_LABEL_PAD.x * 2;
             const innerH = blockHeight - CHORD_LABEL_PAD.y * 2;
 
-            ctx.fillStyle = getScaleDegreeColor(chord.root, currentKey.scale) || "#888";
+            const renderKey = timelineRenderKey();
+            ctx.fillStyle = getScaleDegreeColor(chord.root, renderKey.scale) || "#888";
             ctx.fillRect(x, y, w, blockHeight);
 
             // Border
@@ -149,7 +176,7 @@ export function renderTimeline(container, options = {}) {
 
             // Label
             if (innerW > 12 && innerH > 12) {
-                const fullSymbol = getChordSymbol(chord, currentKey);
+                const fullSymbol = getChordSymbol(chord, renderKey);
                 const symbol = stripBorrowedTags(fullSymbol);
                 const borrowedLabel = borrowedAbbrev(chord.borrowed);
                 const fitLabel = (size) => {
@@ -452,13 +479,14 @@ export function renderTimeline(container, options = {}) {
     }
 
     function showTooltip(node) {
-        const displayLabel = stripBorrowedTags(getChordSymbol(node.chord, currentKey));
-        const alternateLabel = getChordLetterName(node.chord, currentKey);
+        const renderKey = timelineRenderKey();
+        const displayLabel = stripBorrowedTags(getChordSymbol(node.chord, renderKey));
+        const alternateLabel = getChordLetterName(node.chord, renderKey);
         const borrowedLabel = borrowedAbbrev(node.chord.borrowed);
-        const pronunciationHtml = pronunciationDisplayHtml(getChordPronunciation(node.chord, currentKey));
+        const pronunciationHtml = pronunciationDisplayHtml(getChordPronunciation(node.chord, renderKey));
         
         const formattedJson = formatChordJson(node.chord);
-        const nodeColor = getScaleDegreeColor(node.chord.root, currentKey.scale) || "#888";
+        const nodeColor = getScaleDegreeColor(node.chord.root, renderKey.scale) || "#888";
         
         let contextHtml = `
             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 11px; color: #cbd5e1; display: flex; flex-direction: column; gap: 4px; text-align: center;">
@@ -583,6 +611,10 @@ export function renderTimeline(container, options = {}) {
         setSongData(chords, key, lengthBeats, metadata = null) {
             currentChords = chords || [];
             currentKey = key;
+            currentPlaybackKey = key || null;
+            currentSectionKeys = Array.isArray(metadata?.keys)
+                ? [...metadata.keys].sort((a, b) => (a?.beat ?? 1) - (b?.beat ?? 1))
+                : [];
             songLengthBeats = lengthBeats || 1;
             
             // Get firstBeat and numBeats from metadata.meters
@@ -628,6 +660,8 @@ export function renderTimeline(container, options = {}) {
 
         updateProgress(ratio) {
             currentProgressRatio = ratio;
+            const approxBeat = firstBeat + ratio * songLengthBeats;
+            currentPlaybackKey = activeSectionKeyAtBeat(approxBeat);
             draw();
         },
         forceRelayout() {

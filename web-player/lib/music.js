@@ -549,6 +549,12 @@ function resolveChordRootSD(rootNoteName, key) {
 }
 
 function calculateScaleDegrees(toneJSNames, degreeIndices, chordRootSD, chordDegrees, chordType, originalKey) {
+  const extensionBaseDegree = {
+    3: "7", // chord seventh
+    4: "2", // 9th
+    5: "4", // 11th
+    6: "6", // 13th
+  };
   return toneJSNames.map((noteName, index) => {
     const degreeIdx = degreeIndices[index];
     let degree;
@@ -556,9 +562,9 @@ function calculateScaleDegrees(toneJSNames, degreeIndices, chordRootSD, chordDeg
     if (degreeIdx < 3) {
       // Triad notes use chordDegrees
       degree = chordDegrees[degreeIdx];
-    } else if (degreeIdx === 3 && chordType === 7) {
-      // 7th note uses b7
-      degree = "b7";
+    } else if (extensionBaseDegree[degreeIdx]) {
+      // Upper structure indices come from the chord-root major frame.
+      degree = extensionBaseDegree[degreeIdx];
     } else {
       // Fallback (shouldn't happen)
       degree = "1";
@@ -763,17 +769,12 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
 // e.g., actual="Ab", diatonic="A" -> returns "b"
 // e.g., actual="F#", diatonic="F" -> returns "#"
 function getModifierDifference(actual, diatonic) {
-  const getAccidentalValue = (note) => {
-    if (note.includes('bb')) return -2;
-    if (note.includes('b')) return -1;
-    if (note.includes('##') || note.includes('x')) return 2;
-    if (note.includes('#')) return 1;
-    return 0;
-  };
-
-  const actualVal = getAccidentalValue(actual);
-  const diatonicVal = getAccidentalValue(diatonic);
-  const diff = actualVal - diatonicVal;
+  const actualPc = noteToPcLocal(actual);
+  const diatonicPc = noteToPcLocal(diatonic);
+  if (actualPc == null || diatonicPc == null) return "";
+  let diff = actualPc - diatonicPc;
+  while (diff > 6) diff -= 12;
+  while (diff < -6) diff += 12;
 
   if (diff === 0) return "";
   if (diff === -1) return "b";
