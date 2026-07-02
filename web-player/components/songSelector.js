@@ -83,9 +83,14 @@ export function renderSongSelector(container, options = {}) {
   const backBtn = container.querySelector("#sel-back");
   const navPlayableSelect = container.querySelector("#sel-nav-playable-select");
   const navPlayableSort = container.querySelector("#sel-nav-playable-sort");
+  const urlFooter = container.querySelector("#sel-url-footer");
   const urlInput = container.querySelector("#sel-url-input");
   const urlAddBtn = container.querySelector("#sel-url-add");
   const urlStatus = container.querySelector("#sel-url-status");
+
+  function setUrlFooterVisible(visible) {
+    if (urlFooter) urlFooter.hidden = !visible;
+  }
 
   // Client-side index from unified library API
   let songs = [];          // [{slug, artist, title, flags, playable, cacheKey, _t, _a}]
@@ -262,6 +267,7 @@ export function renderSongSelector(container, options = {}) {
 
   // ---- Search view ----
   function showSearch() {
+    setUrlFooterVisible(true);
     showSongNav({ showBack: false });
     body.innerHTML = `
       <div class="sel-field">
@@ -445,6 +451,7 @@ export function renderSongSelector(container, options = {}) {
 
   // ---- Artist view ----
   function showArtist(artistName) {
+    setUrlFooterVisible(true);
     showSongNav({ showBack: true });
     const list = songs
       .filter((s) => (s.artist || "") === artistName)
@@ -508,6 +515,7 @@ export function renderSongSelector(container, options = {}) {
     if (userNavigation) {
       options.onSongPageOpen?.();
     }
+    setUrlFooterVisible(false);
     showSongNav({ activeSlug: slug, showBack: false });
     body.innerHTML = `<div class="sel-hint">Loading song…</div>`;
     let data;
