@@ -1,14 +1,10 @@
 /**
  * Verify pronunciation fixes for known audit issues.
- * Writes NDJSON to debug-c0f3ca.log via ingest endpoint.
  */
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
-import fs from 'node:fs';
 
 const REPO = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const LOG = path.join(REPO, 'debug-c0f3ca.log');
-const ENDPOINT = 'http://127.0.0.1:7355/ingest/9027d9a5-7140-4ebc-92e0-0d781f81d4e6';
 
 const { getChordPronunciation } = await import(
   pathToFileURL(path.join(REPO, 'web-player', 'lib', 'romanNumeralSpeak.js')).href
@@ -16,24 +12,6 @@ const { getChordPronunciation } = await import(
 const { getChordSymbol } = await import(
   pathToFileURL(path.join(REPO, 'web-player', 'lib', 'jsonToSymbol.js')).href
 );
-
-function log(hypothesisId, message, data) {
-  const entry = {
-    sessionId: 'c0f3ca',
-    runId: 'post-fix',
-    hypothesisId,
-    location: 'pronunciationFixVerify.mjs',
-    message,
-    data,
-    timestamp: Date.now(),
-  };
-  fs.appendFileSync(LOG, `${JSON.stringify(entry)}\n`);
-  fetch(ENDPOINT, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': 'c0f3ca' },
-    body: JSON.stringify(entry),
-  }).catch(() => {});
-}
 
 const cases = [
   {
@@ -87,8 +65,9 @@ for (const c of cases) {
   }
   const pass = issues.length === 0;
   if (!pass) failed += 1;
-  log(c.id, pass ? 'PASS' : 'FAIL', { symbol, ...p, issues });
+  console.log(`${pass ? 'PASS' : 'FAIL'} ${c.id} ${symbol} — analytic: ${p.analytic} | functional: ${p.functional}`);
+  if (issues.length) console.log('  ', issues.join('; '));
 }
 
-log('SUMMARY', failed ? 'FAILURES' : 'ALL_PASS', { failed, total: cases.length });
+console.log(failed ? `FAILURES: ${failed}/${cases.length}` : `ALL_PASS: ${cases.length}/${cases.length}`);
 process.exit(failed > 0 ? 1 : 0);

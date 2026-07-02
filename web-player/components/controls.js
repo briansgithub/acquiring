@@ -3,7 +3,7 @@ export const CONTROL_DEFAULTS = {
   melodyVolume: -16,
   chordVolume: -9,
   arpeggiated: false,
-  arpeggiationSlider: 7,
+  arpeggiationSlider: 6,
   arpFixedSpeed: true,
   arpUnlockFromTempo: true,
 };

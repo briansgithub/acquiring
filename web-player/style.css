@@ -1313,17 +1313,30 @@ body {
 
 .sel-song-nav-top {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 10px;
 }
 
 .sel-song-nav-sort-wrap {
-  flex: 1;
-  min-width: 0;
-  max-width: 140px;
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
+.sel-sort-label {
+  flex-shrink: 0;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.sel-playable-sort {
+  width: auto;
+  min-width: 0;
+  max-width: 110px;
+  padding: 4px 6px;
+  font-size: 12px;
+  border-radius: 6px;
 }
 
 .sel-song-nav-picker {
@@ -1796,6 +1809,16 @@ body {
   pointer-events: none;
   user-select: none;
   cursor: default;
+}
+
+.sel-url-footer {
+  flex-shrink: 0;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--divider);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .sel-url-row {

@@ -3,7 +3,9 @@ export const TICKS_PER_BEAT = 192;
 /** Slider 0 = 1/8 cycle/beat (slowest) … 6 = 1/2 … 7 = 1 … 14 = 8 (fastest). */
 export const ARP_SLIDER_MIN = 0;
 export const ARP_SLIDER_MAX = 14;
-export const ARP_SLIDER_DEFAULT = 7;
+export const ARP_SLIDER_DEFAULT = 6;
+/** Highlight arp pills for slider positions at or below this index (1/2 cycle/beat). */
+export const ARP_HIGHLIGHT_MAX_SLIDER = 6;
 
 const ARP_FRACTIONAL_COUNT = 7;
 

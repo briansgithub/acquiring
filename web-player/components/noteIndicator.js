@@ -66,7 +66,7 @@ export function renderNoteIndicator(container, options = {}) {
     <div class="indicator-stack">
       <div class="indicator-melody-section">
         <div class="indicator-volume-row melody-volume-row">
-          <label for="melody-volume" class="indicator-volume-label">Melody vol:</label>
+          <label for="melody-volume" class="indicator-volume-label">Melody volume:</label>
           <input type="range" id="melody-volume" min="-30" max="0" value="-16" step="1" class="volume-slider indicator-volume-slider">
           <span id="melody-volume-label" class="indicator-volume-value">-16dB</span>
         </div>

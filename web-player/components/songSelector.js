@@ -51,7 +51,7 @@ export function renderSongSelector(container, options = {}) {
     <div id="sel-song-nav" class="sel-song-nav" hidden>
       <div class="sel-song-nav-top">
         <div class="sel-song-nav-sort-wrap">
-          <label class="sel-label" for="sel-nav-playable-sort">Sort by</label>
+          <label class="sel-label sel-sort-label" for="sel-nav-playable-sort">Sort by:</label>
           <select id="sel-nav-playable-sort" class="sel-select sel-playable-sort">
             <option value="complexity" selected>Complexity</option>
             <option value="alphabetical">Alphabetically</option>
@@ -66,6 +66,16 @@ export function renderSongSelector(container, options = {}) {
       </div>
     </div>
     <div id="sel-body" class="selector-body"></div>
+    <div id="sel-url-footer" class="sel-url-footer">
+      <label class="sel-label" for="sel-url-input">Add song by URL</label>
+      <div class="sel-url-example">https://www.hooktheory.com/theorytab/view/artist/song</div>
+      <div class="sel-url-row">
+        <input id="sel-url-input" class="sel-input" type="url"
+          autocomplete="off" spellcheck="false" />
+        <button id="sel-url-add" class="sel-url-add" type="button">Add</button>
+      </div>
+      <div id="sel-url-status" class="sel-hint"></div>
+    </div>
   `;
 
   const body = container.querySelector("#sel-body");
@@ -73,6 +83,9 @@ export function renderSongSelector(container, options = {}) {
   const backBtn = container.querySelector("#sel-back");
   const navPlayableSelect = container.querySelector("#sel-nav-playable-select");
   const navPlayableSort = container.querySelector("#sel-nav-playable-sort");
+  const urlInput = container.querySelector("#sel-url-input");
+  const urlAddBtn = container.querySelector("#sel-url-add");
+  const urlStatus = container.querySelector("#sel-url-status");
 
   // Client-side index from unified library API
   let songs = [];          // [{slug, artist, title, flags, playable, cacheKey, _t, _a}]
@@ -252,20 +265,10 @@ export function renderSongSelector(container, options = {}) {
     showSongNav({ showBack: false });
     body.innerHTML = `
       <div class="sel-field">
-        <label class="sel-label" for="sel-url-input">Add song by URL</label>
-        <div class="sel-url-example">https://www.hooktheory.com/theorytab/view/artist/song</div>
-        <div class="sel-url-row">
-          <input id="sel-url-input" class="sel-input" type="url"
-            autocomplete="off" spellcheck="false" />
-          <button id="sel-url-add" class="sel-url-add" type="button">Add</button>
-        </div>
-        <div id="sel-url-status" class="sel-hint"></div>
-      </div>
-      <div class="sel-field">
         <label class="sel-label" for="sel-song-input">Search by song</label>
         <div class="autocomplete">
           <input id="sel-song-input" class="sel-input" type="text"
-            placeholder="Type 3+ letters…" autocomplete="off" spellcheck="false" />
+            autocomplete="off" spellcheck="false" />
           <div id="sel-song-drop" class="autocomplete-drop" hidden></div>
         </div>
       </div>
@@ -273,7 +276,7 @@ export function renderSongSelector(container, options = {}) {
         <label class="sel-label" for="sel-artist-input">Search by artist</label>
         <div class="autocomplete">
           <input id="sel-artist-input" class="sel-input" type="text"
-            placeholder="Type 3+ letters…" autocomplete="off" spellcheck="false" />
+            autocomplete="off" spellcheck="false" />
           <div id="sel-artist-drop" class="autocomplete-drop" hidden></div>
         </div>
       </div>
@@ -285,12 +288,8 @@ export function renderSongSelector(container, options = {}) {
     const artistInput = body.querySelector("#sel-artist-input");
     const artistDrop = body.querySelector("#sel-artist-drop");
     const hint = body.querySelector("#sel-hint");
-    const urlInput = body.querySelector("#sel-url-input");
-    const urlAddBtn = body.querySelector("#sel-url-add");
-    const urlStatus = body.querySelector("#sel-url-status");
 
     updateHint(hint);
-    wireAddUrl(urlInput, urlAddBtn, urlStatus);
 
     const songRun = wireSongInput(songInput, songDrop);
     const artistRun = wireArtistInput(artistInput, artistDrop);
@@ -543,6 +542,7 @@ export function renderSongSelector(container, options = {}) {
   }
 
   // init: render once, load index, refresh hint (don't wipe inputs)
+  wireAddUrl(urlInput, urlAddBtn, urlStatus);
   showSearch();
   loadIndex().then(() => {
     updateHint(body.querySelector("#sel-hint"));

@@ -12,6 +12,7 @@ import { getChordSymbol } from "./lib/jsonToSymbol.js";
 import {
   arpOffsetTicks,
   arpStepMs,
+  ARP_HIGHLIGHT_MAX_SLIDER,
   isArpeggiationActive as arpActive,
   sliderIndexToCyclesPerBeat,
   TICKS_PER_BEAT,
@@ -35,8 +36,6 @@ let isArpeggiated = CONTROL_DEFAULTS.arpeggiated;
 let arpeggiationSlider = CONTROL_DEFAULTS.arpeggiationSlider;
 let arpFixedSpeed = CONTROL_DEFAULTS.arpFixedSpeed;
 let arpUnlockFromTempo = CONTROL_DEFAULTS.arpUnlockFromTempo;
-
-const ARP_HIGHLIGHT_MIN_MS = 50;
 
 function getArpeggioBpm() {
   return arpUnlockFromTempo ? originalBpm : currentBpm;
@@ -62,12 +61,12 @@ function getArpeggioStepMs(noteCount) {
   return arpStepMs(getCyclesPerBeat(), noteCount, getArpeggioBpm(), arpFixedSpeed);
 }
 
-function shouldHighlightArpeggioNote(noteCount) {
-  return isArpeggiationActive() && getArpeggioStepMs(noteCount) >= ARP_HIGHLIGHT_MIN_MS;
+function shouldHighlightArpeggioNote() {
+  return isArpeggiationActive() && arpeggiationSlider <= ARP_HIGHLIGHT_MAX_SLIDER;
 }
 
 function highlightArpeggioNote(note, noteCount) {
-  if (!shouldHighlightArpeggioNote(noteCount)) return;
+  if (!shouldHighlightArpeggioNote()) return;
   noteIndicator.highlightNote(note, getArpeggioStepMs(noteCount));
 }
 
@@ -817,7 +816,7 @@ function createChordEvents(chordsArray, key) {
               chordRing.update(chord);
               isManualChordPreview = false;
             }
-            if (shouldHighlightArpeggioNote(noteCount)) {
+            if (shouldHighlightArpeggioNote()) {
               noteIndicator.highlightNote(thisNote, stepMs);
             }
           }
