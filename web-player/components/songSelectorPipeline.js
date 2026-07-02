@@ -20,6 +20,22 @@ export function btnClass(done) {
   return done ? "entry-btn entry-btn--done" : "entry-btn entry-btn--pending";
 }
 
+const PIPELINE_FLAG_KEYS = {
+  harvest: "harvested",
+  tested: "tested",
+};
+
+export function pipelineButtonLabel(action, done) {
+  switch (action) {
+    case "harvest":
+      return done ? "Fetched" : "Fetch";
+    case "tested":
+      return done ? "Tested" : "Test";
+    default:
+      return action;
+  }
+}
+
 export function pipelineStatusHtml(action, done, esc) {
   const cls = done
     ? "entry-btn entry-btn--done entry-btn--readonly"
@@ -27,18 +43,14 @@ export function pipelineStatusHtml(action, done, esc) {
   const title = done
     ? "Song is in the catalog DB (automatic)"
     : "Not in catalog — use Add song by URL above";
-  return `<span class="${cls}" data-action="${action}" title="${esc(title)}">${action}</span>`;
+  const label = action === "catalogued" ? "Catalogued" : action;
+  return `<span class="${cls}" data-action="${action}" title="${esc(title)}">${label}</span>`;
 }
-
-const PIPELINE_LABELS = {
-  harvest: "Fetch",
-  tested: "tested",
-};
 
 export function pipelineBtnHtml(action, done, esc, { disabled = false, titleOverride = null } = {}) {
   const tips = PIPELINE_TIPS[action];
   const title = titleOverride ?? (done ? tips.done : tips.pending);
-  const label = PIPELINE_LABELS[action] || action;
+  const label = pipelineButtonLabel(action, done);
   const dis = disabled ? " pipeline-action-btn--disabled" : "";
   const disAttr = disabled ? " disabled" : "";
   return `<button type="button" class="${btnClass(done)} pipeline-action-btn${dis}" data-action="${action}" data-done="${done ? "1" : "0"}" title="${esc(title)}"${disAttr}>${label}</button>`;
@@ -234,10 +246,12 @@ function applyFlagsToButtons(body, flags) {
     catalogued.title = done
       ? "Song is in the catalog DB (automatic)"
       : "Not in catalog — use Add song by URL above";
+    catalogued.textContent = "Catalogued";
   }
   for (const btn of body.querySelectorAll(".pipeline-action-btn")) {
     const action = btn.dataset.action;
-    const done = !!flags[action];
+    const flagKey = PIPELINE_FLAG_KEYS[action] || action;
+    const done = !!flags[flagKey];
     const needsScrape = action === "tested" && !flags.scrapeReady;
     btn.className = `${btnClass(done)} pipeline-action-btn${needsScrape ? " pipeline-action-btn--disabled" : ""}`;
     btn.disabled = needsScrape;
@@ -252,7 +266,7 @@ function applyFlagsToButtons(body, flags) {
         btn.title = done ? tips.done : tips.pending;
       }
     }
-    btn.textContent = PIPELINE_LABELS[action] || action;
+    btn.textContent = pipelineButtonLabel(action, done);
   }
 }
 
@@ -322,7 +336,6 @@ export function wirePipelineButtons(body, slug, flags, callbacks) {
       onRun: async () => {
         if (btn.disabled) return;
         btn.classList.add("pipeline-running");
-        const label = btn.textContent;
         btn.textContent = "…";
         setStatus(action === "harvest" ? "Starting Fetch…" : `Running ${action}…`);
         try {
@@ -345,8 +358,8 @@ export function wirePipelineButtons(body, slug, flags, callbacks) {
           setStatus(err.message);
         } finally {
           btn.classList.remove("pipeline-running");
-          if (!btn.classList.contains("pipeline-holding")) {
-            btn.textContent = label;
+          if (!btn.classList.contains("pipeline-holding") && btn.textContent === "…") {
+            btn.textContent = pipelineButtonLabel(action, btn.dataset.done === "1");
           }
         }
       },

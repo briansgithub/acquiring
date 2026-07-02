@@ -100,7 +100,7 @@ export function renderNoteIndicator(container, options = {}) {
         <div class="notes-list notes-list--chord" id="chord-notes" style="min-height:32px;margin-top:2px;"></div>
         <div class="notes-list notes-list--chord" id="chord-degrees-pills" style="min-height:32px;margin-top:4px;"></div>
         <div class="indicator-volume-row">
-          <label for="chord-volume" class="indicator-volume-label">Volume:</label>
+          <label for="chord-volume" class="indicator-volume-label">Chord volume:</label>
           <input type="range" id="chord-volume" min="0" max="100" value="${CONTROL_DEFAULTS.chordVolume}" step="1" class="volume-slider indicator-volume-slider">
           <span id="chord-volume-label" class="indicator-volume-value">${formatVolumePercent(CONTROL_DEFAULTS.chordVolume)}</span>
         </div>
