@@ -1,3 +1,5 @@
+import { percentToDb } from "../lib/volume.js";
+
 export class AudioEngine {
   constructor() {
     const Tone = window.Tone;
@@ -140,14 +142,14 @@ export class AudioEngine {
     }, "16n");
   }
 
-  setMelodyVolume(volume) {
+  setMelodyVolume(percent) {
     if (this.melodySynth) {
-      this.melodySynth.volume.value = volume <= -30 ? -Infinity : volume;
+      this.melodySynth.volume.value = percentToDb(percent);
     }
   }
 
-  setChordVolume(volume) {
-    const volumeValue = volume <= -30 ? -Infinity : volume;
+  setChordVolume(percent) {
+    const volumeValue = percentToDb(percent);
     if (this.chordSynth) {
       this.chordSynth.volume.value = volumeValue;
     }

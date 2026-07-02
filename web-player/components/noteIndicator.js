@@ -5,6 +5,7 @@ import { romanNumeralToHtml } from "../lib/romanNumeralCanvas.js";
 import { verifyScaleDegrees } from "../lib/scaleDegreeVerifier.js";
 import { CONTROL_DEFAULTS } from "./controls.js";
 import { ARP_SLIDER_MAX, ARP_SLIDER_MIN, formatArpCyclesLabel } from "../lib/timing.js";
+import { formatVolumePercent } from "../lib/volume.js";
 
 const VERIFY_DEGREES = typeof window !== "undefined"
   && new URLSearchParams(window.location.search).get("verifyDegrees") === "1";
@@ -67,8 +68,8 @@ export function renderNoteIndicator(container, options = {}) {
       <div class="indicator-melody-section">
         <div class="indicator-volume-row melody-volume-row">
           <label for="melody-volume" class="indicator-volume-label">Melody volume:</label>
-          <input type="range" id="melody-volume" min="-30" max="0" value="-16" step="1" class="volume-slider indicator-volume-slider">
-          <span id="melody-volume-label" class="indicator-volume-value">-16dB</span>
+          <input type="range" id="melody-volume" min="0" max="100" value="${CONTROL_DEFAULTS.melodyVolume}" step="1" class="volume-slider indicator-volume-slider">
+          <span id="melody-volume-label" class="indicator-volume-value">${formatVolumePercent(CONTROL_DEFAULTS.melodyVolume)}</span>
         </div>
         <div id="melody-section" class="card indicator-card indicator-card--melody is-collapsed">
           <div class="melody-section-header">
@@ -100,8 +101,8 @@ export function renderNoteIndicator(container, options = {}) {
         <div class="notes-list notes-list--chord" id="chord-degrees-pills" style="min-height:32px;margin-top:4px;"></div>
         <div class="indicator-volume-row">
           <label for="chord-volume" class="indicator-volume-label">Volume:</label>
-          <input type="range" id="chord-volume" min="-30" max="0" value="-9" step="1" class="volume-slider indicator-volume-slider">
-          <span id="chord-volume-label" class="indicator-volume-value">-9dB</span>
+          <input type="range" id="chord-volume" min="0" max="100" value="${CONTROL_DEFAULTS.chordVolume}" step="1" class="volume-slider indicator-volume-slider">
+          <span id="chord-volume-label" class="indicator-volume-value">${formatVolumePercent(CONTROL_DEFAULTS.chordVolume)}</span>
         </div>
         <div class="chord-arpeggio-controls">
           <div class="chord-arpeggio-toggles" id="arp-toggles">
@@ -222,15 +223,15 @@ export function renderNoteIndicator(container, options = {}) {
   });
 
   melodyVolumeSlider.addEventListener("input", (e) => {
-    const volume = Number(e.target.value);
-    melodyVolumeLabel.textContent = `${volume}dB`;
-    options.onMelodyVolumeChange?.(volume);
+    const percent = Number(e.target.value);
+    melodyVolumeLabel.textContent = formatVolumePercent(percent);
+    options.onMelodyVolumeChange?.(percent);
   });
 
   chordVolumeSlider.addEventListener("input", (e) => {
-    const volume = Number(e.target.value);
-    chordVolumeLabel.textContent = `${volume}dB`;
-    options.onChordVolumeChange?.(volume);
+    const percent = Number(e.target.value);
+    chordVolumeLabel.textContent = formatVolumePercent(percent);
+    options.onChordVolumeChange?.(percent);
   });
 
   let currentKey = options.key || null;
@@ -564,13 +565,13 @@ export function renderNoteIndicator(container, options = {}) {
       chordBorrowedEl.textContent = "";
       chordBorrowedEl.style.visibility = "hidden";
     },
-    setMelodyVolume(volume) {
-      melodyVolumeSlider.value = volume;
-      melodyVolumeLabel.textContent = `${volume}dB`;
+    setMelodyVolume(percent) {
+      melodyVolumeSlider.value = percent;
+      melodyVolumeLabel.textContent = formatVolumePercent(percent);
     },
-    setChordVolume(volume) {
-      chordVolumeSlider.value = volume;
-      chordVolumeLabel.textContent = `${volume}dB`;
+    setChordVolume(percent) {
+      chordVolumeSlider.value = percent;
+      chordVolumeLabel.textContent = formatVolumePercent(percent);
     },
     resetVolumesToDefaults() {
       const d = CONTROL_DEFAULTS;

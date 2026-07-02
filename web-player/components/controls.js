@@ -1,7 +1,7 @@
 export const CONTROL_DEFAULTS = {
   tempoPercent: 100,
-  melodyVolume: -16,
-  chordVolume: -9,
+  melodyVolume: 16,
+  chordVolume: 35,
   arpeggiated: false,
   arpeggiationSlider: 12,
   arpFixedSpeed: true,

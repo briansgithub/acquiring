@@ -271,6 +271,7 @@ const controls = renderControls({
     forceRootPosition = false;
     noteIndicator.setRootPositionChecked(false);
     noteIndicator.resetArpToDefaults();
+    noteIndicator.resetVolumesToDefaults();
     controls.resetSlidersToDefaults();
     engine.setMelodyVolume(CONTROL_DEFAULTS.melodyVolume);
     engine.setChordVolume(CONTROL_DEFAULTS.chordVolume);
