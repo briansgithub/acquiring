@@ -172,3 +172,61 @@ Restored `setKey(key)` on the note indicator — updates internal `currentKey` u
 - `web-player/player.js` — `loadSection`, `resetIdleState`
 - `web-player/components/noteIndicator.js` — `setKey()`
 - [ROMAN_NUMERALS.md](./ROMAN_NUMERALS.md) — other changes in same commit
+
+---
+
+## BUG-004: Secondary dominants rendered on root radius instead of functional radius
+
+| Field | Detail |
+|-------|--------|
+| **Date reported** | 2026-07-02 |
+| **Date resolved** | 2026-07-02 |
+| **Severity** | Medium — chord ring communicates wrong functional placement for applied harmony |
+| **Affected area** | `web-player/components/chordRing.js` |
+| **Repro** | Load songs with applied chords (`V/x`, `vii°/x`). Node appears on `root` radius instead of the radius implied by applied harmony in the current key. |
+| **Status** | **Resolved** |
+
+### Symptom
+
+Chord ring placement previously bucketed nodes by `chord.root` only. For applied chords, this made radius placement disagree with harmonic function in the active key. Coloring was correct for root degree but placement was misleading.
+
+### Root cause
+
+`setSongData()` grouped by root directly and all geometry/hit-test code assumed group index == both placement and color degree.
+
+### Final solution
+
+Split ring node metadata into:
+- `placementDegree` — where node is drawn (geometry)
+- `colorDegree` — what degree color is used (always original `root`)
+
+For applied chords (`applied` 1..7), `placementDegree` is derived by:
+1. `targetTonic = getNoteLabel(root, currentKey)`
+2. `appliedRoot = getNoteLabel(applied, { tonic: targetTonic, scale: "major" })`
+3. map `appliedRoot` back to the current key degree (exact label, then note-letter fallback)
+
+Then:
+- draw/hit-test/tooltip anchoring use `placementDegree`
+- node/tooltip/transition colors use `colorDegree`
+- click playback remains unchanged (original chord object)
+
+### Verification
+
+Closed-loop coverage for Gusty Garden Galaxy:
+- Script: `_Research_testing/gustySecondaryDominantRingClosedLoopTest.mjs`
+- Outputs:
+  - `_Research_testing/gustySecondaryDominantRingClosedLoopReport.json`
+  - `_Research_testing/gustySecondaryDominantRingClosedLoopTable.md`
+
+Result:
+- Sections checked: 5
+- Chords checked: 80
+- Applied chords checked: 5
+- Affected applied chords: 5
+- Failures: 0
+
+### References
+
+- `web-player/components/chordRing.js`
+- `_Research_testing/gustySecondaryDominantRingClosedLoopTest.mjs`
+- `_Research_testing/gustySecondaryDominantRingClosedLoopTable.md`

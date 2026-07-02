@@ -61,7 +61,7 @@ Key state lives in `player.js`: `currentRawChords`, `currentKey`, `currentChordE
 | File | Role |
 |---|---|
 | `components/controls.js` | Play/seek/tempo, melody+chord volume, arpeggiate toggle/speed; section picker (song dropdown hidden — load via Song Selector) |
-| `components/chordRing.js` | Circular chord visualizer; manual chord preview on click; transition table; `ResizeObserver` keeps canvas sharp on layout changes |
+| `components/chordRing.js` | Circular chord visualizer; manual chord preview on click; transition table; `ResizeObserver` keeps canvas sharp on layout changes. Applied chords use split metadata: `placementDegree` (geometry in current key) vs `colorDegree` (always original `root` for node/tooltip/transition colors). |
 | `components/noteIndicator.js` | "Now Playing" Melody + Chord cards (note pills, scale-degree pills, Roman symbol via `romanNumeralToHtml`, pronunciation block, borrowed tag, root-position checkbox) |
 | `components/timeline.js` | Beat-axis timeline; click-to-preview chords; song URL display |
 | `components/songSelector.js` | Left-panel catalog browser: add-by-URL, playable dropdown, light-catalog modal, pipeline buttons, auto-load when pipeline complete |
@@ -109,6 +109,12 @@ Roman/letter symbols are built independently in [`lib/jsonToSymbol.js`](../web-p
 **Display** (figured-bass stacks, °/ø quality glyphs, HTML + canvas): [`lib/romanNumeralCanvas.js`](../web-player/lib/romanNumeralCanvas.js) — see [ROMAN_NUMERALS.md](./ROMAN_NUMERALS.md).
 
 **Pronunciation** (spoken readings): [`lib/romanNumeralSpeak.js`](../web-player/lib/romanNumeralSpeak.js) — see [PRONUNCIATION.md](./PRONUNCIATION.md).
+
+### Chord ring placement semantics
+- Non-applied chords: node radius/angle placement follows `root`.
+- Applied chords (`applied` 1..7): node placement is computed by resolving the applied chord root note in the current key and mapping that note back to a scale degree (`placementDegree`).
+- Color is intentionally decoupled from placement: node color, tooltip scale-degree color chip, and transition table colors stay tied to original `root` (`colorDegree`), even when the node is drawn on another radius.
+- Closed-loop verification fixture: `_Research_testing/gustySecondaryDominantRingClosedLoopTest.mjs` with outputs in `_Research_testing/gustySecondaryDominantRingClosedLoop{Report,Table}.(json|md)` for Gusty Garden Galaxy.
 
 ---
 
