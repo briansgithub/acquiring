@@ -175,6 +175,10 @@ const chordRing = renderChordRing(ringPane, {
     noteIndicator.updateChord(chordData.notes, chordData.root, chordData.chordDegrees, chordData.borrowed, currentKey, chordData.chord);
   },
   labelMode: useRomanNumerals,
+  onPhraseClick: ({ firstBeat }) => {
+    if (!Number.isFinite(firstBeat)) return;
+    jumpToPhraseMeasure(firstBeat);
+  },
   onLabelModeChange: (useRoman) => {
     useRomanNumerals = useRoman;
     noteIndicator.setLabelMode(useRomanNumerals);
@@ -524,7 +528,16 @@ async function loadSection(songIndex, sectionIndex) {
     
     // Compute all chord transitions for the entire section
     const transitionData = computeChordTransitions(currentRawChords, currentKey);
-    chordRing.updateTransitions(transitionData.full, transitionData.rootOnly);
+    chordRing.updateTransitions(
+      transitionData.full,
+      transitionData.rootOnly,
+      transitionData.fullLongestPhrases,
+      transitionData.rootLongestPhrases,
+      transitionData.fullPhraseFirstBeats,
+      transitionData.rootPhraseFirstBeats,
+      transitionData.fullTransitionFirstBeats,
+      transitionData.rootTransitionFirstBeats
+    );
 
     // Update indicator immediately with the first chord if it starts at beat 0 or 1
     // This fixes the issue where the first chord plays but indicator doesn't show until second chord
@@ -936,9 +949,24 @@ function findCurrentMelodyAtTick(tickPosition) {
 function computeChordTransitions(chordsArray, key) {
   const transitions = new Map();
   const rootTransitions = new Map();
+  const fullTransitionFirstBeats = new Map();
+  const rootTransitionFirstBeats = new Map();
+  const fullSequence = [];
+  const rootSequence = [];
   
   if (!chordsArray || !Array.isArray(chordsArray) || chordsArray.length === 0) {
-    return { full: transitions, rootOnly: rootTransitions };
+    return {
+      full: transitions,
+      rootOnly: rootTransitions,
+      fullSequence,
+      rootSequence,
+      fullLongestPhrases: new Map(),
+      rootLongestPhrases: new Map(),
+      fullPhraseFirstBeats: new Map(),
+      rootPhraseFirstBeats: new Map(),
+      fullTransitionFirstBeats,
+      rootTransitionFirstBeats,
+    };
   }
   
   // Filter out rests and sort by beat
@@ -947,7 +975,22 @@ function computeChordTransitions(chordsArray, key) {
     .sort((a, b) => a.beat - b.beat);
   
   if (validChords.length < 2) {
-    return { full: transitions, rootOnly: rootTransitions }; // Need at least 2 chords for a transition
+    for (const chord of validChords) {
+      fullSequence.push(getChordSymbol(chord, key));
+      rootSequence.push(String(chord.root));
+    }
+    return {
+      full: transitions,
+      rootOnly: rootTransitions,
+      fullSequence,
+      rootSequence,
+      fullLongestPhrases: new Map(),
+      rootLongestPhrases: new Map(),
+      fullPhraseFirstBeats: new Map(),
+      rootPhraseFirstBeats: new Map(),
+      fullTransitionFirstBeats,
+      rootTransitionFirstBeats,
+    }; // Need at least 2 chords for a transition
   }
   
   let lastChordSymbol = null;
@@ -955,25 +998,144 @@ function computeChordTransitions(chordsArray, key) {
   
   for (const chord of validChords) {
     const currentChordSymbol = getChordSymbol(chord, key);
-    const currentRoot = chord.root;
+    const currentRoot = String(chord.root);
+    fullSequence.push(currentChordSymbol);
+    rootSequence.push(currentRoot);
     
     // Only count transitions between different chords
     if (lastChordSymbol !== null && lastChordSymbol !== currentChordSymbol) {
       const transitionKey = `${lastChordSymbol} → ${currentChordSymbol}`;
       transitions.set(transitionKey, (transitions.get(transitionKey) || 0) + 1);
+      if (!fullTransitionFirstBeats.has(transitionKey)) {
+        const beat = chord.beat === 0 ? 1 : chord.beat;
+        fullTransitionFirstBeats.set(transitionKey, beat);
+      }
     }
     
     // Count root-only transitions (only between different roots)
     if (lastRoot !== null && lastRoot !== currentRoot) {
       const rootTransitionKey = `${lastRoot} → ${currentRoot}`;
       rootTransitions.set(rootTransitionKey, (rootTransitions.get(rootTransitionKey) || 0) + 1);
+      if (!rootTransitionFirstBeats.has(rootTransitionKey)) {
+        const beat = chord.beat === 0 ? 1 : chord.beat;
+        rootTransitionFirstBeats.set(rootTransitionKey, beat);
+      }
     }
     
     lastChordSymbol = currentChordSymbol;
     lastRoot = currentRoot;
   }
   
-  return { full: transitions, rootOnly: rootTransitions };
+  return {
+    full: transitions,
+    rootOnly: rootTransitions,
+    fullSequence,
+    rootSequence,
+    ...findLongestRepeatedPhrasesWithStarts(fullSequence, validChords, "full"),
+    ...findLongestRepeatedPhrasesWithStarts(rootSequence, validChords, "root"),
+    fullTransitionFirstBeats,
+    rootTransitionFirstBeats,
+  };
+}
+
+function findLongestRepeatedPhrasesWithStarts(sequence, validChords, mode) {
+  const emptyCounts = new Map();
+  const emptyStarts = new Map();
+  if (!Array.isArray(sequence) || sequence.length < 2 || !Array.isArray(validChords)) {
+    return mode === "root"
+      ? { rootLongestPhrases: emptyCounts, rootPhraseFirstBeats: emptyStarts }
+      : { fullLongestPhrases: emptyCounts, fullPhraseFirstBeats: emptyStarts };
+  }
+
+  let selectedLength = 0;
+  for (let phraseLength = sequence.length - 1; phraseLength >= 2; phraseLength--) {
+    if (hasAnyRepeatedPhrase(sequence, phraseLength)) {
+      selectedLength = phraseLength;
+      break;
+    }
+  }
+  if (selectedLength === 0) {
+    selectedLength = sequence.length;
+  }
+
+  const bestCounts = new Map();
+  const bestStarts = new Map();
+  let start = 0;
+  while (start < sequence.length) {
+    const remaining = sequence.length - start;
+    const phraseLength = Math.min(selectedLength, remaining);
+    const phrase = sequence.slice(start, start + phraseLength).join(" → ");
+    bestCounts.set(phrase, (bestCounts.get(phrase) || 0) + 1);
+    if (!bestStarts.has(phrase)) {
+      const phraseStartBeat = validChords[start]?.beat === 0 ? 1 : (validChords[start]?.beat ?? 1);
+      bestStarts.set(phrase, phraseStartBeat);
+    }
+    start += phraseLength;
+  }
+
+  if (mode === "root") {
+    return { rootLongestPhrases: bestCounts, rootPhraseFirstBeats: bestStarts };
+  }
+  return { fullLongestPhrases: bestCounts, fullPhraseFirstBeats: bestStarts };
+}
+
+function hasAnyRepeatedPhrase(sequence, phraseLength) {
+  if (!Array.isArray(sequence) || phraseLength < 2 || phraseLength > sequence.length) return false;
+  const phraseCounts = new Map();
+  const nonOverlappingCounts = new Map();
+  const end = sequence.length - phraseLength;
+
+  for (let start = 0; start <= end; start++) {
+    const phrase = sequence.slice(start, start + phraseLength).join(" → ");
+    if (!phraseCounts.has(phrase)) phraseCounts.set(phrase, []);
+    phraseCounts.get(phrase).push(start);
+  }
+
+  for (const [phrase, starts] of phraseCounts.entries()) {
+    let count = 0;
+    let lastEnd = -1;
+    for (const phraseStart of starts) {
+      if (phraseStart >= lastEnd) {
+        count += 1;
+        lastEnd = phraseStart + phraseLength;
+      }
+    }
+    nonOverlappingCounts.set(phrase, count);
+    if (count >= 2) return true;
+  }
+
+  return false;
+}
+
+function getMeasureStartBeatForBeat(targetBeat, metadata) {
+  const beat = Math.max(1, Math.floor(targetBeat));
+  const meters = Array.isArray(metadata?.meters) ? metadata.meters
+    .filter((m) => Number.isFinite(m?.beat) && Number.isFinite(m?.numBeats) && m.numBeats > 0)
+    .sort((a, b) => a.beat - b.beat) : [];
+  if (meters.length === 0) {
+    return Math.floor((beat - 1) / 4) * 4 + 1;
+  }
+
+  let activeMeter = meters[0];
+  for (const meter of meters) {
+    if (meter.beat <= beat) {
+      activeMeter = meter;
+    } else {
+      break;
+    }
+  }
+
+  const meterStartBeat = activeMeter.beat || 1;
+  const beatsPerMeasure = activeMeter.numBeats || 4;
+  const offset = Math.max(0, beat - meterStartBeat);
+  return meterStartBeat + Math.floor(offset / beatsPerMeasure) * beatsPerMeasure;
+}
+
+function jumpToPhraseMeasure(firstPhraseBeat) {
+  if (!currentSong || songLength <= 0) return;
+  const measureStartBeat = getMeasureStartBeatForBeat(firstPhraseBeat, currentSong?.metadata);
+  const ratio = Math.max(0, Math.min(1, (measureStartBeat - 1) / songLength));
+  handleSeek(ratio);
 }
 
 // Helper function to find the current chord at a given tick position

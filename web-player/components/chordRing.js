@@ -129,6 +129,19 @@ export function renderChordRing(container, options = {}) {
   rootOnlyLabel.appendChild(rootOnlyCheckbox);
   rootOnlyLabel.appendChild(rootOnlySpan);
   rootOnlyCheckboxContainer.appendChild(rootOnlyLabel);
+
+  const longestPhraseLabel = document.createElement("label");
+  longestPhraseLabel.style.cssText = "display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;color:#ffffff;font-size:11px;white-space:nowrap;margin-left:10px;";
+  const longestPhraseCheckbox = document.createElement("input");
+  longestPhraseCheckbox.type = "checkbox";
+  longestPhraseCheckbox.id = "longest-phrase-toggle";
+  longestPhraseCheckbox.checked = false;
+  longestPhraseCheckbox.style.cssText = "cursor:pointer;";
+  const longestPhraseSpan = document.createElement("span");
+  longestPhraseSpan.textContent = "Longest Phrase";
+  longestPhraseLabel.appendChild(longestPhraseCheckbox);
+  longestPhraseLabel.appendChild(longestPhraseSpan);
+  rootOnlyCheckboxContainer.appendChild(longestPhraseLabel);
   transitionTableOverlay.appendChild(rootOnlyCheckboxContainer);
 
   wrapper.appendChild(transitionTableOverlay);
@@ -262,6 +275,10 @@ export function renderChordRing(container, options = {}) {
     showRootOnlyView = e.target.checked;
     updateTransitionTable();
   });
+  longestPhraseCheckbox.addEventListener("change", (e) => {
+    showLongestPhraseView = e.target.checked;
+    updateTransitionTable();
+  });
 
 
   // Interaction State
@@ -281,7 +298,14 @@ export function renderChordRing(container, options = {}) {
   let useRomanNumerals = options.labelMode !== false; // Default to true (roman numerals)
   let transitionCounts = new Map(); // Store full transition counts
   let rootOnlyTransitionCounts = new Map(); // Store root-only transition counts
+  let longestPhraseCounts = new Map(); // Store maximal repeated full-symbol phrases
+  let rootOnlyLongestPhraseCounts = new Map(); // Store maximal repeated root phrases
+  let phraseFirstBeats = new Map(); // Store phrase -> first start beat (full-symbol)
+  let rootPhraseFirstBeats = new Map(); // Store phrase -> first start beat (root-only)
+  let transitionFirstBeats = new Map(); // Store transition -> first start beat (full-symbol)
+  let rootTransitionFirstBeats = new Map(); // Store transition -> first start beat (root-only)
   let showRootOnlyView = false; // Toggle for root-only view
+  let showLongestPhraseView = false; // Toggle for phrase-view mode
   let currentHoveredNode = null; // Declared here to avoid Temporal Dead Zone errors during initial resize/draw
   let hideTimeout = null;
   
@@ -1268,9 +1292,16 @@ export function renderChordRing(container, options = {}) {
   function updateTransitionTable() {
     transitionGroupsContainer.innerHTML = "";
 
-    const countsToDisplay = showRootOnlyView ? rootOnlyTransitionCounts : transitionCounts;
+    const countsToDisplay = showLongestPhraseView
+      ? (showRootOnlyView ? rootOnlyLongestPhraseCounts : longestPhraseCounts)
+      : (showRootOnlyView ? rootOnlyTransitionCounts : transitionCounts);
 
-    if (countsToDisplay.size === 0) {
+    const hasAnyTransitionData = transitionCounts.size > 0 || rootOnlyTransitionCounts.size > 0;
+    if (countsToDisplay.size === 0 && !showLongestPhraseView) {
+      transitionTableOverlay.style.display = "none";
+      return;
+    }
+    if (countsToDisplay.size === 0 && showLongestPhraseView && !hasAnyTransitionData) {
       transitionTableOverlay.style.display = "none";
       return;
     }
@@ -1297,7 +1328,19 @@ export function renderChordRing(container, options = {}) {
     const sortedCounts = Array.from(byCount.keys()).sort((a, b) => b - a);
 
     sortedCounts.forEach((count, groupIdx) => {
-      const transitions = byCount.get(count).sort();
+      const transitions = byCount.get(count).sort((a, b) => {
+        const activeFirstBeats = showLongestPhraseView
+          ? (showRootOnlyView ? rootPhraseFirstBeats : phraseFirstBeats)
+          : (showRootOnlyView ? rootTransitionFirstBeats : transitionFirstBeats);
+        const aBeat = activeFirstBeats?.get(a);
+        const bBeat = activeFirstBeats?.get(b);
+        if (Number.isFinite(aBeat) && Number.isFinite(bBeat) && aBeat !== bBeat) {
+          return aBeat - bBeat;
+        }
+        if (Number.isFinite(aBeat) && !Number.isFinite(bBeat)) return -1;
+        if (!Number.isFinite(aBeat) && Number.isFinite(bBeat)) return 1;
+        return a.localeCompare(b);
+      });
       const details = document.createElement("details");
       details.className = "transition-group";
 
@@ -1314,29 +1357,71 @@ export function renderChordRing(container, options = {}) {
         row.className = "transition-group-row";
 
         const parts = transition.split(" → ");
-        if (parts.length === 2) {
-          const [fromStr, toStr] = parts;
-          let fromColor = null;
-          let toColor = null;
-          if (showRootOnlyView) {
-            const fromRoot = parseInt(fromStr, 10);
-            const toRoot = parseInt(toStr, 10);
-            if (fromRoot >= 1 && fromRoot <= 7) fromColor = getScaleDegreeColor(fromRoot, currentKey.scale);
-            if (toRoot >= 1 && toRoot <= 7) toColor = getScaleDegreeColor(toRoot, currentKey.scale);
-          } else {
-            const fromRoot = symbolToRoot.get(fromStr);
-            const toRoot = symbolToRoot.get(toStr);
-            if (fromRoot) fromColor = getScaleDegreeColor(fromRoot, currentKey.scale);
-            if (toRoot) toColor = getScaleDegreeColor(toRoot, currentKey.scale);
+        if (parts.length >= 2) {
+          const activeFirstBeats = showLongestPhraseView
+            ? (showRootOnlyView ? rootPhraseFirstBeats : phraseFirstBeats)
+            : (showRootOnlyView ? rootTransitionFirstBeats : transitionFirstBeats);
+          const firstBeat = activeFirstBeats.get(transition);
+          if (Number.isFinite(firstBeat) && typeof options.onPhraseClick === "function") {
+            row.style.cursor = "pointer";
+            row.title = "Jump to phrase start";
+            row.addEventListener("click", () => {
+              options.onPhraseClick({ phrase: transition, firstBeat, rootOnly: showRootOnlyView });
+            });
           }
-          const fromDisplay = showRootOnlyView
-            ? fromStr
-            : (useRomanNumerals ? stripBorrowedTags(fromStr) : (symbolToLetter.get(fromStr) || stripBorrowedTags(fromStr)));
-          const toDisplay = showRootOnlyView
-            ? toStr
-            : (useRomanNumerals ? stripBorrowedTags(toStr) : (symbolToLetter.get(toStr) || stripBorrowedTags(toStr)));
-          const useRomanDisplay = showRootOnlyView ? false : useRomanNumerals;
-          appendTransitionLabel(row, fromDisplay, toDisplay, fromColor, toColor, useRomanDisplay);
+
+          if (showLongestPhraseView) {
+            parts.forEach((part, index) => {
+              const partSpan = document.createElement("span");
+              let partColor = null;
+              if (showRootOnlyView) {
+                const root = parseInt(part, 10);
+                if (root >= 1 && root <= 7) {
+                  partColor = getScaleDegreeColor(root, currentKey.scale);
+                }
+                partSpan.textContent = part;
+              } else {
+                const root = symbolToRoot.get(part);
+                if (root) {
+                  partColor = getScaleDegreeColor(root, currentKey.scale);
+                }
+                partSpan.innerHTML = useRomanNumerals
+                  ? romanNumeralToHtml(stripBorrowedTags(part))
+                  : (symbolToLetter.get(part) || stripBorrowedTags(part));
+              }
+              if (partColor) partSpan.style.color = partColor;
+              row.appendChild(partSpan);
+              if (index < parts.length - 1) {
+                const arrow = document.createElement("span");
+                arrow.textContent = " → ";
+                arrow.style.color = "#94a3b8";
+                row.appendChild(arrow);
+              }
+            });
+          } else {
+            const [fromStr, toStr] = parts;
+            let fromColor = null;
+            let toColor = null;
+            if (showRootOnlyView) {
+              const fromRoot = parseInt(fromStr, 10);
+              const toRoot = parseInt(toStr, 10);
+              if (fromRoot >= 1 && fromRoot <= 7) fromColor = getScaleDegreeColor(fromRoot, currentKey.scale);
+              if (toRoot >= 1 && toRoot <= 7) toColor = getScaleDegreeColor(toRoot, currentKey.scale);
+            } else {
+              const fromRoot = symbolToRoot.get(fromStr);
+              const toRoot = symbolToRoot.get(toStr);
+              if (fromRoot) fromColor = getScaleDegreeColor(fromRoot, currentKey.scale);
+              if (toRoot) toColor = getScaleDegreeColor(toRoot, currentKey.scale);
+            }
+            const fromDisplay = showRootOnlyView
+              ? fromStr
+              : (useRomanNumerals ? stripBorrowedTags(fromStr) : (symbolToLetter.get(fromStr) || stripBorrowedTags(fromStr)));
+            const toDisplay = showRootOnlyView
+              ? toStr
+              : (useRomanNumerals ? stripBorrowedTags(toStr) : (symbolToLetter.get(toStr) || stripBorrowedTags(toStr)));
+            const useRomanDisplay = showRootOnlyView ? false : useRomanNumerals;
+            appendTransitionLabel(row, fromDisplay, toDisplay, fromColor, toColor, useRomanDisplay);
+          }
         } else {
           row.textContent = transition;
         }
@@ -1347,6 +1432,15 @@ export function renderChordRing(container, options = {}) {
       details.appendChild(list);
       transitionGroupsContainer.appendChild(details);
     });
+
+    if (countsToDisplay.size === 0 && showLongestPhraseView) {
+      const emptyState = document.createElement("div");
+      emptyState.style.color = "#94a3b8";
+      emptyState.style.fontSize = "11px";
+      emptyState.style.padding = "4px 0";
+      emptyState.textContent = "No repeated phrases";
+      transitionGroupsContainer.appendChild(emptyState);
+    }
   }
 
   return {
@@ -1367,9 +1461,24 @@ export function renderChordRing(container, options = {}) {
       draw();
     },
 
-    updateTransitions(transitions, rootOnlyTransitions) {
+    updateTransitions(
+      transitions,
+      rootOnlyTransitions,
+      phrases,
+      rootOnlyPhrases,
+      phraseStarts,
+      rootPhraseStarts,
+      transitionStarts,
+      rootTransitionStarts
+    ) {
       transitionCounts = transitions || new Map();
       rootOnlyTransitionCounts = rootOnlyTransitions || new Map();
+      longestPhraseCounts = phrases || new Map();
+      rootOnlyLongestPhraseCounts = rootOnlyPhrases || new Map();
+      phraseFirstBeats = phraseStarts || new Map();
+      rootPhraseFirstBeats = rootPhraseStarts || new Map();
+      transitionFirstBeats = transitionStarts || new Map();
+      rootTransitionFirstBeats = rootTransitionStarts || new Map();
       updateTransitionTable();
     },
 
