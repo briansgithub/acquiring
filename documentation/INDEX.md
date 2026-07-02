@@ -13,6 +13,7 @@ Master map of repo documentation. **Read the linked file when your task matches 
 | [MEMORY.md](./MEMORY.md) | You need durable project decisions, conventions, or context carried across sessions. |
 | [HANDOFF.md](../HANDOFF.md) | **Starting a new session** — current repo state, Song Selector behavior, catalog/data layout. |
 | [BUGS.md](./BUGS.md) | You are fixing a known bug or checking whether an issue is already tracked. |
+| [PRONUNCIATION.md](./PRONUNCIATION.md) | You need chord **spoken readings** (analytic/functional/letter), `romanNumeralSpeak.js`, fixtures, or `npm run test:pronunciation`. |
 
 ---
 
@@ -51,6 +52,9 @@ Task involves chord correctness / regression / scrape-and-compare?
 
 Task involves playback / UI / audio engine?
   → ARCHITECTURE.md § Web-player (Song Selector Load gate)
+
+Task involves chord pronunciation / spoken roman readings?
+  → PRONUNCIATION.md
 
 Known bug or regression?
   → BUGS.md first

@@ -1,0 +1,2285 @@
+[
+  {
+    "id": "adds=4+9",
+    "chord": {
+      "root": 5,
+      "beat": 31,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4,
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "analytic": "five add four add nine",
+    "functional": "five add four add nine",
+    "letter": "D"
+  },
+  {
+    "id": "adds=4",
+    "chord": {
+      "root": 6,
+      "beat": 41,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "analytic": "six minor add four",
+    "functional": "six minor add four",
+    "letter": "F sharp minor"
+  },
+  {
+    "id": "adds=6+9",
+    "chord": {
+      "root": 7,
+      "beat": 13,
+      "duration": 4,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [
+        6,
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "E",
+      "scale": "minor"
+    },
+    "analytic": "seven six add six add nine",
+    "functional": "seven first inversion add six add nine",
+    "letter": "D over F sharp"
+  },
+  {
+    "id": "adds=6",
+    "chord": {
+      "root": 4,
+      "beat": 37,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "analytic": "four add six flat five",
+    "functional": "four add six flat five",
+    "letter": "D"
+  },
+  {
+    "id": "adds=9",
+    "chord": {
+      "root": 5,
+      "beat": 1,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "analytic": "five add nine",
+    "functional": "five add nine",
+    "letter": "E"
+  },
+  {
+    "id": "alterations=#11",
+    "chord": {
+      "root": 5,
+      "beat": 9,
+      "duration": 8,
+      "type": 9,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#11"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "analytic": "five nine sharp eleven of five",
+    "functional": "five nine sharp eleven secondary dominant to five",
+    "letter": "D nine"
+  },
+  {
+    "id": "alterations=#5+#9",
+    "chord": {
+      "root": 5,
+      "beat": 11,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#5",
+        "#9"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "analytic": "five augmented seven sharp nine of five minor",
+    "functional": "five seven augmented sharp nine secondary dominant to five minor",
+    "letter": "E augmented seven"
+  },
+  {
+    "id": "alterations=#5",
+    "chord": {
+      "root": 5,
+      "beat": 43,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#5"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "analytic": "five augmented seven",
+    "functional": "five seven augmented",
+    "letter": "D augmented seven"
+  },
+  {
+    "id": "alterations=#9",
+    "chord": {
+      "root": 1,
+      "beat": 12.5,
+      "duration": 0.5,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "mixolydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "G#",
+      "scale": "dorian"
+    },
+    "analytic": "one six five sharp nine mixolydian",
+    "functional": "one first inversion seventh sharp nine borrowed from mixolydian",
+    "letter": "G sharp seven over B sharp"
+  },
+  {
+    "id": "alterations=b5+b9",
+    "chord": {
+      "root": 5,
+      "beat": 29,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5",
+        "b9"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "D#",
+      "scale": "minor"
+    },
+    "analytic": "five seven flat five flat nine major",
+    "functional": "five seven flat five flat nine borrowed from major",
+    "letter": "A sharp seven"
+  },
+  {
+    "id": "alterations=b5",
+    "chord": {
+      "root": 4,
+      "beat": 29,
+      "duration": 4,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "analytic": "four major seven flat five",
+    "functional": "four major seven flat five",
+    "letter": "D nine"
+  },
+  {
+    "id": "alterations=b9",
+    "chord": {
+      "root": 5,
+      "beat": 54.5,
+      "duration": 2.5,
+      "type": 11,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b9"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "mixolydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "analytic": "five minor eleven flat nine mixolydian",
+    "functional": "five minor eleven flat nine borrowed from mixolydian",
+    "letter": "G minor eleven"
+  },
+  {
+    "id": "applied=no",
+    "chord": {
+      "root": 1,
+      "beat": 1,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "analytic": "one",
+    "functional": "one",
+    "letter": "A"
+  },
+  {
+    "id": "applied=yes",
+    "chord": {
+      "root": 5,
+      "beat": 9,
+      "duration": 8,
+      "type": 9,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#11"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "analytic": "five nine sharp eleven of five",
+    "functional": "five nine sharp eleven secondary dominant to five",
+    "letter": "D nine"
+  },
+  {
+    "id": "borrowed=custom-array",
+    "chord": {
+      "root": 7,
+      "beat": 47,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": [
+        1,
+        3,
+        4,
+        6,
+        8,
+        10,
+        11
+      ],
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "analytic": "seven custom scale",
+    "functional": "seven borrowed from custom scale",
+    "letter": "G diminished"
+  },
+  {
+    "id": "borrowed=dorian",
+    "chord": {
+      "root": 6,
+      "beat": 24,
+      "duration": 1,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "analytic": "six diminished six four dorian",
+    "functional": "six diminished second inversion borrowed from dorian",
+    "letter": "F diminished over C flat"
+  },
+  {
+    "id": "borrowed=harmonicMinor",
+    "chord": {
+      "root": 5,
+      "beat": 29,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "analytic": "five harmonic minor",
+    "functional": "five borrowed from harmonic minor",
+    "letter": "E"
+  },
+  {
+    "id": "borrowed=locrian",
+    "chord": {
+      "root": 5,
+      "beat": 9,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "locrian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "B",
+      "scale": "harmonicMinor"
+    },
+    "analytic": "five seven of five",
+    "functional": "five seven secondary dominant to five",
+    "letter": "C sharp seven"
+  },
+  {
+    "id": "borrowed=lydian",
+    "chord": {
+      "root": 4,
+      "beat": 21,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "lydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "analytic": "sharp four minor half-diminished seven lydian",
+    "functional": "sharp four minor seven borrowed from lydian",
+    "letter": "A diminished seven"
+  },
+  {
+    "id": "borrowed=major",
+    "chord": {
+      "root": 5,
+      "beat": 99,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "D#",
+      "scale": "minor"
+    },
+    "analytic": "five seven major",
+    "functional": "five seven borrowed from major",
+    "letter": "A sharp seven"
+  },
+  {
+    "id": "borrowed=minor",
+    "chord": {
+      "root": 1,
+      "beat": 17,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "minor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "B",
+      "scale": "harmonicMinor"
+    },
+    "analytic": "one minor seven",
+    "functional": "one minor seven",
+    "letter": "B minor seven"
+  },
+  {
+    "id": "borrowed=mixolydian",
+    "chord": {
+      "root": 1,
+      "beat": 29,
+      "duration": 2.5,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "mixolydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "analytic": "one nine add thirteen mixolydian",
+    "functional": "one nine add thirteen borrowed from mixolydian",
+    "letter": "C nine"
+  },
+  {
+    "id": "borrowed=none",
+    "chord": {
+      "root": 1,
+      "beat": 1,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "analytic": "one",
+    "functional": "one",
+    "letter": "A"
+  },
+  {
+    "id": "borrowed=phrygian",
+    "chord": {
+      "root": 5,
+      "beat": 35,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "analytic": "five minor half-diminished seven phrygian",
+    "functional": "five minor seven borrowed from phrygian",
+    "letter": "E diminished seven"
+  },
+  {
+    "id": "borrowed=phrygianDominant",
+    "chord": {
+      "root": 4,
+      "beat": 15,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygianDominant",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "Bb",
+      "scale": "minor"
+    },
+    "analytic": "four minor add six phrygian dominant",
+    "functional": "four minor add six borrowed from phrygian dominant",
+    "letter": "E flat minor"
+  },
+  {
+    "id": "inversion=0",
+    "chord": {
+      "root": 1,
+      "beat": 1,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "analytic": "one",
+    "functional": "one",
+    "letter": "A"
+  },
+  {
+    "id": "inversion=1",
+    "chord": {
+      "root": 3,
+      "beat": 79,
+      "duration": 2,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "D#",
+      "scale": "minor"
+    },
+    "analytic": "three major seven six five",
+    "functional": "three first inversion seventh",
+    "letter": "F sharp major seven over A sharp"
+  },
+  {
+    "id": "inversion=2",
+    "chord": {
+      "root": 3,
+      "beat": 9,
+      "duration": 8,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "analytic": "three minor six four",
+    "functional": "three minor second inversion",
+    "letter": "C sharp minor over G sharp"
+  },
+  {
+    "id": "inversion=3",
+    "chord": {
+      "root": 6,
+      "beat": 96,
+      "duration": 3,
+      "type": 7,
+      "inversion": 3,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "D#",
+      "scale": "minor"
+    },
+    "analytic": "six major seven four two",
+    "functional": "six third inversion seventh",
+    "letter": "B major seven over A sharp"
+  },
+  {
+    "id": "omits=3+5",
+    "chord": {
+      "root": 2,
+      "beat": 15,
+      "duration": 2,
+      "type": 11,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        3,
+        5
+      ],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "analytic": "two minor half-diminished eleven no third no fifth",
+    "functional": "two minor eleven no third no fifth",
+    "letter": "B diminished eleven"
+  },
+  {
+    "id": "omits=3",
+    "chord": {
+      "root": 6,
+      "beat": 17,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        3
+      ],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "analytic": "six minor no third",
+    "functional": "six minor no third",
+    "letter": "F sharp minor"
+  },
+  {
+    "id": "omits=5",
+    "chord": {
+      "root": 4,
+      "beat": 3,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "Ab",
+      "scale": "major"
+    },
+    "analytic": "four no fifth",
+    "functional": "four no fifth",
+    "letter": "D flat"
+  },
+  {
+    "id": "suspensions=2+4",
+    "chord": {
+      "root": 5,
+      "beat": 53,
+      "duration": 1.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        2,
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "analytic": "five seven suspended two suspended four add thirteen",
+    "functional": "five seven suspended two suspended four add thirteen",
+    "letter": "G seven suspended two suspended four"
+  },
+  {
+    "id": "suspensions=2",
+    "chord": {
+      "root": 4,
+      "beat": 1,
+      "duration": 8,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "Db",
+      "scale": "major"
+    },
+    "analytic": "four seven suspended two",
+    "functional": "four seven suspended two",
+    "letter": "G flat major seven suspended two"
+  },
+  {
+    "id": "suspensions=4+2",
+    "chord": {
+      "root": 1,
+      "beat": 9.5,
+      "duration": 1,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        4,
+        2
+      ],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "E",
+      "scale": "major"
+    },
+    "analytic": "one seven suspended two suspended four",
+    "functional": "one seven suspended two suspended four",
+    "letter": "E major seven suspended two suspended four"
+  },
+  {
+    "id": "suspensions=4",
+    "chord": {
+      "root": 5,
+      "beat": 61,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "analytic": "five suspended four",
+    "functional": "five suspended four",
+    "letter": "B flat suspended four"
+  },
+  {
+    "id": "type=11",
+    "chord": {
+      "root": 5,
+      "beat": 54.5,
+      "duration": 2.5,
+      "type": 11,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b9"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "mixolydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "analytic": "five minor eleven flat nine mixolydian",
+    "functional": "five minor eleven flat nine borrowed from mixolydian",
+    "letter": "G minor eleven"
+  },
+  {
+    "id": "type=13",
+    "chord": {
+      "root": 5,
+      "beat": 7,
+      "duration": 1.5,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "Eb",
+      "scale": "major"
+    },
+    "analytic": "five thirteen",
+    "functional": "five thirteen",
+    "letter": "B flat thirteen"
+  },
+  {
+    "id": "type=5",
+    "chord": {
+      "root": 1,
+      "beat": 1,
+      "duration": 8,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "analytic": "one",
+    "functional": "one",
+    "letter": "A"
+  },
+  {
+    "id": "type=7",
+    "chord": {
+      "root": 6,
+      "beat": 5,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "analytic": "six minor seven",
+    "functional": "six minor seven",
+    "letter": "F sharp minor seven"
+  },
+  {
+    "id": "type=9",
+    "chord": {
+      "root": 4,
+      "beat": 29,
+      "duration": 4,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "analytic": "four major seven flat five",
+    "functional": "four major seven flat five",
+    "letter": "D nine"
+  },
+  {
+    "id": "adds=6+alterations=b5",
+    "chord": {
+      "root": 4,
+      "beat": 37,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "analytic": "four add six flat five",
+    "functional": "four add six flat five",
+    "letter": "D"
+  },
+  {
+    "id": "adds=6+suspensions=2+4",
+    "chord": {
+      "root": 5,
+      "beat": 53,
+      "duration": 1.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        2,
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "analytic": "five seven suspended two suspended four add thirteen",
+    "functional": "five seven suspended two suspended four add thirteen",
+    "letter": "G seven suspended two suspended four"
+  },
+  {
+    "id": "adds=6+suspensions=2",
+    "chord": {
+      "root": 4,
+      "beat": 25,
+      "duration": 8,
+      "type": 5,
+      "inversion": 1,
+      "applied": 4,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "analytic": "four six suspended two add six of four",
+    "functional": "four first inversion suspended two add six secondary dominant to four",
+    "letter": "G suspended two over B"
+  },
+  {
+    "id": "adds=6+suspensions=4",
+    "chord": {
+      "root": 4,
+      "beat": 29,
+      "duration": 6.5,
+      "type": 9,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "A",
+      "scale": "major"
+    },
+    "analytic": "five nine suspended four add thirteen of four",
+    "functional": "five nine suspended four add thirteen secondary dominant to four",
+    "letter": "A nine suspended four"
+  },
+  {
+    "id": "alterations=b5+suspensions=2",
+    "chord": {
+      "root": 5,
+      "beat": 15.5,
+      "duration": 1,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "locrian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "analytic": "flat five seven suspended two flat five locrian",
+    "functional": "flat five seven suspended two flat five borrowed from locrian",
+    "letter": "A flat major seven suspended two"
+  },
+  {
+    "id": "omits=5+suspensions=4",
+    "chord": {
+      "root": 5,
+      "beat": 26,
+      "duration": 2,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "analytic": "five seven suspended four no fifth",
+    "functional": "five seven suspended four no fifth",
+    "letter": "D seven suspended four"
+  },
+  {
+    "id": "adds=9+suspensions=4",
+    "chord": {
+      "root": 7,
+      "beat": 21,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "D",
+      "scale": "minor"
+    },
+    "analytic": "seven suspended four add nine",
+    "functional": "seven suspended four add nine",
+    "letter": "C suspended four"
+  },
+  {
+    "id": "omits=5+suspensions=2+4",
+    "chord": {
+      "root": 5,
+      "beat": 18.75,
+      "duration": 0.25,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        2,
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "A",
+      "scale": "dorian"
+    },
+    "analytic": "five minor seven suspended two suspended four no fifth",
+    "functional": "five minor seven suspended two suspended four no fifth",
+    "letter": "E minor seven suspended two suspended four"
+  },
+  {
+    "id": "omits=5+suspensions=2",
+    "chord": {
+      "root": 1,
+      "beat": 11,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "analytic": "one suspended two no fifth",
+    "functional": "one suspended two no fifth",
+    "letter": "G suspended two"
+  },
+  {
+    "id": "adds=4+6",
+    "chord": {
+      "root": 2,
+      "beat": 7,
+      "duration": 6,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4,
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "D",
+      "scale": "phrygian"
+    },
+    "analytic": "two add four add six",
+    "functional": "two add four add six",
+    "letter": "E flat"
+  },
+  {
+    "id": "adds=6+4",
+    "chord": {
+      "root": 5,
+      "beat": 33,
+      "duration": 6,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6,
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "E",
+      "scale": "major"
+    },
+    "analytic": "five seven add thirteen add eleven",
+    "functional": "five seven add thirteen add eleven",
+    "letter": "B seven"
+  },
+  {
+    "id": "adds=9+4",
+    "chord": {
+      "root": 1,
+      "beat": 5,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9,
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "E",
+      "scale": "minor"
+    },
+    "analytic": "one minor add nine add four",
+    "functional": "one minor add nine add four",
+    "letter": "E minor"
+  },
+  {
+    "id": "adds=9+6",
+    "chord": {
+      "root": 6,
+      "beat": 5,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9,
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "C#",
+      "scale": "minor"
+    },
+    "analytic": "six add nine add six",
+    "functional": "six add nine add six",
+    "letter": "A"
+  },
+  {
+    "id": "alterations=#11+#9",
+    "chord": {
+      "root": 1,
+      "beat": 37.5,
+      "duration": 0.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        3
+      ],
+      "alterations": [
+        "#11",
+        "#9"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "C",
+      "scale": "phrygianDominant"
+    },
+    "analytic": "one major seven no third sharp eleven sharp nine major",
+    "functional": "one major seven no third sharp eleven sharp nine borrowed from major",
+    "letter": "C major seven"
+  },
+  {
+    "id": "alterations=#2+3",
+    "chord": {
+      "root": 5,
+      "beat": 15.5,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#2",
+        "3"
+      ],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "locrian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "analytic": "flat five six suspended two sharp two three locrian",
+    "functional": "flat five first inversion suspended two sharp two three borrowed from locrian",
+    "letter": "D flat suspended two over F"
+  },
+  {
+    "id": "alterations=#9+b5+b13",
+    "chord": {
+      "root": 1,
+      "beat": 31,
+      "duration": 2,
+      "type": 7,
+      "inversion": 2,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9",
+        "b5",
+        "b13"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "F",
+      "scale": "minor"
+    },
+    "analytic": "five four three sharp nine flat five flat thirteen of one minor",
+    "functional": "five second inversion seventh sharp nine flat five flat thirteen secondary dominant to one minor",
+    "letter": "C seven over G"
+  },
+  {
+    "id": "alterations=3",
+    "chord": {
+      "root": 7,
+      "beat": 5,
+      "duration": 4,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "3"
+      ],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "analytic": "seven diminished six suspended two three",
+    "functional": "seven diminished first inversion suspended two three",
+    "letter": "F sharp diminished suspended two over A"
+  },
+  {
+    "id": "alterations=b9+#5",
+    "chord": {
+      "root": 6,
+      "beat": 138.5,
+      "duration": 7.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b9",
+        "#5"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "locrian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "analytic": "flat six augmented seven flat nine locrian",
+    "functional": "flat six seven augmented flat nine borrowed from locrian",
+    "letter": "A flat augmented seven"
+  },
+  {
+    "id": "alterations=b9+b13",
+    "chord": {
+      "root": 5,
+      "beat": 5,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b9",
+        "b13"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "lydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "E",
+      "scale": "major"
+    },
+    "analytic": "five seven flat nine flat thirteen of five",
+    "functional": "five seven flat nine flat thirteen secondary dominant to five",
+    "letter": "F sharp seven"
+  },
+  {
+    "id": "omits=5+3",
+    "chord": {
+      "root": 4,
+      "beat": 36,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        5,
+        3
+      ],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "A",
+      "scale": "mixolydian"
+    },
+    "analytic": "four no fifth no third",
+    "functional": "four no fifth no third",
+    "letter": "D"
+  },
+  {
+    "id": "adds=4+alterations=#5",
+    "chord": {
+      "root": 2,
+      "beat": 55,
+      "duration": 3,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [
+        "#5"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "C#",
+      "scale": "phrygian"
+    },
+    "analytic": "sharp two minor augmented six add four dorian",
+    "functional": "sharp two minor first inversion add four borrowed from dorian",
+    "letter": "D sharp minor over F sharp"
+  },
+  {
+    "id": "adds=6+alterations=#5+suspensions=4",
+    "chord": {
+      "root": 2,
+      "beat": 15,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [
+        "#5"
+      ],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "analytic": "two minor augmented six four suspended four add six major",
+    "functional": "two minor second inversion suspended four add six borrowed from major",
+    "letter": "D minor suspended four over A"
+  },
+  {
+    "id": "adds=6+omits=5",
+    "chord": {
+      "root": 3,
+      "beat": 7,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "C",
+      "scale": "lydian"
+    },
+    "analytic": "three minor add six no fifth",
+    "functional": "three minor add six no fifth",
+    "letter": "E minor"
+  },
+  {
+    "id": "adds=6+suspensions=4+2",
+    "chord": {
+      "root": 5,
+      "beat": 31,
+      "duration": 6,
+      "type": 7,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        4,
+        2
+      ],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "E",
+      "scale": "major"
+    },
+    "analytic": "five seven suspended two suspended four add thirteen of five",
+    "functional": "five seven suspended two suspended four add thirteen secondary dominant to five",
+    "letter": "F sharp seven suspended two suspended four"
+  },
+  {
+    "id": "adds=9+alterations=b5+omits=3",
+    "chord": {
+      "root": 4,
+      "beat": 47.5,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [
+        3
+      ],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "analytic": "four add nine no third flat five",
+    "functional": "four add nine no third flat five",
+    "letter": "F"
+  },
+  {
+    "id": "adds=9+omits=3",
+    "chord": {
+      "root": 4,
+      "beat": 5,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [
+        3
+      ],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "C",
+      "scale": "lydian"
+    },
+    "analytic": "flat four add nine no third major",
+    "functional": "flat four add nine no third borrowed from major",
+    "letter": "F"
+  },
+  {
+    "id": "adds=9+omits=5",
+    "chord": {
+      "root": 1,
+      "beat": 15,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [
+        5
+      ],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "analytic": "one minor add nine no fifth phrygian",
+    "functional": "one minor add nine no fifth borrowed from phrygian",
+    "letter": "C minor"
+  },
+  {
+    "id": "alterations=#11+#9+omits=3",
+    "chord": {
+      "root": 1,
+      "beat": 37.5,
+      "duration": 0.5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        3
+      ],
+      "alterations": [
+        "#11",
+        "#9"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "C",
+      "scale": "phrygianDominant"
+    },
+    "analytic": "one major seven no third sharp eleven sharp nine major",
+    "functional": "one major seven no third sharp eleven sharp nine borrowed from major",
+    "letter": "C major seven"
+  },
+  {
+    "id": "alterations=#2+3+suspensions=2",
+    "chord": {
+      "root": 5,
+      "beat": 15.5,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#2",
+        "3"
+      ],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "locrian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "analytic": "flat five six suspended two sharp two three locrian",
+    "functional": "flat five first inversion suspended two sharp two three borrowed from locrian",
+    "letter": "D flat suspended two over F"
+  },
+  {
+    "id": "alterations=#5+suspensions=2",
+    "chord": {
+      "root": 2,
+      "beat": 18,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#5"
+      ],
+      "suspensions": [
+        2
+      ],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "Bb",
+      "scale": "major"
+    },
+    "analytic": "flat two augmented suspended two phrygian",
+    "functional": "flat two augmented suspended two borrowed from phrygian",
+    "letter": "C flat augmented suspended two"
+  },
+  {
+    "id": "alterations=3+suspensions=2",
+    "chord": {
+      "root": 7,
+      "beat": 5,
+      "duration": 4,
+      "type": 5,
+      "inversion": 1,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "3"
+      ],
+      "suspensions": [
+        2
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "analytic": "seven diminished six suspended two three",
+    "functional": "seven diminished first inversion suspended two three",
+    "letter": "F sharp diminished suspended two over A"
+  },
+  {
+    "id": "alterations=b9+suspensions=4",
+    "chord": {
+      "root": 5,
+      "beat": 133,
+      "duration": 12,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b9"
+      ],
+      "suspensions": [
+        4
+      ],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "analytic": "five seven suspended four flat nine",
+    "functional": "five seven suspended four flat nine",
+    "letter": "D seven suspended four"
+  },
+  {
+    "id": "honesty-I-maj7",
+    "chord": {
+      "root": 1,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "borrowed": null
+    },
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "analytic": "one major seven",
+    "functional": "one major seven",
+    "letter": "F major seven"
+  },
+  {
+    "id": "honesty-Vsus2sus47-V",
+    "chord": {
+      "root": 5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 5,
+      "suspensions": [
+        2,
+        4
+      ],
+      "borrowed": null
+    },
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "analytic": "five seven suspended two suspended four of five",
+    "functional": "five seven suspended two suspended four secondary dominant to five",
+    "letter": "G seven suspended two suspended four"
+  },
+  {
+    "id": "honesty-vii-dim7-V",
+    "chord": {
+      "root": 5,
+      "type": 7,
+      "inversion": 0,
+      "applied": 7,
+      "borrowed": null
+    },
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "analytic": "seven diminished seven of five",
+    "functional": "seven diminished seven secondary dominant to five",
+    "letter": "B diminished seven"
+  },
+  {
+    "id": "honesty-I6-sharp9-5-mix",
+    "chord": {
+      "root": 1,
+      "type": 7,
+      "inversion": 1,
+      "applied": 0,
+      "alterations": [
+        "#9"
+      ],
+      "borrowed": "mixolydian"
+    },
+    "key": {
+      "tonic": "G#",
+      "scale": "dorian"
+    },
+    "analytic": "one six five sharp nine mixolydian",
+    "functional": "one first inversion seventh sharp nine borrowed from mixolydian",
+    "letter": "G sharp seven over B sharp"
+  }
+]

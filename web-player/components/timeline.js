@@ -2,6 +2,7 @@
 import { getScaleDegreeColor } from "../lib/scales.js";
 import { getChordSymbol, getChordLetterName, stripBorrowedTags, borrowedAbbrev } from "../lib/jsonToSymbol.js";
 import { drawRomanNumeral, measureRomanNumeral, romanNumeralToHtml } from "../lib/romanNumeralCanvas.js";
+import { getChordPronunciation, pronunciationDisplayHtml } from "../lib/romanNumeralSpeak.js";
 
 function stripSongFromArtist(title, artist) {
     const t = title?.trim();
@@ -434,6 +435,7 @@ export function renderTimeline(container, options = {}) {
         const displayLabel = stripBorrowedTags(getChordSymbol(node.chord, currentKey));
         const alternateLabel = getChordLetterName(node.chord, currentKey);
         const borrowedLabel = borrowedAbbrev(node.chord.borrowed);
+        const pronunciationHtml = pronunciationDisplayHtml(getChordPronunciation(node.chord, currentKey));
         
         const formattedJson = formatChordJson(node.chord);
         const nodeColor = getScaleDegreeColor(node.chord.root, currentKey.scale) || "#888";
@@ -457,6 +459,7 @@ export function renderTimeline(container, options = {}) {
             <div style="text-align: center; margin-bottom: 6px;">
                 <div class="chord-tooltip-roman chord-roman-line" style="font-size: 18px; font-weight: 800; color: #ffffff; line-height: 1.2;">${romanNumeralToHtml(displayLabel)}</div>
                 ${borrowedLabel ? `<div style="font-size: 11px; color: #94a3b8; font-weight: 500; margin-top: 2px;">${borrowedLabel}</div>` : ''}
+                ${pronunciationHtml}
                 <div style="font-size: 11px; color: #94a3b8; font-weight: 500; margin-top: 2px;">${alternateLabel}</div>
             </div>
             ${contextHtml}
@@ -578,16 +581,32 @@ export function renderTimeline(container, options = {}) {
             draw();
         },
 
-        setSongInfo(title, artist) {
+        setSongInfo(title, artist, hooktheoryUrl) {
+            songTitleEl.innerHTML = "";
             if (title || artist) {
                 const t = title || "Unknown Song";
                 const a = stripSongFromArtist(t, artist) || artist || "Unknown Artist";
-                songTitleEl.textContent = `${t} by ${a}`;
+                const label = `${t} by ${a}`;
+
+                if (hooktheoryUrl) {
+                    const link = document.createElement("a");
+                    link.href = hooktheoryUrl;
+                    link.target = "_blank";
+                    link.rel = "noopener";
+                    link.textContent = label;
+                    link.className = "timeline-song-title-link";
+                    songTitleEl.appendChild(link);
+                    songTitleRow.style.pointerEvents = "auto";
+                } else {
+                    songTitleEl.textContent = label;
+                    songTitleRow.style.pointerEvents = "none";
+                }
+
                 songTitleRow.style.display = "flex";
                 updateSongTitlePosition();
             } else {
-                songTitleEl.textContent = "";
                 songTitleRow.style.display = "none";
+                songTitleRow.style.pointerEvents = "none";
             }
         },
 

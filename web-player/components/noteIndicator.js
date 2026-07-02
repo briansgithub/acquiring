@@ -1,6 +1,7 @@
 import { getScaleDegreeColor, NOTE_NAME_TO_INTEGER_NOTATION } from "../lib/scales.js";
 import { getChordSymbol, stripBorrowedTags, borrowedAbbrev } from "../lib/jsonToSymbol.js";
 import { romanNumeralToHtml } from "../lib/romanNumeralCanvas.js";
+import { getChordPronunciation, pronunciationDisplayHtml } from "../lib/romanNumeralSpeak.js";
 import { verifyScaleDegrees } from "../lib/scaleDegreeVerifier.js";
 import { CONTROL_DEFAULTS, formatArpSpeedLabel } from "./controls.js";
 
@@ -59,7 +60,6 @@ function analyzeMelodyTension(melodyNote, chordNotes, chordRootSd) {
 export function renderNoteIndicator(container, options = {}) {
   container.innerHTML = `
     <h2 class="now-playing-title">Now Playing</h2>
-    <div id="now-playing-key" class="now-playing-key">—</div>
     <div class="indicator-stack">
       <div class="indicator-melody-section">
         <div id="melody-section" class="card indicator-card indicator-card--melody is-collapsed">
@@ -70,6 +70,11 @@ export function renderNoteIndicator(container, options = {}) {
           <div id="melody-content-wrapper" class="melody-content-wrapper" hidden>
             <div class="notes-list" id="melody-note-label"></div>
             <div class="notes-list" id="melody-scale-degree"></div>
+            <div class="indicator-volume-row">
+              <label for="melody-volume" class="indicator-volume-label">Volume:</label>
+              <input type="range" id="melody-volume" min="-30" max="0" value="-16" step="1" class="volume-slider indicator-volume-slider">
+              <span id="melody-volume-label" class="indicator-volume-value">-16dB</span>
+            </div>
             <div id="tension-badge" class="tension-badge">
               <div id="tension-title" class="tension-title">—</div>
               <div id="tension-desc" class="tension-desc">No active melody</div>
@@ -85,9 +90,15 @@ export function renderNoteIndicator(container, options = {}) {
             Root position
           </label>
           <div class="chord-root" id="chord-root" style="min-height:24px;"></div>
+          <div class="chord-pronunciation" id="chord-pronunciation" hidden></div>
         </div>
         <div class="notes-list notes-list--chord" id="chord-notes" style="min-height:32px;margin-top:2px;"></div>
         <div class="notes-list notes-list--chord" id="chord-degrees-pills" style="min-height:32px;margin-top:4px;"></div>
+        <div class="indicator-volume-row">
+          <label for="chord-volume" class="indicator-volume-label">Volume:</label>
+          <input type="range" id="chord-volume" min="-30" max="0" value="-9" step="1" class="volume-slider indicator-volume-slider">
+          <span id="chord-volume-label" class="indicator-volume-value">-9dB</span>
+        </div>
         <div class="chord-arpeggio-controls">
           <label for="arpeggiate-toggle" class="indicator-option-toggle chord-arpeggio-toggle">
             <input type="checkbox" id="arpeggiate-toggle" />
@@ -112,8 +123,12 @@ export function renderNoteIndicator(container, options = {}) {
   const tensionEl = container.querySelector("#tension-badge");
   const tensionTitleEl = container.querySelector("#tension-title");
   const tensionDescEl = container.querySelector("#tension-desc");
-  const keyIndicatorEl = container.querySelector("#now-playing-key");
+  const melodyVolumeSlider = container.querySelector("#melody-volume");
+  const melodyVolumeLabel = container.querySelector("#melody-volume-label");
+  const chordVolumeSlider = container.querySelector("#chord-volume");
+  const chordVolumeLabel = container.querySelector("#chord-volume-label");
   const chordRootEl = container.querySelector("#chord-root");
+  const chordPronunciationEl = container.querySelector("#chord-pronunciation");
   const chordList = container.querySelector("#chord-notes");
   const chordDegreesPillsList = container.querySelector("#chord-degrees-pills");
   const chordBorrowedEl = container.querySelector("#chord-borrowed");
@@ -161,20 +176,21 @@ export function renderNoteIndicator(container, options = {}) {
   rootPositionToggle.addEventListener("change", () => {
     options.onRootPositionChange?.(rootPositionToggle.checked);
   });
-  
-  let currentKey = options.key || null;
-  updateKeyDisplay(currentKey);
 
-  function updateKeyDisplay(key) {
-    if (!keyIndicatorEl) return;
-    if (key?.tonic && key?.scale) {
-      const scaleName = key.scale.charAt(0).toUpperCase() + key.scale.slice(1);
-      keyIndicatorEl.textContent = `${key.tonic} ${scaleName}`;
-    } else {
-      keyIndicatorEl.textContent = "—";
-    }
-  }
-  
+  melodyVolumeSlider.addEventListener("input", (e) => {
+    const volume = Number(e.target.value);
+    melodyVolumeLabel.textContent = `${volume}dB`;
+    options.onMelodyVolumeChange?.(volume);
+  });
+
+  chordVolumeSlider.addEventListener("input", (e) => {
+    const volume = Number(e.target.value);
+    chordVolumeLabel.textContent = `${volume}dB`;
+    options.onChordVolumeChange?.(volume);
+  });
+
+  let currentKey = options.key || null;
+
   // Store current state for redrawing
   let currentMelodyData = { absoluteLabel: null, relativeLabel: null };
   let currentChordData = { notes: null, chordDegrees: null, root: null, borrowed: null, key: null, chordObj: null };
@@ -392,27 +408,34 @@ export function renderNoteIndicator(container, options = {}) {
       // Store current chord data
       currentChordData = { notes, chordDegrees, root, borrowed, key, chordObj };
       
-      // Update currentKey
       if (key) {
         currentKey = key;
-        updateKeyDisplay(key);
       }
-      
+
       // Update chord symbol (always use roman numeral) with "Chord: " prefix
       if (chordObj?.isRest || !notes?.length) {
         // Show "Chord: Rest" for rests or empty chords
         chordRootEl.textContent = "Chord: Rest";
         chordRootEl.style.visibility = "visible";
+        chordPronunciationEl.innerHTML = "";
+        chordPronunciationEl.hidden = true;
       } else if (chordObj && key) {
         const symbol = stripBorrowedTags(getChordSymbol(chordObj, key));
         chordRootEl.innerHTML = `Chord: <span class="chord-roman-line">${romanNumeralToHtml(symbol)}</span>`;
         chordRootEl.style.visibility = "visible";
+        const pronunciation = getChordPronunciation(chordObj, key);
+        chordPronunciationEl.innerHTML = pronunciationDisplayHtml(pronunciation);
+        chordPronunciationEl.hidden = !pronunciation.analytic;
       } else if (root) {
         chordRootEl.textContent = `Chord: ${root.toString()}`;
         chordRootEl.style.visibility = "visible";
+        chordPronunciationEl.innerHTML = "";
+        chordPronunciationEl.hidden = true;
       } else {
         chordRootEl.textContent = "";
         chordRootEl.style.visibility = "hidden";
+        chordPronunciationEl.innerHTML = "";
+        chordPronunciationEl.hidden = true;
       }
 
       // Update notes display
@@ -459,6 +482,9 @@ export function renderNoteIndicator(container, options = {}) {
       }
     },
     clearNoteHighlight,
+    setKey(key) {
+      currentKey = key || null;
+    },
     reset() {
       clearNoteHighlight();
       currentMelodyData = { absoluteLabel: null, relativeLabel: null };
@@ -470,9 +496,18 @@ export function renderNoteIndicator(container, options = {}) {
       chordBorrowedEl.textContent = "";
       chordBorrowedEl.style.visibility = "hidden";
     },
-    setKey(key) {
-      currentKey = key;
-      updateKeyDisplay(key);
+    setMelodyVolume(volume) {
+      melodyVolumeSlider.value = volume;
+      melodyVolumeLabel.textContent = `${volume}dB`;
+    },
+    setChordVolume(volume) {
+      chordVolumeSlider.value = volume;
+      chordVolumeLabel.textContent = `${volume}dB`;
+    },
+    resetVolumesToDefaults() {
+      const d = CONTROL_DEFAULTS;
+      this.setMelodyVolume(d.melodyVolume);
+      this.setChordVolume(d.chordVolume);
     },
     setRootPositionChecked(checked) {
       rootPositionToggle.checked = !!checked;

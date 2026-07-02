@@ -90,14 +90,42 @@ body {
   font-size: 14px;
 }
 
-.now-playing-key {
+.chord-ring-key {
   text-align: center;
   font-size: 22px;
   font-weight: 700;
   color: #ffffff;
   letter-spacing: 0.02em;
-  margin: 0 0 8px;
+  margin: 4px 0 0;
   line-height: 1.15;
+  width: 100%;
+}
+
+.indicator-volume-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.indicator-volume-label {
+  font-size: 12px;
+  color: var(--muted);
+  flex-shrink: 0;
+  width: 52px;
+}
+
+.indicator-volume-slider {
+  flex: 1;
+  min-width: 0;
+}
+
+.indicator-volume-value {
+  font-size: 12px;
+  color: var(--muted);
+  flex-shrink: 0;
+  width: 40px;
+  text-align: right;
 }
 
 .indicator .card {
@@ -406,7 +434,6 @@ body {
   list-style: none;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 8px;
   padding: 5px 8px;
   font-size: 11px;
@@ -432,11 +459,6 @@ body {
 
 .transition-group-count {
   color: #22d3ee;
-}
-
-.transition-group-meta {
-  color: #64748b;
-  font-weight: 500;
 }
 
 .transition-group-list {
@@ -539,6 +561,34 @@ body {
   line-height: 24px;
 }
 
+.chord-pronunciation,
+.chord-tooltip-pronunciation {
+  margin-top: 4px;
+  text-align: left;
+  font-size: 11px;
+  line-height: 1.35;
+  color: #9aa5b1;
+}
+
+.chord-pronunciation .pronunciation-analytic,
+.chord-pronunciation .pronunciation-functional,
+.chord-tooltip-pronunciation .pronunciation-analytic,
+.chord-tooltip-pronunciation .pronunciation-functional {
+  margin-top: 4px;
+}
+
+.pronunciation-label {
+  color: #64748b;
+  font-weight: 600;
+  font-size: 11px;
+  cursor: help;
+}
+
+.pronunciation-text {
+  margin-top: 1px;
+  color: #9aa5b1;
+}
+
 .notes-list {
   display: flex;
   flex-wrap: wrap;
@@ -626,6 +676,16 @@ body {
   border-radius: 6px;
   background: rgba(17, 24, 39, 0.82);
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.timeline-song-title-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.timeline-song-title-link:hover {
+  color: var(--accent, #38bdf8);
+  text-decoration: underline;
 }
 
 .timeline-footer-controls {
@@ -949,6 +1009,7 @@ body {
 }
 
 .ring-panel-head {
+  flex-direction: column;
   margin-bottom: 8px;
   padding: 0 12px;
 }

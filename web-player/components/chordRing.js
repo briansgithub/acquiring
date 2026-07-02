@@ -13,12 +13,28 @@ import {
 import { getChordSymbol, getChordLetterName, stripBorrowedTags, borrowedAbbrev } from "../lib/jsonToSymbol.js";
 import { rootToDiatonicTriad, getNoteLabel, chordInterpreter } from "../lib/music.js";
 import { drawRomanNumeral, measureRomanNumeral, romanNumeralToHtml } from "../lib/romanNumeralCanvas.js";
+import { getChordPronunciation, pronunciationDisplayHtml } from "../lib/romanNumeralSpeak.js";
 
 export function renderChordRing(container, options = {}) {
   const header = document.createElement("div");
   header.className = "pane-panel-head ring-panel-head";
-  header.innerHTML = `<h2 class="pane-panel-title">Chord Ring</h2>`;
+  header.innerHTML = `
+    <h2 class="pane-panel-title">Chord Ring</h2>
+    <div id="chord-ring-key" class="chord-ring-key">—</div>
+  `;
   container.appendChild(header);
+
+  const keyIndicatorEl = header.querySelector("#chord-ring-key");
+
+  function updateKeyDisplay(key) {
+    if (!keyIndicatorEl) return;
+    if (key?.tonic && key?.scale) {
+      const scaleName = key.scale.charAt(0).toUpperCase() + key.scale.slice(1);
+      keyIndicatorEl.textContent = `${key.tonic} ${scaleName}`;
+    } else {
+      keyIndicatorEl.textContent = "—";
+    }
+  }
 
   const wrapper = document.createElement("div");
   wrapper.className = "ring-canvas-wrap";
@@ -221,6 +237,7 @@ export function renderChordRing(container, options = {}) {
 
   // External Data
   let currentKey = { tonic: "C", scale: "major" };
+  updateKeyDisplay(options.key ?? null);
   let useRomanNumerals = options.labelMode !== false; // Default to true (roman numerals)
   let transitionCounts = new Map(); // Store full transition counts
   let rootOnlyTransitionCounts = new Map(); // Store root-only transition counts
@@ -834,6 +851,7 @@ export function renderChordRing(container, options = {}) {
     const displayLabel = useRomanNumerals ? stripBorrowedTags(node.symbol) : getChordLetterName(node.chord, currentKey);
     const alternateLabel = useRomanNumerals ? getChordLetterName(node.chord, currentKey) : node.symbol;
     const borrowedLabel = borrowedAbbrev(node.chord.borrowed);
+    const pronunciationHtml = pronunciationDisplayHtml(getChordPronunciation(node.chord, currentKey));
     
     const formattedJson = formatChordJson(node.chord);
     
@@ -856,6 +874,7 @@ export function renderChordRing(container, options = {}) {
       <div style="text-align: center; margin-bottom: 6px;">
         <div class="chord-tooltip-roman chord-roman-line" style="font-size: 18px; font-weight: 800; color: #ffffff; line-height: 1.2;">${useRomanNumerals ? romanNumeralToHtml(displayLabel) : displayLabel}</div>
         ${borrowedLabel ? `<div style="font-size: 11px; color: #94a3b8; font-weight: 500; margin-top: 2px;">${borrowedLabel}</div>` : ''}
+        ${pronunciationHtml}
         <div style="font-size: 11px; color: #94a3b8; font-weight: 500; margin-top: 2px;">${alternateLabel}</div>
       </div>
       ${contextHtml}
@@ -1088,11 +1107,11 @@ export function renderChordRing(container, options = {}) {
       const transitions = byCount.get(count).sort();
       const details = document.createElement("details");
       details.className = "transition-group";
-      if (groupIdx < 2 || transitions.length <= 4) details.open = true;
+      details.open = true;
 
       const summary = document.createElement("summary");
       summary.className = "transition-group-summary";
-      summary.innerHTML = `<span class="transition-group-count">×${count}</span><span class="transition-group-meta">${transitions.length} transition${transitions.length === 1 ? "" : "s"}</span>`;
+      summary.innerHTML = `<span class="transition-group-count">×${count}</span>`;
       details.appendChild(summary);
 
       const list = document.createElement("div");
@@ -1174,6 +1193,7 @@ export function renderChordRing(container, options = {}) {
       activeChordSymbol = null;
       if (key) {
         currentKey = key;
+        updateKeyDisplay(key);
       }
       currentGroupedChords = {};
 
@@ -1202,6 +1222,13 @@ export function renderChordRing(container, options = {}) {
         });
       }
       draw();
-    }
+    },
+
+    setKey(key) {
+      if (key) {
+        currentKey = key;
+      }
+      updateKeyDisplay(key);
+    },
   };
 }

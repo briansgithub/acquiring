@@ -7,6 +7,7 @@
   "scripts": {
     "test:scale-degrees": "node web-player/scripts/runScaleDegreeVerifier.mjs",
     "test:scale-degrees:corpus": "node web-player/scripts/runScaleDegreeVerifier.mjs --corpus chord_db --tier quick --fail-under 88",
-    "test:roman-symbols": "node _Research_testing/romanNumeralCanvasTest.mjs && node _Research_testing/romanSymbolCorpusTest.mjs"
+    "test:roman-symbols": "node _Research_testing/romanNumeralCanvasTest.mjs && node _Research_testing/romanSymbolCorpusTest.mjs",
+    "test:pronunciation": "node _Research_testing/romanPronunciationTest.mjs && node _Research_testing/romanPronunciationCorpusTest.mjs && node _Research_testing/romanPronunciationLetterTest.mjs"
   }
 }
