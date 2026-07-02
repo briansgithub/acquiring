@@ -69,12 +69,13 @@ function enrichChordFromSymbol(chord, roman, letter) {
     flattenHalfDimB5,
   };
 }
+const libUrl = (p) => require('url').pathToFileURL(require('path').join(__dirname, '..', 'web-player', 'lib', p)).href;
+
 let engine = null;
 async function loadEngine() {
   if (engine) return engine;
-  const url = (p) => require('url').pathToFileURL(require('path').join(__dirname, '..', 'web-player', 'lib', p)).href;
-  const sym = await import(url('jsonToSymbol.js'));
-  const music = await import(url('music.js'));
+  const sym = await import(libUrl('jsonToSymbol.js'));
+  const music = await import(libUrl('music.js'));
   engine = { sym, music };
   return engine;
 }
@@ -88,7 +89,11 @@ function quiet(fn) {
 
 async function runChord(chord, key) {
   const { sym, music } = await loadEngine();
-  const out = { roman: null, letter: null, notes: null, pcs: null, bassPc: null, error: null };
+  const { verifyScaleDegrees } = await import(libUrl('scaleDegreeVerifier.js'));
+  const out = {
+    roman: null, letter: null, notes: null, pcs: null, bassPc: null,
+    chordDegrees: null, degreesOk: null, degreesWarnings: null, error: null,
+  };
   try {
     quiet(() => {
       out.roman = sym.getChordSymbol(chord, key);
@@ -96,12 +101,21 @@ async function runChord(chord, key) {
       const enriched = enrichChordFromSymbol(chord, out.roman, out.letter);
       const interp = music.chordInterpreter(enriched, key);
       out.notes = interp.notes;
+      out.chordDegrees = interp.chordDegrees;
       const bare = (interp.notes || []).map(bareNote);
       out.pcs = Array.from(new Set(bare.map(noteNameToPc).filter((x) => x !== null))).sort((a, b) => a - b);
       out.bassPc = interp.notes && interp.notes.length ? noteNameToPc(bareNote(interp.notes[0])) : null;
+      const degCheck = verifyScaleDegrees({
+        key,
+        notes: interp.notes,
+        chordDegrees: interp.chordDegrees,
+      });
+      out.degreesOk = degCheck.ok;
+      out.degreesWarnings = degCheck.warnings;
     });
   } catch (e) {
     out.error = e.message;
+    out.degreesOk = false;
   }
   return out;
 }

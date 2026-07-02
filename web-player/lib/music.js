@@ -535,6 +535,19 @@ function applyInversion(toneJSNames, degreeIndices, inversion, baseOctave) {
 }
 
 // Calculates scale degrees relative to original key (label logic)
+function resolveChordRootSD(rootNoteName, key) {
+  for (let sd = 1; sd <= 7; sd++) {
+    if (getNoteLabel(sd, key) === rootNoteName) return sd;
+  }
+  for (let sd = 1; sd <= 7; sd++) {
+    const diatonic = getNoteLabel(sd, key);
+    if (rootNoteName[0] === diatonic[0] && getModifierDifference(rootNoteName, diatonic)) {
+      return sd;
+    }
+  }
+  return 1;
+}
+
 function calculateScaleDegrees(toneJSNames, degreeIndices, chordRootSD, chordDegrees, chordType, originalKey) {
   return toneJSNames.map((noteName, index) => {
     const degreeIdx = degreeIndices[index];
@@ -929,46 +942,17 @@ function buildChordFromNoteName(rootNoteName, quality, originalKey, baseOctave, 
     chordType,
   });
 
-  // Calculate scale degrees relative to original key
-  const baseKeyDegrees = toneJSNames.map((noteName, index) => {
-    const degreeIdx = degreeIndices[index];
-    let degree;
-    
-    if (degreeIdx < 3) {
-      degree = chordDegrees[degreeIdx];
-    } else if (degreeIdx === 3 && chordType === 7) {
-      degree = "b7";
-    } else {
-      degree = "1";
-    }
-    
-    const rawNumber = rawDegree(degree);
-    
-    // Find which scale degree in original key corresponds to this note
-    const actualNote = noteName.replace(/[0-9]/g, '');
-    let calculatedDegree = 1;
-    let found = false;
-    
-    for (let sd = 1; sd <= 7; sd++) {
-      const diatonicNote = getNoteLabel(sd, originalKey);
-      if (diatonicNote === actualNote) {
-        calculatedDegree = sd;
-        found = true;
-        break;
-      }
-    }
-    
-    // If not found, calculate based on root note position
-    if (!found) {
-      const rootNoteInKey = getNoteLabel(1, originalKey);
-      // This is a fallback - might not be perfect for chromatic notes
-      calculatedDegree = (((rawNumber - 1) % 7) + 1);
-    }
-    
-    const modifier = found ? getModifierDifference(actualNote, getNoteLabel(calculatedDegree, originalKey)) : "";
-    return `${modifier}${calculatedDegree}`;
-  });
-  
+  // Scale degrees in the song key (same logic as diatonic chords).
+  const chordRootSD = resolveChordRootSD(rootNoteName, originalKey);
+  const baseKeyDegrees = calculateScaleDegrees(
+    toneJSNames,
+    degreeIndices,
+    chordRootSD,
+    chordDegrees,
+    chordType,
+    originalKey,
+  );
+
   return { notes: toneJSNames, chordDegrees: baseKeyDegrees };
 }
 

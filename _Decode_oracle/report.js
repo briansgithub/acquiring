@@ -11,6 +11,7 @@
  *   romanExact - canonical Roman strings identical
  *   romanCore  - identical after dropping parenthetical borrowed/alteration tags
  *   notesOk    - full pitch-class set matches letter-name implication (pcsExact) AND bass agrees
+ *   degreesOk  - each chord-tone scale-degree pill matches its pitch class in the song key
  *   browserOk  - web-player #chord-notes matches engine notes (set in run.js after browserVerify)
  */
 
@@ -39,6 +40,7 @@ function rowMetrics(r) {
     romanExact: !!r.flags.romanExact,
     romanCore: !!r.flags.romanCore,
     notesOk: !!r.notesOk,
+    degreesOk: r.degreesOk !== false,
     pianoOk: !!(r.flags.pianoExact || r.flags.pianoPcsExact),
     browserOk: r.browserOk === true,
   };
@@ -48,9 +50,9 @@ function pct(n, d) { return d ? ((100 * n) / d).toFixed(0) + '%' : '-'; }
 
 function buildReport(compareResult, scrape, outDir) {
   fs.mkdirSync(outDir, { recursive: true });
-  const matrix = new Map(); // "attr=value" -> {total, romanExact, romanCore, notesOk, browserOk}
+  const matrix = new Map(); // "attr=value" -> {total, romanExact, romanCore, notesOk, degreesOk, browserOk}
   const discrepancies = [];
-  let total = 0, romanExact = 0, romanCore = 0, notesOk = 0, browserOk = 0;
+  let total = 0, romanExact = 0, romanCore = 0, notesOk = 0, degreesOk = 0, browserOk = 0;
 
   const stripFor = (section, idx) => {
     // best-effort: map chord order to the strip that covers it
@@ -67,13 +69,14 @@ function buildReport(compareResult, scrape, outDir) {
       if (m.romanExact) romanExact++;
       if (m.romanCore) romanCore++;
       if (m.notesOk) notesOk++;
+      if (m.degreesOk) degreesOk++;
       if (m.browserOk) browserOk++;
       for (const [k, v] of attrBuckets(r.chord)) {
         const key = `${k}=${v}`;
-        if (!matrix.has(key)) matrix.set(key, { total: 0, romanExact: 0, romanCore: 0, notesOk: 0, browserOk: 0 });
+        if (!matrix.has(key)) matrix.set(key, { total: 0, romanExact: 0, romanCore: 0, notesOk: 0, degreesOk: 0, browserOk: 0 });
         const e = matrix.get(key);
         e.total++; if (m.romanExact) e.romanExact++; if (m.romanCore) e.romanCore++;
-        if (m.notesOk) e.notesOk++; if (m.browserOk) e.browserOk++;
+        if (m.notesOk) e.notesOk++; if (m.degreesOk) e.degreesOk++; if (m.browserOk) e.browserOk++;
       }
       const browserGate = r.browserOk == null || m.browserOk;
       if (!(m.romanCore && m.notesOk && browserGate)) {
@@ -98,6 +101,7 @@ function buildReport(compareResult, scrape, outDir) {
   md += `- Roman exact: **${pct(romanExact, total)}** (${romanExact}/${total})\n`;
   md += `- Roman core (ignoring borrowed/alteration tags): **${pct(romanCore, total)}** (${romanCore}/${total})\n`;
   md += `- Notes exact (full PC set + bass): **${pct(notesOk, total)}** (${notesOk}/${total})\n`;
+  md += `- Scale-degree pills match pitch classes: **${pct(degreesOk, total)}** (${degreesOk}/${total})\n`;
   if (compareResult.sections.some((s) => s.rows.some((r) => r.browserOk != null))) {
     md += `- Browser display matches engine: **${pct(browserOk, total)}** (${browserOk}/${total})\n`;
   }
@@ -142,13 +146,14 @@ function buildReport(compareResult, scrape, outDir) {
   fs.writeFileSync(path.join(outDir, 'discrepancies.md'), dm);
 
   const sectionStats = compareResult.sections.map((sec) => {
-    let st = { name: sec.name, total: 0, romanExact: 0, romanCore: 0, notesOk: 0, browserOk: 0 };
+    let st = { name: sec.name, total: 0, romanExact: 0, romanCore: 0, notesOk: 0, degreesOk: 0, browserOk: 0 };
     sec.rows.forEach((r) => {
       st.total++;
       const m = rowMetrics(r);
       if (m.romanExact) st.romanExact++;
       if (m.romanCore) st.romanCore++;
       if (m.notesOk) st.notesOk++;
+      if (m.degreesOk) st.degreesOk++;
       if (m.browserOk) st.browserOk++;
     });
     return st;
@@ -156,7 +161,7 @@ function buildReport(compareResult, scrape, outDir) {
   const attributeStats = [...matrix.entries()].sort().map(([key, e]) => ({ key, ...e }));
 
   return {
-    total, romanExact, romanCore, notesOk, browserOk, discrepancies: discrepancies.length,
+    total, romanExact, romanCore, notesOk, degreesOk, browserOk, discrepancies: discrepancies.length,
     discrepancyList: discrepancies, matrix, sectionStats, attributeStats,
   };
 }

@@ -158,7 +158,7 @@ export class AudioEngine {
     Tone.Transport.bpm.value = bpm;
   }
 
-  previewChord(notes, duration = "8n", arpeggiate = false) {
+  previewChord(notes, duration = "8n", arpeggiate = false, arpeggiationSpeedMs = 100, onNoteTrigger) {
     const Tone = window.Tone;
     if (Tone.context.state !== "running") {
       Tone.start();
@@ -167,27 +167,46 @@ export class AudioEngine {
       clearTimeout(this.previewTimeout);
       this.previewTimeout = null;
     }
+    if (this.arpeggioSynth?.triggerRelease) {
+      this.arpeggioSynth.triggerRelease();
+    }
     if (this.previewSynth && typeof this.previewSynth.releaseAll === "function") {
       this.previewSynth.releaseAll();
     }
 
+    const now = Tone.now();
+
     if (arpeggiate && notes.length > 1) {
-      const durationSeconds = Tone.Time(duration).toSeconds();
-      const noteDurationSeconds = durationSeconds / notes.length;
-      const now = Tone.now();
+      const stepSeconds = arpeggiationSpeedMs / 1000;
+      const noteDurationSeconds = Math.max(stepSeconds * 0.9, 0.02);
 
       notes.forEach((note, index) => {
-        const noteStartTime = now + index * noteDurationSeconds;
-        const noteDuration = noteDurationSeconds + "s";
-        this.previewSynth.triggerAttackRelease(note, noteDuration, noteStartTime);
+        const noteStartTime = now + index * stepSeconds;
+        this.arpeggioSynth.triggerAttackRelease(note, noteDurationSeconds, noteStartTime);
+        if (onNoteTrigger) {
+          Tone.Draw.schedule(() => onNoteTrigger(note, index), noteStartTime);
+        }
       });
     } else {
-      const now = Tone.now();
       this.previewSynth.triggerAttackRelease(notes, duration, now);
     }
   }
 
   previewNote(note, duration = "8n") {
+    const Tone = window.Tone;
+    if (Tone.context.state !== "running") {
+      Tone.start();
+    }
+    if (this.arpeggioSynth?.triggerRelease) {
+      this.arpeggioSynth.triggerRelease();
+    }
+    const now = Tone.now();
+    const durationSeconds = Tone.Time(duration).toSeconds();
+    this.arpeggioSynth.triggerAttackRelease(note, duration, now);
+    return durationSeconds * 1000;
+  }
+
+  previewMelodyNote(note, duration = "8n") {
     const Tone = window.Tone;
     if (Tone.context.state !== "running") {
       Tone.start();

@@ -22,6 +22,11 @@ async function fetchSectionJson(songId) {
 }
 
 async function harvestLightSong(db, slug, url, { fetchMetrics = true, browser = null } = {}) {
+  const modeRow = db.prepare('SELECT harvest_mode FROM songs WHERE slug = ?').get(slug);
+  if (modeRow?.harvest_mode === 'full') {
+    return { slug, skipped: true, reason: 'full_fetch_complete' };
+  }
+
   if (!url || isJunkUrl(url)) {
     markLightHarvestBlocked(db, slug, 'invalid or junk URL');
     throw Object.assign(new Error('invalid or junk URL'), { permanent: true });
@@ -98,7 +103,7 @@ async function harvestLightSong(db, slug, url, { fetchMetrics = true, browser = 
 const HARVEST_QUEUE_FILTER = `
   AND s.url IS NOT NULL
   AND (s.status IS NULL OR s.status != 'dead')
-  AND (s.harvest_mode IS NULL OR s.harvest_mode NOT IN ('light', 'blocked'))
+  AND (s.harvest_mode IS NULL OR s.harvest_mode NOT IN ('light', 'blocked', 'full'))
 `;
 
 function countSongsNeedingLightHarvest(db, { force = false } = {}) {
@@ -107,7 +112,7 @@ function countSongsNeedingLightHarvest(db, { force = false } = {}) {
       SELECT COUNT(*) AS n FROM songs s
       WHERE s.url IS NOT NULL
         AND (s.status IS NULL OR s.status != 'dead')
-        AND (s.harvest_mode IS NULL OR s.harvest_mode != 'light')
+        AND (s.harvest_mode IS NULL OR s.harvest_mode NOT IN ('light', 'full'))
     `).get().n;
   }
   return db.prepare(`
@@ -118,8 +123,8 @@ function countSongsNeedingLightHarvest(db, { force = false } = {}) {
 
 function listSongsNeedingLightHarvest(db, limit = 50, { force = false, slugs = null, skipSlugs = null } = {}) {
   const harvestFilter = force
-    ? "AND (s.harvest_mode IS NULL OR s.harvest_mode != 'light')"
-    : "AND (s.harvest_mode IS NULL OR s.harvest_mode NOT IN ('light', 'blocked'))";
+    ? "AND (s.harvest_mode IS NULL OR s.harvest_mode NOT IN ('light', 'full'))"
+    : "AND (s.harvest_mode IS NULL OR s.harvest_mode NOT IN ('light', 'blocked', 'full'))";
 
   const skip = skipSlugs?.length ? skipSlugs : [];
   const skipClause = skip.length

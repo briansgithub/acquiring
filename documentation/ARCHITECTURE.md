@@ -135,6 +135,8 @@ Hooktheory URL
   → testModification.js      (per-bucket pass rates; --db-dir per corpus)
 ```
 
+**Scale-degree pills (`degreesOk`):** separate from `notesOk`. `notesOk` checks pitch-class sets + bass against Hooktheory truth; `degreesOk` checks that each UI scale-degree pill label matches its paired note's pitch class in the song key (`web-player/lib/scaleDegreeVerifier.js`, wired in `engineRun.js` → `compare.js` → `report.js`). CLI regression: `npm run test:scale-degrees` (fixtures) and `npm run test:scale-degrees:corpus` (quick `chord_db` batch). Dev assert: add `?verifyDegrees=1` to the player URL to log mismatches in `noteIndicator.js`.
+
 Ground-truth hierarchy: (1) rendered SVG labels, (2) letter-inferred PC sets (`truthNotes.js`), (3) piano DOM scrape when it agrees (`pianoNotes.js`). Incomplete JSON is enriched with SVG letter modifiers.
 
 Failure classes: **engine** (note-gen bug), **harness** (alignment / truth-parser), **piano_noise** (piano scrape vs engine edge disagreement).

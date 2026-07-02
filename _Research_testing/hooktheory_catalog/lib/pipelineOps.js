@@ -10,7 +10,8 @@ const { CACHE_ROOT } = require('./cacheSync');
 const { computeFlags, canLoad, loadGateMissing } = require('./pipelineFlags');
 const { resetCacheSync } = require('./library');
 const { harvestSong } = require('./harvest');
-const { loadHarvest, clearHarvestArtifact, isHarvested } = require('./harvestArtifact');
+const { loadHarvest, clearHarvestArtifact, isLightHarvest } = require('./harvestArtifact');
+const { setHarvestMode } = require('./db');
 const { prepareMetadataFromHarvest, commitMetadata } = require('./metadataFromHarvest');
 const { writeProcessedCacheFromHarvest, commitProcessed } = require('./processedFromHarvest');
 const { runLocalsParallel, runCompareInWorker, commitTested } = require('./runLocalsParallel');
@@ -80,7 +81,15 @@ function requireHarvest(slug) {
 
 async function runHarvest(db, slug, { rescrape = false } = {}) {
   const row = requireSong(db, slug);
-  await harvestSong(row.url, { rescrape });
+  const existing = loadHarvest(slug);
+  const forceRescrape = rescrape
+    || row.harvest_mode === 'light'
+    || (existing && isLightHarvest(existing.scrape));
+  const harvested = await harvestSong(row.url, { rescrape: forceRescrape });
+  if (isLightHarvest(harvested.scrape)) {
+    return wrapErr(db, slug, 'Full fetch did not complete — scrape is still light harvest', 500);
+  }
+  setHarvestMode(db, slug, 'full');
   const extras = await runLocalsParallel(db, slug, { includeTested: false });
   return wrapOk(db, slug, extras);
 }
@@ -139,6 +148,7 @@ async function runPipelineAction(db, slug, action) {
 function clearHarvest(db, slug) {
   if (!getSongRow(db, slug)) return wrapErr(db, slug, 'song not found', 404);
   clearHarvestArtifact(slug);
+  setHarvestMode(db, slug, null);
   return wrapOk(db, slug);
 }
 

@@ -16,6 +16,7 @@ async function runOracleForUrl(url) {
   const summary = {
     total: rep.total,
     notesOk: rep.notesOk,
+    degreesOk: rep.degreesOk,
     romanExact: rep.romanExact,
     romanCore: rep.romanCore,
     discrepancies: rep.discrepancies,

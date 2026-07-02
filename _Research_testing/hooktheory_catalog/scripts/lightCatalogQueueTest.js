@@ -18,7 +18,7 @@ function assert(cond, msg) {
   if (!cond) throw new Error(msg);
 }
 
-function main() {
+async function main() {
   const db = openDb();
   db.prepare('DELETE FROM song_sections WHERE slug = ?').run(TEST_SLUG);
   db.prepare('DELETE FROM songs WHERE slug = ?').run(TEST_SLUG);
@@ -53,6 +53,14 @@ function main() {
   const afterList = listSongsNeedingLightHarvest(db, 50);
   assert(!afterList.some((r) => r.slug === TEST_SLUG), 'light mode should exclude from queue');
 
+  setHarvestMode(db, TEST_SLUG, 'full');
+  const afterFull = listSongsNeedingLightHarvest(db, 50);
+  assert(!afterFull.some((r) => r.slug === TEST_SLUG), 'full mode should exclude from light queue');
+
+  const { harvestLightSong } = require('../lib/lightHarvest');
+  const skip = await harvestLightSong(db, TEST_SLUG, 'https://www.hooktheory.com/theorytab/view/test-artist/test-song');
+  assert(skip.skipped && skip.reason === 'full_fetch_complete', 'should skip light harvest when full');
+
   try { fs.unlinkSync(harvestFileForSlug(TEST_SLUG)); } catch (_) {}
   db.prepare('DELETE FROM song_sections WHERE slug = ?').run(TEST_SLUG);
   db.prepare('DELETE FROM songs WHERE slug = ?').run(TEST_SLUG);
@@ -60,4 +68,7 @@ function main() {
   console.log('lightCatalogQueueTest: PASS');
 }
 
-main();
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

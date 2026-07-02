@@ -1,6 +1,7 @@
 
 import { getScaleDegreeColor } from "../lib/scales.js";
-import { getChordSymbol, getChordLetterName } from "../lib/jsonToSymbol.js";
+import { getChordSymbol, getChordLetterName, stripBorrowedTags, borrowedAbbrev } from "../lib/jsonToSymbol.js";
+import { drawRomanNumeral, measureRomanNumeral, romanNumeralToHtml } from "../lib/romanNumeralCanvas.js";
 
 function stripSongFromArtist(title, artist) {
     const t = title?.trim();
@@ -62,43 +63,8 @@ export function renderTimeline(container, options = {}) {
     label.textContent = "Play chord tone on click";
     label.style.cssText = "cursor: pointer; font-size: 12px; color: var(--text, #e5e7eb); user-select: none;";
     
-    const arpCheckbox = document.createElement("input");
-    arpCheckbox.type = "checkbox";
-    arpCheckbox.id = "timeline-arpeggiate-checkbox";
-    arpCheckbox.checked = false; // Off by default
-    arpCheckbox.disabled = false; // Will be updated based on play checkbox
-    arpCheckbox.style.cssText = "cursor: pointer; width: 16px; height: 16px;";
-    
-    const arpLabel = document.createElement("label");
-    arpLabel.htmlFor = "timeline-arpeggiate-checkbox";
-    arpLabel.textContent = "Arpeggiate";
-    arpLabel.style.cssText = "cursor: pointer; font-size: 12px; color: var(--text, #e5e7eb); user-select: none;";
-    
-    // Update arpeggiate checkbox state based on play checkbox
-    function updateArpCheckboxState() {
-        arpCheckbox.disabled = !checkbox.checked;
-        if (!checkbox.checked) {
-            arpCheckbox.checked = false;
-        }
-        // Update label color to show disabled state
-        if (arpCheckbox.disabled) {
-            arpLabel.style.color = "var(--muted, #9ca3af)";
-            arpLabel.style.cursor = "not-allowed";
-            arpCheckbox.style.cursor = "not-allowed";
-        } else {
-            arpLabel.style.color = "var(--text, #e5e7eb)";
-            arpLabel.style.cursor = "pointer";
-            arpCheckbox.style.cursor = "pointer";
-        }
-    }
-    
-    checkbox.addEventListener("change", updateArpCheckboxState);
-    updateArpCheckboxState(); // Set initial state
-    
     checkboxContainer.appendChild(checkbox);
     checkboxContainer.appendChild(label);
-    checkboxContainer.appendChild(arpCheckbox);
-    checkboxContainer.appendChild(arpLabel);
 
     footer.appendChild(checkboxContainer);
     container.appendChild(footer);
@@ -193,25 +159,20 @@ export function renderTimeline(container, options = {}) {
                 ctx.shadowColor = "rgba(255,255,255,0.5)"; // Light shadow for contrast on dark blocks? Or no shadow?
                 ctx.shadowBlur = 0; // Removing shadow for clean look with black text
 
-                let symbol = getChordSymbol(chord, currentKey);
-                if (typeof symbol === 'string') {
-                    symbol = symbol.replace(/\([a-z.]+\)$/i, "");
-                }
-                // Hide if text fits? Simply clip or verify width.
-                const metrics = ctx.measureText(symbol);
-                if (metrics.width < w - 4) {
-                    if (chord.borrowed) {
-                        // Draw symbol higher
-                        ctx.fillText(symbol, x + w / 2, y + blockHeight / 2 - fontSize * 0.3);
-                        // Draw borrowed text lower (smaller)
+                const fullSymbol = getChordSymbol(chord, currentKey);
+                const symbol = stripBorrowedTags(fullSymbol);
+                const borrowedLabel = borrowedAbbrev(chord.borrowed);
+                const metricsWidth = measureRomanNumeral(ctx, symbol, fontSize);
+                if (metricsWidth < w - 4) {
+                    if (borrowedLabel) {
+                        drawRomanNumeral(ctx, symbol, x + w / 2, y + blockHeight / 2 - fontSize * 0.3, fontSize);
                         const borrowedFontSize = fontSize * 0.55;
                         ctx.font = `500 ${borrowedFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-                        // If borrowed is an array (custom scale), show "(borrowed)"
-                        // Otherwise show the mode name
-                        const borrowedLabel = Array.isArray(chord.borrowed) ? "(borrowed)" : `(${chord.borrowed})`;
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "middle";
                         ctx.fillText(borrowedLabel, x + w / 2, y + blockHeight / 2 + fontSize * 0.3);
                     } else {
-                        ctx.fillText(symbol, x + w / 2, y + blockHeight / 2);
+                        drawRomanNumeral(ctx, symbol, x + w / 2, y + blockHeight / 2, fontSize);
                     }
                 }
                 ctx.shadowBlur = 0;
@@ -470,16 +431,9 @@ export function renderTimeline(container, options = {}) {
     }
 
     function showTooltip(node) {
-        let displayLabel = getChordSymbol(node.chord, currentKey);
-        let alternateLabel = getChordLetterName(node.chord, currentKey);
-        
-        // Strip trailing mixture tags (e.g. "(mix)") from Roman numerals for clean text display
-        if (typeof displayLabel === 'string') {
-            displayLabel = displayLabel.replace(/\([a-z.]+\)$/i, "");
-        }
-        if (typeof alternateLabel === 'string') {
-            alternateLabel = alternateLabel.replace(/\([a-z.]+\)$/i, "");
-        }
+        const displayLabel = stripBorrowedTags(getChordSymbol(node.chord, currentKey));
+        const alternateLabel = getChordLetterName(node.chord, currentKey);
+        const borrowedLabel = borrowedAbbrev(node.chord.borrowed);
         
         const formattedJson = formatChordJson(node.chord);
         const nodeColor = getScaleDegreeColor(node.chord.root, currentKey.scale) || "#888";
@@ -501,7 +455,8 @@ export function renderTimeline(container, options = {}) {
 
         tooltip.innerHTML = `
             <div style="text-align: center; margin-bottom: 6px;">
-                <div style="font-size: 18px; font-weight: 800; color: #ffffff; line-height: 1.2;">${displayLabel}</div>
+                <div class="chord-tooltip-roman chord-roman-line" style="font-size: 18px; font-weight: 800; color: #ffffff; line-height: 1.2;">${romanNumeralToHtml(displayLabel)}</div>
+                ${borrowedLabel ? `<div style="font-size: 11px; color: #94a3b8; font-weight: 500; margin-top: 2px;">${borrowedLabel}</div>` : ''}
                 <div style="font-size: 11px; color: #94a3b8; font-weight: 500; margin-top: 2px;">${alternateLabel}</div>
             </div>
             ${contextHtml}
@@ -590,17 +545,17 @@ export function renderTimeline(container, options = {}) {
 
         // Calculate the beat position from the click (accounting for firstBeat offset)
         const clickedBeat = Math.floor(ratio * songLengthBeats) + firstBeat;
-        
-        // If checkbox is checked, find and play the chord
-        if (checkbox.checked) {
-            const chord = findChordAtBeat(clickedBeat);
-            if (chord && options.onChordClick) {
-                options.onChordClick(chord, arpCheckbox.checked);
-            }
-        }
 
         if (options.onSeek) {
             options.onSeek(ratio);
+        }
+
+        // Play after seek so handleSeek's releaseAllNotes doesn't cut off the preview
+        if (checkbox.checked) {
+            const chord = findChordAtBeat(clickedBeat);
+            if (chord && options.onChordClick) {
+                options.onChordClick(chord, options.getArpeggiated?.() ?? false);
+            }
         }
     });
 

@@ -68,6 +68,7 @@ function compareChord(truth, eng, rendered) {
   const notesOk = usePiano
     ? (pianoExact || pianoPcsExact) && bassInNotes && orderOk
     : pcsExact && bassInNotes && orderOk;
+  const degreesOk = eng.degreesOk !== false;
 
   return {
     beat: eng.beat,
@@ -84,9 +85,11 @@ function compareChord(truth, eng, rendered) {
     flags: {
       romanExact, romanCore, rootPcMatch, bassPcMatch, rootInPcs, bassInNotes,
       pcsExact, pianoExact, pianoPcsExact, pianoValidated, usePiano, orderOk,
+      degreesOk,
     },
     ok: romanExact && notesOk,
     notesOk,
+    degreesOk,
     engineError: eng.error || null,
   };
 }

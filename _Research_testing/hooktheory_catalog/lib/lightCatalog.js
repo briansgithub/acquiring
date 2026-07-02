@@ -139,7 +139,12 @@ async function runHarvestPhase(db, opts) {
       writeState({ current_slug: song.slug, queue_remaining: remaining });
 
       try {
-        await harvestLightSong(db, song.slug, song.url, { browser });
+        const result = await harvestLightSong(db, song.slug, song.url, { browser });
+        if (result?.skipped) {
+          skipSlugs.add(song.slug);
+          appendLog(`[light-catalog] skip ${song.slug}: ${result.reason}`);
+          continue;
+        }
         harvested++;
         writeState({
           songs_harvested_session: harvested,

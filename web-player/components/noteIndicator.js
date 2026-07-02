@@ -1,5 +1,11 @@
 import { getScaleDegreeColor, NOTE_NAME_TO_INTEGER_NOTATION } from "../lib/scales.js";
-import { getChordSymbol } from "../lib/jsonToSymbol.js";
+import { getChordSymbol, stripBorrowedTags, borrowedAbbrev } from "../lib/jsonToSymbol.js";
+import { romanNumeralToHtml } from "../lib/romanNumeralCanvas.js";
+import { verifyScaleDegrees } from "../lib/scaleDegreeVerifier.js";
+import { CONTROL_DEFAULTS, formatArpSpeedLabel } from "./controls.js";
+
+const VERIFY_DEGREES = typeof window !== "undefined"
+  && new URLSearchParams(window.location.search).get("verifyDegrees") === "1";
 
 const NOTE_PC = Object.fromEntries(
   Object.entries(NOTE_NAME_TO_INTEGER_NOTATION).map(([n, v]) => [n.replace(/[#b]/g, (m) => m), v])
@@ -82,14 +88,14 @@ export function renderNoteIndicator(container, options = {}) {
         </div>
         <div class="notes-list notes-list--chord" id="chord-notes" style="min-height:32px;margin-top:2px;"></div>
         <div class="notes-list notes-list--chord" id="chord-degrees-pills" style="min-height:32px;margin-top:4px;"></div>
-        <div class="chord-arpeggio-controls" id="chord-arpeggio-controls">
+        <div class="chord-arpeggio-controls">
           <label for="arpeggiate-toggle" class="indicator-option-toggle chord-arpeggio-toggle">
             <input type="checkbox" id="arpeggiate-toggle" />
-            Arpeggiate Chords
+            Arpeggiate chords
           </label>
           <div class="arp-speed-row" id="arp-speed-row">
-            <label for="arp-speed" class="arp-speed-label">Arp Spd:</label>
-            <input type="range" id="arp-speed" min="10" max="1000" value="100" step="10" class="volume-slider arp-speed-slider" />
+            <label for="arp-speed" class="arp-speed-label">Arp speed:</label>
+            <input type="range" id="arp-speed" min="10" max="1000" value="100" step="10" class="volume-slider arp-speed-slider">
             <span id="arp-speed-label" class="arp-speed-value">100ms</span>
           </div>
         </div>
@@ -117,6 +123,25 @@ export function renderNoteIndicator(container, options = {}) {
   const arpSpeedLabel = container.querySelector("#arp-speed-label");
   const arpSpeedRow = container.querySelector("#arp-speed-row");
 
+  function setArpSpeedRowEnabled(enabled) {
+    arpSpeedRow.style.opacity = enabled ? "1" : "0.5";
+    arpSpeedRow.style.pointerEvents = enabled ? "auto" : "none";
+  }
+
+  setArpSpeedRowEnabled(arpToggle.checked);
+
+  arpToggle.addEventListener("change", (e) => {
+    const isChecked = e.target.checked;
+    setArpSpeedRowEnabled(isChecked);
+    options.onArpeggiateToggle?.(isChecked);
+  });
+
+  arpSpeedSlider.addEventListener("input", (e) => {
+    const ms = Number(e.target.value);
+    arpSpeedLabel.textContent = formatArpSpeedLabel(ms);
+    options.onArpeggiateSpeedChange?.(ms);
+  });
+
   function setMelodyExpanded(expanded) {
     melodySection.classList.toggle("is-collapsed", !expanded);
     melodyContentWrapper.hidden = !expanded;
@@ -135,26 +160,6 @@ export function renderNoteIndicator(container, options = {}) {
 
   rootPositionToggle.addEventListener("change", () => {
     options.onRootPositionChange?.(rootPositionToggle.checked);
-  });
-
-  arpSpeedRow.style.opacity = "0.5";
-  arpSpeedRow.style.pointerEvents = "none";
-
-  arpToggle.addEventListener("change", (e) => {
-    const isChecked = e.target.checked;
-    arpSpeedRow.style.opacity = isChecked ? "1" : "0.5";
-    arpSpeedRow.style.pointerEvents = isChecked ? "auto" : "none";
-    options.onArpeggiateToggle?.(isChecked);
-  });
-
-  arpSpeedSlider.addEventListener("input", (e) => {
-    const ms = Number(e.target.value);
-    if (ms >= 1000) {
-      arpSpeedLabel.textContent = `${(ms / 1000).toFixed(1)}s`;
-    } else {
-      arpSpeedLabel.textContent = `${ms}ms`;
-    }
-    options.onArpeggiateSpeedChange?.(ms);
   });
   
   let currentKey = options.key || null;
@@ -324,7 +329,7 @@ export function renderNoteIndicator(container, options = {}) {
       // Add click handler to play the note
       pill.addEventListener("click", () => {
         if (options.onNoteClick) {
-          options.onNoteClick(n);
+          options.onNoteClick(n, { isChord: true });
         }
       });
       
@@ -358,13 +363,24 @@ export function renderNoteIndicator(container, options = {}) {
         // Add click handler to play the corresponding note
         pill.addEventListener("click", () => {
           if (options.onNoteClick && correspondingNote) {
-            options.onNoteClick(correspondingNote);
+            options.onNoteClick(correspondingNote, { isChord: true });
           }
         });
         
         chordDegreesPillsList.appendChild(pill);
       });
     }
+  }
+
+  let highlightClearTimer = null;
+
+  function clearNoteHighlight() {
+    if (highlightClearTimer) {
+      clearTimeout(highlightClearTimer);
+      highlightClearTimer = null;
+    }
+    const allPills = [...chordList.querySelectorAll(".pill"), ...chordDegreesPillsList.querySelectorAll(".pill")];
+    allPills.forEach((p) => p.classList.remove("highlighted"));
   }
 
   return {
@@ -388,8 +404,8 @@ export function renderNoteIndicator(container, options = {}) {
         chordRootEl.textContent = "Chord: Rest";
         chordRootEl.style.visibility = "visible";
       } else if (chordObj && key) {
-        const symbol = getChordSymbol(chordObj, key);
-        chordRootEl.textContent = `Chord: ${symbol}`;
+        const symbol = stripBorrowedTags(getChordSymbol(chordObj, key));
+        chordRootEl.innerHTML = `Chord: <span class="chord-roman-line">${romanNumeralToHtml(symbol)}</span>`;
         chordRootEl.style.visibility = "visible";
       } else if (root) {
         chordRootEl.textContent = `Chord: ${root.toString()}`;
@@ -402,39 +418,49 @@ export function renderNoteIndicator(container, options = {}) {
       // Update notes display
       updateChordNotesDisplay();
 
+      if (VERIFY_DEGREES && notes?.length && chordDegrees?.length && key) {
+        const check = verifyScaleDegrees({ key, notes, chordDegrees });
+        if (!check.ok) {
+          console.warn("[scale-degree verify]", check.failures, { notes, chordDegrees, key, chordObj });
+        }
+      }
+
       // Update melody display to refresh tension analysis against new chord notes
       updateMelodyDisplay();
 
       // Update borrowed (fixed position, doesn't affect layout)
-      if (borrowed) {
-        // If borrowed is an array (custom scale), show "(borrowed)"
-        // Otherwise show the mode name
-        const borrowedLabel = Array.isArray(borrowed) ? `(borrowed: ${borrowed})` : `(${borrowed})`;
-        chordBorrowedEl.textContent = borrowedLabel;
+      const abbrev = borrowedAbbrev(borrowed);
+      if (abbrev) {
+        chordBorrowedEl.textContent = abbrev;
+        chordBorrowedEl.style.visibility = "visible";
+      } else if (borrowed) {
+        chordBorrowedEl.textContent = Array.isArray(borrowed) ? "(bor)" : `(${borrowed})`;
         chordBorrowedEl.style.visibility = "visible";
       } else {
         chordBorrowedEl.textContent = "";
         chordBorrowedEl.style.visibility = "hidden";
       }
     },
-    highlightNote(note) {
-      // Remove highlight from all pills (both note labels and scale degrees)
-      const allPills = [...chordList.querySelectorAll(".pill"), ...chordDegreesPillsList.querySelectorAll(".pill")];
-      allPills.forEach(p => p.classList.remove("highlighted"));
+    highlightNote(note, clearAfterMs = null) {
+      clearNoteHighlight();
 
-      // Find and highlight the specific note in the note labels row
-      const target = Array.from(chordList.querySelectorAll(".pill")).find(p => p.textContent === note);
+      const target = Array.from(chordList.querySelectorAll(".pill")).find((p) => p.textContent === note);
       if (target) {
         target.classList.add("highlighted");
-        // Also highlight corresponding scale degree pill if it exists
         const noteIndex = Array.from(chordList.querySelectorAll(".pill")).indexOf(target);
         const degreePills = chordDegreesPillsList.querySelectorAll(".pill");
         if (degreePills[noteIndex]) {
           degreePills[noteIndex].classList.add("highlighted");
         }
       }
+
+      if (clearAfterMs != null && clearAfterMs > 0) {
+        highlightClearTimer = setTimeout(clearNoteHighlight, clearAfterMs);
+      }
     },
+    clearNoteHighlight,
     reset() {
+      clearNoteHighlight();
       currentMelodyData = { absoluteLabel: null, relativeLabel: null };
       currentChordData = { notes: null, chordDegrees: null, root: null, borrowed: null, key: null, chordObj: null };
       updateMelodyDisplay();
@@ -450,6 +476,19 @@ export function renderNoteIndicator(container, options = {}) {
     },
     setRootPositionChecked(checked) {
       rootPositionToggle.checked = !!checked;
+    },
+    setArpeggiated(enabled) {
+      arpToggle.checked = !!enabled;
+      setArpSpeedRowEnabled(arpToggle.checked);
+    },
+    setArpeggiationSpeed(ms) {
+      arpSpeedSlider.value = ms;
+      arpSpeedLabel.textContent = formatArpSpeedLabel(ms);
+    },
+    resetArpToDefaults() {
+      const d = CONTROL_DEFAULTS;
+      this.setArpeggiated(d.arpeggiated);
+      this.setArpeggiationSpeed(d.arpeggiationSpeed);
     },
   };
 }

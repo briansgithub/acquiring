@@ -2,13 +2,31 @@
  * Pipeline flag helpers for unified library rows.
  */
 
-const { isHarvested } = require('./harvestArtifact');
+const { isHarvested, loadHarvest, isLightHarvest } = require('./harvestArtifact');
+
+/** Any harvest artifact on disk (light or full browser scrape). */
+function hasHarvestArtifact(slug) {
+  return slug ? isHarvested(slug) : false;
+}
+
+/** Full Puppeteer Fetch completed — not light-catalog API harvest. */
+function isFullFetch(row, slug) {
+  if (!slug || !hasHarvestArtifact(slug)) return false;
+  if (row.harvest_mode === 'light') return false;
+  if (row.harvest_mode === 'full') return true;
+  const harvest = loadHarvest(slug);
+  if (harvest && isLightHarvest(harvest.scrape)) return false;
+  return true;
+}
 
 function computeFlags(row, slug) {
-  const harvested = slug ? isHarvested(slug) : false;
+  const scrapeReady = hasHarvestArtifact(slug);
   return {
     catalogued: true,
-    harvested,
+    /** UI "Fetch" — true only after full browser scrape. */
+    harvested: isFullFetch(row, slug),
+    /** Harvest artifact exists (enables Test even when only light-catalogged). */
+    scrapeReady,
     harvestMode: row.harvest_mode || null,
     metadata: row.status === 'enriched',
     processed: !!(row.cache_dir && row.processed_at),
@@ -27,4 +45,10 @@ function loadGateMissing(flags) {
   return missing;
 }
 
-module.exports = { computeFlags, canLoad, loadGateMissing };
+module.exports = {
+  computeFlags,
+  canLoad,
+  loadGateMissing,
+  hasHarvestArtifact,
+  isFullFetch,
+};

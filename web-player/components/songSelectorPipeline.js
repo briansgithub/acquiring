@@ -66,6 +66,8 @@ function rateRow(label, row, esc) {
     <td>${errPct(row.romanCore, t)}%</td>
     <td>${pct(row.notesOk, t)}%</td>
     <td>${errPct(row.notesOk, t)}%</td>
+    <td>${pct(row.degreesOk, t)}%</td>
+    <td>${errPct(row.degreesOk, t)}%</td>
   </tr>`;
 }
 
@@ -79,6 +81,8 @@ function oracleTableHead() {
     <th scope="col">core err</th>
     <th scope="col">notesOK</th>
     <th scope="col">notes err</th>
+    <th scope="col">degOK</th>
+    <th scope="col">deg err</th>
   </tr></thead>`;
 }
 

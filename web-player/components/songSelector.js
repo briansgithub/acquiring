@@ -45,6 +45,7 @@ function loadTooltip(missing) {
 export function renderSongSelector(container, options = {}) {
   container.innerHTML = `
     <div class="selector-head pane-panel-head">
+      <button id="sel-back" type="button" class="sel-back" hidden>Back</button>
       <h2 class="pane-panel-title">Song Selector</h2>
     </div>
     <div id="sel-song-nav" class="sel-song-nav" hidden>
@@ -57,7 +58,6 @@ export function renderSongSelector(container, options = {}) {
             <option value="artist">Artist</option>
           </select>
         </div>
-        <button id="sel-back" type="button" class="sel-back" hidden>Back</button>
       </div>
       <div class="sel-song-nav-picker">
         <select id="sel-nav-playable-select" class="sel-select sel-playable-select" aria-label="Playable songs">
@@ -439,7 +439,7 @@ export function renderSongSelector(container, options = {}) {
 
   // ---- Artist view ----
   function showArtist(artistName) {
-    showSongNav({ showBack: false });
+    showSongNav({ showBack: true });
     const list = songs
       .filter((s) => (s.artist || "") === artistName)
       .sort((a, b) => (a.title || "").localeCompare(b.title || ""));

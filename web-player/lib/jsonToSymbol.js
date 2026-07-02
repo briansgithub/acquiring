@@ -101,6 +101,23 @@ const BORROWED_TAG = {
     lydian: 'lyd', mixolydian: 'mix', locrian: 'loc', major: 'maj',
     harmonicMinor: 'hmin', phrygianDominant: 'phdm',
 };
+export const BORROWED_TAG_RE = /\((min|mix|dor|phr|lyd|loc|maj|hmin|phdm|bor)\)/g;
+
+/** Remove borrowed-mode parentheticals from a roman symbol (shown on their own line in the UI). */
+export function stripBorrowedTags(symbol) {
+    if (!symbol) return '';
+    return symbol.replace(BORROWED_TAG_RE, '');
+}
+
+/** Hooktheory-style borrowed abbreviation for a secondary display line, e.g. "(mix)". */
+export function borrowedAbbrev(borrowed) {
+    if (borrowed == null || borrowed === '') return null;
+    if (Array.isArray(borrowed)) return '(bor)';
+    if (typeof borrowed === 'string' && BORROWED_TAG[borrowed]) {
+        return `(${BORROWED_TAG[borrowed]})`;
+    }
+    return null;
+}
 // Borrowed scales whose notes/qualities our engine can resolve directly.
 const SUPPORTED_BORROWED = new Set(['minor', 'dorian', 'phrygian', 'lydian', 'mixolydian', 'locrian', 'major', 'harmonicMinor', 'phrygianDominant']);
 
@@ -157,25 +174,22 @@ function borrowedPrefix(degree, key, borrowedScale) {
     return '';
 }
 
-const SUPERS = { 5: '', 7: '⁷', 9: '⁹', 11: '¹¹', 13: '¹³' };
-
 // Builds the augmented / quality / figured-bass / extension / suspension / alteration suffix
 // for a chord. Order matches Hooktheory's rendering:
-//   [+] [°|ø|△] [figured-bass digits] [extension number] [susN...] [(alteration)...]
-// opts.fullyDiminished: a diminished 7th renders "°7" (vii°7) instead of half-dim "ø7".
-// opts.majorSeventh: a major-quality seventh renders "△" (I△7, IV△9).
+//   [+] [°|ø|△] [figured-bass] [susN...] [extension] [(add...)] [(no...)] [(alteration)...]
+// Plain ASCII digits only — superscript/subscript sizing is applied at render time.
 function buildSuffix(chord, quality, opts = {}) {
     const fullyDiminished = opts.fullyDiminished || false;
     const majorSeventh = opts.majorSeventh || false;
     const suspended = Array.isArray(chord.suspensions) && chord.suspensions.length > 0;
+    const alterations = Array.isArray(chord.alterations) ? chord.alterations : [];
+    const altInline = alterations.length ? alterations.map((a) => `(${a})`).join('') : '';
     let suffix = '';
+    let alterationsEmbedded = false;
 
-    // Augmented fifth (#5 alteration, or a diatonic augmented triad e.g. III+) renders "+".
-    const augmented = quality === 'augmented' || (Array.isArray(chord.alterations) && chord.alterations.includes('#5'));
+    const augmented = quality === 'augmented' || alterations.includes('#5');
     if (augmented) suffix += '+';
 
-    // Diminished / half-diminished / major-seventh marker sits right after the numeral.
-    // Suspended chords replace the third, so Hooktheory drops the quality marker entirely.
     if (!suspended) {
         if (quality === 'diminished') {
             suffix += (chord.type >= 7 && !fullyDiminished) ? 'ø' : '°';
@@ -184,36 +198,83 @@ function buildSuffix(chord, quality, opts = {}) {
         }
     }
 
-    // Figured-bass inversion digits.
-    if (chord.inversion === 1) suffix += (chord.type >= 7) ? '⁶⁵' : '⁶';
-    else if (chord.inversion === 2) suffix += (chord.type >= 7) ? '⁴³' : '⁶₄';
-    else if (chord.inversion === 3) suffix += '⁴²';
-
-    // Extension number (7/9/11/13), shown only when no inversion figure already implies it.
-    if (chord.type >= 7) {
-        const hasInversionSuffix = /[⁶⁴⁵³²]/.test(suffix);
-        if (!hasInversionSuffix) suffix += (SUPERS[chord.type] || '⁷');
+    // Figured-bass: Hooktheory inserts alterations between stacked digits (e.g. I6(#9)5).
+    if (chord.inversion === 1) {
+        if (chord.type >= 7) {
+            if (altInline) {
+                suffix += `6${altInline}5`;
+                alterationsEmbedded = true;
+            } else {
+                suffix += '65';
+            }
+        } else if (altInline) {
+            suffix += `6${altInline}`;
+            alterationsEmbedded = true;
+        } else {
+            suffix += '6';
+        }
+    } else if (chord.inversion === 2) {
+        if (chord.type >= 7) {
+            if (altInline) {
+                suffix += `4${altInline}3`;
+                alterationsEmbedded = true;
+            } else {
+                suffix += '43';
+            }
+        } else if (altInline) {
+            suffix += `6${altInline}4`;
+            alterationsEmbedded = true;
+        } else {
+            suffix += '64';
+        }
+    } else if (chord.inversion === 3) {
+        suffix += '42';
     }
 
-    // Added tones. A 4th/6th is promoted to its compound form (11th/13th) once the chord
-    // already carries a 7th (e.g. ii7(add11), I9(add13)); a 6th stays "add6" on a plain triad.
+    const susStr = suspended ? chord.suspensions.map((s) => `sus${s}`).join('') : '';
+    if (suspended) {
+        const hasFigured = /[0-9]/.test(suffix);
+        const omitInline = Array.isArray(chord.omits) && chord.omits.length
+            ? chord.omits.map((v) => `(no${v})`).join('')
+            : '';
+        if (chord.suspensions.length > 1) {
+            const [a, b] = chord.suspensions;
+            if (chord.type >= 7 && !hasFigured) {
+                // Hooktheory SVG x-order: ascending sus [2,4] → Vsus2sus47; descending [4,2] → V7(no5)sus4sus2.
+                if (a < b) suffix += susStr + String(chord.type);
+                else {
+                    suffix += String(chord.type) + omitInline + susStr;
+                    if (omitInline) opts.omitsPlaced = true;
+                }
+            } else {
+                suffix += susStr;
+            }
+        } else if (chord.type >= 7 && !hasFigured) {
+            suffix += String(chord.type) + susStr;
+        } else {
+            suffix += susStr;
+        }
+    } else if (chord.type >= 7) {
+        const hasInversionSuffix = /[0-9]/.test(suffix);
+        if (!hasInversionSuffix) suffix += String(chord.type);
+    }
+
+    if (opts.borrowedTag) suffix += opts.borrowedTag;
+
     if (Array.isArray(chord.adds) && chord.adds.length) {
-        suffix += chord.adds.map((v) => `(add${(v <= 6 && chord.type >= 7) ? v + 7 : v})`).join('');
+        const addBody = chord.adds.map((v) => {
+            const n = (v <= 6 && chord.type >= 7) ? v + 7 : v;
+            return `add${n}`;
+        }).join('');
+        suffix += `(${addBody})`;
     }
 
-    // Omitted tones (e.g. (no3) power chords, (no5)).
-    if (Array.isArray(chord.omits) && chord.omits.length) {
+    if (Array.isArray(chord.omits) && chord.omits.length && !opts.omitsPlaced) {
         suffix += chord.omits.map((v) => `(no${v})`).join('');
     }
 
-    // Suspensions (sus2 / sus4).
-    if (suspended) {
-        suffix += chord.suspensions.map((s) => `sus${s}`).join('');
-    }
-
-    // Alterations (e.g. (b5), (#5)).
-    if (Array.isArray(chord.alterations) && chord.alterations.length) {
-        suffix += chord.alterations.map((a) => `(${a})`).join('');
+    if (alterations.length && !alterationsEmbedded) {
+        suffix += `(${alterations.join('')})`;
     }
 
     return suffix;
@@ -232,7 +293,7 @@ function buildNumeral(degree, qualities, chord, prefix, opts = {}) {
  * Converts a chord object to its Roman Numeral representation.
  * @param {Object} chord - The chord object from the JSON data.
  * @param {Object} key - The key object { tonic, scale }.
- * @returns {string} The Roman Numeral symbol (e.g., "ii", "vii°/ii", "V⁷/V", "♭VI(min)").
+ * @returns {string} The Roman Numeral symbol (e.g., "ii", "vii°/ii", "V7/V", "♭VI(min)").
  */
 export function getChordSymbol(chord, key) {
     if (!chord || !chord.root) return "";
@@ -246,7 +307,7 @@ export function getChordSymbol(chord, key) {
         const targetTonic = getNoteLabel(chord.root, key);
         const numeratorKey = { tonic: targetTonic, scale: 'major' };
         const majorSeventh = chord.type >= 7 && isMajorSeventh(chord.applied, numeratorKey);
-        const numerator = buildNumeral(chord.applied, MAJOR_SCALE_CHORD_QUALITIES, chord, '', { fullyDiminished: fullyDim, majorSeventh });
+        const numerator = buildNumeral(chord.applied, MAJOR_SCALE_CHORD_QUALITIES, chord, '', { fullyDiminished: fullyDim, majorSeventh, applied: true });
         const targetRomans = getRomanNumeralsForScale(key.scale);
         const denominator = targetRomans[chord.root - 1] || '';
         return `${numerator}/${denominator}`;
@@ -272,13 +333,19 @@ export function getChordSymbol(chord, key) {
         const majorSeventh = chord.type >= 7 && quality !== 'diminished' && customArraySeventhMajor(borrowed, chord.root);
         let roman = ROMAN_MAP[chord.root] || '';
         if (quality === 'minor' || quality === 'diminished') roman = roman.toLowerCase();
-        return prefix + roman + buildSuffix(chord, quality, { majorSeventh }) + tag;
+        const hasAdds = Array.isArray(chord.adds) && chord.adds.length > 0;
+        const suffixOpts = { majorSeventh };
+        if (hasAdds) suffixOpts.borrowedTag = tag;
+        return prefix + roman + buildSuffix(chord, quality, suffixOpts) + (hasAdds ? '' : tag);
     }
 
     const qualities = getChordQualitiesForScale(scale);
     const quality = (chord.root >= 1 && chord.root <= 7) ? qualities[chord.root - 1] : 'major';
     const majorSeventh = chord.type >= 7 && quality !== 'diminished' && isMajorSeventh(chord.root, { tonic: key.tonic, scale });
-    return buildNumeral(chord.root, qualities, chord, prefix, { majorSeventh }) + tag;
+    const hasAdds = Array.isArray(chord.adds) && chord.adds.length > 0;
+    const suffixOpts = { majorSeventh };
+    if (tag && hasAdds) suffixOpts.borrowedTag = tag;
+    return buildNumeral(chord.root, qualities, chord, prefix, suffixOpts) + (tag && !hasAdds ? tag : '');
 }
 
 /**

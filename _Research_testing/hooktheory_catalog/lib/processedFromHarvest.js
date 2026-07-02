@@ -37,6 +37,14 @@ async function writeProcessedCacheFromHarvest(harvest) {
 
   const { artist } = extractArtistAndSongFromUrl(url);
   const songDir = CacheManager.getSongCacheDir(artist, songTitle);
+  try {
+    const existing = await fs.readdir(songDir);
+    for (const f of existing.filter((x) => x.endsWith('.json') && x !== '_metadata.json')) {
+      await fs.unlink(path.join(songDir, f));
+    }
+  } catch (_) {
+    /* song dir may not exist yet */
+  }
   await fs.mkdir(songDir, { recursive: true });
 
   const sectionsData = {};

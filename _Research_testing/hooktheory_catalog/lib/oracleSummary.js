@@ -14,10 +14,13 @@ function statsFromReportSections(sections) {
   let romanExact = 0;
   let romanCore = 0;
   let notesOk = 0;
+  let degreesOk = 0;
   let discrepancies = 0;
 
   for (const sec of sections || []) {
-    const st = { name: sec.name, total: 0, romanExact: 0, romanCore: 0, notesOk: 0, browserOk: 0 };
+    const st = {
+      name: sec.name, total: 0, romanExact: 0, romanCore: 0, notesOk: 0, degreesOk: 0, browserOk: 0,
+    };
     for (const r of sec.rows || []) {
       total++;
       st.total++;
@@ -25,19 +28,21 @@ function statsFromReportSections(sections) {
       if (m.romanExact) { romanExact++; st.romanExact++; }
       if (m.romanCore) { romanCore++; st.romanCore++; }
       if (m.notesOk) { notesOk++; st.notesOk++; }
+      if (m.degreesOk) { degreesOk++; st.degreesOk++; }
       if (m.browserOk) st.browserOk++;
       const browserGate = r.browserOk == null || m.browserOk;
       if (!(m.romanCore && m.notesOk && browserGate)) discrepancies++;
       for (const [k, v] of attrBuckets(r.chord)) {
         const key = `${k}=${v}`;
         if (!matrix.has(key)) {
-          matrix.set(key, { total: 0, romanExact: 0, romanCore: 0, notesOk: 0, browserOk: 0 });
+          matrix.set(key, { total: 0, romanExact: 0, romanCore: 0, notesOk: 0, degreesOk: 0, browserOk: 0 });
         }
         const e = matrix.get(key);
         e.total++;
         if (m.romanExact) e.romanExact++;
         if (m.romanCore) e.romanCore++;
         if (m.notesOk) e.notesOk++;
+        if (m.degreesOk) e.degreesOk++;
         if (m.browserOk) e.browserOk++;
       }
     }
@@ -53,6 +58,7 @@ function statsFromReportSections(sections) {
     romanExact,
     romanCore,
     notesOk,
+    degreesOk,
     discrepancies,
     sections: sectionStats,
     attributes: attributeStats,

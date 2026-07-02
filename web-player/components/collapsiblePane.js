@@ -1,9 +1,11 @@
 const COLLAPSED_WIDTH = "36px";
+const ICON_COLLAPSE = "«";
+const ICON_EXPAND = "»";
 
 /**
  * Wraps a panel so it collapses to a thin vertical strip; grid column width is updated explicitly.
  */
-export function makeCollapsible(paneEl, { collapseClass, label, expandedWidth }) {
+export function makeCollapsible(paneEl, { collapseClass, label, expandedWidth, startCollapsed = false }) {
   const app = document.getElementById("app");
   const widthVar = `--${collapseClass}-width`;
   const expanded = `${expandedWidth}px`;
@@ -29,6 +31,10 @@ export function makeCollapsible(paneEl, { collapseClass, label, expandedWidth })
   collapsedLabel.className = "pane-collapsed-label";
   collapsedLabel.textContent = label;
   collapsedLabel.hidden = true;
+  topBar.appendChild(collapsedLabel);
+
+  const bottomBar = document.createElement("div");
+  bottomBar.className = "pane-bottom-bar";
 
   const toggle = document.createElement("button");
   toggle.className = "pane-collapse-toggle";
@@ -36,13 +42,12 @@ export function makeCollapsible(paneEl, { collapseClass, label, expandedWidth })
   toggle.setAttribute("aria-expanded", "true");
   toggle.setAttribute("aria-label", `Collapse ${label}`);
   toggle.title = `Collapse ${label}`;
-  toggle.textContent = "◂";
+  toggle.textContent = ICON_COLLAPSE;
 
-  topBar.insertBefore(toggle, topBar.firstChild);
-  topBar.appendChild(collapsedLabel);
+  bottomBar.appendChild(toggle);
 
   paneEl.classList.add("collapsible-pane");
-  paneEl.append(topBar, contentWrap);
+  paneEl.append(topBar, contentWrap, bottomBar);
 
   function setCollapsed(collapsed) {
     paneEl.classList.toggle("is-collapsed", collapsed);
@@ -51,7 +56,7 @@ export function makeCollapsible(paneEl, { collapseClass, label, expandedWidth })
     contentWrap.hidden = collapsed;
     if (panelHead) panelHead.hidden = collapsed;
     collapsedLabel.hidden = !collapsed;
-    toggle.textContent = collapsed ? "▸" : "◂";
+    toggle.textContent = collapsed ? ICON_EXPAND : ICON_COLLAPSE;
     toggle.setAttribute("aria-expanded", String(!collapsed));
     toggle.setAttribute("aria-label", collapsed ? `Expand ${label}` : `Collapse ${label}`);
     toggle.title = collapsed ? `Expand ${label}` : `Collapse ${label}`;
@@ -61,6 +66,10 @@ export function makeCollapsible(paneEl, { collapseClass, label, expandedWidth })
   toggle.addEventListener("click", () => {
     setCollapsed(!paneEl.classList.contains("is-collapsed"));
   });
+
+  if (startCollapsed) {
+    setCollapsed(true);
+  }
 
   return { setCollapsed, isCollapsed: () => paneEl.classList.contains("is-collapsed") };
 }

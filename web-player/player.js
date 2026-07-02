@@ -1,5 +1,5 @@
 import { AudioEngine } from "./audio/engine.js";
-import { renderControls } from "./components/controls.js";
+import { renderControls, CONTROL_DEFAULTS } from "./components/controls.js";
 import { makeCollapsible } from "./components/collapsiblePane.js";
 import { renderChordRing } from "./components/chordRing.js";
 import { renderNoteIndicator } from "./components/noteIndicator.js";
@@ -22,6 +22,29 @@ const engine = new AudioEngine();
 let useRomanNumerals = true; // Track label mode (roman numerals vs letter labels)
 let currentKey = null; // Store current key for event recalculation
 let forceRootPosition = false;
+let isArpeggiated = CONTROL_DEFAULTS.arpeggiated;
+let arpeggiationSpeed = CONTROL_DEFAULTS.arpeggiationSpeed;
+
+const ARP_HIGHLIGHT_MIN_MS = 50;
+
+function shouldHighlightArpeggioNote() {
+  return arpeggiationSpeed >= ARP_HIGHLIGHT_MIN_MS;
+}
+
+function highlightArpeggioNote(note) {
+  if (!shouldHighlightArpeggioNote()) return;
+  noteIndicator.highlightNote(note, arpeggiationSpeed);
+}
+
+function previewChordWithSettings(notes, arpeggiate = false) {
+  engine.previewChord(
+    notes,
+    "4n",
+    arpeggiate,
+    arpeggiationSpeed,
+    arpeggiate ? (note) => highlightArpeggioNote(note) : null
+  );
+}
 
 function interpretChord(chord, key) {
   return chordInterpreter(chord, key, { forceRootPosition });
@@ -138,16 +161,26 @@ const controls = renderControls(controlsPane, {
     currentBpm = tempo;
     currentSecondsPerBeat = 60 / tempo;
     engine.setTempo(tempo);
-    // If not arpeggiated, we don't need to reschedule events at all.
-    // Tone.js natively adjusts playback speed for tick-scheduled events seamlessly.
-    // If arpeggiated, we debounce rescheduling to keep arpeggio speed constant in ms
-    // without cutting off sounding audio repeatedly while dragging the slider.
     if (isArpeggiated) {
       if (tempoDebounceTimer) clearTimeout(tempoDebounceTimer);
       tempoDebounceTimer = setTimeout(() => {
         updatePlaybackSettings();
       }, 250);
     }
+  },
+  onResetDefaults: () => {
+    isArpeggiated = CONTROL_DEFAULTS.arpeggiated;
+    arpeggiationSpeed = CONTROL_DEFAULTS.arpeggiationSpeed;
+    forceRootPosition = false;
+    noteIndicator.setRootPositionChecked(false);
+    noteIndicator.resetArpToDefaults();
+    controls.resetSlidersToDefaults();
+    engine.setMelodyVolume(CONTROL_DEFAULTS.melodyVolume);
+    engine.setChordVolume(CONTROL_DEFAULTS.chordVolume);
+    currentBpm = originalBpm;
+    currentSecondsPerBeat = 60 / originalBpm;
+    engine.setTempo(currentBpm);
+    updatePlaybackSettings();
   },
 });
 
@@ -163,9 +196,10 @@ if (chordVolumeSlider) {
 
 const chordRing = renderChordRing(ringPane, {
   getForceRootPosition: () => forceRootPosition,
+  getArpeggiated: () => isArpeggiated,
   onChordClick: (chordData, arpeggiate = false) => {
     isManualChordPreview = true;
-    engine.previewChord(chordData.notes, "4n", arpeggiate);
+    previewChordWithSettings(chordData.notes, arpeggiate);
     noteIndicator.updateChord(chordData.notes, chordData.root, chordData.chordDegrees, chordData.borrowed, currentKey, chordData.chord);
   },
   labelMode: useRomanNumerals,
@@ -187,8 +221,13 @@ const chordRing = renderChordRing(ringPane, {
   }
 });
 const noteIndicator = renderNoteIndicator(indicatorPane, {
-  onNoteClick: (note) => {
-    engine.previewNote(note, "4n");
+  onNoteClick: (note, { isChord = false } = {}) => {
+    if (isChord) {
+      const durationMs = engine.previewNote(note, "4n");
+      noteIndicator.highlightNote(note, durationMs);
+      return;
+    }
+    engine.previewMelodyNote(note, "4n");
   },
   onRootPositionChange: handleRootPositionChange,
   onArpeggiateToggle: (enabled) => {
@@ -205,13 +244,14 @@ const noteIndicator = renderNoteIndicator(indicatorPane, {
   key: currentKey
 });
 const timeline = renderTimeline(timelinePane, {
+  getArpeggiated: () => isArpeggiated,
   onSeek: handleSeek,
   onChordClick: (chord, arpeggiate = false) => {
     if (!currentKey) return;
     isManualChordPreview = true;
     const chordData = interpretChord(chord, currentKey);
     if (chordData && chordData.notes && chordData.notes.length > 0) {
-      engine.previewChord(chordData.notes, "4n", arpeggiate);
+      previewChordWithSettings(chordData.notes, arpeggiate);
       noteIndicator.updateChord(chordData.notes, chord.root, chordData.chordDegrees, chord.borrowed, currentKey, chord);
     }
   }
@@ -237,7 +277,12 @@ const songSelector = renderSongSelector(selectorPane, {
 });
 
 makeCollapsible(selectorPane, { collapseClass: "selector", label: "Songs", expandedWidth: 310 });
-makeCollapsible(controlsPane, { collapseClass: "controls", label: "Controls", expandedWidth: 250 });
+const controlsCollapsible = makeCollapsible(controlsPane, {
+  collapseClass: "controls",
+  label: "Controls",
+  expandedWidth: 250,
+  startCollapsed: true,
+});
 
 // Add keyboard support for spacebar to toggle play/pause
 document.addEventListener("keydown", (event) => {
@@ -262,8 +307,6 @@ let originalBpm = 120; // Store the original tempo from the loaded section
 let currentRawNotes = []; // Store raw note data for tempo recalculation
 let currentRawChords = []; // Store raw chord data for tempo recalculation
 let isLoading = false;
-let isArpeggiated = false;
-let arpeggiationSpeed = 100; // ms
 let arpDebounceTimer = null;
 let tempoDebounceTimer = null;
 let isManualChordPreview = false; // Track when chord is manually clicked
@@ -292,6 +335,7 @@ function resetIdleState() {
   timeline.setSongData([], null, 0);
   timeline.setSongInfo(null, null);
   timeline.updateProgress(0);
+  controlsCollapsible.setCollapsed(true);
 }
 
 async function init() {
@@ -377,10 +421,6 @@ async function loadSection(songIndex, sectionIndex) {
     currentRawNotes = notesArray;
     currentRawChords = data.chords || [];
 
-    // #region agent log
-    fetch('http://127.0.0.1:7355/ingest/9027d9a5-7140-4ebc-92e0-0d781f81d4e6',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'14a874'},body:JSON.stringify({sessionId:'14a874',location:'player.js:loadSection',message:'section loaded',hypothesisId:'H-C',data:{songIndex,sectionIndex,sectionName:section.sectionName,relPath:section.relPath,fileSongId:section.songId,chordCount:currentRawChords.length,firstChordRoot:currentRawChords[0]?.root,allSectionLabels:song.sections?.map((s,i)=>({i,name:s.sectionName,id:s.songId}))},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
-
     const melodyEvents = createMelodyEvents(notesArray, key);
     const chordEvents = createChordEvents(currentRawChords, key);
 
@@ -459,6 +499,7 @@ async function loadSection(songIndex, sectionIndex) {
     }
 
     setupProgressTracking();
+    controlsCollapsible.setCollapsed(false);
     console.log("Section loaded successfully.");
   } catch (err) {
     console.error("Error during playback setup in loadSection:", err);
@@ -710,7 +751,6 @@ function createChordEvents(chordsArray, key) {
         // Capture closure values
         const isFirstNote = (noteIdx === 0);
         const thisNote = note;
-        const shouldHighlight = arpeggiationSpeed >= 50;
 
         const durationSeconds = (noteEnd - noteStart) / ticksPerSecond;
 
@@ -722,15 +762,12 @@ function createChordEvents(chordsArray, key) {
           name: chord.root,
           onTrigger: () => {
             if (isFirstNote) {
-              // On very first note, update the main chord display
               noteIndicator.updateChord(chordNotes, chord.root, chordData.chordDegrees, chord.borrowed, currentKey, chord);
               chordRing.update(chord);
-              // Reset manual preview flag when chord changes during playback
               isManualChordPreview = false;
             }
-            // Only highlight notes when arpeggio speed is >= 50ms to avoid visual clutter at fast speeds
-            if (shouldHighlight) {
-              noteIndicator.highlightNote(thisNote);
+            if (shouldHighlightArpeggioNote()) {
+              noteIndicator.highlightNote(thisNote, arpeggiationSpeed);
             }
           }
         };

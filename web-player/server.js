@@ -7,7 +7,6 @@ const { handleBatchStatus, handleBatchStart, handleBatchPause, handleBatchResume
 const { handlePipelineRun, handlePipelineClear, handlePipelineJob, matchPipelineRoute } = require("../_Research_testing/hooktheory_catalog/web/pipelineApi");
 const { handleAddSong } = require("../_Research_testing/hooktheory_catalog/web/addSongApi");
 const { getPlaybackCacheDir } = require("../lib/dataRoot");
-const { debugLog } = require("../_Research_testing/hooktheory_catalog/lib/debugLog");
 
 const PORT = process.env.PORT || 3000;
 const CACHE_ROOT = getPlaybackCacheDir();
@@ -82,29 +81,6 @@ async function loadLibrary() {
     if (!metadata?.sections?.length) {
       sections.sort((a, b) => (a.numericId || 0) - (b.numericId || 0));
     }
-
-    const songIds = sections.map((s) => s.songId);
-    const uniqueSongIds = new Set(songIds.filter(Boolean));
-    // #region agent log
-    debugLog({
-      location: 'server.js:loadLibrary',
-      message: 'library song sections',
-      hypothesisId: uniqueSongIds.size < sections.length ? 'H-E' : 'H-B',
-      data: {
-        artistDir: artistEntry.name,
-        sectionCount: sections.length,
-        uniqueSongIds: uniqueSongIds.size,
-        metadataSectionCount: metadata?.sections?.length ?? 0,
-        sections: sections.map((s, idx) => ({
-          idx,
-          sectionName: s.sectionName,
-          file: s.file,
-          songId: s.songId,
-          numericId: s.numericId,
-        })),
-      },
-    });
-    // #endregion
     
     library.push({
       artist: artistEntry.name,

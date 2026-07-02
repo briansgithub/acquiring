@@ -45,6 +45,7 @@ async function harvestSong(url, { rescrape = false } = {}) {
   }
 
   scrape.harvestedAt = new Date().toISOString();
+  delete scrape.harvestMode;
   fs.writeFileSync(scrapeFile, JSON.stringify(scrape, null, 2));
 
   return {

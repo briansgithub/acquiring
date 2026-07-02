@@ -1,4 +1,24 @@
-export function renderControls(container, { onPlayPause, onRestart, onSectionChange, onMelodyVolumeChange, onChordVolumeChange, onTempoChange }) {
+export const CONTROL_DEFAULTS = {
+  tempoPercent: 100,
+  melodyVolume: -16,
+  chordVolume: -9,
+  arpeggiated: false,
+  arpeggiationSpeed: 100,
+};
+
+export function formatArpSpeedLabel(ms) {
+  return ms >= 1000 ? `${(ms / 1000).toFixed(1)}s` : `${ms}ms`;
+}
+
+export function renderControls(container, {
+  onPlayPause,
+  onRestart,
+  onSectionChange,
+  onMelodyVolumeChange,
+  onChordVolumeChange,
+  onTempoChange,
+  onResetDefaults,
+}) {
   container.innerHTML = `
     <div class="pane-panel-head controls-head">
       <h2 class="pane-panel-title">Controls</h2>
@@ -26,6 +46,9 @@ export function renderControls(container, { onPlayPause, onRestart, onSectionCha
       <input type="range" id="chord-volume" min="-30" max="0" value="-9" step="1" class="volume-slider">
       <span id="chord-volume-label" style="font-size:12px;color:#9ca3af;width:35px;text-align:right;">-9dB</span>
     </div>
+    <div class="row">
+      <button id="reset-defaults-btn" type="button">Reset to default</button>
+    </div>
   `;
 
   const playBtn = container.querySelector("#play-toggle");
@@ -37,6 +60,11 @@ export function renderControls(container, { onPlayPause, onRestart, onSectionCha
   const melodyVolumeLabel = container.querySelector("#melody-volume-label");
   const chordVolumeSlider = container.querySelector("#chord-volume");
   const chordVolumeLabel = container.querySelector("#chord-volume-label");
+  const resetDefaultsBtn = container.querySelector("#reset-defaults-btn");
+
+  resetDefaultsBtn.addEventListener("click", () => {
+    onResetDefaults?.();
+  });
 
   playBtn.addEventListener("click", () => {
     const isPlaying = playBtn.dataset.state === "playing";
@@ -94,6 +122,28 @@ export function renderControls(container, { onPlayPause, onRestart, onSectionCha
     resetPlayState() {
       playBtn.dataset.state = "paused";
       playBtn.textContent = "Play";
+    },
+    setMelodyVolume(volume) {
+      melodyVolumeSlider.value = volume;
+      melodyVolumeLabel.textContent = `${volume}dB`;
+    },
+    setChordVolume(volume) {
+      chordVolumeSlider.value = volume;
+      chordVolumeLabel.textContent = `${volume}dB`;
+    },
+    setTempoPercent(percentage) {
+      const pct = Math.max(1, Math.min(100, percentage));
+      tempoSlider.value = pct;
+      tempoLabel.textContent = `${pct}%`;
+      onTempoChange?.((pct / 100) * baseTempo);
+    },
+    resetSlidersToDefaults() {
+      const d = CONTROL_DEFAULTS;
+      this.setMelodyVolume(d.melodyVolume);
+      this.setChordVolume(d.chordVolume);
+      const pct = Math.max(1, Math.min(100, d.tempoPercent));
+      tempoSlider.value = pct;
+      tempoLabel.textContent = `${pct}%`;
     },
   };
 }

@@ -10,8 +10,9 @@ import {
   ROMAN_NUMERALS_LOCRIAN,
   getScaleDegreeColor 
 } from "../lib/scales.js";
-import { getChordSymbol, getChordLetterName } from "../lib/jsonToSymbol.js";
+import { getChordSymbol, getChordLetterName, stripBorrowedTags, borrowedAbbrev } from "../lib/jsonToSymbol.js";
 import { rootToDiatonicTriad, getNoteLabel, chordInterpreter } from "../lib/music.js";
+import { drawRomanNumeral, measureRomanNumeral, romanNumeralToHtml } from "../lib/romanNumeralCanvas.js";
 
 export function renderChordRing(container, options = {}) {
   const header = document.createElement("div");
@@ -54,20 +55,6 @@ export function renderChordRing(container, options = {}) {
   romanLabel.appendChild(romanSpan);
   overlay.appendChild(romanLabel);
   
-  // Arpeggiate checkbox
-  const arpLabel = document.createElement("label");
-  arpLabel.style.cssText = "display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;color:#ffffff;font-size:12px;white-space:nowrap;";
-  const arpCheckbox = document.createElement("input");
-  arpCheckbox.type = "checkbox";
-  arpCheckbox.id = "arpeggiate-toggle-ring";
-  arpCheckbox.checked = false; // Off by default
-  arpCheckbox.style.cssText = "cursor:pointer;";
-  const arpSpan = document.createElement("span");
-  arpSpan.textContent = "Arpeggiate";
-  arpLabel.appendChild(arpCheckbox);
-  arpLabel.appendChild(arpSpan);
-  overlay.appendChild(arpLabel);
-  
   wrapper.appendChild(overlay);
   
   container.appendChild(wrapper);
@@ -101,10 +88,32 @@ export function renderChordRing(container, options = {}) {
   tableTitle.style.paddingBottom = "4px";
   tableTitle.style.borderBottom = "1px solid rgba(255, 255, 255, 0.2)";
   transitionTableOverlay.appendChild(tableTitle);
-  
+
+  const transitionGroupsContainer = document.createElement("div");
+  transitionGroupsContainer.className = "transition-groups";
+  transitionTableOverlay.appendChild(transitionGroupsContainer);
+
+  const rootOnlyCheckboxContainer = document.createElement("div");
+  rootOnlyCheckboxContainer.style.marginTop = "8px";
+  rootOnlyCheckboxContainer.style.paddingTop = "8px";
+  rootOnlyCheckboxContainer.style.borderTop = "1px solid rgba(255, 255, 255, 0.2)";
+
+  const rootOnlyLabel = document.createElement("label");
+  rootOnlyLabel.style.cssText = "display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;color:#ffffff;font-size:11px;white-space:nowrap;";
+  const rootOnlyCheckbox = document.createElement("input");
+  rootOnlyCheckbox.type = "checkbox";
+  rootOnlyCheckbox.id = "root-only-toggle";
+  rootOnlyCheckbox.checked = false;
+  rootOnlyCheckbox.style.cssText = "cursor:pointer;";
+  const rootOnlySpan = document.createElement("span");
+  rootOnlySpan.textContent = "Root Only";
+  rootOnlyLabel.appendChild(rootOnlyCheckbox);
+  rootOnlyLabel.appendChild(rootOnlySpan);
+  rootOnlyCheckboxContainer.appendChild(rootOnlyLabel);
+  transitionTableOverlay.appendChild(rootOnlyCheckboxContainer);
+
   wrapper.appendChild(transitionTableOverlay);
 
-  // Inject style rules for JSON sub-popup and trigger
   if (!document.getElementById("chord-tooltip-styles")) {
     const styleTag = document.createElement("style");
     styleTag.id = "chord-tooltip-styles";
@@ -192,57 +201,6 @@ export function renderChordRing(container, options = {}) {
     updateHoverState();
   });
 
-  const transitionTable = document.createElement("table");
-  transitionTable.style.width = "100%";
-  transitionTable.style.borderCollapse = "collapse";
-  transitionTable.style.fontSize = "11px";
-  transitionTable.style.color = "#e5e7eb";
-  
-  const tableHeader = document.createElement("thead");
-  const headerRow = document.createElement("tr");
-  const header1 = document.createElement("th");
-  header1.textContent = "Transition";
-  header1.style.textAlign = "left";
-  header1.style.padding = "4px 8px";
-  header1.style.borderBottom = "1px solid rgba(255, 255, 255, 0.2)";
-  header1.style.color = "#cbd5e1";
-  header1.style.fontWeight = "600";
-  const header2 = document.createElement("th");
-  header2.textContent = "Count";
-  header2.style.textAlign = "right";
-  header2.style.padding = "4px 8px";
-  header2.style.borderBottom = "1px solid rgba(255, 255, 255, 0.2)";
-  header2.style.color = "#cbd5e1";
-  header2.style.fontWeight = "600";
-  headerRow.appendChild(header1);
-  headerRow.appendChild(header2);
-  tableHeader.appendChild(headerRow);
-  transitionTable.appendChild(tableHeader);
-  
-  const tableBody = document.createElement("tbody");
-  transitionTable.appendChild(tableBody);
-  transitionTableOverlay.appendChild(transitionTable);
-
-  // Add checkbox below table for root-only view
-  const rootOnlyCheckboxContainer = document.createElement("div");
-  rootOnlyCheckboxContainer.style.marginTop = "8px";
-  rootOnlyCheckboxContainer.style.paddingTop = "8px";
-  rootOnlyCheckboxContainer.style.borderTop = "1px solid rgba(255, 255, 255, 0.2)";
-  
-  const rootOnlyLabel = document.createElement("label");
-  rootOnlyLabel.style.cssText = "display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;color:#ffffff;font-size:11px;white-space:nowrap;";
-  const rootOnlyCheckbox = document.createElement("input");
-  rootOnlyCheckbox.type = "checkbox";
-  rootOnlyCheckbox.id = "root-only-toggle";
-  rootOnlyCheckbox.checked = false;
-  rootOnlyCheckbox.style.cssText = "cursor:pointer;";
-  const rootOnlySpan = document.createElement("span");
-  rootOnlySpan.textContent = "Root Only";
-  rootOnlyLabel.appendChild(rootOnlyCheckbox);
-  rootOnlyLabel.appendChild(rootOnlySpan);
-  rootOnlyCheckboxContainer.appendChild(rootOnlyLabel);
-  transitionTableOverlay.appendChild(rootOnlyCheckboxContainer);
-
   // Checkbox change handler
   rootOnlyCheckbox.addEventListener("change", (e) => {
     showRootOnlyView = e.target.checked;
@@ -289,31 +247,6 @@ export function renderChordRing(container, options = {}) {
   const CENTER_RING_RADIUS = 80; // Radius of the labeling ring
   const DIATONIC_RING_RADIUS = 150; // Radius where diatonic chords sit
   const VARIANT_SPACING = 70; // Spacing between concentric rings
-
-  // Helper function to abbreviate mode/borrowed names (Option B)
-  function getAbbreviatedSubLabel(borrowed) {
-    if (borrowed === null || borrowed === undefined || borrowed === "") {
-      return null;
-    }
-    if (Array.isArray(borrowed) && borrowed.length > 0) {
-      return "(bor.)";
-    }
-    if (typeof borrowed === 'string' && borrowed.length > 0) {
-      const mode = borrowed.toLowerCase().trim();
-      if (mode.includes("mixolydian")) return "(mix.)";
-      if (mode.includes("dorian")) return "(dor.)";
-      if (mode.includes("phrygian")) return "(phr.)";
-      if (mode.includes("lydian")) return "(lyd.)";
-      if (mode.includes("locrian")) return "(loc.)";
-      if (mode.includes("harmonic minor")) return "(h.min)";
-      if (mode.includes("phrygian dominant")) return "(phr.dom)";
-      if (mode.includes("major")) return "(maj.)";
-      if (mode.includes("minor")) return "(min.)";
-      if (mode.includes("borrowed")) return "(bor.)";
-      return borrowed.length > 5 ? `(${borrowed.substring(0, 3)}.)` : `(${borrowed})`;
-    }
-    return null;
-  }
 
   // Helper function to get roman numerals for a scale type
   function getRomanNumeralsForScale(scaleType) {
@@ -453,11 +386,10 @@ export function renderChordRing(container, options = {}) {
     if (exactDiatonic) {
       const isActive = isNodeActive(exactDiatonic);
       const chord = exactDiatonic.chord;
-      const subLabel = getAbbreviatedSubLabel(chord ? chord.borrowed : null);
-      let displayLabel = useRomanNumerals ? exactDiatonic.symbol : getChordLetterName(chord, currentKey);
-      if (useRomanNumerals && typeof displayLabel === 'string') {
-        displayLabel = displayLabel.replace(/\([a-z.]+\)$/i, "");
-      }
+      const subLabel = borrowedAbbrev(chord?.borrowed);
+      const displayLabel = useRomanNumerals
+        ? (subLabel ? stripBorrowedTags(exactDiatonic.symbol) : exactDiatonic.symbol)
+        : getChordLetterName(chord, currentKey);
       drawNode(dx, dy, nodeRadius, color, displayLabel, 1.0, isActive, false, subLabel);
     } else {
       // Placeholder
@@ -472,12 +404,10 @@ export function renderChordRing(container, options = {}) {
       const vy = centerY + dist * Math.sin(angle);
       const isActive = isNodeActive(v);
       const chord = v.chord;
-      const subLabel = getAbbreviatedSubLabel(chord ? chord.borrowed : null);
-
-      let displayLabel = useRomanNumerals ? v.symbol : getChordLetterName(v.chord, currentKey);
-      if (useRomanNumerals && typeof displayLabel === 'string') {
-        displayLabel = displayLabel.replace(/\([a-z.]+\)$/i, "");
-      }
+      const subLabel = borrowedAbbrev(chord?.borrowed);
+      const displayLabel = useRomanNumerals
+        ? (subLabel ? stripBorrowedTags(v.symbol) : v.symbol)
+        : getChordLetterName(v.chord, currentKey);
       drawNode(vx, vy, nodeRadius, color, displayLabel, 0.9, isActive, false, subLabel);
     });
   }
@@ -547,14 +477,9 @@ export function renderChordRing(container, options = {}) {
       let subFontSize = labelFontSize * 0.75;
       
       const checkFit = () => {
-        // Measure main label with current main font
-        ctx.font = `bold ${labelFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-        const mainWidth = ctx.measureText(label).width;
-        
-        // Measure subLabel with current sub font
+        const mainWidth = measureRomanNumeral(ctx, label, labelFontSize);
         ctx.font = `500 ${subFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
         const subWidth = ctx.measureText(subLabel).width;
-        
         return mainWidth <= maxTextWidth && subWidth <= maxTextWidth;
       };
       
@@ -563,20 +488,17 @@ export function renderChordRing(container, options = {}) {
         subFontSize = labelFontSize * 0.75;
       }
       
-      // Draw main label higher
-      ctx.font = `bold ${labelFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-      ctx.fillText(label, x, y - (labelFontSize * 0.35));
+      drawRomanNumeral(ctx, label, x, y - (labelFontSize * 0.35), labelFontSize);
       
-      // Draw subLabel lower (using the same fill color for visual coherence)
       ctx.font = `500 ${subFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
       ctx.fillText(subLabel, x, y + (labelFontSize * 0.55));
     } else {
-      ctx.font = `bold ${labelFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-      while (ctx.measureText(label).width > maxTextWidth && labelFontSize > 8) {
+      while (measureRomanNumeral(ctx, label, labelFontSize) > maxTextWidth && labelFontSize > 8) {
         labelFontSize -= 0.5;
-        ctx.font = `bold ${labelFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
       }
-      ctx.fillText(label, x, y);
+      drawRomanNumeral(ctx, label, x, y, labelFontSize);
     }
     ctx.restore();
   }
@@ -590,13 +512,11 @@ export function renderChordRing(container, options = {}) {
 
     // Draw Chord Transition in the center of the circle (vertically aligned to cy)
     if (activeChord) {
-      const currSymbol = activeChordSymbol || "";
-      const currName = currSymbol.replace(/\([a-z.]+\)$/i, "");
+      const currSymbol = activeChordSymbol ? stripBorrowedTags(activeChordSymbol) : "";
       const currColor = getScaleDegreeColor(activeChord.root, key.scale) || "#ffffff";
 
       if (previousChord) {
-        const prevSymbol = getChordSymbol(previousChord, key) || "";
-        const prevName = prevSymbol.replace(/\([a-z.]+\)$/i, "");
+        const prevSymbol = stripBorrowedTags(getChordSymbol(previousChord, key) || "");
         const prevColor = getScaleDegreeColor(previousChord.root, key.scale) || "#ffffff";
 
         // Try single line first
@@ -608,10 +528,10 @@ export function renderChordRing(container, options = {}) {
         let fitsSingleLine = false;
 
         while (fontSize >= minSingleLineFont) {
+          const wPrev = measureRomanNumeral(ctx, prevSymbol, fontSize);
           ctx.font = `bold ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-          const wPrev = ctx.measureText(prevName).width;
           const wArrow = ctx.measureText(" → ").width;
-          const wCurr = ctx.measureText(currName).width;
+          const wCurr = measureRomanNumeral(ctx, currSymbol, fontSize);
           const totalW = wPrev + wArrow + wCurr;
           if (totalW <= targetW) {
             fitsSingleLine = true;
@@ -621,91 +541,77 @@ export function renderChordRing(container, options = {}) {
         }
 
         if (fitsSingleLine) {
-          // Draw single line centered at cy
-          ctx.font = `bold ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
           ctx.textBaseline = "middle";
-
-          const wPrev = ctx.measureText(prevName).width;
+          const wPrev = measureRomanNumeral(ctx, prevSymbol, fontSize);
+          ctx.font = `bold ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
           const wArrow = ctx.measureText(" → ").width;
-          const wCurr = ctx.measureText(currName).width;
-          const totalW = wPrev + wArrow + wCurr;
+          const totalW = wPrev + wArrow + measureRomanNumeral(ctx, currSymbol, fontSize);
           const startX = cx - totalW / 2;
 
           ctx.textAlign = "left";
           ctx.fillStyle = prevColor;
-          ctx.fillText(prevName, startX, cy);
+          let cursor = startX;
+          cursor += drawRomanNumeral(ctx, prevSymbol, cursor, cy, fontSize, { align: 'left' });
 
           ctx.fillStyle = "#cbd5e1";
-          ctx.fillText(" → ", startX + wPrev, cy);
+          ctx.font = `bold ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+          ctx.fillText(" → ", cursor, cy);
+          cursor += wArrow;
 
           ctx.fillStyle = currColor;
-          ctx.fillText(currName, startX + wPrev + wArrow, cy);
+          drawRomanNumeral(ctx, currSymbol, cursor, cy, fontSize, { align: 'left' });
         } else {
           // Exceeds single line -> Draw multi-line
-          // Line 1: [prevName] →
-          // Line 2: [currName]
           const maxMultiLineFont = 34 * zoom;
           const minMultiLineFont = 14 * zoom;
-          const targetWTwoLine = r * 1.45; // smaller target width for safety off-center
+          const targetWTwoLine = r * 1.45;
 
           let multiFontSize = maxMultiLineFont;
           while (multiFontSize >= minMultiLineFont) {
             ctx.font = `bold ${multiFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-            const wLine1 = ctx.measureText(prevName + " →").width;
-            const wLine2 = ctx.measureText(currName).width;
+            const wLine1 = measureRomanNumeral(ctx, prevSymbol, multiFontSize) + ctx.measureText(" →").width;
+            const wLine2 = measureRomanNumeral(ctx, currSymbol, multiFontSize);
             if (wLine1 <= targetWTwoLine && wLine2 <= targetWTwoLine) {
               break;
             }
             multiFontSize -= 1;
           }
 
-          ctx.font = `bold ${multiFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
           ctx.textBaseline = "middle";
-
           const vOffset = Math.max(10 * zoom, multiFontSize * 0.65);
           const y1 = cy - vOffset;
           const y2 = cy + vOffset;
 
-          // Measure Line 1 elements to center them horizontally
-          const wPrev = ctx.measureText(prevName).width;
+          ctx.font = `bold ${multiFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+          const wPrev = measureRomanNumeral(ctx, prevSymbol, multiFontSize);
           const wArrow = ctx.measureText(" →").width;
-          const totalW1 = wPrev + wArrow;
-          const startX1 = cx - totalW1 / 2;
+          const startX1 = cx - (wPrev + wArrow) / 2;
 
-          // Draw Line 1 (prevName + arrow)
           ctx.textAlign = "left";
           ctx.fillStyle = prevColor;
-          ctx.fillText(prevName, startX1, y1);
-
+          let cursor = startX1;
+          cursor += drawRomanNumeral(ctx, prevSymbol, cursor, y1, multiFontSize, { align: 'left' });
           ctx.fillStyle = "#cbd5e1";
-          ctx.fillText(" →", startX1 + wPrev, y1);
+          ctx.font = `bold ${multiFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+          ctx.fillText(" →", cursor, y1);
 
-          // Draw Line 2 (currName)
-          ctx.textAlign = "center";
           ctx.fillStyle = currColor;
-          ctx.fillText(currName, cx, y2);
+          drawRomanNumeral(ctx, currSymbol, cx, y2, multiFontSize, { align: 'center' });
         }
       } else {
-        // No previous chord - draw current chord centered, scaling to fill
         const maxSingleFont = 48 * zoom;
         const minSingleFont = 18 * zoom;
         const targetW = r * 1.55;
 
         let fontSize = maxSingleFont;
         while (fontSize >= minSingleFont) {
-          ctx.font = `bold ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-          const w = ctx.measureText(currName).width;
-          if (w <= targetW) {
-            break;
-          }
+          if (measureRomanNumeral(ctx, currSymbol, fontSize) <= targetW) break;
           fontSize -= 1;
         }
 
-        ctx.font = `bold ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-        ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillStyle = currColor;
-        ctx.fillText(currName, cx, cy);
+        drawRomanNumeral(ctx, currSymbol, cx, cy, fontSize, { align: 'center' });
       }
     } else {
       // No active chord - draw placeholder
@@ -925,16 +831,9 @@ export function renderChordRing(container, options = {}) {
   }
 
   function showTooltip(node) {
-    let displayLabel = useRomanNumerals ? node.symbol : getChordLetterName(node.chord, currentKey);
-    let alternateLabel = useRomanNumerals ? getChordLetterName(node.chord, currentKey) : node.symbol;
-    
-    // Strip trailing mixture tags (e.g. "(mix)") from Roman numerals for clean text display
-    if (typeof displayLabel === 'string') {
-      displayLabel = displayLabel.replace(/\([a-z.]+\)$/i, "");
-    }
-    if (typeof alternateLabel === 'string') {
-      alternateLabel = alternateLabel.replace(/\([a-z.]+\)$/i, "");
-    }
+    const displayLabel = useRomanNumerals ? stripBorrowedTags(node.symbol) : getChordLetterName(node.chord, currentKey);
+    const alternateLabel = useRomanNumerals ? getChordLetterName(node.chord, currentKey) : node.symbol;
+    const borrowedLabel = borrowedAbbrev(node.chord.borrowed);
     
     const formattedJson = formatChordJson(node.chord);
     
@@ -955,7 +854,8 @@ export function renderChordRing(container, options = {}) {
 
     tooltip.innerHTML = `
       <div style="text-align: center; margin-bottom: 6px;">
-        <div style="font-size: 18px; font-weight: 800; color: #ffffff; line-height: 1.2;">${displayLabel}</div>
+        <div class="chord-tooltip-roman chord-roman-line" style="font-size: 18px; font-weight: 800; color: #ffffff; line-height: 1.2;">${useRomanNumerals ? romanNumeralToHtml(displayLabel) : displayLabel}</div>
+        ${borrowedLabel ? `<div style="font-size: 11px; color: #94a3b8; font-weight: 500; margin-top: 2px;">${borrowedLabel}</div>` : ''}
         <div style="font-size: 11px; color: #94a3b8; font-weight: 500; margin-top: 2px;">${alternateLabel}</div>
       </div>
       ${contextHtml}
@@ -1112,7 +1012,7 @@ export function renderChordRing(container, options = {}) {
         root: degree,
         chordDegrees: triadData.chordDegrees,
         borrowed: null
-      }, arpCheckbox.checked);
+      }, options.getArpeggiated?.() ?? false);
     }
   }
 
@@ -1127,18 +1027,39 @@ export function renderChordRing(container, options = {}) {
         chordDegrees: chordData.chordDegrees,
         borrowed: chordObj.borrowed || null,
         chord: chordObj
-      }, arpCheckbox.checked);
+      }, options.getArpeggiated?.() ?? false);
     }
   }
 
 
   // --- UPDATE DATA ---
 
-  function updateTransitionTable() {
-    const tbody = transitionTable.querySelector("tbody");
-    tbody.innerHTML = "";
+  function appendTransitionLabel(parent, fromStr, toStr, fromColor, toColor, useRoman) {
+    const wrap = document.createElement("span");
+    wrap.className = useRoman ? "chord-tooltip-roman chord-roman-line transition-table-roman" : "";
+    wrap.style.fontFamily = '"Times New Roman", Times, serif';
 
-    // Use root-only view if checkbox is checked, otherwise use full transitions
+    const fromSpan = document.createElement("span");
+    if (fromColor) fromSpan.style.color = fromColor;
+    fromSpan.innerHTML = useRoman ? romanNumeralToHtml(fromStr) : fromStr;
+
+    const arrowSpan = document.createElement("span");
+    arrowSpan.textContent = " → ";
+    arrowSpan.style.color = "#94a3b8";
+
+    const toSpan = document.createElement("span");
+    if (toColor) toSpan.style.color = toColor;
+    toSpan.innerHTML = useRoman ? romanNumeralToHtml(toStr) : toStr;
+
+    wrap.appendChild(fromSpan);
+    wrap.appendChild(arrowSpan);
+    wrap.appendChild(toSpan);
+    parent.appendChild(wrap);
+  }
+
+  function updateTransitionTable() {
+    transitionGroupsContainer.innerHTML = "";
+
     const countsToDisplay = showRootOnlyView ? rootOnlyTransitionCounts : transitionCounts;
 
     if (countsToDisplay.size === 0) {
@@ -1148,81 +1069,65 @@ export function renderChordRing(container, options = {}) {
 
     transitionTableOverlay.style.display = "block";
 
-    // Build a symbol -> root lookup from currentGroupedChords
     const symbolToRoot = new Map();
     for (let root = 1; root <= 7; root++) {
-      const entries = currentGroupedChords[root] || [];
-      for (const entry of entries) {
-        if (!symbolToRoot.has(entry.symbol)) {
-          symbolToRoot.set(entry.symbol, root);
-        }
+      for (const entry of currentGroupedChords[root] || []) {
+        if (!symbolToRoot.has(entry.symbol)) symbolToRoot.set(entry.symbol, root);
       }
     }
 
-    // Convert Map to array and sort by count (highest to lowest)
-    const sortedTransitions = Array.from(countsToDisplay.entries())
-      .sort((a, b) => b[1] - a[1]);
+    const byCount = new Map();
+    for (const [transition, count] of countsToDisplay.entries()) {
+      if (!byCount.has(count)) byCount.set(count, []);
+      byCount.get(count).push(transition);
+    }
 
-    sortedTransitions.forEach(([transition, count]) => {
-      const row = document.createElement("tr");
-      row.style.borderBottom = "1px solid rgba(255, 255, 255, 0.1)";
-      
-      const cell1 = document.createElement("td");
-      cell1.style.padding = "4px 8px";
-      cell1.style.fontFamily = '"Times New Roman", Times, serif';
+    const sortedCounts = Array.from(byCount.keys()).sort((a, b) => b - a);
 
-      // Split "A → B" and color each chord
-      const parts = transition.split(" → ");
-      if (parts.length === 2) {
-        const [fromStr, toStr] = parts;
+    sortedCounts.forEach((count, groupIdx) => {
+      const transitions = byCount.get(count).sort();
+      const details = document.createElement("details");
+      details.className = "transition-group";
+      if (groupIdx < 2 || transitions.length <= 4) details.open = true;
 
-        const fromSpan = document.createElement("span");
-        fromSpan.textContent = fromStr;
-        const arrowSpan = document.createElement("span");
-        arrowSpan.textContent = " → ";
-        arrowSpan.style.color = "#94a3b8";
-        const toSpan = document.createElement("span");
-        toSpan.textContent = toStr;
+      const summary = document.createElement("summary");
+      summary.className = "transition-group-summary";
+      summary.innerHTML = `<span class="transition-group-count">×${count}</span><span class="transition-group-meta">${transitions.length} transition${transitions.length === 1 ? "" : "s"}</span>`;
+      details.appendChild(summary);
 
-        if (showRootOnlyView) {
-          // Root-only: values are numbers like "4 → 5"
-          const fromRoot = parseInt(fromStr, 10);
-          const toRoot = parseInt(toStr, 10);
-          if (fromRoot >= 1 && fromRoot <= 7) {
-            fromSpan.style.color = getScaleDegreeColor(fromRoot, currentKey.scale);
+      const list = document.createElement("div");
+      list.className = "transition-group-list";
+
+      for (const transition of transitions) {
+        const row = document.createElement("div");
+        row.className = "transition-group-row";
+
+        const parts = transition.split(" → ");
+        if (parts.length === 2) {
+          const [fromStr, toStr] = parts;
+          let fromColor = null;
+          let toColor = null;
+          if (showRootOnlyView) {
+            const fromRoot = parseInt(fromStr, 10);
+            const toRoot = parseInt(toStr, 10);
+            if (fromRoot >= 1 && fromRoot <= 7) fromColor = getScaleDegreeColor(fromRoot, currentKey.scale);
+            if (toRoot >= 1 && toRoot <= 7) toColor = getScaleDegreeColor(toRoot, currentKey.scale);
+          } else {
+            const fromRoot = symbolToRoot.get(fromStr);
+            const toRoot = symbolToRoot.get(toStr);
+            if (fromRoot) fromColor = getScaleDegreeColor(fromRoot, currentKey.scale);
+            if (toRoot) toColor = getScaleDegreeColor(toRoot, currentKey.scale);
           }
-          if (toRoot >= 1 && toRoot <= 7) {
-            toSpan.style.color = getScaleDegreeColor(toRoot, currentKey.scale);
-          }
+          appendTransitionLabel(row, stripBorrowedTags(fromStr), stripBorrowedTags(toStr), fromColor, toColor, !showRootOnlyView);
         } else {
-          // Full transitions: values are chord symbols like "IV → V"
-          const fromRoot = symbolToRoot.get(fromStr);
-          const toRoot = symbolToRoot.get(toStr);
-          if (fromRoot) {
-            fromSpan.style.color = getScaleDegreeColor(fromRoot, currentKey.scale);
-          }
-          if (toRoot) {
-            toSpan.style.color = getScaleDegreeColor(toRoot, currentKey.scale);
-          }
+          row.textContent = transition;
         }
 
-        cell1.appendChild(fromSpan);
-        cell1.appendChild(arrowSpan);
-        cell1.appendChild(toSpan);
-      } else {
-        cell1.textContent = transition;
+        list.appendChild(row);
       }
-      
-      const cell2 = document.createElement("td");
-      cell2.textContent = count;
-      cell2.style.textAlign = "right";
-      cell2.style.padding = "4px 8px";
-      cell2.style.fontWeight = "600";
-      cell2.style.color = "#22d3ee";
-      
-      row.appendChild(cell1);
-      row.appendChild(cell2);
-      tbody.appendChild(row);
+
+      details.appendChild(list);
+      transitionGroupsContainer.appendChild(details);
     });
   }
 
