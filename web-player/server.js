@@ -17,77 +17,80 @@ const sendJson = (res, data, status = 200) => {
   res.end(JSON.stringify(data));
 };
 
+async function loadLibraryEntry(artistName) {
+  const artistPath = path.join(CACHE_ROOT, artistName);
+  const files = await fs.promises.readdir(artistPath);
+
+  let metadata = null;
+  const metadataPath = path.join(artistPath, "_metadata.json");
+  try {
+    if (fs.existsSync(metadataPath)) {
+      metadata = JSON.parse(await fs.promises.readFile(metadataPath, "utf8"));
+    }
+  } catch (e) {
+    // Ignore metadata load errors, fall back to numericId sorting
+  }
+
+  const sectionJsonFiles = files.filter((f) => f.endsWith(".json") && f !== "_metadata.json");
+
+  function sectionEntryFromFile(file) {
+    const parts = file.split(" - ");
+    const sectionName = parts[0] || "Unknown";
+    const numericId = parts[1] ? parseInt(parts[1], 10) : 0;
+    const songId = parts.length >= 3 ? parts[2].replace(".json", "") : null;
+    const absolutePath = path.join(artistPath, file);
+    const relPath = path.relative(CACHE_ROOT, absolutePath).split(path.sep).join("/");
+    return { sectionName, file, path: absolutePath, relPath, numericId, songId };
+  }
+
+  function findFileForMeta(meta) {
+    const byId = sectionJsonFiles.filter((f) => f.endsWith(` - ${meta.songId}.json`));
+    if (!byId.length) return null;
+    if (meta.sectionName) {
+      const want = meta.sectionName.toLowerCase();
+      const named = byId.find((f) => f.split(" - ")[0].toLowerCase() === want);
+      if (named) return named;
+    }
+    return byId[0];
+  }
+
+  let sections;
+  if (metadata?.sections?.length) {
+    const seenSongIds = new Set();
+    sections = [];
+    const sortedMeta = [...metadata.sections].sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
+    for (const meta of sortedMeta) {
+      if (!meta.songId || seenSongIds.has(meta.songId)) continue;
+      seenSongIds.add(meta.songId);
+      const file = findFileForMeta(meta);
+      if (!file) continue;
+      const entry = sectionEntryFromFile(file);
+      entry.sectionName = meta.sectionName || entry.sectionName;
+      entry.numericId = meta.numericId ?? entry.numericId;
+      sections.push(entry);
+    }
+  } else {
+    sections = sectionJsonFiles.map(sectionEntryFromFile);
+  }
+
+  if (!metadata?.sections?.length) {
+    sections.sort((a, b) => (a.numericId || 0) - (b.numericId || 0));
+  }
+
+  return {
+    artist: artistName,
+    title: artistName.split(" - ").slice(1).join(" ").trim() || artistName,
+    sections,
+    url: metadata?.url || null,
+  };
+}
+
 async function loadLibrary() {
   const artists = await fs.promises.readdir(CACHE_ROOT, { withFileTypes: true });
   const library = [];
   for (const artistEntry of artists) {
     if (!artistEntry.isDirectory()) continue;
-    const artistPath = path.join(CACHE_ROOT, artistEntry.name);
-    const files = await fs.promises.readdir(artistPath);
-    
-    // Try to load metadata file for section ordering
-    let metadata = null;
-    const metadataPath = path.join(artistPath, "_metadata.json");
-    try {
-      if (fs.existsSync(metadataPath)) {
-        metadata = JSON.parse(await fs.promises.readFile(metadataPath, "utf8"));
-      }
-    } catch (e) {
-      // Ignore metadata load errors, fall back to numericId sorting
-    }
-    
-    const sectionJsonFiles = files.filter((f) => f.endsWith(".json") && f !== "_metadata.json");
-
-    function sectionEntryFromFile(file) {
-      const parts = file.split(" - ");
-      const sectionName = parts[0] || "Unknown";
-      const numericId = parts[1] ? parseInt(parts[1], 10) : 0;
-      const songId = parts.length >= 3 ? parts[2].replace(".json", "") : null;
-      const absolutePath = path.join(artistPath, file);
-      const relPath = path.relative(CACHE_ROOT, absolutePath).split(path.sep).join("/");
-      return { sectionName, file, path: absolutePath, relPath, numericId, songId };
-    }
-
-    function findFileForMeta(meta) {
-      const byId = sectionJsonFiles.filter((f) => f.endsWith(` - ${meta.songId}.json`));
-      if (!byId.length) return null;
-      if (meta.sectionName) {
-        const want = meta.sectionName.toLowerCase();
-        const named = byId.find((f) => f.split(" - ")[0].toLowerCase() === want);
-        if (named) return named;
-      }
-      return byId[0];
-    }
-
-    let sections;
-    if (metadata?.sections?.length) {
-      const seenSongIds = new Set();
-      sections = [];
-      const sortedMeta = [...metadata.sections].sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
-      for (const meta of sortedMeta) {
-        if (!meta.songId || seenSongIds.has(meta.songId)) continue;
-        seenSongIds.add(meta.songId);
-        const file = findFileForMeta(meta);
-        if (!file) continue;
-        const entry = sectionEntryFromFile(file);
-        entry.sectionName = meta.sectionName || entry.sectionName;
-        entry.numericId = meta.numericId ?? entry.numericId;
-        sections.push(entry);
-      }
-    } else {
-      sections = sectionJsonFiles.map(sectionEntryFromFile);
-    }
-    
-    if (!metadata?.sections?.length) {
-      sections.sort((a, b) => (a.numericId || 0) - (b.numericId || 0));
-    }
-    
-    library.push({
-      artist: artistEntry.name,
-      title: artistEntry.name.split(" - ").slice(1).join(" ").trim() || artistEntry.name,
-      sections,
-      url: metadata?.url || null,
-    });
+    library.push(await loadLibraryEntry(artistEntry.name));
   }
   // Sort songs alphabetically by title (or artist if title is empty)
   library.sort((a, b) => {
@@ -99,6 +102,22 @@ async function loadLibrary() {
     console.warn("No artists found in cache at", CACHE_ROOT);
   }
   return library;
+}
+
+async function handleApiSongEntry(reqUrl, res) {
+  const cacheKey = reqUrl.searchParams.get("key");
+  if (!cacheKey) return sendJson(res, { error: "key query param required" }, 400);
+  const artistPath = path.join(CACHE_ROOT, cacheKey);
+  if (!artistPath.startsWith(CACHE_ROOT)) return sendJson(res, { error: "invalid key" }, 400);
+  try {
+    const stat = await fs.promises.stat(artistPath);
+    if (!stat.isDirectory()) return sendJson(res, { error: "song not found" }, 404);
+    const entry = await loadLibraryEntry(cacheKey);
+    sendJson(res, entry);
+  } catch (err) {
+    if (err.code === "ENOENT") return sendJson(res, { error: "song not found" }, 404);
+    sendJson(res, { error: err.message }, 500);
+  }
 }
 
 async function handleApiSongs(res) {
@@ -167,6 +186,7 @@ const server = http.createServer((req, res) => {
     return;
   }
   if (reqUrl.pathname === "/api/songs") return handleApiSongs(res);
+  if (reqUrl.pathname === "/api/songs/entry") return handleApiSongEntry(reqUrl, res);
   if (reqUrl.pathname === "/api/song") return handleApiSong(reqUrl, res);
   if (reqUrl.pathname === "/api/catalog/songs") return handleCatalogSongs(res);
   if (reqUrl.pathname === "/api/catalog/song") return handleCatalogSongDetail(reqUrl, res);

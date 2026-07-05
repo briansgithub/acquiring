@@ -151,7 +151,7 @@ export function renderSongSelector(container, options = {}) {
   navPlayableSelect?.addEventListener("change", () => {
     const slug = navPlayableSelect.value;
     if (!slug) return;
-    showSongDetail(slug);
+    showSongDetail(slug, { autoLoadPlayer: true });
   });
 
   if (navSongInput && navSongDrop) {
@@ -462,7 +462,7 @@ export function renderSongSelector(container, options = {}) {
       const item = e.target.closest(".autocomplete-item");
       if (!item) return;
       e.preventDefault();
-      showSongDetail(item.dataset.slug);
+      showSongDetail(item.dataset.slug, { autoLoadPlayer: true });
     });
     return run;
   }
@@ -565,10 +565,7 @@ export function renderSongSelector(container, options = {}) {
     }
   }
 
-  async function showSongDetail(slug, { userNavigation = true } = {}) {
-    if (userNavigation) {
-      options.onSongPageOpen?.();
-    }
+  async function showSongDetail(slug, { userNavigation = true, autoLoadPlayer = false } = {}) {
     setUrlFooterVisible(false);
     showSongNav({ showBack: false, mode: "search" });
     body.innerHTML = `<div class="sel-hint">Loading song…</div>`;
@@ -583,13 +580,17 @@ export function renderSongSelector(container, options = {}) {
     }
     const s = data.song || {};
     addRecentSong(s);
-    
+
     const flags = s.flags || {};
     const sections = data.sections || [];
     const canLoad = !!s.canLoad;
     const complete = isPipelineComplete(flags);
     const alreadyLoaded = !!s.cacheKey && options.isSongLoaded?.(s.cacheKey);
     const missing = complete ? (s.loadGateMissing || []) : pipelineMissing(flags);
+
+    if (userNavigation && !(autoLoadPlayer && alreadyLoaded)) {
+      options.onSongPageOpen?.();
+    }
 
     body.innerHTML = buildSongDetailHtml(s, sections, flags, canLoad, missing, esc, loadTooltip);
     showSongNav({ showBack: true, mode: "search" });
@@ -607,7 +608,8 @@ export function renderSongSelector(container, options = {}) {
       await loadSongIntoPlayer(slug);
     });
 
-    if (complete && canLoad && !alreadyLoaded) {
+    const shouldAutoLoad = canLoad && !alreadyLoaded && (autoLoadPlayer || complete);
+    if (shouldAutoLoad) {
       await loadSongIntoPlayer(slug, { auto: true });
     }
   }

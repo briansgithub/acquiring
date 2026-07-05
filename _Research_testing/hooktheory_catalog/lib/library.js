@@ -4,12 +4,12 @@
  * not by scanning .hooktheory_cache/ on library load.
  */
 
-const { computeFlags, canLoad, loadGateMissing } = require('./pipelineFlags');
+const { computeFlags, computeFlagsFromDb, canLoad, loadGateMissing } = require('./pipelineFlags');
 const { resolveOracleSummary } = require('./oracleSummary');
 const { getSongDetail, listSongSections } = require('./queries');
 
 function mapLibraryRow(row) {
-  const flags = computeFlags(row, row.slug);
+  const flags = computeFlagsFromDb(row);
   return {
     slug: row.slug,
     artist: row.artist,
