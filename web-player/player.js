@@ -220,6 +220,9 @@ const chordRing = renderChordRing(ringPane, {
         }
       }
     }
+  },
+  onColorSchemeChange: (scheme) => {
+    timeline.setColorScheme(scheme);
   }
 });
 const noteIndicator = renderNoteIndicator(indicatorPane, {
@@ -336,13 +339,16 @@ const songSelector = renderSongSelector(selectorPane, {
   },
   onLoad: async ({ cacheKey }) => {
     try {
-      const res = await fetch("/api/songs");
-      library = await res.json();
-      const idx = library.findIndex((s) => s.artist === cacheKey);
+      let idx = library.findIndex((s) => s.artist === cacheKey);
       if (idx < 0) {
-        console.error("Loaded song not found in playback cache:", cacheKey);
-        loadingSplash.hide();
-        return;
+        const res = await fetch(`/api/songs/entry?key=${encodeURIComponent(cacheKey)}`);
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || `HTTP ${res.status}`);
+        }
+        const entry = await res.json();
+        library.push(entry);
+        idx = library.length - 1;
       }
       loadedCacheKey = cacheKey;
       handleSongChange(String(idx));

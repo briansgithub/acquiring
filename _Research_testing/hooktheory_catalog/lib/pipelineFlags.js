@@ -34,6 +34,21 @@ function computeFlags(row, slug) {
   };
 }
 
+/** DB-only flags for bulk list queries — avoids ~39k sync harvest file reads. */
+function computeFlagsFromDb(row) {
+  const mode = row.harvest_mode;
+  const scrapeReady = mode === 'full' || mode === 'light';
+  return {
+    catalogued: true,
+    harvested: mode === 'full',
+    scrapeReady,
+    harvestMode: mode || null,
+    metadata: row.status === 'enriched',
+    processed: !!(row.cache_dir && row.processed_at),
+    tested: !!row.oracle_tested_at,
+  };
+}
+
 function canLoad(flags) {
   return flags.catalogued && flags.metadata && flags.processed;
 }
@@ -47,6 +62,7 @@ function loadGateMissing(flags) {
 
 module.exports = {
   computeFlags,
+  computeFlagsFromDb,
   canLoad,
   loadGateMissing,
   hasHarvestArtifact,

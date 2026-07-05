@@ -112,6 +112,23 @@ export function renderSongSelector(container, options = {}) {
   let loaded = false;
   let loadError = null;
 
+  function getRecentSongs() {
+    try {
+      return JSON.parse(localStorage.getItem('recentSongs')) || [];
+    } catch {
+      return [];
+    }
+  }
+
+  function addRecentSong(s) {
+    if (!s || !s.slug) return;
+    let recent = getRecentSongs();
+    recent = recent.filter(r => r.slug !== s.slug);
+    recent.unshift({ slug: s.slug, title: s.title, artist: s.artist, playable: s.playable });
+    if (recent.length > 5) recent = recent.slice(0, 5);
+    localStorage.setItem('recentSongs', JSON.stringify(recent));
+  }
+
   backBtn.addEventListener("click", () => showSearch());
 
   function showSongNav({ activeSlug = null, showBack = false, mode = "browse" } = {}) {
@@ -134,7 +151,7 @@ export function renderSongSelector(container, options = {}) {
   navPlayableSelect?.addEventListener("change", () => {
     const slug = navPlayableSelect.value;
     if (!slug) return;
-    showSongDetail(slug);
+    showSongDetail(slug, { autoLoadPlayer: true });
   });
 
   if (navSongInput && navSongDrop) {
@@ -401,7 +418,22 @@ export function renderSongSelector(container, options = {}) {
   function wireSongInput(input, drop) {
     const run = debounce(() => {
       const q = input.value.trim();
-      if (q.length < MIN_CHARS) return closeDrop(drop);
+      if (q.length < MIN_CHARS) {
+        if (q.length === 0 && document.activeElement === input) {
+          const recents = getRecentSongs();
+          if (recents.length > 0) {
+            drop.innerHTML = `<div class="autocomplete-empty" style="text-align:left; font-size:10px; padding:4px 8px; color:#94a3b8; border-bottom:1px solid rgba(255,255,255,0.1)">RECENT SONGS</div>` + recents.map((s) => `
+              <div class="autocomplete-item" data-slug="${esc(s.slug)}">
+                <span class="ac-title">${esc(s.title || "(untitled)")}${s.playable ? ' <span class="ac-ready">●</span>' : ""}</span>
+                <span class="ac-sub">${esc(s.artist || "")}</span>
+              </div>
+            `).join("");
+            drop.hidden = false;
+            return;
+          }
+        }
+        return closeDrop(drop);
+      }
       if (!loaded) {
         drop.innerHTML = `<div class="autocomplete-empty">Catalog still loading…</div>`;
         drop.hidden = false;
@@ -430,7 +462,7 @@ export function renderSongSelector(container, options = {}) {
       const item = e.target.closest(".autocomplete-item");
       if (!item) return;
       e.preventDefault();
-      showSongDetail(item.dataset.slug);
+      showSongDetail(item.dataset.slug, { autoLoadPlayer: true });
     });
     return run;
   }
@@ -533,10 +565,7 @@ export function renderSongSelector(container, options = {}) {
     }
   }
 
-  async function showSongDetail(slug, { userNavigation = true } = {}) {
-    if (userNavigation) {
-      options.onSongPageOpen?.();
-    }
+  async function showSongDetail(slug, { userNavigation = true, autoLoadPlayer = false } = {}) {
     setUrlFooterVisible(false);
     showSongNav({ showBack: false, mode: "search" });
     body.innerHTML = `<div class="sel-hint">Loading song…</div>`;
@@ -550,12 +579,18 @@ export function renderSongSelector(container, options = {}) {
       return;
     }
     const s = data.song || {};
+    addRecentSong(s);
+
     const flags = s.flags || {};
     const sections = data.sections || [];
     const canLoad = !!s.canLoad;
     const complete = isPipelineComplete(flags);
     const alreadyLoaded = !!s.cacheKey && options.isSongLoaded?.(s.cacheKey);
     const missing = complete ? (s.loadGateMissing || []) : pipelineMissing(flags);
+
+    if (userNavigation && !(autoLoadPlayer && alreadyLoaded)) {
+      options.onSongPageOpen?.();
+    }
 
     body.innerHTML = buildSongDetailHtml(s, sections, flags, canLoad, missing, esc, loadTooltip);
     showSongNav({ showBack: true, mode: "search" });
@@ -573,7 +608,8 @@ export function renderSongSelector(container, options = {}) {
       await loadSongIntoPlayer(slug);
     });
 
-    if (complete && canLoad && !alreadyLoaded) {
+    const shouldAutoLoad = canLoad && !alreadyLoaded && (autoLoadPlayer || complete);
+    if (shouldAutoLoad) {
       await loadSongIntoPlayer(slug, { auto: true });
     }
   }

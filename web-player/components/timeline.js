@@ -1,5 +1,9 @@
 
-import { getScaleDegreeColor } from "../lib/scales.js";
+import { 
+    getScaleDegreeColor,
+    getHooktheoryColor,
+    createStripedPattern
+} from "../lib/scales.js";
 import { getChordSymbol, getChordLetterName, stripBorrowedTags, borrowedAbbrev } from "../lib/jsonToSymbol.js";
 import {
     drawRomanNumeral,
@@ -156,6 +160,22 @@ export function renderTimeline(container, options = {}) {
         const blockHeight = (logicalHeight - axisHeight) * BLOCK_HEIGHT_RATIO;
         const y = (logicalHeight - axisHeight - blockHeight) / 2;
 
+        let currentSectionStartBeat = firstBeat;
+        let currentSectionEndBeat = firstBeat + songLengthBeats;
+        const currentPlaybackBeat = firstBeat + (currentProgressRatio || 0) * songLengthBeats;
+
+        if (currentSectionKeys.length > 0) {
+            for (let i = 0; i < currentSectionKeys.length; i++) {
+                const keyBeat = currentSectionKeys[i].beat ?? 1;
+                if (keyBeat <= currentPlaybackBeat) {
+                    currentSectionStartBeat = Math.max(firstBeat, keyBeat);
+                } else if (keyBeat > currentPlaybackBeat) {
+                    currentSectionEndBeat = keyBeat;
+                    break;
+                }
+            }
+        }
+
         // Draw Chords
         currentChords.forEach(chord => {
             if (chord.isRest) return;
@@ -165,8 +185,12 @@ export function renderTimeline(container, options = {}) {
             const innerW = w - CHORD_LABEL_PAD.x * 2;
             const innerH = blockHeight - CHORD_LABEL_PAD.y * 2;
 
+            const isCurrentlyPlayingSection = chord.beat >= currentSectionStartBeat && chord.beat < currentSectionEndBeat;
+            
+            ctx.globalAlpha = isCurrentlyPlayingSection ? 1.0 : 0.35;
+
             const renderKey = timelineRenderKey();
-            ctx.fillStyle = getScaleDegreeColor(chord.root, renderKey.scale) || "#888";
+            ctx.fillStyle = getColor(chord.root, renderKey.scale) || "#888";
             ctx.fillRect(x, y, w, blockHeight);
 
             // Border
@@ -227,6 +251,8 @@ export function renderTimeline(container, options = {}) {
             }
         });
 
+        ctx.globalAlpha = 1.0; // Reset alpha for everything else
+
         // Draw Beat Axis
         const axisY = y + blockHeight + 2; // Keep labels inside visible canvas bounds
         
@@ -278,6 +304,34 @@ export function renderTimeline(container, options = {}) {
                     ctx.stroke();
                 }
             }
+        }
+
+        // Draw Section Key Lines
+        if (currentSectionKeys.length > 0) {
+            currentSectionKeys.forEach((keyChange) => {
+                const beatOffset = (keyChange.beat ?? 1) - firstBeat;
+                if (beatOffset >= 0 && beatOffset < songLengthBeats) {
+                    const lineX = beatOffset * pixelsPerBeat;
+                    const c = getColor(1, keyChange.scale);
+                    const hexColor = c && c.hexColor ? c.hexColor : c;
+                    
+                    // 1px black border (by stroking 4px black then 2px color)
+                    ctx.strokeStyle = "#000000";
+                    ctx.lineWidth = 4 * (window.devicePixelRatio || 1);
+                    ctx.beginPath();
+                    ctx.moveTo(lineX, 0);
+                    ctx.lineTo(lineX, logicalHeight);
+                    ctx.stroke();
+
+                    // Colored line
+                    ctx.strokeStyle = hexColor || "#ffffff";
+                    ctx.lineWidth = 2 * (window.devicePixelRatio || 1);
+                    ctx.beginPath();
+                    ctx.moveTo(lineX, 0);
+                    ctx.lineTo(lineX, logicalHeight);
+                    ctx.stroke();
+                }
+            });
         }
 
         // Draw Progress Indicator
@@ -398,6 +452,18 @@ export function renderTimeline(container, options = {}) {
     canvasWrapper.appendChild(tooltip);
 
     let isMouseOverTooltip = false;
+    let currentColorScheme = options.colorScheme || "diatonic";
+
+    function getColor(degree, scaleType) {
+        if (currentColorScheme === "hooktheory") {
+            const result = getHooktheoryColor(degree, scaleType);
+            if (result && result.isPattern) {
+                return createStripedPattern(ctx, result.color1, result.color2);
+            }
+            return result;
+        }
+        return getScaleDegreeColor(degree, scaleType);
+    }
     tooltip.addEventListener("mouseenter", () => {
         isMouseOverTooltip = true;
     });
@@ -407,6 +473,32 @@ export function renderTimeline(container, options = {}) {
     });
 
     const ROMAN_MAP = { 1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI", 7: "VII" };
+
+    function getKeySignatureAtCoordinates(mx, my) {
+        if (!currentSectionKeys.length || !songLengthBeats) return null;
+        
+        const pixelsPerBeat = logicalWidth / songLengthBeats;
+        const axisHeight = 18;
+        const blockHeight = (logicalHeight - axisHeight) * BLOCK_HEIGHT_RATIO;
+        const blockY = (logicalHeight - axisHeight - blockHeight) / 2;
+        
+        const tolerance = 6; // px
+
+        for (const keyChange of currentSectionKeys) {
+            const beatOffset = (keyChange.beat ?? 1) - firstBeat;
+            if (beatOffset >= 0 && beatOffset < songLengthBeats) {
+                const lineX = beatOffset * pixelsPerBeat;
+                if (Math.abs(mx - lineX) <= tolerance) {
+                    return {
+                        key: keyChange,
+                        x: lineX,
+                        y: blockY + blockHeight
+                    };
+                }
+            }
+        }
+        return null;
+    }
 
     function getChordAtCoordinates(mx, my) {
         if (!currentChords.length || !songLengthBeats) return null;
@@ -540,6 +632,26 @@ export function renderTimeline(container, options = {}) {
         }, 120);
     }
 
+    function showKeyTooltip(node) {
+        const key = node.key;
+        tooltip.innerHTML = `
+            <div style="text-align: center; margin-bottom: 2px;">
+                <div style="font-size: 16px; font-weight: 700; color: #ffffff;">Key Change</div>
+                <div style="font-size: 14px; color: #94a3b8; font-weight: 500; margin-top: 4px;">${key.tonic} ${key.scale.charAt(0).toUpperCase() + key.scale.slice(1)}</div>
+            </div>
+        `;
+        
+        tooltip.style.left = `${node.x}px`;
+        tooltip.style.top = `${node.y}px`;
+        tooltip.style.display = "block";
+        
+        // Trigger CSS fade in
+        setTimeout(() => {
+            tooltip.style.opacity = "1";
+            tooltip.style.transform = "translate(-50%, 0) translateY(10px)";
+        }, 10);
+    }
+
     function updateTooltipPosition() {
         if (currentHoveredChord && tooltip.style.display !== "none") {
             const pixelsPerBeat = logicalWidth / songLengthBeats;
@@ -556,15 +668,23 @@ export function renderTimeline(container, options = {}) {
     }
 
     function updateHoverState(mx, my) {
-        let node = null;
+        let chordNode = null;
+        let keyNode = null;
         if (mx !== undefined && my !== undefined) {
-            node = getChordAtCoordinates(mx, my);
+            keyNode = getKeySignatureAtCoordinates(mx, my);
+            if (!keyNode) {
+                chordNode = getChordAtCoordinates(mx, my);
+            }
         }
         
-        if (node) {
-            currentHoveredChord = node.chord;
+        if (keyNode) {
+            currentHoveredChord = null;
             clearTimeout(hideTimeout);
-            showTooltip(node);
+            showKeyTooltip(keyNode);
+        } else if (chordNode) {
+            currentHoveredChord = chordNode.chord;
+            clearTimeout(hideTimeout);
+            showTooltip(chordNode);
         } else {
             currentHoveredChord = null;
             clearTimeout(hideTimeout);
@@ -608,6 +728,10 @@ export function renderTimeline(container, options = {}) {
     });
 
     return {
+        setColorScheme(scheme) {
+            currentColorScheme = scheme;
+            draw();
+        },
         setSongData(chords, key, lengthBeats, metadata = null) {
             currentChords = chords || [];
             currentKey = key;

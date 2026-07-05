@@ -8,7 +8,9 @@ import {
   ROMAN_NUMERALS_LYDIAN,
   ROMAN_NUMERALS_MIXOLYDIAN,
   ROMAN_NUMERALS_LOCRIAN,
-  getScaleDegreeColor 
+  getScaleDegreeColor,
+  getHooktheoryColor,
+  createStripedPattern
 } from "../lib/scales.js";
 import { getChordSymbol, getChordLetterName, stripBorrowedTags, borrowedAbbrev } from "../lib/jsonToSymbol.js";
 import { rootToDiatonicTriad, getNoteLabel, chordInterpreter } from "../lib/music.js";
@@ -80,6 +82,8 @@ export function renderChordRing(container, options = {}) {
   
   const romanNumeralToggle = romanCheckbox;
 
+  let currentColorScheme = options.colorScheme || "diatonic";
+
   // Create color scheme overlay at upper left
   const colorSchemeOverlay = document.createElement("div");
   colorSchemeOverlay.id = "color-scheme-overlay";
@@ -121,18 +125,34 @@ export function renderChordRing(container, options = {}) {
   optDiatonic.textContent = "Diatonic Function";
   colorSchemeSelect.appendChild(optDiatonic);
   
+  const optHooktheory = document.createElement("option");
+  optHooktheory.value = "hooktheory";
+  optHooktheory.textContent = "Hooktheory Relative Major";
+  colorSchemeSelect.appendChild(optHooktheory);
+  
+  colorSchemeSelect.value = currentColorScheme;
+  
   colorSchemeOverlay.appendChild(colorSchemeSelect);
 
   const colorSchemeDesc = document.createElement("div");
   colorSchemeDesc.style.fontSize = "11px";
   colorSchemeDesc.style.color = "#94a3b8";
   colorSchemeDesc.style.lineHeight = "1.3";
-  colorSchemeDesc.textContent = "Colors chords based on their diatonic scale degree relative to the current key (e.g., I is always red, IV is always green, V is always blue).";
+  colorSchemeDesc.textContent = currentColorScheme === "diatonic" 
+    ? "Colors chords based on their diatonic scale degree relative to the current key."
+    : "Colors chords dynamically based on their interval relative to the Relative Major Scale (Ionian Mode).";
   colorSchemeOverlay.appendChild(colorSchemeDesc);
   
   colorSchemeSelect.addEventListener("change", (e) => {
-    if (e.target.value === "diatonic") {
-      colorSchemeDesc.textContent = "Colors chords based on their diatonic scale degree relative to the current key (e.g., I is always red, IV is always green, V is always blue).";
+    const val = e.target.value;
+    currentColorScheme = val;
+    if (val === "diatonic") {
+      colorSchemeDesc.textContent = "Colors chords based on their diatonic scale degree relative to the current key.";
+    } else {
+      colorSchemeDesc.textContent = "Colors chords dynamically based on their interval relative to the Relative Major Scale (Ionian Mode).";
+    }
+    if (options.onColorSchemeChange) {
+      options.onColorSchemeChange(val);
     }
     draw();
   });
@@ -610,6 +630,19 @@ export function renderChordRing(container, options = {}) {
     });
   }
 
+  function getColor(degree, scaleType) {
+    if (currentColorScheme === "hooktheory") {
+      const result = getHooktheoryColor(degree, scaleType);
+      if (result && result.isPattern) {
+        const pattern = createStripedPattern(ctx, result.color1, result.color2);
+        pattern.hexColor = result.color1;
+        return pattern;
+      }
+      return result;
+    }
+    return getScaleDegreeColor(degree, scaleType);
+  }
+
   function drawScaleDegreeNodes(degree, centerX, centerY) {
     // 1 at Top (-PI/2)
     const angle = (degree - 1) * (2 * Math.PI / 7) - (Math.PI / 2);
@@ -639,7 +672,7 @@ export function renderChordRing(container, options = {}) {
 
     const dx = centerX + diatonicDist * Math.cos(angle);
     const dy = centerY + diatonicDist * Math.sin(angle);
-    const color = getScaleDegreeColor(degree, currentKey.scale);
+    const color = getColor(degree, currentKey.scale);
 
     if (exactDiatonic) {
       const isActive = isNodeActive(exactDiatonic);
@@ -649,7 +682,7 @@ export function renderChordRing(container, options = {}) {
       const displayLabel = useRomanNumerals
         ? (subLabel ? stripBorrowedTags(exactDiatonic.symbol) : exactDiatonic.symbol)
         : getChordLetterName(chord, currentKey);
-      drawNode(dx, dy, nodeRadius, getScaleDegreeColor(colorDegree, currentKey.scale), displayLabel, 1.0, isActive, false, subLabel);
+      drawNode(dx, dy, nodeRadius, getColor(colorDegree, currentKey.scale), displayLabel, 1.0, isActive, false, subLabel);
     } else {
       // Placeholder
       const placeholderLabel = useRomanNumerals ? expectedDiatonicLabel : getNoteLabel(degree, currentKey);
@@ -668,7 +701,7 @@ export function renderChordRing(container, options = {}) {
       const displayLabel = useRomanNumerals
         ? (subLabel ? stripBorrowedTags(v.symbol) : v.symbol)
         : getChordLetterName(v.chord, currentKey);
-      drawNode(vx, vy, nodeRadius, getScaleDegreeColor(colorDegree, currentKey.scale), displayLabel, 0.9, isActive, false, subLabel);
+      drawNode(vx, vy, nodeRadius, getColor(colorDegree, currentKey.scale), displayLabel, 0.9, isActive, false, subLabel);
     });
   }
 
@@ -684,12 +717,14 @@ export function renderChordRing(container, options = {}) {
     ctx.globalAlpha = opacity;
     ctx.fillStyle = color;
 
+    const hexColor = color.hexColor || color;
+
     if (isActive) {
       ctx.shadowBlur = 30 * zoom;
       ctx.shadowColor = "#ffffff"; // Bright glow
     } else if (opacity > 0.8) {
       ctx.shadowBlur = 10 * zoom;
-      ctx.shadowColor = color;
+      ctx.shadowColor = hexColor;
     }
 
     ctx.fill();
@@ -718,8 +753,8 @@ export function renderChordRing(container, options = {}) {
     ctx.textBaseline = "middle";
     
     // Choose high-contrast text color based on background color luminance
-    const getTextContrastColor = (hexColor) => {
-      const hex = hexColor.replace("#", "");
+    const getTextContrastColor = (hexCol) => {
+      const hex = hexCol.replace("#", "");
       const r = parseInt(hex.substring(0, 2), 16) || 0;
       const g = parseInt(hex.substring(2, 4), 16) || 0;
       const b = parseInt(hex.substring(4, 6), 16) || 0;
@@ -727,7 +762,7 @@ export function renderChordRing(container, options = {}) {
       return luminance > 0.5 ? "#111827" : "#ffffff";
     };
     
-    ctx.fillStyle = isPlaceholder ? "#ffffff" : getTextContrastColor(color);
+    ctx.fillStyle = isPlaceholder ? "#ffffff" : getTextContrastColor(hexColor);
     
     // Scale text with node size
     let labelFontSize = isActive ? Math.max(16, 22 * zoom) : Math.max(12, 16 * zoom);
@@ -774,11 +809,13 @@ export function renderChordRing(container, options = {}) {
     // Draw Chord Transition in the center of the circle (vertically aligned to cy)
     if (activeChord) {
       const currSymbol = getCenterDisplayLabel(activeChord);
-      const currColor = getScaleDegreeColor(activeChord.root, key.scale) || "#ffffff";
+      const currColorObj = getColor(activeChord.root, key.scale) || "#ffffff";
+      const currColor = currColorObj.hexColor || currColorObj;
 
       if (previousChord) {
         const prevSymbol = getCenterDisplayLabel(previousChord);
-        const prevColor = getScaleDegreeColor(previousChord.root, key.scale) || "#ffffff";
+        const prevColorObj = getColor(previousChord.root, key.scale) || "#ffffff";
+        const prevColor = prevColorObj.hexColor || prevColorObj;
 
         const line1TargetW = r * 1.35;
         const line2TargetW = r * 1.55;
@@ -967,7 +1004,7 @@ export function renderChordRing(container, options = {}) {
             degree: i,
             placementDegree: i,
             colorDegree: v.colorDegree ?? i,
-            color: getScaleDegreeColor(v.colorDegree ?? i, currentKey.scale),
+            color: getColor(v.colorDegree ?? i, currentKey.scale),
             isVariant: true,
             variantIndex: vIdx + 1
           };
@@ -997,7 +1034,7 @@ export function renderChordRing(container, options = {}) {
             degree: i,
             placementDegree: i,
             colorDegree: exactDiatonic.colorDegree ?? i,
-            color: getScaleDegreeColor(exactDiatonic.colorDegree ?? i, currentKey.scale),
+            color: getColor(exactDiatonic.colorDegree ?? i, currentKey.scale),
             isVariant: false
           };
         }
@@ -1484,13 +1521,15 @@ export function renderChordRing(container, options = {}) {
               if (showRootOnlyView) {
                 const root = parseInt(part, 10);
                 if (root >= 1 && root <= 7) {
-                  partColor = getScaleDegreeColor(root, currentKey.scale);
+                  const partColorObj = getColor(root, currentKey.scale);
+                  partColor = partColorObj.hexColor || partColorObj;
                 }
                 partSpan.textContent = part;
               } else {
                 const root = symbolToRoot.get(part);
                 if (root) {
-                  partColor = getScaleDegreeColor(root, currentKey.scale);
+                  const partColorObj = getColor(root, currentKey.scale);
+                  partColor = partColorObj.hexColor || partColorObj;
                 }
                 partSpan.innerHTML = useRomanNumerals
                   ? romanNumeralToHtml(stripBorrowedTags(part))
@@ -1512,13 +1551,25 @@ export function renderChordRing(container, options = {}) {
             if (showRootOnlyView) {
               const fromRoot = parseInt(fromStr, 10);
               const toRoot = parseInt(toStr, 10);
-              if (fromRoot >= 1 && fromRoot <= 7) fromColor = getScaleDegreeColor(fromRoot, currentKey.scale);
-              if (toRoot >= 1 && toRoot <= 7) toColor = getScaleDegreeColor(toRoot, currentKey.scale);
+              if (fromRoot >= 1 && fromRoot <= 7) {
+                const fc = getColor(fromRoot, currentKey.scale);
+                fromColor = fc.hexColor || fc;
+              }
+              if (toRoot >= 1 && toRoot <= 7) {
+                const tc = getColor(toRoot, currentKey.scale);
+                toColor = tc.hexColor || tc;
+              }
             } else {
               const fromRoot = symbolToRoot.get(fromStr);
               const toRoot = symbolToRoot.get(toStr);
-              if (fromRoot) fromColor = getScaleDegreeColor(fromRoot, currentKey.scale);
-              if (toRoot) toColor = getScaleDegreeColor(toRoot, currentKey.scale);
+              if (fromRoot) {
+                const fc = getColor(fromRoot, currentKey.scale);
+                fromColor = fc.hexColor || fc;
+              }
+              if (toRoot) {
+                const tc = getColor(toRoot, currentKey.scale);
+                toColor = tc.hexColor || tc;
+              }
             }
             const fromDisplay = showRootOnlyView
               ? fromStr
