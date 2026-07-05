@@ -9,6 +9,10 @@ import {
   pipelineMissing,
   wirePipelineButtons,
 } from "./songSelectorPipeline.js";
+import {
+  buildPlayableCaches,
+  wirePlayablePicker,
+} from "./songSelectorPlayable.js";
 
 const MIN_CHARS = 3;
 const MAX_SUGGESTIONS = 10;
@@ -61,9 +65,13 @@ export function renderSongSelector(container, options = {}) {
           </div>
         </div>
         <div class="sel-song-nav-picker">
-          <select id="sel-nav-playable-select" class="sel-select sel-playable-select" aria-label="Playable songs">
-            <option value="">Select a song…</option>
-          </select>
+          <label class="sel-label" for="sel-nav-playable-input">Playable songs</label>
+          <div class="autocomplete">
+            <input id="sel-nav-playable-input" class="sel-input" type="text"
+              placeholder="Select a song…" autocomplete="off" spellcheck="false"
+              aria-label="Playable songs" />
+            <div id="sel-nav-playable-drop" class="autocomplete-drop" hidden></div>
+          </div>
         </div>
       </div>
       <div id="sel-song-nav-search" class="sel-song-nav-picker" hidden>
@@ -93,7 +101,8 @@ export function renderSongSelector(container, options = {}) {
   const backBtn = container.querySelector("#sel-back");
   const songNavBrowse = container.querySelector("#sel-song-nav-browse");
   const songNavSearch = container.querySelector("#sel-song-nav-search");
-  const navPlayableSelect = container.querySelector("#sel-nav-playable-select");
+  const navPlayableInput = container.querySelector("#sel-nav-playable-input");
+  const navPlayableDrop = container.querySelector("#sel-nav-playable-drop");
   const navPlayableSort = container.querySelector("#sel-nav-playable-sort");
   const navSongInput = container.querySelector("#sel-nav-song-input");
   const navSongDrop = container.querySelector("#sel-nav-song-drop");
@@ -111,6 +120,8 @@ export function renderSongSelector(container, options = {}) {
   let artists = [];        // [{name, _n}]
   let loaded = false;
   let loadError = null;
+  let playableCaches = null;
+  let playableSortMode = "complexity";
 
   function getRecentSongs() {
     try {
@@ -131,6 +142,32 @@ export function renderSongSelector(container, options = {}) {
 
   backBtn.addEventListener("click", () => showSearch());
 
+  function closeDrop(drop) {
+    drop.hidden = true;
+    drop.innerHTML = "";
+  }
+
+  function getPlayableSortMode() {
+    return navPlayableSort?.value || playableSortMode;
+  }
+
+  function rebuildPlayableCaches() {
+    playableCaches = loaded ? buildPlayableCaches(songs) : null;
+  }
+
+  const playablePicker = (navPlayableInput && navPlayableDrop)
+    ? wirePlayablePicker(navPlayableInput, navPlayableDrop, {
+      getCaches: () => playableCaches,
+      getSortMode: getPlayableSortMode,
+      getLoaded: () => loaded,
+      onSelect: (slug) => showSongDetail(slug, { autoLoadPlayer: true }),
+      onSelectArtist: (artistName) => showArtist(artistName),
+      esc,
+      closeDrop,
+      debounceMs: DEBOUNCE_MS,
+    })
+    : null;
+
   function showSongNav({ activeSlug = null, showBack = false, mode = "browse" } = {}) {
     if (!songNav) return;
     songNav.hidden = false;
@@ -138,20 +175,16 @@ export function renderSongSelector(container, options = {}) {
     if (backBtn) backBtn.hidden = !showBack;
     if (songNavBrowse) songNavBrowse.hidden = mode !== "browse";
     if (songNavSearch) songNavSearch.hidden = mode !== "search";
-    if (mode === "browse") {
-      refreshPlayableDropdown(activeSlug);
+    if (mode === "browse" && activeSlug) {
+      playablePicker?.setSelection(activeSlug);
     }
   }
 
   navPlayableSort?.addEventListener("change", () => {
     playableSortMode = navPlayableSort.value;
-    refreshPlayableDropdown(navPlayableSelect?.value || null);
-  });
-
-  navPlayableSelect?.addEventListener("change", () => {
-    const slug = navPlayableSelect.value;
-    if (!slug) return;
-    showSongDetail(slug, { autoLoadPlayer: true });
+    if (document.activeElement === navPlayableInput) {
+      playablePicker?.refresh();
+    }
   });
 
   if (navSongInput && navSongDrop) {
@@ -186,9 +219,11 @@ export function renderSongSelector(container, options = {}) {
       artists = [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
       loaded = true;
       loadError = null;
+      rebuildPlayableCaches();
     } catch (err) {
       loadError = err.message;
       loaded = false;
+      playableCaches = null;
     }
   }
 
@@ -209,7 +244,6 @@ export function renderSongSelector(container, options = {}) {
       return;
     }
     hintEl.textContent = `${songs.length} songs · ${artists.length} artists · ${songs.filter((s) => s.playable).length} playable`;
-    refreshPlayableDropdown();
   }
 
   let runAllSearches = () => {};
@@ -224,72 +258,6 @@ export function renderSongSelector(container, options = {}) {
       }
     }
     return out;
-  }
-
-  let playableSortMode = "complexity";
-
-  function getPlayableSortMode() {
-    return navPlayableSort?.value || playableSortMode;
-  }
-
-  function formatSongLabel(s, sortBy) {
-    const title = s.title || "(untitled)";
-    const artist = s.artist || "";
-    if (sortBy === "complexity") {
-      const c = s.complexity_rating != null
-        ? Number(s.complexity_rating).toFixed(1)
-        : "—";
-      return `${c} — ${title} — ${artist}`;
-    }
-    return artist ? `${title} — ${artist}` : title;
-  }
-
-  function playableSongsSorted(sortBy = getPlayableSortMode()) {
-    const list = songs.filter((s) => s.playable && s.cacheKey);
-    const cmpTitle = (a, b) => (a.title || "").localeCompare(b.title || "", undefined, { sensitivity: "base" });
-    const cmpArtist = (a, b) => (a.artist || "").localeCompare(b.artist || "", undefined, { sensitivity: "base" });
-
-    if (sortBy === "complexity") {
-      return list.sort((a, b) => {
-        const ca = a.complexity_rating;
-        const cb = b.complexity_rating;
-        const aMissing = ca == null;
-        const bMissing = cb == null;
-        if (aMissing !== bMissing) return aMissing ? 1 : -1;
-        if (!aMissing && cb !== ca) return ca - cb;
-        const byTitle = cmpTitle(a, b);
-        if (byTitle !== 0) return byTitle;
-        return cmpArtist(a, b);
-      });
-    }
-    if (sortBy === "artist") {
-      return list.sort((a, b) => {
-        const byArtist = cmpArtist(a, b);
-        if (byArtist !== 0) return byArtist;
-        return cmpTitle(a, b);
-      });
-    }
-    return list.sort((a, b) => {
-      const byTitle = cmpTitle(a, b);
-      if (byTitle !== 0) return byTitle;
-      return cmpArtist(a, b);
-    });
-  }
-
-  function refreshPlayableDropdown(activeSlug = null) {
-    const sortBy = getPlayableSortMode();
-    const playable = playableSongsSorted(sortBy);
-    const optionsHtml = [
-      '<option value="">Select a song…</option>',
-      ...playable.map((s) => `<option value="${esc(s.slug)}">${esc(formatSongLabel(s, sortBy))}</option>`),
-    ].join("");
-
-    for (const sel of container.querySelectorAll(".sel-playable-select")) {
-      sel.innerHTML = optionsHtml;
-      if (activeSlug && sel.closest("#sel-song-nav")) {
-        sel.value = activeSlug;
-      }
-    }
   }
 
   function matchArtists(q) {
@@ -342,11 +310,6 @@ export function renderSongSelector(container, options = {}) {
       songRun();
       artistRun();
     };
-  }
-
-  function closeDrop(drop) {
-    drop.hidden = true;
-    drop.innerHTML = "";
   }
 
   async function pollAddJob(jobId, onRunning) {

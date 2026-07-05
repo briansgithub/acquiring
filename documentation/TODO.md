@@ -9,6 +9,7 @@
 ## Player / UX
 
 - [x] Song Selector panel: unified library search, pipeline buttons, gated Load (2026-06-29)
+- [x] Optimized song selector: infinite scroll, collapsible groupings, dynamic width sizers, artist selection flow (2026-07-05)
 - [x] Hide Controls song dropdown; load via Song Selector only (2026-06-29)
 - [x] Roman numeral figured-bass display: equal stack digit sizes, °/ø quality stacks, Gladiolus verify harnesses (2026-07-02, `e57dc72`) — see [ROMAN_NUMERALS.md](./ROMAN_NUMERALS.md)
 - [x] Chord pronunciation UI + `romanNumeralSpeak.js` (2026-07-01, `ff97572`) — see [PRONUNCIATION.md](./PRONUNCIATION.md)

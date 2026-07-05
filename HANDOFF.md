@@ -2,7 +2,7 @@
 
 **Read this first**, then [Documentation/INDEX.md](Documentation/INDEX.md) for the full doc map. Do **not** linearly read every `.md` under `_Decode_oracle/out/` (thousands of per-song oracle reports).
 
-**Latest commit:** `085c222` — *Refine Song Selector UX, layout, and six-song catalog workflow.*
+**Latest commit:** `e879a8c` — *Optimize Song Selector: infinite scroll, collapsible groupings, dynamic width sizers, and artist selection flow.*
 
 ---
 
@@ -30,6 +30,10 @@ Start player: `python launch_player.py` or `node web-player/server.js` (port 300
 
 ### Song Selector behavior (recent session)
 
+- **Infinite Scroll & Performance**: Playable song picker lists thousands of songs smoothly using chunked rendering with `IntersectionObserver` (no more hardcoded 50-song limit).
+- **Collapsible Grouping**: Groups list entries by complexity range, alphabetical character, or artist letter. Groups are initially collapsed and toggle open/closed on click.
+- **Dynamic Width & Overflow**: Sized dynamically to fit the longest name in the catalog (using a 0-height dummy element sized to the longest cache entry). The pane CSS `overflow` is set to `visible` so the dropdown floats cleanly over the main app grid without clipping.
+- **Artist Selection Mode**: When sorted by "Artist", the dropdown lists unique artist names. Clicking an artist opens their catalog list inside the Song Selector panel.
 - **Persistent nav** above scrollable body: Sort by, playable dropdown, **Back** (only when song detail is loaded).
 - **Light catalog** opens in a **modal** (header button on search view only); not on song detail.
 - **Complexity sort:** ascending (low → high); missing ratings sink to bottom.
