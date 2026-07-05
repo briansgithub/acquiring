@@ -293,11 +293,20 @@ export function renderTimeline(container, options = {}) {
                     const c = getColor(1, keyChange.scale);
                     const hexColor = c && c.hexColor ? c.hexColor : c;
                     
+                    // 1px black border (by stroking 4px black then 2px color)
+                    ctx.strokeStyle = "#000000";
+                    ctx.lineWidth = 4 * (window.devicePixelRatio || 1);
+                    ctx.beginPath();
+                    ctx.moveTo(lineX, 0);
+                    ctx.lineTo(lineX, logicalHeight);
+                    ctx.stroke();
+
+                    // Colored line
                     ctx.strokeStyle = hexColor || "#ffffff";
                     ctx.lineWidth = 2 * (window.devicePixelRatio || 1);
                     ctx.beginPath();
-                    ctx.moveTo(lineX, y);
-                    ctx.lineTo(lineX, y + blockHeight);
+                    ctx.moveTo(lineX, 0);
+                    ctx.lineTo(lineX, logicalHeight);
                     ctx.stroke();
                 }
             });
@@ -443,6 +452,32 @@ export function renderTimeline(container, options = {}) {
 
     const ROMAN_MAP = { 1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI", 7: "VII" };
 
+    function getKeySignatureAtCoordinates(mx, my) {
+        if (!currentSectionKeys.length || !songLengthBeats) return null;
+        
+        const pixelsPerBeat = logicalWidth / songLengthBeats;
+        const axisHeight = 18;
+        const blockHeight = (logicalHeight - axisHeight) * BLOCK_HEIGHT_RATIO;
+        const blockY = (logicalHeight - axisHeight - blockHeight) / 2;
+        
+        const tolerance = 6; // px
+
+        for (const keyChange of currentSectionKeys) {
+            const beatOffset = (keyChange.beat ?? 1) - firstBeat;
+            if (beatOffset >= 0 && beatOffset < songLengthBeats) {
+                const lineX = beatOffset * pixelsPerBeat;
+                if (Math.abs(mx - lineX) <= tolerance) {
+                    return {
+                        key: keyChange,
+                        x: lineX,
+                        y: blockY + blockHeight
+                    };
+                }
+            }
+        }
+        return null;
+    }
+
     function getChordAtCoordinates(mx, my) {
         if (!currentChords.length || !songLengthBeats) return null;
         
@@ -575,6 +610,26 @@ export function renderTimeline(container, options = {}) {
         }, 120);
     }
 
+    function showKeyTooltip(node) {
+        const key = node.key;
+        tooltip.innerHTML = `
+            <div style="text-align: center; margin-bottom: 2px;">
+                <div style="font-size: 16px; font-weight: 700; color: #ffffff;">Key Change</div>
+                <div style="font-size: 14px; color: #94a3b8; font-weight: 500; margin-top: 4px;">${key.tonic} ${key.scale.charAt(0).toUpperCase() + key.scale.slice(1)}</div>
+            </div>
+        `;
+        
+        tooltip.style.left = `${node.x}px`;
+        tooltip.style.top = `${node.y}px`;
+        tooltip.style.display = "block";
+        
+        // Trigger CSS fade in
+        setTimeout(() => {
+            tooltip.style.opacity = "1";
+            tooltip.style.transform = "translate(-50%, 0) translateY(10px)";
+        }, 10);
+    }
+
     function updateTooltipPosition() {
         if (currentHoveredChord && tooltip.style.display !== "none") {
             const pixelsPerBeat = logicalWidth / songLengthBeats;
@@ -591,15 +646,23 @@ export function renderTimeline(container, options = {}) {
     }
 
     function updateHoverState(mx, my) {
-        let node = null;
+        let chordNode = null;
+        let keyNode = null;
         if (mx !== undefined && my !== undefined) {
-            node = getChordAtCoordinates(mx, my);
+            keyNode = getKeySignatureAtCoordinates(mx, my);
+            if (!keyNode) {
+                chordNode = getChordAtCoordinates(mx, my);
+            }
         }
         
-        if (node) {
-            currentHoveredChord = node.chord;
+        if (keyNode) {
+            currentHoveredChord = null;
             clearTimeout(hideTimeout);
-            showTooltip(node);
+            showKeyTooltip(keyNode);
+        } else if (chordNode) {
+            currentHoveredChord = chordNode.chord;
+            clearTimeout(hideTimeout);
+            showTooltip(chordNode);
         } else {
             currentHoveredChord = null;
             clearTimeout(hideTimeout);
