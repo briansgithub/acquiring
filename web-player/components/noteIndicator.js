@@ -75,6 +75,7 @@ function analyzeMelodyTension(melodyNote, chordNotes, chordRootSd, key) {
 export function renderNoteIndicator(container, options = {}) {
   container.innerHTML = `
     <h2 class="now-playing-title">Now Playing</h2>
+    <div id="now-playing-key" class="now-playing-key" style="font-size: 13px; color: #94a3b8; margin-bottom: 8px; font-weight: 500;"></div>
     <div id="now-playing-controls" class="now-playing-controls"></div>
     <div class="now-playing-body">
     <div class="indicator-stack">
@@ -151,6 +152,7 @@ export function renderNoteIndicator(container, options = {}) {
   `;
 
   const melodyNoteLabelEl = container.querySelector("#melody-note-label");
+  const nowPlayingKey = container.querySelector("#now-playing-key");
   const melodyScaleDegreeEl = container.querySelector("#melody-scale-degree");
   const melodySection = container.querySelector("#melody-section");
   const melodyContentWrapper = container.querySelector("#melody-content-wrapper");
@@ -248,7 +250,12 @@ export function renderNoteIndicator(container, options = {}) {
     options.onChordVolumeChange?.(percent);
   });
 
-  let currentKey = options.key || null;
+  let activeKey = options.key || null;
+  let activeNotes = null;
+  let activeRoot = null;
+  let activeDegrees = null;
+  let activeBorrowed = null;
+  let activeChord = null;
   let useRomanNumerals = options.labelMode !== false;
 
   // Store current state for redrawing
@@ -332,7 +339,7 @@ export function renderNoteIndicator(container, options = {}) {
     // Melody vs Chord tension analysis
     const chordNotes = currentChordData.notes;
     if (absoluteLabel) {
-      const t = analyzeMelodyTension(absoluteLabel, chordNotes, currentChordData.root, currentChordData.key || currentKey);
+      const t = analyzeMelodyTension(absoluteLabel, chordNotes, currentChordData.root, currentChordData.key || activeKey);
       tensionEl.style.background = `${t.color}15`;
       tensionEl.style.color = t.color;
       tensionEl.style.border = `1px solid ${t.color}44`;
@@ -349,7 +356,7 @@ export function renderNoteIndicator(container, options = {}) {
 
   function updateChordLabelDisplay() {
     const { notes, root, key, chordObj } = currentChordData;
-    const effKey = key || currentKey;
+    const effKey = key || activeKey;
 
     if (chordObj?.isRest || !notes?.length) {
       chordRootEl.textContent = "Chord: Rest";
@@ -514,22 +521,25 @@ export function renderNoteIndicator(container, options = {}) {
       updateMelodyDisplay();
     },
     updateChord(notes, root, chordDegrees, borrowed, key, chordObj = null) {
-      // Store current chord data
-      currentChordData = { notes, chordDegrees, root, borrowed, key, chordObj };
-      
-      if (key) {
-        currentKey = key;
-      }
+      activeNotes = notes;
+      activeRoot = root;
+      activeDegrees = chordDegrees;
+      activeBorrowed = borrowed;
+      activeKey = key || activeKey;
+      activeChord = chordObj;
 
+      // Store current chord data
+      currentChordData = { notes, chordDegrees, root, borrowed, key: activeKey, chordObj };
+      
       updateChordLabelDisplay();
 
       // Update notes display
       updateChordNotesDisplay();
 
-      if (VERIFY_DEGREES && notes?.length && chordDegrees?.length && key) {
-        const check = verifyScaleDegrees({ key, notes, chordDegrees });
+      if (VERIFY_DEGREES && notes?.length && chordDegrees?.length && activeKey) {
+        const check = verifyScaleDegrees({ key: activeKey, notes, chordDegrees });
         if (!check.ok) {
-          console.warn("[scale-degree verify]", check.failures, { notes, chordDegrees, key, chordObj });
+          console.warn("[scale-degree verify]", check.failures, { notes, chordDegrees, key: activeKey, chordObj });
         }
       }
 
@@ -561,7 +571,27 @@ export function renderNoteIndicator(container, options = {}) {
     },
     clearNoteHighlight,
     setKey(key) {
-      currentKey = key || null;
+      if (
+        key &&
+        activeKey &&
+        key.tonic === activeKey.tonic &&
+        key.scale === activeKey.scale
+      )
+        return;
+      activeKey = key;
+      if (nowPlayingKey && key && key.tonic && key.scale) {
+        nowPlayingKey.textContent = `${key.tonic} ${key.scale.charAt(0).toUpperCase() + key.scale.slice(1)}`;
+      } else if (nowPlayingKey) {
+        nowPlayingKey.textContent = "";
+      }
+      this.updateChord(
+        activeNotes,
+        activeRoot,
+        activeDegrees,
+        activeBorrowed,
+        activeKey,
+        activeChord
+      );
     },
     setLabelMode(useRoman) {
       useRomanNumerals = useRoman;

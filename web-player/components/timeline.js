@@ -1,5 +1,9 @@
 
-import { getScaleDegreeColor } from "../lib/scales.js";
+import { 
+    getScaleDegreeColor,
+    getHooktheoryColor,
+    createStripedPattern
+} from "../lib/scales.js";
 import { getChordSymbol, getChordLetterName, stripBorrowedTags, borrowedAbbrev } from "../lib/jsonToSymbol.js";
 import {
     drawRomanNumeral,
@@ -166,7 +170,7 @@ export function renderTimeline(container, options = {}) {
             const innerH = blockHeight - CHORD_LABEL_PAD.y * 2;
 
             const renderKey = timelineRenderKey();
-            ctx.fillStyle = getScaleDegreeColor(chord.root, renderKey.scale) || "#888";
+            ctx.fillStyle = getColor(chord.root, renderKey.scale) || "#888";
             ctx.fillRect(x, y, w, blockHeight);
 
             // Border
@@ -278,6 +282,25 @@ export function renderTimeline(container, options = {}) {
                     ctx.stroke();
                 }
             }
+        }
+
+        // Draw Section Key Lines
+        if (currentSectionKeys.length > 0) {
+            currentSectionKeys.forEach((keyChange) => {
+                const beatOffset = (keyChange.beat ?? 1) - firstBeat;
+                if (beatOffset >= 0 && beatOffset < songLengthBeats) {
+                    const lineX = beatOffset * pixelsPerBeat;
+                    const c = getColor(1, keyChange.scale);
+                    const hexColor = c && c.hexColor ? c.hexColor : c;
+                    
+                    ctx.strokeStyle = hexColor || "#ffffff";
+                    ctx.lineWidth = 2 * (window.devicePixelRatio || 1);
+                    ctx.beginPath();
+                    ctx.moveTo(lineX, y);
+                    ctx.lineTo(lineX, y + blockHeight);
+                    ctx.stroke();
+                }
+            });
         }
 
         // Draw Progress Indicator
@@ -398,6 +421,18 @@ export function renderTimeline(container, options = {}) {
     canvasWrapper.appendChild(tooltip);
 
     let isMouseOverTooltip = false;
+    let currentColorScheme = options.colorScheme || "diatonic";
+
+    function getColor(degree, scaleType) {
+        if (currentColorScheme === "hooktheory") {
+            const result = getHooktheoryColor(degree, scaleType);
+            if (result && result.isPattern) {
+                return createStripedPattern(ctx, result.color1, result.color2);
+            }
+            return result;
+        }
+        return getScaleDegreeColor(degree, scaleType);
+    }
     tooltip.addEventListener("mouseenter", () => {
         isMouseOverTooltip = true;
     });
@@ -608,6 +643,10 @@ export function renderTimeline(container, options = {}) {
     });
 
     return {
+        setColorScheme(scheme) {
+            currentColorScheme = scheme;
+            draw();
+        },
         setSongData(chords, key, lengthBeats, metadata = null) {
             currentChords = chords || [];
             currentKey = key;

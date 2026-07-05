@@ -220,6 +220,9 @@ const chordRing = renderChordRing(ringPane, {
         }
       }
     }
+  },
+  onColorSchemeChange: (scheme) => {
+    timeline.setColorScheme(scheme);
   }
 });
 const noteIndicator = renderNoteIndicator(indicatorPane, {

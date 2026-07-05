@@ -225,6 +225,87 @@ export const SCALE_DEGREE_COLORS = {
   7: "#FF00CB"
 };
 
+export const HOOKTHEORY_COLORS = {
+  1: "#FF2300",
+  2: "#FFAF00",
+  3: "#F3E200",
+  4: "#00CE00",
+  5: "#3537FF",
+  6: "#BA36E6",
+  7: "#FF38CB"
+};
+
+export function getHooktheoryColor(rootDegree, scaleType) {
+  let shift = 0;
+  if (scaleType === 'minor') shift = 5;
+  else if (scaleType === 'dorian') shift = 1;
+  else if (scaleType === 'phrygian') shift = 2;
+  else if (scaleType === 'lydian') shift = 3;
+  else if (scaleType === 'mixolydian') shift = 4;
+  else if (scaleType === 'locrian') shift = 6;
+
+  const rootStr = String(rootDegree);
+  const match = rootStr.match(/^([b#]*)([\d]+)$/);
+  if (!match) return HOOKTHEORY_COLORS[1]; 
+
+  const accidental = match[1];
+  const baseDegree = parseInt(match[2], 10);
+  
+  const majorDegree = ((baseDegree - 1 + shift) % 7) + 1;
+  
+  if (accidental) {
+    let degreeA = baseDegree;
+    let degreeB = baseDegree;
+    
+    if (accidental.includes('b')) {
+      degreeB = baseDegree;
+      degreeA = baseDegree - 1;
+      if (degreeA < 1) degreeA = 7;
+    } else if (accidental.includes('#')) {
+      degreeA = baseDegree;
+      degreeB = baseDegree + 1;
+      if (degreeB > 7) degreeB = 1;
+    }
+    
+    const majorA = ((degreeA - 1 + shift) % 7) + 1;
+    const majorB = ((degreeB - 1 + shift) % 7) + 1;
+    
+    return {
+      isPattern: true,
+      color1: HOOKTHEORY_COLORS[majorA],
+      color2: HOOKTHEORY_COLORS[majorB]
+    };
+  }
+
+  return HOOKTHEORY_COLORS[majorDegree];
+}
+
+export function createStripedPattern(ctx, color1, color2) {
+  const patternCanvas = document.createElement('canvas');
+  patternCanvas.width = 10;
+  patternCanvas.height = 10;
+  const pctx = patternCanvas.getContext('2d');
+  
+  pctx.fillStyle = color1;
+  pctx.fillRect(0, 0, 10, 10);
+  
+  pctx.fillStyle = color2;
+  pctx.beginPath();
+  pctx.moveTo(0, 10);
+  pctx.lineTo(10, 0);
+  pctx.lineTo(10, 4);
+  pctx.lineTo(6, 10);
+  pctx.fill();
+  
+  pctx.beginPath();
+  pctx.moveTo(0, 4);
+  pctx.lineTo(4, 0);
+  pctx.lineTo(0, 0);
+  pctx.fill();
+  
+  return ctx.createPattern(patternCanvas, 'repeat');
+}
+
 export const ROMAN_NUMERALS_MAJOR = ["I", "ii", "iii", "IV", "V", "vi", "vii°"];
 export const ROMAN_NUMERALS_MINOR = ["i", "ii°", "III", "iv", "v", "VI", "VII"];
 export const ROMAN_NUMERALS_DORIAN = ["i", "ii", "III", "IV", "v", "vi°", "VII"];
