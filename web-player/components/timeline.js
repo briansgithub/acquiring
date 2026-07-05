@@ -160,6 +160,22 @@ export function renderTimeline(container, options = {}) {
         const blockHeight = (logicalHeight - axisHeight) * BLOCK_HEIGHT_RATIO;
         const y = (logicalHeight - axisHeight - blockHeight) / 2;
 
+        let currentSectionStartBeat = firstBeat;
+        let currentSectionEndBeat = firstBeat + songLengthBeats;
+        const currentPlaybackBeat = firstBeat + (currentProgressRatio || 0) * songLengthBeats;
+
+        if (currentSectionKeys.length > 0) {
+            for (let i = 0; i < currentSectionKeys.length; i++) {
+                const keyBeat = currentSectionKeys[i].beat ?? 1;
+                if (keyBeat <= currentPlaybackBeat) {
+                    currentSectionStartBeat = Math.max(firstBeat, keyBeat);
+                } else if (keyBeat > currentPlaybackBeat) {
+                    currentSectionEndBeat = keyBeat;
+                    break;
+                }
+            }
+        }
+
         // Draw Chords
         currentChords.forEach(chord => {
             if (chord.isRest) return;
@@ -168,6 +184,10 @@ export function renderTimeline(container, options = {}) {
             const w = chord.duration * pixelsPerBeat;
             const innerW = w - CHORD_LABEL_PAD.x * 2;
             const innerH = blockHeight - CHORD_LABEL_PAD.y * 2;
+
+            const isCurrentlyPlayingSection = chord.beat >= currentSectionStartBeat && chord.beat < currentSectionEndBeat;
+            
+            ctx.globalAlpha = isCurrentlyPlayingSection ? 1.0 : 0.35;
 
             const renderKey = timelineRenderKey();
             ctx.fillStyle = getColor(chord.root, renderKey.scale) || "#888";
@@ -230,6 +250,8 @@ export function renderTimeline(container, options = {}) {
                 }
             }
         });
+
+        ctx.globalAlpha = 1.0; // Reset alpha for everything else
 
         // Draw Beat Axis
         const axisY = y + blockHeight + 2; // Keep labels inside visible canvas bounds
