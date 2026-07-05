@@ -190,7 +190,8 @@ export function renderTimeline(container, options = {}) {
             ctx.globalAlpha = isCurrentlyPlayingSection ? 1.0 : 0.35;
 
             const renderKey = timelineRenderKey();
-            ctx.fillStyle = getColor(chord.root, renderKey.scale) || "#888";
+            const c = getColor(chord.root, renderKey.scale, chord.borrowed);
+            ctx.fillStyle = c && c.hexColor ? c : c;
             ctx.fillRect(x, y, w, blockHeight);
 
             // Border
@@ -454,15 +455,15 @@ export function renderTimeline(container, options = {}) {
     let isMouseOverTooltip = false;
     let currentColorScheme = options.colorScheme || "diatonic";
 
-    function getColor(degree, scaleType) {
+    function getColor(root, scaleType, borrowedScale = null) {
         if (currentColorScheme === "hooktheory") {
-            const result = getHooktheoryColor(degree, scaleType);
+            const result = getHooktheoryColor(root, scaleType, borrowedScale);
             if (result && result.isPattern) {
-                return createStripedPattern(ctx, result.color1, result.color2);
+                return createStripedPattern(ctx, result.color1, result.color2, result.hexColor);
             }
             return result;
         }
-        return getScaleDegreeColor(degree, scaleType);
+        return getScaleDegreeColor(root, scaleType);
     }
     tooltip.addEventListener("mouseenter", () => {
         isMouseOverTooltip = true;

@@ -237,50 +237,89 @@ export const HOOKTHEORY_COLORS = {
 
 export function getHooktheoryColor(rootDegree, scaleType) {
   let shift = 0;
-  if (scaleType === 'minor') shift = 5;
-  else if (scaleType === 'dorian') shift = 1;
-  else if (scaleType === 'phrygian') shift = 2;
-  else if (scaleType === 'lydian') shift = 3;
-  else if (scaleType === 'mixolydian') shift = 4;
-  else if (scaleType === 'locrian') shift = 6;
+export const BOOMWHACKER_12 = [
+  "#E62B45", // 0 (P1)
+  "#F6501D", // 1 (m2)
+  "#F98625", // 2 (M2)
+  "#FEC637", // 3 (m3)
+  "#FFFD40", // 4 (M3)
+  "#D1FC48", // 5 (P4)
+  "#74F936", // 6 (d5)
+  "#53F984", // 7 (P5)
+  "#0081F9", // 8 (m6)
+  "#0081F9", // 9 (M6)
+  "#9062F9", // 10 (m7)
+  "#EF3FF9"  // 11 (M7)
+];
 
-  const rootStr = String(rootDegree);
-  const match = rootStr.match(/^([b#]*)([\d]+)$/);
-  if (!match) return HOOKTHEORY_COLORS[1]; 
+const RELATIVE_MAJOR_OFFSETS = {
+  "major": 0, "ionian": 0,
+  "dorian": 10,
+  "phrygian": 8,
+  "lydian": 7,
+  "mixolydian": 5,
+  "minor": 3, "aeolian": 3,
+  "locrian": 1
+};
 
-  const accidental = match[1];
-  const baseDegree = parseInt(match[2], 10);
+export const SCALE_INTERVALS = {
+  "major": [0, 2, 4, 5, 7, 9, 11],
+  "minor": [0, 2, 3, 5, 7, 8, 10],
+  "dorian": [0, 2, 3, 5, 7, 9, 10],
+  "phrygian": [0, 1, 3, 5, 7, 8, 10],
+  "lydian": [0, 2, 4, 6, 7, 9, 11],
+  "mixolydian": [0, 2, 4, 5, 7, 9, 10],
+  "locrian": [0, 1, 3, 5, 6, 8, 10],
+  "ionian": [0, 2, 4, 5, 7, 9, 11],
+  "aeolian": [0, 2, 3, 5, 7, 8, 10]
+};
+
+export function getHooktheoryColor(root, scaleType, borrowedScale = null) {
+  const baseRoot = parseInt(String(root).replace(/[#b]/g, ''), 10) || 1;
+  let accidentalMod = 0;
   
-  const majorDegree = ((baseDegree - 1 + shift) % 7) + 1;
-  
-  if (accidental) {
-    let degreeA = baseDegree;
-    let degreeB = baseDegree;
-    
-    if (accidental.includes('b')) {
-      degreeB = baseDegree;
-      degreeA = baseDegree - 1;
-      if (degreeA < 1) degreeA = 7;
-    } else if (accidental.includes('#')) {
-      degreeA = baseDegree;
-      degreeB = baseDegree + 1;
-      if (degreeB > 7) degreeB = 1;
-    }
-    
-    const majorA = ((degreeA - 1 + shift) % 7) + 1;
-    const majorB = ((degreeB - 1 + shift) % 7) + 1;
-    
-    return {
-      isPattern: true,
-      color1: HOOKTHEORY_COLORS[majorA],
-      color2: HOOKTHEORY_COLORS[majorB]
-    };
+  if (typeof root === 'string') {
+    if (root.includes('bb')) accidentalMod = -2;
+    else if (root.includes('b')) accidentalMod = -1;
+    else if (root.includes('##')) accidentalMod = 2;
+    else if (root.includes('#')) accidentalMod = 1;
   }
 
-  return HOOKTHEORY_COLORS[majorDegree];
+  let targetInterval;
+  if (Array.isArray(borrowedScale)) {
+    targetInterval = borrowedScale[baseRoot - 1];
+  } else if (typeof borrowedScale === 'string' && borrowedScale.startsWith('array:')) {
+    const arr = borrowedScale.replace('array:', '').split(',').map(Number);
+    targetInterval = arr[baseRoot - 1];
+  } else if (borrowedScale && SCALE_INTERVALS[borrowedScale]) {
+    targetInterval = SCALE_INTERVALS[borrowedScale][baseRoot - 1];
+  } else {
+    const activeScale = SCALE_INTERVALS[scaleType] ? scaleType : "major";
+    targetInterval = SCALE_INTERVALS[activeScale][baseRoot - 1];
+  }
+
+  targetInterval = (targetInterval + accidentalMod + 12) % 12;
+
+  const relMajOffset = RELATIVE_MAJOR_OFFSETS[scaleType] || 0;
+  const distance = (targetInterval - relMajOffset + 12) % 12;
+
+  const isDiatonicDistance = [0, 2, 4, 5, 7, 9, 11].includes(distance);
+
+  if (isDiatonicDistance) {
+    return BOOMWHACKER_12[distance];
+  } else {
+    const prev = (distance - 1 + 12) % 12;
+    const next = (distance + 1) % 12;
+    return {
+      isPattern: true,
+      color1: BOOMWHACKER_12[prev],
+      color2: BOOMWHACKER_12[next],
+      hexColor: BOOMWHACKER_12[distance]
+    };
+  }
 }
 
-export function createStripedPattern(ctx, color1, color2) {
+export function createStripedPattern(ctx, color1, color2, hexColor) {
   const patternCanvas = document.createElement('canvas');
   patternCanvas.width = 10;
   patternCanvas.height = 10;
@@ -303,7 +342,10 @@ export function createStripedPattern(ctx, color1, color2) {
   pctx.lineTo(0, 0);
   pctx.fill();
   
-  return ctx.createPattern(patternCanvas, 'repeat');
+  const pattern = ctx.createPattern(patternCanvas, 'repeat');
+  pattern.isPattern = true;
+  pattern.hexColor = hexColor || color1;
+  return pattern;
 }
 
 export const ROMAN_NUMERALS_MAJOR = ["I", "ii", "iii", "IV", "V", "vi", "vii°"];

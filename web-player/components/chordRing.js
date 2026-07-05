@@ -630,17 +630,15 @@ export function renderChordRing(container, options = {}) {
     });
   }
 
-  function getColor(degree, scaleType) {
+  function getColor(root, scaleType, borrowedScale = null) {
     if (currentColorScheme === "hooktheory") {
-      const result = getHooktheoryColor(degree, scaleType);
+      const result = getHooktheoryColor(root, scaleType, borrowedScale);
       if (result && result.isPattern) {
-        const pattern = createStripedPattern(ctx, result.color1, result.color2);
-        pattern.hexColor = result.color1;
-        return pattern;
+        return createStripedPattern(ctx, result.color1, result.color2, result.hexColor);
       }
       return result;
     }
-    return getScaleDegreeColor(degree, scaleType);
+    return getScaleDegreeColor(root, scaleType);
   }
 
   function drawScaleDegreeNodes(degree, centerX, centerY) {
@@ -682,7 +680,7 @@ export function renderChordRing(container, options = {}) {
       const displayLabel = useRomanNumerals
         ? (subLabel ? stripBorrowedTags(exactDiatonic.symbol) : exactDiatonic.symbol)
         : getChordLetterName(chord, currentKey);
-      drawNode(dx, dy, nodeRadius, getColor(colorDegree, currentKey.scale), displayLabel, 1.0, isActive, false, subLabel);
+      drawNode(dx, dy, nodeRadius, getColor(colorDegree, currentKey.scale, chord?.borrowed), displayLabel, 1.0, isActive, false, subLabel);
     } else {
       // Placeholder
       const placeholderLabel = useRomanNumerals ? expectedDiatonicLabel : getNoteLabel(degree, currentKey);
@@ -701,7 +699,7 @@ export function renderChordRing(container, options = {}) {
       const displayLabel = useRomanNumerals
         ? (subLabel ? stripBorrowedTags(v.symbol) : v.symbol)
         : getChordLetterName(v.chord, currentKey);
-      drawNode(vx, vy, nodeRadius, getColor(colorDegree, currentKey.scale), displayLabel, 0.9, isActive, false, subLabel);
+      drawNode(vx, vy, nodeRadius, getColor(colorDegree, currentKey.scale, chord?.borrowed), displayLabel, 0.9, isActive, false, subLabel);
     });
   }
 
@@ -808,14 +806,24 @@ export function renderChordRing(container, options = {}) {
 
     // Draw Chord Transition in the center of the circle (vertically aligned to cy)
     if (activeChord) {
-      const currSymbol = getCenterDisplayLabel(activeChord);
-      const currColorObj = getColor(activeChord.root, key.scale) || "#ffffff";
-      const currColor = currColorObj.hexColor || currColorObj;
+      let currColor = "#ffffff";
+      let prevColor = "#ffffff";
+      
+      const activeChordObj = getActiveChordFromTicks();
+      if (activeChordObj) {
+        const currColorObj = getColor(activeChordObj.root, key.scale, activeChordObj.borrowed) || "#ffffff";
+        currColor = currColorObj.hexColor || currColorObj;
+        
+        const previousChordObj = getPreviousChordFromTicks();
+        if (previousChordObj) {
+          const prevColorObj = getColor(previousChordObj.root, key.scale, previousChordObj.borrowed) || "#ffffff";
+          prevColor = prevColorObj.hexColor || prevColorObj;
+        }
+      }
 
+      const currSymbol = getCenterDisplayLabel(activeChord);
       if (previousChord) {
         const prevSymbol = getCenterDisplayLabel(previousChord);
-        const prevColorObj = getColor(previousChord.root, key.scale) || "#ffffff";
-        const prevColor = prevColorObj.hexColor || prevColorObj;
 
         const line1TargetW = r * 1.35;
         const line2TargetW = r * 1.55;
@@ -1004,7 +1012,7 @@ export function renderChordRing(container, options = {}) {
             degree: i,
             placementDegree: i,
             colorDegree: v.colorDegree ?? i,
-            color: getColor(v.colorDegree ?? i, currentKey.scale),
+            color: getColor(v.colorDegree ?? i, currentKey.scale, v.chord?.borrowed),
             isVariant: true,
             variantIndex: vIdx + 1
           };
@@ -1034,7 +1042,7 @@ export function renderChordRing(container, options = {}) {
             degree: i,
             placementDegree: i,
             colorDegree: exactDiatonic.colorDegree ?? i,
-            color: getColor(exactDiatonic.colorDegree ?? i, currentKey.scale),
+            color: getColor(exactDiatonic.colorDegree ?? i, currentKey.scale, exactDiatonic.chord?.borrowed),
             isVariant: false
           };
         }
