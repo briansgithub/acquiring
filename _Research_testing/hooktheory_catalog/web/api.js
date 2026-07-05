@@ -92,6 +92,7 @@ function handleCatalogUpdate(reqUrl, res) {
 
   catalogJob.on('close', () => {
     catalogJob = null;
+    require('../lib/libraryCache').invalidateLibraryCache();
   });
 
   const { writeState } = require('../lib/update');
@@ -193,11 +194,11 @@ function handleCatalogSongDetail(reqUrl, res) {
 function handleLibraryList(res) {
   try {
     const { openDb } = loadCatalogDb();
-    const { listLibrary } = require('../lib/library');
+    const { getLibraryCache } = require('../lib/libraryCache');
     const db = openDb();
-    const songs = listLibrary(db);
+    const jsonString = getLibraryCache(db);
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ songs }));
+    res.end(jsonString);
   } catch (err) {
     res.writeHead(500, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: err.message }));

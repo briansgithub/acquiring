@@ -78,6 +78,7 @@ async function runDiscoverPhase(db, state, opts) {
     phase: 'enrich',
   });
   appendLog(`[daemon] discover done total=${db.prepare('SELECT COUNT(*) AS n FROM songs').get().n} offset=${result.finalOffset}`);
+  require('./libraryCache').invalidateLibraryCache();
   return next;
 }
 
@@ -112,6 +113,7 @@ async function runEnrichPhase(db, opts) {
           last_slug: result.slug,
           last_enriched_at: new Date().toISOString(),
         });
+        require('./libraryCache').invalidateLibraryCache();
         if (enriched % opts.batchLog === 0) {
           const st = getCatalogStatus(db);
           appendLog(`[daemon] progress enriched=${st.totals.enriched} pending=${st.totals.pending} last=${result.slug}`);

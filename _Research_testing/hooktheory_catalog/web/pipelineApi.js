@@ -62,6 +62,7 @@ function handlePipelineClear(reqUrl, res) {
     if (parsed.action === 'processed') {
       resetCacheSync();
     }
+    require('../lib/libraryCache').invalidateLibraryCache();
     const status = result.ok ? 200 : (result.status || 500);
     res.writeHead(status, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(result));

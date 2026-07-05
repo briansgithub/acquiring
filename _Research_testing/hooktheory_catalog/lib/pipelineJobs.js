@@ -70,6 +70,7 @@ function startJob(slug, action) {
     })
     .finally(() => {
       activeBySlug.delete(slug);
+      require('./libraryCache').invalidateLibraryCache();
     });
 
   return jobId;
@@ -113,6 +114,7 @@ function startAddJob(url) {
     })
     .finally(() => {
       activeBySlug.delete(slug);
+      require('./libraryCache').invalidateLibraryCache();
     });
 
   return jobId;

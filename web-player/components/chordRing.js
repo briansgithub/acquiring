@@ -80,6 +80,65 @@ export function renderChordRing(container, options = {}) {
   
   const romanNumeralToggle = romanCheckbox;
 
+  // Create color scheme overlay at upper left
+  const colorSchemeOverlay = document.createElement("div");
+  colorSchemeOverlay.id = "color-scheme-overlay";
+  colorSchemeOverlay.style.position = "absolute";
+  colorSchemeOverlay.style.top = "10px";
+  colorSchemeOverlay.style.left = "10px";
+  colorSchemeOverlay.style.pointerEvents = "auto";
+  colorSchemeOverlay.style.zIndex = "10";
+  colorSchemeOverlay.style.maxWidth = "220px";
+  colorSchemeOverlay.style.background = "rgba(17, 24, 39, 0.95)";
+  colorSchemeOverlay.style.border = "1px solid rgba(255, 255, 255, 0.2)";
+  colorSchemeOverlay.style.borderRadius = "8px";
+  colorSchemeOverlay.style.padding = "8px";
+  colorSchemeOverlay.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.4)";
+  
+  const colorSchemeTitle = document.createElement("div");
+  colorSchemeTitle.textContent = "Color Scheme";
+  colorSchemeTitle.style.fontSize = "12px";
+  colorSchemeTitle.style.fontWeight = "600";
+  colorSchemeTitle.style.color = "#cbd5e1";
+  colorSchemeTitle.style.marginBottom = "6px";
+  colorSchemeTitle.style.paddingBottom = "4px";
+  colorSchemeTitle.style.borderBottom = "1px solid rgba(255, 255, 255, 0.2)";
+  colorSchemeOverlay.appendChild(colorSchemeTitle);
+
+  const colorSchemeSelect = document.createElement("select");
+  colorSchemeSelect.style.width = "100%";
+  colorSchemeSelect.style.background = "rgba(0, 0, 0, 0.5)";
+  colorSchemeSelect.style.color = "#fff";
+  colorSchemeSelect.style.border = "1px solid rgba(255, 255, 255, 0.3)";
+  colorSchemeSelect.style.borderRadius = "4px";
+  colorSchemeSelect.style.padding = "4px";
+  colorSchemeSelect.style.fontSize = "11px";
+  colorSchemeSelect.style.marginBottom = "8px";
+  colorSchemeSelect.style.cursor = "pointer";
+  
+  const optDiatonic = document.createElement("option");
+  optDiatonic.value = "diatonic";
+  optDiatonic.textContent = "Diatonic Function";
+  colorSchemeSelect.appendChild(optDiatonic);
+  
+  colorSchemeOverlay.appendChild(colorSchemeSelect);
+
+  const colorSchemeDesc = document.createElement("div");
+  colorSchemeDesc.style.fontSize = "11px";
+  colorSchemeDesc.style.color = "#94a3b8";
+  colorSchemeDesc.style.lineHeight = "1.3";
+  colorSchemeDesc.textContent = "Colors chords based on their diatonic scale degree relative to the current key (e.g., I is always red, IV is always green, V is always blue).";
+  colorSchemeOverlay.appendChild(colorSchemeDesc);
+  
+  colorSchemeSelect.addEventListener("change", (e) => {
+    if (e.target.value === "diatonic") {
+      colorSchemeDesc.textContent = "Colors chords based on their diatonic scale degree relative to the current key (e.g., I is always red, IV is always green, V is always blue).";
+    }
+    draw();
+  });
+
+  wrapper.appendChild(colorSchemeOverlay);
+
   // Create transition table overlay at upper right
   const transitionTableOverlay = document.createElement("div");
   transitionTableOverlay.id = "transition-table-overlay";
