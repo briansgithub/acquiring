@@ -25,8 +25,24 @@ export function renderChordRing(container, options = {}) {
     <div class="ring-head-row">
       <div id="ring-playback-controls" class="ring-playback-controls" hidden></div>
       <h2 class="pane-panel-title ring-panel-title">Chord Ring</h2>
+      <div class="ring-color-scheme-toggle-wrap">
+        <button class="ring-color-scheme-toggle" id="ring-color-scheme-toggle" title="Color Scheme" aria-expanded="false">
+          <span class="ring-color-scheme-toggle-label">🎨</span>
+          <span class="ring-color-scheme-toggle-arrow">▾</span>
+        </button>
+      </div>
     </div>
     <div id="chord-ring-key" class="chord-ring-key">—</div>
+    <div id="ring-color-scheme-panel" class="ring-color-scheme-panel" hidden>
+      <div class="ring-color-scheme-panel-inner">
+        <select id="ring-color-scheme-select" class="ring-color-scheme-select">
+          <option value="diatonic">Diatonic Function</option>
+          <option value="hooktheory">Hooktheory Relative Major</option>
+          <option value="boomwhacker">Boomwhacker 12-Tone</option>
+        </select>
+        <div id="ring-color-scheme-desc" class="ring-color-scheme-desc"></div>
+      </div>
+    </div>
   `;
   container.appendChild(header);
 
@@ -85,89 +101,38 @@ export function renderChordRing(container, options = {}) {
 
   let currentColorScheme = options.colorScheme || "diatonic";
 
-  // Create color scheme overlay at upper left
-  const colorSchemeOverlay = document.createElement("div");
-  colorSchemeOverlay.id = "color-scheme-overlay";
-  colorSchemeOverlay.style.position = "absolute";
-  colorSchemeOverlay.style.top = "10px";
-  colorSchemeOverlay.style.left = "10px";
-  colorSchemeOverlay.style.pointerEvents = "auto";
-  colorSchemeOverlay.style.zIndex = "10";
-  colorSchemeOverlay.style.maxWidth = "220px";
-  colorSchemeOverlay.style.background = "rgba(17, 24, 39, 0.95)";
-  colorSchemeOverlay.style.border = "1px solid rgba(255, 255, 255, 0.2)";
-  colorSchemeOverlay.style.borderRadius = "8px";
-  colorSchemeOverlay.style.padding = "8px";
-  colorSchemeOverlay.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.4)";
-  
-  const colorSchemeTitle = document.createElement("div");
-  colorSchemeTitle.textContent = "Color Scheme";
-  colorSchemeTitle.style.fontSize = "12px";
-  colorSchemeTitle.style.fontWeight = "600";
-  colorSchemeTitle.style.color = "#cbd5e1";
-  colorSchemeTitle.style.marginBottom = "6px";
-  colorSchemeTitle.style.paddingBottom = "4px";
-  colorSchemeTitle.style.borderBottom = "1px solid rgba(255, 255, 255, 0.2)";
-  colorSchemeOverlay.appendChild(colorSchemeTitle);
+  const colorSchemePanel = header.querySelector("#ring-color-scheme-panel");
+  const colorSchemeToggleBtn = header.querySelector("#ring-color-scheme-toggle");
+  const colorSchemeToggleArrow = header.querySelector(".ring-color-scheme-toggle-arrow");
+  const colorSchemeSelect = header.querySelector("#ring-color-scheme-select");
+  const colorSchemeDesc = header.querySelector("#ring-color-scheme-desc");
 
-  const colorSchemeSelect = document.createElement("select");
-  colorSchemeSelect.style.width = "100%";
-  colorSchemeSelect.style.background = "rgba(0, 0, 0, 0.5)";
-  colorSchemeSelect.style.color = "#fff";
-  colorSchemeSelect.style.border = "1px solid rgba(255, 255, 255, 0.3)";
-  colorSchemeSelect.style.borderRadius = "4px";
-  colorSchemeSelect.style.padding = "4px";
-  colorSchemeSelect.style.fontSize = "11px";
-  colorSchemeSelect.style.marginBottom = "8px";
-  colorSchemeSelect.style.cursor = "pointer";
-  const optDiatonic = document.createElement("option");
-  optDiatonic.value = "diatonic";
-  optDiatonic.textContent = "Diatonic Function";
-  colorSchemeSelect.appendChild(optDiatonic);
-  
-  const optHooktheory = document.createElement("option");
-  optHooktheory.value = "hooktheory";
-  optHooktheory.textContent = "Hooktheory Relative Major";
-  colorSchemeSelect.appendChild(optHooktheory);
-
-  const optBoomwhacker = document.createElement("option");
-  optBoomwhacker.value = "boomwhacker";
-  optBoomwhacker.textContent = "Boomwhacker 12-Tone";
-  colorSchemeSelect.appendChild(optBoomwhacker);
-  
-  colorSchemeSelect.value = currentColorScheme;
-  
-  colorSchemeOverlay.appendChild(colorSchemeSelect);
- 
   const getDescription = (scheme) => {
-    if (scheme === "diatonic") {
-      return "Colors chords based on their diatonic scale degree relative to the current key.";
-    } else if (scheme === "hooktheory") {
-      return "Colors chords dynamically based on their interval relative to the Relative Major Scale (Ionian Mode).";
-    } else if (scheme === "boomwhacker") {
-      return "Colors chords using a 12-tone array based on their half-step distance from the Relative Major root.";
-    }
+    if (scheme === "diatonic") return "Colors chords by their diatonic scale degree in the current key.";
+    if (scheme === "hooktheory") return "Colors by degree relative to the Relative Major (Ionian Mode).";
+    if (scheme === "boomwhacker") return "12-tone array coloring by half-step distance from the Relative Major root.";
     return "";
   };
 
-  const colorSchemeDesc = document.createElement("div");
-  colorSchemeDesc.style.fontSize = "11px";
-  colorSchemeDesc.style.color = "#94a3b8";
-  colorSchemeDesc.style.lineHeight = "1.3";
+  colorSchemeSelect.value = currentColorScheme;
   colorSchemeDesc.textContent = getDescription(currentColorScheme);
-  colorSchemeOverlay.appendChild(colorSchemeDesc);
-  
+
+  let colorPanelOpen = false;
+  colorSchemeToggleBtn.addEventListener("click", () => {
+    colorPanelOpen = !colorPanelOpen;
+    colorSchemePanel.hidden = !colorPanelOpen;
+    colorSchemeToggleBtn.setAttribute("aria-expanded", String(colorPanelOpen));
+    colorSchemeToggleArrow.textContent = colorPanelOpen ? "▴" : "▾";
+  });
+
   colorSchemeSelect.addEventListener("change", (e) => {
     const val = e.target.value;
     currentColorScheme = val;
     colorSchemeDesc.textContent = getDescription(val);
-    if (options.onColorSchemeChange) {
-      options.onColorSchemeChange(val);
-    }
+    if (options.onColorSchemeChange) options.onColorSchemeChange(val);
     draw();
   });
 
-  wrapper.appendChild(colorSchemeOverlay);
 
   // Create transition table overlay at upper right
   const transitionTableOverlay = document.createElement("div");
