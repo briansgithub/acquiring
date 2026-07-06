@@ -1361,12 +1361,16 @@ body {
 }
 
 .ring-color-scheme-panel {
-  margin-top: 6px;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  width: 220px;
   background: rgba(15, 20, 35, 0.97);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   padding: 8px 10px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+  z-index: 20;
 }
 
 .ring-color-scheme-panel[hidden] {

@@ -30,19 +30,19 @@ export function renderChordRing(container, options = {}) {
           <span class="ring-color-scheme-toggle-label">🎨</span>
           <span class="ring-color-scheme-toggle-arrow">▾</span>
         </button>
+        <div id="ring-color-scheme-panel" class="ring-color-scheme-panel" hidden>
+          <div class="ring-color-scheme-panel-inner">
+            <select id="ring-color-scheme-select" class="ring-color-scheme-select">
+              <option value="diatonic">Diatonic Function</option>
+              <option value="hooktheory">Hooktheory Relative Major</option>
+              <option value="boomwhacker">Boomwhacker 12-Tone</option>
+            </select>
+            <div id="ring-color-scheme-desc" class="ring-color-scheme-desc"></div>
+          </div>
+        </div>
       </div>
     </div>
     <div id="chord-ring-key" class="chord-ring-key">—</div>
-    <div id="ring-color-scheme-panel" class="ring-color-scheme-panel" hidden>
-      <div class="ring-color-scheme-panel-inner">
-        <select id="ring-color-scheme-select" class="ring-color-scheme-select">
-          <option value="diatonic">Diatonic Function</option>
-          <option value="hooktheory">Hooktheory Relative Major</option>
-          <option value="boomwhacker">Boomwhacker 12-Tone</option>
-        </select>
-        <div id="ring-color-scheme-desc" class="ring-color-scheme-desc"></div>
-      </div>
-    </div>
   `;
   container.appendChild(header);
 
