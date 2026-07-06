@@ -8,7 +8,7 @@ import { renderTimeline } from "./components/timeline.js";
 import { renderSongSelector } from "./components/songSelector.js";
 import { renderQuizMode } from "./components/quiz/quizMode.js";
 import { createQuizAudio } from "./components/quiz/quizAudio.js";
-import { fetchCorpusStats, buildSongEntries, poolStats } from "./components/quiz/quizPool.js";
+import { fetchCorpusStats, buildSongEntries, poolStats, buildFrequencyProfile } from "./components/quiz/quizPool.js";
 import { QuizSession } from "./lib/quizSession.js";
 import { romanNumeralToHtml } from "./lib/romanNumeralCanvas.js";
 import { chordInterpreter, getSongLength, parseKey, sdToToneJSNoteName } from "./lib/music.js";
@@ -538,6 +538,12 @@ if (quizPane) {
     audio: quizAudio,
     session: quizSession,
     romanHtml: romanNumeralToHtml,
+    chordRing,
+    timeline,
+    getFrequencyProfile: () => {
+      const songCtx = buildQuizSongContext();
+      return songCtx?.entries ? buildFrequencyProfile(songCtx.entries) : null;
+    },
   });
 }
 
@@ -562,7 +568,40 @@ function setAppMode(mode) {
         corpusStats = stats;
       });
     }
+    // Initialize frequency overlay on ring
+    const profile = buildQuizSongContext()?.entries
+      ? buildFrequencyProfile(buildQuizSongContext().entries)
+      : null;
+    if (profile && typeof chordRing.setFrequencyOverlay === 'function') {
+      chordRing.setFrequencyOverlay(profile.symbolCounts);
+    }
+    // Force ring and timeline relayout after CSS grid change
+    requestAnimationFrame(() => {
+      if (typeof chordRing.setKey === 'function' && currentKey) {
+        chordRing.setSongData(currentRawChords, currentKey);
+      }
+      if (typeof timeline.forceRelayout === 'function') {
+        timeline.forceRelayout();
+      }
+    });
     quizMode?.refresh();
+  } else {
+    // Clear quiz overlays when returning to player mode
+    if (typeof chordRing.clearQuizOverlays === 'function') {
+      chordRing.clearQuizOverlays();
+    }
+    if (typeof timeline.clearQuizOverlays === 'function') {
+      timeline.clearQuizOverlays();
+    }
+    // Force relayout after CSS grid change back to player
+    requestAnimationFrame(() => {
+      if (typeof chordRing.setKey === 'function' && currentKey) {
+        chordRing.setSongData(currentRawChords, currentKey);
+      }
+      if (typeof timeline.forceRelayout === 'function') {
+        timeline.forceRelayout();
+      }
+    });
   }
 }
 

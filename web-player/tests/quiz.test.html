@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quiz Closed-Loop Tests</title>
+  <style>
+    body { font-family: monospace; background: #111; color: #eee; padding: 20px; }
+    .pass { color: #4ade80; }
+    .fail { color: #f87171; }
+    .group { margin-top: 20px; font-weight: bold; color: #60a5fa; }
+    .log { margin-left: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Quiz Closed-Loop Tests</h1>
+  <div id="results"></div>
+  <div id="test-container" style="display:none;"></div>
+
+  <script type="module">
+    import { renderQuizMode } from "../components/quiz/quizMode.js";
+    import { QuizSession } from "../lib/quizSession.js";
+    import { romanNumeralToHtml } from "../lib/romanNumeralCanvas.js";
+    
+    // Import individual modes for direct testing
+    import { degreeId } from "../components/quiz/modes/degreeId.js";
+    import { transitionDrill } from "../components/quiz/modes/transitionDrill.js";
+    import { cloze } from "../components/quiz/modes/cloze.js";
+    import { dictation } from "../components/quiz/modes/dictation.js";
+
+    const results = document.getElementById("results");
+    const container = document.getElementById("test-container");
+
+    function log(msg, status = "") {
+      const div = document.createElement("div");
+      div.className = status;
+      div.textContent = msg;
+      results.appendChild(div);
+    }
+
+    function assert(cond, msg) {
+      if (cond) {
+        log("✓ " + msg, "log pass");
+      } else {
+        log("✗ " + msg, "log fail");
+        throw new Error("Assertion failed: " + msg);
+      }
+    }
+
+    const mockPool = [
+      { chord: { root: 0, type: 5, beat: 1, duration: 4 }, symbol: "I", rootNotes: ["C4"] },
+      { chord: { root: 5, type: 5, beat: 5, duration: 4 }, symbol: "IV", rootNotes: ["F4"] },
+      { chord: { root: 7, type: 5, beat: 9, duration: 4 }, symbol: "V", rootNotes: ["G4"] },
+      { chord: { root: 9, type: 5, beat: 13, duration: 4 }, symbol: "vi", rootNotes: ["A4"] }
+    ];
+
+    async function runTests() {
+      log("Setting up mock context...", "group");
+      
+      const session = new QuizSession();
+      // Force predictable random picking for tests
+      session.pickEntry = (pool) => pool[0]; // Always pick 'I'
+
+      let ringFlashed = null;
+      let timelineMarkers = null;
+      let ringHighlight = null;
+      let selectHandler = null;
+
+      const mockCtx = {
+        audio: { playSequence: () => {}, cancel: () => {} },
+        session,
+        romanHtml: romanNumeralToHtml,
+        chordRing: {
+          highlightChoices: (syms) => { ringHighlight = syms; },
+          setChordSelectHandler: (cb) => { selectHandler = cb; },
+          showTransitionArc: () => {},
+          flashCorrect: (sym) => { ringFlashed = { correct: true, sym }; },
+          flashWrong: (sym) => { ringFlashed = { correct: false, sym }; },
+          clearQuizOverlays: () => {},
+          setFrequencyOverlay: () => {}
+        },
+        timeline: {
+          highlightBeatRange: () => {},
+          setQuizMarkers: (m) => { timelineMarkers = m; },
+          clearQuizOverlays: () => {}
+        },
+        getFrequencyProfile: () => null,
+        getSongTitle: () => "Test Song",
+        getSectionStats: () => ({ total: 4 }),
+        getSectionName: () => "Chorus",
+        getSongKey: () => ({ root: 0, scale: "major", rootNote: 0 }),
+        getSections: () => [{ name: "Chorus", pool: mockPool }]
+      };
+
+      // Create a fake song wrapper required by modes
+      const baseWrapper = document.createElement("div");
+      baseWrapper.dataset.songLoaded = "true";
+      // We will monkey patch `requireSong` in modeUtils if needed, 
+      // but actually requireSong just checks `el.closest('.quiz-mode-body')` or similar.
+      // Let's see: requireSong(el, ctx) checks if song is loaded. We can mock it by passing a custom ctx?
+      // Actually requireSong calls ctx.getSongKey(). If yes, it returns { songCtx: {key}, pool, section }
+      // But it fetches pool from `ctx.getSections()[ctx.getSectionIndex()]`.
+      mockCtx.getSectionIndex = () => 0;
+
+      // --- Test 1: Degree ID ---
+      log("Testing Degree ID...", "group");
+      container.innerHTML = "";
+      let modeHandle = degreeId.render(container, mockCtx);
+      assert(container.querySelector("#di-prompt"), "Degree ID rendered");
+      
+      // Simulate "Next" to load a question
+      container.querySelector("#di-next").click();
+      assert(ringHighlight && ringHighlight.length > 1, "Ring choices highlighted");
+      
+      // We know target is mockPool[0] ("I") because we mocked pickEntry.
+      // Simulate correct click
+      const correctBtn = Array.from(container.querySelectorAll(".quiz-choice-btn")).find(b => b.dataset.quizSymbol === "I");
+      assert(correctBtn, "Found correct button");
+      correctBtn.click();
+      
+      assert(ringFlashed && ringFlashed.correct && ringFlashed.sym === "I", "Ring flashed correct green");
+      assert(correctBtn.classList.contains("quiz-correct"), "Button marked correct");
+      modeHandle.destroy();
+
+      // --- Test 2: Cloze ---
+      log("Testing Cloze...", "group");
+      container.innerHTML = "";
+      // Mock pickWeightedProgressionRun to always return the first 3 chords
+      import * as quizPool from "../components/quiz/quizPool.js";
+      // To mock a module export, we might need a workaround, or we can just rely on randomness if we can't mock.
+      // Actually, we can just test if the sequence renders.
+      modeHandle = cloze.render(container, mockCtx);
+      assert(container.querySelector("#cz-prompt"), "Cloze rendered");
+      
+      // If we don't mock pickWeightedProgressionRun, it will use real logic.
+      // We'll just click Next and check if it sets timeline markers.
+      container.querySelector("#cz-next").click();
+      assert(timelineMarkers !== null, "Timeline markers were set for cloze sequence");
+      
+      // Simulate choosing the correct answer
+      const gapSym = container.querySelector(".quiz-cloze-gap");
+      if (gapSym) { // If a gap was created
+        // Try clicking all buttons until one is correct (since we didn't mock the run)
+        const btns = container.querySelectorAll(".quiz-choice-btn");
+        btns[0].click();
+        assert(ringFlashed !== null, "Ring flashed after answer");
+      }
+      modeHandle.destroy();
+
+      log("All closed-loop tests passed!", "group pass");
+    }
+
+    runTests().catch(e => log("Error: " + e.message, "fail"));
+  </script>
+</body>
+</html>

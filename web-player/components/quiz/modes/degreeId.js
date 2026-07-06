@@ -62,6 +62,46 @@ export const degreeId = {
     const chordTools = mountChordDrillTools(el, "di", ctx, base, () => target);
     const scale = () => base.songCtx.scale || base.songCtx.key?.scale || "major";
 
+    let choicesCleanup = null;
+
+    function handleChoice(symbol) {
+      if (answered) return;
+      answered = true;
+      const correct = symbol === target.symbol;
+
+      // Highlight the button if it exists
+      const btns = choicesEl.querySelectorAll(".quiz-choice-btn");
+      btns.forEach(btn => {
+        if (btn.textContent === symbol || (btn.dataset.quizSymbol === symbol)) {
+          btn.classList.add(correct ? "quiz-correct" : "quiz-wrong");
+        }
+      });
+
+      quizRecord(ctx, "mode-degree", correct, {
+        chord: target.chord,
+        symbol: target.symbol,
+        quality: correct ? 4 : 1,
+      });
+      feedback(
+        feedbackEl,
+        correct,
+        correct ? `Correct: ${target.symbol}` : `Answer: ${target.symbol}`,
+      );
+
+      // Flash on the ring
+      if (ctx.chordRing) {
+        if (correct) {
+          ctx.chordRing.flashCorrect?.(target.symbol);
+        } else {
+          ctx.chordRing.flashWrong?.(symbol);
+          setTimeout(() => ctx.chordRing.flashCorrect?.(target.symbol), 400);
+        }
+        ctx.chordRing.highlightChoices?.(null); // clear dimming
+      }
+      // Clear timeline highlight
+      ctx.timeline?.highlightBeatRange?.(null, null);
+    }
+
     function showQuestion() {
       answered = false;
       feedbackEl.innerHTML = "";
@@ -75,29 +115,35 @@ export const degreeId = {
       const symbols = shuffle([target.symbol, ...wrong]);
 
       promptEl.textContent =
-        "What Roman numeral chord did you hear? Tonicize or Repeat (honors Arpeggio checkbox).";
+        "What Roman numeral chord did you hear? Tap the Ring or choose below.";
 
-      renderChoices(
+      choicesCleanup?.();
+      choicesCleanup = renderChoices(
         choicesEl,
         symbols.map((s) => ({ label: ctx.romanHtml(s), symbol: s })),
-        (choice, btn) => {
-          if (answered) return;
-          answered = true;
-          const correct = choice.symbol === target.symbol;
-          btn.classList.add(correct ? "quiz-correct" : "quiz-wrong");
-          quizRecord(ctx, "mode-degree", correct, {
-            chord: target.chord,
-            symbol: target.symbol,
-            quality: correct ? 4 : 1,
-          });
-          feedback(
-            feedbackEl,
-            correct,
-            correct ? `Correct: ${target.symbol}` : `Answer: ${target.symbol}`,
-          );
-        },
+        (choice) => handleChoice(choice.symbol),
         { html: true },
       );
+
+      // Highlight choices on the ring and allow click-to-answer
+      if (ctx.chordRing) {
+        ctx.chordRing.highlightChoices?.(symbols);
+        ctx.chordRing.setChordSelectHandler?.((chord) => {
+          const cid = (c) => `r${c.root}|t${c.type || 5}|i${c.inversion || 0}|b${c.borrowed || 'none'}|a${c.applied || 0}`;
+          const isCorrect = cid(chord) === cid(target.chord);
+          handleChoice(isCorrect ? target.symbol : "WRONG");
+        });
+      }
+
+      // Highlight target beat range on timeline
+      if (ctx.timeline && target.chord?.beat != null) {
+        ctx.timeline.highlightBeatRange?.(
+          target.chord.beat,
+          target.chord.beat + (target.chord.duration || 1),
+          'rgba(34, 211, 238, 0.2)',
+        );
+      }
+
       chordTools.wireChoices(choicesEl, symbols);
       chordTools.syncDisplay(target);
       cueQuestionAudio(() => chordTools.playEntry(target));
@@ -111,6 +157,12 @@ export const degreeId = {
     promptEl.textContent =
       "Press Start for the first question. Use Tonicize, Repeat, or Arpeggio — tools stay active after answering.";
 
-    return { destroy: () => ctx.audio.cancel() };
+    return { destroy: () => {
+      choicesCleanup?.();
+      ctx.audio.cancel();
+      ctx.chordRing?.highlightChoices?.(null);
+      ctx.chordRing?.setChordSelectHandler?.(null);
+      ctx.timeline?.highlightBeatRange?.(null, null);
+    } };
   },
 };

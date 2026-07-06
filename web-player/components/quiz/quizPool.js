@@ -345,3 +345,55 @@ export function poolStats(pool) {
   }
   return { counts, transitions, total: pool.length || 1 };
 }
+
+export function buildFrequencyProfile(pool) {
+  const { counts, transitions, total } = poolStats(pool);
+
+  const maxSymbolCount = counts.size ? Math.max(...counts.values()) : 0;
+  const maxTransitionCount = transitions.size ? Math.max(...transitions.values()) : 0;
+
+  return {
+    symbolCounts: counts,
+    transitionCounts: transitions,
+    totalChords: total,
+    maxSymbolCount,
+    maxTransitionCount,
+
+    topSymbols(n = 5) {
+      return [...counts.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, n)
+        .map(([sym]) => sym);
+    },
+
+    topTransitions(n = 5) {
+      return [...transitions.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, n)
+        .map(([key]) => key);
+    },
+
+    symbolWeight(symbol) {
+      return (counts.get(symbol) || 0) / total;
+    },
+  };
+}
+
+export function pickFrequencyBiased(pool, session, lastSymbol, profile) {
+  const base = session.pickEntry(pool);
+  if (!base || !profile || !lastSymbol) return base;
+
+  // Score each candidate by transition frequency from lastSymbol
+  const candidates = pool.filter((e) => e.symbol !== lastSymbol);
+  if (!candidates.length) return base;
+
+  const scored = candidates.map((entry) => {
+    const tKey = `${lastSymbol}=>${entry.symbol}`;
+    const tCount = profile.transitionCounts.get(tKey) || 0;
+    const symWeight = profile.symbolWeight(entry.symbol);
+    // Blend: base weight 1 + transition boost + symbol frequency
+    return { entry, weight: 1 + tCount * 2 + symWeight };
+  });
+
+  return pickWeighted(scored, (s) => s.weight).entry;
+}

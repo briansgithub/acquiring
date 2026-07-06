@@ -66,6 +66,14 @@ export const singArpeggio = {
       promptEl.innerHTML = `Sing the ${label} (${toneIdx + 1}/${target.rootNotes.length}) — <span class="quiz-chord-sym" data-quiz-symbol="${target.symbol}">${ctx.romanHtml(target.symbol)}</span>`;
       chordTools.wireStaticChords(promptEl);
       chordTools.syncDisplay(target);
+
+      if (ctx.timeline && target.chord?.beat != null) {
+        ctx.timeline.highlightBeatRange?.(
+          target.chord.beat,
+          target.chord.beat + (target.chord.duration || 1),
+          'rgba(34, 211, 238, 0.2)'
+        );
+      }
     }
 
     function nextQuestion() {
@@ -122,6 +130,13 @@ export const singArpeggio = {
             quality,
           });
           feedback(resultsEl, pass, pass ? "Arpeggio complete!" : "Some tones missed.");
+          if (ctx.chordRing) {
+            if (pass) {
+              ctx.chordRing.flashCorrect?.(target.symbol);
+            } else {
+              ctx.chordRing.flashWrong?.(target.symbol);
+            }
+          }
         } else {
           renderPrompt();
         }
@@ -131,6 +146,9 @@ export const singArpeggio = {
     });
 
     promptEl.textContent = "Press Start for the first chord. Tonicize for key context; Repeat chord or tone as needed.";
-    return { destroy: () => ctx.audio.cancel() };
+    return { destroy: () => {
+      ctx.audio.cancel();
+      ctx.timeline?.highlightBeatRange?.(null, null);
+    } };
   },
 };

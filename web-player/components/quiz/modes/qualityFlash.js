@@ -101,6 +101,15 @@ export const qualityFlash = {
       );
       chordTools.wireStaticChords(promptEl);
       chordTools.syncDisplay(current);
+
+      if (ctx.timeline && current.chord?.beat != null) {
+        ctx.timeline.highlightBeatRange?.(
+          current.chord.beat,
+          current.chord.beat + (current.chord.duration || 1),
+          'rgba(34, 211, 238, 0.2)'
+        );
+      }
+
       cueQuestionAudio(playCurrent);
     }
 
@@ -112,6 +121,9 @@ export const qualityFlash = {
     promptEl.textContent =
       "Press Start for the first chord. Arpeggio / Show notes work on the target chord after answering too.";
 
-    return { destroy: () => ctx.audio.cancel() };
+    return { destroy: () => {
+      ctx.audio.cancel();
+      ctx.timeline?.highlightBeatRange?.(null, null);
+    } };
   },
 };

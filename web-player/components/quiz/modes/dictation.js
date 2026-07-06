@@ -12,6 +12,7 @@ import {
   quizRecord,
   cueQuestionAudio,
 } from "./modeUtils.js";
+import { getChordSymbol } from "../../../lib/jsonToSymbol.js";
 
 function runBounds(difficulty) {
   if (difficulty === "easy") return { min: 3, max: 3 };
@@ -93,6 +94,19 @@ export const dictation = {
       });
     }
 
+    function updateTimelineMarkers() {
+      if (!ctx.timeline || !run) return;
+      const markers = run.map((entry, i) => {
+        let status = 'pending';
+        if (graded) {
+          const picks = [...slotsEl.querySelectorAll("select")].map((s) => s.value);
+          status = picks[i] === entry.symbol ? 'correct' : 'wrong';
+        }
+        return { beat: entry.chord.beat, symbol: entry.symbol, status };
+      }).filter(m => m.beat != null);
+      ctx.timeline.setQuizMarkers?.(markers);
+    }
+
     function showQuestion() {
       graded = false;
       feedbackEl.innerHTML = "";
@@ -107,10 +121,38 @@ export const dictation = {
       }
       quizNotify(ctx, { symbols: run.map((e) => e.symbol) });
       const hint = diffEl.value === "easy" ? " (first chord shown)" : "";
-      promptEl.textContent = `Transcribe ${run.length} chords${hint}. Arpeggio uses the focused slot (defaults to #1).`;
+      promptEl.textContent = `Transcribe ${run.length} chords${hint}. Tap Ring nodes to fill the active slot. Arpeggio uses focused slot.`;
       renderSlots();
       chordTools.wireStaticChords(slotsEl);
       chordTools.syncDisplay(run[focusIdx]);
+      
+      updateTimelineMarkers();
+
+      if (ctx.chordRing) {
+        ctx.chordRing.setChordSelectHandler?.((chord) => {
+          if (graded) return;
+          const sym = getChordSymbol(chord, base.songCtx.key);
+          const selects = [...slotsEl.querySelectorAll("select")];
+          const activeSel = selects[focusIdx];
+          if (activeSel && !activeSel.disabled) {
+            // Only set if it's a valid option
+            const opts = [...activeSel.options].map(o => o.value);
+            if (opts.includes(sym)) {
+              activeSel.value = sym;
+              // Advance focus to next empty slot
+              let nextIdx = focusIdx + 1;
+              while (nextIdx < selects.length && (selects[nextIdx].disabled || selects[nextIdx].value)) {
+                nextIdx++;
+              }
+              if (nextIdx < selects.length && !selects[nextIdx].disabled) {
+                focusIdx = nextIdx;
+                selects[focusIdx].focus();
+              }
+            }
+          }
+        });
+      }
+
       cueQuestionAudio(playRun);
     }
 
@@ -149,9 +191,14 @@ export const dictation = {
         sel.disabled = true;
         sel.classList.add(picks[i] === run[i].symbol ? "quiz-slot-ok" : "quiz-slot-bad");
       });
+      updateTimelineMarkers();
     });
 
     promptEl.textContent = "Press Start for the first progression. Use Tonicize for key context, Repeat to hear it.";
-    return { destroy: () => ctx.audio.cancel() };
+    return { destroy: () => {
+      ctx.audio.cancel();
+      ctx.chordRing?.setChordSelectHandler?.(null);
+      ctx.timeline?.setQuizMarkers?.(null);
+    } };
   },
 };

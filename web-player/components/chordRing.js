@@ -441,6 +441,14 @@ export function renderChordRing(container, options = {}) {
   let currentHoveredNode = null; // Declared here to avoid Temporal Dead Zone errors during initial resize/draw
   let hideTimeout = null;
 
+  // Quiz overlay state
+  let quizHighlightSymbols = null;
+  let quizFlashSymbol = null;
+  let quizFlashColor = null;
+  let quizFlashTimer = null;
+  let quizTransitionArc = null;
+  let quizFreqOverlay = null;
+
   keyFilterSelect.addEventListener("change", (e) => {
     selectedKeyFilter = e.target.value;
     updateTransitionTable();
@@ -642,6 +650,148 @@ export function renderChordRing(container, options = {}) {
     }
     if (typeof updateCenterReadingTooltipPosition === "function") {
       updateCenterReadingTooltipPosition();
+    }
+
+    // Draw quiz overlays on top of everything
+    drawQuizOverlays(centerX, centerY);
+  }
+
+  // --- Quiz overlay rendering ---
+  function getNodePositions(centerX, centerY) {
+    const positions = [];
+    const diatonicLabels = getRomanNumeralsForScale(currentKey.scale);
+    for (let degree = 1; degree <= 7; degree++) {
+      const angle = (degree - 1) * (2 * Math.PI / 7) - (Math.PI / 2);
+      const chords = currentGroupedChords[degree] || [];
+      const expectedDiatonicLabel = diatonicLabels[degree - 1];
+      const exactDiatonic = chords.find(c =>
+        c.symbol === expectedDiatonicLabel &&
+        (!c.chord.borrowed || c.chord.borrowed === "" || c.chord.borrowed === null)
+      );
+      const variants = chords.filter(c => {
+        const isBorrowed = c.chord.borrowed && c.chord.borrowed !== "" && c.chord.borrowed !== null;
+        return c.symbol !== expectedDiatonicLabel || isBorrowed;
+      });
+
+      const diatonicDist = DIATONIC_RING_RADIUS * zoom;
+      const nodeRadius = NODE_RADIUS * zoom;
+      const dx = centerX + diatonicDist * Math.cos(angle);
+      const dy = centerY + diatonicDist * Math.sin(angle);
+
+      if (exactDiatonic) {
+        positions.push({ symbol: exactDiatonic.symbol, x: dx, y: dy, r: nodeRadius, degree });
+      } else {
+        positions.push({ symbol: expectedDiatonicLabel, x: dx, y: dy, r: nodeRadius, degree, placeholder: true });
+      }
+
+      variants.forEach((v, idx) => {
+        const dist = (DIATONIC_RING_RADIUS + VARIANT_SPACING * (idx + 1)) * zoom;
+        const vx = centerX + dist * Math.cos(angle);
+        const vy = centerY + dist * Math.sin(angle);
+        positions.push({ symbol: v.symbol, x: vx, y: vy, r: nodeRadius, degree });
+      });
+    }
+    return positions;
+  }
+
+  function drawQuizOverlays(centerX, centerY) {
+    const hasOverlay = quizHighlightSymbols || quizFlashSymbol || quizTransitionArc || quizFreqOverlay;
+    if (!hasOverlay) return;
+
+    const positions = getNodePositions(centerX, centerY);
+
+    // 1. Dim non-highlighted nodes
+    if (quizHighlightSymbols) {
+      const highlightSet = new Set(quizHighlightSymbols);
+      for (const pos of positions) {
+        if (!highlightSet.has(pos.symbol)) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(pos.x, pos.y, pos.r * 1.15, 0, Math.PI * 2);
+          ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+    }
+
+    // 2. Flash glow on correct/wrong
+    if (quizFlashSymbol) {
+      const node = positions.find(p => p.symbol === quizFlashSymbol);
+      if (node) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, node.r * 1.6, 0, Math.PI * 2);
+        ctx.fillStyle = quizFlashColor || "rgba(34, 197, 94, 0.6)";
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // 3. Transition arc between two nodes
+    if (quizTransitionArc) {
+      const fromNode = positions.find(p => p.symbol === quizTransitionArc.from);
+      const toNode = positions.find(p => p.symbol === quizTransitionArc.to);
+      if (fromNode && toNode) {
+        const midX = (fromNode.x + toNode.x) / 2;
+        const midY = (fromNode.y + toNode.y) / 2;
+        const dx = toNode.x - fromNode.x;
+        const dy = toNode.y - fromNode.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        // Control point perpendicular to midpoint, offset inward toward center
+        const perpX = -dy / dist;
+        const perpY = dx / dist;
+        const cpOffset = dist * 0.3;
+        const cpX = midX + perpX * cpOffset;
+        const cpY = midY + perpY * cpOffset;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(fromNode.x, fromNode.y);
+        ctx.quadraticCurveTo(cpX, cpY, toNode.x, toNode.y);
+        ctx.strokeStyle = "rgba(168, 85, 247, 0.7)";
+        ctx.lineWidth = 2.5 * zoom;
+        ctx.stroke();
+
+        // Arrowhead at destination
+        const t = 0.92;
+        const ax = (1 - t) * (1 - t) * fromNode.x + 2 * (1 - t) * t * cpX + t * t * toNode.x;
+        const ay = (1 - t) * (1 - t) * fromNode.y + 2 * (1 - t) * t * cpY + t * t * toNode.y;
+        const arrowAngle = Math.atan2(toNode.y - ay, toNode.x - ax);
+        const arrowLen = 10 * zoom;
+        ctx.beginPath();
+        ctx.moveTo(toNode.x, toNode.y);
+        ctx.lineTo(toNode.x - arrowLen * Math.cos(arrowAngle - 0.4), toNode.y - arrowLen * Math.sin(arrowAngle - 0.4));
+        ctx.moveTo(toNode.x, toNode.y);
+        ctx.lineTo(toNode.x - arrowLen * Math.cos(arrowAngle + 0.4), toNode.y - arrowLen * Math.sin(arrowAngle + 0.4));
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    // 4. Frequency overlay rings
+    if (quizFreqOverlay) {
+      const counts = quizFreqOverlay;
+      let maxCount = 0;
+      for (const [, count] of counts) {
+        if (count > maxCount) maxCount = count;
+      }
+      if (maxCount > 0) {
+        for (const pos of positions) {
+          const count = counts.get(pos.symbol);
+          if (count && count > 0) {
+            const ratio = count / maxCount;
+            const strokeW = 1 + ratio * 4;
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, pos.r + 4 * zoom, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(250, 204, 21, ${0.3 + ratio * 0.5})`;
+            ctx.lineWidth = strokeW * zoom;
+            ctx.stroke();
+            ctx.restore();
+          }
+        }
+      }
     }
   }
 
@@ -1689,6 +1839,58 @@ export function renderChordRing(container, options = {}) {
   }
 
   return {
+    highlightChoices(symbols) {
+      quizHighlightSymbols = symbols && symbols.length > 0 ? symbols : null;
+      draw();
+    },
+
+    flashCorrect(symbol) {
+      if (quizFlashTimer) clearTimeout(quizFlashTimer);
+      quizFlashSymbol = symbol;
+      quizFlashColor = "rgba(34, 197, 94, 0.6)";
+      draw();
+      quizFlashTimer = setTimeout(() => {
+        quizFlashSymbol = null;
+        quizFlashColor = null;
+        quizFlashTimer = null;
+        draw();
+      }, 1200);
+    },
+
+    flashWrong(symbol) {
+      if (quizFlashTimer) clearTimeout(quizFlashTimer);
+      quizFlashSymbol = symbol;
+      quizFlashColor = "rgba(239, 68, 68, 0.6)";
+      draw();
+      quizFlashTimer = setTimeout(() => {
+        quizFlashSymbol = null;
+        quizFlashColor = null;
+        quizFlashTimer = null;
+        draw();
+      }, 1200);
+    },
+
+    showTransitionArc(fromSymbol, toSymbol) {
+      quizTransitionArc = fromSymbol && toSymbol ? { from: fromSymbol, to: toSymbol } : null;
+      draw();
+    },
+
+    setFrequencyOverlay(symbolCountMap) {
+      quizFreqOverlay = symbolCountMap instanceof Map && symbolCountMap.size > 0 ? symbolCountMap : null;
+      draw();
+    },
+
+    clearQuizOverlays() {
+      quizHighlightSymbols = null;
+      quizFlashSymbol = null;
+      quizFlashColor = null;
+      if (quizFlashTimer) clearTimeout(quizFlashTimer);
+      quizFlashTimer = null;
+      quizTransitionArc = null;
+      quizFreqOverlay = null;
+      draw();
+    },
+
     setKeyFilter(label) {
       if (!autoFilterCheckbox.checked) return;
       if (perKeyLabels && perKeyLabels.includes(label)) {

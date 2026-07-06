@@ -72,6 +72,10 @@ export function renderTimeline(container, options = {}) {
     let currentHoveredChord = null;
     let hideTimeout = null;
 
+    // Quiz overlay state
+    let quizHighlightRange = null;
+    let quizMarkers = null;
+
     const AXIS_HEIGHT = 13;
     const BLOCK_HEIGHT_RATIO = 0.9; // shorter blocks to make vertical room for title row
     const CHORD_LABEL_PAD = { x: 7, y: 4 };
@@ -358,6 +362,61 @@ export function renderTimeline(container, options = {}) {
 
         if (typeof updateTooltipPosition === "function") {
             updateTooltipPosition();
+        }
+
+        drawQuizOverlays(pixelsPerBeat, y, blockHeight);
+    }
+
+    function drawQuizOverlays(pixelsPerBeat, blockY, blockHeight) {
+        // --- Highlight range (semi-transparent rectangle over the chord blocks) ---
+        if (quizHighlightRange) {
+            const { startBeat, endBeat, color } = quizHighlightRange;
+            const x = (startBeat - firstBeat) * pixelsPerBeat;
+            const w = (endBeat - startBeat) * pixelsPerBeat;
+            ctx.save();
+            ctx.globalAlpha = 0.25;
+            ctx.fillStyle = color || "#22d3ee";
+            ctx.fillRect(x, blockY, w, blockHeight);
+            ctx.globalAlpha = 1.0;
+            // Border for the highlight region
+            ctx.strokeStyle = color || "#22d3ee";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x, blockY, w, blockHeight);
+            ctx.restore();
+        }
+
+        // --- Quiz markers (colored dots above the chord blocks) ---
+        if (quizMarkers && quizMarkers.length > 0) {
+            const STATUS_COLORS = {
+                pending: "#94a3b8",
+                active:  "#22d3ee",
+                correct: "#22c55e",
+                wrong:   "#ef4444",
+            };
+            const dotRadius = 4;
+            const dotY = blockY - dotRadius - 3; // sit above the chord blocks
+
+            ctx.save();
+            quizMarkers.forEach(marker => {
+                const cx = (marker.beat - firstBeat) * pixelsPerBeat;
+                const fillColor = STATUS_COLORS[marker.status] || STATUS_COLORS.pending;
+                ctx.beginPath();
+                ctx.arc(cx, dotY, dotRadius, 0, Math.PI * 2);
+                ctx.fillStyle = fillColor;
+                ctx.fill();
+
+                // Active marker gets a subtle glow ring
+                if (marker.status === "active") {
+                    ctx.beginPath();
+                    ctx.arc(cx, dotY, dotRadius + 3, 0, Math.PI * 2);
+                    ctx.strokeStyle = fillColor;
+                    ctx.globalAlpha = 0.35;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    ctx.globalAlpha = 1.0;
+                }
+            });
+            ctx.restore();
         }
     }
 
@@ -799,6 +858,21 @@ export function renderTimeline(container, options = {}) {
         },
         forceRelayout() {
             resize();
-        }
+        },
+
+        // --- Quiz overlay API ---
+        highlightBeatRange(startBeat, endBeat, color) {
+            quizHighlightRange = { startBeat, endBeat, color: color || "#22d3ee" };
+            draw();
+        },
+        setQuizMarkers(markers) {
+            quizMarkers = markers;   // array of { beat, status }
+            draw();
+        },
+        clearQuizOverlays() {
+            quizHighlightRange = null;
+            quizMarkers = null;
+            draw();
+        },
     };
 }
