@@ -103,16 +103,22 @@ function activeSectionKeyAtBeat(keys, beat, fallbackKey = currentKey) {
   return { tonic, scale: chosen.scale || fallbackKey?.scale || "major" };
 }
 
+let lastSyncedKeyString = null;
+
 function syncDisplayedKeyAtBeat(beat) {
   const activeKey = activeSectionKeyAtBeat(currentSectionKeys, beat, currentKey);
   if (!activeKey) return currentKey;
   noteIndicator.setKey(activeKey);
   chordRing.setKey(activeKey);
   
-  if (typeof chordRing.setKeyFilter === "function") {
-    const keyLabel = `${activeKey.tonic} ${activeKey.scale.charAt(0).toUpperCase() + activeKey.scale.slice(1)}`;
-    chordRing.setKeyFilter(keyLabel);
+  const activeKeyStr = `${activeKey.tonic}-${activeKey.scale}`;
+  if (lastSyncedKeyString !== null && lastSyncedKeyString !== activeKeyStr) {
+    if (typeof chordRing.setKeyFilter === "function") {
+      const keyLabel = `${activeKey.tonic} ${activeKey.scale.charAt(0).toUpperCase() + activeKey.scale.slice(1)}`;
+      chordRing.setKeyFilter(keyLabel);
+    }
   }
+  lastSyncedKeyString = activeKeyStr;
   
   return activeKey;
 }
@@ -604,6 +610,14 @@ async function loadSection(songIndex, sectionIndex) {
     // Ensure transport remains stopped (song should be paused until play is pressed)
     engine.scheduleMelody(melodyEvents);
     engine.scheduleChords(chordEvents);
+    
+    // Initialize lastSyncedKeyString to the section's base key so we don't immediately trigger a dropdown change on play
+    if (currentSectionKeys && currentSectionKeys.length > 0) {
+       const fk = currentSectionKeys[0] || { tonic: "C", scale: "major" };
+       lastSyncedKeyString = `${fk.tonic}-${fk.scale}`;
+    } else {
+       lastSyncedKeyString = "C-major";
+    }
 
     controls.setSections(song.sections);
     const sectionSelect = document.getElementById("section-select");

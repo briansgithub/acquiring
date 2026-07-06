@@ -416,6 +416,7 @@ export function renderChordRing(container, options = {}) {
 
   // External Data
   let currentKey = { tonic: "C", scale: "major" };
+  let baseSectionKey = { tonic: "C", scale: "major" };
   let currentRawChords = []; // Store raw chords to build accurate symbol maps across multiple keys
   updateKeyDisplay(options.key ?? null);
   let useRomanNumerals = options.labelMode !== false; // Default to true (roman numerals)
@@ -528,11 +529,12 @@ export function renderChordRing(container, options = {}) {
     return activeChordSymbol !== null && entry.symbol === activeChordSymbol;
   }
 
-  function resolvePlacementDegreeFromNote(noteName, key) {
+  function resolvePlacementDegreeFromNote(noteName, key, exactOnly = false) {
     if (!noteName || !key) return null;
     for (let degree = 1; degree <= 7; degree++) {
       if (getNoteLabel(degree, key) === noteName) return degree;
     }
+    if (exactOnly) return null;
     const noteLetter = String(noteName)[0]?.toUpperCase();
     if (!noteLetter) return null;
     for (let degree = 1; degree <= 7; degree++) {
@@ -1517,11 +1519,11 @@ export function renderChordRing(container, options = {}) {
       currentRawChords.forEach(c => {
         if (c.isRest) return;
         const colorDegree = Number(c.root);
-        const sym = getChordSymbol(c, colorKey);
+        const sym = getChordSymbol(c, baseSectionKey);
         
         if (!symbolToRoot.has(sym)) symbolToRoot.set(sym, colorDegree);
         if (!symbolToBorrowed.has(sym)) symbolToBorrowed.set(sym, c.borrowed);
-        if (!symbolToLetter.has(sym)) symbolToLetter.set(sym, getChordLetterName(c, colorKey));
+        if (!symbolToLetter.has(sym)) symbolToLetter.set(sym, getChordLetterName(c, baseSectionKey));
       });
     }
 
@@ -1593,11 +1595,17 @@ export function renderChordRing(container, options = {}) {
                 }
                 partSpan.textContent = part;
               } else {
-                const root = symbolToRoot.get(part);
-                if (root) {
+                const baseRoot = symbolToRoot.get(part);
+                if (baseRoot) {
                   const borrowed = symbolToBorrowed.get(part);
-                  const partColorObj = getColor(root, colorKey.scale, borrowed);
-                  partColor = partColorObj?.hexColor || partColorObj;
+                  const noteName = getNoteLabel(baseRoot, baseSectionKey);
+                  const exactOnly = selectedKeyFilter === "__all__";
+                  const activeDegree = resolvePlacementDegreeFromNote(noteName, colorKey, exactOnly);
+                  
+                  if (activeDegree) {
+                    const partColorObj = getColor(activeDegree, colorKey.scale, borrowed);
+                    partColor = partColorObj?.hexColor || partColorObj;
+                  }
                 }
                 partSpan.innerHTML = useRomanNumerals
                   ? romanNumeralToHtml(stripBorrowedTags(part))
@@ -1628,17 +1636,26 @@ export function renderChordRing(container, options = {}) {
                 toColor = tc?.hexColor || tc;
               }
             } else {
-              const fromRoot = symbolToRoot.get(fromStr);
-              const toRoot = symbolToRoot.get(toStr);
-              if (fromRoot) {
+              const exactOnly = selectedKeyFilter === "__all__";
+              const fromBaseRoot = symbolToRoot.get(fromStr);
+              if (fromBaseRoot) {
                 const borrowed = symbolToBorrowed.get(fromStr);
-                const fc = getColor(fromRoot, colorKey.scale, borrowed);
-                fromColor = fc?.hexColor || fc;
+                const noteName = getNoteLabel(fromBaseRoot, baseSectionKey);
+                const activeDegree = resolvePlacementDegreeFromNote(noteName, colorKey, exactOnly);
+                if (activeDegree) {
+                  const partColorObj = getColor(activeDegree, colorKey.scale, borrowed);
+                  fromColor = partColorObj?.hexColor || partColorObj;
+                }
               }
-              if (toRoot) {
+              const toBaseRoot = symbolToRoot.get(toStr);
+              if (toBaseRoot) {
                 const borrowed = symbolToBorrowed.get(toStr);
-                const tc = getColor(toRoot, colorKey.scale, borrowed);
-                toColor = tc?.hexColor || tc;
+                const noteName = getNoteLabel(toBaseRoot, baseSectionKey);
+                const activeDegree = resolvePlacementDegreeFromNote(noteName, colorKey, exactOnly);
+                if (activeDegree) {
+                  const partColorObj = getColor(activeDegree, colorKey.scale, borrowed);
+                  toColor = partColorObj?.hexColor || partColorObj;
+                }
               }
             }
             const fromDisplay = showRootOnlyView
@@ -1781,6 +1798,7 @@ export function renderChordRing(container, options = {}) {
       currentRawChords = chords || [];
       if (key) {
         currentKey = key;
+        baseSectionKey = key;
         updateKeyDisplay(key);
       }
       currentGroupedChords = {};
