@@ -346,20 +346,7 @@ export function getBoomwhackerColor(root, scaleType, borrowedScale = null) {
   const relMajOffset = RELATIVE_MAJOR_OFFSETS[scaleType] || 0;
   const distance = (targetInterval - relMajOffset + 12) % 12;
 
-  const isDiatonicDistance = [0, 2, 4, 5, 7, 9, 11].includes(distance);
-
-  if (isDiatonicDistance) {
-    return BOOMWHACKER_12[distance];
-  } else {
-    const prev = (distance - 1 + 12) % 12;
-    const next = (distance + 1) % 12;
-    return {
-      isPattern: true,
-      color1: BOOMWHACKER_12[prev],
-      color2: BOOMWHACKER_12[next],
-      hexColor: BOOMWHACKER_12[distance]
-    };
-  }
+  return BOOMWHACKER_12[distance];
 }
 
 export function createStripedPattern(ctx, color1, color2, hexColor) {
@@ -386,6 +373,9 @@ export function createStripedPattern(ctx, color1, color2, hexColor) {
   pctx.fill();
   
   const pattern = ctx.createPattern(patternCanvas, 'repeat');
+  if (!pattern) {
+    return hexColor || color1 || color2 || '#ffffff';
+  }
   pattern.isPattern = true;
   pattern.hexColor = hexColor || color1;
   return pattern;

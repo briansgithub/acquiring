@@ -180,9 +180,7 @@ const server = http.createServer((req, res) => {
   if (reqUrl.pathname === "/api/shutdown" && req.method === "POST") {
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ ok: true }));
-    setTimeout(() => {
-      server.close(() => process.exit(0));
-    }, 50);
+    scheduleShutdown("api");
     return;
   }
   if (reqUrl.pathname === "/api/songs") return handleApiSongs(res);
@@ -213,7 +211,26 @@ const server = http.createServer((req, res) => {
   serveStatic(staticPath, res);
 });
 
+let shuttingDown = false;
+
+function scheduleShutdown(reason = "signal") {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  console.log(`Shutting down (${reason})...`);
+  setTimeout(() => {
+    if (typeof server.closeAllConnections === "function") {
+      server.closeAllConnections();
+    }
+    server.close(() => process.exit(0));
+    setTimeout(() => process.exit(0), 2500).unref();
+  }, 50).unref();
+}
+
+process.on("SIGINT", () => scheduleShutdown("SIGINT"));
+process.on("SIGTERM", () => scheduleShutdown("SIGTERM"));
+
 server.listen(PORT, () => {
   console.log(`Player server running at http://localhost:${PORT}`);
+  console.log(`PID ${process.pid}`);
 });
 

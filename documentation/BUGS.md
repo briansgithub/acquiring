@@ -230,3 +230,55 @@ Result:
 - `web-player/components/chordRing.js`
 - `_Research_testing/gustySecondaryDominantRingClosedLoopTest.mjs`
 - `_Research_testing/gustySecondaryDominantRingClosedLoopTable.md`
+
+---
+
+## BUG-005: Playback wiped mid-song when library fetch completed (false "crash" / key-change suspicion)
+
+| Field | Detail |
+|-------|--------|
+| **Date reported** | 2026-07-05 |
+| **Date resolved** | 2026-07-05 |
+| **Severity** | High — loaded song disappears during playback; play fails with "No song loaded" |
+| **Affected area** | `web-player/player.js` (`init()`, `resetIdleState()`) |
+| **Repro** | Hard refresh. Immediately load a section (e.g. Weird Al — Everything You Know Is Wrong, Instrumental). Start playback before `"Loaded library N songs"` appears (~20s with ~34k cache entries). Playback stops / UI clears when that log line finally prints. Often misread as a key-signature change bug (Instrumental modulates at beats 33, 65, 73, 81). |
+| **Status** | **Resolved** |
+
+### Symptom
+
+Section loads and plays, then after several measures the song vanishes, timeline/ring clear, and play warns `No song loaded`. Console order (oldest first): `Section loaded successfully` → playback → `Loaded library 34097 songs`. Double `Section loaded` lines are normal when switching sections after initial load.
+
+Boomwhacker color scheme was initially suspected; simulation showed valid colors for all chords in the Instrumental section. Key changes during playback only trigger `chordRing.setKey()` when the key signature actually changes.
+
+### Root cause
+
+Race between async `init()` and user actions:
+
+1. Page load starts `fetch("/api/songs")` (full cache scan — **~20s** measured for 34,097 songs).
+2. User loads and plays a section while fetch is still in flight.
+3. When fetch completes, `init()` unconditionally called `resetIdleState()` → `clearPlayerState()`, nulling `currentSong` and stopping transport UI.
+
+The `"Loaded library"` log is **not** a page reload; it is the delayed completion of the initial library fetch.
+
+### Final solution
+
+**Files changed:** `web-player/player.js`, `web-player/components/chordRing.js`, `web-player/lib/scales.js`, `web-player/server.js`, `_Debug_testing/playerServerCtl.mjs`
+
+1. **`init()` guard** — call `resetIdleState()` only when `!currentSong` at fetch completion.
+2. **`chordRing.setKey()`** — early return when key signature unchanged (avoids full ring redraw every transport tick).
+3. **Color / pattern hardening** — optional chaining on canvas color access; `createStripedPattern` fallback if `createPattern` returns null.
+4. **Server lifecycle** — `playerServerCtl.mjs` for start/stop/status; server handles SIGTERM and `closeAllConnections()` for clean shutdown with an active browser tab.
+
+### Lessons / guardrails
+
+- Never call state-wiping idle reset from async startup paths without checking whether the user already started a session.
+- `"Loaded library N songs"` appearing **after** section load is expected with a large cache; it does not imply reload.
+- Key-signature changes during playback are handled by `syncDisplayedKeyAtBeat()` and are unrelated to library init.
+- Use `npm run player:start` / `player:stop` for automation instead of blocking shell on `node server.js`.
+
+### References
+
+- `web-player/player.js` — `init()`, `resetIdleState()`, `clearPlayerState()`
+- `HANDOFF.md` — server start options and race description
+- `_Debug_testing/playerServerCtl.mjs` — detached server control
+- `_Debug_testing/boomwhackerInstrumentalSim.mjs` — color-scheme simulation for Instrumental section

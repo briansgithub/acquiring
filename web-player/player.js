@@ -482,7 +482,12 @@ async function init() {
     console.warn("Playback library not ready:", err.message);
     library = [];
   }
-  resetIdleState();
+  // Library fetch can take 15–20s with a large cache. Do not wipe an in-progress
+  // session if the user already loaded a section while we were waiting.
+  const hadSong = !!currentSong;
+  if (!hadSong) {
+    resetIdleState();
+  }
 }
 
 init();

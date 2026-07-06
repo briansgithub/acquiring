@@ -26,7 +26,23 @@ If you are picking up a new task unrelated to data layout, read [Documentation/I
 | 4 | Chord ring | `1fr` |
 | Top row | Timeline | full width |
 
-Start player: `python launch_player.py` or `node web-player/server.js` (port 3000).
+Start player:
+
+| Method | Use |
+|--------|-----|
+| `python launch_player.py` | Interactive — opens browser, Ctrl+C or Quit stops |
+| `npm run player:start` | Detached server for dev/automation (`player:stop`, `player:status`, `player:restart`) |
+| `node web-player/server.js` | Direct start (port 3000) |
+
+Server control script: `_Debug_testing/playerServerCtl.mjs` — graceful shutdown via `POST /api/shutdown`, force-kill fallback. State in `_Debug_testing/.player-server.json`, logs in `_Debug_testing/player-server.log`.
+
+### Player startup / library race (2026-07)
+
+`GET /api/songs` can take **15–20s** with a large cache (~34k entries). On page load, `init()` fetches the full library asynchronously. If the user loads a section **before** that fetch completes, the old code always called `resetIdleState()` when the fetch finished — wiping the active session mid-playback. Console looked like a reload (`Loaded library N songs` after `Section loaded successfully`) but was just the slow fetch completing.
+
+**Fix:** `init()` only calls `resetIdleState()` when no song is loaded (`!currentSong`). Key-signature changes during playback were a red herring; they only redraw the chord ring when the key sig actually changes.
+
+**Related hardening:** `chordRing.setKey()` skips redraw when key unchanged (matches `noteIndicator.setKey`); server shutdown uses `closeAllConnections()` + SIGTERM handler so stop works with an active browser tab.
 
 ### Song Selector behavior (recent session)
 

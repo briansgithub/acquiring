@@ -696,7 +696,7 @@ export function renderChordRing(container, options = {}) {
     ctx.globalAlpha = opacity;
     ctx.fillStyle = color;
 
-    const hexColor = color.hexColor || color;
+    const hexColor = color?.hexColor || color || '#ffffff';
 
     if (isActive) {
       ctx.shadowBlur = 30 * zoom;
@@ -1501,14 +1501,14 @@ export function renderChordRing(container, options = {}) {
                 const root = parseInt(part, 10);
                 if (root >= 1 && root <= 7) {
                   const partColorObj = getColor(root, currentKey.scale);
-                  partColor = partColorObj.hexColor || partColorObj;
+                  partColor = partColorObj?.hexColor || partColorObj;
                 }
                 partSpan.textContent = part;
               } else {
                 const root = symbolToRoot.get(part);
                 if (root) {
                   const partColorObj = getColor(root, currentKey.scale);
-                  partColor = partColorObj.hexColor || partColorObj;
+                  partColor = partColorObj?.hexColor || partColorObj;
                 }
                 partSpan.innerHTML = useRomanNumerals
                   ? romanNumeralToHtml(stripBorrowedTags(part))
@@ -1532,22 +1532,22 @@ export function renderChordRing(container, options = {}) {
               const toRoot = parseInt(toStr, 10);
               if (fromRoot >= 1 && fromRoot <= 7) {
                 const fc = getColor(fromRoot, currentKey.scale);
-                fromColor = fc.hexColor || fc;
+                fromColor = fc?.hexColor || fc;
               }
               if (toRoot >= 1 && toRoot <= 7) {
                 const tc = getColor(toRoot, currentKey.scale);
-                toColor = tc.hexColor || tc;
+                toColor = tc?.hexColor || tc;
               }
             } else {
               const fromRoot = symbolToRoot.get(fromStr);
               const toRoot = symbolToRoot.get(toStr);
               if (fromRoot) {
                 const fc = getColor(fromRoot, currentKey.scale);
-                fromColor = fc.hexColor || fc;
+                fromColor = fc?.hexColor || fc;
               }
               if (toRoot) {
                 const tc = getColor(toRoot, currentKey.scale);
-                toColor = tc.hexColor || tc;
+                toColor = tc?.hexColor || tc;
               }
             }
             const fromDisplay = showRootOnlyView
@@ -1689,6 +1689,12 @@ export function renderChordRing(container, options = {}) {
 
     setKey(key) {
       const prevKeySig = currentKey ? `${currentKey.tonic || "?"}-${currentKey.scale || "?"}` : "none";
+      const nextSig = key
+        ? `${key.tonic || "?"}-${key.scale || "?"}`
+        : prevKeySig;
+      if (key && nextSig === prevKeySig) {
+        return;
+      }
       if (key) {
         currentKey = key;
       }

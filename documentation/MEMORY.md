@@ -15,6 +15,7 @@ A **`_Research_testing/hooktheory_catalog`** module indexes TheoryTab songs in S
 ## Key conventions
 
 - Song/section JSON lives in `.hooktheory_cache/`; the web player loads it via `web-player/server.js` (`GET /api/song`).
+- **`GET /api/songs`** builds the full playable index from cache folders; with a large library this can take **15–20 seconds**. `player.js` `init()` must not reset player state when that fetch completes if the user already loaded a section (see `documentation/BUGS.md` BUG-005).
 - Timing uses **192 ticks per beat** (Tone.js transport ticks). Events are scheduled as `"<tick>i"` strings.
 - Chord voicing and scale logic live in `web-player/lib/` (`music.js`, `chordVoicing.js`, etc.).
 - Debug/research scripts go in `_Debug_testing` and `_Research_testing` respectively (per project rules).
