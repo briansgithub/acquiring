@@ -47,7 +47,28 @@ function autoCorrelate(buffer, sampleRate) {
   return sampleRate / period;
 }
 
-export async function capturePitchFrames(durationMs = 2200) {
+export function signedOctaveCents(observedHz, targetHz) {
+  if (!observedHz || !targetHz) return Number.NaN;
+  let bestSigned = 0;
+  let bestAbs = Number.POSITIVE_INFINITY;
+  for (let shift = -2; shift <= 2; shift++) {
+    const shifted = targetHz * 2 ** shift;
+    const signed = centsError(observedHz, shifted);
+    const abs = Math.abs(signed);
+    if (abs < bestAbs) {
+      bestAbs = abs;
+      bestSigned = signed;
+    }
+  }
+  return bestSigned;
+}
+
+export function bestOctaveError(observedHz, targetHz) {
+  const signed = signedOctaveCents(observedHz, targetHz);
+  return Number.isFinite(signed) ? Math.abs(signed) : Number.NaN;
+}
+
+export async function capturePitchFrames(durationMs = 2200, onFrame = null) {
   const stream = await navigator.mediaDevices.getUserMedia({
     audio: {
       echoCancellation: false,
@@ -68,7 +89,10 @@ export async function capturePitchFrames(durationMs = 2200) {
   while (performance.now() - start < durationMs) {
     analyser.getFloatTimeDomainData(data);
     const hz = autoCorrelate(data, sampleRate);
-    if (hz && hz > 50 && hz < 1300) frames.push(hz);
+    if (hz && hz > 50 && hz < 1300) {
+      frames.push(hz);
+      onFrame?.(hz);
+    }
     await new Promise((resolve) => setTimeout(resolve, 40));
   }
 

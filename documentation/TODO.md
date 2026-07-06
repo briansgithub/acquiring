@@ -34,3 +34,18 @@
 
 - [ ] **Modularize data from code** — portable `SACRED_RING_DATA` root; gitignore cache + harvest blobs; see [HANDOFF.md](../HANDOFF.md)
 - [ ] Keep `engine.js` and `player.js` under 400-line limit — split if they grow further
+
+## Quiz mode — deferred
+
+- [ ] **Whole-song frequency aggregation (phase 2)** — aggregate chord/transition histogram across all sections of `loadedCacheKey`; freq panel toggle **This section** | **Whole song**
+- [ ] Optional catalog build: per-song symbol histogram in SQLite for offline/fast load
+- [ ] Confusability multiple-choice (distractors = top transition candidates from corpus)
+- [ ] Markov predict-the-next-chord (sing prediction then reveal)
+- [ ] "Which is more common" 2AFC
+- [ ] Anomaly detection (swap one chord for a rare one, ask if it belongs)
+- [ ] Cadence decks (V→I / IV→I / V→vi drills from real transitions)
+- [ ] Roots-in-rhythm singing
+- [ ] Retrograde singing
+- [ ] Gamification (frequency-rank tiers, progression bingo, name-that-song bonus, accuracy history charts)
+- [ ] Rarity-weighted resurfacing beyond SM-2
+- [ ] Corpus-wide progression sampling (quiz on songs not loaded, chords from `corpus_stats`)

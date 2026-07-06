@@ -6,7 +6,11 @@ import { renderChordRing } from "./components/chordRing.js";
 import { renderNoteIndicator } from "./components/noteIndicator.js";
 import { renderTimeline } from "./components/timeline.js";
 import { renderSongSelector } from "./components/songSelector.js";
-import { renderQuizPanel } from "./components/quizPanel.js";
+import { renderQuizMode } from "./components/quiz/quizMode.js";
+import { createQuizAudio } from "./components/quiz/quizAudio.js";
+import { fetchCorpusStats, buildSongEntries, poolStats } from "./components/quiz/quizPool.js";
+import { QuizSession } from "./lib/quizSession.js";
+import { romanNumeralToHtml } from "./lib/romanNumeralCanvas.js";
 import { chordInterpreter, getSongLength, parseKey, sdToToneJSNoteName } from "./lib/music.js";
 import { normalizeToneNotes } from "./lib/chordVoicing.js";
 import { getChordSymbol } from "./lib/jsonToSymbol.js";
@@ -371,7 +375,12 @@ const songSelector = renderSongSelector(selectorPane, {
   },
 });
 
-makeCollapsible(selectorPane, { collapseClass: "selector", label: "Songs", expandedWidth: 310 });
+const selectorCollapsible = makeCollapsible(selectorPane, {
+  collapseClass: "selector",
+  label: "Songs",
+  expandedWidth: 310,
+});
+let selectorExpandedBeforeQuiz = true;
 
 // Add keyboard support for spacebar to toggle play/pause
 document.addEventListener("keydown", (event) => {
@@ -404,45 +413,25 @@ let isManualChordPreview = false; // Track when chord is manually clicked
 let sectionLoopInProgress = false;
 
 let loadedCacheKey = null;
-let quizPanel = null;
+let quizMode = null;
 
-function buildQuizContext() {
-  if (!currentRawChords?.length || !currentKey) {
-    return { pool: [], stats: { counts: new Map(), transitions: new Map(), total: 1 } };
-  }
+function buildQuizSongContext() {
+  if (!currentRawChords?.length || !currentKey) return null;
+  const entries = buildSongEntries(currentRawChords, currentSectionKeys, currentKey, interpretChord);
+  return {
+    key: currentKey,
+    scale: currentKey.scale,
+    entries,
+    interpret: interpretChord,
+  };
+}
 
-  const valid = currentRawChords.filter((chord) => !chord.isRest);
-  const pool = valid
-    .map((chord) => {
-      const beat = chord.beat === 0 ? 1 : chord.beat;
-      const activeKey = activeSectionKeyAtBeat(currentSectionKeys, beat, currentKey);
-      const data = interpretChord(chord, activeKey);
-      const symbol = getChordSymbol(chord, activeKey);
-      const notes = normalizeToneNotes(data.notes || []);
-      const chordDegrees = data.chordDegrees || [];
-      const degreeIdx = chordDegrees.findIndex((d) => /^(b|#)?3$/.test(String(d)));
-      const targetIndex = degreeIdx >= 0 ? degreeIdx : 0;
-      return {
-        chord,
-        symbol,
-        notes,
-        chordDegrees,
-        targetNote: notes[targetIndex],
-        targetDegree: chordDegrees[targetIndex] || "1",
-      };
-    })
-    .filter((entry) => entry.notes?.length);
-
-  const counts = new Map();
-  const transitions = new Map();
-  for (let i = 0; i < pool.length; i++) {
-    counts.set(pool[i].symbol, (counts.get(pool[i].symbol) || 0) + 1);
-    if (i > 0) {
-      const key = `${pool[i - 1].symbol}=>${pool[i].symbol}`;
-      transitions.set(key, (transitions.get(key) || 0) + 1);
-    }
-  }
-  return { pool, stats: { counts, transitions, total: pool.length || 1 } };
+function getLoadedSongLabel() {
+  const song = library[resolveSongIndex(currentSongIdx)];
+  if (!song || !currentRawChords?.length) return null;
+  const section = song.sections?.[currentSectionIdx];
+  const title = song.title || song.artist || "Unknown";
+  return section?.name ? `${title} — ${section.name}` : title;
 }
 
 function clearPlayerState() {
@@ -470,7 +459,7 @@ function clearPlayerState() {
   timeline.setSongData([], null, 0);
   timeline.setSongInfo(null, null);
   timeline.updateProgress(0);
-  quizPanel?.refresh();
+  quizMode?.refresh();
 }
 
 function resetIdleState() {
@@ -499,17 +488,61 @@ function init() {
 }
 
 init();
-const quizMount = document.createElement("div");
-quizMount.id = "quiz-panel-mount";
-indicatorPane.querySelector(".indicator-stack")?.appendChild(quizMount);
-quizPanel = renderQuizPanel(quizMount, {
-  getQuizContext: buildQuizContext,
-  playQuizTarget: (notes) => previewChordWithSettings(notes, false),
-  playQuizReference: (tonicNote, targetNote) => {
-    engine.previewNote(tonicNote, "8n");
-    setTimeout(() => engine.previewNote(targetNote, "8n"), 420);
-  },
-});
+
+const quizPane = document.getElementById("quiz-pane");
+const quizAudio = createQuizAudio();
+const quizSession = new QuizSession();
+let corpusStats = null;
+
+function getSectionStats() {
+  const songCtx = buildQuizSongContext();
+  if (!songCtx?.entries?.length) return null;
+  return poolStats(songCtx.entries);
+}
+
+if (quizPane) {
+  quizMode = renderQuizMode(quizPane, {
+    getSongContext: buildQuizSongContext,
+    getSongLabel: getLoadedSongLabel,
+    getSongKey: () => loadedCacheKey,
+    getSectionStats,
+    getCorpus: async () => {
+      if (!corpusStats) corpusStats = await fetchCorpusStats();
+      return corpusStats;
+    },
+    audio: quizAudio,
+    session: quizSession,
+    romanHtml: romanNumeralToHtml,
+  });
+}
+
+const appEl = document.getElementById("app");
+const modePlayerBtn = document.getElementById("mode-player");
+const modeQuizBtn = document.getElementById("mode-quiz");
+
+function setAppMode(mode) {
+  const quiz = mode === "quiz";
+  if (quiz) {
+    selectorExpandedBeforeQuiz = !selectorCollapsible.isCollapsed();
+    selectorCollapsible.setCollapsed(true);
+  } else {
+    selectorCollapsible.setCollapsed(!selectorExpandedBeforeQuiz);
+  }
+  appEl?.classList.toggle("quiz-mode", quiz);
+  modePlayerBtn?.classList.toggle("active", !quiz);
+  modeQuizBtn?.classList.toggle("active", quiz);
+  if (quiz) {
+    if (!corpusStats) {
+      fetchCorpusStats().then((stats) => {
+        corpusStats = stats;
+      });
+    }
+    quizMode?.refresh();
+  }
+}
+
+modePlayerBtn?.addEventListener("click", () => setAppMode("player"));
+modeQuizBtn?.addEventListener("click", () => setAppMode("quiz"));
 
 async function loadSection(songIndex, sectionIndex) {
   if (isLoading) return;
@@ -681,7 +714,7 @@ async function loadSection(songIndex, sectionIndex) {
 
     setupProgressTracking();
     controls.setPlaybackVisible(true);
-    quizPanel?.refresh();
+    quizMode?.refresh();
     console.log("Section loaded successfully.");
   } catch (err) {
     console.error("Error during playback setup in loadSection:", err);
