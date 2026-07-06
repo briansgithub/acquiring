@@ -272,7 +272,52 @@ export const SCALE_INTERVALS = {
   "aeolian": [0, 2, 3, 5, 7, 8, 10]
 };
 
-export function getHooktheoryColor(root, scaleType, borrowedScale = null) {
+export function getHooktheoryColor(rootDegree, scaleType) {
+  let shift = 0;
+  if (scaleType === 'minor') shift = 5;
+  else if (scaleType === 'dorian') shift = 1;
+  else if (scaleType === 'phrygian') shift = 2;
+  else if (scaleType === 'lydian') shift = 3;
+  else if (scaleType === 'mixolydian') shift = 4;
+  else if (scaleType === 'locrian') shift = 6;
+
+  const rootStr = String(rootDegree);
+  const match = rootStr.match(/^([b#]*)([\d]+)$/);
+  if (!match) return HOOKTHEORY_COLORS[1]; 
+
+  const accidental = match[1];
+  const baseDegree = parseInt(match[2], 10);
+  
+  const majorDegree = ((baseDegree - 1 + shift) % 7) + 1;
+  
+  if (accidental) {
+    let degreeA = baseDegree;
+    let degreeB = baseDegree;
+    
+    if (accidental.includes('b')) {
+      degreeB = baseDegree;
+      degreeA = baseDegree - 1;
+      if (degreeA < 1) degreeA = 7;
+    } else if (accidental.includes('#')) {
+      degreeA = baseDegree;
+      degreeB = baseDegree + 1;
+      if (degreeB > 7) degreeB = 1;
+    }
+    
+    const majorA = ((degreeA - 1 + shift) % 7) + 1;
+    const majorB = ((degreeB - 1 + shift) % 7) + 1;
+    
+    return {
+      isPattern: true,
+      color1: HOOKTHEORY_COLORS[majorA],
+      color2: HOOKTHEORY_COLORS[majorB]
+    };
+  }
+
+  return HOOKTHEORY_COLORS[majorDegree];
+}
+
+export function getBoomwhackerColor(root, scaleType, borrowedScale = null) {
   const baseRoot = parseInt(String(root).replace(/[#b]/g, ''), 10) || 1;
   let accidentalMod = 0;
   

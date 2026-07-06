@@ -1,7 +1,7 @@
 
-import { 
     getScaleDegreeColor,
     getHooktheoryColor,
+    getBoomwhackerColor,
     createStripedPattern
 } from "../lib/scales.js";
 import { getChordSymbol, getChordLetterName, stripBorrowedTags, borrowedAbbrev } from "../lib/jsonToSymbol.js";
@@ -457,7 +457,13 @@ export function renderTimeline(container, options = {}) {
 
     function getColor(root, scaleType, borrowedScale = null) {
         if (currentColorScheme === "hooktheory") {
-            const result = getHooktheoryColor(root, scaleType, borrowedScale);
+            const result = getHooktheoryColor(root, scaleType);
+            if (result && result.isPattern) {
+                return createStripedPattern(ctx, result.color1, result.color2, result.color1);
+            }
+            return result;
+        } else if (currentColorScheme === "boomwhacker") {
+            const result = getBoomwhackerColor(root, scaleType, borrowedScale);
             if (result && result.isPattern) {
                 return createStripedPattern(ctx, result.color1, result.color2, result.hexColor);
             }

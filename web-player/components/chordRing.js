@@ -10,6 +10,7 @@ import {
   ROMAN_NUMERALS_LOCRIAN,
   getScaleDegreeColor,
   getHooktheoryColor,
+  getBoomwhackerColor,
   createStripedPattern
 } from "../lib/scales.js";
 import { getChordSymbol, getChordLetterName, stripBorrowedTags, borrowedAbbrev } from "../lib/jsonToSymbol.js";
@@ -119,7 +120,6 @@ export function renderChordRing(container, options = {}) {
   colorSchemeSelect.style.fontSize = "11px";
   colorSchemeSelect.style.marginBottom = "8px";
   colorSchemeSelect.style.cursor = "pointer";
-  
   const optDiatonic = document.createElement("option");
   optDiatonic.value = "diatonic";
   optDiatonic.textContent = "Diatonic Function";
@@ -129,28 +129,38 @@ export function renderChordRing(container, options = {}) {
   optHooktheory.value = "hooktheory";
   optHooktheory.textContent = "Hooktheory Relative Major";
   colorSchemeSelect.appendChild(optHooktheory);
+
+  const optBoomwhacker = document.createElement("option");
+  optBoomwhacker.value = "boomwhacker";
+  optBoomwhacker.textContent = "Boomwhacker 12-Tone";
+  colorSchemeSelect.appendChild(optBoomwhacker);
   
   colorSchemeSelect.value = currentColorScheme;
   
   colorSchemeOverlay.appendChild(colorSchemeSelect);
+ 
+  const getDescription = (scheme) => {
+    if (scheme === "diatonic") {
+      return "Colors chords based on their diatonic scale degree relative to the current key.";
+    } else if (scheme === "hooktheory") {
+      return "Colors chords dynamically based on their interval relative to the Relative Major Scale (Ionian Mode).";
+    } else if (scheme === "boomwhacker") {
+      return "Colors chords using a 12-tone array based on their half-step distance from the Relative Major root.";
+    }
+    return "";
+  };
 
   const colorSchemeDesc = document.createElement("div");
   colorSchemeDesc.style.fontSize = "11px";
   colorSchemeDesc.style.color = "#94a3b8";
   colorSchemeDesc.style.lineHeight = "1.3";
-  colorSchemeDesc.textContent = currentColorScheme === "diatonic" 
-    ? "Colors chords based on their diatonic scale degree relative to the current key."
-    : "Colors chords dynamically based on their interval relative to the Relative Major Scale (Ionian Mode).";
+  colorSchemeDesc.textContent = getDescription(currentColorScheme);
   colorSchemeOverlay.appendChild(colorSchemeDesc);
   
   colorSchemeSelect.addEventListener("change", (e) => {
     const val = e.target.value;
     currentColorScheme = val;
-    if (val === "diatonic") {
-      colorSchemeDesc.textContent = "Colors chords based on their diatonic scale degree relative to the current key.";
-    } else {
-      colorSchemeDesc.textContent = "Colors chords dynamically based on their interval relative to the Relative Major Scale (Ionian Mode).";
-    }
+    colorSchemeDesc.textContent = getDescription(val);
     if (options.onColorSchemeChange) {
       options.onColorSchemeChange(val);
     }
@@ -632,7 +642,13 @@ export function renderChordRing(container, options = {}) {
 
   function getColor(root, scaleType, borrowedScale = null) {
     if (currentColorScheme === "hooktheory") {
-      const result = getHooktheoryColor(root, scaleType, borrowedScale);
+      const result = getHooktheoryColor(root, scaleType);
+      if (result && result.isPattern) {
+        return createStripedPattern(ctx, result.color1, result.color2, result.color1);
+      }
+      return result;
+    } else if (currentColorScheme === "boomwhacker") {
+      const result = getBoomwhackerColor(root, scaleType, borrowedScale);
       if (result && result.isPattern) {
         return createStripedPattern(ctx, result.color1, result.color2, result.hexColor);
       }
