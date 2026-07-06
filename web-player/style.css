@@ -1301,6 +1301,8 @@ body {
 }
 
 .ring-panel-head {
+  position: relative;
+  z-index: 30;
   flex-direction: column;
   margin-bottom: 8px;
   padding: 0 12px;
