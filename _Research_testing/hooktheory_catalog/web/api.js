@@ -5,6 +5,7 @@
 const path = require('path');
 const { spawn } = require('child_process');
 const fs = require('fs');
+const zlib = require('zlib');
 
 const { ROOT, CLI_DIR, dataPath } = require('../lib/paths');
 const { STATE_FILE } = require('../lib/update');
@@ -191,12 +192,29 @@ function handleCatalogSongDetail(reqUrl, res) {
   }
 }
 
-function handleLibraryList(res) {
+let libraryGzipCache = null;
+
+function handleLibraryList(req, res) {
   try {
     const { openDb } = loadCatalogDb();
-    const { getLibraryCache } = require('../lib/libraryCache');
+    const { getLibraryCache, getCacheFilePath } = require('../lib/libraryCache');
     const db = openDb();
     const jsonString = getLibraryCache(db);
+    const accept = req.headers['accept-encoding'] || '';
+    if (accept.includes('gzip')) {
+      const cacheFile = getCacheFilePath();
+      const mtime = fs.existsSync(cacheFile) ? fs.statSync(cacheFile).mtimeMs : 0;
+      if (!libraryGzipCache || libraryGzipCache.mtime !== mtime) {
+        libraryGzipCache = { mtime, buf: zlib.gzipSync(jsonString) };
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json',
+        'Content-Encoding': 'gzip',
+        'Vary': 'Accept-Encoding',
+      });
+      res.end(libraryGzipCache.buf);
+      return;
+    }
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(jsonString);
   } catch (err) {

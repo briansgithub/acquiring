@@ -192,7 +192,7 @@ const server = http.createServer((req, res) => {
   if (reqUrl.pathname === "/api/song") return handleApiSong(reqUrl, res);
   if (reqUrl.pathname === "/api/catalog/songs") return handleCatalogSongs(res);
   if (reqUrl.pathname === "/api/catalog/song") return handleCatalogSongDetail(reqUrl, res);
-  if (reqUrl.pathname === "/api/library") return handleLibraryList(res);
+  if (reqUrl.pathname === "/api/library") return handleLibraryList(req, res);
   if (reqUrl.pathname === "/api/library/song") return handleLibrarySong(reqUrl, res);
   if (reqUrl.pathname === "/api/library/load" && req.method === "POST") return handleLibraryLoad(reqUrl, res);
   if (reqUrl.pathname === "/api/library/add" && req.method === "POST") return handleAddSong(req, res);

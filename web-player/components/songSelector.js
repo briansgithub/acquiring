@@ -10,7 +10,7 @@ import {
   wirePipelineButtons,
 } from "./songSelectorPipeline.js";
 import {
-  buildPlayableCaches,
+  createLazyPlayableCaches,
   wirePlayablePicker,
 } from "./songSelectorPlayable.js";
 
@@ -151,8 +151,20 @@ export function renderSongSelector(container, options = {}) {
     return navPlayableSort?.value || playableSortMode;
   }
 
-  function rebuildPlayableCaches() {
-    playableCaches = loaded ? buildPlayableCaches(songs) : null;
+  let playableCount = 0;
+
+  function schedulePlayableCachePrewarm() {
+    if (!loaded) {
+      playableCaches = null;
+      return;
+    }
+    playableCaches = createLazyPlayableCaches(songs);
+    const prewarm = () => playableCaches?.prewarmDefault();
+    if (typeof requestIdleCallback === "function") {
+      requestIdleCallback(prewarm, { timeout: 2000 });
+    } else {
+      setTimeout(prewarm, 50);
+    }
   }
 
   const playablePicker = (navPlayableInput && navPlayableDrop)
@@ -182,6 +194,7 @@ export function renderSongSelector(container, options = {}) {
 
   navPlayableSort?.addEventListener("change", () => {
     playableSortMode = navPlayableSort.value;
+    playableCaches?.ensure(playableSortMode);
     if (document.activeElement === navPlayableInput) {
       playablePicker?.refresh();
     }
@@ -204,11 +217,15 @@ export function renderSongSelector(container, options = {}) {
       }
       const data = await res.json();
       if (data.error) throw new Error(data.error);
-      songs = (data.songs || []).map((s) => ({
-        ...s,
-        _t: (s.title || "").toLowerCase(),
-        _a: (s.artist || "").toLowerCase(),
-      }));
+      playableCount = 0;
+      songs = (data.songs || []).map((s) => {
+        if (s.playable) playableCount++;
+        return {
+          ...s,
+          _t: (s.title || "").toLowerCase(),
+          _a: (s.artist || "").toLowerCase(),
+        };
+      });
       const seen = new Map();
       for (const s of songs) {
         const name = s.artist || "";
@@ -219,7 +236,7 @@ export function renderSongSelector(container, options = {}) {
       artists = [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
       loaded = true;
       loadError = null;
-      rebuildPlayableCaches();
+      schedulePlayableCachePrewarm();
     } catch (err) {
       loadError = err.message;
       loaded = false;
@@ -243,7 +260,7 @@ export function renderSongSelector(container, options = {}) {
       hintEl.textContent = "Loading catalog…";
       return;
     }
-    hintEl.textContent = `${songs.length} songs · ${artists.length} artists · ${songs.filter((s) => s.playable).length} playable`;
+    hintEl.textContent = `${songs.length} songs · ${artists.length} artists · ${playableCount} playable`;
   }
 
   let runAllSearches = () => {};

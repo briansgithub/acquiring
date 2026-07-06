@@ -52,61 +52,106 @@ function sortPlayableList(list, sortBy) {
   });
 }
 
-export function buildPlayableCaches(songs) {
-  const pool = songs.filter((s) => s.playable && s.cacheKey);
-  
-  let longestComplexity = null;
-  let maxCompLen = 0;
-  
-  let longestOther = null;
-  let maxOtherLen = 0;
+/** Build sorted playable lists on demand — avoids ~4s triple-sort on startup. */
+export function createLazyPlayableCaches(songs) {
+  let pool = null;
+  const sorts = {};
+  const longestSizer = { complexity: null, alphabetical: null, artist: null };
 
-  const uniqueArtists = new Map();
-  let longestArtist = null;
-  let maxArtistLen = 0;
-
-  for (const s of pool) {
-    const compLabel = formatSongLabel(s, "complexity");
-    if (compLabel.length > maxCompLen) {
-      maxCompLen = compLabel.length;
-      longestComplexity = s;
-    }
-    
-    const otherLabelLen = (s.title || "").length + (s.artist || "").length;
-    if (otherLabelLen > maxOtherLen) {
-      maxOtherLen = otherLabelLen;
-      longestOther = s;
-    }
-
-    if (s.artist) {
-      if (!uniqueArtists.has(s.artist)) {
-        uniqueArtists.set(s.artist, { isArtist: true, name: s.artist, artist: s.artist, _a: s.artist.toLowerCase() });
+  function getPool() {
+    if (!pool) {
+      pool = [];
+      for (const s of songs) {
+        if (s.playable && s.cacheKey) pool.push(s);
       }
     }
+    return pool;
   }
 
-  const artistList = [...uniqueArtists.values()].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
-  for (const a of artistList) {
-    if (a.name.length > maxArtistLen) {
-      maxArtistLen = a.name.length;
-      longestArtist = a;
+  function computeLongest(items, sortBy) {
+    let longest = null;
+    let maxLen = 0;
+    if (sortBy === "complexity") {
+      for (const s of items) {
+        const label = formatSongLabel(s, "complexity");
+        if (label.length > maxLen) {
+          maxLen = label.length;
+          longest = s;
+        }
+      }
+    } else if (sortBy === "artist") {
+      for (const a of items) {
+        if (a.name.length > maxLen) {
+          maxLen = a.name.length;
+          longest = a;
+        }
+      }
+    } else {
+      for (const s of items) {
+        const len = (s.title || "").length + (s.artist || "").length;
+        if (len > maxLen) {
+          maxLen = len;
+          longest = s;
+        }
+      }
+    }
+    longestSizer[sortBy] = longest;
+  }
+
+  function buildArtistList() {
+    const uniqueArtists = new Map();
+    for (const s of getPool()) {
+      if (!s.artist || uniqueArtists.has(s.artist)) continue;
+      uniqueArtists.set(s.artist, {
+        isArtist: true,
+        name: s.artist,
+        artist: s.artist,
+        _a: s.artist.toLowerCase(),
+      });
+    }
+    sorts.artist = [...uniqueArtists.values()].sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
+    );
+    computeLongest(sorts.artist, "artist");
+  }
+
+  function ensure(sortBy) {
+    if (sortBy === "artist") {
+      if (!sorts.artist) buildArtistList();
+      return;
+    }
+    if (!sorts[sortBy]) {
+      sorts[sortBy] = sortPlayableList(getPool().slice(), sortBy);
+      computeLongest(sorts[sortBy], sortBy);
     }
   }
 
   return {
-    complexity: sortPlayableList([...pool], "complexity"),
-    alphabetical: sortPlayableList([...pool], "alphabetical"),
-    artist: artistList,
-    longestSizer: {
-      complexity: longestComplexity,
-      alphabetical: longestOther,
-      artist: longestOther
-    }
+    ensure,
+    prewarmDefault() {
+      ensure("complexity");
+    },
+    get longestSizer() {
+      return longestSizer;
+    },
+    get complexity() {
+      ensure("complexity");
+      return sorts.complexity;
+    },
+    get alphabetical() {
+      ensure("alphabetical");
+      return sorts.alphabetical;
+    },
+    get artist() {
+      ensure("artist");
+      return sorts.artist;
+    },
   };
 }
 
 export function queryPlayable(caches, { sortBy = "complexity", query = "" } = {}) {
   if (!caches) return [];
+  caches.ensure?.(sortBy);
   const sorted = caches[sortBy] || caches.complexity;
   const q = query.trim().toLowerCase();
   if (!q) return sorted;
