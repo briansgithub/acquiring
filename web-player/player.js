@@ -20,9 +20,6 @@ import {
 } from "./lib/timing.js";
 
 const Tone = window.Tone;
-// #region agent log
-fetch('http://127.0.0.1:7355/ingest/9027d9a5-7140-4ebc-92e0-0d781f81d4e6',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b6e47b'},body:JSON.stringify({sessionId:'b6e47b',hypothesisId:'C',location:'player.js:top',message:'player.js module eval',data:{toneReady:!!window.Tone,domReady:document.readyState},timestamp:Date.now(),runId:'startup'})}).catch(()=>{});
-// #endregion
 
 const ringPane = document.getElementById("ring-pane");
 const indicatorPane = document.getElementById("indicator-pane");
@@ -483,29 +480,8 @@ function resolveSongIndex(preferredIndex = currentSongIdx) {
   return idx >= 0 ? idx : preferredIndex;
 }
 
-async function init() {
-  // #region agent log
-  const _initT0 = performance.now();
-  fetch('http://127.0.0.1:7355/ingest/9027d9a5-7140-4ebc-92e0-0d781f81d4e6',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b6e47b'},body:JSON.stringify({sessionId:'b6e47b',hypothesisId:'A',location:'player.js:init',message:'init start',data:{},timestamp:Date.now(),runId:'startup'})}).catch(()=>{});
-  // #endregion
-  try {
-    library = await fetch("/api/songs").then(async (r) => {
-      if (!r.ok) {
-        const text = await r.text();
-        throw new Error(`HTTP ${r.status} ${text}`);
-      }
-      return r.json();
-    });
-    console.info("Loaded library", library.length, "songs");
-    // #region agent log
-    fetch('http://127.0.0.1:7355/ingest/9027d9a5-7140-4ebc-92e0-0d781f81d4e6',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b6e47b'},body:JSON.stringify({sessionId:'b6e47b',hypothesisId:'A',location:'player.js:init',message:'/api/songs done',data:{ms:Math.round(performance.now()-_initT0),songCount:library.length,jsonBytes:JSON.stringify(library).length},timestamp:Date.now(),runId:'startup'})}).catch(()=>{});
-    // #endregion
-  } catch (err) {
-    console.warn("Playback library not ready:", err.message);
-    library = [];
-  }
-  // Library fetch can take 15–20s with a large cache. Do not wipe an in-progress
-  // session if the user already loaded a section while we were waiting.
+function init() {
+  // Playback library loads on demand via /api/songs/entry when user picks a song.
   const hadSong = !!currentSong;
   if (hadSong && loadedCacheKey) {
     const idx = resolveSongIndex(currentSongIdx);

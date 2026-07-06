@@ -7,6 +7,7 @@ const { handleBatchStatus, handleBatchStart, handleBatchPause, handleBatchResume
 const { handlePipelineRun, handlePipelineClear, handlePipelineJob, matchPipelineRoute } = require("../_Research_testing/hooktheory_catalog/web/pipelineApi");
 const { handleAddSong } = require("../_Research_testing/hooktheory_catalog/web/addSongApi");
 const { getPlaybackCacheDir } = require("../lib/dataRoot");
+const { loadLibrary: loadCachedLibrary } = require("./playbackLibraryCache");
 
 const PORT = process.env.PORT || 3000;
 const CACHE_ROOT = getPlaybackCacheDir();
@@ -85,14 +86,13 @@ async function loadLibraryEntry(artistName) {
   };
 }
 
-async function loadLibrary() {
+async function scanPlaybackLibrary() {
   const artists = await fs.promises.readdir(CACHE_ROOT, { withFileTypes: true });
   const library = [];
   for (const artistEntry of artists) {
     if (!artistEntry.isDirectory()) continue;
     library.push(await loadLibraryEntry(artistEntry.name));
   }
-  // Sort songs alphabetically by title (or artist if title is empty)
   library.sort((a, b) => {
     const aTitle = a.title || a.artist || "";
     const bTitle = b.title || b.artist || "";
@@ -102,6 +102,10 @@ async function loadLibrary() {
     console.warn("No artists found in cache at", CACHE_ROOT);
   }
   return library;
+}
+
+function loadLibrary() {
+  return loadCachedLibrary(scanPlaybackLibrary, CACHE_ROOT);
 }
 
 async function handleApiSongEntry(reqUrl, res) {
@@ -122,13 +126,7 @@ async function handleApiSongEntry(reqUrl, res) {
 
 async function handleApiSongs(res) {
   try {
-    // #region agent log
-    const _t0 = Date.now();
-    // #endregion
     const library = await loadLibrary();
-    // #region agent log
-    try{require('fs').appendFileSync(require('path').join(__dirname,'..','debug-b6e47b.log'),JSON.stringify({sessionId:'b6e47b',hypothesisId:'A',location:'server.js:handleApiSongs',message:'loadLibrary complete',data:{ms:Date.now()-_t0,songCount:library.length},timestamp:Date.now(),runId:'startup'})+'\n');}catch(_){}
-    // #endregion
     sendJson(res, library);
   } catch (err) {
     console.error("Failed to build library", err);
