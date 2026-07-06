@@ -166,8 +166,11 @@ export function renderChordRing(container, options = {}) {
   const keyFilterWrap = document.createElement("div");
   keyFilterWrap.style.marginBottom = "6px";
   keyFilterWrap.style.display = "none";
+  keyFilterWrap.style.alignItems = "center";
+  keyFilterWrap.style.gap = "6px";
+  
   const keyFilterSelect = document.createElement("select");
-  keyFilterSelect.style.width = "100%";
+  keyFilterSelect.style.flex = "1";
   keyFilterSelect.style.background = "rgba(0, 0, 0, 0.5)";
   keyFilterSelect.style.color = "#fff";
   keyFilterSelect.style.border = "1px solid rgba(255, 255, 255, 0.3)";
@@ -175,11 +178,30 @@ export function renderChordRing(container, options = {}) {
   keyFilterSelect.style.padding = "4px";
   keyFilterSelect.style.fontSize = "11px";
   keyFilterSelect.style.cursor = "pointer";
+  
   const allKeysOpt = document.createElement("option");
   allKeysOpt.value = "__all__";
   allKeysOpt.textContent = "All Keys";
   keyFilterSelect.appendChild(allKeysOpt);
+  
+  const autoFilterWrap = document.createElement("label");
+  autoFilterWrap.style.display = "flex";
+  autoFilterWrap.style.alignItems = "center";
+  autoFilterWrap.style.gap = "4px";
+  autoFilterWrap.style.fontSize = "11px";
+  autoFilterWrap.style.color = "#94a3b8";
+  autoFilterWrap.style.cursor = "pointer";
+  autoFilterWrap.title = "Automatically change the selected key filter as the song plays across key boundaries";
+
+  const autoFilterCheckbox = document.createElement("input");
+  autoFilterCheckbox.type = "checkbox";
+  autoFilterCheckbox.checked = true; // Default to auto
+  
+  autoFilterWrap.appendChild(autoFilterCheckbox);
+  autoFilterWrap.appendChild(document.createTextNode("Auto"));
+  
   keyFilterWrap.appendChild(keyFilterSelect);
+  keyFilterWrap.appendChild(autoFilterWrap);
   transitionTableOverlay.appendChild(keyFilterWrap);
 
   const transitionGroupsContainer = document.createElement("div");
@@ -1651,6 +1673,7 @@ export function renderChordRing(container, options = {}) {
 
   return {
     setKeyFilter(label) {
+      if (!autoFilterCheckbox.checked) return;
       if (perKeyLabels && perKeyLabels.includes(label)) {
         if (selectedKeyFilter !== label) {
           selectedKeyFilter = label;
@@ -1714,7 +1737,7 @@ export function renderChordRing(container, options = {}) {
       }
 
       if (perKeyLabels && perKeyLabels.length > 1) {
-        keyFilterWrap.style.display = "block";
+        keyFilterWrap.style.display = "flex";
         perKeyLabels.forEach(label => {
           const opt = document.createElement("option");
           opt.value = label;
