@@ -468,6 +468,12 @@ function resetIdleState() {
   clearPlayerState();
 }
 
+function resolveSongIndex(preferredIndex = currentSongIdx) {
+  if (!loadedCacheKey || !library.length) return preferredIndex;
+  const idx = library.findIndex((s) => s.artist === loadedCacheKey);
+  return idx >= 0 ? idx : preferredIndex;
+}
+
 async function init() {
   try {
     library = await fetch("/api/songs").then(async (r) => {
@@ -485,6 +491,10 @@ async function init() {
   // Library fetch can take 15–20s with a large cache. Do not wipe an in-progress
   // session if the user already loaded a section while we were waiting.
   const hadSong = !!currentSong;
+  if (hadSong && loadedCacheKey) {
+    const idx = resolveSongIndex(currentSongIdx);
+    if (idx !== currentSongIdx) currentSongIdx = idx;
+  }
   if (!hadSong) {
     resetIdleState();
   }
@@ -519,6 +529,7 @@ async function loadSection(songIndex, sectionIndex) {
       engine.releaseAllNotes();
     }, 10);
 
+    songIndex = resolveSongIndex(songIndex);
     const song = library[songIndex];
     if (!song) {
       console.warn("No song at index", songIndex);
@@ -624,7 +635,7 @@ async function loadSection(songIndex, sectionIndex) {
     noteIndicator.reset();
     
     // Compute all chord transitions for the entire section
-    const transitionData = computeChordTransitions(currentRawChords, currentKey);
+    const transitionData = computeChordTransitions(currentRawChords, currentKey, currentSectionKeys, currentKey);
     chordRing.updateTransitions(
       transitionData.full,
       transitionData.rootOnly,
@@ -637,7 +648,9 @@ async function loadSection(songIndex, sectionIndex) {
       transitionData.fullAllSubstringCounts,
       transitionData.rootAllSubstringCounts,
       transitionData.fullAllSubstringFirstBeats,
-      transitionData.rootAllSubstringFirstBeats
+      transitionData.rootAllSubstringFirstBeats,
+      transitionData.perKey,
+      transitionData.keyLabels
     );
 
     // Update indicator immediately with the first chord if it starts at beat 0 or 1
@@ -864,7 +877,9 @@ function handleSongChange(songIdx) {
 }
 
 function handleSectionChange(idx) {
-  loadSection(currentSongIdx, Number(idx)).catch(err => console.error("LoadSection failed inside section change:", err));
+  const sectionIdx = Number(idx);
+  const songIdx = resolveSongIndex(currentSongIdx);
+  loadSection(songIdx, sectionIdx).catch(err => console.error("LoadSection failed inside section change:", err));
 }
 
 function getLastReleaseTick(melodyEvents, chordEvents) {
@@ -1061,7 +1076,7 @@ function findCurrentMelodyAtTick(tickPosition) {
 }
 
 // Compute all chord transitions from the chord array
-function computeChordTransitions(chordsArray, key) {
+function computeChordTransitions(chordsArray, key, sectionKeys = [], fallbackKey = null) {
   const transitions = new Map();
   const rootTransitions = new Map();
   const fullTransitionFirstBeats = new Map();
@@ -1069,23 +1084,27 @@ function computeChordTransitions(chordsArray, key) {
   const fullSequence = [];
   const rootSequence = [];
   
+  const emptyResult = {
+    full: transitions,
+    rootOnly: rootTransitions,
+    fullSequence,
+    rootSequence,
+    fullLongestPhrases: new Map(),
+    rootLongestPhrases: new Map(),
+    fullPhraseFirstBeats: new Map(),
+    rootPhraseFirstBeats: new Map(),
+    fullTransitionFirstBeats,
+    rootTransitionFirstBeats,
+    fullAllSubstringCounts: new Map(),
+    rootAllSubstringCounts: new Map(),
+    fullAllSubstringFirstBeats: new Map(),
+    rootAllSubstringFirstBeats: new Map(),
+    perKey: new Map(),
+    keyLabels: [],
+  };
+
   if (!chordsArray || !Array.isArray(chordsArray) || chordsArray.length === 0) {
-    return {
-      full: transitions,
-      rootOnly: rootTransitions,
-      fullSequence,
-      rootSequence,
-      fullLongestPhrases: new Map(),
-      rootLongestPhrases: new Map(),
-      fullPhraseFirstBeats: new Map(),
-      rootPhraseFirstBeats: new Map(),
-      fullTransitionFirstBeats,
-      rootTransitionFirstBeats,
-      fullAllSubstringCounts: new Map(),
-      rootAllSubstringCounts: new Map(),
-      fullAllSubstringFirstBeats: new Map(),
-      rootAllSubstringFirstBeats: new Map(),
-    };
+    return emptyResult;
   }
   
   // Filter out rests and sort by beat
@@ -1111,6 +1130,8 @@ function computeChordTransitions(chordsArray, key) {
       rootTransitionFirstBeats,
       ...findAllSubstringsWithStarts(fullSequence, validChords, "full"),
       ...findAllSubstringsWithStarts(rootSequence, validChords, "root"),
+      perKey: new Map(),
+      keyLabels: [],
     }; // Need at least 2 chords for a transition
   }
   
@@ -1146,6 +1167,55 @@ function computeChordTransitions(chordsArray, key) {
     lastChordSymbol = currentChordSymbol;
     lastRoot = currentRoot;
   }
+
+  // --- Per-key partitioning ---
+  const perKey = new Map();
+  const keyLabels = [];
+  const fk = fallbackKey || key;
+
+  if (Array.isArray(sectionKeys) && sectionKeys.length > 0) {
+    // Build ordered key regions: [{key, startBeat, endBeat}, ...]
+    const sortedKeys = [...sectionKeys].sort((a, b) => (a?.beat ?? 1) - (b?.beat ?? 1));
+    const regions = [];
+    for (let i = 0; i < sortedKeys.length; i++) {
+      const sk = sortedKeys[i];
+      const tonic = String(sk.tonic || fk.tonic || "C").replace(/♭/g, "b").replace(/♯/g, "#").replace(/♮/g, "");
+      const scale = sk.scale || fk.scale || "major";
+      const startBeat = sk.beat ?? 1;
+      const endBeat = (i + 1 < sortedKeys.length) ? (sortedKeys[i + 1].beat ?? Infinity) : Infinity;
+      const label = `${tonic} ${scale.charAt(0).toUpperCase() + scale.slice(1)}`;
+      regions.push({ key: { tonic, scale }, startBeat, endBeat, label });
+    }
+
+    // Only build per-key data if there are 2+ distinct key labels
+    const uniqueLabels = [...new Set(regions.map(r => r.label))];
+    if (uniqueLabels.length > 1) {
+      for (const region of regions) {
+        const regionChords = validChords.filter(c => {
+          const beat = c.beat === 0 ? 1 : c.beat;
+          return beat >= region.startBeat && beat < region.endBeat;
+        });
+        if (regionChords.length < 2) continue;
+
+        const regionData = computeChordTransitions(regionChords, region.key);
+        // Remove perKey/keyLabels from sub-result to avoid infinite nesting
+        delete regionData.perKey;
+        delete regionData.keyLabels;
+        regionData.regionKey = region.key;
+
+        // If this label already exists (same key in multiple non-contiguous regions),
+        // we'd merge, but for simplicity we append a suffix
+        let label = region.label;
+        if (perKey.has(label)) {
+          let suffix = 2;
+          while (perKey.has(`${label} (${suffix})`)) suffix++;
+          label = `${label} (${suffix})`;
+        }
+        perKey.set(label, regionData);
+        keyLabels.push(label);
+      }
+    }
+  }
   
   return {
     full: transitions,
@@ -1158,6 +1228,8 @@ function computeChordTransitions(chordsArray, key) {
     rootTransitionFirstBeats,
     ...findAllSubstringsWithStarts(fullSequence, validChords, "full"),
     ...findAllSubstringsWithStarts(rootSequence, validChords, "root"),
+    perKey,
+    keyLabels,
   };
 }
 

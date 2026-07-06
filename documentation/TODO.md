@@ -25,6 +25,7 @@
 
 - [x] Initial `documentation/` structure (MEMORY, ARCHITECTURE, BUGS, TODO)
 - [x] BUG-001 log: stuck arpeggio notes (2026-06-29)
+- [x] BUG-006 log: stale `currentSongIdx` wrong-song section switch after library fetch (2026-07-05)
 - [x] Unified library + Song Selector documented in ARCHITECTURE.md and catalog USAGE.md (2026-06-29)
 - [x] PRONUNCIATION.md + ROMAN_NUMERALS.md (2026-07-02)
 - [ ] Add setup/run instructions for web player server and cache layout

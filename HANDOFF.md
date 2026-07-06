@@ -40,7 +40,9 @@ Server control script: `_Debug_testing/playerServerCtl.mjs` — graceful shutdow
 
 `GET /api/songs` can take **15–20s** with a large cache (~34k entries). On page load, `init()` fetches the full library asynchronously. If the user loads a section **before** that fetch completes, the old code always called `resetIdleState()` when the fetch finished — wiping the active session mid-playback. Console looked like a reload (`Loaded library N songs` after `Section loaded successfully`) but was just the slow fetch completing.
 
-**Fix:** `init()` only calls `resetIdleState()` when no song is loaded (`!currentSong`). Key-signature changes during playback were a red herring; they only redraw the chord ring when the key sig actually changes.
+**Fix (BUG-005):** `init()` only calls `resetIdleState()` when no song is loaded (`!currentSong`). Key-signature changes during playback were a red herring; they only redraw the chord ring when the key sig actually changes.
+
+**Fix (BUG-006):** Same race window, different symptom — section switch loaded the wrong song because `init()` replaced the `library` array without re-resolving `currentSongIdx`. A song loaded before fetch completed was pushed at index 0; after fetch, index 0 is alphabetically first (`kendrick-lamar - __I__`). Added `resolveSongIndex()` to look up by stable `loadedCacheKey` in `init()`, `loadSection()`, and `handleSectionChange()`.
 
 **Related hardening:** `chordRing.setKey()` skips redraw when key unchanged (matches `noteIndicator.setKey`); server shutdown uses `closeAllConnections()` + SIGTERM handler so stop works with an active browser tab.
 

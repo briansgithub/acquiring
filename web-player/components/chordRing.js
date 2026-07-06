@@ -162,6 +162,26 @@ export function renderChordRing(container, options = {}) {
   tableTitle.style.borderBottom = "1px solid rgba(255, 255, 255, 0.2)";
   transitionTableOverlay.appendChild(tableTitle);
 
+  // Key filter selector (hidden when only one key)
+  const keyFilterWrap = document.createElement("div");
+  keyFilterWrap.style.marginBottom = "6px";
+  keyFilterWrap.style.display = "none";
+  const keyFilterSelect = document.createElement("select");
+  keyFilterSelect.style.width = "100%";
+  keyFilterSelect.style.background = "rgba(0, 0, 0, 0.5)";
+  keyFilterSelect.style.color = "#fff";
+  keyFilterSelect.style.border = "1px solid rgba(255, 255, 255, 0.3)";
+  keyFilterSelect.style.borderRadius = "4px";
+  keyFilterSelect.style.padding = "4px";
+  keyFilterSelect.style.fontSize = "11px";
+  keyFilterSelect.style.cursor = "pointer";
+  const allKeysOpt = document.createElement("option");
+  allKeysOpt.value = "__all__";
+  allKeysOpt.textContent = "All Keys";
+  keyFilterSelect.appendChild(allKeysOpt);
+  keyFilterWrap.appendChild(keyFilterSelect);
+  transitionTableOverlay.appendChild(keyFilterWrap);
+
   const transitionGroupsContainer = document.createElement("div");
   transitionGroupsContainer.className = "transition-groups";
   transitionTableOverlay.appendChild(transitionGroupsContainer);
@@ -391,8 +411,16 @@ export function renderChordRing(container, options = {}) {
   let showRootOnlyView = false; // Toggle for root-only view
   let showLongestPhraseView = false; // Toggle for phrase-view mode
   let includeRedundantSubstrings = false; // Toggle for all-substrings mode inside longest-phrase view
+  let perKeyData = new Map(); // Per-key transition data
+  let perKeyLabels = []; // Ordered key labels
+  let selectedKeyFilter = "__all__"; // Active key filter
   let currentHoveredNode = null; // Declared here to avoid Temporal Dead Zone errors during initial resize/draw
   let hideTimeout = null;
+
+  keyFilterSelect.addEventListener("change", (e) => {
+    selectedKeyFilter = e.target.value;
+    updateTransitionTable();
+  });
   
   // Set initial checkbox state
   romanNumeralToggle.checked = useRomanNumerals;
@@ -1408,13 +1436,45 @@ export function renderChordRing(container, options = {}) {
   function updateTransitionTable() {
     transitionGroupsContainer.innerHTML = "";
 
+    // Resolve which data set to use based on key filter
+    let activeTransitions = transitionCounts;
+    let activeRootTransitions = rootOnlyTransitionCounts;
+    let activeLongestPhrases = longestPhraseCounts;
+    let activeRootLongestPhrases = rootOnlyLongestPhraseCounts;
+    let activePhraseFirstBeats = phraseFirstBeats;
+    let activeRootPhraseFirstBeats = rootPhraseFirstBeats;
+    let activeTransitionFirstBeats = transitionFirstBeats;
+    let activeRootTransitionFirstBeats = rootTransitionFirstBeats;
+    let activeAllSubstringCounts = allSubstringCounts;
+    let activeRootAllSubstringCounts = rootAllSubstringCounts;
+    let activeAllSubstringFirstBeats = allSubstringFirstBeats;
+    let activeRootAllSubstringFirstBeats = rootAllSubstringFirstBeats;
+    let colorKey = currentKey;
+
+    if (selectedKeyFilter !== "__all__" && perKeyData.has(selectedKeyFilter)) {
+      const kd = perKeyData.get(selectedKeyFilter);
+      activeTransitions = kd.full || new Map();
+      activeRootTransitions = kd.rootOnly || new Map();
+      activeLongestPhrases = kd.fullLongestPhrases || new Map();
+      activeRootLongestPhrases = kd.rootLongestPhrases || new Map();
+      activePhraseFirstBeats = kd.fullPhraseFirstBeats || new Map();
+      activeRootPhraseFirstBeats = kd.rootPhraseFirstBeats || new Map();
+      activeTransitionFirstBeats = kd.fullTransitionFirstBeats || new Map();
+      activeRootTransitionFirstBeats = kd.rootTransitionFirstBeats || new Map();
+      activeAllSubstringCounts = kd.fullAllSubstringCounts || new Map();
+      activeRootAllSubstringCounts = kd.rootAllSubstringCounts || new Map();
+      activeAllSubstringFirstBeats = kd.fullAllSubstringFirstBeats || new Map();
+      activeRootAllSubstringFirstBeats = kd.rootAllSubstringFirstBeats || new Map();
+      if (kd.regionKey) colorKey = kd.regionKey;
+    }
+
     const countsToDisplay = showLongestPhraseView
       ? (includeRedundantSubstrings
-        ? (showRootOnlyView ? rootAllSubstringCounts : allSubstringCounts)
-        : (showRootOnlyView ? rootOnlyLongestPhraseCounts : longestPhraseCounts))
-      : (showRootOnlyView ? rootOnlyTransitionCounts : transitionCounts);
+        ? (showRootOnlyView ? activeRootAllSubstringCounts : activeAllSubstringCounts)
+        : (showRootOnlyView ? activeRootLongestPhrases : activeLongestPhrases))
+      : (showRootOnlyView ? activeRootTransitions : activeTransitions);
 
-    const hasAnyTransitionData = transitionCounts.size > 0 || rootOnlyTransitionCounts.size > 0;
+    const hasAnyTransitionData = activeTransitions.size > 0 || activeRootTransitions.size > 0;
     if (countsToDisplay.size === 0 && !showLongestPhraseView) {
       transitionTableOverlay.style.display = "none";
       return;
@@ -1428,9 +1488,11 @@ export function renderChordRing(container, options = {}) {
 
     const symbolToRoot = new Map();
     const symbolToLetter = new Map();
+    const symbolToBorrowed = new Map();
     for (let placement = 1; placement <= 7; placement++) {
       for (const entry of currentGroupedChords[placement] || []) {
         if (!symbolToRoot.has(entry.symbol)) symbolToRoot.set(entry.symbol, entry.colorDegree ?? entry.chord?.root ?? placement);
+        if (!symbolToBorrowed.has(entry.symbol)) symbolToBorrowed.set(entry.symbol, entry.chord?.borrowed);
         if (!symbolToLetter.has(entry.symbol)) {
           symbolToLetter.set(entry.symbol, getChordLetterName(entry.chord, currentKey));
         }
@@ -1449,9 +1511,9 @@ export function renderChordRing(container, options = {}) {
       const transitions = byCount.get(count).sort((a, b) => {
         const activeFirstBeats = showLongestPhraseView
           ? (includeRedundantSubstrings
-            ? (showRootOnlyView ? rootAllSubstringFirstBeats : allSubstringFirstBeats)
-            : (showRootOnlyView ? rootPhraseFirstBeats : phraseFirstBeats))
-          : (showRootOnlyView ? rootTransitionFirstBeats : transitionFirstBeats);
+            ? (showRootOnlyView ? activeRootAllSubstringFirstBeats : activeAllSubstringFirstBeats)
+            : (showRootOnlyView ? activeRootPhraseFirstBeats : activePhraseFirstBeats))
+          : (showRootOnlyView ? activeRootTransitionFirstBeats : activeTransitionFirstBeats);
         const aBeat = activeFirstBeats?.get(a);
         const bBeat = activeFirstBeats?.get(b);
         if (Number.isFinite(aBeat) && Number.isFinite(bBeat) && aBeat !== bBeat) {
@@ -1480,9 +1542,9 @@ export function renderChordRing(container, options = {}) {
         const parts = transition.split(" → ");
         const activeFirstBeats = showLongestPhraseView
           ? (includeRedundantSubstrings
-            ? (showRootOnlyView ? rootAllSubstringFirstBeats : allSubstringFirstBeats)
-            : (showRootOnlyView ? rootPhraseFirstBeats : phraseFirstBeats))
-          : (showRootOnlyView ? rootTransitionFirstBeats : transitionFirstBeats);
+            ? (showRootOnlyView ? activeRootAllSubstringFirstBeats : activeAllSubstringFirstBeats)
+            : (showRootOnlyView ? activeRootPhraseFirstBeats : activePhraseFirstBeats))
+          : (showRootOnlyView ? activeRootTransitionFirstBeats : activeTransitionFirstBeats);
         const firstBeat = activeFirstBeats.get(transition);
         if (Number.isFinite(firstBeat) && typeof options.onPhraseClick === "function") {
           row.style.cursor = "pointer";
@@ -1500,14 +1562,15 @@ export function renderChordRing(container, options = {}) {
               if (showRootOnlyView) {
                 const root = parseInt(part, 10);
                 if (root >= 1 && root <= 7) {
-                  const partColorObj = getColor(root, currentKey.scale);
+                  const partColorObj = getColor(root, colorKey.scale);
                   partColor = partColorObj?.hexColor || partColorObj;
                 }
                 partSpan.textContent = part;
               } else {
                 const root = symbolToRoot.get(part);
                 if (root) {
-                  const partColorObj = getColor(root, currentKey.scale);
+                  const borrowed = symbolToBorrowed.get(part);
+                  const partColorObj = getColor(root, colorKey.scale, borrowed);
                   partColor = partColorObj?.hexColor || partColorObj;
                 }
                 partSpan.innerHTML = useRomanNumerals
@@ -1531,22 +1594,24 @@ export function renderChordRing(container, options = {}) {
               const fromRoot = parseInt(fromStr, 10);
               const toRoot = parseInt(toStr, 10);
               if (fromRoot >= 1 && fromRoot <= 7) {
-                const fc = getColor(fromRoot, currentKey.scale);
+                const fc = getColor(fromRoot, colorKey.scale);
                 fromColor = fc?.hexColor || fc;
               }
               if (toRoot >= 1 && toRoot <= 7) {
-                const tc = getColor(toRoot, currentKey.scale);
+                const tc = getColor(toRoot, colorKey.scale);
                 toColor = tc?.hexColor || tc;
               }
             } else {
               const fromRoot = symbolToRoot.get(fromStr);
               const toRoot = symbolToRoot.get(toStr);
               if (fromRoot) {
-                const fc = getColor(fromRoot, currentKey.scale);
+                const borrowed = symbolToBorrowed.get(fromStr);
+                const fc = getColor(fromRoot, colorKey.scale, borrowed);
                 fromColor = fc?.hexColor || fc;
               }
               if (toRoot) {
-                const tc = getColor(toRoot, currentKey.scale);
+                const borrowed = symbolToBorrowed.get(toStr);
+                const tc = getColor(toRoot, colorKey.scale, borrowed);
                 toColor = tc?.hexColor || tc;
               }
             }
@@ -1610,7 +1675,9 @@ export function renderChordRing(container, options = {}) {
       substringCounts,
       rootSubstringCounts,
       substringStarts,
-      rootSubstringStarts
+      rootSubstringStarts,
+      perKey,
+      keyLabels
     ) {
       transitionCounts = transitions || new Map();
       rootOnlyTransitionCounts = rootOnlyTransitions || new Map();
@@ -1624,6 +1691,34 @@ export function renderChordRing(container, options = {}) {
       rootAllSubstringCounts = rootSubstringCounts || new Map();
       allSubstringFirstBeats = substringStarts || new Map();
       rootAllSubstringFirstBeats = rootSubstringStarts || new Map();
+      
+      perKeyData = perKey || new Map();
+      perKeyLabels = keyLabels || [];
+
+      // Clear previous options except "All Keys"
+      while (keyFilterSelect.options.length > 1) {
+        keyFilterSelect.remove(1);
+      }
+
+      if (perKeyLabels && perKeyLabels.length > 1) {
+        keyFilterWrap.style.display = "block";
+        perKeyLabels.forEach(label => {
+          const opt = document.createElement("option");
+          opt.value = label;
+          opt.textContent = label;
+          keyFilterSelect.appendChild(opt);
+        });
+        
+        // Keep selection if it still exists, otherwise default to all
+        if (!perKeyLabels.includes(selectedKeyFilter)) {
+          selectedKeyFilter = "__all__";
+        }
+      } else {
+        keyFilterWrap.style.display = "none";
+        selectedKeyFilter = "__all__";
+      }
+      keyFilterSelect.value = selectedKeyFilter;
+
       updateTransitionTable();
     },
 

@@ -220,7 +220,7 @@ node extract_hooktheory_data.js https://www.hooktheory.com/theorytab/view/<artis
 node _Research_testing/hooktheory_catalog/cli/discover.js --mode quick  # discover songs into catalog
 ```
 
-Library: six fetch+tested songs in cache (see HANDOFF.md). Start player: `python launch_player.py`, `npm run player:start`, or `node web-player/server.js`. Stop detached server: `npm run player:stop`. See HANDOFF.md for the library-init race (BUG-005).
+Library: six fetch+tested songs in cache (see HANDOFF.md). Start player: `python launch_player.py`, `npm run player:start`, or `node web-player/server.js`. Stop detached server: `npm run player:stop`. See HANDOFF.md for the library-init race (BUG-005, BUG-006).
 
 The page scraper ([`lib/scraper/pageScraper.js`](../lib/scraper/pageScraper.js), Fix 030) discovers sections via `a.tb-section-tab` → `tab-{songId}` containers (Hooktheory removed the old `div.col-md-8` layout).
 

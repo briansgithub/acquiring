@@ -275,6 +275,7 @@ The `"Loaded library"` log is **not** a page reload; it is the delayed completio
 - `"Loaded library N songs"` appearing **after** section load is expected with a large cache; it does not imply reload.
 - Key-signature changes during playback are handled by `syncDisplayedKeyAtBeat()` and are unrelated to library init.
 - Use `npm run player:start` / `player:stop` for automation instead of blocking shell on `node server.js`.
+- Replacing `library` without re-resolving `currentSongIdx` causes wrong-song section switches — see BUG-006.
 
 ### References
 
@@ -282,3 +283,63 @@ The `"Loaded library"` log is **not** a page reload; it is the delayed completio
 - `HANDOFF.md` — server start options and race description
 - `_Debug_testing/playerServerCtl.mjs` — detached server control
 - `_Debug_testing/boomwhackerInstrumentalSim.mjs` — color-scheme simulation for Instrumental section
+
+---
+
+## BUG-006: Section switch loads wrong song after library fetch (stale `currentSongIdx`)
+
+| Field | Detail |
+|-------|--------|
+| **Date reported** | 2026-07-05 |
+| **Date resolved** | 2026-07-05 |
+| **Severity** | High — section switch plays a completely different song (e.g. Kendrick Lamar — `__I__` chorus instead of Weird Al — Everything You Know Is Wrong chorus) |
+| **Affected area** | `web-player/player.js` (`init()`, `loadSection()`, `handleSectionChange()`, `currentSongIdx`, `loadedCacheKey`) |
+| **Repro** | Hard refresh. Immediately load a song (e.g. Weird Al — Everything You Know Is Wrong) before `"Loaded library N songs"` appears (~20s with ~34k cache entries). Switch to Instrumental and play. Wait for library fetch to complete. Switch to Chorus — player loads a different song's section (often Kendrick Lamar — `__I__`, which sorts to library index 0). |
+| **Status** | **Resolved** |
+
+### Symptom
+
+User is listening to one song's section (e.g. Instrumental). After the delayed `"Loaded library N songs"` console line, switching sections (e.g. to Chorus) loads audio and timeline metadata for a **different** song. Title in Now Playing changes to the wrong song. Instrumental may continue sounding correct until the switch because playback state is already in memory.
+
+Often reported alongside BUG-005 symptoms; same underlying race window (user acts before `init()` finishes).
+
+### Root cause
+
+Sibling race to BUG-005, different failure mode:
+
+1. Page load starts `fetch("/api/songs")` (full cache scan, alphabetically sorted — **~20s** for 34,097 songs).
+2. User loads a song via Song Selector while fetch is in flight. `onLoad` pushes the entry onto the partial `library` array at index **0** and sets `currentSongIdx = 0`.
+3. User switches sections — `loadSection(0, sectionIndex)` reads from the pushed entry; **correct** while the partial array still holds that song.
+4. When fetch completes, `init()` **replaces** the entire `library` array with the sorted full list. Index **0** is now `kendrick-lamar - __I__` (alphabetically first). Weird Al sits at index **~8807**.
+5. BUG-005 fix prevented `resetIdleState()` when `currentSong` was set, but **`currentSongIdx` was never re-resolved**. Section switches call `loadSection(currentSongIdx, …)` → `library[0].sections[…]` → wrong song.
+
+`loadedCacheKey` (stable cache-folder name) was correct throughout; only the numeric index was stale.
+
+### Final solution
+
+**Files changed:** `web-player/player.js`, `_Debug_testing/sectionSwitchRaceSim.mjs`
+
+1. **`resolveSongIndex(preferredIndex)`** — if `loadedCacheKey` is set, `library.findIndex(s => s.artist === loadedCacheKey)`; fall back to `preferredIndex` when not found.
+2. **`init()`** — after library fetch, if a song is already loaded (`hadSong && loadedCacheKey`), update `currentSongIdx` via `resolveSongIndex()`.
+3. **`loadSection()`** — resolve `songIndex` through `resolveSongIndex()` before reading `library[songIndex]`.
+4. **`handleSectionChange()`** — pass `resolveSongIndex(currentSongIdx)` into `loadSection()`.
+
+### Verification
+
+`_Debug_testing/sectionSwitchRaceSim.mjs` reproduces the race offline against the real cache:
+
+- Pre-fix: `currentSongIdx: 0`, `artistAtCurrentIdx: "kendrick-lamar - __I__"`, `mismatch: true`
+- Post-fix: `currentSongIdx: 8807`, chorus `relPath` points at Weird Al's `Chorus - 1700298 - nJmBYZPEboA.json`
+
+### Lessons / guardrails
+
+- Never use a bare array index as the long-lived song identity when the backing array can be replaced asynchronously.
+- Prefer stable keys (`loadedCacheKey` / cache folder name) over positional indices for anything that survives `init()` or library refresh.
+- BUG-005 and BUG-006 share the same repro window; fixing one without the other leaves a latent bug.
+- Section switches re-fetch from `library[…]`; in-memory playback can mask a stale index until the next switch.
+
+### References
+
+- `web-player/player.js` — `resolveSongIndex()`, `init()`, `loadSection()`, `handleSectionChange()`
+- `documentation/BUGS.md` — BUG-005 (related library-init race)
+- `_Debug_testing/sectionSwitchRaceSim.mjs` — offline race reproduction and fix verification
