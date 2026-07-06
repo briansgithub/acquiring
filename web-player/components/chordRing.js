@@ -806,24 +806,14 @@ export function renderChordRing(container, options = {}) {
 
     // Draw Chord Transition in the center of the circle (vertically aligned to cy)
     if (activeChord) {
-      let currColor = "#ffffff";
-      let prevColor = "#ffffff";
-      
-      const activeChordObj = getActiveChordFromTicks();
-      if (activeChordObj) {
-        const currColorObj = getColor(activeChordObj.root, key.scale, activeChordObj.borrowed) || "#ffffff";
-        currColor = currColorObj.hexColor || currColorObj;
-        
-        const previousChordObj = getPreviousChordFromTicks();
-        if (previousChordObj) {
-          const prevColorObj = getColor(previousChordObj.root, key.scale, previousChordObj.borrowed) || "#ffffff";
-          prevColor = prevColorObj.hexColor || prevColorObj;
-        }
-      }
-
       const currSymbol = getCenterDisplayLabel(activeChord);
+      const currColorObj = getColor(activeChord.root, key.scale, activeChord.borrowed) || "#ffffff";
+      const currColor = currColorObj.hexColor || currColorObj;
+
       if (previousChord) {
         const prevSymbol = getCenterDisplayLabel(previousChord);
+        const prevColorObj = getColor(previousChord.root, key.scale, previousChord.borrowed) || "#ffffff";
+        const prevColor = prevColorObj.hexColor || prevColorObj;
 
         const line1TargetW = r * 1.35;
         const line2TargetW = r * 1.55;
