@@ -1650,6 +1650,15 @@ export function renderChordRing(container, options = {}) {
   }
 
   return {
+    setKeyFilter(label) {
+      if (perKeyLabels && perKeyLabels.includes(label)) {
+        if (selectedKeyFilter !== label) {
+          selectedKeyFilter = label;
+          keyFilterSelect.value = label;
+          updateTransitionTable();
+        }
+      }
+    },
     update(chord) {
       if (!chord || chord.isRest) {
         activeChordSymbol = null;

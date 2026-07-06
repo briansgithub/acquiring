@@ -579,7 +579,7 @@ export function renderTimeline(container, options = {}) {
     }
 
     function showTooltip(node) {
-        const renderKey = timelineRenderKey();
+        const renderKey = activeSectionKeyAtBeat(node.chord.beat);
         const displayLabel = stripBorrowedTags(getChordSymbol(node.chord, renderKey));
         const alternateLabel = getChordLetterName(node.chord, renderKey);
         const borrowedLabel = borrowedAbbrev(node.chord.borrowed);
@@ -590,6 +590,7 @@ export function renderTimeline(container, options = {}) {
         
         let contextHtml = `
             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 11px; color: #cbd5e1; display: flex; flex-direction: column; gap: 4px; text-align: center;">
+                <div><span style="color: #64748b;">Key:</span> <strong style="color: #e2e8f0;">${renderKey.tonic} ${renderKey.scale.charAt(0).toUpperCase() + renderKey.scale.slice(1)}</strong></div>
                 <div><span style="color: #64748b;">Scale Degree:</span> <strong style="color: ${nodeColor};">${ROMAN_MAP[node.chord.root] || node.chord.root}</strong></div>
         `;
         

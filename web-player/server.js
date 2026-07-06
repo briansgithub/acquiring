@@ -122,7 +122,13 @@ async function handleApiSongEntry(reqUrl, res) {
 
 async function handleApiSongs(res) {
   try {
+    // #region agent log
+    const _t0 = Date.now();
+    // #endregion
     const library = await loadLibrary();
+    // #region agent log
+    try{require('fs').appendFileSync(require('path').join(__dirname,'..','debug-b6e47b.log'),JSON.stringify({sessionId:'b6e47b',hypothesisId:'A',location:'server.js:handleApiSongs',message:'loadLibrary complete',data:{ms:Date.now()-_t0,songCount:library.length},timestamp:Date.now(),runId:'startup'})+'\n');}catch(_){}
+    // #endregion
     sendJson(res, library);
   } catch (err) {
     console.error("Failed to build library", err);

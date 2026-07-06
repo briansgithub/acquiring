@@ -192,6 +192,10 @@ export function renderSongSelector(container, options = {}) {
   }
 
   async function loadIndex() {
+    // #region agent log
+    const _idxT0 = performance.now();
+    fetch('http://127.0.0.1:7355/ingest/9027d9a5-7140-4ebc-92e0-0d781f81d4e6',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b6e47b'},body:JSON.stringify({sessionId:'b6e47b',hypothesisId:'B',location:'songSelector.js:loadIndex',message:'loadIndex start',data:{},timestamp:Date.now(),runId:'startup'})}).catch(()=>{});
+    // #endregion
     try {
       const res = await fetch("/api/library");
       if (!res.ok) {
@@ -202,7 +206,11 @@ export function renderSongSelector(container, options = {}) {
             : `HTTP ${res.status}: ${text.slice(0, 80)}`,
         );
       }
-      const data = await res.json();
+      const _fetchMs = Math.round(performance.now() - _idxT0);
+      const _text = await res.text();
+      const _parseT0 = performance.now();
+      const data = JSON.parse(_text);
+      const _parseMs = Math.round(performance.now() - _parseT0);
       if (data.error) throw new Error(data.error);
       songs = (data.songs || []).map((s) => ({
         ...s,
@@ -219,7 +227,12 @@ export function renderSongSelector(container, options = {}) {
       artists = [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
       loaded = true;
       loadError = null;
+      const _cacheT0 = performance.now();
       rebuildPlayableCaches();
+      const _cacheMs = Math.round(performance.now() - _cacheT0);
+      // #region agent log
+      fetch('http://127.0.0.1:7355/ingest/9027d9a5-7140-4ebc-92e0-0d781f81d4e6',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b6e47b'},body:JSON.stringify({sessionId:'b6e47b',hypothesisId:'B',location:'songSelector.js:loadIndex',message:'loadIndex done',data:{fetchMs:_fetchMs,parseMs:_parseMs,cacheMs:_cacheMs,totalMs:Math.round(performance.now()-_idxT0),songCount:songs.length,playableCount:songs.filter(s=>s.playable).length,jsonBytes:_text.length},timestamp:Date.now(),runId:'startup'})}).catch(()=>{});
+      // #endregion
     } catch (err) {
       loadError = err.message;
       loaded = false;
