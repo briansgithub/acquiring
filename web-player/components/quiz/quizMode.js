@@ -118,15 +118,34 @@ export function renderQuizMode(container, ctx) {
     headerEl.textContent = `${active.label} — streak ${s.streak} (best ${s.bestStreak}) · ${s.accuracy}%`;
   }
 
+  function clearVisualOverlays() {
+    if (typeof ctx.chordRing?.clearQuizOverlays === 'function') {
+      ctx.chordRing.clearQuizOverlays();
+    }
+    if (typeof ctx.timeline?.clearQuizOverlays === 'function') {
+      ctx.timeline.clearQuizOverlays();
+    }
+  }
+
+  function syncFrequencyOverlay() {
+    if (typeof ctx.chordRing?.setFrequencyOverlay !== 'function') return;
+    const profile = ctx.getFrequencyProfile?.();
+    if (profile?.symbolCounts) {
+      ctx.chordRing.setFrequencyOverlay(profile.symbolCounts);
+    }
+  }
+
   function refreshChrome() {
     updateSongBanner();
     updateSectionBar();
     updateHeader();
     freqPanel.refresh();
+    syncFrequencyOverlay();
   }
 
   function mountMode(mode) {
     activeHandle?.destroy?.();
+    clearVisualOverlays();
     active = mode;
     bodyEl.innerHTML = "";
     activeHandle = mode.render(bodyEl, ctx) || {};
@@ -159,6 +178,7 @@ export function renderQuizMode(container, ctx) {
     },
     destroy() {
       activeHandle?.destroy?.();
+      clearVisualOverlays();
     },
   };
 }

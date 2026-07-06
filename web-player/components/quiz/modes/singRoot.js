@@ -56,6 +56,15 @@ export const singRoot = {
       promptEl.innerHTML = `Sing the root of <span class="quiz-chord-sym" data-quiz-symbol="${target.symbol}">${ctx.romanHtml(target.symbol)}</span>.`;
       chordTools.wireStaticChords(promptEl);
       chordTools.syncDisplay(target);
+
+      if (ctx.timeline && target.chord?.beat != null) {
+        ctx.timeline.highlightBeatRange?.(
+          target.chord.beat,
+          target.chord.beat + (target.chord.duration || 1),
+          'rgba(34, 211, 238, 0.2)'
+        );
+      }
+
       cueQuestionAudio(playTarget);
     }
 
@@ -91,12 +100,22 @@ export const singRoot = {
             ? `Pass: ${Math.round(result.cents)}¢ off`
             : `Miss: ${Math.round(result.cents)}¢ off (>${threshold}¢)`,
         );
+        if (ctx.chordRing) {
+          if (result.pass) {
+            ctx.chordRing.flashCorrect?.(target.symbol);
+          } else {
+            ctx.chordRing.flashWrong?.(target.symbol);
+          }
+        }
       } catch (err) {
         statusEl.textContent = err?.message || "Mic error";
       }
     });
 
     promptEl.textContent = "Press Start for the first chord. Use Tonicize for key context, Repeat to hear it.";
-    return { destroy: () => ctx.audio.cancel() };
+    return { destroy: () => {
+      ctx.audio.cancel();
+      ctx.timeline?.highlightBeatRange?.(null, null);
+    } };
   },
 };

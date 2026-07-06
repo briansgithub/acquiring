@@ -2471,21 +2471,6 @@ body {
   display: none;
 }
 
-#app.quiz-mode #timeline-pane,
-#app.quiz-mode #indicator-pane,
-#app.quiz-mode #ring-pane {
-  display: none;
-}
-
-#app.quiz-mode #quiz-pane {
-  display: flex;
-  flex-direction: column;
-  grid-column: 2 / 4;
-  grid-row: 1 / 3;
-  overflow: hidden;
-  min-height: 0;
-}
-
 .quiz-mode-shell {
   display: flex;
   flex-direction: column;
@@ -3135,32 +3120,7 @@ body {
   background: rgba(34, 211, 238, 0.15);
 }
 
-#quiz-pane {
-  display: none;
-}
-
-#app.quiz-mode #timeline-pane,
-#app.quiz-mode #indicator-pane,
-#app.quiz-mode #ring-pane {
-  display: none !important;
-}
-
-#app.quiz-mode #quiz-pane {
-  display: flex;
-  flex-direction: column;
-  grid-column: 2 / 4;
-  grid-row: 1 / 3;
-  overflow: hidden;
-  min-height: 0;
-}
-
-.quiz-workspace {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  height: 100%;
-  min-height: 0;
-}
+/* quiz-pane default: hidden in player mode (shown via quiz-mode class below) */
 
 .quiz-song-banner {
   flex-shrink: 0;
@@ -3304,132 +3264,84 @@ body {
   background: rgba(34, 211, 238, 0.15);
 }
 
-#quiz-pane {
-  display: none;
+/* ── Quiz-mode integrated layout ──
+   Shows ring + timeline alongside quiz pane.
+   Selector stays collapsed (36px strip). Indicator hidden. */
+
+#app.quiz-mode {
+  grid-template-columns: var(--selector-width) 1fr minmax(300px, 380px);
+  grid-template-rows: 80px 1fr;
 }
 
-#app.quiz-mode #timeline-pane,
-#app.quiz-mode #indicator-pane,
+#app.quiz-mode #selector-pane {
+  grid-column: 1;
+  grid-row: 1 / -1;
+  align-self: stretch;
+}
+
+#app.quiz-mode #timeline-pane {
+  grid-column: 2 / -1;
+  grid-row: 1;
+  padding: 4px 10px;
+  min-height: 0;
+}
+
+#app.quiz-mode #indicator-pane {
+  display: none !important;
+}
+
 #app.quiz-mode #ring-pane {
-  display: none;
+  grid-column: 3;
+  grid-row: 2;
+  overflow: hidden;
+  min-height: 0;
+  padding: 6px;
 }
 
 #app.quiz-mode #quiz-pane {
   display: flex;
   flex-direction: column;
-  grid-column: 2 / 4;
-  grid-row: 1 / 3;
+  grid-column: 2;
+  grid-row: 2;
   overflow: hidden;
   min-height: 0;
   padding: 8px;
 }
 
-.quiz-mode-shell {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  height: 100%;
-}
-
-.quiz-mode-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 3px;
-  justify-content: center;
-}
-
-.quiz-mode-tab {
-  border: 1px solid var(--divider);
-  border-radius: 4px;
-  background: #0b1324;
-  color: var(--muted);
-  padding: 2px 6px;
-  font-size: 9px;
-  line-height: 1.2;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.quiz-mode-tab:hover {
-  border-color: var(--accent);
-  color: var(--text);
-}
-
-.quiz-mode-tab.active {
-  border-color: var(--accent);
-  color: var(--text);
-  background: rgba(34, 211, 238, 0.12);
-}
-
-.quiz-session-header {
-  font-size: 9px;
-  color: var(--muted);
-  text-align: center;
-  line-height: 1.2;
-}
-
-.quiz-mode-body {
+/* Compact ring in quiz mode: tighter padding, smaller transition table */
+#app.quiz-mode .ring-canvas-wrap {
   flex: 1;
-  overflow: auto;
-}
-
-.quiz-pitch-meter {
-  margin-top: 8px;
-}
-
-.quiz-pitch-track {
-  position: relative;
-  height: 10px;
-  border-radius: 5px;
-  background: linear-gradient(90deg, #ef4444 0%, #22c55e 50%, #ef4444 100%);
-  border: 1px solid var(--divider);
-}
-
-.quiz-pitch-needle {
-  position: absolute;
-  top: -3px;
-  width: 3px;
-  height: 16px;
-  background: #f8fafc;
-  border-radius: 2px;
-  left: 50%;
-  transform: translateX(-50%);
-  transition: left 60ms linear;
-}
-
-.quiz-pitch-labels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 10px;
-  color: var(--muted);
-  margin-top: 2px;
-}
-
-/* Quiz mode layout: collapsed Songs strip + full-width workspace (player.js setAppMode) */
-#app.quiz-mode {
-  grid-template-columns: var(--selector-width) 1fr;
-  grid-template-rows: 1fr;
-}
-
-#app.quiz-mode #selector-pane {
-  grid-column: 1;
-  grid-row: 1;
-  align-self: stretch;
-}
-
-#app.quiz-mode #timeline-pane,
-#app.quiz-mode #indicator-pane,
-#app.quiz-mode #ring-pane {
-  display: none !important;
-}
-
-#app.quiz-mode #quiz-pane {
-  display: flex;
-  flex-direction: column;
-  grid-column: 2 / -1;
-  grid-row: 1;
-  overflow: hidden;
   min-height: 0;
+}
+
+#app.quiz-mode .ring-panel-head {
+  padding: 2px 8px;
+}
+
+#app.quiz-mode .ring-panel-title {
+  font-size: 12px;
+}
+
+#app.quiz-mode .chord-ring-key {
+  font-size: 11px;
+}
+
+/* Quiz-ring overlay animations */
+@keyframes quiz-node-pulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.4); }
+}
+
+@keyframes quiz-flash-correct {
+  0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+  70% { box-shadow: 0 0 20px 10px rgba(34, 197, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+@keyframes quiz-flash-wrong {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70% { box-shadow: 0 0 20px 10px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
 .quiz-song-banner {

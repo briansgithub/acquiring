@@ -52,6 +52,8 @@ export function renderQuizFreqPanel(container, ctx) {
       return;
     }
 
+    const maxCount = Math.max(...rows.map((r) => r.expectedCount || 0));
+
     const useTwoCols = rows.length > 8;
     sectionEl.innerHTML = `
       <div class="quiz-freq-tbl${useTwoCols ? " quiz-freq-tbl-split" : ""}">
@@ -67,7 +69,9 @@ export function renderQuizFreqPanel(container, ctx) {
           ${rows
             .map((r) => {
               const key = kind === "symbol" ? r.symbol : r.key;
+              const barWidth = maxCount > 0 ? (r.expectedCount / maxCount) * 100 : 0;
               return `<div class="quiz-freq-tbl-row ${rowClasses(kind, key)}" data-key="${key}">
+                <div class="quiz-freq-row-bg" style="width: ${barWidth}%"></div>
                 <span class="quiz-freq-col-sym quiz-freq-cell-sym">${labelFn(r)}</span>
                 <span class="quiz-freq-col-n">${r.expectedCount}</span>
                 <span class="quiz-freq-col-pct">${r.expectedPct}</span>
@@ -79,6 +83,45 @@ export function renderQuizFreqPanel(container, ctx) {
             .join("")}
         </div>
       </div>`;
+
+    // Bind ring hover/click events
+    const rowNodes = sectionEl.querySelectorAll(".quiz-freq-tbl-row");
+    rowNodes.forEach((rowNode) => {
+      const key = rowNode.dataset.key;
+      
+      function highlight() {
+        if (!ctx.chordRing) return;
+        if (kind === "symbol") {
+          ctx.chordRing.highlightChoices?.([key]);
+        } else if (kind === "transition") {
+          const [from, to] = key.split("=>");
+          ctx.chordRing.showTransitionArc?.(from, to);
+        }
+      }
+
+      function clear() {
+        if (!ctx.chordRing) return;
+        if (kind === "symbol") {
+          ctx.chordRing.highlightChoices?.(null);
+        } else if (kind === "transition") {
+          ctx.chordRing.showTransitionArc?.(null, null);
+        }
+      }
+
+      rowNode.addEventListener("mouseenter", highlight);
+      rowNode.addEventListener("mouseleave", clear);
+      rowNode.addEventListener("click", () => {
+        // Toggle active row styling
+        const active = rowNode.classList.contains("quiz-freq-row-active");
+        sectionEl.querySelectorAll(".quiz-freq-tbl-row").forEach(r => r.classList.remove("quiz-freq-row-active"));
+        if (!active) {
+          rowNode.classList.add("quiz-freq-row-active");
+          highlight();
+        } else {
+          clear();
+        }
+      });
+    });
   }
 
   function refresh() {

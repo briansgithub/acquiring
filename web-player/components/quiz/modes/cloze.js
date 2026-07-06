@@ -88,6 +88,55 @@ export const cloze = {
       chordTools.wireStaticChords(seqEl);
     }
 
+    let choicesCleanup = null;
+
+    function handleChoice(symbol) {
+      if (answered) return;
+      answered = true;
+      const answer = run[gapIdx];
+      const correct = symbol === answer.symbol;
+
+      const btns = choicesEl.querySelectorAll(".quiz-choice-btn");
+      btns.forEach((btn) => {
+        if (btn.dataset.quizSymbol === symbol || btn.textContent === symbol || (correct && (btn.dataset.quizSymbol === answer.symbol || btn.textContent === answer.symbol))) {
+          btn.classList.add(correct ? "quiz-correct" : "quiz-wrong");
+        }
+      });
+
+      quizRecord(ctx, "mode-cloze", correct, {
+        chord: answer.chord,
+        symbol: answer.symbol,
+        quality: correct ? 4 : 1,
+      });
+
+      if (ctx.chordRing) {
+        if (correct) {
+          ctx.chordRing.flashCorrect?.(answer.symbol);
+        } else {
+          ctx.chordRing.flashWrong?.(symbol);
+          setTimeout(() => ctx.chordRing.flashCorrect?.(answer.symbol), 400);
+        }
+        ctx.chordRing.highlightChoices?.(null);
+      }
+
+      renderSequence(true);
+      updateTimelineMarkers(true, correct);
+      feedback(feedbackEl, correct, correct ? "Correct!" : `Answer: ${answer.symbol}`);
+      playFull();
+    }
+
+    function updateTimelineMarkers(isAnswered, isCorrect) {
+      if (!ctx.timeline || !run) return;
+      const markers = run.map((entry, i) => {
+        let status = 'active';
+        if (i === gapIdx) {
+          status = isAnswered ? (isCorrect ? 'correct' : 'wrong') : 'pending';
+        }
+        return { beat: entry.chord.beat, symbol: entry.symbol, status };
+      }).filter(m => m.beat != null);
+      ctx.timeline.setQuizMarkers?.(markers);
+    }
+
     function showQuestion() {
       answered = false;
       feedbackEl.innerHTML = "";
@@ -106,6 +155,7 @@ export const cloze = {
       const answer = run[gapIdx];
       quizNotify(ctx, { symbols: [answer.symbol] });
       renderSequence(false);
+      
       const nWrong = difficulty === "easy" ? 2 : 3;
       const fromSymbol = run[gapIdx - 1]?.symbol || run[gapIdx + 1]?.symbol || null;
       const wrong =
@@ -113,27 +163,32 @@ export const cloze = {
           ? songTransitionDistractors(pool, fromSymbol, answer.symbol, nWrong)
           : songPoolDistractors(pool, answer.symbol, nWrong);
       const symbols = shuffle([answer.symbol, ...wrong]);
-      promptEl.textContent =
-        "Fill in the missing chord. Arpeggio / Show notes target the gap chord.";
-      renderChoices(
+      
+      promptEl.textContent = "Fill in the missing chord. Arpeggio targets the gap chord. Tap Ring or choose below.";
+      
+      choicesCleanup?.();
+      choicesCleanup = renderChoices(
         choicesEl,
         symbols.map((s) => ({ label: ctx.romanHtml(s), symbol: s })),
-        (choice, btn) => {
-          if (answered) return;
-          answered = true;
-          const correct = choice.symbol === answer.symbol;
-          btn.classList.add(correct ? "quiz-correct" : "quiz-wrong");
-          quizRecord(ctx, "mode-cloze", correct, {
-            chord: answer.chord,
-            symbol: answer.symbol,
-            quality: correct ? 4 : 1,
-          });
-          renderSequence(true);
-          feedback(feedbackEl, correct, correct ? "Correct!" : `Answer: ${answer.symbol}`);
-          playFull();
-        },
+        (choice) => handleChoice(choice.symbol),
         { html: true },
       );
+
+      choicesEl.querySelectorAll(".quiz-choice-btn").forEach((btn, i) => {
+        btn.dataset.quizSymbol = symbols[i];
+      });
+
+      if (ctx.chordRing) {
+        ctx.chordRing.highlightChoices?.(symbols);
+        ctx.chordRing.setChordSelectHandler?.((chord) => {
+          const cid = (c) => `r${c.root}|t${c.type || 5}|i${c.inversion || 0}|b${c.borrowed || 'none'}|a${c.applied || 0}`;
+          const isCorrect = cid(chord) === cid(answer.chord);
+          handleChoice(isCorrect ? answer.symbol : "WRONG");
+        });
+      }
+
+      updateTimelineMarkers(false, false);
+
       chordTools.wireChoices(choicesEl, symbols);
       chordTools.syncDisplay(answer);
       cueQuestionAudio(playMuted);
@@ -147,6 +202,12 @@ export const cloze = {
     promptEl.textContent =
       "Press Start for the first question. Right-click any chord symbol for arpeggio / notes.";
 
-    return { destroy: () => ctx.audio.cancel() };
+    return { destroy: () => {
+      choicesCleanup?.();
+      ctx.audio.cancel();
+      ctx.chordRing?.highlightChoices?.(null);
+      ctx.chordRing?.setChordSelectHandler?.(null);
+      ctx.timeline?.setQuizMarkers?.(null);
+    } };
   },
 };

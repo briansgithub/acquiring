@@ -17,6 +17,7 @@ import {
   quizRecord,
   cueQuestionAudio,
 } from "./modeUtils.js";
+import { getChordSymbol } from "../../../lib/jsonToSymbol.js";
 
 export const transitionDrill = {
   id: "mode-transition",
@@ -46,6 +47,8 @@ export const transitionDrill = {
     const chordTools = mountChordDrillTools(el, "td", ctx, base, () =>
       pair ? (step === 0 ? pair[0] : pair[1]) : null,
     );
+
+    let choicesCleanup = null;
 
     function difficulty() {
       return diffEl.value;
@@ -101,6 +104,18 @@ export const transitionDrill = {
       );
       feedbackEl.appendChild(div);
       chordTools.wireStaticChords(feedbackEl);
+
+      if (ctx.chordRing) {
+        ctx.chordRing.showTransitionArc?.(from, to);
+        if (ok) {
+          ctx.chordRing.flashCorrect?.(to);
+        } else {
+          ctx.chordRing.flashWrong?.(to);
+          setTimeout(() => ctx.chordRing.flashCorrect?.(to), 400);
+        }
+        ctx.chordRing.highlightChoices?.(null);
+      }
+      ctx.timeline?.highlightBeatRange?.(null, null);
     }
 
     function playPair() {
@@ -110,47 +125,69 @@ export const transitionDrill = {
       chordTools.playEntriesSequential(pair, msPerStep);
     }
 
+    function handleChoice(symbol) {
+      if (answered) return;
+      const answer = step === 0 ? pair[0].symbol : pair[1].symbol;
+      const correct = symbol === answer;
+
+      // Visual feedback on the button
+      const btns = choicesEl.querySelectorAll(".quiz-choice-btn");
+      btns.forEach(btn => {
+        if (btn.dataset.quizSymbol === symbol || btn.textContent === symbol || (correct && (btn.dataset.quizSymbol === answer || btn.textContent === answer))) {
+          btn.classList.add(correct ? "quiz-correct" : "quiz-wrong");
+        }
+      });
+
+      if (step === 0) {
+        firstPick = symbol;
+        step = 1;
+        // Brief delay so user sees button feedback
+        setTimeout(renderStep, 250);
+        return;
+      }
+
+      answered = true;
+      const bothRight =
+        firstPick === pair[0].symbol && symbol === pair[1].symbol;
+      const transitionKey = `${pair[0].symbol}=>${pair[1].symbol}`;
+      quizRecord(ctx, "mode-transition", bothRight, {
+        chord: pair[1].chord,
+        symbol: pair[1].symbol,
+        transition: transitionKey,
+        quality: bothRight ? 4 : 1,
+      });
+      revealTransition(bothRight);
+    }
+
     function renderStep() {
+      choicesCleanup?.();
       choicesEl.innerHTML = "";
       promptEl.textContent = stepPrompt();
       const answer = step === 0 ? pair[0].symbol : pair[1].symbol;
       const symbols = symbolChoices(answer, step);
 
-      renderChoices(
+      choicesCleanup = renderChoices(
         choicesEl,
         symbols.map((s) => ({ label: s, symbol: s })),
-        (choice, btn) => {
-          if (answered) return;
-          const correct = choice.symbol === answer;
-          btn.classList.add(correct ? "quiz-correct" : "quiz-wrong");
-
-          if (step === 0) {
-            firstPick = choice.symbol;
-            step = 1;
-            renderStep();
-            return;
-          }
-
-          answered = true;
-          const bothRight =
-            firstPick === pair[0].symbol && choice.symbol === pair[1].symbol;
-          const transitionKey = `${pair[0].symbol}=>${pair[1].symbol}`;
-          quizRecord(ctx, "mode-transition", bothRight, {
-            chord: pair[1].chord,
-            symbol: pair[1].symbol,
-            transition: transitionKey,
-            quality: bothRight ? 4 : 1,
-          });
-          revealTransition(bothRight);
-        },
+        (choice) => handleChoice(choice.symbol),
         { html: true },
       );
 
       choicesEl.querySelectorAll(".quiz-choice-btn").forEach((btn, i) => {
         btn.innerHTML = ctx.romanHtml(symbols[i]);
+        btn.dataset.quizSymbol = symbols[i];
       });
       chordTools.wireChoices(choicesEl, symbols);
       chordTools.syncDisplay(pair[step]);
+
+      if (ctx.chordRing) {
+        ctx.chordRing.highlightChoices?.(symbols);
+        ctx.chordRing.setChordSelectHandler?.((chord) => {
+          const cid = (c) => `r${c.root}|t${c.type || 5}|i${c.inversion || 0}|b${c.borrowed || 'none'}|a${c.applied || 0}`;
+          const isCorrect = cid(chord) === cid(pair[step].chord);
+          handleChoice(isCorrect ? pair[step].symbol : "WRONG");
+        });
+      }
     }
 
     function showQuestion() {
@@ -159,6 +196,10 @@ export const transitionDrill = {
       firstPick = null;
       feedbackEl.innerHTML = "";
       chordTools.clearPanels();
+
+      if (ctx.chordRing) {
+        ctx.chordRing.showTransitionArc?.(null, null);
+      }
 
       pair = pickWeightedTransition(base.pool);
       if (!pair) {
@@ -169,6 +210,15 @@ export const transitionDrill = {
       const transitionKey = `${pair[0].symbol}=>${pair[1].symbol}`;
       quizNotify(ctx, { transition: transitionKey });
       promptEl.textContent = `${stepPrompt()} Arpeggio checkbox applies to Repeat.`;
+      
+      if (ctx.timeline && pair[0].chord?.beat != null && pair[1].chord?.beat != null) {
+        ctx.timeline.highlightBeatRange?.(
+          pair[0].chord.beat,
+          pair[1].chord.beat + (pair[1].chord.duration || 1),
+          'rgba(34, 211, 238, 0.2)'
+        );
+      }
+      
       renderStep();
       cueQuestionAudio(playPair);
     }
@@ -181,6 +231,13 @@ export const transitionDrill = {
     promptEl.textContent =
       "Press Start for the first question. Arpeggio targets the chord for the current step.";
 
-    return { destroy: () => ctx.audio.cancel() };
+    return { destroy: () => {
+      choicesCleanup?.();
+      ctx.audio.cancel();
+      ctx.chordRing?.highlightChoices?.(null);
+      ctx.chordRing?.setChordSelectHandler?.(null);
+      ctx.chordRing?.showTransitionArc?.(null, null);
+      ctx.timeline?.highlightBeatRange?.(null, null);
+    } };
   },
 };
