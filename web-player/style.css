@@ -3434,3 +3434,26 @@ body {
   background: transparent;
   border-color: var(--divider);
 }
+
+@media (max-width: 1000px) {
+  #app.quiz-mode {
+    grid-template-columns: var(--selector-width) 1fr;
+    grid-template-rows: auto auto 1fr;
+    overflow-y: auto;
+  }
+  #app.quiz-mode #timeline-pane {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  #app.quiz-mode #ring-pane {
+    grid-column: 2;
+    grid-row: 2;
+    min-height: 450px;
+  }
+  #app.quiz-mode #quiz-pane {
+    grid-column: 2;
+    grid-row: 3;
+    min-height: 500px;
+  }
+}
+

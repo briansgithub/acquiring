@@ -952,34 +952,46 @@ export function renderChordRing(container, options = {}) {
         const dx = toNode.x - fromNode.x;
         const dy = toNode.y - fromNode.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        // Control point perpendicular to midpoint, offset inward toward center
-        const perpX = -dy / dist;
-        const perpY = dx / dist;
-        const cpOffset = dist * 0.3;
-        const cpX = midX + perpX * cpOffset;
-        const cpY = midY + perpY * cpOffset;
+        
+        if (dist > 0) {
+          // Control point perpendicular to midpoint, offset inward toward center
+          const perpX = -dy / dist;
+          const perpY = dx / dist;
+          const cpOffset = dist * 0.3;
+          const cpX = midX + perpX * cpOffset;
+          const cpY = midY + perpY * cpOffset;
 
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(fromNode.x, fromNode.y);
-        ctx.quadraticCurveTo(cpX, cpY, toNode.x, toNode.y);
-        ctx.strokeStyle = "rgba(168, 85, 247, 0.7)";
-        ctx.lineWidth = 2.5 * zoom;
-        ctx.stroke();
+          // Adjust start and end points to sit exactly on the node radius
+          const rStart = fromNode.r * 1.25;
+          const rEnd = toNode.r * 1.25;
 
-        // Arrowhead at destination
-        const t = 0.92;
-        const ax = (1 - t) * (1 - t) * fromNode.x + 2 * (1 - t) * t * cpX + t * t * toNode.x;
-        const ay = (1 - t) * (1 - t) * fromNode.y + 2 * (1 - t) * t * cpY + t * t * toNode.y;
-        const arrowAngle = Math.atan2(toNode.y - ay, toNode.x - ax);
-        const arrowLen = 10 * zoom;
-        ctx.beginPath();
-        ctx.moveTo(toNode.x, toNode.y);
-        ctx.lineTo(toNode.x - arrowLen * Math.cos(arrowAngle - 0.4), toNode.y - arrowLen * Math.sin(arrowAngle - 0.4));
-        ctx.moveTo(toNode.x, toNode.y);
-        ctx.lineTo(toNode.x - arrowLen * Math.cos(arrowAngle + 0.4), toNode.y - arrowLen * Math.sin(arrowAngle + 0.4));
-        ctx.stroke();
-        ctx.restore();
+          const distStart = Math.hypot(cpX - fromNode.x, cpY - fromNode.y);
+          const startX = fromNode.x + ((cpX - fromNode.x) / distStart) * rStart;
+          const startY = fromNode.y + ((cpY - fromNode.y) / distStart) * rStart;
+
+          const distEnd = Math.hypot(toNode.x - cpX, toNode.y - cpY);
+          const endX = toNode.x - ((toNode.x - cpX) / distEnd) * rEnd;
+          const endY = toNode.y - ((toNode.y - cpY) / distEnd) * rEnd;
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(startX, startY);
+          ctx.quadraticCurveTo(cpX, cpY, endX, endY);
+          ctx.strokeStyle = "rgba(168, 85, 247, 0.7)";
+          ctx.lineWidth = 2.5 * zoom;
+          ctx.stroke();
+
+          // Arrowhead at destination
+          const arrowAngle = Math.atan2(endY - cpY, endX - cpX);
+          const arrowLen = 10 * zoom;
+          ctx.beginPath();
+          ctx.moveTo(endX, endY);
+          ctx.lineTo(endX - arrowLen * Math.cos(arrowAngle - 0.4), endY - arrowLen * Math.sin(arrowAngle - 0.4));
+          ctx.moveTo(endX, endY);
+          ctx.lineTo(endX - arrowLen * Math.cos(arrowAngle + 0.4), endY - arrowLen * Math.sin(arrowAngle + 0.4));
+          ctx.stroke();
+          ctx.restore();
+        }
       }
     }
 

@@ -1,4 +1,5 @@
 import { mountChordDrillTools, chordToolsExtrasHtml } from "../quizChordInspect.js";
+import { pickFrequencyBiased } from "../quizPool.js";
 import {
   mountDifficultyAfter,
   micGrade,
@@ -81,7 +82,7 @@ export const singArpeggio = {
       statusEl.textContent = "";
       toneIdx = 0;
       chordTools.clearPanels();
-      target = ctx.session.pickEntry(base.pool);
+      target = pickFrequencyBiased(base.pool, ctx.session, ctx.session.lastSymbol, ctx.getFrequencyProfile?.(), "normal");
       if (!target?.rootNotes?.length) return;
       quizNotify(ctx, { symbols: [target.symbol] });
       renderPrompt();

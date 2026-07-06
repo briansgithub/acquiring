@@ -1,4 +1,5 @@
 import { mountChordDrillTools } from "../quizChordInspect.js";
+import { pickFrequencyBiased } from "../quizPool.js";
 import {
   mountDifficultyAfter,  micGrade,
   sm2Quality,
@@ -59,7 +60,7 @@ export const singCallResponse = {
       feedbackEl.innerHTML = "";
       statusEl.textContent = "";
       chordTools.clearPanels();
-      target = ctx.session.pickEntry(base.pool);
+      target = pickFrequencyBiased(base.pool, ctx.session, ctx.session.lastSymbol, ctx.getFrequencyProfile?.(), "normal");
       if (!target?.rootNotes?.length) return;
       toneIdx = pickToneIndex();
       const label = LABELS[toneIdx] || `tone ${toneIdx + 1}`;

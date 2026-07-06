@@ -3,6 +3,7 @@ import {
   songDiatonicDistractors,
   songPoolDistractors,
   songTransitionDistractors,
+  pickFrequencyBiased,
 } from "../quizPool.js";
 import { mountChordDrillTools } from "../quizChordInspect.js";
 import {
@@ -107,7 +108,7 @@ export const degreeId = {
       feedbackEl.innerHTML = "";
       chordTools.clearPanels();
       const pool = base.pool;
-      target = ctx.session.pickEntry(pool);
+      target = pickFrequencyBiased(pool, ctx.session, ctx.session.lastSymbol, ctx.getFrequencyProfile?.(), diffEl.value);
       if (!target) return;
       quizNotify(ctx, { symbols: [target.symbol] });
 

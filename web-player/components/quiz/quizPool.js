@@ -379,15 +379,28 @@ export function buildFrequencyProfile(pool) {
   };
 }
 
-export function pickFrequencyBiased(pool, session, lastSymbol, profile) {
-  const base = session.pickEntry(pool);
+export function pickFrequencyBiased(pool, session, lastSymbol, profile, difficulty = "normal") {
+  let candidates = pool;
+  if (profile) {
+    if (difficulty === "easy") {
+      const top = profile.topSymbols(4);
+      candidates = pool.filter((e) => top.includes(e.symbol));
+      if (!candidates.length) candidates = pool;
+    } else if (difficulty === "normal") {
+      const top = profile.topSymbols(8);
+      candidates = pool.filter((e) => top.includes(e.symbol));
+      if (!candidates.length) candidates = pool;
+    }
+  }
+
+  const base = session.pickEntry(candidates);
   if (!base || !profile || !lastSymbol) return base;
 
   // Score each candidate by transition frequency from lastSymbol
-  const candidates = pool.filter((e) => e.symbol !== lastSymbol);
-  if (!candidates.length) return base;
+  const scoringPool = candidates.filter((e) => e.symbol !== lastSymbol);
+  if (!scoringPool.length) return base;
 
-  const scored = candidates.map((entry) => {
+  const scored = scoringPool.map((entry) => {
     const tKey = `${lastSymbol}=>${entry.symbol}`;
     const tCount = profile.transitionCounts.get(tKey) || 0;
     const symWeight = profile.symbolWeight(entry.symbol);
@@ -395,5 +408,5 @@ export function pickFrequencyBiased(pool, session, lastSymbol, profile) {
     return { entry, weight: 1 + tCount * 2 + symWeight };
   });
 
-  return pickWeighted(scored, (s) => s.weight).entry;
+  return pickWeighted(scored, (s) => s.weight)?.entry || base;
 }

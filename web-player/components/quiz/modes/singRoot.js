@@ -1,4 +1,5 @@
 import { mountChordDrillTools } from "../quizChordInspect.js";
+import { pickFrequencyBiased } from "../quizPool.js";
 import {
   mountDifficultyAfter,  micGrade,
   sm2Quality,
@@ -50,7 +51,7 @@ export const singRoot = {
       feedbackEl.innerHTML = "";
       statusEl.textContent = "";
       chordTools.clearPanels();
-      target = ctx.session.pickEntry(base.pool);
+      target = pickFrequencyBiased(base.pool, ctx.session, ctx.session.lastSymbol, ctx.getFrequencyProfile?.(), "normal");
       if (!target?.rootNotes?.[0]) return;
       quizNotify(ctx, { symbols: [target.symbol] });
       promptEl.innerHTML = `Sing the root of <span class="quiz-chord-sym" data-quiz-symbol="${target.symbol}">${ctx.romanHtml(target.symbol)}</span>.`;
