@@ -235,8 +235,6 @@ export const HOOKTHEORY_COLORS = {
   7: "#FF38CB"
 };
 
-export function getHooktheoryColor(rootDegree, scaleType) {
-  let shift = 0;
 export const BOOMWHACKER_12 = [
   "#E62B45", // 0 (P1)
   "#F6501D", // 1 (m2)
