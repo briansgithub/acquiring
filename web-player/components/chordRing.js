@@ -394,6 +394,7 @@ export function renderChordRing(container, options = {}) {
 
   // External Data
   let currentKey = { tonic: "C", scale: "major" };
+  let currentRawChords = []; // Store raw chords to build accurate symbol maps across multiple keys
   updateKeyDisplay(options.key ?? null);
   let useRomanNumerals = options.labelMode !== false; // Default to true (roman numerals)
   let transitionCounts = new Map(); // Store full transition counts
@@ -1489,14 +1490,17 @@ export function renderChordRing(container, options = {}) {
     const symbolToRoot = new Map();
     const symbolToLetter = new Map();
     const symbolToBorrowed = new Map();
-    for (let placement = 1; placement <= 7; placement++) {
-      for (const entry of currentGroupedChords[placement] || []) {
-        if (!symbolToRoot.has(entry.symbol)) symbolToRoot.set(entry.symbol, entry.colorDegree ?? entry.chord?.root ?? placement);
-        if (!symbolToBorrowed.has(entry.symbol)) symbolToBorrowed.set(entry.symbol, entry.chord?.borrowed);
-        if (!symbolToLetter.has(entry.symbol)) {
-          symbolToLetter.set(entry.symbol, getChordLetterName(entry.chord, currentKey));
-        }
-      }
+    
+    if (currentRawChords) {
+      currentRawChords.forEach(c => {
+        if (c.isRest) return;
+        const colorDegree = Number(c.root);
+        const sym = getChordSymbol(c, colorKey);
+        
+        if (!symbolToRoot.has(sym)) symbolToRoot.set(sym, colorDegree);
+        if (!symbolToBorrowed.has(sym)) symbolToBorrowed.set(sym, c.borrowed);
+        if (!symbolToLetter.has(sym)) symbolToLetter.set(sym, getChordLetterName(c, colorKey));
+      });
     }
 
     const byCount = new Map();
@@ -1742,6 +1746,7 @@ export function renderChordRing(container, options = {}) {
       previousChord = null;
       activeChord = null;
       activeChordSymbol = null;
+      currentRawChords = chords || [];
       if (key) {
         currentKey = key;
         updateKeyDisplay(key);
