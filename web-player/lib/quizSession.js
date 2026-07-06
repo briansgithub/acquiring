@@ -2,6 +2,8 @@ import { QuizScheduler } from "./quizScheduler.js";
 import { poolStats } from "../components/quiz/quizPool.js";
 import { QuizSymbolStats } from "./quizSymbolStats.js";
 
+const SESSION_KEY = "sr_quiz_session_v1";
+
 function loadSession() {
   try {
     return JSON.parse(localStorage.getItem(SESSION_KEY) || "{}");
@@ -41,7 +43,6 @@ export class QuizSession {
   }
 
   notifyQuestion(songKey, payload = {}) {
-    this.symbolStats.trackAsked(songKey, payload);
     if (payload.transition) {
       this.currentTarget = { type: "transition", key: payload.transition };
     } else if (payload.symbols?.length === 1) {

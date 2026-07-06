@@ -1,3 +1,4 @@
+import { chordToolsExtrasHtml } from "../quizChordInspect.js";
 import {
   capturePitchFrames,
   median,
@@ -196,33 +197,56 @@ export function sm2Quality(cents, threshold) {
 }
 
 export function requireSong(el, ctx) {
-  const songCtx = ctx.getSongContext();
-  const pool = songCtx?.entries || [];
-  if (!pool.length) {
+  const base = {
+    get songCtx() {
+      return ctx.getSongContext();
+    },
+    get pool() {
+      return this.songCtx?.entries ?? [];
+    },
+  };
+  if (!base.pool.length) {
     el.innerHTML = `<div class="quiz-card"><div class="quiz-prompt">Load a song first.</div></div>`;
     return null;
   }
-  return { songCtx, pool };
+  return base;
 }
 
 export const QUIZ_TOOLTIPS = {
   tonicize: "Play I–IV–V–I in the song's key to orient your ear to the tonal center",
   next: "Load a new question without playing audio",
+  start: "Begin the first question for this drill",
   repeatChord: "Replay the target chord for this question (no key cadence)",
   repeatTransition: "Replay the transition chords for this question (no key cadence)",
   repeatProgression: "Replay the question chords in sequence (no key cadence)",
   repeatCloze: "Replay the progression with the missing chord silent (no key cadence)",
   repeatQuality: "Replay the isolated chord for this question",
+  arpeggio: "Play chords one note at a time (Arp note slider)",
+  showNotes: "Show scale degrees for the target chord",
   repeatArpeggioChord: "Replay the full target chord (no key cadence)",
   repeatArpeggioTone: "Replay the current arpeggio tone to sing",
   singRoot: "Capture your sung root with the microphone and grade pitch accuracy",
   singTone: "Capture your sung tone with the microphone and grade pitch accuracy",
 };
 
-export function keyQuizTransportHtml(prefix, repeatTitle, repeatLabel = "Repeat") {
-  const { tonicize, next } = QUIZ_TOOLTIPS;
-  return `
-    <div class="quiz-row quiz-transport-row">
+export function cueQuestionAudio(playFn) {
+  if (typeof playFn !== "function") return;
+  queueMicrotask(() => playFn());
+}
+
+export function activateQuizTransport(root, prefix) {
+  root.querySelector(`.quiz-transport-start[data-transport="${prefix}"]`)?.classList.add("is-hidden");
+  root.querySelector(`.quiz-transport-row[data-transport="${prefix}"]`)?.classList.remove("is-pending");
+}
+
+export function keyQuizTransportHtml(prefix, repeatTitle, repeatLabel = "Repeat", { chordTools = false } = {}) {
+  const { tonicize, next, start } = QUIZ_TOOLTIPS;
+  const extras = chordTools ? chordToolsExtrasHtml(prefix) : "";
+  return `${extras}
+    <div class="quiz-row quiz-transport-start" data-transport="${prefix}">
+      <button type="button" id="${prefix}-start" class="quiz-start-btn" title="${start}">Start</button>
+    </div>
+    <div class="quiz-row quiz-transport-row is-pending" data-transport="${prefix}">
       <button type="button" id="${prefix}-tonicize" title="${tonicize}">Tonicize</button>
       <button type="button" id="${prefix}-repeat" title="${repeatTitle}">${repeatLabel}</button>
       <button type="button" id="${prefix}-next" title="${next}">Next</button>
@@ -230,6 +254,10 @@ export function keyQuizTransportHtml(prefix, repeatTitle, repeatLabel = "Repeat"
 }
 
 export function wireKeyQuizTransport(root, prefix, { onTonicize, onRepeat, onNext }) {
+  root.querySelector(`#${prefix}-start`)?.addEventListener("click", () => {
+    activateQuizTransport(root, prefix);
+    onNext?.();
+  });
   root.querySelector(`#${prefix}-tonicize`)?.addEventListener("click", onTonicize);
   root.querySelector(`#${prefix}-repeat`)?.addEventListener("click", onRepeat);
   root.querySelector(`#${prefix}-next`)?.addEventListener("click", onNext);

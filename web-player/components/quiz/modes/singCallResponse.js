@@ -1,6 +1,6 @@
+import { mountChordDrillTools } from "../quizChordInspect.js";
 import {
-  mountDifficultyAfter,
-  micGrade,
+  mountDifficultyAfter,  micGrade,
   sm2Quality,
   DIFFICULTY_TO_CENTS,
   requireSong,
@@ -11,6 +11,7 @@ import {
   QUIZ_TOOLTIPS,
   quizNotify,
   quizRecord,
+  cueQuestionAudio,
 } from "./modeUtils.js";
 
 const LABELS = ["root", "3rd", "5th", "7th", "9th", "11th", "13th"];
@@ -21,14 +22,13 @@ export const singCallResponse = {
   render(el, ctx) {
     const base = requireSong(el, ctx);
     if (!base) return {};
-    const { songCtx, pool } = base;
     let target = null;
     let toneIdx = 1;
 
     el.innerHTML = `
       <div class="quiz-card">
         <div class="quiz-prompt" id="sc-prompt">Sing the requested chord tone.</div>
-        ${keyQuizTransportHtml("sc", QUIZ_TOOLTIPS.repeatChord)}
+        ${keyQuizTransportHtml("sc", QUIZ_TOOLTIPS.repeatChord, "Repeat", { chordTools: true })}
         <div class="quiz-row">
           <button type="button" id="sc-sing" title="${QUIZ_TOOLTIPS.singTone}">Sing</button>
         </div>
@@ -43,6 +43,7 @@ export const singCallResponse = {
     const feedbackEl = el.querySelector("#sc-feedback");
     const meterEl = el.querySelector("#sc-meter");
     const diffEl = mountDifficultyAfter(promptEl, { type: "pitch", id: "sc-diff" });
+    const chordTools = mountChordDrillTools(el, "sc", ctx, base, () => target);
 
     function pickToneIndex() {
       const len = target?.rootNotes?.length || 0;
@@ -51,23 +52,26 @@ export const singCallResponse = {
     }
 
     function playChord() {
-      if (!target) return;
-      ctx.audio.playChord(target.notes);
+      if (target) chordTools.playEntry(target);
     }
 
     function nextQuestion() {
       feedbackEl.innerHTML = "";
       statusEl.textContent = "";
-      target = ctx.session.pickEntry(pool);
+      chordTools.clearPanels();
+      target = ctx.session.pickEntry(base.pool);
       if (!target?.rootNotes?.length) return;
       toneIdx = pickToneIndex();
       const label = LABELS[toneIdx] || `tone ${toneIdx + 1}`;
       quizNotify(ctx, { symbols: [target.symbol] });
-      promptEl.textContent = `Hear the chord, then sing the ${label}. Tonicize for key context, then Repeat.`;
+      promptEl.innerHTML = `Hear <span class="quiz-chord-sym" data-quiz-symbol="${target.symbol}">${ctx.romanHtml(target.symbol)}</span>, then sing the ${label}.`;
+      chordTools.wireStaticChords(promptEl);
+      chordTools.syncDisplay(target);
+      cueQuestionAudio(playChord);
     }
 
     wireKeyQuizTransport(el, "sc", {
-      onTonicize: () => tonicizeKey(songCtx, ctx.audio),
+      onTonicize: () => tonicizeKey(base.songCtx, ctx.audio),
       onRepeat: playChord,
       onNext: nextQuestion,
     });
@@ -104,7 +108,7 @@ export const singCallResponse = {
       }
     });
 
-    promptEl.textContent = "Press Next for a chord. Use Tonicize for key context, Repeat to hear it.";
+    promptEl.textContent = "Press Start for the first chord. Use Tonicize for key context, Repeat to hear it.";
     return { destroy: () => ctx.audio.cancel() };
   },
 };

@@ -55,6 +55,39 @@ export function createQuizAudio() {
     s.triggerAttackRelease(notes, ms / 1000, now);
   }
 
+  function playArpeggio(notes, { msPerNote = 400, sustainRatio = 0.85, onNote, onDone } = {}) {
+    if (!notes?.length) return { cancel: clearTimers };
+    clearTimers();
+    let cancelled = false;
+    cancelSeq = () => {
+      cancelled = true;
+    };
+
+    const run = async () => {
+      await ensureAudio();
+      if (cancelled) return;
+      const Tone = window.Tone;
+      const s = ensureSynth();
+      notes.forEach((note, i) => {
+        const t = setTimeout(() => {
+          if (cancelled) return;
+          onNote?.(i, note);
+          s.triggerAttackRelease(note, (msPerNote * sustainRatio) / 1000, Tone.now());
+          if (i === notes.length - 1 && onDone) {
+            const doneT = setTimeout(() => {
+              if (!cancelled) onDone();
+            }, msPerNote * 0.5);
+            timers.push(doneT);
+          }
+        }, i * msPerNote);
+        timers.push(t);
+      });
+    };
+    run().catch(() => {});
+
+    return { cancel: clearTimers };
+  }
+
   function playSequence(steps, msPerStep = 850) {
     clearTimers();
     let cancelled = false;
@@ -93,5 +126,5 @@ export function createQuizAudio() {
     return { cancel: clearTimers };
   }
 
-  return { playChord, playSequence, playCadence, playCadenceThen, cancel: clearTimers };
+  return { playChord, playArpeggio, playSequence, playCadence, playCadenceThen, cancel: clearTimers };
 }

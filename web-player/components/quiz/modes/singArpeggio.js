@@ -1,3 +1,4 @@
+import { mountChordDrillTools, chordToolsExtrasHtml } from "../quizChordInspect.js";
 import {
   mountDifficultyAfter,
   micGrade,
@@ -6,9 +7,11 @@ import {
   requireSong,
   feedback,
   tonicizeKey,
+  activateQuizTransport,
   QUIZ_TOOLTIPS,
   quizNotify,
   quizRecord,
+  cueQuestionAudio,
 } from "./modeUtils.js";
 
 const LABELS = ["root", "3rd", "5th", "7th"];
@@ -19,14 +22,17 @@ export const singArpeggio = {
   render(el, ctx) {
     const base = requireSong(el, ctx);
     if (!base) return {};
-    const { songCtx, pool } = base;
     let target = null;
     let toneIdx = 0;
 
     el.innerHTML = `
       <div class="quiz-card">
         <div class="quiz-prompt" id="sa-prompt">Sing the arpeggio tones in order.</div>
-        <div class="quiz-row quiz-transport-row">
+        ${chordToolsExtrasHtml("sa")}
+        <div class="quiz-row quiz-transport-start" data-transport="sa">
+          <button type="button" id="sa-start" class="quiz-start-btn" title="${QUIZ_TOOLTIPS.start}">Start</button>
+        </div>
+        <div class="quiz-row quiz-transport-row is-pending" data-transport="sa">
           <button type="button" id="sa-tonicize" title="${QUIZ_TOOLTIPS.tonicize}">Tonicize</button>
           <button type="button" id="sa-repeat-chord" title="${QUIZ_TOOLTIPS.repeatArpeggioChord}">Repeat chord</button>
           <button type="button" id="sa-repeat-tone" title="${QUIZ_TOOLTIPS.repeatArpeggioTone}">Repeat tone</button>
@@ -44,34 +50,41 @@ export const singArpeggio = {
     const resultsEl = el.querySelector("#sa-results");
     const meterEl = el.querySelector("#sa-meter");
     const diffEl = mountDifficultyAfter(promptEl, { type: "pitch", id: "sa-diff" });
+    const chordTools = mountChordDrillTools(el, "sa", ctx, base, () => target);
 
     function playChord() {
-      if (!target) return;
-      ctx.audio.playChord(target.notes);
+      if (target) chordTools.playEntry(target);
     }
 
     function playTone() {
-      const note = target?.rootNotes?.[toneIdx];
-      if (note) ctx.audio.playChord([note], 700);
+      if (!target) return;
+      chordTools.playToneAt(target, toneIdx);
     }
 
-    function updatePrompt() {
+    function renderPrompt() {
       const label = LABELS[toneIdx] || `tone ${toneIdx + 1}`;
-      promptEl.textContent = `Sing the ${label} (${toneIdx + 1}/${target.rootNotes.length})`;
+      promptEl.innerHTML = `Sing the ${label} (${toneIdx + 1}/${target.rootNotes.length}) — <span class="quiz-chord-sym" data-quiz-symbol="${target.symbol}">${ctx.romanHtml(target.symbol)}</span>`;
+      chordTools.wireStaticChords(promptEl);
+      chordTools.syncDisplay(target);
     }
 
     function nextQuestion() {
       resultsEl.innerHTML = "";
       statusEl.textContent = "";
       toneIdx = 0;
-      target = ctx.session.pickEntry(pool);
+      chordTools.clearPanels();
+      target = ctx.session.pickEntry(base.pool);
       if (!target?.rootNotes?.length) return;
       quizNotify(ctx, { symbols: [target.symbol] });
-      updatePrompt();
-      promptEl.textContent += " Tonicize for key context; Repeat chord or tone as needed.";
+      renderPrompt();
+      cueQuestionAudio(playChord);
     }
 
-    el.querySelector("#sa-tonicize").addEventListener("click", () => tonicizeKey(songCtx, ctx.audio));
+    el.querySelector("#sa-start").addEventListener("click", () => {
+      activateQuizTransport(el, "sa");
+      nextQuestion();
+    });
+    el.querySelector("#sa-tonicize").addEventListener("click", () => tonicizeKey(base.songCtx, ctx.audio));
     el.querySelector("#sa-repeat-chord").addEventListener("click", playChord);
     el.querySelector("#sa-repeat-tone").addEventListener("click", playTone);
     el.querySelector("#sa-next").addEventListener("click", nextQuestion);
@@ -110,14 +123,14 @@ export const singArpeggio = {
           });
           feedback(resultsEl, pass, pass ? "Arpeggio complete!" : "Some tones missed.");
         } else {
-          updatePrompt();
+          renderPrompt();
         }
       } catch (err) {
         statusEl.textContent = err?.message || "Mic error";
       }
     });
 
-    promptEl.textContent = "Press Next for a chord. Tonicize for key context; Repeat chord or tone as needed.";
+    promptEl.textContent = "Press Start for the first chord. Tonicize for key context; Repeat chord or tone as needed.";
     return { destroy: () => ctx.audio.cancel() };
   },
 };

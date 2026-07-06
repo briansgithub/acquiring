@@ -1,5 +1,20 @@
-import { pickWeightedProgressionRun, confusableDistractors } from "../quizPool.js";
-import { renderChoices, feedback, shuffle, requireSong, mountDifficultyAfter, keyQuizTransportHtml, wireKeyQuizTransport, tonicizeKey, QUIZ_TOOLTIPS, quizNotify, quizRecord } from "./modeUtils.js";
+import { pickWeightedProgressionRun, songPoolDistractors, songTransitionDistractors } from "../quizPool.js";
+import { mountChordDrillTools } from "../quizChordInspect.js";
+import {
+  renderChoices,
+  feedback,
+  shuffle,
+  requireSong,
+  mountDifficultyAfter,
+  keyQuizTransportHtml,
+  wireKeyQuizTransport,
+  tonicizeKey,
+  QUIZ_TOOLTIPS,
+  quizNotify,
+  quizRecord,
+  cueQuestionAudio,
+} from "./modeUtils.js";
+
 function runBounds(difficulty) {
   if (difficulty === "hard") return { min: 5, max: 6 };
   if (difficulty === "easy") return { min: 4, max: 6 };
@@ -17,7 +32,6 @@ export const cloze = {
   render(el, ctx) {
     const base = requireSong(el, ctx);
     if (!base) return {};
-    const { songCtx, pool } = base;
     let run = null;
     let gapIdx = 0;
     let answered = false;
@@ -26,7 +40,7 @@ export const cloze = {
       <div class="quiz-card">
         <div class="quiz-prompt" id="cz-prompt">Fill in the missing chord.</div>
         <div id="cz-sequence" class="quiz-cloze-sequence"></div>
-        ${keyQuizTransportHtml("cz", QUIZ_TOOLTIPS.repeatCloze)}
+        ${keyQuizTransportHtml("cz", QUIZ_TOOLTIPS.repeatCloze, "Repeat", { chordTools: true })}
         <div id="cz-choices" class="quiz-choices"></div>
         <div id="cz-feedback"></div>
       </div>
@@ -37,35 +51,50 @@ export const cloze = {
     const choicesEl = el.querySelector("#cz-choices");
     const feedbackEl = el.querySelector("#cz-feedback");
     const diffEl = mountDifficultyAfter(promptEl, { id: "cz-diff" });
+    const chordTools = mountChordDrillTools(el, "cz", ctx, base, () =>
+      run?.[gapIdx] ?? null,
+    );
 
     function playMuted() {
       if (!run) return;
-      const steps = run.map((e, i) => (i === gapIdx ? null : e.notes));
-      ctx.audio.playSequence(steps, 850);
+      let i = 0;
+      const gap = Math.max(200, Math.round(chordTools.chordHoldMs() * 0.35));
+      const step = () => {
+        if (i >= run.length) return;
+        if (i === gapIdx) {
+          i += 1;
+          setTimeout(step, gap);
+          return;
+        }
+        const entry = run[i++];
+        chordTools.playEntry(entry, () => setTimeout(step, gap));
+      };
+      step();
     }
 
     function playFull() {
       if (!run) return;
-      ctx.audio.playSequence(
-        run.map((e) => e.notes),
-        850,
-      );
+      const gap = Math.max(200, Math.round(chordTools.chordHoldMs() * 0.35));
+      chordTools.playEntriesSequential(run, gap);
     }
 
     function renderSequence(reveal = false) {
       seqEl.innerHTML = run
         .map((e, i) => {
           if (i === gapIdx && !reveal) return "<span class='quiz-cloze-gap'>?</span>";
-          return `<span class="quiz-cloze-sym">${e.symbol}</span>`;
+          return `<span class="quiz-cloze-sym quiz-chord-sym" data-quiz-symbol="${e.symbol}">${ctx.romanHtml(e.symbol)}</span>`;
         })
         .join(" → ");
+      chordTools.wireStaticChords(seqEl);
     }
 
-    async function showQuestion() {
+    function showQuestion() {
       answered = false;
       feedbackEl.innerHTML = "";
+      chordTools.clearPanels();
       const difficulty = diffEl.value;
       const { min, max } = runBounds(difficulty);
+      const pool = base.pool;
       run = pickWeightedProgressionRun(pool, min, max);
       if (!run) {
         promptEl.textContent = "Section too short for cloze.";
@@ -77,16 +106,15 @@ export const cloze = {
       const answer = run[gapIdx];
       quizNotify(ctx, { symbols: [answer.symbol] });
       renderSequence(false);
-      const corpus = await ctx.getCorpus();
-      const scale = songCtx.scale || songCtx.key?.scale || "major";
       const nWrong = difficulty === "easy" ? 2 : 3;
-      const neighbors = [run[gapIdx - 1]?.symbol, run[gapIdx + 1]?.symbol].filter(Boolean);
+      const fromSymbol = run[gapIdx - 1]?.symbol || run[gapIdx + 1]?.symbol || null;
       const wrong =
-        difficulty === "hard"
-          ? confusableDistractors(corpus, scale, answer.symbol, neighbors, nWrong)
-          : confusableDistractors(corpus, scale, answer.symbol, [], nWrong);
+        difficulty === "hard" && fromSymbol
+          ? songTransitionDistractors(pool, fromSymbol, answer.symbol, nWrong)
+          : songPoolDistractors(pool, answer.symbol, nWrong);
       const symbols = shuffle([answer.symbol, ...wrong]);
-      promptEl.textContent = "Fill in the missing chord. Tonicize for key context, then Repeat.";
+      promptEl.textContent =
+        "Fill in the missing chord. Arpeggio / Show notes target the gap chord.";
       renderChoices(
         choicesEl,
         symbols.map((s) => ({ label: ctx.romanHtml(s), symbol: s })),
@@ -106,14 +134,18 @@ export const cloze = {
         },
         { html: true },
       );
+      chordTools.wireChoices(choicesEl, symbols);
+      chordTools.syncDisplay(answer);
+      cueQuestionAudio(playMuted);
     }
 
     wireKeyQuizTransport(el, "cz", {
-      onTonicize: () => tonicizeKey(songCtx, ctx.audio),
+      onTonicize: () => tonicizeKey(base.songCtx, ctx.audio),
       onRepeat: playMuted,
       onNext: showQuestion,
     });
-    promptEl.textContent = "Press Next for a question. Use Tonicize for key context, Repeat to hear the progression.";
+    promptEl.textContent =
+      "Press Start for the first question. Right-click any chord symbol for arpeggio / notes.";
 
     return { destroy: () => ctx.audio.cancel() };
   },

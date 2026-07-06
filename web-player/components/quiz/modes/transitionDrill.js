@@ -1,9 +1,22 @@
 import {
   pickWeightedTransition,
-  distractorSymbols,
-  transitionTargetDistractors,
+  songPoolDistractors,
+  songTransitionDistractors,
 } from "../quizPool.js";
-import { renderChoices, shuffle, requireSong, mountDifficultyAfter, keyQuizTransportHtml, wireKeyQuizTransport, tonicizeKey, QUIZ_TOOLTIPS, quizNotify, quizRecord } from "./modeUtils.js";
+import { mountChordDrillTools } from "../quizChordInspect.js";
+import {
+  renderChoices,
+  shuffle,
+  requireSong,
+  mountDifficultyAfter,
+  keyQuizTransportHtml,
+  wireKeyQuizTransport,
+  tonicizeKey,
+  QUIZ_TOOLTIPS,
+  quizNotify,
+  quizRecord,
+  cueQuestionAudio,
+} from "./modeUtils.js";
 
 export const transitionDrill = {
   id: "mode-transition",
@@ -11,18 +24,16 @@ export const transitionDrill = {
   render(el, ctx) {
     const base = requireSong(el, ctx);
     if (!base) return {};
-    const { songCtx, pool } = base;
 
     let pair = null;
     let step = 0;
     let firstPick = null;
     let answered = false;
-    let corpus = null;
 
     el.innerHTML = `
       <div class="quiz-card">
         <div class="quiz-prompt" id="td-prompt">Identify the chord transition.</div>
-        ${keyQuizTransportHtml("td", QUIZ_TOOLTIPS.repeatTransition)}
+        ${keyQuizTransportHtml("td", QUIZ_TOOLTIPS.repeatTransition, "Repeat", { chordTools: true })}
         <div id="td-choices" class="quiz-choices"></div>
         <div id="td-feedback"></div>
       </div>
@@ -32,7 +43,9 @@ export const transitionDrill = {
     const choicesEl = el.querySelector("#td-choices");
     const feedbackEl = el.querySelector("#td-feedback");
     const diffEl = mountDifficultyAfter(promptEl, { id: "td-diff" });
-    const scale = () => songCtx.scale || songCtx.key?.scale || "major";
+    const chordTools = mountChordDrillTools(el, "td", ctx, base, () =>
+      pair ? (step === 0 ? pair[0] : pair[1]) : null,
+    );
 
     function difficulty() {
       return diffEl.value;
@@ -48,12 +61,13 @@ export const transitionDrill = {
     }
 
     function priorInPool(entry) {
+      const pool = base.pool;
       const idx = pool.findIndex((e) => e.chord === entry.chord);
       return idx > 0 ? pool[idx - 1].symbol : null;
     }
 
-    async function symbolChoices(answerSymbol, stepIndex) {
-      if (!corpus) corpus = await ctx.getCorpus();
+    function symbolChoices(answerSymbol, stepIndex) {
+      const pool = base.pool;
       const n = choiceCount() - 1;
       let fromSymbol = null;
       if (difficulty() === "hard") {
@@ -61,9 +75,17 @@ export const transitionDrill = {
       }
       const d =
         difficulty() === "hard" && fromSymbol
-          ? transitionTargetDistractors(corpus, scale(), fromSymbol, answerSymbol, n)
-          : distractorSymbols(corpus, scale(), answerSymbol, n);
+          ? songTransitionDistractors(pool, fromSymbol, answerSymbol, n)
+          : songPoolDistractors(pool, answerSymbol, n);
       return shuffle([answerSymbol, ...d]);
+    }
+
+    function spanRoman(symbol) {
+      const span = document.createElement("span");
+      span.className = "quiz-chord-sym";
+      span.dataset.quizSymbol = symbol;
+      span.innerHTML = ctx.romanHtml(symbol);
+      return span;
     }
 
     function revealTransition(ok) {
@@ -78,26 +100,21 @@ export const transitionDrill = {
         spanRoman(to),
       );
       feedbackEl.appendChild(div);
-    }
-
-    function spanRoman(symbol) {
-      const span = document.createElement("span");
-      span.innerHTML = ctx.romanHtml(symbol);
-      return span;
+      chordTools.wireStaticChords(feedbackEl);
     }
 
     function playPair() {
       if (!pair) return;
       const d = difficulty();
       const msPerStep = d === "easy" ? 1200 : 850;
-      ctx.audio.playSequence([pair[0].notes, pair[1].notes], msPerStep);
+      chordTools.playEntriesSequential(pair, msPerStep);
     }
 
-    async function renderStep() {
+    function renderStep() {
       choicesEl.innerHTML = "";
       promptEl.textContent = stepPrompt();
       const answer = step === 0 ? pair[0].symbol : pair[1].symbol;
-      const symbols = await symbolChoices(answer, step);
+      const symbols = symbolChoices(answer, step);
 
       renderChoices(
         choicesEl,
@@ -132,15 +149,18 @@ export const transitionDrill = {
       choicesEl.querySelectorAll(".quiz-choice-btn").forEach((btn, i) => {
         btn.innerHTML = ctx.romanHtml(symbols[i]);
       });
+      chordTools.wireChoices(choicesEl, symbols);
+      chordTools.syncDisplay(pair[step]);
     }
 
-    async function showQuestion() {
+    function showQuestion() {
       answered = false;
       step = 0;
       firstPick = null;
       feedbackEl.innerHTML = "";
+      chordTools.clearPanels();
 
-      pair = pickWeightedTransition(pool);
+      pair = pickWeightedTransition(base.pool);
       if (!pair) {
         promptEl.textContent = "Need at least 2 chords in the section.";
         choicesEl.innerHTML = "";
@@ -148,17 +168,18 @@ export const transitionDrill = {
       }
       const transitionKey = `${pair[0].symbol}=>${pair[1].symbol}`;
       quizNotify(ctx, { transition: transitionKey });
-      corpus = await ctx.getCorpus();
-      promptEl.textContent = `${stepPrompt()} Tonicize for key context, then Repeat.`;
-      await renderStep();
+      promptEl.textContent = `${stepPrompt()} Arpeggio checkbox applies to Repeat.`;
+      renderStep();
+      cueQuestionAudio(playPair);
     }
 
     wireKeyQuizTransport(el, "td", {
-      onTonicize: () => tonicizeKey(songCtx, ctx.audio),
+      onTonicize: () => tonicizeKey(base.songCtx, ctx.audio),
       onRepeat: playPair,
       onNext: showQuestion,
     });
-    promptEl.textContent = "Press Next for a question. Use Tonicize for key context, Repeat for the transition.";
+    promptEl.textContent =
+      "Press Start for the first question. Arpeggio targets the chord for the current step.";
 
     return { destroy: () => ctx.audio.cancel() };
   },

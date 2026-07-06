@@ -1,6 +1,6 @@
+import { mountChordDrillTools } from "../quizChordInspect.js";
 import {
-  mountDifficultyAfter,
-  micGrade,
+  mountDifficultyAfter,  micGrade,
   sm2Quality,
   DIFFICULTY_TO_CENTS,
   requireSong,
@@ -11,6 +11,7 @@ import {
   QUIZ_TOOLTIPS,
   quizNotify,
   quizRecord,
+  cueQuestionAudio,
 } from "./modeUtils.js";
 
 export const singRoot = {
@@ -19,13 +20,12 @@ export const singRoot = {
   render(el, ctx) {
     const base = requireSong(el, ctx);
     if (!base) return {};
-    const { songCtx, pool } = base;
     let target = null;
 
     el.innerHTML = `
       <div class="quiz-card">
         <div class="quiz-prompt" id="sr-prompt">Sing the chord root.</div>
-        ${keyQuizTransportHtml("sr", QUIZ_TOOLTIPS.repeatChord)}
+        ${keyQuizTransportHtml("sr", QUIZ_TOOLTIPS.repeatChord, "Repeat", { chordTools: true })}
         <div class="quiz-row">
           <button type="button" id="sr-sing" title="${QUIZ_TOOLTIPS.singRoot}">Sing Root</button>
         </div>
@@ -40,23 +40,27 @@ export const singRoot = {
     const feedbackEl = el.querySelector("#sr-feedback");
     const meterEl = el.querySelector("#sr-meter");
     const diffEl = mountDifficultyAfter(promptEl, { type: "pitch", id: "sr-diff" });
+    const chordTools = mountChordDrillTools(el, "sr", ctx, base, () => target);
 
     function playTarget() {
-      if (!target) return;
-      ctx.audio.playChord(target.notes);
+      if (target) chordTools.playEntry(target);
     }
 
     function nextQuestion() {
       feedbackEl.innerHTML = "";
       statusEl.textContent = "";
-      target = ctx.session.pickEntry(pool);
+      chordTools.clearPanels();
+      target = ctx.session.pickEntry(base.pool);
       if (!target?.rootNotes?.[0]) return;
       quizNotify(ctx, { symbols: [target.symbol] });
-      promptEl.textContent = `Sing the root of ${target.symbol}. Tonicize for key context, then Repeat.`;
+      promptEl.innerHTML = `Sing the root of <span class="quiz-chord-sym" data-quiz-symbol="${target.symbol}">${ctx.romanHtml(target.symbol)}</span>.`;
+      chordTools.wireStaticChords(promptEl);
+      chordTools.syncDisplay(target);
+      cueQuestionAudio(playTarget);
     }
 
     wireKeyQuizTransport(el, "sr", {
-      onTonicize: () => tonicizeKey(songCtx, ctx.audio),
+      onTonicize: () => tonicizeKey(base.songCtx, ctx.audio),
       onRepeat: playTarget,
       onNext: nextQuestion,
     });
@@ -92,7 +96,7 @@ export const singRoot = {
       }
     });
 
-    promptEl.textContent = "Press Next for a chord. Use Tonicize for key context, Repeat to hear it.";
+    promptEl.textContent = "Press Start for the first chord. Use Tonicize for key context, Repeat to hear it.";
     return { destroy: () => ctx.audio.cancel() };
   },
 };

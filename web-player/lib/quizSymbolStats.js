@@ -43,40 +43,48 @@ export class QuizSymbolStats {
     this.persisted = loadPersisted();
     this.session = emptyBucket();
     this.currentTarget = null;
+    this.lastUpdated = null;
   }
 
-  trackAsked(songKey, payload = {}) {
+  #markUpdated(kind, key) {
+    if (!key) return;
+    this.lastUpdated = { kind, key };
+  }
+
+  trackAnswer(songKey, payload = {}, correct) {
     const { symbols = [], transition = null } = payload;
     for (const sym of symbols) {
       bump(this.session, "symbol", sym, "asked");
       if (songKey) bump(this.songBucket(songKey), "symbol", sym, "asked");
       bump(this.persisted.global, "symbol", sym, "asked");
+      if (correct) {
+        bump(this.session, "symbol", sym, "correct");
+        if (songKey) bump(this.songBucket(songKey), "symbol", sym, "correct");
+        bump(this.persisted.global, "symbol", sym, "correct");
+      }
     }
     if (transition) {
       bump(this.session, "transition", transition, "asked");
       if (songKey) bump(this.songBucket(songKey), "transition", transition, "asked");
       bump(this.persisted.global, "transition", transition, "asked");
+      if (correct) {
+        bump(this.session, "transition", transition, "correct");
+        if (songKey) bump(this.songBucket(songKey), "transition", transition, "correct");
+        bump(this.persisted.global, "transition", transition, "correct");
+      }
     }
+    this.#markAnswered(payload);
     savePersisted(this.persisted);
   }
 
-  trackAnswer(songKey, payload = {}, correct) {
+  #markAnswered(payload) {
     const { symbols = [], transition = null } = payload;
-    if (!correct) {
-      savePersisted(this.persisted);
+    if (transition) {
+      this.#markUpdated("transition", transition);
       return;
     }
-    for (const sym of symbols) {
-      bump(this.session, "symbol", sym, "correct");
-      if (songKey) bump(this.songBucket(songKey), "symbol", sym, "correct");
-      bump(this.persisted.global, "symbol", sym, "correct");
-    }
-    if (transition) {
-      bump(this.session, "transition", transition, "correct");
-      if (songKey) bump(this.songBucket(songKey), "transition", transition, "correct");
-      bump(this.persisted.global, "transition", transition, "correct");
-    }
-    savePersisted(this.persisted);
+    const sym = symbols[symbols.length - 1];
+    if (sym) this.#markUpdated("symbol", sym);
   }
 
   setCurrentTarget(target) {

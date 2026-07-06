@@ -1,24 +1,40 @@
 import {
-  distractorSymbols,
-  diatonicDistractors,
-  transitionTargetDistractors,
+  chordIdentityKey,
+  songDiatonicDistractors,
+  songPoolDistractors,
+  songTransitionDistractors,
 } from "../quizPool.js";
-import { renderChoices, feedback, shuffle, requireSong, mountDifficultyAfter, keyQuizTransportHtml, wireKeyQuizTransport, tonicizeKey, QUIZ_TOOLTIPS, quizNotify, quizRecord } from "./modeUtils.js";
+import { mountChordDrillTools } from "../quizChordInspect.js";
+import {
+  renderChoices,
+  feedback,
+  shuffle,
+  requireSong,
+  mountDifficultyAfter,
+  keyQuizTransportHtml,
+  wireKeyQuizTransport,
+  tonicizeKey,
+  QUIZ_TOOLTIPS,
+  quizNotify,
+  quizRecord,
+  cueQuestionAudio,
+} from "./modeUtils.js";
 
 function priorSymbol(pool, target) {
-  const idx = pool.findIndex((e) => e.chord === target.chord);
+  const id = chordIdentityKey(target.chord);
+  const idx = pool.findIndex((e) => chordIdentityKey(e.chord) === id);
   return idx > 0 ? pool[idx - 1].symbol : null;
 }
 
-async function buildDistractors(difficulty, corpus, scale, target, pool) {
+function buildDistractors(difficulty, scale, target, pool) {
   if (difficulty === "easy") {
-    return diatonicDistractors(scale, target.symbol, 2);
+    return songDiatonicDistractors(pool, scale, target.symbol, 2);
   }
   if (difficulty === "hard") {
     const from = priorSymbol(pool, target);
-    return transitionTargetDistractors(corpus, scale, from, target.symbol, 3);
+    return songTransitionDistractors(pool, from, target.symbol, 3);
   }
-  return distractorSymbols(corpus, scale, target.symbol, 3);
+  return songPoolDistractors(pool, target.symbol, 3);
 }
 
 export const degreeId = {
@@ -27,14 +43,13 @@ export const degreeId = {
   render(el, ctx) {
     const base = requireSong(el, ctx);
     if (!base) return {};
-    const { songCtx, pool } = base;
     let answered = false;
     let target = null;
 
     el.innerHTML = `
       <div class="quiz-card">
         <div class="quiz-prompt" id="di-prompt">Identify the chord.</div>
-        ${keyQuizTransportHtml("di", QUIZ_TOOLTIPS.repeatChord)}
+        ${keyQuizTransportHtml("di", QUIZ_TOOLTIPS.repeatChord, "Repeat", { chordTools: true })}
         <div id="di-choices" class="quiz-choices"></div>
         <div id="di-feedback"></div>
       </div>
@@ -44,20 +59,23 @@ export const degreeId = {
     const choicesEl = el.querySelector("#di-choices");
     const feedbackEl = el.querySelector("#di-feedback");
     const diffEl = mountDifficultyAfter(promptEl, { id: "di-diff" });
-    const scale = () => songCtx.scale || songCtx.key?.scale || "major";
+    const chordTools = mountChordDrillTools(el, "di", ctx, base, () => target);
+    const scale = () => base.songCtx.scale || base.songCtx.key?.scale || "major";
 
-    async function showQuestion() {
+    function showQuestion() {
       answered = false;
       feedbackEl.innerHTML = "";
+      chordTools.clearPanels();
+      const pool = base.pool;
       target = ctx.session.pickEntry(pool);
       if (!target) return;
       quizNotify(ctx, { symbols: [target.symbol] });
 
-      const corpus = await ctx.getCorpus();
-      const wrong = await buildDistractors(diffEl.value, corpus, scale(), target, pool);
+      const wrong = buildDistractors(diffEl.value, scale(), target, pool);
       const symbols = shuffle([target.symbol, ...wrong]);
 
-      promptEl.textContent = "What Roman numeral chord did you hear? Tonicize for key context, then Repeat.";
+      promptEl.textContent =
+        "What Roman numeral chord did you hear? Tonicize or Repeat (honors Arpeggio checkbox).";
 
       renderChoices(
         choicesEl,
@@ -80,16 +98,18 @@ export const degreeId = {
         },
         { html: true },
       );
+      chordTools.wireChoices(choicesEl, symbols);
+      chordTools.syncDisplay(target);
+      cueQuestionAudio(() => chordTools.playEntry(target));
     }
 
     wireKeyQuizTransport(el, "di", {
-      onTonicize: () => tonicizeKey(songCtx, ctx.audio),
-      onRepeat: () => {
-        if (target) ctx.audio.playChord(target.notes);
-      },
+      onTonicize: () => tonicizeKey(base.songCtx, ctx.audio),
+      onRepeat: () => chordTools.playEntry(target),
       onNext: showQuestion,
     });
-    promptEl.textContent = "Press Next for a question. Use Tonicize for key context, Repeat for the chord.";
+    promptEl.textContent =
+      "Press Start for the first question. Use Tonicize, Repeat, or Arpeggio — tools stay active after answering.";
 
     return { destroy: () => ctx.audio.cancel() };
   },

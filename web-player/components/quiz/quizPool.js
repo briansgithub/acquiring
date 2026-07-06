@@ -186,6 +186,48 @@ export function diatonicDistractors(scale, excludeSymbol, n = 3) {
   return shuffle(fallback).slice(0, n);
 }
 
+export function songPoolSymbolCandidates(pool, excludeSymbol = null) {
+  const stats = poolStats(pool);
+  const seen = new Set();
+  const out = [];
+  for (const entry of pool) {
+    if (!entry.symbol || entry.symbol === excludeSymbol || seen.has(entry.symbol)) continue;
+    seen.add(entry.symbol);
+    out.push({ symbol: entry.symbol, count: stats.counts.get(entry.symbol) || 1 });
+  }
+  return out;
+}
+
+export function songPoolDistractors(pool, excludeSymbol, n = 3) {
+  const candidates = songPoolSymbolCandidates(pool, excludeSymbol);
+  if (!candidates.length) return [];
+  return weightedSymbolPick(candidates, Math.min(n, candidates.length));
+}
+
+export function songDiatonicDistractors(pool, scale, excludeSymbol, n = 3) {
+  const diatonic = new Set(DIATONIC[scale] || DIATONIC.major);
+  const fromSong = songPoolSymbolCandidates(pool, excludeSymbol).filter((c) =>
+    diatonic.has(c.symbol),
+  );
+  if (fromSong.length >= n) return weightedSymbolPick(fromSong, n);
+  const fallback = songPoolDistractors(pool, excludeSymbol, n);
+  return [...new Set(fallback)].slice(0, n);
+}
+
+export function songTransitionDistractors(pool, fromSymbol, excludeSymbol, n = 3) {
+  if (!fromSymbol) return songPoolDistractors(pool, excludeSymbol, n);
+  const stats = poolStats(pool);
+  const candidates = [];
+  for (const [key, count] of stats.transitions) {
+    const [from, to] = key.split("=>");
+    if (from === fromSymbol && to !== excludeSymbol) {
+      candidates.push({ symbol: to, count });
+    }
+  }
+  if (candidates.length >= n) return weightedSymbolPick(candidates, n);
+  return songPoolDistractors(pool, excludeSymbol, n);
+}
+
 export function transitionTargetDistractors(
   corpus,
   scale,
@@ -246,6 +288,11 @@ export function distractorSymbols(corpus, scale, excludeSymbol, n = 3) {
   }
   const fallback = (DIATONIC[scale] || DIATONIC.major).filter((s) => s !== excludeSymbol);
   return shuffle(fallback).slice(0, n);
+}
+
+export function findPoolEntry(pool, symbol) {
+  if (!pool?.length || !symbol) return null;
+  return pool.find((e) => e.symbol === symbol) ?? null;
 }
 
 export function buildSongEntries(rawChords, sectionKeys, fallbackKey, interpret) {

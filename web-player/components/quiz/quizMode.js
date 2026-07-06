@@ -7,6 +7,7 @@ import { singRoot } from "./modes/singRoot.js";
 import { singArpeggio } from "./modes/singArpeggio.js";
 import { singCallResponse } from "./modes/singCallResponse.js";
 import { renderQuizFreqPanel } from "./quizFreqPanel.js";
+import { mountWorkspaceChordMenu } from "./quizChordInspect.js";
 
 const MODES = [
   qualityFlash,
@@ -23,9 +24,9 @@ const IDLE_HTML = `
   <div class="quiz-idle-prompt quiz-prompt">
     <strong>Start a drill</strong><br />
     1. Pick a mode tab above<br />
-    2. Press <em>Next</em> to load a question (no audio yet)<br />
+    2. Press <em>Start</em> on a mode tab to load the first question<br />
     3. <em>Tonicize</em> for key context, then <em>Repeat</em> to hear the prompt<br />
-    4. Answer or sing — stats update in the table above
+    4. Answer or sing — all choices come from this section's chords
   </div>`;
 
 export function renderQuizMode(container, ctx) {
@@ -34,15 +35,23 @@ export function renderQuizMode(container, ctx) {
 
   container.innerHTML = `
     <div class="quiz-workspace">
-      <div class="quiz-song-banner" id="quiz-song-banner"></div>
-      <div class="quiz-mode-tabs" id="quiz-mode-tabs"></div>
+      <div class="quiz-top-bar">
+        <div class="quiz-song-title" id="quiz-song-title"></div>
+        <div class="quiz-song-meta" id="quiz-song-meta">
+          <div class="quiz-song-banner" id="quiz-song-banner"></div>
+          <div class="quiz-section-bar" id="quiz-section-bar"></div>
+        </div>
+      </div>
       <div class="quiz-stats-top" id="quiz-freq-mount"></div>
+      <div class="quiz-mode-tabs" id="quiz-mode-tabs"></div>
       <div class="quiz-session-header" id="quiz-session-header"></div>
       <div class="quiz-mode-body" id="quiz-mode-body"></div>
     </div>
   `;
 
+  const songTitleEl = container.querySelector("#quiz-song-title");
   const songBannerEl = container.querySelector("#quiz-song-banner");
+  const sectionBarEl = container.querySelector("#quiz-section-bar");
   const freqMount = container.querySelector("#quiz-freq-mount");
   const headerEl = container.querySelector("#quiz-session-header");
   const tabsEl = container.querySelector("#quiz-mode-tabs");
@@ -54,17 +63,50 @@ export function renderQuizMode(container, ctx) {
     updateHeader();
   };
 
-  function updateSongBanner() {
-    const label = ctx.getSongLabel?.();
-    const stats = ctx.getSectionStats?.();
-    songBannerEl.classList.toggle("is-empty", !label);
-    if (!label) {
-      songBannerEl.textContent =
-        "No song loaded — expand Songs (left) or switch to Player to load one";
+  function updateSectionBar() {
+    const sections = ctx.getSections?.() ?? [];
+    const idx = ctx.getSectionIndex?.() ?? 0;
+    if (!sections.length) {
+      sectionBarEl.innerHTML = "";
       return;
     }
-    const chordNote = stats?.total ? ` · ${stats.total} chords` : "";
-    songBannerEl.textContent = `${label}${chordNote}`;
+    const options = sections
+      .map(
+        (s, i) =>
+          `<option value="${i}"${i === idx ? " selected" : ""}>${s.name || `Section ${i + 1}`}</option>`,
+      )
+      .join("");
+    sectionBarEl.innerHTML = `
+      <label class="quiz-section-label" for="quiz-section-select">Section</label>
+      <select id="quiz-section-select" class="select quiz-select quiz-section-select" title="Switch section for this song">${options}</select>
+      <span class="quiz-section-hint" title="Expand the Songs strip on the left (») to change songs">Songs: left panel »</span>
+    `;
+    const sel = sectionBarEl.querySelector("#quiz-section-select");
+    sel?.addEventListener("change", () => {
+      const next = Number(sel.value);
+      if (Number.isFinite(next)) ctx.setSectionIndex?.(next);
+    });
+  }
+
+  mountWorkspaceChordMenu(container.querySelector(".quiz-workspace"), ctx);
+
+  function updateSongBanner() {
+    const title = ctx.getSongTitle?.();
+    const stats = ctx.getSectionStats?.();
+    const sectionOnly = ctx.getSectionName?.();
+
+    songTitleEl.classList.toggle("is-empty", !title);
+    if (!title) {
+      songTitleEl.textContent = "No song loaded";
+      songBannerEl.textContent =
+        "Expand Songs (left ») or switch to Player to load one";
+      return;
+    }
+
+    songTitleEl.textContent = title;
+    const chordNote = stats?.total ? `${stats.total} chords` : "";
+    const sectionLabel = sectionOnly ? `Section: ${sectionOnly}` : "";
+    songBannerEl.textContent = [sectionLabel, chordNote].filter(Boolean).join(" · ");
   }
 
   function updateHeader() {
@@ -76,14 +118,19 @@ export function renderQuizMode(container, ctx) {
     headerEl.textContent = `${active.label} — streak ${s.streak} (best ${s.bestStreak}) · ${s.accuracy}%`;
   }
 
+  function refreshChrome() {
+    updateSongBanner();
+    updateSectionBar();
+    updateHeader();
+    freqPanel.refresh();
+  }
+
   function mountMode(mode) {
     activeHandle?.destroy?.();
     active = mode;
     bodyEl.innerHTML = "";
     activeHandle = mode.render(bodyEl, ctx) || {};
-    updateSongBanner();
-    updateHeader();
-    freqPanel.refresh();
+    refreshChrome();
     for (const btn of tabsEl.querySelectorAll(".quiz-mode-tab")) {
       btn.classList.toggle("active", btn.dataset.modeId === mode.id);
     }
@@ -100,15 +147,15 @@ export function renderQuizMode(container, ctx) {
   }
 
   bodyEl.innerHTML = IDLE_HTML;
-  updateSongBanner();
-  updateHeader();
-  freqPanel.refresh();
+  refreshChrome();
 
   return {
-    refresh() {
-      updateSongBanner();
-      updateHeader();
-      freqPanel.refresh();
+    refresh(opts = {}) {
+      if (opts.remount && active) {
+        mountMode(active);
+        return;
+      }
+      refreshChrome();
     },
     destroy() {
       activeHandle?.destroy?.();

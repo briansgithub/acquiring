@@ -1,5 +1,3 @@
-const VIEW_KEY = "sr_quiz_stats_view";
-
 function statPair(correct, asked) {
   if (!asked) return "—";
   return `${correct}/${asked}`;
@@ -10,40 +8,32 @@ export function renderQuizFreqPanel(container, ctx) {
   panel.id = "quiz-freq-panel";
   panel.className = "quiz-freq-panel";
   panel.innerHTML = `
-    <div class="quiz-freq-toolbar">
-      <div class="quiz-freq-segment" role="group" aria-label="Stats view">
-        <button type="button" class="quiz-freq-seg active" data-view="chords">Chords</button>
-        <button type="button" class="quiz-freq-seg" data-view="transitions">Transitions</button>
-      </div>
-      <span class="quiz-freq-hint">Section distribution · drills weighted by frequency</span>
+    <div class="quiz-freq-dual">
+      <section class="quiz-freq-section">
+        <h3 class="quiz-freq-section-title">Chords</h3>
+        <div id="quiz-freq-chords"></div>
+      </section>
+      <section class="quiz-freq-section">
+        <h3 class="quiz-freq-section-title">Transitions</h3>
+        <div id="quiz-freq-trans"></div>
+      </section>
     </div>
-    <div class="quiz-freq-table-wrap" id="quiz-freq-table-wrap"></div>
   `;
   container.appendChild(panel);
 
-  let activeView = sessionStorage.getItem(VIEW_KEY) || "chords";
-  const tableWrap = panel.querySelector("#quiz-freq-table-wrap");
-  const segBtns = [...panel.querySelectorAll(".quiz-freq-seg")];
+  const chordsEl = panel.querySelector("#quiz-freq-chords");
+  const transEl = panel.querySelector("#quiz-freq-trans");
 
-  function setView(view) {
-    activeView = view;
-    sessionStorage.setItem(VIEW_KEY, view);
-    for (const btn of segBtns) {
-      btn.classList.toggle("active", btn.dataset.view === view);
+  function lastUpdated() {
+    return ctx.session?.symbolStats?.lastUpdated ?? null;
+  }
+
+  function rowClasses(kind, rowKey) {
+    const recent = lastUpdated();
+    if (recent?.kind === kind && recent.key === rowKey) {
+      return "quiz-freq-row-recent";
     }
-    refresh();
-  }
-
-  for (const btn of segBtns) {
-    btn.addEventListener("click", () => setView(btn.dataset.view));
-    btn.classList.toggle("active", btn.dataset.view === activeView);
-  }
-
-  function isRowActive(rowKey) {
-    const t = ctx.session?.currentTarget;
-    if (!t) return false;
-    if (activeView === "chords") return t.type === "symbol" && t.key === rowKey;
-    return t.type === "transition" && t.key === rowKey;
+    return "";
   }
 
   function compactRows(rows) {
@@ -56,72 +46,62 @@ export function renderQuizFreqPanel(container, ctx) {
     );
   }
 
+  function renderTable(sectionEl, rows, kind, labelFn) {
+    if (!rows.length) {
+      sectionEl.innerHTML = '<div class="quiz-freq-empty">No data for this section.</div>';
+      return;
+    }
+
+    const useTwoCols = rows.length > 8;
+    sectionEl.innerHTML = `
+      <div class="quiz-freq-tbl${useTwoCols ? " quiz-freq-tbl-split" : ""}">
+        <div class="quiz-freq-tbl-hd">
+          <span class="quiz-freq-col-sym">Symbol</span>
+          <span class="quiz-freq-col-n" title="Count in section">#</span>
+          <span class="quiz-freq-col-pct" title="Section frequency">%</span>
+          <span class="quiz-freq-col-stat" title="Session correct/asked">Sess</span>
+          <span class="quiz-freq-col-stat" title="This song correct/asked">Song</span>
+          <span class="quiz-freq-col-stat" title="All songs correct/asked">All</span>
+        </div>
+        <div class="quiz-freq-tbl-body">
+          ${rows
+            .map((r) => {
+              const key = kind === "symbol" ? r.symbol : r.key;
+              return `<div class="quiz-freq-tbl-row ${rowClasses(kind, key)}" data-key="${key}">
+                <span class="quiz-freq-col-sym quiz-freq-cell-sym">${labelFn(r)}</span>
+                <span class="quiz-freq-col-n">${r.expectedCount}</span>
+                <span class="quiz-freq-col-pct">${r.expectedPct}</span>
+                <span class="quiz-freq-col-stat">${statPair(r.sessionCorrect, r.sessionAsked)}</span>
+                <span class="quiz-freq-col-stat">${statPair(r.songCorrect, r.songAsked)}</span>
+                <span class="quiz-freq-col-stat">${statPair(r.globalCorrect, r.globalAsked)}</span>
+              </div>`;
+            })
+            .join("")}
+        </div>
+      </div>`;
+  }
+
   function refresh() {
     const songKey = ctx.getSongKey?.();
     const stats = ctx.getSectionStats?.();
     if (!stats?.total || !songKey) {
-      tableWrap.innerHTML =
-        '<div class="quiz-freq-empty">Load a song to see section stats.</div>';
+      chordsEl.innerHTML = '<div class="quiz-freq-empty">Load a song to see section stats.</div>';
+      transEl.innerHTML = "";
       return;
     }
 
-    if (activeView === "chords") {
-      const rows = compactRows(ctx.session.mergedChordRows(songKey, stats, ctx.romanHtml));
-      if (!rows.length) {
-        tableWrap.innerHTML = '<div class="quiz-freq-empty">No chord data.</div>';
-        return;
-      }
-      tableWrap.innerHTML = `
-        <table class="quiz-freq-table">
-          <thead><tr>
-            <th>Sym</th><th>#</th><th>%</th>
-            <th title="Session: correct/asked">Sess</th>
-            <th title="This song: correct/asked">Song</th>
-            <th title="All songs: correct/asked">All</th>
-          </tr></thead>
-          <tbody>${rows
-            .map(
-              (r) => `<tr class="${isRowActive(r.symbol) ? "quiz-freq-row-active" : ""}">
-              <td class="quiz-freq-symbol">${r.labelHtml}</td>
-              <td>${r.expectedCount}</td>
-              <td class="quiz-freq-pct-num">${r.expectedPct}</td>
-              <td>${statPair(r.sessionCorrect, r.sessionAsked)}</td>
-              <td>${statPair(r.songCorrect, r.songAsked)}</td>
-              <td>${statPair(r.globalCorrect, r.globalAsked)}</td>
-            </tr>`,
-            )
-            .join("")}</tbody>
-        </table>`;
-      return;
-    }
+    const chordRows = compactRows(ctx.session.mergedChordRows(songKey, stats, ctx.romanHtml));
+    renderTable(
+      chordsEl,
+      chordRows,
+      "symbol",
+      (r) => `<span class="quiz-chord-sym" data-quiz-symbol="${r.symbol}">${r.labelHtml}</span>`,
+    );
 
-    const rows = compactRows(ctx.session.mergedTransitionRows(songKey, stats));
-    if (!rows.length) {
-      tableWrap.innerHTML = '<div class="quiz-freq-empty">No transitions in section.</div>';
-      return;
-    }
-    tableWrap.innerHTML = `
-      <table class="quiz-freq-table">
-        <thead><tr>
-          <th>Move</th><th>#</th><th>%</th>
-          <th title="Session: correct/asked">Sess</th>
-          <th title="This song: correct/asked">Song</th>
-          <th title="All songs: correct/asked">All</th>
-        </tr></thead>
-        <tbody>${rows
-          .map((r) => {
-            const label = `${ctx.romanHtml(r.from)}→${ctx.romanHtml(r.to)}`;
-            return `<tr class="${isRowActive(r.key) ? "quiz-freq-row-active" : ""}">
-              <td class="quiz-freq-symbol">${label}</td>
-              <td>${r.expectedCount}</td>
-              <td class="quiz-freq-pct-num">${r.expectedPct}</td>
-              <td>${statPair(r.sessionCorrect, r.sessionAsked)}</td>
-              <td>${statPair(r.songCorrect, r.songAsked)}</td>
-              <td>${statPair(r.globalCorrect, r.globalAsked)}</td>
-            </tr>`;
-          })
-          .join("")}</tbody>
-      </table>`;
+    const transRows = compactRows(ctx.session.mergedTransitionRows(songKey, stats));
+    renderTable(transEl, transRows, "transition", (r) =>
+      `<span class="quiz-chord-sym" data-quiz-symbol="${r.from}">${ctx.romanHtml(r.from)}</span><span class="quiz-freq-arrow">→</span><span class="quiz-chord-sym" data-quiz-symbol="${r.to}">${ctx.romanHtml(r.to)}</span>`,
+    );
   }
 
   return { refresh, el: panel };

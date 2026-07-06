@@ -426,12 +426,25 @@ function buildQuizSongContext() {
   };
 }
 
-function getLoadedSongLabel() {
+function getLoadedSongTitle() {
+  const song = library[resolveSongIndex(currentSongIdx)];
+  if (!song || !currentRawChords?.length) return null;
+  const artist = song.artist ? `${song.artist} — ` : "";
+  return `${artist}${song.title || "Unknown"}`;
+}
+
+function getLoadedSectionName() {
   const song = library[resolveSongIndex(currentSongIdx)];
   if (!song || !currentRawChords?.length) return null;
   const section = song.sections?.[currentSectionIdx];
-  const title = song.title || song.artist || "Unknown";
-  return section?.name ? `${title} — ${section.name}` : title;
+  return section?.name || (song.sections?.length > 1 ? `Section ${currentSectionIdx + 1}` : null);
+}
+
+function getLoadedSongLabel() {
+  const title = getLoadedSongTitle();
+  if (!title) return null;
+  const section = getLoadedSectionName();
+  return section ? `${title} — ${section}` : title;
 }
 
 function clearPlayerState() {
@@ -503,9 +516,21 @@ function getSectionStats() {
 if (quizPane) {
   quizMode = renderQuizMode(quizPane, {
     getSongContext: buildQuizSongContext,
+    getSongTitle: getLoadedSongTitle,
+    getSectionName: getLoadedSectionName,
     getSongLabel: getLoadedSongLabel,
-    getSongKey: () => loadedCacheKey,
+    getSongKey: () => loadedCacheKey || library[resolveSongIndex(currentSongIdx)]?.artist || null,
     getSectionStats,
+    getSections: () => {
+      const song = library[resolveSongIndex(currentSongIdx)];
+      return song?.sections ?? [];
+    },
+    getSectionIndex: () => currentSectionIdx,
+    setSectionIndex: (idx) => {
+      loadSection(resolveSongIndex(currentSongIdx), idx).catch((err) =>
+        console.error("Quiz section change failed:", err),
+      );
+    },
     getCorpus: async () => {
       if (!corpusStats) corpusStats = await fetchCorpusStats();
       return corpusStats;
@@ -714,7 +739,7 @@ async function loadSection(songIndex, sectionIndex) {
 
     setupProgressTracking();
     controls.setPlaybackVisible(true);
-    quizMode?.refresh();
+    quizMode?.refresh({ remount: true });
     console.log("Section loaded successfully.");
   } catch (err) {
     console.error("Error during playback setup in loadSection:", err);

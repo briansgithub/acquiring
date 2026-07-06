@@ -1,5 +1,18 @@
 import { pickWeightedProgressionRun } from "../quizPool.js";
-import { feedback, requireSong, mountDifficultyAfter, keyQuizTransportHtml, wireKeyQuizTransport, tonicizeKey, QUIZ_TOOLTIPS, quizNotify, quizRecord } from "./modeUtils.js";
+import { mountChordDrillTools } from "../quizChordInspect.js";
+import {
+  feedback,
+  requireSong,
+  mountDifficultyAfter,
+  keyQuizTransportHtml,
+  wireKeyQuizTransport,
+  tonicizeKey,
+  QUIZ_TOOLTIPS,
+  quizNotify,
+  quizRecord,
+  cueQuestionAudio,
+} from "./modeUtils.js";
+
 function runBounds(difficulty) {
   if (difficulty === "easy") return { min: 3, max: 3 };
   if (difficulty === "hard") return { min: 6, max: 8 };
@@ -12,14 +25,13 @@ export const dictation = {
   render(el, ctx) {
     const base = requireSong(el, ctx);
     if (!base) return {};
-    const { songCtx, pool } = base;
     let run = null;
     let graded = false;
 
     el.innerHTML = `
       <div class="quiz-card">
         <div class="quiz-prompt" id="dt-prompt">Transcribe the progression.</div>
-        ${keyQuizTransportHtml("dt", QUIZ_TOOLTIPS.repeatProgression)}
+        ${keyQuizTransportHtml("dt", QUIZ_TOOLTIPS.repeatProgression, "Repeat", { chordTools: true })}
         <div id="dt-slots" class="quiz-dictation-slots"></div>
         <div class="quiz-row"><button type="button" id="dt-submit" title="Check your transcription against the answer">Submit</button></div>
         <div id="dt-feedback"></div>
@@ -30,14 +42,17 @@ export const dictation = {
     const slotsEl = el.querySelector("#dt-slots");
     const feedbackEl = el.querySelector("#dt-feedback");
     const diffEl = mountDifficultyAfter(promptEl, { id: "dt-diff" });
-    const uniqueSymbols = [...new Set(pool.map((e) => e.symbol))];
+    let focusIdx = 0;
+    const chordTools = mountChordDrillTools(el, "dt", ctx, base, () => run?.[focusIdx] ?? null);
+
+    function uniqueSymbols() {
+      return [...new Set(base.pool.map((e) => e.symbol))];
+    }
 
     function playRun() {
       if (!run) return;
-      ctx.audio.playSequence(
-        run.map((e) => e.notes),
-        850,
-      );
+      const gap = Math.max(200, Math.round(chordTools.chordHoldMs() * 0.35));
+      chordTools.playEntriesSequential(run, gap);
     }
 
     function renderSlots() {
@@ -55,12 +70,19 @@ export const dictation = {
         blank.value = "";
         blank.textContent = "—";
         sel.appendChild(blank);
-        for (const sym of uniqueSymbols) {
+        for (const sym of uniqueSymbols()) {
           const opt = document.createElement("option");
           opt.value = sym;
           opt.textContent = sym;
+          opt.dataset.quizSymbol = sym;
           sel.appendChild(opt);
         }
+        sel.addEventListener("focus", () => {
+          focusIdx = i;
+        });
+        sel.addEventListener("change", () => {
+          focusIdx = i;
+        });
         if (hintFirst && i === 0) {
           sel.value = entry.symbol;
           sel.disabled = true;
@@ -74,8 +96,10 @@ export const dictation = {
     function showQuestion() {
       graded = false;
       feedbackEl.innerHTML = "";
+      chordTools.clearPanels();
+      focusIdx = 0;
       const { min, max } = runBounds(diffEl.value);
-      run = pickWeightedProgressionRun(pool, min, max);
+      run = pickWeightedProgressionRun(base.pool, min, max);
       if (!run) {
         promptEl.textContent = "Section too short for dictation.";
         slotsEl.innerHTML = "";
@@ -83,12 +107,15 @@ export const dictation = {
       }
       quizNotify(ctx, { symbols: run.map((e) => e.symbol) });
       const hint = diffEl.value === "easy" ? " (first chord shown)" : "";
-      promptEl.textContent = `Transcribe ${run.length} chords${hint}. Tonicize for key context, then Repeat.`;
+      promptEl.textContent = `Transcribe ${run.length} chords${hint}. Arpeggio uses the focused slot (defaults to #1).`;
       renderSlots();
+      chordTools.wireStaticChords(slotsEl);
+      chordTools.syncDisplay(run[focusIdx]);
+      cueQuestionAudio(playRun);
     }
 
     wireKeyQuizTransport(el, "dt", {
-      onTonicize: () => tonicizeKey(songCtx, ctx.audio),
+      onTonicize: () => tonicizeKey(base.songCtx, ctx.audio),
       onRepeat: playRun,
       onNext: showQuestion,
     });
@@ -124,7 +151,7 @@ export const dictation = {
       });
     });
 
-    promptEl.textContent = "Press Next for a progression. Use Tonicize for key context, Repeat to hear it.";
+    promptEl.textContent = "Press Start for the first progression. Use Tonicize for key context, Repeat to hear it.";
     return { destroy: () => ctx.audio.cancel() };
   },
 };
