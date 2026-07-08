@@ -54,25 +54,34 @@ export function renderQuizMode(container, ctx) {
       <div class="quiz-stats-top" id="quiz-freq-mount"></div>
       <div class="quiz-mode-tabs" id="quiz-mode-tabs"></div>
       <div class="quiz-session-header" id="quiz-session-header"></div>
-      <div class="quiz-playback-controls">
-        <div class="quiz-tempo-row">
-          <span class="quiz-tempo-label">Tempo:</span>
-          <input type="range" id="quiz-tempo-slider" class="quiz-tempo-slider"
-            min="40" max="240" step="1" value="120" />
-          <span class="quiz-tempo-val" id="quiz-tempo-val">120</span>
-        </div>
-        <div class="quiz-arp-toggle">
-          <input type="checkbox" id="quiz-arp-cb"> <label for="quiz-arp-cb">Arpeggio</label>
-        </div>
-        <div class="quiz-arp-speed-row" id="quiz-arp-speed-row" style="display:none;">
-          <label class="quiz-arp-speed-label">Speed:</label>
-          <input type="range" class="quiz-arp-speed-slider" id="quiz-arp-speed" min="0" max="5" step="1" value="3">
-          <span class="quiz-arp-speed-val" id="quiz-arp-speed-val">4 c/b</span>
-        </div>
-      </div>
       <div class="quiz-mode-body" id="quiz-mode-body"></div>
     </div>
   `;
+
+  // Move playback controls to timeline pane
+  const timelinePane = document.getElementById("timeline-pane");
+  let playbackControls = timelinePane.querySelector(".quiz-playback-controls");
+  if (!playbackControls) {
+    playbackControls = document.createElement("div");
+    playbackControls.className = "quiz-playback-controls";
+    playbackControls.innerHTML = `
+      <div class="quiz-tempo-row">
+        <span class="quiz-tempo-label">Tempo:</span>
+        <input type="range" id="quiz-tempo-slider" class="quiz-tempo-slider"
+          min="40" max="240" step="1" value="120" />
+        <span class="quiz-tempo-val" id="quiz-tempo-val">120</span>
+      </div>
+      <div class="quiz-arp-toggle">
+        <input type="checkbox" id="quiz-arp-cb"> <label for="quiz-arp-cb">Arpeggio</label>
+      </div>
+      <div class="quiz-arp-speed-row" id="quiz-arp-speed-row" style="display:none;">
+        <label class="quiz-arp-speed-label">Speed:</label>
+        <input type="range" class="quiz-arp-speed-slider" id="quiz-arp-speed" min="0" max="5" step="1" value="3">
+        <span class="quiz-arp-speed-val" id="quiz-arp-speed-val">4 c/b</span>
+      </div>
+    `;
+    timelinePane.appendChild(playbackControls);
+  }
 
   const songTitleEl = container.querySelector("#quiz-song-title");
   const songBannerEl = container.querySelector("#quiz-song-banner");
@@ -83,8 +92,8 @@ export function renderQuizMode(container, ctx) {
   const bodyEl = container.querySelector("#quiz-mode-body");
 
   // Tempo slider
-  const tempoSlider = container.querySelector("#quiz-tempo-slider");
-  const tempoVal = container.querySelector("#quiz-tempo-val");
+  const tempoSlider = playbackControls.querySelector("#quiz-tempo-slider");
+  const tempoVal = playbackControls.querySelector("#quiz-tempo-val");
   function syncTempoFromCtx() {
     const songCtx = ctx.getSongContext?.();
     if (songCtx?.key?.bpm) {
@@ -98,10 +107,10 @@ export function renderQuizMode(container, ctx) {
   });
 
   // Arpeggio toggle + speed
-  const arpCb = container.querySelector("#quiz-arp-cb");
-  const arpSpeedRow = container.querySelector("#quiz-arp-speed-row");
-  const arpSpeedSlider = container.querySelector("#quiz-arp-speed");
-  const arpSpeedVal = container.querySelector("#quiz-arp-speed-val");
+  const arpCb = playbackControls.querySelector("#quiz-arp-cb");
+  const arpSpeedRow = playbackControls.querySelector("#quiz-arp-speed-row");
+  const arpSpeedSlider = playbackControls.querySelector("#quiz-arp-speed");
+  const arpSpeedVal = playbackControls.querySelector("#quiz-arp-speed-val");
 
   const arpLabels = ["1 c/b", "2 c/b", "3 c/b", "4 c/b", "6 c/b", "8 c/b"];
 

@@ -253,12 +253,18 @@ const chordRing = renderChordRing(ringPane, {
 const noteIndicator = renderNoteIndicator(indicatorPane, {
   labelMode: useRomanNumerals,
   onNoteClick: (note, { isChord = false } = {}) => {
+    let duration = "4n";
+    let durationMs = undefined;
+    if (document.getElementById("app").classList.contains("quiz-mode")) {
+      durationMs = getArpeggioStepMs(3);
+      duration = (durationMs / 1000) + "s";
+    }
     if (isChord) {
-      const durationMs = engine.previewNote(note, "4n");
-      noteIndicator.highlightNote(note, durationMs);
+      const ms = engine.previewNote(note, duration);
+      noteIndicator.highlightNote(note, durationMs || ms);
       return;
     }
-    engine.previewMelodyNote(note, "4n");
+    engine.previewMelodyNote(note, duration);
   },
   onRootPositionChange: handleRootPositionChange,
   onArpeggiateToggle: (enabled) => {
