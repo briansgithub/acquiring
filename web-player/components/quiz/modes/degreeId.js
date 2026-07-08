@@ -65,10 +65,20 @@ export const degreeId = {
 
     let choicesCleanup = null;
 
+    let answeredCorrectFirstTry = false;
+
     function handleChoice(symbol) {
-      if (answered) return;
+      if (answered) {
+        if (answeredCorrectFirstTry && symbol === target.symbol) {
+          el.querySelector("#di-next")?.click();
+        }
+        return;
+      }
       answered = true;
       const correct = symbol === target.symbol;
+      if (correct) {
+        answeredCorrectFirstTry = true;
+      }
 
       // Highlight the button if it exists
       const btns = choicesEl.querySelectorAll(".quiz-choice-btn");
@@ -105,6 +115,7 @@ export const degreeId = {
 
     function showQuestion() {
       answered = false;
+      answeredCorrectFirstTry = false;
       feedbackEl.innerHTML = "";
       chordTools.clearPanels();
       const pool = base.pool;

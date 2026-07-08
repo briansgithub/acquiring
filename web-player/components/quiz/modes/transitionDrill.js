@@ -125,8 +125,15 @@ export const transitionDrill = {
       chordTools.playEntriesSequential(pair, msPerStep);
     }
 
+    let answeredCorrectFirstTry = false;
+
     function handleChoice(symbol) {
-      if (answered) return;
+      if (answered) {
+        if (answeredCorrectFirstTry && symbol === pair[1].symbol) {
+          el.querySelector("#td-next")?.click();
+        }
+        return;
+      }
       const answer = step === 0 ? pair[0].symbol : pair[1].symbol;
       const correct = symbol === answer;
 
@@ -149,6 +156,9 @@ export const transitionDrill = {
       answered = true;
       const bothRight =
         firstPick === pair[0].symbol && symbol === pair[1].symbol;
+      if (bothRight) {
+        answeredCorrectFirstTry = true;
+      }
       const transitionKey = `${pair[0].symbol}=>${pair[1].symbol}`;
       quizRecord(ctx, "mode-transition", bothRight, {
         chord: pair[1].chord,
@@ -192,6 +202,7 @@ export const transitionDrill = {
 
     function showQuestion() {
       answered = false;
+      answeredCorrectFirstTry = false;
       step = 0;
       firstPick = null;
       feedbackEl.innerHTML = "";
