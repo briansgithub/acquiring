@@ -54,11 +54,9 @@ export function renderQuizMode(container, ctx) {
       <div class="quiz-stats-top" id="quiz-freq-mount"></div>
       <div class="quiz-mode-tabs" id="quiz-mode-tabs"></div>
       <div class="quiz-session-header" id="quiz-session-header"></div>
-      <div class="quiz-playback-controls" id="quiz-playback-controls">
-        <button type="button" class="quiz-tonic-btn" id="quiz-tonic-btn"
-          title="Hold to play the tonic note continuously">♩ Tonic</button>
+      <div class="quiz-playback-controls">
         <div class="quiz-tempo-row">
-          <span class="quiz-tempo-label">Tempo</span>
+          <span class="quiz-tempo-label">Tempo:</span>
           <input type="range" id="quiz-tempo-slider" class="quiz-tempo-slider"
             min="40" max="240" step="1" value="120" />
           <span class="quiz-tempo-val" id="quiz-tempo-val">120</span>
@@ -83,45 +81,6 @@ export function renderQuizMode(container, ctx) {
   const headerEl = container.querySelector("#quiz-session-header");
   const tabsEl = container.querySelector("#quiz-mode-tabs");
   const bodyEl = container.querySelector("#quiz-mode-body");
-
-  // Tonic button — plays a sustained tonic while held
-  const tonicBtn = container.querySelector("#quiz-tonic-btn");
-  function startTonic() {
-    stopTonic();
-    const Tone = window.Tone;
-    if (!Tone) return;
-    if (Tone.context.state !== "running") Tone.start();
-    const songCtx = ctx.getSongContext?.();
-    if (!songCtx?.key) return;
-    const rootSd = 1;
-    const rootKey = songCtx.key;
-    // Compute tonic note name from key
-    const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-    const rootNote = NOTE_NAMES[((rootKey.root - 1) % 12 + 12) % 12] + "4";
-    tonicSynth = new Tone.Synth({
-      oscillator: { type: "triangle" },
-      envelope: { attack: 0.05, decay: 0.1, sustain: 0.8, release: 0.3 },
-      volume: -8,
-    }).toDestination();
-    tonicSynth.triggerAttack(rootNote, Tone.now());
-    tonicBtn.classList.add("is-active");
-  }
-  function stopTonic() {
-    if (tonicSynth) {
-      try { tonicSynth.triggerRelease(); } catch {}
-      setTimeout(() => {
-        try { tonicSynth?.dispose(); } catch {}
-        tonicSynth = null;
-      }, 400);
-    }
-    tonicBtn.classList.remove("is-active");
-  }
-  tonicBtn.addEventListener("mousedown", startTonic);
-  tonicBtn.addEventListener("mouseup", stopTonic);
-  tonicBtn.addEventListener("mouseleave", stopTonic);
-  tonicBtn.addEventListener("touchstart", (e) => { e.preventDefault(); startTonic(); });
-  tonicBtn.addEventListener("touchend", stopTonic);
-  tonicBtn.addEventListener("touchcancel", stopTonic);
 
   // Tempo slider
   const tempoSlider = container.querySelector("#quiz-tempo-slider");

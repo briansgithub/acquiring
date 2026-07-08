@@ -8,7 +8,11 @@ export function renderQuizFreqPanel(container, ctx) {
   panel.id = "quiz-freq-panel";
   panel.className = "quiz-freq-panel";
   panel.innerHTML = `
-    <div class="quiz-freq-dual">
+    <div class="quiz-freq-header" id="quiz-freq-toggle" title="Toggle score table">
+      <span class="quiz-freq-header-title">Section Score Table</span>
+      <span class="quiz-freq-toggle-icon">▼</span>
+    </div>
+    <div class="quiz-freq-dual" id="quiz-freq-dual">
       <section class="quiz-freq-section">
         <h3 class="quiz-freq-section-title">Chords</h3>
         <div id="quiz-freq-chords"></div>
@@ -20,6 +24,17 @@ export function renderQuizFreqPanel(container, ctx) {
     </div>
   `;
   container.appendChild(panel);
+
+  const toggleBtn = panel.querySelector("#quiz-freq-toggle");
+  const dualContainer = panel.querySelector("#quiz-freq-dual");
+  const toggleIcon = panel.querySelector(".quiz-freq-toggle-icon");
+  let isCollapsed = false;
+
+  toggleBtn.addEventListener("click", () => {
+    isCollapsed = !isCollapsed;
+    dualContainer.style.display = isCollapsed ? "none" : "flex";
+    toggleIcon.textContent = isCollapsed ? "▶" : "▼";
+  });
 
   const chordsEl = panel.querySelector("#quiz-freq-chords");
   const transEl = panel.querySelector("#quiz-freq-trans");

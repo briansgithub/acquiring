@@ -247,13 +247,41 @@ export function keyQuizTransportHtml(prefix, repeatTitle, repeatLabel = "Repeat"
       <button type="button" id="${prefix}-start" class="quiz-start-btn" title="${start}">Start</button>
     </div>
     <div class="quiz-row quiz-transport-row is-pending" data-transport="${prefix}">
+      <button type="button" id="${prefix}-tonic" class="quiz-tonic-btn" title="Hold to play Tonic continuously">♩ Tonic</button>
       <button type="button" id="${prefix}-tonicize" title="${tonicize}">Tonicize</button>
       <button type="button" id="${prefix}-repeat" title="${repeatTitle}">${repeatLabel}</button>
       <button type="button" id="${prefix}-next" title="${next}">Next</button>
     </div>`;
 }
 
-export function wireKeyQuizTransport(root, prefix, { onTonicize, onRepeat, onNext }) {
+let tonicSynth = null;
+function startTonic(songCtx) {
+  stopTonic();
+  const Tone = window.Tone;
+  if (!Tone) return;
+  if (Tone.context.state !== "running") Tone.start();
+  if (!songCtx?.key) return;
+  const rootKey = songCtx.key;
+  const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+  const rootNote = NOTE_NAMES[((rootKey.root - 1) % 12 + 12) % 12] + "4";
+  tonicSynth = new Tone.Synth({
+    oscillator: { type: "triangle" },
+    envelope: { attack: 0.05, decay: 0.1, sustain: 0.8, release: 0.3 },
+    volume: -8,
+  }).toDestination();
+  tonicSynth.triggerAttack(rootNote, Tone.now());
+}
+function stopTonic() {
+  if (tonicSynth) {
+    try { tonicSynth.triggerRelease(); } catch {}
+    setTimeout(() => {
+      try { tonicSynth?.dispose(); } catch {}
+      tonicSynth = null;
+    }, 400);
+  }
+}
+
+export function wireKeyQuizTransport(root, prefix, { getSongCtx, onTonicize, onRepeat, onNext }) {
   root.querySelector(`#${prefix}-start`)?.addEventListener("click", () => {
     activateQuizTransport(root, prefix);
     onNext?.();
@@ -261,6 +289,25 @@ export function wireKeyQuizTransport(root, prefix, { onTonicize, onRepeat, onNex
   root.querySelector(`#${prefix}-tonicize`)?.addEventListener("click", onTonicize);
   root.querySelector(`#${prefix}-repeat`)?.addEventListener("click", onRepeat);
   root.querySelector(`#${prefix}-next`)?.addEventListener("click", onNext);
+
+  const tonicBtn = root.querySelector(`#${prefix}-tonic`);
+  if (tonicBtn) {
+    const down = (e) => {
+      if (e.type.startsWith("touch")) e.preventDefault();
+      startTonic(getSongCtx?.());
+      tonicBtn.classList.add("is-active");
+    };
+    const up = () => {
+      stopTonic();
+      tonicBtn.classList.remove("is-active");
+    };
+    tonicBtn.addEventListener("mousedown", down);
+    tonicBtn.addEventListener("mouseup", up);
+    tonicBtn.addEventListener("mouseleave", up);
+    tonicBtn.addEventListener("touchstart", down);
+    tonicBtn.addEventListener("touchend", up);
+    tonicBtn.addEventListener("touchcancel", up);
+  }
 }
 
 export function tonicizeKey(songCtx, audio) {

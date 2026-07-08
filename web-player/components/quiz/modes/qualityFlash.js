@@ -113,7 +113,7 @@ export const qualityFlash = {
       cueQuestionAudio(playCurrent);
     }
 
-    wireKeyQuizTransport(el, "qf", {
+    wireKeyQuizTransport(el, "qf", { getSongCtx: () => base.songCtx,
       onTonicize: () => tonicizeKey(base.songCtx, ctx.audio),
       onRepeat: playCurrent,
       onNext: showQuestion,

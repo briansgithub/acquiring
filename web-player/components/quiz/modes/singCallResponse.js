@@ -80,7 +80,7 @@ export const singCallResponse = {
       cueQuestionAudio(playChord);
     }
 
-    wireKeyQuizTransport(el, "sc", {
+    wireKeyQuizTransport(el, "sc", { getSongCtx: () => base.songCtx,
       onTonicize: () => tonicizeKey(base.songCtx, ctx.audio),
       onRepeat: playChord,
       onNext: nextQuestion,

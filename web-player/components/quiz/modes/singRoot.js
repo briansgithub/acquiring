@@ -69,7 +69,7 @@ export const singRoot = {
       cueQuestionAudio(playTarget);
     }
 
-    wireKeyQuizTransport(el, "sr", {
+    wireKeyQuizTransport(el, "sr", { getSongCtx: () => base.songCtx,
       onTonicize: () => tonicizeKey(base.songCtx, ctx.audio),
       onRepeat: playTarget,
       onNext: nextQuestion,

@@ -194,7 +194,7 @@ export const cloze = {
       cueQuestionAudio(playMuted);
     }
 
-    wireKeyQuizTransport(el, "cz", {
+    wireKeyQuizTransport(el, "cz", { getSongCtx: () => base.songCtx,
       onTonicize: () => tonicizeKey(base.songCtx, ctx.audio),
       onRepeat: playMuted,
       onNext: showQuestion,

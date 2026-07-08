@@ -223,7 +223,7 @@ export const transitionDrill = {
       cueQuestionAudio(playPair);
     }
 
-    wireKeyQuizTransport(el, "td", {
+    wireKeyQuizTransport(el, "td", { getSongCtx: () => base.songCtx,
       onTonicize: () => tonicizeKey(base.songCtx, ctx.audio),
       onRepeat: playPair,
       onNext: showQuestion,

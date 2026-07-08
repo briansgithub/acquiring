@@ -150,7 +150,7 @@ export const degreeId = {
       cueQuestionAudio(() => chordTools.playEntry(target));
     }
 
-    wireKeyQuizTransport(el, "di", {
+    wireKeyQuizTransport(el, "di", { getSongCtx: () => base.songCtx,
       onTonicize: () => tonicizeKey(base.songCtx, ctx.audio),
       onRepeat: () => chordTools.playEntry(target),
       onNext: showQuestion,
