@@ -553,6 +553,25 @@ if (quizPane) {
       const songCtx = buildQuizSongContext();
       return songCtx?.entries ? buildFrequencyProfile(songCtx.entries) : null;
     },
+    get isArpeggiated() { return isArpeggiated; },
+    get arpeggiationSlider() { return arpeggiationSlider; },
+    setArpeggiated: (enabled) => {
+      isArpeggiated = enabled;
+      updatePlaybackSettings();
+      noteIndicator.setArpeggiated?.(enabled);
+    },
+    setArpSlider: (index) => {
+      arpeggiationSlider = index;
+      updatePlaybackSettings();
+      noteIndicator.setArpeggiationSlider?.(index);
+    },
+    setTempo: (bpm) => {
+      if (!Number.isFinite(bpm) || bpm < 20) return;
+      currentBpm = bpm;
+      currentSecondsPerBeat = 60 / bpm;
+      engine.setTempo(bpm);
+      controls.setTempo?.(bpm);
+    },
   });
 }
 

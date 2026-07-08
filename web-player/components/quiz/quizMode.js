@@ -29,9 +29,18 @@ const IDLE_HTML = `
     4. Answer or sing — all choices come from this section's chords
   </div>`;
 
+/** Map section object name to a display label showing type (Chorus, Verse, etc.) */
+function sectionDisplayName(section, index) {
+  const raw = section?.name;
+  if (!raw) return `Section ${index + 1}`;
+  // Already descriptive enough
+  return raw;
+}
+
 export function renderQuizMode(container, ctx) {
   let active = null;
   let activeHandle = null;
+  let tonicSynth = null;
 
   container.innerHTML = `
     <div class="quiz-workspace">
@@ -45,6 +54,24 @@ export function renderQuizMode(container, ctx) {
       <div class="quiz-stats-top" id="quiz-freq-mount"></div>
       <div class="quiz-mode-tabs" id="quiz-mode-tabs"></div>
       <div class="quiz-session-header" id="quiz-session-header"></div>
+      <div class="quiz-playback-controls" id="quiz-playback-controls">
+        <button type="button" class="quiz-tonic-btn" id="quiz-tonic-btn"
+          title="Hold to play the tonic note continuously">♩ Tonic</button>
+        <div class="quiz-tempo-row">
+          <span class="quiz-tempo-label">Tempo</span>
+          <input type="range" id="quiz-tempo-slider" class="quiz-tempo-slider"
+            min="40" max="240" step="1" value="120" />
+          <span class="quiz-tempo-val" id="quiz-tempo-val">120</span>
+        </div>
+        <div class="quiz-arp-toggle">
+          <input type="checkbox" id="quiz-arp-cb"> <label for="quiz-arp-cb">Arpeggio</label>
+        </div>
+        <div class="quiz-arp-speed-row" id="quiz-arp-speed-row" style="display:none;">
+          <label class="quiz-arp-speed-label">Speed:</label>
+          <input type="range" class="quiz-arp-speed-slider" id="quiz-arp-speed" min="0" max="5" step="1" value="3">
+          <span class="quiz-arp-speed-val" id="quiz-arp-speed-val">4 c/b</span>
+        </div>
+      </div>
       <div class="quiz-mode-body" id="quiz-mode-body"></div>
     </div>
   `;
@@ -56,6 +83,90 @@ export function renderQuizMode(container, ctx) {
   const headerEl = container.querySelector("#quiz-session-header");
   const tabsEl = container.querySelector("#quiz-mode-tabs");
   const bodyEl = container.querySelector("#quiz-mode-body");
+
+  // Tonic button — plays a sustained tonic while held
+  const tonicBtn = container.querySelector("#quiz-tonic-btn");
+  function startTonic() {
+    stopTonic();
+    const Tone = window.Tone;
+    if (!Tone) return;
+    if (Tone.context.state !== "running") Tone.start();
+    const songCtx = ctx.getSongContext?.();
+    if (!songCtx?.key) return;
+    const rootSd = 1;
+    const rootKey = songCtx.key;
+    // Compute tonic note name from key
+    const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    const rootNote = NOTE_NAMES[((rootKey.root - 1) % 12 + 12) % 12] + "4";
+    tonicSynth = new Tone.Synth({
+      oscillator: { type: "triangle" },
+      envelope: { attack: 0.05, decay: 0.1, sustain: 0.8, release: 0.3 },
+      volume: -8,
+    }).toDestination();
+    tonicSynth.triggerAttack(rootNote, Tone.now());
+    tonicBtn.classList.add("is-active");
+  }
+  function stopTonic() {
+    if (tonicSynth) {
+      try { tonicSynth.triggerRelease(); } catch {}
+      setTimeout(() => {
+        try { tonicSynth?.dispose(); } catch {}
+        tonicSynth = null;
+      }, 400);
+    }
+    tonicBtn.classList.remove("is-active");
+  }
+  tonicBtn.addEventListener("mousedown", startTonic);
+  tonicBtn.addEventListener("mouseup", stopTonic);
+  tonicBtn.addEventListener("mouseleave", stopTonic);
+  tonicBtn.addEventListener("touchstart", (e) => { e.preventDefault(); startTonic(); });
+  tonicBtn.addEventListener("touchend", stopTonic);
+  tonicBtn.addEventListener("touchcancel", stopTonic);
+
+  // Tempo slider
+  const tempoSlider = container.querySelector("#quiz-tempo-slider");
+  const tempoVal = container.querySelector("#quiz-tempo-val");
+  function syncTempoFromCtx() {
+    const songCtx = ctx.getSongContext?.();
+    if (songCtx?.key?.bpm) {
+      tempoSlider.value = songCtx.key.bpm;
+      tempoVal.textContent = songCtx.key.bpm;
+    }
+  }
+  tempoSlider.addEventListener("input", () => {
+    tempoVal.textContent = tempoSlider.value;
+    ctx.setTempo?.(Number(tempoSlider.value));
+  });
+
+  // Arpeggio toggle + speed
+  const arpCb = container.querySelector("#quiz-arp-cb");
+  const arpSpeedRow = container.querySelector("#quiz-arp-speed-row");
+  const arpSpeedSlider = container.querySelector("#quiz-arp-speed");
+  const arpSpeedVal = container.querySelector("#quiz-arp-speed-val");
+
+  const arpLabels = ["1 c/b", "2 c/b", "3 c/b", "4 c/b", "6 c/b", "8 c/b"];
+
+  function syncArpFromCtx() {
+    if (ctx.isArpeggiated !== undefined) {
+      arpCb.checked = ctx.isArpeggiated;
+      arpSpeedRow.style.display = ctx.isArpeggiated ? "flex" : "none";
+    }
+    if (ctx.arpeggiationSlider !== undefined) {
+      arpSpeedSlider.value = ctx.arpeggiationSlider;
+      arpSpeedVal.textContent = arpLabels[ctx.arpeggiationSlider] || "";
+    }
+  }
+
+  arpCb.addEventListener("change", () => {
+    const on = arpCb.checked;
+    arpSpeedRow.style.display = on ? "flex" : "none";
+    ctx.setArpeggiated?.(on);
+  });
+  arpSpeedSlider.addEventListener("input", () => {
+    const val = Number(arpSpeedSlider.value);
+    arpSpeedVal.textContent = arpLabels[val] || "";
+    ctx.setArpSlider?.(val);
+  });
 
   const freqPanel = renderQuizFreqPanel(freqMount, ctx);
   ctx.onStatsChange = () => {
@@ -73,7 +184,7 @@ export function renderQuizMode(container, ctx) {
     const options = sections
       .map(
         (s, i) =>
-          `<option value="${i}"${i === idx ? " selected" : ""}>${s.name || `Section ${i + 1}`}</option>`,
+          `<option value="${i}"${i === idx ? " selected" : ""}>${sectionDisplayName(s, i)}</option>`,
       )
       .join("");
     sectionBarEl.innerHTML = `
@@ -136,6 +247,8 @@ export function renderQuizMode(container, ctx) {
   }
 
   function refreshChrome() {
+    syncTempoFromCtx();
+    syncArpFromCtx();
     updateSongBanner();
     updateSectionBar();
     updateHeader();
@@ -179,6 +292,7 @@ export function renderQuizMode(container, ctx) {
     destroy() {
       activeHandle?.destroy?.();
       clearVisualOverlays();
+      stopTonic();
     },
   };
 }
