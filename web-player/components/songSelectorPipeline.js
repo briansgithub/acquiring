@@ -175,8 +175,9 @@ export function buildSongDetailHtml(s, sections, flags, canLoad, missing, esc, l
   const keyStr = [s.primary_key_tonic, s.primary_key_scale].filter(Boolean).join(" ");
   const row = (label, value) => detailRow(label, value, esc);
   const num = detailNum;
+  const isFav = s.is_favorite ? "true" : "false";
   return `
-    <div class="entry-title">${esc(s.title || "(untitled)")}</div>
+    <div class="entry-title">${esc(s.title || "(untitled)")}<span class="favorite-star" data-slug="${esc(s.slug)}" data-active="${isFav}" title="Toggle Favorite">★</span></div>
     <div class="entry-artist">Artist: ${esc(s.artist || "")}</div>
     ${s.url ? `<a class="entry-link entry-link--top" href="${esc(s.url)}" target="_blank" rel="noopener">Open on TheoryTab ↗</a>` : ""}
     <div class="entry-btns" aria-label="Pipeline status">

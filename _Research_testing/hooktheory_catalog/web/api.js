@@ -15,8 +15,8 @@ let catalogJob = null;
 let daemonJob = null;
 
 function loadCatalogDb() {
-  const { openDb, getCatalogStatus, listSongs } = require('../lib/db');
-  return { openDb, getCatalogStatus, listSongs };
+  const { openDb, getCatalogStatus, listSongs, toggleFavorite } = require('../lib/db');
+  return { openDb, getCatalogStatus, listSongs, toggleFavorite };
 }
 
 function loadQueries() {
@@ -282,6 +282,30 @@ function handleLibraryLoad(reqUrl, res) {
   }
 }
 
+function handleLibraryFavoriteToggle(req, res) {
+  let body = '';
+  req.on('data', chunk => { body += chunk.toString(); });
+  req.on('end', () => {
+    try {
+      const { slug, isFavorite } = JSON.parse(body);
+      if (!slug) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'slug is required' }));
+        return;
+      }
+      const { openDb, toggleFavorite } = loadCatalogDb();
+      const db = openDb();
+      toggleFavorite(db, slug, !!isFavorite);
+      require('../lib/libraryCache').invalidateLibraryCache();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, slug, isFavorite: !!isFavorite }));
+    } catch (err) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message }));
+    }
+  });
+}
+
 module.exports = {
   ROOT,
   handleCatalogStatus,
@@ -294,4 +318,5 @@ module.exports = {
   handleLibraryList,
   handleLibrarySong,
   handleLibraryLoad,
+  handleLibraryFavoriteToggle,
 };

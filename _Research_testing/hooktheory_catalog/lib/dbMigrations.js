@@ -75,6 +75,7 @@ const SONGS_PIPELINE_COLUMNS = [
   ['oracle_out_dir', 'TEXT'],
   ['oracle_summary_json', 'TEXT'],
   ['harvest_mode', 'TEXT'],
+  ['is_favorite', 'INTEGER NOT NULL DEFAULT 0'],
 ];
 
 function migrateSchema(db) {

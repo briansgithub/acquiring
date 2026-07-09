@@ -19,6 +19,7 @@ function mapLibraryRow(row) {
     playable: flags.processed,
     cacheKey: row.cache_dir || null,
     complexity_rating: row.complexity_rating ?? null,
+    is_favorite: !!row.is_favorite,
     flags,
   };
 }
@@ -26,7 +27,8 @@ function mapLibraryRow(row) {
 function listLibrary(db) {
   const rows = db.prepare(`
     SELECT s.slug, s.artist, s.title, s.status, s.url, s.cache_dir, s.processed_at,
-      s.oracle_tested_at, s.harvest_mode, s.discovery_source, m.complexity_rating
+      s.oracle_tested_at, s.harvest_mode, s.discovery_source, m.complexity_rating,
+      s.is_favorite
     FROM songs s
     LEFT JOIN song_metrics m ON m.slug = s.slug
     ORDER BY artist, title
@@ -50,6 +52,7 @@ function getLibrarySong(db, slug) {
       loadGateMissing: loadGateMissing(flags),
       oracleSummary,
       oracleOutDir: song.oracle_out_dir || null,
+      is_favorite: !!song.is_favorite,
     },
     sections,
   };

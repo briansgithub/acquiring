@@ -22,7 +22,8 @@ CREATE TABLE IF NOT EXISTS songs (
   last_checked_at TEXT,
   status TEXT NOT NULL DEFAULT 'pending',
   error_message TEXT,
-  discovery_source TEXT
+  discovery_source TEXT,
+  is_favorite INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS song_metrics (
@@ -369,6 +370,10 @@ function listSongs(db, { limit = 100, offset = 0, orderBy = 'complexity_rating' 
   `).all(limit, offset);
 }
 
+function toggleFavorite(db, slug, isFavorite) {
+  db.prepare('UPDATE songs SET is_favorite = ? WHERE slug = ?').run(isFavorite ? 1 : 0, slug);
+}
+
 module.exports = {
   DB_PATH,
   openDb,
@@ -392,4 +397,5 @@ module.exports = {
   getSongBySlug,
   listSongs,
   nowIso,
+  toggleFavorite,
 };

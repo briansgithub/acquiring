@@ -2,7 +2,7 @@ const http = require("http");
 const path = require("path");
 const fs = require("fs");
 const url = require("url");
-const { handleCatalogStatus, handleCatalogUpdate, handleDaemonStatus, handleDaemonStart, handleDaemonStop, handleCatalogSongs, handleCatalogSongDetail, handleLibraryList, handleLibrarySong, handleLibraryLoad } = require("./catalogApi");
+const { handleCatalogStatus, handleCatalogUpdate, handleDaemonStatus, handleDaemonStart, handleDaemonStop, handleCatalogSongs, handleCatalogSongDetail, handleLibraryList, handleLibrarySong, handleLibraryLoad, handleLibraryFavoriteToggle } = require("./catalogApi");
 const { handleBatchStatus, handleBatchStart, handleBatchPause, handleBatchResume, handleBatchCancel, matchCatalogBatchRoute } = require("../_Research_testing/hooktheory_catalog/web/catalogBatchApi");
 const { handlePipelineRun, handlePipelineClear, handlePipelineJob, matchPipelineRoute } = require("../_Research_testing/hooktheory_catalog/web/pipelineApi");
 const { handleAddSong } = require("../_Research_testing/hooktheory_catalog/web/addSongApi");
@@ -197,6 +197,7 @@ const server = http.createServer((req, res) => {
   if (reqUrl.pathname === "/api/library") return handleLibraryList(req, res);
   if (reqUrl.pathname === "/api/library/song") return handleLibrarySong(reqUrl, res);
   if (reqUrl.pathname === "/api/library/load" && req.method === "POST") return handleLibraryLoad(reqUrl, res);
+  if (reqUrl.pathname === "/api/library/favorite" && req.method === "POST") return handleLibraryFavoriteToggle(req, res);
   if (reqUrl.pathname === "/api/library/add" && req.method === "POST") return handleAddSong(req, res);
   if (reqUrl.pathname === "/api/library/pipeline/job" && req.method === "GET") return handlePipelineJob(reqUrl, res);
   const pipelineRoute = matchPipelineRoute(reqUrl.pathname, req.method);

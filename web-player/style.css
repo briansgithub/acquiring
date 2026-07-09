@@ -1677,6 +1677,7 @@ body {
   gap: 4px;
   position: relative;
   z-index: 1;
+  margin-bottom: 12px;
 }
 
 .sel-field:focus-within {
@@ -2012,6 +2013,30 @@ body {
   font-size: 20px;
   font-weight: 700;
   color: #fff;
+  display: flex;
+  align-items: center;
+}
+
+.favorite-star {
+  cursor: pointer;
+  color: #64748b;
+  font-size: 24px;
+  margin-left: 8px;
+  line-height: 1;
+  user-select: none;
+  transition: color 0.2s;
+}
+
+.favorite-star[data-active="true"] {
+  color: #eab308;
+}
+
+.favorite-star:hover {
+  color: #cbd5e1;
+}
+
+.favorite-star[data-active="true"]:hover {
+  color: #facc15;
 }
 
 .entry-artist {

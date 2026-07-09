@@ -204,6 +204,15 @@ export function renderSongSelector(container, options = {}) {
     wireSongInput(navSongInput, navSongDrop);
   }
 
+  function populateFavorites() {
+    const favSelectEl = container.querySelector("#sel-nav-favorites-select");
+    if (favSelectEl) {
+      const favorites = songs.filter(s => s.is_favorite).sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+      favSelectEl.innerHTML = '<option value="">Select a favorite...</option>' + 
+        favorites.map(s => `<option value="${esc(s.slug)}">${esc(s.title || "(untitled)")} - ${esc(s.artist || "")}</option>`).join("");
+    }
+  }
+
   async function loadIndex() {
     try {
       const res = await fetch("/api/library");
@@ -236,6 +245,8 @@ export function renderSongSelector(container, options = {}) {
       artists = [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
       loaded = true;
       loadError = null;
+      
+      populateFavorites();
       schedulePlayableCachePrewarm();
     } catch (err) {
       loadError = err.message;
@@ -310,6 +321,12 @@ export function renderSongSelector(container, options = {}) {
           <div id="sel-artist-drop" class="autocomplete-drop" hidden></div>
         </div>
       </div>
+      <div class="sel-field">
+        <label class="sel-label" for="sel-nav-favorites-select">Favorites</label>
+        <select id="sel-nav-favorites-select" class="sel-select">
+          <option value="">Select a favorite...</option>
+        </select>
+      </div>
       <div id="sel-hint" class="sel-hint"></div>
     `;
 
@@ -327,6 +344,18 @@ export function renderSongSelector(container, options = {}) {
       songRun();
       artistRun();
     };
+
+    const favSelectEl = body.querySelector("#sel-nav-favorites-select");
+    if (favSelectEl) {
+      favSelectEl.addEventListener("change", (e) => {
+        if (e.target.value) {
+          showSongDetail(e.target.value, { autoLoadPlayer: true });
+        }
+      });
+      if (loaded) {
+        populateFavorites();
+      }
+    }
   }
 
   async function pollAddJob(jobId, onRunning) {
@@ -581,6 +610,27 @@ export function renderSongSelector(container, options = {}) {
       reloadIndex: () => loadIndex(),
       onJobDone: (jobSlug) => showSongDetail(jobSlug, { userNavigation: false }),
     });
+
+    const favStar = body.querySelector(".favorite-star");
+    if (favStar) {
+      favStar.addEventListener("click", async () => {
+        const isActive = favStar.dataset.active === "true";
+        const newActive = !isActive;
+        favStar.dataset.active = newActive ? "true" : "false"; // Optimistic update
+        try {
+          const res = await fetch("/api/library/favorite", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ slug, isFavorite: newActive })
+          });
+          if (!res.ok) throw new Error("Failed to toggle favorite");
+          await loadIndex();
+        } catch (err) {
+          console.error(err);
+          favStar.dataset.active = isActive ? "true" : "false"; // Revert
+        }
+      });
+    }
 
     const loadBtn = body.querySelector("#sel-load-btn");
     loadBtn?.addEventListener("click", async () => {
