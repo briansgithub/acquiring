@@ -188,6 +188,10 @@ export class AudioEngine {
     const now = Tone.now();
 
     if (arpeggiate && notes.length > 1) {
+      if (this.arpeggioSynth) {
+        this.arpeggioSynth.envelope.sustain = 0.1;
+        this.arpeggioSynth.envelope.release = 0.04;
+      }
       const stepSeconds = arpeggiationSpeedMs / 1000;
       const noteDurationSeconds = Math.max(stepSeconds * 0.9, 0.02);
 
@@ -208,13 +212,18 @@ export class AudioEngine {
     if (Tone.context.state !== "running") {
       Tone.start();
     }
-    if (this.arpeggioSynth?.triggerRelease) {
-      this.arpeggioSynth.triggerRelease();
+    if (this.arpeggioSynth) {
+      if (this.arpeggioSynth.triggerRelease) {
+        this.arpeggioSynth.triggerRelease();
+      }
+      this.arpeggioSynth.envelope.sustain = 0.1;
+      this.arpeggioSynth.envelope.release = 0.04;
+      const now = Tone.now();
+      const durationSeconds = Tone.Time(duration).toSeconds();
+      this.arpeggioSynth.triggerAttackRelease(note, duration, now);
+      return durationSeconds * 1000;
     }
-    const now = Tone.now();
-    const durationSeconds = Tone.Time(duration).toSeconds();
-    this.arpeggioSynth.triggerAttackRelease(note, duration, now);
-    return durationSeconds * 1000;
+    return 0;
   }
 
   startPreviewNote(note) {
@@ -222,15 +231,23 @@ export class AudioEngine {
     if (Tone.context.state !== "running") {
       Tone.start();
     }
-    if (this.arpeggioSynth?.triggerRelease) {
-      this.arpeggioSynth.triggerRelease();
+    if (this.arpeggioSynth) {
+      if (this.arpeggioSynth.triggerRelease) {
+        this.arpeggioSynth.triggerRelease();
+      }
+      this.arpeggioSynth.envelope.sustain = 0.8;
+      this.arpeggioSynth.envelope.release = 0.3;
+      this.arpeggioSynth.triggerAttack(note);
     }
-    this.arpeggioSynth.triggerAttack(note);
   }
 
   stopPreviewNote() {
-    if (this.arpeggioSynth?.triggerRelease) {
-      this.arpeggioSynth.triggerRelease();
+    if (this.arpeggioSynth) {
+      if (this.arpeggioSynth.triggerRelease) {
+        this.arpeggioSynth.triggerRelease();
+      }
+      this.arpeggioSynth.envelope.sustain = 0.1;
+      this.arpeggioSynth.envelope.release = 0.04;
     }
   }
 
