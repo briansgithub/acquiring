@@ -50,8 +50,8 @@ export function renderChordRing(container, options = {}) {
           <span id="ring-octave-display" style="font-size:9px; color:#94a3b8; font-weight:bold; line-height:1; min-width:10px; text-align:center;">4</span>
           <button id="ring-octave-down-btn" class="chord-ring-octave-btn" title="Octave Down">▼</button>
         </div>
-        <button id="ring-tonic-btn" class="chord-ring-tonic-btn">Tonic</button>
-        <button id="ring-ionian-btn" class="chord-ring-tonic-btn">Ionian</button>
+        <button id="ring-tonic-btn" class="chord-ring-tonic-btn">Scale Tonic</button>
+        <button id="ring-ionian-btn" class="chord-ring-tonic-btn">Ionian Tonic</button>
       </div>
     </div>
   `;
