@@ -14,24 +14,34 @@ SERVER_JS = ROOT / "web-player" / "server.js"
 
 def free_port(port: int) -> None:
     """Stop any process already listening on port (stale player from prior run)."""
-    if sys.platform != "win32":
-        return
-    try:
-        subprocess.run(
-            [
-                "powershell",
-                "-NoProfile",
-                "-Command",
-                f"Get-NetTCPConnection -LocalPort {port} -ErrorAction SilentlyContinue | "
-                f"Select-Object -ExpandProperty OwningProcess -Unique | "
-                f"ForEach-Object {{ Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }}",
-            ],
-            capture_output=True,
-            timeout=10,
-            check=False,
-        )
-    except Exception:
-        pass
+    if sys.platform == "win32":
+        try:
+            subprocess.run(
+                [
+                    "powershell",
+                    "-NoProfile",
+                    "-Command",
+                    f"Get-NetTCPConnection -LocalPort {port} -ErrorAction SilentlyContinue | "
+                    f"Select-Object -ExpandProperty OwningProcess -Unique | "
+                    f"ForEach-Object {{ Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }}",
+                ],
+                capture_output=True,
+                timeout=10,
+                check=False,
+            )
+        except Exception:
+            pass
+    else:
+        try:
+            # On Linux/macOS, kill any process listening on the port
+            subprocess.run(
+                f"lsof -t -i :{port} | xargs kill -9",
+                shell=True,
+                capture_output=True,
+                check=False,
+            )
+        except Exception:
+            pass
 
 
 def stop_process(proc: subprocess.Popen) -> None:
