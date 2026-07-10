@@ -357,6 +357,7 @@ export function renderChordRing(container, options = {}) {
   transitionTableOverlay.style.right = "10px";
   transitionTableOverlay.style.pointerEvents = "auto";
   transitionTableOverlay.style.zIndex = "10";
+  transitionTableOverlay.style.width = "220px";
   transitionTableOverlay.style.maxWidth = "300px";
   transitionTableOverlay.style.maxHeight = "400px";
   transitionTableOverlay.style.overflowY = "auto";
@@ -368,14 +369,28 @@ export function renderChordRing(container, options = {}) {
   transitionTableOverlay.style.display = "none"; // Hidden by default until transitions exist
   
   const tableTitle = document.createElement("div");
-  tableTitle.textContent = "Chord Transitions";
+  tableTitle.textContent = "Chord Transitions ▾";
   tableTitle.style.fontSize = "12px";
   tableTitle.style.fontWeight = "600";
   tableTitle.style.color = "#cbd5e1";
   tableTitle.style.marginBottom = "6px";
   tableTitle.style.paddingBottom = "4px";
   tableTitle.style.borderBottom = "1px solid rgba(255, 255, 255, 0.2)";
+  tableTitle.style.cursor = "pointer";
+  tableTitle.style.userSelect = "none";
+  tableTitle.title = "Click to collapse/expand chord transitions";
   transitionTableOverlay.appendChild(tableTitle);
+
+  const transitionTableBody = document.createElement("div");
+  transitionTableBody.id = "transition-table-body";
+  transitionTableOverlay.appendChild(transitionTableBody);
+
+  let transitionsCollapsed = false;
+  tableTitle.addEventListener("click", () => {
+    transitionsCollapsed = !transitionsCollapsed;
+    transitionTableBody.style.display = transitionsCollapsed ? "none" : "block";
+    tableTitle.textContent = transitionsCollapsed ? "Chord Transitions ▸" : "Chord Transitions ▾";
+  });
 
   // Key filter selector (hidden when only one key)
   const keyFilterWrap = document.createElement("div");
@@ -417,11 +432,11 @@ export function renderChordRing(container, options = {}) {
   
   keyFilterWrap.appendChild(keyFilterSelect);
   keyFilterWrap.appendChild(autoFilterWrap);
-  transitionTableOverlay.appendChild(keyFilterWrap);
+  transitionTableBody.appendChild(keyFilterWrap);
 
   const transitionGroupsContainer = document.createElement("div");
   transitionGroupsContainer.className = "transition-groups";
-  transitionTableOverlay.appendChild(transitionGroupsContainer);
+  transitionTableBody.appendChild(transitionGroupsContainer);
 
   const rootOnlyCheckboxContainer = document.createElement("div");
   rootOnlyCheckboxContainer.style.marginTop = "8px";
@@ -470,9 +485,68 @@ export function renderChordRing(container, options = {}) {
   redundantSubstringLabel.appendChild(redundantSubstringCheckbox);
   redundantSubstringLabel.appendChild(redundantSubstringSpan);
   rootOnlyCheckboxContainer.appendChild(redundantSubstringLabel);
-  transitionTableOverlay.appendChild(rootOnlyCheckboxContainer);
+  transitionTableBody.appendChild(rootOnlyCheckboxContainer);
 
   wrapper.appendChild(transitionTableOverlay);
+
+  // Create quiz overlay panel at upper left
+  const quizOverlayPanel = document.createElement("div");
+  quizOverlayPanel.id = "quiz-overlay-panel";
+  quizOverlayPanel.style.position = "absolute";
+  quizOverlayPanel.style.top = "10px";
+  quizOverlayPanel.style.left = "10px";
+  quizOverlayPanel.style.pointerEvents = "auto";
+  quizOverlayPanel.style.zIndex = "10";
+  quizOverlayPanel.style.width = "130px";
+  quizOverlayPanel.style.background = "rgba(17, 24, 39, 0.95)";
+  quizOverlayPanel.style.border = "1px solid rgba(255, 255, 255, 0.2)";
+  quizOverlayPanel.style.borderRadius = "8px";
+  quizOverlayPanel.style.padding = "8px";
+  quizOverlayPanel.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.4)";
+
+  const quizTitle = document.createElement("div");
+  quizTitle.textContent = "Quiz & Stats ▾";
+  quizTitle.style.fontSize = "12px";
+  quizTitle.style.fontWeight = "600";
+  quizTitle.style.color = "#cbd5e1";
+  quizTitle.style.marginBottom = "6px";
+  quizTitle.style.paddingBottom = "4px";
+  quizTitle.style.borderBottom = "1px solid rgba(255, 255, 255, 0.2)";
+  quizTitle.style.cursor = "pointer";
+  quizTitle.style.userSelect = "none";
+  quizTitle.title = "Click to collapse/expand quiz controls";
+  quizOverlayPanel.appendChild(quizTitle);
+
+  const quizBody = document.createElement("div");
+  quizBody.id = "quiz-overlay-body";
+  quizBody.style.display = "flex";
+  quizBody.style.flexDirection = "column";
+  quizBody.style.gap = "6px";
+  quizOverlayPanel.appendChild(quizBody);
+
+  const clozeBtn = document.createElement("button");
+  clozeBtn.id = "quiz-cloze-btn";
+  clozeBtn.type = "button";
+  clozeBtn.className = "quiz-cloze-btn";
+  clozeBtn.style.cssText = "width:100%; background:#4f46e5; color:#fff; border:1px solid #4338ca; border-radius:6px; padding:6px 10px; font-size:11px; font-weight:700; cursor:pointer; transition:all 0.15s ease;";
+  clozeBtn.textContent = "🎯 Cloze Quiz";
+  quizBody.appendChild(clozeBtn);
+
+  const statsBtn = document.createElement("button");
+  statsBtn.id = "ring-stats-btn";
+  statsBtn.type = "button";
+  statsBtn.style.cssText = "width:100%; background:#1e293b; color:#94a3b8; border:1px solid #334155; border-radius:6px; padding:6px 10px; font-size:11px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px; transition:all 0.15s ease;";
+  statsBtn.innerHTML = "📊 Stats";
+  quizBody.appendChild(statsBtn);
+
+  let quizCollapsed = false;
+  quizTitle.addEventListener("click", () => {
+    quizCollapsed = !quizCollapsed;
+    quizBody.style.display = quizCollapsed ? "none" : "flex";
+    quizTitle.textContent = quizCollapsed ? "Quiz & Stats ▸" : "Quiz & Stats ▾";
+  });
+
+  wrapper.appendChild(quizOverlayPanel);
 
   if (!document.getElementById("chord-tooltip-styles")) {
     const styleTag = document.createElement("style");
@@ -2301,6 +2375,12 @@ export function renderChordRing(container, options = {}) {
     },
     setChordSelectHandler(handler) {
       chordSelectHandler = handler;
+    },
+    getQuizClozeBtn() {
+      return clozeBtn;
+    },
+    getStatsBtn() {
+      return statsBtn;
     },
   };
 }

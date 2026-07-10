@@ -48,6 +48,7 @@ let quizClozeCorrectChord = null;
 let quizClozeStats = { correct: 0, total: 0 };
 let statsDrawerOpen = false;
 let freqPanel = null;
+let quizClozeBtn = null;
 
 function getArpeggioBpm() {
   return arpUnlockFromTempo ? originalBpm : currentBpm;
@@ -257,27 +258,6 @@ const chordRing = renderChordRing(ringPane, {
     timeline.setColorScheme(scheme);
   }
 });
-// Create quiz/stats action bar below Play/Restart controls
-const ringActionBar = document.createElement("div");
-ringActionBar.id = "ring-action-bar";
-ringActionBar.style.cssText = "display:flex; align-items:center; justify-content:center; gap:8px; padding:4px 8px;";
-ringActionBar.innerHTML = `
-  <button id="quiz-cloze-btn" type="button" class="quiz-cloze-btn" style="background:#4f46e5; color:#fff; border:1px solid #4338ca; border-radius:6px; padding:5px 12px; font-size:11px; font-weight:700; cursor:pointer; transition:all 0.15s ease;">🎯 Cloze Quiz</button>
-  <button id="ring-stats-btn" type="button" style="background:#1e293b; color:#94a3b8; border:1px solid #334155; border-radius:6px; padding:5px 10px; font-size:11px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:4px; transition:all 0.15s ease;">📊 Stats</button>
-`;
-// Insert after ring-playback-controls (below Play/Restart)
-const ringPlaybackControls = ringPane.querySelector("#ring-playback-controls");
-if (ringPlaybackControls) {
-  ringPlaybackControls.parentNode.insertBefore(ringActionBar, ringPlaybackControls.nextSibling);
-} else {
-  ringPane.insertBefore(ringActionBar, ringPane.firstChild);
-}
-
-const quizClozeBtn = ringActionBar.querySelector("#quiz-cloze-btn");
-quizClozeBtn.addEventListener("click", () => {
-  handleToggleCloze();
-});
-
 // Setup stats drawer inside ringPane
 ringPane.style.position = "relative";
 const statsDrawer = document.createElement("div");
@@ -299,7 +279,14 @@ const statsCtx = {
 
 freqPanel = renderQuizFreqPanel(statsDrawer, statsCtx);
 
-const statsBtn = ringActionBar.querySelector("#ring-stats-btn");
+// Get button references from chordRing API
+quizClozeBtn = chordRing.getQuizClozeBtn();
+const statsBtn = chordRing.getStatsBtn();
+
+quizClozeBtn.addEventListener("click", () => {
+  handleToggleCloze();
+});
+
 statsBtn.addEventListener("click", () => {
   statsDrawerOpen = !statsDrawerOpen;
   if (statsDrawerOpen) {
