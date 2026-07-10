@@ -153,11 +153,14 @@ export class AudioEngine {
     if (this.chordSynth) {
       this.chordSynth.volume.value = volumeValue;
     }
-    if (this.arpeggioSynth) {
-      this.arpeggioSynth.volume.value = volumeValue;
-    }
     if (this.previewSynth) {
       this.previewSynth.volume.value = volumeValue;
+    }
+  }
+
+  setDroneVolume(percent) {
+    if (this.arpeggioSynth) {
+      this.arpeggioSynth.volume.value = percentToDb(percent);
     }
   }
 

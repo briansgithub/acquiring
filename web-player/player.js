@@ -279,6 +279,7 @@ const noteIndicator = renderNoteIndicator(indicatorPane, {
   },
   onMelodyVolumeChange: (volume) => engine.setMelodyVolume(volume),
   onChordVolumeChange: (volume) => engine.setChordVolume(volume),
+  onDroneVolumeChange: (volume) => engine.setDroneVolume(volume),
   key: currentKey
 });
 

@@ -56,6 +56,10 @@ export function renderChordRing(container, options = {}) {
           <input type="checkbox" id="ring-drone-toggle" style="cursor:pointer; margin:0;">
           Drone
         </label>
+        <div class="chord-ring-drone-vol-wrap" style="display:flex; align-items:center; gap:4px; margin-left:4px;">
+          <span style="font-size:9px; color:#94a3b8; font-weight:bold; cursor:default;" title="Drone Volume">🔊</span>
+          <input type="range" id="ring-drone-volume" min="0" max="100" value="80" style="width:45px; height:4px; cursor:pointer; accent-color:#22d3ee; margin:0; padding:0; background:#334155; border-radius:2px; outline:none; border:none; appearance:slider-horizontal;">
+        </div>
       </div>
     </div>
   `;
@@ -68,6 +72,7 @@ export function renderChordRing(container, options = {}) {
   const octaveDownBtn = header.querySelector("#ring-octave-down-btn");
   const octaveDisplay = header.querySelector("#ring-octave-display");
   const droneCheckbox = header.querySelector("#ring-drone-toggle");
+  const droneVolumeSlider = header.querySelector("#ring-drone-volume");
 
   let currentOctave = 3;
   let activeDroneButton = null;
@@ -95,6 +100,18 @@ export function renderChordRing(container, options = {}) {
       }
     }
   });
+
+  droneVolumeSlider.addEventListener("input", (e) => {
+    const val = parseInt(e.target.value, 10);
+    if (options.onDroneVolumeChange) {
+      options.onDroneVolumeChange(val);
+    }
+  });
+
+  // Initialize drone volume from slider's default value
+  if (options.onDroneVolumeChange) {
+    options.onDroneVolumeChange(parseInt(droneVolumeSlider.value, 10));
+  }
 
   function getRelativeIonianDegree(scale) {
     switch (scale) {
