@@ -150,6 +150,30 @@ body {
   border-color: #22d3ee;
 }
 
+.chord-ring-octave-btn {
+  background: #1e293b;
+  color: #94a3b8;
+  border: 1px solid #334155;
+  border-radius: 4px;
+  padding: 1px 4px;
+  font-size: 8px;
+  cursor: pointer;
+  user-select: none;
+  line-height: 1;
+  width: 14px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+
+.chord-ring-octave-btn:hover {
+  background: #334155;
+  color: #e2e8f0;
+}
+
+
 .indicator-volume-row {
   display: flex;
   align-items: center;

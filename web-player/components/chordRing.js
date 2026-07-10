@@ -44,7 +44,12 @@ export function renderChordRing(container, options = {}) {
     </div>
     <div id="chord-ring-key-wrap" style="display:flex; flex-direction:column; align-items:center; gap:6px;">
       <div id="chord-ring-key" class="chord-ring-key">—</div>
-      <div id="chord-ring-key-actions" class="chord-ring-key-actions" style="display:flex; gap:6px;">
+      <div id="chord-ring-key-actions" class="chord-ring-key-actions" style="display:flex; gap:6px; align-items:center;">
+        <div class="chord-ring-octave-controls" style="display:flex; flex-direction:column; gap:1px; align-items:center; margin-right:2px;">
+          <button id="ring-octave-up-btn" class="chord-ring-octave-btn" title="Octave Up">▲</button>
+          <span id="ring-octave-display" style="font-size:9px; color:#94a3b8; font-weight:bold; line-height:1; min-width:10px; text-align:center;">4</span>
+          <button id="ring-octave-down-btn" class="chord-ring-octave-btn" title="Octave Down">▼</button>
+        </div>
         <button id="ring-tonic-btn" class="chord-ring-tonic-btn">Tonic</button>
         <button id="ring-ionian-btn" class="chord-ring-tonic-btn">Ionian</button>
       </div>
@@ -55,6 +60,25 @@ export function renderChordRing(container, options = {}) {
   const keyIndicatorEl = header.querySelector("#chord-ring-key");
   const tonicBtn = header.querySelector("#ring-tonic-btn");
   const ionianBtn = header.querySelector("#ring-ionian-btn");
+  const octaveUpBtn = header.querySelector("#ring-octave-up-btn");
+  const octaveDownBtn = header.querySelector("#ring-octave-down-btn");
+  const octaveDisplay = header.querySelector("#ring-octave-display");
+
+  let currentOctave = 4;
+
+  octaveUpBtn.addEventListener("click", () => {
+    if (currentOctave < 8) {
+      currentOctave++;
+      octaveDisplay.textContent = currentOctave;
+    }
+  });
+
+  octaveDownBtn.addEventListener("click", () => {
+    if (currentOctave > 1) {
+      currentOctave--;
+      octaveDisplay.textContent = currentOctave;
+    }
+  });
 
   function getRelativeIonianDegree(scale) {
     switch (scale) {
@@ -97,12 +121,12 @@ export function renderChordRing(container, options = {}) {
   }
 
   handleNoteButton(tonicBtn, () => {
-    return getNoteLabel(1, currentKey) + "4";
+    return getNoteLabel(1, currentKey) + currentOctave;
   });
 
   handleNoteButton(ionianBtn, () => {
     const degree = getRelativeIonianDegree(currentKey.scale);
-    return getNoteLabel(degree, currentKey) + "4";
+    return getNoteLabel(degree, currentKey) + currentOctave;
   });
 
   function updateKeyDisplay(key) {
