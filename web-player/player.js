@@ -222,6 +222,9 @@ const chordRing = renderChordRing(ringPane, {
   onNoteRelease: () => {
     engine.stopPreviewNote();
   },
+  onDroneVolumeChange: (volume) => {
+    engine.setDroneVolume(volume);
+  },
   labelMode: useRomanNumerals,
   onPhraseClick: ({ firstBeat }) => {
     if (!Number.isFinite(firstBeat)) return;
@@ -279,7 +282,6 @@ const noteIndicator = renderNoteIndicator(indicatorPane, {
   },
   onMelodyVolumeChange: (volume) => engine.setMelodyVolume(volume),
   onChordVolumeChange: (volume) => engine.setChordVolume(volume),
-  onDroneVolumeChange: (volume) => engine.setDroneVolume(volume),
   key: currentKey
 });
 
