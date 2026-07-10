@@ -8,7 +8,7 @@ import { renderTimeline } from "./components/timeline.js";
 import { renderSongSelector } from "./components/songSelector.js";
 import { renderQuizMode } from "./components/quiz/quizMode.js";
 import { createQuizAudio } from "./components/quiz/quizAudio.js";
-import { fetchCorpusStats, buildSongEntries, poolStats, buildFrequencyProfile } from "./components/quiz/quizPool.js";
+import { fetchCorpusStats, buildSongEntries, poolStats, buildFrequencyProfile, pickFrequencyBiased } from "./components/quiz/quizPool.js";
 import { QuizSession } from "./lib/quizSession.js";
 import { romanNumeralToHtml } from "./lib/romanNumeralCanvas.js";
 import { chordInterpreter, getSongLength, parseKey, sdToToneJSNoteName } from "./lib/music.js";
@@ -41,6 +41,10 @@ let isArpeggiated = CONTROL_DEFAULTS.arpeggiated;
 let arpeggiationSlider = CONTROL_DEFAULTS.arpeggiationSlider;
 let arpFixedSpeed = CONTROL_DEFAULTS.arpFixedSpeed;
 let arpUnlockFromTempo = CONTROL_DEFAULTS.arpUnlockFromTempo;
+let quizClozeActive = false;
+let quizClozeMaskedBeat = null;
+let quizClozeCorrectChord = null;
+let quizClozeStats = { correct: 0, total: 0 };
 
 function getArpeggioBpm() {
   return arpUnlockFromTempo ? originalBpm : currentBpm;
@@ -330,6 +334,7 @@ const controls = renderControls({
     engine.setTempo(currentBpm);
     updatePlaybackSettings();
   },
+  onToggleCloze: () => handleToggleCloze(),
 });
 
 const melodyVolumeSlider = document.getElementById("melody-volume");
@@ -346,6 +351,9 @@ const timeline = renderTimeline(timelinePane, {
   onSeek: handleSeek,
   onChordClick: (chord, arpeggiate = false) => {
     if (!currentKey) return;
+    if (quizClozeActive && quizClozeMaskedBeat === chord.beat) {
+      return; // Ignore clicking on masked chord during quiz
+    }
     isManualChordPreview = true;
     const chordBeat = chord.beat === 0 ? 1 : chord.beat;
     const activeKey = activeSectionKeyAtBeat(currentSectionKeys, chordBeat, currentKey);
@@ -355,6 +363,32 @@ const timeline = renderTimeline(timelinePane, {
       noteIndicator.updateChord(chordData.notes, chord.root, chordData.chordDegrees, chord.borrowed, activeKey, chord);
     }
   }
+});
+
+// Setup inline quiz bar inside timelinePane
+const quizBar = document.createElement("div");
+quizBar.id = "timeline-quiz-bar";
+quizBar.className = "timeline-quiz-bar";
+quizBar.style.cssText = "display: none; align-items: center; justify-content: space-between; background: #111827; border-top: 1px solid var(--divider); padding: 8px 12px; font-size: 13px; color: #cbd5e1; height: 36px; box-sizing: border-box;";
+quizBar.innerHTML = `
+  <div class="quiz-bar-info" style="display: flex; align-items: center; gap: 12px;">
+    <span class="quiz-bar-title" style="font-weight: 700; color: #22d3ee;">Progression Quiz</span>
+    <span id="quiz-bar-feedback" class="quiz-bar-feedback" style="font-weight: 500; color: #94a3b8;">Identify the masked chord...</span>
+  </div>
+  <div class="quiz-bar-actions" style="display: flex; align-items: center; gap: 8px;">
+    <span id="quiz-bar-score" class="quiz-bar-score" style="font-variant-numeric: tabular-nums; font-weight: 600; background: rgba(34, 211, 238, 0.15); color: #22d3ee; padding: 2px 8px; border-radius: 6px; margin-right: 8px;">0 / 0</span>
+    <button id="quiz-bar-next-btn" class="quiz-bar-btn primary" style="background: #0284c7; color: #ffffff; border: 1px solid #0369a1; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.15s ease;" disabled>Next</button>
+    <button id="quiz-bar-stop-btn" class="quiz-bar-btn" style="background: #1e293b; color: #f1f5f9; border: 1px solid #334155; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.15s ease;">Stop</button>
+  </div>
+`;
+timelinePane.appendChild(quizBar);
+
+quizBar.querySelector("#quiz-bar-next-btn").addEventListener("click", () => {
+  nextClozeQuestion();
+});
+
+quizBar.querySelector("#quiz-bar-stop-btn").addEventListener("click", () => {
+  stopClozeQuiz();
 });
 
 const songSelector = renderSongSelector(selectorPane, {
@@ -1066,6 +1100,10 @@ function createChordEvents(chordsArray, key, sectionKeys = currentSectionKeys) {
   const events = [];
   chordsArray.forEach((chord) => {
     if (chord.isRest) return;
+
+    // Check if this chord is masked in the integrated cloze quiz
+    const isMasked = quizClozeActive && quizClozeMaskedBeat === chord.beat;
+
     const chordBeat = chord.beat === 0 ? 1 : chord.beat;
     const activeKey = activeSectionKeyAtBeat(sectionKeys, chordBeat, key);
     const chordData = interpretChord(chord, activeKey);
@@ -1078,6 +1116,20 @@ function createChordEvents(chordsArray, key, sectionKeys = currentSectionKeys) {
     const normalizedBeat = chord.beat === 0 ? 1 : chord.beat;
     const startTick = (normalizedBeat - 1) * 192;
     const endTick = startTick + (chord.duration * 192);
+
+    if (isMasked) {
+      // Silence it: schedule a silent trigger that resets indicators
+      events.push({
+        time: Math.round(startTick) + "i",
+        type: "silent",
+        onTrigger: () => {
+          noteIndicator.reset();
+          chordRing.update(null);
+          isManualChordPreview = false;
+        }
+      });
+      return;
+    }
 
     if (isArpeggiationActive() && chordNotes.length > 1) {
       const noteCount = chordNotes.length;
@@ -1631,5 +1683,137 @@ async function updatePlaybackSettings() {
   } else {
     controls.resetPlayState();
   }
+}
+
+// Integrated Cloze Quiz Helper Functions
+function handleToggleCloze() {
+  if (quizClozeActive) {
+    stopClozeQuiz();
+  } else {
+    startClozeQuiz();
+  }
+}
+
+function startClozeQuiz() {
+  const entries = buildQuizSongContext()?.entries;
+  if (!entries || !entries.length) {
+    alert("Please load a song section to play the quiz.");
+    return;
+  }
+  
+  quizClozeActive = true;
+  controls.setQuizClozeState(true);
+  
+  quizClozeStats = { correct: 0, total: 0 };
+  updateQuizBarScore();
+  
+  const quizBarEl = document.getElementById("timeline-quiz-bar");
+  if (quizBarEl) quizBarEl.style.display = "flex";
+  
+  nextClozeQuestion();
+}
+
+function stopClozeQuiz() {
+  quizClozeActive = false;
+  quizClozeMaskedBeat = null;
+  quizClozeCorrectChord = null;
+  controls.setQuizClozeState(false);
+  
+  timeline.setMaskedChords([]);
+  chordRing.setChordSelectHandler(null);
+  
+  const quizBarEl = document.getElementById("timeline-quiz-bar");
+  if (quizBarEl) quizBarEl.style.display = "none";
+  
+  restartSectionFromBeginning({ autoPlay: false });
+}
+
+function nextClozeQuestion() {
+  const entries = buildQuizSongContext()?.entries;
+  if (!entries || !entries.length) return;
+  
+  timeline.setMaskedChords([]);
+  chordRing.update(null);
+  
+  const profile = buildFrequencyProfile(entries);
+  const lastSymbol = quizSession.lastSymbol;
+  const chosenEntry = pickFrequencyBiased(entries, quizSession, lastSymbol, profile, "normal");
+  if (!chosenEntry) return;
+  
+  quizClozeMaskedBeat = chosenEntry.chord.beat;
+  quizClozeCorrectChord = chosenEntry.chord;
+  
+  timeline.setMaskedChords([quizClozeMaskedBeat]);
+  
+  chordRing.setChordSelectHandler((guessChord) => {
+    handleQuizClozeGuess(guessChord);
+  });
+  
+  restartSectionFromBeginning({ autoPlay: true });
+  
+  updateQuizBarFeedback("Identify the masked chord by clicking its symbol on the Chord Ring. Playback is looping.");
+  
+  const nextBtn = document.getElementById("quiz-bar-next-btn");
+  if (nextBtn) nextBtn.disabled = true;
+}
+
+function handleQuizClozeGuess(guessChord) {
+  if (!quizClozeCorrectChord) return;
+  
+  const cid = (c) => `r${c.root}|t${c.type || 5}|i${c.inversion || 0}|b${c.borrowed || 'none'}|a${c.applied || 0}`;
+  const correct = cid(guessChord) === cid(quizClozeCorrectChord);
+  const correctSymbol = getChordSymbol(quizClozeCorrectChord, currentKey);
+  const guessSymbol = getChordSymbol(guessChord, currentKey);
+  
+  quizClozeStats.total++;
+  
+  if (correct) {
+    quizClozeStats.correct++;
+    chordRing.flashCorrect(correctSymbol);
+    timeline.setMaskedChords([]);
+    
+    quizClozeMaskedBeat = null;
+    
+    const melodyEvents = createMelodyEvents(currentRawNotes, currentKey, currentSectionKeys);
+    const chordEvents = createChordEvents(currentRawChords, currentKey, currentSectionKeys);
+    currentMelodyEvents = melodyEvents;
+    currentChordEvents = chordEvents;
+    engine.rescheduleParts(melodyEvents, chordEvents);
+    
+    const chordBeat = quizClozeCorrectChord.beat === 0 ? 1 : quizClozeCorrectChord.beat;
+    const activeKey = activeSectionKeyAtBeat(currentSectionKeys, chordBeat, currentKey);
+    const chordData = interpretChord(quizClozeCorrectChord, activeKey);
+    previewChordWithSettings(chordData.notes, isArpeggiationActive());
+    
+    noteIndicator.updateChord(chordData.notes, quizClozeCorrectChord.root, chordData.chordDegrees, quizClozeCorrectChord.borrowed, activeKey, quizClozeCorrectChord);
+    chordRing.update(quizClozeCorrectChord);
+    
+    updateQuizBarFeedback(`🎉 Correct! It is ${correctSymbol}.`);
+    quizSession.record(correctSymbol, true);
+  } else {
+    chordRing.flashWrong(guessSymbol);
+    setTimeout(() => {
+      chordRing.flashCorrect(correctSymbol);
+    }, 400);
+    
+    updateQuizBarFeedback(`❌ Incorrect. The answer is ${correctSymbol}.`);
+    quizSession.record(correctSymbol, false);
+  }
+  
+  updateQuizBarScore();
+  chordRing.setChordSelectHandler(null);
+  
+  const nextBtn = document.getElementById("quiz-bar-next-btn");
+  if (nextBtn) nextBtn.disabled = false;
+}
+
+function updateQuizBarFeedback(text) {
+  const feedbackEl = document.getElementById("quiz-bar-feedback");
+  if (feedbackEl) feedbackEl.textContent = text;
+}
+
+function updateQuizBarScore() {
+  const scoreEl = document.getElementById("quiz-bar-score");
+  if (scoreEl) scoreEl.textContent = `${quizClozeStats.correct} / ${quizClozeStats.total}`;
 }
 

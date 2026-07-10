@@ -76,6 +76,7 @@ export function renderChordRing(container, options = {}) {
 
   let currentOctave = 3;
   let activeDroneButton = null;
+  let chordSelectHandler = null;
 
   octaveUpBtn.addEventListener("click", () => {
     if (currentOctave < 8) {
@@ -1781,19 +1782,34 @@ export function renderChordRing(container, options = {}) {
   }
 
   function playDiatonicTriad(degree) {
-    // Logic for playing the placeholder triad
     const triadData = rootToDiatonicTriad(degree, currentKey, 3);
+    const chordObj = {
+      root: degree,
+      type: 5,
+      inversion: 0,
+      applied: 0,
+      borrowed: null
+    };
+    if (chordSelectHandler) {
+      chordSelectHandler(chordObj);
+      return;
+    }
     if (options.onChordClick) {
       options.onChordClick({
         notes: triadData.notes,
         root: degree,
         chordDegrees: triadData.chordDegrees,
-        borrowed: null
+        borrowed: null,
+        chord: chordObj
       }, options.getArpeggiated?.() ?? false);
     }
   }
 
   function playChord(chordObj) {
+    if (chordSelectHandler) {
+      chordSelectHandler(chordObj);
+      return;
+    }
     const chordData = chordInterpreter(chordObj, currentKey, {
       forceRootPosition: options.getForceRootPosition?.() ?? false,
     });
@@ -2282,6 +2298,9 @@ export function renderChordRing(container, options = {}) {
       if (keySig !== prevKeySig) {
         updateTransitionTable();
       }
+    },
+    setChordSelectHandler(handler) {
+      chordSelectHandler = handler;
     },
   };
 }

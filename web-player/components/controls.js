@@ -21,6 +21,7 @@ export function renderControls({ topContainer, tempoContainer, footerContainer, 
     playbackContainer.innerHTML = `
       <button id="play-toggle" type="button" data-state="paused">Play</button>
       <button id="restart-btn" type="button">Restart</button>
+      <button id="quiz-cloze-btn" type="button" class="quiz-cloze-btn">Cloze Quiz</button>
     `;
     playbackContainer.hidden = true;
   }
@@ -60,6 +61,7 @@ export function renderControls({ topContainer, tempoContainer, footerContainer, 
 
   const playBtn = playbackContainer?.querySelector("#play-toggle");
   const restartBtn = playbackContainer?.querySelector("#restart-btn");
+  const quizClozeBtn = playbackContainer?.querySelector("#quiz-cloze-btn");
   const sectionSelect = topContainer.querySelector("#section-select");
   const tempoSlider = (tempoContainer ?? topContainer).querySelector("#tempo-slider");
   const tempoLabel = (tempoContainer ?? topContainer).querySelector("#tempo-label");
@@ -83,6 +85,10 @@ export function renderControls({ topContainer, tempoContainer, footerContainer, 
 
   restartBtn?.addEventListener("click", () => {
     onRestart?.();
+  });
+
+  quizClozeBtn?.addEventListener("click", () => {
+    onToggleCloze?.();
   });
 
   sectionSelect.addEventListener("change", (e) => {
@@ -143,6 +149,11 @@ export function renderControls({ topContainer, tempoContainer, footerContainer, 
       const pct = Math.max(1, Math.min(TEMPO_MAX_PERCENT, CONTROL_DEFAULTS.tempoPercent));
       tempoSlider.value = pct;
       tempoLabel.textContent = `${pct}%`;
+    },
+    setQuizClozeState(active) {
+      if (!quizClozeBtn) return;
+      quizClozeBtn.classList.toggle("active", active);
+      quizClozeBtn.textContent = active ? "Stop Quiz" : "Cloze Quiz";
     },
   };
 }

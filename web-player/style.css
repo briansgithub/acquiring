@@ -23,7 +23,7 @@ body {
   --selector-width: 310px;
   display: grid;
   grid-template-columns: var(--selector-width) 290px 1fr;
-  grid-template-rows: 110px 1fr;
+  grid-template-rows: 130px 1fr;
   gap: 12px;
   padding: 12px;
   height: 100vh;
@@ -3385,7 +3385,7 @@ body {
 
 #app.quiz-mode {
   grid-template-columns: var(--selector-width) 1fr minmax(300px, 380px);
-  grid-template-rows: 80px 1fr;
+  grid-template-rows: 130px 1fr;
 }
 
 #app.quiz-mode #selector-pane {
@@ -3628,4 +3628,22 @@ body {
 }
 #app.quiz-mode #timeline-pane .quiz-playback-controls {
   display: flex;
+}
+
+/* Cloze Quiz button custom styling */
+.ring-playback-controls .quiz-cloze-btn {
+  background: #4f46e5 !important; /* Indigo 600 */
+  color: #ffffff !important;
+}
+
+.ring-playback-controls .quiz-cloze-btn:hover {
+  background: #4338ca !important;
+}
+
+.ring-playback-controls .quiz-cloze-btn.active {
+  background: #dc2626 !important; /* Red 600 */
+}
+
+.ring-playback-controls .quiz-cloze-btn.active:hover {
+  background: #b91c1c !important;
 }
