@@ -129,6 +129,75 @@ export function renderChordRing(container, options = {}) {
     return getNoteLabel(degree, currentKey) + currentOctave;
   });
 
+  function getCssColorForDegree(degree, scale) {
+    if (currentColorScheme === "hooktheory") {
+      const result = getHooktheoryColor(degree, scale);
+      if (result && typeof result === "object" && result.isPattern) {
+        return `repeating-linear-gradient(45deg, ${result.color1}, ${result.color1} 4px, ${result.color2} 4px, ${result.color2} 8px)`;
+      }
+      return result;
+    } else if (currentColorScheme === "boomwhacker") {
+      return getBoomwhackerColor(degree, scale);
+    }
+    return getScaleDegreeColor(degree, scale);
+  }
+
+  function getContrastColor(hex) {
+    if (!hex || typeof hex !== 'string') return '#ffffff';
+    if (hex.includes('gradient')) return '#ffffff';
+    
+    const cleanHex = hex.replace('#', '');
+    if (cleanHex.length !== 6) return '#ffffff';
+    
+    const r = parseInt(cleanHex.substring(0, 2), 16);
+    const g = parseInt(cleanHex.substring(2, 4), 16);
+    const b = parseInt(cleanHex.substring(4, 6), 16);
+    
+    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+    return (yiq >= 128) ? '#000000' : '#ffffff';
+  }
+
+  function updateButtonColors() {
+    if (!currentKey) {
+      tonicBtn.style.removeProperty('--btn-bg');
+      tonicBtn.style.removeProperty('--btn-color');
+      tonicBtn.style.removeProperty('--btn-border');
+      ionianBtn.style.removeProperty('--btn-bg');
+      ionianBtn.style.removeProperty('--btn-color');
+      ionianBtn.style.removeProperty('--btn-border');
+      return;
+    }
+
+    const scale = currentKey.scale;
+    const tonicColor = getCssColorForDegree(1, scale);
+    const ionianDegree = getRelativeIonianDegree(scale);
+    const ionianColor = getCssColorForDegree(ionianDegree, scale);
+
+    tonicBtn.style.setProperty('--btn-bg', tonicColor);
+    ionianBtn.style.setProperty('--btn-bg', ionianColor);
+
+    // Get base color for pattern/gradient contrast calculation
+    let tonicBaseColor = tonicColor;
+    if (tonicColor.includes('gradient')) {
+      const result = getHooktheoryColor(1, scale);
+      tonicBaseColor = result ? result.color1 : "#ff0000";
+    }
+    let ionianBaseColor = ionianColor;
+    if (ionianColor.includes('gradient')) {
+      const result = getHooktheoryColor(ionianDegree, scale);
+      ionianBaseColor = result ? result.color1 : "#ff0000";
+    }
+
+    const tonicText = getContrastColor(tonicBaseColor);
+    const ionianText = getContrastColor(ionianBaseColor);
+
+    tonicBtn.style.setProperty('--btn-color', tonicText);
+    tonicBtn.style.setProperty('--btn-border', tonicBaseColor);
+    
+    ionianBtn.style.setProperty('--btn-color', ionianText);
+    ionianBtn.style.setProperty('--btn-border', ionianBaseColor);
+  }
+
   function updateKeyDisplay(key) {
     if (!keyIndicatorEl) return;
     if (key?.tonic && key?.scale) {
@@ -137,7 +206,9 @@ export function renderChordRing(container, options = {}) {
     } else {
       keyIndicatorEl.textContent = "—";
     }
+    updateButtonColors();
   }
+
 
   const wrapper = document.createElement("div");
   wrapper.className = "ring-canvas-wrap";
@@ -211,6 +282,7 @@ export function renderChordRing(container, options = {}) {
     currentColorScheme = val;
     colorSchemeDesc.textContent = getDescription(val);
     if (options.onColorSchemeChange) options.onColorSchemeChange(val);
+    updateButtonColors();
     draw();
   });
 
