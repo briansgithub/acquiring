@@ -47,11 +47,11 @@ export function renderChordRing(container, options = {}) {
       <div id="chord-ring-key-actions" class="chord-ring-key-actions" style="display:flex; gap:6px; align-items:center;">
         <div class="chord-ring-octave-controls" style="display:flex; flex-direction:column; gap:1px; align-items:center; margin-right:2px;">
           <button id="ring-octave-up-btn" class="chord-ring-octave-btn" title="Octave Up">▲</button>
-          <span id="ring-octave-display" style="font-size:9px; color:#94a3b8; font-weight:bold; line-height:1; min-width:10px; text-align:center;">4</span>
+          <span id="ring-octave-display" style="font-size:9px; color:#94a3b8; font-weight:bold; line-height:1; min-width:10px; text-align:center;">3</span>
           <button id="ring-octave-down-btn" class="chord-ring-octave-btn" title="Octave Down">▼</button>
         </div>
-        <button id="ring-tonic-btn" class="chord-ring-tonic-btn">Scale Tonic 🎵</button>
-        <button id="ring-ionian-btn" class="chord-ring-tonic-btn">Ionian Tonic 🎵</button>
+        <button id="ring-tonic-btn" class="chord-ring-tonic-btn">Scale Tonic ♪</button>
+        <button id="ring-ionian-btn" class="chord-ring-tonic-btn">Ionian Tonic ♪</button>
       </div>
     </div>
   `;
@@ -64,7 +64,7 @@ export function renderChordRing(container, options = {}) {
   const octaveDownBtn = header.querySelector("#ring-octave-down-btn");
   const octaveDisplay = header.querySelector("#ring-octave-display");
 
-  let currentOctave = 4;
+  let currentOctave = 3;
 
   octaveUpBtn.addEventListener("click", () => {
     if (currentOctave < 8) {
