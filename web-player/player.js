@@ -420,30 +420,10 @@ const timeline = renderTimeline(timelinePane, {
   }
 });
 
-// Setup inline quiz bar inside timelinePane
-const quizBar = document.createElement("div");
-quizBar.id = "timeline-quiz-bar";
-quizBar.className = "timeline-quiz-bar";
-quizBar.style.cssText = "display: none; align-items: center; justify-content: space-between; background: #111827; border-top: 1px solid var(--divider); padding: 8px 12px; font-size: 13px; color: #cbd5e1; height: 36px; box-sizing: border-box;";
-quizBar.innerHTML = `
-  <div class="quiz-bar-info" style="display: flex; align-items: center; gap: 12px;">
-    <span class="quiz-bar-title" style="font-weight: 700; color: #22d3ee;">Progression Quiz</span>
-    <span id="quiz-bar-feedback" class="quiz-bar-feedback" style="font-weight: 500; color: #94a3b8;">Identify the masked chord...</span>
-  </div>
-  <div class="quiz-bar-actions" style="display: flex; align-items: center; gap: 8px;">
-    <span id="quiz-bar-score" class="quiz-bar-score" style="font-variant-numeric: tabular-nums; font-weight: 600; background: rgba(34, 211, 238, 0.15); color: #22d3ee; padding: 2px 8px; border-radius: 6px; margin-right: 8px;">0 / 0</span>
-    <button id="quiz-bar-next-btn" class="quiz-bar-btn primary" style="background: #0284c7; color: #ffffff; border: 1px solid #0369a1; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.15s ease;" disabled>Next</button>
-    <button id="quiz-bar-stop-btn" class="quiz-bar-btn" style="background: #1e293b; color: #f1f5f9; border: 1px solid #334155; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.15s ease;">Stop</button>
-  </div>
-`;
-timelinePane.appendChild(quizBar);
-
-quizBar.querySelector("#quiz-bar-next-btn").addEventListener("click", () => {
+// Setup inline quiz next button handler from Chord Ring panel
+const quizNextBtn = chordRing.getQuizNextBtn();
+quizNextBtn.addEventListener("click", () => {
   nextClozeQuestion();
-});
-
-quizBar.querySelector("#quiz-bar-stop-btn").addEventListener("click", () => {
-  stopClozeQuiz();
 });
 
 const songSelector = renderSongSelector(selectorPane, {
@@ -1757,7 +1737,7 @@ function startClozeQuiz() {
   quizClozeStats = { correct: 0, total: 0 };
   updateQuizBarScore();
   
-  const quizBarEl = document.getElementById("timeline-quiz-bar");
+  const quizBarEl = document.getElementById("quiz-feedback-container");
   if (quizBarEl) quizBarEl.style.display = "flex";
   
   nextClozeQuestion();
@@ -1775,7 +1755,7 @@ function stopClozeQuiz() {
   timeline.setMaskedChords([]);
   chordRing.setChordSelectHandler(null);
   
-  const quizBarEl = document.getElementById("timeline-quiz-bar");
+  const quizBarEl = document.getElementById("quiz-feedback-container");
   if (quizBarEl) quizBarEl.style.display = "none";
   
   restartSectionFromBeginning({ autoPlay: false });
