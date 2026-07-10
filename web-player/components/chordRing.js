@@ -52,7 +52,7 @@ export function renderChordRing(container, options = {}) {
           <button id="ring-octave-down-btn" class="chord-ring-octave-btn" title="Octave Down">▼</button>
         </div>
         <button id="ring-tonic-btn" class="chord-ring-tonic-btn">Scale Tonic ♪</button>
-        <label class="chord-ring-drone-wrap" style="display:flex; align-items:center; gap:4px; font-size:10px; color:#94a3b8; font-weight:600; cursor:pointer; user-select:none; margin-left:4px;">
+        <label class="chord-ring-drone-wrap" title="Enable Drone to keep notes playing indefinitely on click instead of holding" style="display:flex; align-items:center; gap:4px; font-size:10px; color:#94a3b8; font-weight:600; cursor:pointer; user-select:none; margin-left:4px;">
           <input type="checkbox" id="ring-drone-toggle" style="cursor:pointer; margin:0;">
           Drone
         </label>
