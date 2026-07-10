@@ -591,11 +591,12 @@ function init() {
   }
 }
 
-init();
-
 const quizPane = document.getElementById("quiz-pane");
 const quizAudio = createQuizAudio();
 const quizSession = new QuizSession();
+
+init();
+
 let corpusStats = null;
 
 function getSectionStats() {
