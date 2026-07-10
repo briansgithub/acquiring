@@ -42,11 +42,68 @@ export function renderChordRing(container, options = {}) {
         </div>
       </div>
     </div>
-    <div id="chord-ring-key" class="chord-ring-key">—</div>
+    <div id="chord-ring-key-wrap" style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+      <div id="chord-ring-key" class="chord-ring-key">—</div>
+      <div id="chord-ring-key-actions" class="chord-ring-key-actions" style="display:flex; gap:6px;">
+        <button id="ring-tonic-btn" class="chord-ring-tonic-btn">Tonic</button>
+        <button id="ring-ionian-btn" class="chord-ring-tonic-btn">Ionian</button>
+      </div>
+    </div>
   `;
   container.appendChild(header);
 
   const keyIndicatorEl = header.querySelector("#chord-ring-key");
+  const tonicBtn = header.querySelector("#ring-tonic-btn");
+  const ionianBtn = header.querySelector("#ring-ionian-btn");
+
+  function getRelativeIonianDegree(scale) {
+    switch (scale) {
+      case "major": case "ionian": return 1;
+      case "dorian": return "b7";
+      case "phrygian": return "b6";
+      case "lydian": return 5;
+      case "mixolydian": return 4;
+      case "minor": case "aeolian": case "harmonicMinor": return 3;
+      case "locrian": return "b2";
+      case "phrygianDominant": return "b6";
+      default: return 1;
+    }
+  }
+
+  function handleNoteButton(btn, getNoteFn) {
+    const playNote = (e) => {
+      e.preventDefault();
+      if (!currentKey || !options.onNotePlay) return;
+      const note = getNoteFn();
+      if (note) {
+        options.onNotePlay(note);
+        btn.classList.add("is-active");
+      }
+    };
+    const releaseNote = (e) => {
+      e.preventDefault();
+      if (options.onNoteRelease) options.onNoteRelease();
+      btn.classList.remove("is-active");
+    };
+    btn.addEventListener("mousedown", playNote);
+    btn.addEventListener("touchstart", playNote, { passive: false });
+    
+    window.addEventListener("mouseup", (e) => {
+      if (btn.classList.contains("is-active")) releaseNote(e);
+    });
+    window.addEventListener("touchend", (e) => {
+      if (btn.classList.contains("is-active")) releaseNote(e);
+    });
+  }
+
+  handleNoteButton(tonicBtn, () => {
+    return getNoteLabel(1, currentKey) + "4";
+  });
+
+  handleNoteButton(ionianBtn, () => {
+    const degree = getRelativeIonianDegree(currentKey.scale);
+    return getNoteLabel(degree, currentKey) + "4";
+  });
 
   function updateKeyDisplay(key) {
     if (!keyIndicatorEl) return;

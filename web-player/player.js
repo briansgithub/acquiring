@@ -216,6 +216,12 @@ const chordRing = renderChordRing(ringPane, {
     previewChordWithSettings(chordData.notes, arpeggiate);
     noteIndicator.updateChord(chordData.notes, chordData.root, chordData.chordDegrees, chordData.borrowed, currentKey, chordData.chord);
   },
+  onNotePlay: (note) => {
+    engine.startPreviewNote(note);
+  },
+  onNoteRelease: () => {
+    engine.stopPreviewNote();
+  },
   labelMode: useRomanNumerals,
   onPhraseClick: ({ firstBeat }) => {
     if (!Number.isFinite(firstBeat)) return;

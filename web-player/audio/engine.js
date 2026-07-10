@@ -214,6 +214,23 @@ export class AudioEngine {
     return durationSeconds * 1000;
   }
 
+  startPreviewNote(note) {
+    const Tone = window.Tone;
+    if (Tone.context.state !== "running") {
+      Tone.start();
+    }
+    if (this.arpeggioSynth?.triggerRelease) {
+      this.arpeggioSynth.triggerRelease();
+    }
+    this.arpeggioSynth.triggerAttack(note);
+  }
+
+  stopPreviewNote() {
+    if (this.arpeggioSynth?.triggerRelease) {
+      this.arpeggioSynth.triggerRelease();
+    }
+  }
+
   previewMelodyNote(note, duration = "8n") {
     const Tone = window.Tone;
     if (Tone.context.state !== "running") {
