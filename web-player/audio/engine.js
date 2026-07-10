@@ -22,6 +22,13 @@ export class AudioEngine {
       envelope: { attack: 0.01, decay: 0.05, sustain: 0.1, release: 0.04 },
     }).toDestination();
 
+    // Drone synth is used exclusively for Tonic/Ionian drone buttons
+    this.droneSynth = new Tone.Synth({
+      oscillator: { type: "sawtooth" },
+      volume: -5,
+      envelope: { attack: 0.01, decay: 0.1, sustain: 0.8, release: 0.3 },
+    }).toDestination();
+
     this.previewSynth = new Tone.PolySynth(Tone.Synth, {
       oscillator: { type: "sawtooth" },
       volume: -5,
@@ -153,14 +160,17 @@ export class AudioEngine {
     if (this.chordSynth) {
       this.chordSynth.volume.value = volumeValue;
     }
+    if (this.arpeggioSynth) {
+      this.arpeggioSynth.volume.value = volumeValue;
+    }
     if (this.previewSynth) {
       this.previewSynth.volume.value = volumeValue;
     }
   }
 
   setDroneVolume(percent) {
-    if (this.arpeggioSynth) {
-      this.arpeggioSynth.volume.value = percentToDb(percent);
+    if (this.droneSynth) {
+      this.droneSynth.volume.value = percentToDb(percent);
     }
   }
 
@@ -188,10 +198,6 @@ export class AudioEngine {
     const now = Tone.now();
 
     if (arpeggiate && notes.length > 1) {
-      if (this.arpeggioSynth) {
-        this.arpeggioSynth.envelope.sustain = 0.1;
-        this.arpeggioSynth.envelope.release = 0.04;
-      }
       const stepSeconds = arpeggiationSpeedMs / 1000;
       const noteDurationSeconds = Math.max(stepSeconds * 0.9, 0.02);
 
@@ -212,18 +218,13 @@ export class AudioEngine {
     if (Tone.context.state !== "running") {
       Tone.start();
     }
-    if (this.arpeggioSynth) {
-      if (this.arpeggioSynth.triggerRelease) {
-        this.arpeggioSynth.triggerRelease();
-      }
-      this.arpeggioSynth.envelope.sustain = 0.1;
-      this.arpeggioSynth.envelope.release = 0.04;
-      const now = Tone.now();
-      const durationSeconds = Tone.Time(duration).toSeconds();
-      this.arpeggioSynth.triggerAttackRelease(note, duration, now);
-      return durationSeconds * 1000;
+    if (this.arpeggioSynth?.triggerRelease) {
+      this.arpeggioSynth.triggerRelease();
     }
-    return 0;
+    const now = Tone.now();
+    const durationSeconds = Tone.Time(duration).toSeconds();
+    this.arpeggioSynth.triggerAttackRelease(note, duration, now);
+    return durationSeconds * 1000;
   }
 
   startPreviewNote(note) {
@@ -231,23 +232,19 @@ export class AudioEngine {
     if (Tone.context.state !== "running") {
       Tone.start();
     }
-    if (this.arpeggioSynth) {
-      if (this.arpeggioSynth.triggerRelease) {
-        this.arpeggioSynth.triggerRelease();
+    if (this.droneSynth) {
+      if (this.droneSynth.triggerRelease) {
+        this.droneSynth.triggerRelease();
       }
-      this.arpeggioSynth.envelope.sustain = 0.8;
-      this.arpeggioSynth.envelope.release = 0.3;
-      this.arpeggioSynth.triggerAttack(note);
+      this.droneSynth.triggerAttack(note);
     }
   }
 
   stopPreviewNote() {
-    if (this.arpeggioSynth) {
-      if (this.arpeggioSynth.triggerRelease) {
-        this.arpeggioSynth.triggerRelease();
+    if (this.droneSynth) {
+      if (this.droneSynth.triggerRelease) {
+        this.droneSynth.triggerRelease();
       }
-      this.arpeggioSynth.envelope.sustain = 0.1;
-      this.arpeggioSynth.envelope.release = 0.04;
     }
   }
 
@@ -267,6 +264,9 @@ export class AudioEngine {
       }
       if (this.arpeggioSynth?.triggerRelease) {
         this.arpeggioSynth.triggerRelease();
+      }
+      if (this.droneSynth?.triggerRelease) {
+        this.droneSynth.triggerRelease();
       }
       if (this.chordSynth) {
         const trackedNotes =
