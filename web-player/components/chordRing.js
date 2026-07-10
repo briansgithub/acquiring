@@ -45,13 +45,17 @@ export function renderChordRing(container, options = {}) {
     <div id="chord-ring-key-wrap" style="display:flex; flex-direction:column; align-items:center; gap:6px;">
       <div id="chord-ring-key" class="chord-ring-key">—</div>
       <div id="chord-ring-key-actions" class="chord-ring-key-actions" style="display:flex; gap:6px; align-items:center;">
-        <div class="chord-ring-octave-controls" style="display:flex; flex-direction:column; gap:1px; align-items:center; margin-right:2px;">
+        <button id="ring-ionian-btn" class="chord-ring-tonic-btn">Scale Ionian ♪</button>
+        <div class="chord-ring-octave-controls" style="display:flex; flex-direction:column; gap:1px; align-items:center; margin-right:2px; margin-left:2px;">
           <button id="ring-octave-up-btn" class="chord-ring-octave-btn" title="Octave Up">▲</button>
           <span id="ring-octave-display" style="font-size:9px; color:#94a3b8; font-weight:bold; line-height:1; min-width:10px; text-align:center;">3</span>
           <button id="ring-octave-down-btn" class="chord-ring-octave-btn" title="Octave Down">▼</button>
         </div>
         <button id="ring-tonic-btn" class="chord-ring-tonic-btn">Scale Tonic ♪</button>
-        <button id="ring-ionian-btn" class="chord-ring-tonic-btn">Ionian Tonic ♪</button>
+        <label class="chord-ring-drone-wrap" style="display:flex; align-items:center; gap:4px; font-size:10px; color:#94a3b8; font-weight:600; cursor:pointer; user-select:none; margin-left:4px;">
+          <input type="checkbox" id="ring-drone-toggle" style="cursor:pointer; margin:0;">
+          Drone
+        </label>
       </div>
     </div>
   `;
@@ -63,8 +67,10 @@ export function renderChordRing(container, options = {}) {
   const octaveUpBtn = header.querySelector("#ring-octave-up-btn");
   const octaveDownBtn = header.querySelector("#ring-octave-down-btn");
   const octaveDisplay = header.querySelector("#ring-octave-display");
+  const droneCheckbox = header.querySelector("#ring-drone-toggle");
 
   let currentOctave = 3;
+  let activeDroneButton = null;
 
   octaveUpBtn.addEventListener("click", () => {
     if (currentOctave < 8) {
@@ -77,6 +83,16 @@ export function renderChordRing(container, options = {}) {
     if (currentOctave > 1) {
       currentOctave--;
       octaveDisplay.textContent = currentOctave;
+    }
+  });
+
+  droneCheckbox.addEventListener("change", () => {
+    if (!droneCheckbox.checked) {
+      if (activeDroneButton) {
+        activeDroneButton.classList.remove("is-active");
+        if (options.onNoteRelease) options.onNoteRelease();
+        activeDroneButton = null;
+      }
     }
   });
 
@@ -95,8 +111,7 @@ export function renderChordRing(container, options = {}) {
   }
 
   function handleNoteButton(btn, getNoteFn) {
-    const playNote = (e) => {
-      e.preventDefault();
+    const playNote = () => {
       if (!currentKey || !options.onNotePlay) return;
       const note = getNoteFn();
       if (note) {
@@ -104,20 +119,44 @@ export function renderChordRing(container, options = {}) {
         btn.classList.add("is-active");
       }
     };
-    const releaseNote = (e) => {
-      e.preventDefault();
+    
+    const releaseNote = () => {
       if (options.onNoteRelease) options.onNoteRelease();
       btn.classList.remove("is-active");
     };
-    btn.addEventListener("mousedown", playNote);
-    btn.addEventListener("touchstart", playNote, { passive: false });
+
+    const handlePress = (e) => {
+      e.preventDefault();
+      const isDrone = droneCheckbox && droneCheckbox.checked;
+      
+      if (isDrone) {
+        if (btn.classList.contains("is-active")) {
+          releaseNote();
+          if (activeDroneButton === btn) activeDroneButton = null;
+        } else {
+          if (activeDroneButton && activeDroneButton !== btn) {
+            activeDroneButton.classList.remove("is-active");
+          }
+          playNote();
+          activeDroneButton = btn;
+        }
+      } else {
+        playNote();
+      }
+    };
+
+    const handleRelease = (e) => {
+      const isDrone = droneCheckbox && droneCheckbox.checked;
+      if (!isDrone && btn.classList.contains("is-active")) {
+        releaseNote();
+      }
+    };
+
+    btn.addEventListener("mousedown", handlePress);
+    btn.addEventListener("touchstart", handlePress, { passive: false });
     
-    window.addEventListener("mouseup", (e) => {
-      if (btn.classList.contains("is-active")) releaseNote(e);
-    });
-    window.addEventListener("touchend", (e) => {
-      if (btn.classList.contains("is-active")) releaseNote(e);
-    });
+    window.addEventListener("mouseup", handleRelease);
+    window.addEventListener("touchend", handleRelease);
   }
 
   handleNoteButton(tonicBtn, () => {
@@ -200,6 +239,11 @@ export function renderChordRing(container, options = {}) {
 
   function updateKeyDisplay(key) {
     if (!keyIndicatorEl) return;
+    if (activeDroneButton) {
+      activeDroneButton.classList.remove("is-active");
+      if (options.onNoteRelease) options.onNoteRelease();
+      activeDroneButton = null;
+    }
     if (key?.tonic && key?.scale) {
       const scaleName = key.scale.charAt(0).toUpperCase() + key.scale.slice(1);
       keyIndicatorEl.textContent = `${key.tonic} ${scaleName}`;
