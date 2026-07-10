@@ -25,19 +25,24 @@ export function renderChordRing(container, options = {}) {
     <div class="ring-head-row">
       <div id="ring-playback-controls" class="ring-playback-controls" hidden></div>
       <h2 class="pane-panel-title ring-panel-title">Chord Ring</h2>
-      <div class="ring-color-scheme-toggle-wrap">
-        <button class="ring-color-scheme-toggle" id="ring-color-scheme-toggle" title="Color Scheme" aria-expanded="false">
-          <span class="ring-color-scheme-toggle-label">🎨</span>
-          <span class="ring-color-scheme-toggle-arrow">▾</span>
+      <div class="ring-header-actions" style="display:flex; align-items:center; gap:8px; position:absolute; right:0; top:50%; transform:translateY(-50%);">
+        <button class="ring-stats-btn" id="ring-stats-btn" title="View Section Chord Stats" style="background:#1e293b; color:#94a3b8; border:1px solid #334155; border-radius:6px; padding:4px 8px; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:4px; font-weight:600; transition:all 0.15s ease;">
+          📊 Stats
         </button>
-        <div id="ring-color-scheme-panel" class="ring-color-scheme-panel" hidden>
-          <div class="ring-color-scheme-panel-inner">
-            <select id="ring-color-scheme-select" class="ring-color-scheme-select">
-              <option value="diatonic">Diatonic Function</option>
-              <option value="hooktheory">Hooktheory Relative Major</option>
-              <option value="boomwhacker">Boomwhacker 12-Tone</option>
-            </select>
-            <div id="ring-color-scheme-desc" class="ring-color-scheme-desc"></div>
+        <div class="ring-color-scheme-toggle-wrap">
+          <button class="ring-color-scheme-toggle" id="ring-color-scheme-toggle" title="Color Scheme" aria-expanded="false">
+            <span class="ring-color-scheme-toggle-label">🎨</span>
+            <span class="ring-color-scheme-toggle-arrow">▾</span>
+          </button>
+          <div id="ring-color-scheme-panel" class="ring-color-scheme-panel" hidden>
+            <div class="ring-color-scheme-panel-inner">
+              <select id="ring-color-scheme-select" class="ring-color-scheme-select">
+                <option value="diatonic">Diatonic Function</option>
+                <option value="hooktheory">Hooktheory Relative Major</option>
+                <option value="boomwhacker">Boomwhacker 12-Tone</option>
+              </select>
+              <div id="ring-color-scheme-desc" class="ring-color-scheme-desc"></div>
+            </div>
           </div>
         </div>
       </div>

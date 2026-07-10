@@ -3,6 +3,7 @@ import { createLoadingSplash } from "./components/loadingSplash.js";
 import { renderControls, CONTROL_DEFAULTS } from "./components/controls.js";
 import { makeCollapsible } from "./components/collapsiblePane.js";
 import { renderChordRing } from "./components/chordRing.js";
+import { renderQuizFreqPanel } from "./components/quiz/quizFreqPanel.js";
 import { renderNoteIndicator } from "./components/noteIndicator.js";
 import { renderTimeline } from "./components/timeline.js";
 import { renderSongSelector } from "./components/songSelector.js";
@@ -45,6 +46,8 @@ let quizClozeActive = false;
 let quizClozeMaskedBeat = null;
 let quizClozeCorrectChord = null;
 let quizClozeStats = { correct: 0, total: 0 };
+let statsDrawerOpen = false;
+let freqPanel = null;
 
 function getArpeggioBpm() {
   return arpUnlockFromTempo ? originalBpm : currentBpm;
@@ -254,6 +257,45 @@ const chordRing = renderChordRing(ringPane, {
     timeline.setColorScheme(scheme);
   }
 });
+
+// Setup stats drawer inside ringPane
+ringPane.style.position = "relative";
+const statsDrawer = document.createElement("div");
+statsDrawer.id = "ring-stats-drawer";
+statsDrawer.style.cssText = "position: absolute; bottom: 0; left: 0; right: 0; height: 60%; background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(8px); border-top: 1px solid var(--divider); display: none; flex-direction: column; z-index: 100; border-radius: 0 0 12px 12px; padding: 12px; box-sizing: border-box; overflow-y: auto;";
+ringPane.appendChild(statsDrawer);
+
+const statsCtx = {
+  getSongKey: () => loadedCacheKey || (currentSong ? currentSong.artist + "_" + currentSong.title : null),
+  getSectionStats: () => {
+    if (!currentRawChords) return null;
+    const entries = buildQuizSongContext()?.entries || [];
+    return poolStats(entries);
+  },
+  session: quizSession,
+  romanHtml: romanNumeralToHtml,
+  chordRing: chordRing,
+};
+
+freqPanel = renderQuizFreqPanel(statsDrawer, statsCtx);
+
+const statsBtn = ringPane.querySelector("#ring-stats-btn");
+statsBtn?.addEventListener("click", () => {
+  statsDrawerOpen = !statsDrawerOpen;
+  if (statsDrawerOpen) {
+    statsDrawer.style.display = "flex";
+    statsBtn.style.background = "rgba(34, 211, 238, 0.2)";
+    statsBtn.style.borderColor = "#22d3ee";
+    statsBtn.style.color = "#22d3ee";
+    freqPanel.refresh();
+  } else {
+    statsDrawer.style.display = "none";
+    statsBtn.style.background = "#1e293b";
+    statsBtn.style.borderColor = "#334155";
+    statsBtn.style.color = "#94a3b8";
+  }
+});
+
 const noteIndicator = renderNoteIndicator(indicatorPane, {
   labelMode: useRomanNumerals,
   onNoteClick: (note, { isChord = false } = {}) => {
@@ -847,6 +889,9 @@ async function loadSection(songIndex, sectionIndex) {
     setupProgressTracking();
     controls.setPlaybackVisible(true);
     quizMode?.refresh({ remount: true });
+    if (typeof statsDrawerOpen !== "undefined" && statsDrawerOpen) {
+      freqPanel?.refresh();
+    }
     console.log("Section loaded successfully.");
   } catch (err) {
     console.error("Error during playback setup in loadSection:", err);
@@ -1102,7 +1147,7 @@ function createChordEvents(chordsArray, key, sectionKeys = currentSectionKeys) {
     if (chord.isRest) return;
 
     // Check if this chord is masked in the integrated cloze quiz
-    const isMasked = quizClozeActive && quizClozeMaskedBeat === chord.beat;
+    const isMasked = quizClozeActive && Number(quizClozeMaskedBeat) === Number(chord.beat);
 
     const chordBeat = chord.beat === 0 ? 1 : chord.beat;
     const activeKey = activeSectionKeyAtBeat(sectionKeys, chordBeat, key);
@@ -1760,7 +1805,15 @@ function nextClozeQuestion() {
 function handleQuizClozeGuess(guessChord) {
   if (!quizClozeCorrectChord) return;
   
-  const cid = (c) => `r${c.root}|t${c.type || 5}|i${c.inversion || 0}|b${c.borrowed || 'none'}|a${c.applied || 0}`;
+  const cid = (c) => {
+    if (!c) return "";
+    const root = Number(c.root);
+    const type = Number(c.type || 5);
+    const inv = Number(c.inversion || 0);
+    const borrowed = Array.isArray(c.borrowed) ? "custom" : (c.borrowed || "none");
+    const applied = Number(c.applied || 0);
+    return `r${root}|t${type}|i${inv}|b${borrowed}|a${applied}`;
+  };
   const correct = cid(guessChord) === cid(quizClozeCorrectChord);
   const correctSymbol = getChordSymbol(quizClozeCorrectChord, currentKey);
   const guessSymbol = getChordSymbol(guessChord, currentKey);
@@ -1802,6 +1855,10 @@ function handleQuizClozeGuess(guessChord) {
   
   updateQuizBarScore();
   chordRing.setChordSelectHandler(null);
+  
+  if (statsDrawerOpen && freqPanel) {
+    freqPanel.refresh();
+  }
   
   const nextBtn = document.getElementById("quiz-bar-next-btn");
   if (nextBtn) nextBtn.disabled = false;

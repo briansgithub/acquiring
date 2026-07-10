@@ -195,7 +195,7 @@ export function renderTimeline(container, options = {}) {
             
             ctx.globalAlpha = isCurrentlyPlayingSection ? 1.0 : 0.35;
 
-            const isMasked = maskedBeats.includes(chord.beat);
+            const isMasked = maskedBeats.includes(Number(chord.beat));
             if (isMasked) {
                 // Draw a large dark gray rectangle
                 ctx.fillStyle = "#27272a"; // Zinc 800
@@ -895,7 +895,7 @@ export function renderTimeline(container, options = {}) {
             draw();
         },
         setMaskedChords(beats) {
-            maskedBeats = beats || [];
+            maskedBeats = (beats || []).map(Number);
             draw();
         },
         clearQuizOverlays() {

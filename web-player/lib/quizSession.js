@@ -13,7 +13,11 @@ function loadSession() {
 }
 
 function saveSession(data) {
-  localStorage.setItem(SESSION_KEY, JSON.stringify(data));
+  try {
+    localStorage.setItem(SESSION_KEY, JSON.stringify(data));
+  } catch (e) {
+    console.warn("saveSession failed:", e);
+  }
 }
 
 function defaultModeStats() {
