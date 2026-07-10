@@ -358,6 +358,13 @@ export function renderNoteIndicator(container, options = {}) {
     const { notes, root, key, chordObj } = currentChordData;
     const effKey = key || activeKey;
 
+    const isMasked = chordObj && options.isChordMasked?.(chordObj);
+    if (isMasked) {
+      chordRootEl.innerHTML = `Chord: <span class="chord-roman-line">?</span>`;
+      chordRootEl.style.visibility = "visible";
+      return;
+    }
+
     if (chordObj?.isRest || !notes?.length) {
       chordRootEl.textContent = "Chord: Rest";
       chordRootEl.style.visibility = "visible";
@@ -390,6 +397,32 @@ export function renderNoteIndicator(container, options = {}) {
     // Clear existing pills
     chordList.innerHTML = "";
     chordDegreesPillsList.innerHTML = "";
+    
+    const isMasked = chordObj && options.isChordMasked?.(chordObj);
+    if (isMasked) {
+      const numPills = notes ? notes.length : 4;
+      for (let i = 0; i < numPills; i++) {
+        const pill = document.createElement("span");
+        pill.className = "pill";
+        pill.textContent = "?";
+        pill.style.background = "rgba(107, 114, 128, 0.12)";
+        pill.style.borderColor = "rgba(107, 114, 128, 0.4)";
+        pill.style.color = "#6b7280";
+        pill.style.cursor = "default";
+        chordList.appendChild(pill);
+      }
+      for (let i = 0; i < numPills; i++) {
+        const pill = document.createElement("span");
+        pill.className = "pill";
+        pill.textContent = "?";
+        pill.style.background = "rgba(107, 114, 128, 0.12)";
+        pill.style.borderColor = "rgba(107, 114, 128, 0.4)";
+        pill.style.color = "#6b7280";
+        pill.style.cursor = "default";
+        chordDegreesPillsList.appendChild(pill);
+      }
+      return;
+    }
     
     // Check if it's a rest or no chord
     const isRest = chordObj?.isRest || !notes?.length;

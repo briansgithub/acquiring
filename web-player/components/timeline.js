@@ -773,7 +773,7 @@ export function renderTimeline(container, options = {}) {
             currentHoveredChord = null;
             clearTimeout(hideTimeout);
             showKeyTooltip(keyNode);
-        } else if (chordNode) {
+        } else if (chordNode && !maskedBeats.includes(Number(chordNode.chord.beat))) {
             currentHoveredChord = chordNode.chord;
             clearTimeout(hideTimeout);
             showTooltip(chordNode);

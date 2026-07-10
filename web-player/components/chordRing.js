@@ -823,6 +823,9 @@ export function renderChordRing(container, options = {}) {
   }
 
   function isNodeActive(entry) {
+    if (activeChord && options.isChordMasked?.(activeChord)) {
+      return false;
+    }
     return activeChordSymbol !== null && entry.symbol === activeChordSymbol;
   }
 
@@ -1291,6 +1294,14 @@ export function renderChordRing(container, options = {}) {
 
     // Draw Chord Transition in the center of the circle (vertically aligned to cy)
     if (activeChord) {
+      if (options.isChordMasked?.(activeChord)) {
+        ctx.fillStyle = "#6b7280";
+        ctx.font = `bold ${32 * zoom}px sans-serif`;
+        ctx.textBaseline = "middle";
+        ctx.textAlign = "center";
+        ctx.fillText("?", cx, cy);
+        return;
+      }
       const currSymbol = getCenterDisplayLabel(activeChord);
       const currColorObj = getColor(activeChord.root, key.scale, activeChord.borrowed) || "#ffffff";
       const currColor = currColorObj.hexColor || currColorObj;

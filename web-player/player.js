@@ -217,6 +217,9 @@ async function handlePlayPause(shouldPlay) {
 }
 
 const chordRing = renderChordRing(ringPane, {
+  isChordMasked: (chord) => {
+    return quizClozeActive && chord && Number(quizClozeMaskedBeat) === Number(chord.beat);
+  },
   getForceRootPosition: () => forceRootPosition,
   getArpeggiated: () => isArpeggiationActive(),
   onChordClick: (chordData, arpeggiate = false) => {
@@ -304,6 +307,9 @@ statsBtn.addEventListener("click", () => {
 });
 
 const noteIndicator = renderNoteIndicator(indicatorPane, {
+  isChordMasked: (chord) => {
+    return quizClozeActive && chord && Number(quizClozeMaskedBeat) === Number(chord.beat);
+  },
   labelMode: useRomanNumerals,
   onNoteClick: (note, { isChord = false } = {}) => {
     let duration = "4n";
@@ -1170,19 +1176,7 @@ function createChordEvents(chordsArray, key, sectionKeys = currentSectionKeys) {
     const startTick = (normalizedBeat - 1) * 192;
     const endTick = startTick + (chord.duration * 192);
 
-    if (isMasked) {
-      // Silence it: schedule a silent trigger that resets indicators
-      events.push({
-        time: Math.round(startTick) + "i",
-        type: "silent",
-        onTrigger: () => {
-          noteIndicator.reset();
-          chordRing.update(null);
-          isManualChordPreview = false;
-        }
-      });
-      return;
-    }
+
 
     if (isArpeggiationActive() && chordNotes.length > 1) {
       const noteCount = chordNotes.length;
