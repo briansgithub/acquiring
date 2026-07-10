@@ -272,7 +272,7 @@ const statsCtx = {
     const entries = buildQuizSongContext()?.entries || [];
     return poolStats(entries);
   },
-  session: quizSession,
+  get session() { return quizSession; },
   romanHtml: romanNumeralToHtml,
   chordRing: chordRing,
 };
