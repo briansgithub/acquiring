@@ -1868,10 +1868,14 @@ function stopClozeQuiz() {
   const quizInfoContainer = chordRing.getQuizClozeInfo();
   if (quizInfoContainer) quizInfoContainer.style.display = "none";
   
+  loopStartTick = null;
+  loopEndTick = null;
+  updateTimelineLoopPoints();
+  
   restartSectionFromBeginning({ autoPlay: false });
 }
 
-function nextClozeQuestion() {
+async function nextClozeQuestion() {
   const entries = buildQuizSongContext()?.entries;
   if (!entries || !entries.length) return;
   
@@ -1892,7 +1896,52 @@ function nextClozeQuestion() {
     handleQuizClozeGuess(guessChord);
   });
   
-  restartSectionFromBeginning({ autoPlay: true });
+  // Set default loop points: 2 measures before and 1 measure after the masked chord
+  if (quizClozeCorrectChord) {
+    const targetBeat = Math.max(1, Math.floor(quizClozeCorrectChord.beat));
+    const meters = Array.isArray(currentSong?.metadata?.meters) ? currentSong.metadata.meters
+      .filter((m) => Number.isFinite(m?.beat) && Number.isFinite(m?.numBeats) && m.numBeats > 0)
+      .sort((a, b) => a.beat - b.beat) : [];
+    let activeMeter = { numBeats: 4 };
+    if (meters.length > 0) {
+      activeMeter = meters[0];
+      for (const m of meters) {
+        if (m.beat <= targetBeat) activeMeter = m;
+        else break;
+      }
+    }
+    const beatsPerMeasure = activeMeter.numBeats || 4;
+    const qMeasureStart = getMeasureStartBeatForBeat(quizClozeCorrectChord.beat, currentSong?.metadata);
+    
+    let startBeat = qMeasureStart - (2 * beatsPerMeasure);
+    if (startBeat < 1) startBeat = 1;
+    
+    const totalTicks = songLength * 192;
+    const progressTicks = lastReleaseTick > 0 ? lastReleaseTick : totalTicks;
+    const progressBeats = progressTicks / 192 + 1;
+    
+    let endBeat = qMeasureStart + (2 * beatsPerMeasure); // 1 measure after target chord's measure
+    if (endBeat > progressBeats) endBeat = progressBeats;
+    
+    loopStartTick = (startBeat - 1) * 192;
+    loopEndTick = (endBeat - 1) * 192;
+    
+    if (loopEndTick > progressTicks) loopEndTick = progressTicks;
+    if (loopEndTick <= loopStartTick) {
+      loopStartTick = 0;
+      loopEndTick = progressTicks;
+    }
+    
+    updateTimelineLoopPoints();
+  }
+  
+  await restartSectionFromBeginning({ autoPlay: true });
+  
+  if (loopEnabled && loopStartTick !== null) {
+    const totalTicks = songLength * 192;
+    const progressTicks = lastReleaseTick > 0 ? lastReleaseTick : totalTicks;
+    handleSeek(loopStartTick / progressTicks);
+  }
   
   updateQuizBarFeedback("Identify the masked chord by clicking its symbol on the Chord Ring. Playback is looping.");
   
