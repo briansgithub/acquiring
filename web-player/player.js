@@ -639,8 +639,8 @@ function updateTimelineLoopPoints() {
   const ToneObj = window.Tone;
   if (ToneObj && ToneObj.Transport) {
     if (loopEnabled && loopStartTick !== null && loopEndTick !== null) {
-      const newStart = ToneObj.Transport.ticksToSeconds(loopStartTick);
-      const newEnd = ToneObj.Transport.ticksToSeconds(loopEndTick);
+      const newStart = ToneObj.Time(loopStartTick + "i").toSeconds();
+      const newEnd = ToneObj.Time(loopEndTick + "i").toSeconds();
       // Safe update order: ensure loopStart <= loopEnd at all times
       ToneObj.Transport.loopStart = 0;
       ToneObj.Transport.loopEnd = newEnd;
