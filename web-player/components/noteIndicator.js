@@ -400,26 +400,42 @@ export function renderNoteIndicator(container, options = {}) {
     
     const isMasked = chordObj && options.isChordMasked?.(chordObj);
     if (isMasked) {
-      const numPills = notes ? notes.length : 4;
-      for (let i = 0; i < numPills; i++) {
+      (notes || []).forEach((n) => {
         const pill = document.createElement("span");
         pill.className = "pill";
         pill.textContent = "?";
         pill.style.background = "rgba(107, 114, 128, 0.12)";
         pill.style.borderColor = "rgba(107, 114, 128, 0.4)";
         pill.style.color = "#6b7280";
-        pill.style.cursor = "default";
+        pill.style.cursor = "pointer";
+        
+        // Add click handler to play note audio
+        pill.addEventListener("click", () => {
+          if (options.onNoteClick) {
+            options.onNoteClick(normalizeToneNotes([n])[0], { isChord: true });
+          }
+        });
         chordList.appendChild(pill);
-      }
-      for (let i = 0; i < numPills; i++) {
-        const pill = document.createElement("span");
-        pill.className = "pill";
-        pill.textContent = "?";
-        pill.style.background = "rgba(107, 114, 128, 0.12)";
-        pill.style.borderColor = "rgba(107, 114, 128, 0.4)";
-        pill.style.color = "#6b7280";
-        pill.style.cursor = "default";
-        chordDegreesPillsList.appendChild(pill);
+      });
+      
+      if (chordDegrees && Array.isArray(chordDegrees)) {
+        chordDegrees.forEach((degree, index) => {
+          const pill = document.createElement("span");
+          pill.className = "pill";
+          pill.textContent = "?";
+          pill.style.background = "rgba(107, 114, 128, 0.12)";
+          pill.style.borderColor = "rgba(107, 114, 128, 0.4)";
+          pill.style.color = "#6b7280";
+          pill.style.cursor = "pointer";
+          
+          const correspondingNote = notes ? notes[index] : null;
+          pill.addEventListener("click", () => {
+            if (options.onNoteClick && correspondingNote) {
+              options.onNoteClick(normalizeToneNotes([correspondingNote])[0], { isChord: true });
+            }
+          });
+          chordDegreesPillsList.appendChild(pill);
+        });
       }
       return;
     }

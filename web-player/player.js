@@ -415,9 +415,6 @@ const timeline = renderTimeline(timelinePane, {
   onSeek: handleSeek,
   onChordClick: (chord, arpeggiate = false) => {
     if (!currentKey) return;
-    if (quizClozeActive && quizClozeMaskedBeat === chord.beat) {
-      return; // Ignore clicking on masked chord during quiz
-    }
     isManualChordPreview = true;
     const chordBeat = chord.beat === 0 ? 1 : chord.beat;
     const activeKey = activeSectionKeyAtBeat(currentSectionKeys, chordBeat, currentKey);
