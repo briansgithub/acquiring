@@ -1973,11 +1973,12 @@ async function nextClozeQuestion() {
       loopEndTick = (endBeat - 1) * 192;
       
       const totalTicks = songLength * 192;
-      if (loopEndTick > totalTicks) loopEndTick = totalTicks;
+      const progressTicks = lastReleaseTick > 0 ? lastReleaseTick : totalTicks;
+      if (loopEndTick > progressTicks) loopEndTick = progressTicks;
       
       if (loopEndTick <= loopStartTick) {
         loopStartTick = 0;
-        loopEndTick = totalTicks;
+        loopEndTick = progressTicks;
       }
       
       updateTimelineLoopPoints();
