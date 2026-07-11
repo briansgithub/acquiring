@@ -3622,11 +3622,8 @@ body {
   font-size: 10px;
 }
 
-/* Quiz playback controls visibility in timeline pane */
-#timeline-pane .quiz-playback-controls {
-  display: none;
-}
-#app.quiz-mode #timeline-pane .quiz-playback-controls {
+/* Quiz playback controls visibility in quiz pane workspace */
+.quiz-workspace .quiz-playback-controls {
   display: flex;
 }
 

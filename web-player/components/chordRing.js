@@ -497,7 +497,7 @@ export function renderChordRing(container, options = {}) {
   quizOverlayPanel.style.left = "10px";
   quizOverlayPanel.style.pointerEvents = "auto";
   quizOverlayPanel.style.zIndex = "10";
-  quizOverlayPanel.style.width = "150px";
+  quizOverlayPanel.style.width = "130px";
   quizOverlayPanel.style.background = "rgba(17, 24, 39, 0.95)";
   quizOverlayPanel.style.border = "1px solid rgba(255, 255, 255, 0.2)";
   quizOverlayPanel.style.borderRadius = "8px";
@@ -538,16 +538,6 @@ export function renderChordRing(container, options = {}) {
   statsBtn.style.cssText = "width:100%; background:#1e293b; color:#94a3b8; border:1px solid #334155; border-radius:6px; padding:6px 10px; font-size:11px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px; transition:all 0.15s ease;";
   statsBtn.innerHTML = "📊 Stats";
   quizBody.appendChild(statsBtn);
-
-  const feedbackContainer = document.createElement("div");
-  feedbackContainer.id = "quiz-feedback-container";
-  feedbackContainer.style.cssText = "display: none; flex-direction: column; gap: 6px; border-top: 1px solid rgba(255, 255, 255, 0.15); padding-top: 6px; margin-top: 4px;";
-  feedbackContainer.innerHTML = `
-    <div id="quiz-bar-score" style="text-align: center; font-weight: 700; color: #22d3ee; background: rgba(34, 211, 238, 0.15); padding: 4px; border-radius: 4px; font-size: 11px; font-variant-numeric: tabular-nums;">0 / 0</div>
-    <div id="quiz-bar-feedback" style="text-align: center; font-size: 10px; color: #cbd5e1; font-weight: 500; line-height: 1.3;">Identify the masked chord...</div>
-    <button id="quiz-bar-next-btn" style="width: 100%; background: #0284c7; color: #fff; border: 1px solid #0369a1; border-radius: 6px; padding: 5px; font-size: 11px; font-weight: 600; cursor: pointer; transition: background 0.15s;" disabled>Next</button>
-  `;
-  quizBody.appendChild(feedbackContainer);
 
   let quizCollapsed = false;
   quizTitle.addEventListener("click", () => {
@@ -2402,12 +2392,6 @@ export function renderChordRing(container, options = {}) {
     },
     getStatsBtn() {
       return statsBtn;
-    },
-    getQuizFeedbackContainer() {
-      return feedbackContainer;
-    },
-    getQuizNextBtn() {
-      return feedbackContainer.querySelector("#quiz-bar-next-btn");
     },
   };
 }

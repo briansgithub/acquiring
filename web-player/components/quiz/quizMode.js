@@ -58,9 +58,9 @@ export function renderQuizMode(container, ctx) {
     </div>
   `;
 
-  // Move playback controls to timeline pane
-  const timelinePane = document.getElementById("timeline-pane");
-  let playbackControls = timelinePane.querySelector(".quiz-playback-controls");
+  // Setup playback controls inside quiz pane
+  const quizWorkspace = container.querySelector(".quiz-workspace");
+  let playbackControls = quizWorkspace.querySelector(".quiz-playback-controls");
   if (!playbackControls) {
     playbackControls = document.createElement("div");
     playbackControls.className = "quiz-playback-controls";
@@ -80,7 +80,7 @@ export function renderQuizMode(container, ctx) {
         <span class="quiz-arp-speed-val" id="quiz-arp-speed-val">4 c/b</span>
       </div>
     `;
-    timelinePane.appendChild(playbackControls);
+    quizWorkspace.appendChild(playbackControls);
   }
 
   const songTitleEl = container.querySelector("#quiz-song-title");
