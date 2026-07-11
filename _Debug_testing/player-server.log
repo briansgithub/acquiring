@@ -86,3 +86,4 @@ PID 18393
 --- start 2026-07-11T01:51:32.855Z port=3000 ---
 Player server running at http://localhost:3000
 PID 21918
+Shutting down (api)...

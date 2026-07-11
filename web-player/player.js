@@ -1928,9 +1928,35 @@ async function nextClozeQuestion() {
   if (quizClozeCorrectChord && currentRawChords && currentRawChords.length > 0) {
     const idx = currentRawChords.findIndex(c => Number(c.beat) === Number(quizClozeCorrectChord.beat));
     if (idx !== -1) {
-      const startChord = currentRawChords[Math.max(0, idx - 2)];
-      const startBeat = startChord.beat === 0 ? 1 : startChord.beat;
-      loopStartTick = (startBeat - 1) * 192;
+      // Find the 3rd unique chord before the masked chord
+      function getChordSymbol(c) {
+        if (c.isRest) return null;
+        return `${c.roman || ""}_${c.root || ""}_${c.type || ""}`;
+      }
+      
+      let thirdUniqueChordIdx = -1;
+      const seenSymbols = [];
+      for (let i = idx - 1; i >= 0; i--) {
+        const c = currentRawChords[i];
+        const sym = getChordSymbol(c);
+        if (!sym) continue; // Skip rests
+        if (!seenSymbols.includes(sym)) {
+          seenSymbols.push(sym);
+        }
+        if (seenSymbols.length === 3) {
+          thirdUniqueChordIdx = i;
+          break;
+        }
+      }
+      
+      if (thirdUniqueChordIdx !== -1) {
+        const startChord = currentRawChords[thirdUniqueChordIdx];
+        const baseBeat = startChord.beat === 0 ? 1 : startChord.beat;
+        const startBeat = baseBeat + startChord.duration;
+        loopStartTick = (startBeat - 1) * 192;
+      } else {
+        loopStartTick = 0;
+      }
       
       const endChord = currentRawChords[Math.min(currentRawChords.length - 1, idx + 1)];
       const endBeat = (endChord.beat === 0 ? 1 : endChord.beat) + endChord.duration;
