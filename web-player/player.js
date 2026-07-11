@@ -1910,6 +1910,9 @@ function startClozeQuiz() {
     quizClozeBtn.style.borderColor = "#b91c1c";
   }
   
+  loopEnabled = true;
+  controls.setLoopChecked(true);
+  
   quizClozeStats = { correct: 0, total: 0 };
   updateQuizBarScore();
   
