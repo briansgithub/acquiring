@@ -1970,7 +1970,7 @@ async function nextClozeQuestion() {
       
       const endChord = currentRawChords[Math.min(currentRawChords.length - 1, idx + 1)];
       const endBeat = (endChord.beat === 0 ? 1 : endChord.beat) + endChord.duration;
-      loopEndTick = (endBeat - 1) * 192;
+      loopEndTick = ((endBeat - 1) * 192) - 1;
       
       const totalTicks = songLength * 192;
       const progressTicks = lastReleaseTick > 0 ? lastReleaseTick : totalTicks;
