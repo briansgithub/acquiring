@@ -1100,7 +1100,7 @@ function startVisualPlaybackLoop() {
 startVisualPlaybackLoop();
 
 function setupProgressTracking() {
-  engine.onTick((currentTicks) => {
+  engine.onTick((currentTicks, time) => {
     // songLength is in Beats.
     // Progress calculation based on TICKS (192 PPQ) to ensure stability during tempo changes.
     // Tone.Transport.seconds is unstable/approximated during aggressive tempo ramps.
@@ -1115,7 +1115,7 @@ function setupProgressTracking() {
       currentTicks >= loopEndTick
     ) {
       const startRatio = loopStartTick / progressTicks;
-      handleSeek(startRatio);
+      handleSeek(startRatio, time);
       return;
     }
 
@@ -1135,7 +1135,7 @@ function setupProgressTracking() {
   });
 }
 
-function handleSeek(ratio) {
+function handleSeek(ratio, time) {
   if (!currentSong || songLength <= 0) return;
   // Store current playback state
   const wasPlaying = Tone.Transport.state === "started";
@@ -1148,7 +1148,7 @@ function handleSeek(ratio) {
   // CRITICAL: Release all currently playing notes FIRST, before canceling parts
   // This ensures that any notes currently in their attack/sustain phase are stopped
   // This is especially important for arpeggiated chords which have many individual note events
-  engine.releaseAllNotes();
+  engine.releaseAllNotes(time);
   
   // Cancel all scheduled parts to prevent events from firing at wrong times
   engine.cancelAllParts();

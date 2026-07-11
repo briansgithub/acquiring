@@ -268,33 +268,33 @@ export class AudioEngine {
     this.melodySynth.triggerAttackRelease(note, duration);
   }
 
-  releaseAllNotes() {
+  releaseAllNotes(time) {
     const Tone = window.Tone;
     try {
       if (this.melodySynth?.triggerRelease) {
-        this.melodySynth.triggerRelease();
+        this.melodySynth.triggerRelease(time);
       }
       if (this.arpeggioSynth?.triggerRelease) {
-        this.arpeggioSynth.triggerRelease();
+        this.arpeggioSynth.triggerRelease(time);
       }
       if (this.droneSynth?.triggerRelease) {
-        this.droneSynth.triggerRelease();
+        this.droneSynth.triggerRelease(time);
       }
       if (this.chordSynth) {
         const trackedNotes =
           this.activeChordNotes.size > 0 ? Array.from(this.activeChordNotes) : null;
         if (typeof this.chordSynth.releaseAll === "function") {
-          this.chordSynth.releaseAll();
+          this.chordSynth.releaseAll(time);
         }
         if (trackedNotes?.length) {
           try {
-            this.chordSynth.triggerRelease(trackedNotes);
+            this.chordSynth.triggerRelease(trackedNotes, time);
           } catch {
             // ignore
           }
         }
         if (typeof this.chordSynth.releaseAll === "function") {
-          this.chordSynth.releaseAll();
+          this.chordSynth.releaseAll(time);
         }
         this.activeChordNotes.clear();
       }
