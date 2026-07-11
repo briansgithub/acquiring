@@ -1020,12 +1020,11 @@ function setupProgressTracking() {
   let lastChordId = null; // Track last chord to avoid redundant updates
   let lastMelodyId = null; // Track last melody to avoid redundant updates
   
-  engine.onTick(() => {
+  engine.onTick((currentTicks, time) => {
     // songLength is in Beats.
     // Progress calculation based on TICKS (192 PPQ) to ensure stability during tempo changes.
     // Tone.Transport.seconds is unstable/approximated during aggressive tempo ramps.
     const totalTicks = songLength * 192;
-    const currentTicks = Tone.Transport.ticks;
     const progressTicks = lastReleaseTick > 0 ? lastReleaseTick : totalTicks;
 
     // Check loop points
@@ -1040,58 +1039,6 @@ function setupProgressTracking() {
       return;
     }
 
-    const ratio = progressTicks > 0 ? Math.min(1, currentTicks / progressTicks) : 0;
-    const currentBeat = (currentTicks / 192) + 1;
-    syncDisplayedKeyAtBeat(currentBeat);
-
-    controls.updateProgress(ratio);
-    timeline.updateProgress(ratio);
-    
-    // Update melody display (including rests) based on current position
-    const currentMelodyInfo = findCurrentMelodyAtTick(currentTicks);
-    const currentMelodyId = currentMelodyInfo ? 
-      `${currentMelodyInfo.note?.beat || 'none'}-${currentMelodyInfo.note?.duration || 'none'}-${currentMelodyInfo.isRest || false}` : 
-      'none';
-    
-    if (currentMelodyId !== lastMelodyId) {
-      lastMelodyId = currentMelodyId;
-      if (currentMelodyInfo) {
-        if (currentMelodyInfo.isRest) {
-          noteIndicator.updateMelody(null, null);
-        } else {
-          noteIndicator.updateMelody(currentMelodyInfo.absoluteLabel, currentMelodyInfo.relativeLabel);
-        }
-      } else {
-        // No melody at this position
-        noteIndicator.updateMelody(null, null);
-      }
-    }
-    
-    // Update chord display (including rests) based on current position
-    const currentChordInfo = findCurrentChordAtTick(currentTicks);
-    const currentChordId = currentChordInfo ? 
-      `${currentChordInfo.chord?.beat || 'none'}-${currentChordInfo.chord?.duration || 'none'}-${currentChordInfo.chord?.isRest || false}` : 
-      'none';
-    
-    if (currentChordId !== lastChordId) {
-      lastChordId = currentChordId;
-      if (currentChordInfo) {
-        noteIndicator.updateChord(
-          currentChordInfo.notes,
-          currentChordInfo.root,
-          currentChordInfo.degrees,
-          currentChordInfo.borrowed,
-          currentChordInfo.key || currentKey,
-          currentChordInfo.chord
-        );
-        chordRing.update(currentChordInfo.chord);
-      } else {
-        // No chord at this position (shouldn't happen if chords cover the whole song, but handle it)
-        noteIndicator.reset();
-        chordRing.update(null);
-      }
-    }
-    
     // Loop to beginning when section ends
     if (
       lastReleaseTick > 0 &&
@@ -1103,6 +1050,66 @@ function setupProgressTracking() {
       restartSectionFromBeginning({ autoPlay: true }).finally(() => {
         sectionLoopInProgress = false;
       });
+      return;
+    }
+
+    // Defer visual updates to match the actual play timing using Tone.Draw
+    const ToneObj = window.Tone;
+    if (ToneObj && ToneObj.Draw) {
+      ToneObj.Draw.add(() => {
+        const visualTicks = ToneObj.Transport.ticks;
+        const ratio = progressTicks > 0 ? Math.min(1, visualTicks / progressTicks) : 0;
+        const currentBeat = (visualTicks / 192) + 1;
+        syncDisplayedKeyAtBeat(currentBeat);
+
+        controls.updateProgress(ratio);
+        timeline.updateProgress(ratio);
+        
+        // Update melody display (including rests) based on current position
+        const currentMelodyInfo = findCurrentMelodyAtTick(visualTicks);
+        const currentMelodyId = currentMelodyInfo ? 
+          `${currentMelodyInfo.note?.beat || 'none'}-${currentMelodyInfo.note?.duration || 'none'}-${currentMelodyInfo.isRest || false}` : 
+          'none';
+        
+        if (currentMelodyId !== lastMelodyId) {
+          lastMelodyId = currentMelodyId;
+          if (currentMelodyInfo) {
+            if (currentMelodyInfo.isRest) {
+              noteIndicator.updateMelody(null, null);
+            } else {
+              noteIndicator.updateMelody(currentMelodyInfo.absoluteLabel, currentMelodyInfo.relativeLabel);
+            }
+          } else {
+            // No melody at this position
+            noteIndicator.updateMelody(null, null);
+          }
+        }
+        
+        // Update chord display (including rests) based on current position
+        const currentChordInfo = findCurrentChordAtTick(visualTicks);
+        const currentChordId = currentChordInfo ? 
+          `${currentChordInfo.chord?.beat || 'none'}-${currentChordInfo.chord?.duration || 'none'}-${currentChordInfo.chord?.isRest || false}` : 
+          'none';
+        
+        if (currentChordId !== lastChordId) {
+          lastChordId = currentChordId;
+          if (currentChordInfo) {
+            noteIndicator.updateChord(
+              currentChordInfo.notes,
+              currentChordInfo.root,
+              currentChordInfo.degrees,
+              currentChordInfo.borrowed,
+              currentChordInfo.key || currentKey,
+              currentChordInfo.chord
+            );
+            chordRing.update(currentChordInfo.chord);
+          } else {
+            // No chord at this position (shouldn't happen if chords cover the whole song, but handle it)
+            noteIndicator.reset();
+            chordRing.update(null);
+          }
+        }
+      }, time);
     }
   });
 }

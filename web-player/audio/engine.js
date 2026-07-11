@@ -72,7 +72,10 @@ export class AudioEngine {
     const part = new Tone.Part((time, event) => {
       if (event.type === "attack") {
         this.melodySynth.triggerAttack(event.name, time);
-        event.onTrigger?.();
+        if (event.onTrigger) {
+          if (Tone.Draw) Tone.Draw.add(event.onTrigger, time);
+          else event.onTrigger();
+        }
       } else if (event.type === "release") {
         this.melodySynth.triggerRelease(time);
       }
@@ -87,7 +90,10 @@ export class AudioEngine {
       if (event.type === "arpeggio") {
         if (!event.note) return;
         this.arpeggioSynth.triggerAttackRelease(event.note, event.duration, time);
-        event.onTrigger?.();
+        if (event.onTrigger) {
+          if (Tone.Draw) Tone.Draw.add(event.onTrigger, time);
+          else event.onTrigger();
+        }
         return;
       }
 
@@ -97,7 +103,10 @@ export class AudioEngine {
         this.chordSynth.triggerAttack(event.notes, time);
         this.currentChordNotes = event.notes;
         event.notes.forEach((note) => this.activeChordNotes.add(note));
-        event.onTrigger?.();
+        if (event.onTrigger) {
+          if (Tone.Draw) Tone.Draw.add(event.onTrigger, time);
+          else event.onTrigger();
+        }
       } else if (event.type === "release") {
         if (typeof this.chordSynth.releaseAll === "function") {
           this.chordSynth.releaseAll(time);
@@ -137,6 +146,9 @@ export class AudioEngine {
     this.releaseAllNotes();
     this.currentChordNotes = null;
     this.activeChordNotes.clear();
+    if (Tone && Tone.Draw) {
+      Tone.Draw.cancel();
+    }
   }
 
   onTick(callback) {
@@ -293,8 +305,12 @@ export class AudioEngine {
   }
 
   cancelAllParts() {
+    const Tone = window.Tone;
     for (const part of this.parts) {
       part.cancel();
+    }
+    if (Tone && Tone.Draw) {
+      Tone.Draw.cancel();
     }
   }
 
