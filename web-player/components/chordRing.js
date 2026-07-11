@@ -45,13 +45,13 @@ export function renderChordRing(container, options = {}) {
     <div id="chord-ring-key-wrap" style="display:flex; flex-direction:column; align-items:center; gap:6px;">
       <div id="chord-ring-key" class="chord-ring-key">—</div>
       <div id="chord-ring-key-actions" class="chord-ring-key-actions" style="display:flex; gap:6px; align-items:center;">
-        <button id="ring-ionian-btn" class="chord-ring-tonic-btn">Scale Ionian ♪</button>
+        <button id="ring-ionian-btn" class="chord-ring-tonic-btn">Rel. Ionian <br>♪ Tonic ♪</button>
         <div class="chord-ring-octave-controls" style="display:flex; flex-direction:column; gap:1px; align-items:center; margin-right:2px; margin-left:2px;">
           <button id="ring-octave-up-btn" class="chord-ring-octave-btn" title="Octave Up">▲</button>
           <span id="ring-octave-display" style="font-size:9px; color:#94a3b8; font-weight:bold; line-height:1; min-width:10px; text-align:center;">3</span>
           <button id="ring-octave-down-btn" class="chord-ring-octave-btn" title="Octave Down">▼</button>
         </div>
-        <button id="ring-tonic-btn" class="chord-ring-tonic-btn">Scale Tonic ♪</button>
+        <button id="ring-tonic-btn" class="chord-ring-tonic-btn">Scale<br>♪ Tonic ♪</button>
         <label class="chord-ring-drone-wrap" title="Enable Drone to keep notes playing indefinitely on click instead of holding" style="display:flex; align-items:center; gap:4px; font-size:10px; color:#94a3b8; font-weight:600; cursor:pointer; user-select:none; margin-left:4px;">
           <input type="checkbox" id="ring-drone-toggle" style="cursor:pointer; margin:0;">
           Drone
