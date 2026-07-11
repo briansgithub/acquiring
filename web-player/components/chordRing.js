@@ -497,7 +497,7 @@ export function renderChordRing(container, options = {}) {
   quizOverlayPanel.style.left = "10px";
   quizOverlayPanel.style.pointerEvents = "auto";
   quizOverlayPanel.style.zIndex = "10";
-  quizOverlayPanel.style.width = "130px";
+  quizOverlayPanel.style.width = "160px";
   quizOverlayPanel.style.background = "rgba(17, 24, 39, 0.95)";
   quizOverlayPanel.style.border = "1px solid rgba(255, 255, 255, 0.2)";
   quizOverlayPanel.style.borderRadius = "8px";
@@ -529,8 +529,55 @@ export function renderChordRing(container, options = {}) {
   clozeBtn.type = "button";
   clozeBtn.className = "quiz-cloze-btn";
   clozeBtn.style.cssText = "width:100%; background:#4f46e5; color:#fff; border:1px solid #4338ca; border-radius:6px; padding:6px 10px; font-size:11px; font-weight:700; cursor:pointer; transition:all 0.15s ease;";
-  clozeBtn.textContent = "🎯 Cloze Quiz";
+  clozeBtn.textContent = "🎯 Start cloze quiz";
   quizBody.appendChild(clozeBtn);
+
+  const quizInfoContainer = document.createElement("div");
+  quizInfoContainer.id = "quiz-cloze-info";
+  quizInfoContainer.style.display = "none";
+  quizInfoContainer.style.flexDirection = "column";
+  quizInfoContainer.style.gap = "6px";
+  quizInfoContainer.style.marginTop = "4px";
+  quizInfoContainer.style.borderTop = "1px solid rgba(255, 255, 255, 0.1)";
+  quizInfoContainer.style.paddingTop = "6px";
+  
+  const feedbackEl = document.createElement("div");
+  feedbackEl.id = "quiz-cloze-feedback";
+  feedbackEl.style.fontSize = "10px";
+  feedbackEl.style.color = "#94a3b8";
+  feedbackEl.style.lineHeight = "1.3";
+  feedbackEl.textContent = "Identify the masked chord...";
+  quizInfoContainer.appendChild(feedbackEl);
+
+  const scoreRow = document.createElement("div");
+  scoreRow.style.display = "flex";
+  scoreRow.style.justifyContent = "space-between";
+  scoreRow.style.alignItems = "center";
+  scoreRow.style.fontSize = "10px";
+  scoreRow.style.color = "#94a3b8";
+  
+  const scoreLabel = document.createElement("span");
+  scoreLabel.textContent = "Score:";
+  scoreRow.appendChild(scoreLabel);
+  
+  const scoreEl = document.createElement("span");
+  scoreEl.id = "quiz-cloze-score";
+  scoreEl.style.fontWeight = "700";
+  scoreEl.style.color = "#22d3ee";
+  scoreEl.style.fontVariantNumeric = "tabular-nums";
+  scoreEl.textContent = "0 / 0";
+  scoreRow.appendChild(scoreEl);
+  quizInfoContainer.appendChild(scoreRow);
+
+  const nextBtn = document.createElement("button");
+  nextBtn.id = "quiz-cloze-next-btn";
+  nextBtn.type = "button";
+  nextBtn.disabled = true;
+  nextBtn.style.cssText = "width:100%; background:#0284c7; color:#fff; border:1px solid #0369a1; border-radius:6px; padding:5px 8px; font-size:10px; font-weight:700; cursor:pointer; transition:all 0.15s ease;";
+  nextBtn.textContent = "Next Question";
+  quizInfoContainer.appendChild(nextBtn);
+  
+  quizBody.appendChild(quizInfoContainer);
 
   const statsBtn = document.createElement("button");
   statsBtn.id = "ring-stats-btn";
@@ -2392,6 +2439,18 @@ export function renderChordRing(container, options = {}) {
     },
     getStatsBtn() {
       return statsBtn;
+    },
+    getQuizClozeInfo() {
+      return quizInfoContainer;
+    },
+    getQuizClozeFeedback() {
+      return feedbackEl;
+    },
+    getQuizClozeScore() {
+      return scoreEl;
+    },
+    getQuizClozeNextBtn() {
+      return nextBtn;
     },
   };
 }

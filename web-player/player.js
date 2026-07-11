@@ -282,13 +282,22 @@ const statsCtx = {
 
 freqPanel = renderQuizFreqPanel(statsDrawer, statsCtx);
 
-// Get button references from chordRing API
+// Get button and panel references from chordRing API
 quizClozeBtn = chordRing.getQuizClozeBtn();
 const statsBtn = chordRing.getStatsBtn();
+const quizClozeNextBtn = chordRing.getQuizClozeNextBtn();
 
-quizClozeBtn.addEventListener("click", () => {
-  handleToggleCloze();
-});
+if (quizClozeBtn) {
+  quizClozeBtn.addEventListener("click", () => {
+    handleToggleCloze();
+  });
+}
+
+if (quizClozeNextBtn) {
+  quizClozeNextBtn.addEventListener("click", () => {
+    nextClozeQuestion();
+  });
+}
 
 statsBtn.addEventListener("click", () => {
   statsDrawerOpen = !statsDrawerOpen;
@@ -586,46 +595,7 @@ const quizSession = new QuizSession();
 
 init();
 
-// Setup Cloze Quiz bar inside quizPane
-const quizBar = document.createElement("div");
-quizBar.id = "timeline-quiz-bar";
-quizBar.className = "timeline-quiz-bar";
-quizBar.style.cssText = "display: none; height: 100%; width: 100%; box-sizing: border-box;";
-quizBar.innerHTML = `
-<div class="quiz-card" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between; padding: 16px; box-sizing: border-box; background: #111827; border-radius: 12px; border: 1px solid var(--divider);">
-  <div class="quiz-card-header" style="display: flex; flex-direction: column; gap: 8px;">
-    <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: #22d3ee; display: flex; align-items: center; gap: 6px;">
-      🎯 Progression Quiz
-    </h3>
-    <p id="quiz-bar-feedback" style="margin: 0; font-size: 13px; color: #94a3b8; line-height: 1.4;">
-      Identify the masked chord by clicking its symbol on the Chord Ring.
-    </p>
-  </div>
-  
-  <div style="flex: 1; display: flex; align-items: center; justify-content: center; margin: 20px 0;">
-    <div style="text-align: center;">
-      <span style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 6px;">Current Score</span>
-      <span id="quiz-bar-score" style="font-size: 36px; font-weight: 800; color: #22d3ee; font-variant-numeric: tabular-nums;">0 / 0</span>
-    </div>
-  </div>
 
-  <div style="display: flex; gap: 10px; border-top: 1px solid var(--divider); padding-top: 12px;">
-    <button id="quiz-bar-next-btn" class="quiz-bar-btn primary" style="flex: 1; background: #0284c7; color: #ffffff; border: 1px solid #0369a1; border-radius: 8px; padding: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s ease;" disabled>Next Question</button>
-    <button id="quiz-bar-stop-btn" class="quiz-bar-btn" style="flex: 1; background: #1e293b; color: #f1f5f9; border: 1px solid #334155; border-radius: 8px; padding: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s ease;">Stop Quiz</button>
-  </div>
-</div>
-`;
-if (quizPane) {
-  quizPane.appendChild(quizBar);
-}
-
-quizBar.querySelector("#quiz-bar-next-btn").addEventListener("click", () => {
-  nextClozeQuestion();
-});
-
-quizBar.querySelector("#quiz-bar-stop-btn").addEventListener("click", () => {
-  stopClozeQuiz();
-});
 
 let corpusStats = null;
 
@@ -699,7 +669,7 @@ function setAppMode(mode, { stopQuiz = true } = {}) {
     quizClozeCorrectChord = null;
     if (quizClozeBtn) {
       quizClozeBtn.classList.remove("active");
-      quizClozeBtn.textContent = "🎯 Cloze Quiz";
+      quizClozeBtn.textContent = "🎯 Start cloze quiz";
       quizClozeBtn.style.background = "#4f46e5";
       quizClozeBtn.style.borderColor = "#4338ca";
     }
@@ -707,10 +677,8 @@ function setAppMode(mode, { stopQuiz = true } = {}) {
     timeline.setMaskedChords([]);
     chordRing.setChordSelectHandler(null);
     
-    const quizBarEl = document.getElementById("timeline-quiz-bar");
-    if (quizBarEl) quizBarEl.style.display = "none";
-    const workspaceEl = quizPane?.querySelector(".quiz-workspace");
-    if (workspaceEl) workspaceEl.style.display = "flex";
+    const quizInfoContainer = chordRing.getQuizClozeInfo();
+    if (quizInfoContainer) quizInfoContainer.style.display = "none";
     
     restartSectionFromBeginning({ autoPlay: false });
   }
@@ -1790,7 +1758,7 @@ function startClozeQuiz() {
   quizClozeActive = true;
   if (quizClozeBtn) {
     quizClozeBtn.classList.add("active");
-    quizClozeBtn.textContent = "⏹ Stop Quiz";
+    quizClozeBtn.textContent = "⏹ Stop cloze quiz";
     quizClozeBtn.style.background = "#dc2626";
     quizClozeBtn.style.borderColor = "#b91c1c";
   }
@@ -1798,13 +1766,8 @@ function startClozeQuiz() {
   quizClozeStats = { correct: 0, total: 0 };
   updateQuizBarScore();
   
-  setAppMode("quiz", { stopQuiz: false });
-  
-  const workspaceEl = quizPane?.querySelector(".quiz-workspace");
-  if (workspaceEl) workspaceEl.style.display = "none";
-  
-  const quizBarEl = document.getElementById("timeline-quiz-bar");
-  if (quizBarEl) quizBarEl.style.display = "block";
+  const quizInfoContainer = chordRing.getQuizClozeInfo();
+  if (quizInfoContainer) quizInfoContainer.style.display = "flex";
   
   nextClozeQuestion();
 }
@@ -1815,7 +1778,7 @@ function stopClozeQuiz() {
   quizClozeCorrectChord = null;
   if (quizClozeBtn) {
     quizClozeBtn.classList.remove("active");
-    quizClozeBtn.textContent = "🎯 Cloze Quiz";
+    quizClozeBtn.textContent = "🎯 Start cloze quiz";
     quizClozeBtn.style.background = "#4f46e5";
     quizClozeBtn.style.borderColor = "#4338ca";
   }
@@ -1823,12 +1786,9 @@ function stopClozeQuiz() {
   timeline.setMaskedChords([]);
   chordRing.setChordSelectHandler(null);
   
-  const quizBarEl = document.getElementById("timeline-quiz-bar");
-  if (quizBarEl) quizBarEl.style.display = "none";
-  const workspaceEl = quizPane?.querySelector(".quiz-workspace");
-  if (workspaceEl) workspaceEl.style.display = "flex";
+  const quizInfoContainer = chordRing.getQuizClozeInfo();
+  if (quizInfoContainer) quizInfoContainer.style.display = "none";
   
-  setAppMode("player", { stopQuiz: false });
   restartSectionFromBeginning({ autoPlay: false });
 }
 
@@ -1857,7 +1817,7 @@ function nextClozeQuestion() {
   
   updateQuizBarFeedback("Identify the masked chord by clicking its symbol on the Chord Ring. Playback is looping.");
   
-  const nextBtn = document.getElementById("quiz-bar-next-btn");
+  const nextBtn = chordRing.getQuizClozeNextBtn();
   if (nextBtn) nextBtn.disabled = true;
 }
 
@@ -1919,17 +1879,17 @@ function handleQuizClozeGuess(guessChord) {
     freqPanel.refresh();
   }
   
-  const nextBtn = document.getElementById("quiz-bar-next-btn");
+  const nextBtn = chordRing.getQuizClozeNextBtn();
   if (nextBtn) nextBtn.disabled = false;
 }
 
 function updateQuizBarFeedback(text) {
-  const feedbackEl = document.getElementById("quiz-bar-feedback");
+  const feedbackEl = chordRing.getQuizClozeFeedback();
   if (feedbackEl) feedbackEl.textContent = text;
 }
 
 function updateQuizBarScore() {
-  const scoreEl = document.getElementById("quiz-bar-score");
+  const scoreEl = chordRing.getQuizClozeScore();
   if (scoreEl) scoreEl.textContent = `${quizClozeStats.correct} / ${quizClozeStats.total}`;
 }
 
