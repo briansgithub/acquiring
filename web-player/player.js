@@ -49,6 +49,9 @@ let quizClozeStats = { correct: 0, total: 0 };
 let statsDrawerOpen = false;
 let freqPanel = null;
 let quizClozeBtn = null;
+let loopStartTick = null;
+let loopEndTick = null;
+let loopEnabled = true;
 
 function getArpeggioBpm() {
   return arpUnlockFromTempo ? originalBpm : currentBpm;
@@ -396,9 +399,20 @@ const controls = renderControls({
     currentBpm = originalBpm;
     currentSecondsPerBeat = 60 / originalBpm;
     engine.setTempo(currentBpm);
+    
+    loopStartTick = null;
+    loopEndTick = null;
+    loopEnabled = true;
+    controls.setLoopChecked(true);
+    updateTimelineLoopPoints();
+    
     updatePlaybackSettings();
   },
   onToggleCloze: () => handleToggleCloze(),
+  onToggleLoop: (checked) => {
+    loopEnabled = checked;
+    updateTimelineLoopPoints();
+  },
 });
 
 const melodyVolumeSlider = document.getElementById("melody-volume");
@@ -468,13 +482,47 @@ const selectorCollapsible = makeCollapsible(selectorPane, {
 });
 let selectorExpandedBeforeQuiz = true;
 
-// Add keyboard support for spacebar to toggle play/pause
+// Add keyboard support for spacebar, a, b, and c keys
 document.addEventListener("keydown", (event) => {
-  // Only handle spacebar, and ignore if user is typing in an input field
-  if (event.code === "Space" && event.target.tagName !== "INPUT" && event.target.tagName !== "TEXTAREA") {
+  const isInput = event.target.tagName === "INPUT" || event.target.tagName === "TEXTAREA";
+  if (isInput) return;
+
+  if (event.code === "Space") {
     event.preventDefault();
     const isPlaying = Tone.Transport.state === "started";
     handlePlayPause(!isPlaying);
+    return;
+  }
+
+  const key = event.key.toLowerCase();
+  if (key === "a") {
+    event.preventDefault();
+    const currentTicks = Tone.Transport.ticks;
+    loopStartTick = currentTicks;
+    if (loopEndTick !== null && loopStartTick >= loopEndTick) {
+      loopEndTick = null;
+    }
+    updateTimelineLoopPoints();
+    console.log(`Loop start point set to tick ${loopStartTick}`);
+  } else if (key === "b") {
+    event.preventDefault();
+    const currentTicks = Tone.Transport.ticks;
+    if (loopStartTick === null) {
+      loopStartTick = 0;
+    }
+    if (currentTicks <= loopStartTick) {
+      console.warn("Cannot set end loop point B before or at start loop point A.");
+    } else {
+      loopEndTick = currentTicks;
+      updateTimelineLoopPoints();
+      console.log(`Loop end point set to tick ${loopEndTick}`);
+    }
+  } else if (key === "c") {
+    event.preventDefault();
+    loopStartTick = null;
+    loopEndTick = null;
+    updateTimelineLoopPoints();
+    console.log("Loop points cleared.");
   }
 });
 
@@ -558,7 +606,25 @@ function clearPlayerState() {
   timeline.setSongData([], null, 0);
   timeline.setSongInfo(null, null);
   timeline.updateProgress(0);
+  
+  loopStartTick = null;
+  loopEndTick = null;
+  updateTimelineLoopPoints();
+  
   quizMode?.refresh();
+}
+
+function updateTimelineLoopPoints() {
+  const totalTicks = songLength * 192;
+  const progressTicks = lastReleaseTick > 0 ? lastReleaseTick : totalTicks;
+  
+  if (loopEnabled) {
+    const startRatio = loopStartTick !== null ? loopStartTick / progressTicks : null;
+    const endRatio = loopEndTick !== null ? loopEndTick / progressTicks : null;
+    timeline.setLoopPoints(startRatio, endRatio);
+  } else {
+    timeline.setLoopPoints(null, null);
+  }
 }
 
 function resetIdleState() {
@@ -740,6 +806,10 @@ async function loadSection(songIndex, sectionIndex) {
   if (isLoading) return;
   isLoading = true;
   loadingSplash.show();
+
+  loopStartTick = null;
+  loopEndTick = null;
+  updateTimelineLoopPoints();
 
   try {
     engine.cancelAllParts();
@@ -957,6 +1027,18 @@ function setupProgressTracking() {
     const totalTicks = songLength * 192;
     const currentTicks = Tone.Transport.ticks;
     const progressTicks = lastReleaseTick > 0 ? lastReleaseTick : totalTicks;
+
+    // Check loop points
+    if (
+      loopEnabled &&
+      loopStartTick !== null &&
+      loopEndTick !== null &&
+      currentTicks >= loopEndTick
+    ) {
+      const startRatio = loopStartTick / progressTicks;
+      handleSeek(startRatio);
+      return;
+    }
 
     const ratio = progressTicks > 0 ? Math.min(1, currentTicks / progressTicks) : 0;
     const currentBeat = (currentTicks / 192) + 1;

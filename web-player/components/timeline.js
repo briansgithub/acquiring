@@ -77,6 +77,10 @@ export function renderTimeline(container, options = {}) {
     let quizMarkers = null;
     let maskedBeats = [];
 
+    // Loop points state
+    let loopStartRatio = null;
+    let loopEndRatio = null;
+
     const AXIS_HEIGHT = 13;
     const BLOCK_HEIGHT_RATIO = 0.9; // shorter blocks to make vertical room for title row
     const CHORD_LABEL_PAD = { x: 7, y: 4 };
@@ -389,6 +393,74 @@ export function renderTimeline(container, options = {}) {
         }
 
         drawQuizOverlays(pixelsPerBeat, y, blockHeight);
+
+        // Draw Loop points
+        if (loopStartRatio !== null) {
+            const startX = loopStartRatio * logicalWidth;
+            
+            // Draw loop region shading if both are set
+            if (loopEndRatio !== null) {
+                const endX = loopEndRatio * logicalWidth;
+                ctx.fillStyle = "rgba(34, 211, 238, 0.08)";
+                ctx.fillRect(startX, 0, endX - startX, logicalHeight);
+            }
+            
+            // Draw start line
+            ctx.strokeStyle = "#22d3ee";
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(startX, 0);
+            ctx.lineTo(startX, logicalHeight);
+            ctx.stroke();
+            ctx.setLineDash([]); // Reset
+            
+            // Draw bracket/flag at top
+            ctx.fillStyle = "#22d3ee";
+            ctx.beginPath();
+            ctx.moveTo(startX, 0);
+            ctx.lineTo(startX + 12, 0);
+            ctx.lineTo(startX + 12, 14);
+            ctx.lineTo(startX, 8);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.fillStyle = "#0f172a";
+            ctx.font = "bold 9px sans-serif";
+            ctx.textAlign = "left";
+            ctx.textBaseline = "middle";
+            ctx.fillText("A", startX + 3, 6);
+        }
+        
+        if (loopEndRatio !== null) {
+            const endX = loopEndRatio * logicalWidth;
+            
+            // Draw end line
+            ctx.strokeStyle = "#f43f5e";
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(endX, 0);
+            ctx.lineTo(endX, logicalHeight);
+            ctx.stroke();
+            ctx.setLineDash([]); // Reset
+            
+            // Draw bracket/flag at top
+            ctx.fillStyle = "#f43f5e";
+            ctx.beginPath();
+            ctx.moveTo(endX, 0);
+            ctx.lineTo(endX - 12, 0);
+            ctx.lineTo(endX - 12, 14);
+            ctx.lineTo(endX, 8);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.fillStyle = "#0f172a";
+            ctx.font = "bold 9px sans-serif";
+            ctx.textAlign = "right";
+            ctx.textBaseline = "middle";
+            ctx.fillText("B", endX - 3, 6);
+        }
     }
 
     function drawQuizOverlays(pixelsPerBeat, blockY, blockHeight) {
@@ -902,6 +974,11 @@ export function renderTimeline(container, options = {}) {
             quizHighlightRange = null;
             quizMarkers = null;
             maskedBeats = [];
+            draw();
+        },
+        setLoopPoints(startRatio, endRatio) {
+            loopStartRatio = startRatio;
+            loopEndRatio = endRatio;
             draw();
         },
     };
