@@ -1114,11 +1114,15 @@ function setupProgressTracking() {
     ) {
       // 1. Release currently playing notes gracefully at the scheduled boundary time
       engine.releaseAllNotes(time);
+      engine.releaseAllNotes(); // immediate fallback to prevent stuck/held notes
       
       // 2. Jump transport back to loopStartTick immediately without recreating parts
       Tone.Transport.ticks = loopStartTick;
+
+      // 3. Play the starting chord notes at the loop start offset
+      resumeMidChordPlayback(loopStartTick, currentChordEvents);
       
-      // 3. Clear visual tracking cache to force updates on the next animation frame
+      // 4. Clear visual tracking cache to force updates on the next animation frame
       progressTrackingChordId = null;
       progressTrackingMelodyId = null;
       lastVisualTicks = -1;
@@ -1963,22 +1967,22 @@ async function nextClozeQuestion() {
       if (thirdUniqueChordIdx !== -1 && thirdUniqueChordIdx + 1 < idx) {
         const startChord = currentRawChords[thirdUniqueChordIdx + 1];
         const startBeat = startChord.beat === 0 ? 1 : startChord.beat;
-        loopStartTick = (startBeat - 1) * 192;
+        loopStartTick = ((startBeat - 1) * 192) + 24; // 24 ticks (a 32nd note) later to prevent previous chord overlap
       } else {
-        loopStartTick = 0;
+        loopStartTick = 24;
       }
       
       const endChord = currentRawChords[Math.min(currentRawChords.length - 1, idx + 1)];
       const endBeat = (endChord.beat === 0 ? 1 : endChord.beat) + endChord.duration;
-      loopEndTick = ((endBeat - 1) * 192) - 1;
+      loopEndTick = ((endBeat - 1) * 192) - 24; // 24 ticks earlier to prevent triggering boundary chord
       
       const totalTicks = songLength * 192;
       const progressTicks = lastReleaseTick > 0 ? lastReleaseTick : totalTicks;
-      if (loopEndTick > progressTicks) loopEndTick = progressTicks;
+      if (loopEndTick > progressTicks - 24) loopEndTick = progressTicks - 24;
       
       if (loopEndTick <= loopStartTick) {
-        loopStartTick = 0;
-        loopEndTick = progressTicks;
+        loopStartTick = 24;
+        loopEndTick = progressTicks - 24;
       }
       
       updateTimelineLoopPoints();
