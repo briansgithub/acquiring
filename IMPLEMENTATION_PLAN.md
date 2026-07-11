@@ -15,10 +15,11 @@ Re-implement the ear-training quizzes directly in the main player page under tog
 - [x] Implement mask states in `timeline.js` (using `setMaskedChords(beats[])` API)
 - [x] Render masked chords as a large dark gray rectangle with a "?" label on the timeline canvas
 - [x] Add a "Fill Chord" activate button to the player interface (named "Cloze Quiz" next to transport controls)
-- [x] Silence the audio of masked chords during playback in the audio engine (`player.js`) by scheduling a silent trigger event
+- [x] Play chord audio normally during Cloze Quiz to allow hearing progression
 - [x] Hook up Chord Ring interaction to accept guesses for the masked chord via `setChordSelectHandler`
 - [x] Provide inline correct/incorrect feedback (unmask on correct guess and play chord sound, flash incorrect node on wrong guess, update inline banner message and stats)
 - [x] Support biased chord selection (utilize `pickFrequencyBiased` based on frequency profile counts of the section)
+- [x] Clean timeline: Move all quiz feedback bars and arpeggio/tempo playback controls into the quiz window (#quiz-pane)
 
 ---
 
@@ -44,6 +45,8 @@ Re-implement the ear-training quizzes directly in the main player page under tog
 ## Architecture & Integration Notes
 - **State management:** Integrated quizzes toggle local states (e.g. `quizClozeActive`) within `player.js`.
 - **UI adjustments:**
-  - Added a dedicated `#timeline-quiz-bar` directly inside the timeline pane below the canvas.
-  - Increased `#timeline-pane` layout height to 130px in `#app` and `#app.quiz-mode` grid setups to accommodate the canvas and the inline quiz bar comfortably.
+  - Moves Cloze Quiz feedback, score tracking, and controls into the `#quiz-pane` window, showing them inside a dedicated card.
+  - Moves quiz playback controls (arpeggio settings and tempo slider) to the bottom of the `.quiz-workspace` inside `#quiz-pane`.
+  - Keeps the `#timeline-pane` completely clean and layout-identical to the main branch.
   - Intercepted chord clicks on the timeline and nodes on the chord ring when the quiz is active to prevent cheating.
+  - Overrode `AudioContext.prototype.createScriptProcessor` in `index.html` to throw an error, bypassing deprecated node warnings in Tone.js's browser check.
