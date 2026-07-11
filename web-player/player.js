@@ -1022,7 +1022,7 @@ async function loadSection(songIndex, sectionIndex) {
   }
 }
 
-async function restartSectionFromBeginning({ autoPlay = false } = {}) {
+async function restartSectionFromBeginning({ autoPlay = false, startTick = null } = {}) {
   if (!currentSong || songLength <= 0) return;
   engine.releaseAllNotes();
   engine.stop();
@@ -1035,12 +1035,30 @@ async function restartSectionFromBeginning({ autoPlay = false } = {}) {
   await engine.setupTransport(currentBpm);
   engine.scheduleMelody(melodyEvents);
   engine.scheduleChords(chordEvents);
-  controls.updateProgress(0);
-  timeline.updateProgress(0);
-  syncDisplayedKeyAtBeat(1);
+  
+  if (startTick !== null) {
+    const totalTicks = songLength * 192;
+    const ratio = startTick / totalTicks;
+    const seconds = songLength * currentSecondsPerBeat * ratio;
+    const Tone = window.Tone;
+    Tone.Transport.seconds = seconds;
+    syncDisplayedKeyAtBeat((startTick / 192) + 1);
+    controls.updateProgress(ratio);
+    timeline.updateProgress(ratio);
+  } else {
+    controls.updateProgress(0);
+    timeline.updateProgress(0);
+    syncDisplayedKeyAtBeat(1);
+  }
+  
   chordRing.update(null, null, null);
   noteIndicator.reset();
   setupProgressTracking();
+  
+  if (startTick !== null) {
+    resumeMidChordPlayback(startTick, currentChordEvents);
+  }
+  
   if (autoPlay) {
     await engine.play();
     controls.setPlayState(true);
@@ -2017,16 +2035,8 @@ async function nextClozeQuestion() {
     }
   }
   
-  await restartSectionFromBeginning({ autoPlay: false });
-  
-  if (loopEnabled && loopStartTick !== null) {
-    const totalTicks = songLength * 192;
-    handleSeek(loopStartTick / totalTicks);
-    resumeMidChordPlayback(loopStartTick, currentChordEvents);
-  }
-  
-  await engine.play();
-  controls.setPlayState(true);
+  const startTick = (loopEnabled && loopStartTick !== null) ? loopStartTick : null;
+  await restartSectionFromBeginning({ autoPlay: true, startTick });
   
   updateQuizBarFeedback("Identify the masked chord by clicking its symbol on the Chord Ring. Playback is looping.");
   
