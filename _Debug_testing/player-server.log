@@ -145,3 +145,7 @@ Shutting down (api)...
 Player server running at http://localhost:3000
 PID 30826
 Shutting down (api)...
+
+--- start 2026-07-11T07:17:16.194Z port=3000 ---
+Player server running at http://localhost:3000
+PID 33212

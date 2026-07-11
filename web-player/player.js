@@ -2014,12 +2014,15 @@ async function nextClozeQuestion() {
     }
   }
   
-  await restartSectionFromBeginning({ autoPlay: true });
+  await restartSectionFromBeginning({ autoPlay: false });
   
   if (loopEnabled && loopStartTick !== null) {
     const totalTicks = songLength * 192;
     handleSeek(loopStartTick / totalTicks);
   }
+  
+  await engine.play();
+  controls.setPlayState(true);
   
   updateQuizBarFeedback("Identify the masked chord by clicking its symbol on the Chord Ring. Playback is looping.");
   
