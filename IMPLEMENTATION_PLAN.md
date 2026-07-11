@@ -19,7 +19,8 @@ Re-implement the ear-training quizzes directly in the main player page under tog
 - [x] Hook up Chord Ring interaction to accept guesses for the masked chord via `setChordSelectHandler`
 - [x] Provide inline correct/incorrect feedback (unmask on correct guess and play chord sound, flash incorrect node on wrong guess, update inline banner message and stats)
 - [x] Support biased chord selection (utilize `pickFrequencyBiased` based on frequency profile counts of the section)
-- [x] Clean timeline: Move all quiz feedback bars and arpeggio/tempo playback controls into the quiz window (#quiz-pane)
+- [x] Clean timeline: Move all quiz playback controls into the quiz window (#quiz-pane)
+- [x] Integrated Player UI: Run Cloze Quiz inside the main player layout, displaying instructions, score, and next button inside the top-left collapsible Quiz & Stats overlay panel.
 
 ---
 
@@ -45,8 +46,9 @@ Re-implement the ear-training quizzes directly in the main player page under tog
 ## Architecture & Integration Notes
 - **State management:** Integrated quizzes toggle local states (e.g. `quizClozeActive`) within `player.js`.
 - **UI adjustments:**
-  - Moves Cloze Quiz feedback, score tracking, and controls into the `#quiz-pane` window, showing them inside a dedicated card.
-  - Moves quiz playback controls (arpeggio settings and tempo slider) to the bottom of the `.quiz-workspace` inside `#quiz-pane`.
+  - Moves Cloze Quiz feedback, score tracking, and next question trigger into the top-left collapsible **Quiz & Stats** overlay on the Chord Ring.
+  - Keeps the app inside Player mode layout during the Cloze Quiz, allowing full use of the now-playing indicator card and key selector.
+  - Moves normal quiz playback controls (arpeggio settings and tempo slider) to the bottom of the `.quiz-workspace` inside `#quiz-pane` (used as reference material).
   - Keeps the `#timeline-pane` completely clean and layout-identical to the main branch.
   - Intercepted chord clicks on the timeline and nodes on the chord ring when the quiz is active to prevent cheating.
-  - Overrode `AudioContext.prototype.createScriptProcessor` in `index.html` to throw an error, bypassing deprecated node warnings in Tone.js's browser check.
+  - Overrode `AudioContext.prototype.createScriptProcessor` in `index.html` to throw an error, bypassing deprecated node warnings in Tone.js's check.
