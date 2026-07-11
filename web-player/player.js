@@ -1140,6 +1140,11 @@ function handleSeek(ratio) {
   // Store current playback state
   const wasPlaying = Tone.Transport.state === "started";
   
+  // Clear visual tracking cache to force updates on next animation frame
+  progressTrackingChordId = null;
+  progressTrackingMelodyId = null;
+  lastVisualTicks = -1;
+  
   // CRITICAL: Release all currently playing notes FIRST, before canceling parts
   // This ensures that any notes currently in their attack/sustain phase are stopped
   // This is especially important for arpeggiated chords which have many individual note events
