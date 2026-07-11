@@ -625,11 +625,10 @@ function clearPlayerState() {
 
 function updateTimelineLoopPoints() {
   const totalTicks = songLength * 192;
-  const progressTicks = lastReleaseTick > 0 ? lastReleaseTick : totalTicks;
   
   if (loopEnabled) {
-    const startRatio = loopStartTick !== null ? loopStartTick / progressTicks : null;
-    const endRatio = loopEndTick !== null ? loopEndTick / progressTicks : null;
+    const startRatio = loopStartTick !== null ? loopStartTick / totalTicks : null;
+    const endRatio = loopEndTick !== null ? loopEndTick / totalTicks : null;
     timeline.setLoopPoints(startRatio, endRatio);
   } else {
     timeline.setLoopPoints(null, null);
@@ -1042,8 +1041,7 @@ function startVisualPlaybackLoop() {
     lastVisualTicks = currentTicks;
     
     const totalTicks = songLength * 192;
-    const progressTicks = lastReleaseTick > 0 ? lastReleaseTick : totalTicks;
-    const ratio = progressTicks > 0 ? Math.min(1, currentTicks / progressTicks) : 0;
+    const ratio = totalTicks > 0 ? Math.min(1, currentTicks / totalTicks) : 0;
     const currentBeat = (currentTicks / 192) + 1;
     
     syncDisplayedKeyAtBeat(currentBeat);
@@ -1975,12 +1973,11 @@ async function nextClozeQuestion() {
       loopEndTick = (endBeat - 1) * 192;
       
       const totalTicks = songLength * 192;
-      const progressTicks = lastReleaseTick > 0 ? lastReleaseTick : totalTicks;
-      if (loopEndTick > progressTicks) loopEndTick = progressTicks;
+      if (loopEndTick > totalTicks) loopEndTick = totalTicks;
       
       if (loopEndTick <= loopStartTick) {
         loopStartTick = 0;
-        loopEndTick = progressTicks;
+        loopEndTick = totalTicks;
       }
       
       updateTimelineLoopPoints();
@@ -1991,8 +1988,7 @@ async function nextClozeQuestion() {
   
   if (loopEnabled && loopStartTick !== null) {
     const totalTicks = songLength * 192;
-    const progressTicks = lastReleaseTick > 0 ? lastReleaseTick : totalTicks;
-    handleSeek(loopStartTick / progressTicks);
+    handleSeek(loopStartTick / totalTicks);
   }
   
   updateQuizBarFeedback("Identify the masked chord by clicking its symbol on the Chord Ring. Playback is looping.");
