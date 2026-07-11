@@ -2,8 +2,8 @@ export const TEMPO_MAX_PERCENT = 200;
 
 export const CONTROL_DEFAULTS = {
   tempoPercent: 100,
-  melodyVolume: 16,
-  chordVolume: 35,
+  melodyVolume: 10,
+  chordVolume: 80,
   arpeggiated: false,
   arpeggiationSlider: 12,
   arpFixedSpeed: true,
@@ -16,11 +16,17 @@ export function renderControls({ topContainer, tempoContainer, footerContainer, 
   onSectionChange,
   onTempoChange,
   onResetDefaults,
+  onToggleCloze,
+  onToggleLoop,
 }) {
   if (playbackContainer) {
     playbackContainer.innerHTML = `
       <button id="play-toggle" type="button" data-state="paused">Play</button>
       <button id="restart-btn" type="button">Restart</button>
+      <div class="controls-loop-toggle" style="display:inline-flex; align-items:center; gap:4px; margin-left:12px; font-size:11px; font-weight:600; color:#94a3b8; user-select:none; cursor:pointer;">
+        <input type="checkbox" id="loop-cb" checked style="cursor:pointer;" />
+        <label for="loop-cb" style="cursor:pointer;">Loop</label>
+      </div>
     `;
     playbackContainer.hidden = true;
   }
@@ -60,6 +66,7 @@ export function renderControls({ topContainer, tempoContainer, footerContainer, 
 
   const playBtn = playbackContainer?.querySelector("#play-toggle");
   const restartBtn = playbackContainer?.querySelector("#restart-btn");
+  const loopCb = playbackContainer?.querySelector("#loop-cb");
   const sectionSelect = topContainer.querySelector("#section-select");
   const tempoSlider = (tempoContainer ?? topContainer).querySelector("#tempo-slider");
   const tempoLabel = (tempoContainer ?? topContainer).querySelector("#tempo-label");
@@ -83,6 +90,10 @@ export function renderControls({ topContainer, tempoContainer, footerContainer, 
 
   restartBtn?.addEventListener("click", () => {
     onRestart?.();
+  });
+
+  loopCb?.addEventListener("change", () => {
+    onToggleLoop?.(loopCb.checked);
   });
 
   sectionSelect.addEventListener("change", (e) => {
@@ -143,6 +154,12 @@ export function renderControls({ topContainer, tempoContainer, footerContainer, 
       const pct = Math.max(1, Math.min(TEMPO_MAX_PERCENT, CONTROL_DEFAULTS.tempoPercent));
       tempoSlider.value = pct;
       tempoLabel.textContent = `${pct}%`;
+    },
+    setQuizClozeState(active) {
+      // Managed externally by player.js
+    },
+    setLoopChecked(checked) {
+      if (loopCb) loopCb.checked = !!checked;
     },
   };
 }

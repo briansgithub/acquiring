@@ -90,11 +90,21 @@ export const cloze = {
 
     let choicesCleanup = null;
 
+    let answeredCorrectFirstTry = false;
+
     function handleChoice(symbol) {
-      if (answered) return;
-      answered = true;
       const answer = run[gapIdx];
+      if (answered) {
+        if (answeredCorrectFirstTry && symbol === answer.symbol) {
+          el.querySelector("#cz-next")?.click();
+        }
+        return;
+      }
+      answered = true;
       const correct = symbol === answer.symbol;
+      if (correct) {
+        answeredCorrectFirstTry = true;
+      }
 
       const btns = choicesEl.querySelectorAll(".quiz-choice-btn");
       btns.forEach((btn) => {
@@ -139,6 +149,7 @@ export const cloze = {
 
     function showQuestion() {
       answered = false;
+      answeredCorrectFirstTry = false;
       feedbackEl.innerHTML = "";
       chordTools.clearPanels();
       const difficulty = diffEl.value;
@@ -194,7 +205,7 @@ export const cloze = {
       cueQuestionAudio(playMuted);
     }
 
-    wireKeyQuizTransport(el, "cz", {
+    wireKeyQuizTransport(el, "cz", { getSongCtx: () => base.songCtx,
       onTonicize: () => tonicizeKey(base.songCtx, ctx.audio),
       onRepeat: playMuted,
       onNext: showQuestion,

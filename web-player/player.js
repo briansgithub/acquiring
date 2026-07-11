@@ -3,12 +3,13 @@ import { createLoadingSplash } from "./components/loadingSplash.js";
 import { renderControls, CONTROL_DEFAULTS } from "./components/controls.js";
 import { makeCollapsible } from "./components/collapsiblePane.js";
 import { renderChordRing } from "./components/chordRing.js";
+import { renderQuizFreqPanel } from "./components/quiz/quizFreqPanel.js";
 import { renderNoteIndicator } from "./components/noteIndicator.js";
 import { renderTimeline } from "./components/timeline.js";
 import { renderSongSelector } from "./components/songSelector.js";
 import { renderQuizMode } from "./components/quiz/quizMode.js";
 import { createQuizAudio } from "./components/quiz/quizAudio.js";
-import { fetchCorpusStats, buildSongEntries, poolStats, buildFrequencyProfile } from "./components/quiz/quizPool.js";
+import { fetchCorpusStats, buildSongEntries, poolStats, buildFrequencyProfile, pickFrequencyBiased } from "./components/quiz/quizPool.js";
 import { QuizSession } from "./lib/quizSession.js";
 import { romanNumeralToHtml } from "./lib/romanNumeralCanvas.js";
 import { chordInterpreter, getSongLength, parseKey, sdToToneJSNoteName } from "./lib/music.js";
@@ -24,6 +25,11 @@ import {
 } from "./lib/timing.js";
 
 const Tone = window.Tone;
+
+let progressTrackingChordId = null;
+let progressTrackingMelodyId = null;
+let lastVisualTicks = -1;
+
 
 const ringPane = document.getElementById("ring-pane");
 const indicatorPane = document.getElementById("indicator-pane");
@@ -41,6 +47,16 @@ let isArpeggiated = CONTROL_DEFAULTS.arpeggiated;
 let arpeggiationSlider = CONTROL_DEFAULTS.arpeggiationSlider;
 let arpFixedSpeed = CONTROL_DEFAULTS.arpFixedSpeed;
 let arpUnlockFromTempo = CONTROL_DEFAULTS.arpUnlockFromTempo;
+let quizClozeActive = false;
+let quizClozeMaskedBeat = null;
+let quizClozeCorrectChord = null;
+let quizClozeStats = { correct: 0, total: 0 };
+let statsDrawerOpen = false;
+let freqPanel = null;
+let quizClozeBtn = null;
+let loopStartTick = null;
+let loopEndTick = null;
+let loopEnabled = true;
 
 function getArpeggioBpm() {
   return arpUnlockFromTempo ? originalBpm : currentBpm;
@@ -209,6 +225,9 @@ async function handlePlayPause(shouldPlay) {
 }
 
 const chordRing = renderChordRing(ringPane, {
+  isChordMasked: (chord) => {
+    return quizClozeActive && chord && Number(quizClozeMaskedBeat) === Number(chord.beat);
+  },
   getForceRootPosition: () => forceRootPosition,
   getArpeggiated: () => isArpeggiationActive(),
   onChordClick: (chordData, arpeggiate = false) => {
@@ -250,15 +269,78 @@ const chordRing = renderChordRing(ringPane, {
     timeline.setColorScheme(scheme);
   }
 });
+// Setup stats drawer inside ringPane
+ringPane.style.position = "relative";
+const statsDrawer = document.createElement("div");
+statsDrawer.id = "ring-stats-drawer";
+statsDrawer.style.cssText = "position: absolute; bottom: 0; left: 0; right: 0; height: 60%; background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(8px); border-top: 1px solid var(--divider); display: none; flex-direction: column; z-index: 100; border-radius: 0 0 12px 12px; padding: 12px; box-sizing: border-box; overflow-y: auto;";
+ringPane.appendChild(statsDrawer);
+
+const statsCtx = {
+  getSongKey: () => loadedCacheKey || (currentSong ? currentSong.artist + "_" + currentSong.title : null),
+  getSectionStats: () => {
+    if (!currentRawChords) return null;
+    const entries = buildQuizSongContext()?.entries || [];
+    return poolStats(entries);
+  },
+  get session() { return quizSession; },
+  romanHtml: romanNumeralToHtml,
+  chordRing: chordRing,
+};
+
+freqPanel = renderQuizFreqPanel(statsDrawer, statsCtx);
+
+// Get button and panel references from chordRing API
+quizClozeBtn = chordRing.getQuizClozeBtn();
+const statsBtn = chordRing.getStatsBtn();
+const quizClozeNextBtn = chordRing.getQuizClozeNextBtn();
+
+if (quizClozeBtn) {
+  quizClozeBtn.addEventListener("click", () => {
+    handleToggleCloze();
+  });
+}
+
+if (quizClozeNextBtn) {
+  quizClozeNextBtn.addEventListener("click", () => {
+    nextClozeQuestion();
+  });
+}
+
+statsBtn.addEventListener("click", () => {
+  statsDrawerOpen = !statsDrawerOpen;
+  if (statsDrawerOpen) {
+    statsDrawer.style.display = "flex";
+    statsBtn.style.background = "rgba(34, 211, 238, 0.2)";
+    statsBtn.style.borderColor = "#22d3ee";
+    statsBtn.style.color = "#22d3ee";
+    freqPanel.refresh();
+  } else {
+    statsDrawer.style.display = "none";
+    statsBtn.style.background = "#1e293b";
+    statsBtn.style.borderColor = "#334155";
+    statsBtn.style.color = "#94a3b8";
+  }
+});
+
 const noteIndicator = renderNoteIndicator(indicatorPane, {
+  isChordMasked: (chord) => {
+    return quizClozeActive && chord && Number(quizClozeMaskedBeat) === Number(chord.beat);
+  },
   labelMode: useRomanNumerals,
   onNoteClick: (note, { isChord = false } = {}) => {
+    let duration = "4n";
+    let durationMs = undefined;
+    if (document.getElementById("app").classList.contains("quiz-mode")) {
+      durationMs = getArpeggioStepMs(3);
+      duration = (durationMs / 1000) + "s";
+    }
     if (isChord) {
-      const durationMs = engine.previewNote(note, "4n");
-      noteIndicator.highlightNote(note, durationMs);
+      const ms = engine.previewNote(note, duration);
+      noteIndicator.highlightNote(note, durationMs || ms);
       return;
     }
-    engine.previewMelodyNote(note, "4n");
+    engine.previewMelodyNote(note, duration);
   },
   onRootPositionChange: handleRootPositionChange,
   onArpeggiateToggle: (enabled) => {
@@ -322,7 +404,19 @@ const controls = renderControls({
     currentBpm = originalBpm;
     currentSecondsPerBeat = 60 / originalBpm;
     engine.setTempo(currentBpm);
+    
+    loopStartTick = null;
+    loopEndTick = null;
+    loopEnabled = true;
+    controls.setLoopChecked(true);
+    updateTimelineLoopPoints();
+    
     updatePlaybackSettings();
+  },
+  onToggleCloze: () => handleToggleCloze(),
+  onToggleLoop: (checked) => {
+    loopEnabled = checked;
+    updateTimelineLoopPoints();
   },
 });
 
@@ -350,6 +444,8 @@ const timeline = renderTimeline(timelinePane, {
     }
   }
 });
+
+
 
 const songSelector = renderSongSelector(selectorPane, {
   isSongLoaded: (cacheKey) => !!cacheKey && cacheKey === loadedCacheKey,
@@ -391,13 +487,47 @@ const selectorCollapsible = makeCollapsible(selectorPane, {
 });
 let selectorExpandedBeforeQuiz = true;
 
-// Add keyboard support for spacebar to toggle play/pause
+// Add keyboard support for spacebar, a, b, and c keys
 document.addEventListener("keydown", (event) => {
-  // Only handle spacebar, and ignore if user is typing in an input field
-  if (event.code === "Space" && event.target.tagName !== "INPUT" && event.target.tagName !== "TEXTAREA") {
+  const isInput = event.target.tagName === "INPUT" || event.target.tagName === "TEXTAREA";
+  if (isInput) return;
+
+  if (event.code === "Space") {
     event.preventDefault();
     const isPlaying = Tone.Transport.state === "started";
     handlePlayPause(!isPlaying);
+    return;
+  }
+
+  const key = event.key.toLowerCase();
+  if (key === "a") {
+    event.preventDefault();
+    const currentTicks = Tone.Transport.ticks;
+    loopStartTick = currentTicks;
+    if (loopEndTick !== null && loopStartTick >= loopEndTick) {
+      loopEndTick = null;
+    }
+    updateTimelineLoopPoints();
+    console.log(`Loop start point set to tick ${loopStartTick}`);
+  } else if (key === "b") {
+    event.preventDefault();
+    const currentTicks = Tone.Transport.ticks;
+    if (loopStartTick === null) {
+      loopStartTick = 0;
+    }
+    if (currentTicks <= loopStartTick) {
+      console.warn("Cannot set end loop point B before or at start loop point A.");
+    } else {
+      loopEndTick = currentTicks;
+      updateTimelineLoopPoints();
+      console.log(`Loop end point set to tick ${loopEndTick}`);
+    }
+  } else if (key === "c") {
+    event.preventDefault();
+    loopStartTick = null;
+    loopEndTick = null;
+    updateTimelineLoopPoints();
+    console.log("Loop points cleared.");
   }
 });
 
@@ -481,7 +611,44 @@ function clearPlayerState() {
   timeline.setSongData([], null, 0);
   timeline.setSongInfo(null, null);
   timeline.updateProgress(0);
+  
+  loopStartTick = null;
+  loopEndTick = null;
+  updateTimelineLoopPoints();
+  
+  progressTrackingChordId = null;
+  progressTrackingMelodyId = null;
+  lastVisualTicks = -1;
+  
   quizMode?.refresh();
+}
+
+function updateTimelineLoopPoints() {
+  const totalTicks = songLength * 192;
+  
+  if (loopEnabled) {
+    const startRatio = loopStartTick !== null ? loopStartTick / totalTicks : null;
+    const endRatio = loopEndTick !== null ? loopEndTick / totalTicks : null;
+    timeline.setLoopPoints(startRatio, endRatio);
+  } else {
+    timeline.setLoopPoints(null, null);
+  }
+
+  // Sync native Tone.Transport loop settings
+  const ToneObj = window.Tone;
+  if (ToneObj && ToneObj.Transport) {
+    if (loopEnabled && loopStartTick !== null && loopEndTick !== null) {
+      const newStart = ToneObj.Transport.ticksToSeconds(loopStartTick);
+      const newEnd = ToneObj.Transport.ticksToSeconds(loopEndTick);
+      // Safe update order: ensure loopStart <= loopEnd at all times
+      ToneObj.Transport.loopStart = 0;
+      ToneObj.Transport.loopEnd = newEnd;
+      ToneObj.Transport.loopStart = newStart;
+      ToneObj.Transport.loop = true;
+    } else {
+      ToneObj.Transport.loop = false;
+    }
+  }
 }
 
 function resetIdleState() {
@@ -509,11 +676,14 @@ function init() {
   }
 }
 
-init();
-
 const quizPane = document.getElementById("quiz-pane");
 const quizAudio = createQuizAudio();
 const quizSession = new QuizSession();
+
+init();
+
+
+
 let corpusStats = null;
 
 function getSectionStats() {
@@ -553,6 +723,25 @@ if (quizPane) {
       const songCtx = buildQuizSongContext();
       return songCtx?.entries ? buildFrequencyProfile(songCtx.entries) : null;
     },
+    get isArpeggiated() { return isArpeggiated; },
+    get arpeggiationSlider() { return arpeggiationSlider; },
+    setArpeggiated: (enabled) => {
+      isArpeggiated = enabled;
+      updatePlaybackSettings();
+      noteIndicator.setArpeggiated?.(enabled);
+    },
+    setArpSlider: (index) => {
+      arpeggiationSlider = index;
+      updatePlaybackSettings();
+      noteIndicator.setArpeggiationSlider?.(index);
+    },
+    setTempo: (bpm) => {
+      if (!Number.isFinite(bpm) || bpm < 20) return;
+      currentBpm = bpm;
+      currentSecondsPerBeat = 60 / bpm;
+      engine.setTempo(bpm);
+      controls.setTempo?.(bpm);
+    },
   });
 }
 
@@ -560,7 +749,27 @@ const appEl = document.getElementById("app");
 const modePlayerBtn = document.getElementById("mode-player");
 const modeQuizBtn = document.getElementById("mode-quiz");
 
-function setAppMode(mode) {
+function setAppMode(mode, { stopQuiz = true } = {}) {
+  if (stopQuiz && quizClozeActive) {
+    quizClozeActive = false;
+    quizClozeMaskedBeat = null;
+    quizClozeCorrectChord = null;
+    if (quizClozeBtn) {
+      quizClozeBtn.classList.remove("active");
+      quizClozeBtn.textContent = "🎯 Start cloze quiz";
+      quizClozeBtn.style.background = "#4f46e5";
+      quizClozeBtn.style.borderColor = "#4338ca";
+    }
+    
+    timeline.setMaskedChords([]);
+    chordRing.setChordSelectHandler(null);
+    
+    const quizInfoContainer = chordRing.getQuizClozeInfo();
+    if (quizInfoContainer) quizInfoContainer.style.display = "none";
+    
+    restartSectionFromBeginning({ autoPlay: false });
+  }
+
   const quiz = mode === "quiz";
   if (quiz) {
     selectorExpandedBeforeQuiz = !selectorCollapsible.isCollapsed();
@@ -621,6 +830,10 @@ async function loadSection(songIndex, sectionIndex) {
   if (isLoading) return;
   isLoading = true;
   loadingSplash.show();
+
+  loopStartTick = null;
+  loopEndTick = null;
+  updateTimelineLoopPoints();
 
   try {
     engine.cancelAllParts();
@@ -788,6 +1001,9 @@ async function loadSection(songIndex, sectionIndex) {
     setupProgressTracking();
     controls.setPlaybackVisible(true);
     quizMode?.refresh({ remount: true });
+    if (typeof statsDrawerOpen !== "undefined" && statsDrawerOpen) {
+      freqPanel?.refresh();
+    }
     console.log("Section loaded successfully.");
   } catch (err) {
     console.error("Error during playback setup in loadSection:", err);
@@ -824,22 +1040,27 @@ async function restartSectionFromBeginning({ autoPlay = false } = {}) {
   }
 }
 
-function setupProgressTracking() {
-  let lastChordId = null; // Track last chord to avoid redundant updates
-  let lastMelodyId = null; // Track last melody to avoid redundant updates
-  
-  engine.onTick(() => {
-    // songLength is in Beats.
-    // Progress calculation based on TICKS (192 PPQ) to ensure stability during tempo changes.
-    // Tone.Transport.seconds is unstable/approximated during aggressive tempo ramps.
+
+function startVisualPlaybackLoop() {
+  function tick() {
+    requestAnimationFrame(tick);
+    
+    const ToneObj = window.Tone;
+    if (!ToneObj || ToneObj.Transport.state !== "started" || !currentSong || songLength <= 0) {
+      return;
+    }
+    
+    const currentTicks = ToneObj.Transport.ticks;
+    if (currentTicks === lastVisualTicks) {
+      return;
+    }
+    lastVisualTicks = currentTicks;
+    
     const totalTicks = songLength * 192;
-    const currentTicks = Tone.Transport.ticks;
-    const progressTicks = lastReleaseTick > 0 ? lastReleaseTick : totalTicks;
-
-    const ratio = progressTicks > 0 ? Math.min(1, currentTicks / progressTicks) : 0;
+    const ratio = totalTicks > 0 ? Math.min(1, currentTicks / totalTicks) : 0;
     const currentBeat = (currentTicks / 192) + 1;
+    
     syncDisplayedKeyAtBeat(currentBeat);
-
     controls.updateProgress(ratio);
     timeline.updateProgress(ratio);
     
@@ -849,8 +1070,8 @@ function setupProgressTracking() {
       `${currentMelodyInfo.note?.beat || 'none'}-${currentMelodyInfo.note?.duration || 'none'}-${currentMelodyInfo.isRest || false}` : 
       'none';
     
-    if (currentMelodyId !== lastMelodyId) {
-      lastMelodyId = currentMelodyId;
+    if (currentMelodyId !== progressTrackingMelodyId) {
+      progressTrackingMelodyId = currentMelodyId;
       if (currentMelodyInfo) {
         if (currentMelodyInfo.isRest) {
           noteIndicator.updateMelody(null, null);
@@ -858,7 +1079,6 @@ function setupProgressTracking() {
           noteIndicator.updateMelody(currentMelodyInfo.absoluteLabel, currentMelodyInfo.relativeLabel);
         }
       } else {
-        // No melody at this position
         noteIndicator.updateMelody(null, null);
       }
     }
@@ -869,8 +1089,8 @@ function setupProgressTracking() {
       `${currentChordInfo.chord?.beat || 'none'}-${currentChordInfo.chord?.duration || 'none'}-${currentChordInfo.chord?.isRest || false}` : 
       'none';
     
-    if (currentChordId !== lastChordId) {
-      lastChordId = currentChordId;
+    if (currentChordId !== progressTrackingChordId) {
+      progressTrackingChordId = currentChordId;
       if (currentChordInfo) {
         noteIndicator.updateChord(
           currentChordInfo.notes,
@@ -882,12 +1102,49 @@ function setupProgressTracking() {
         );
         chordRing.update(currentChordInfo.chord);
       } else {
-        // No chord at this position (shouldn't happen if chords cover the whole song, but handle it)
         noteIndicator.reset();
         chordRing.update(null);
       }
     }
-    
+  }
+  requestAnimationFrame(tick);
+}
+
+// Start the loop immediately
+startVisualPlaybackLoop();
+
+function setupProgressTracking() {
+  engine.onTick((currentTicks, time) => {
+    // songLength is in Beats.
+    // Progress calculation based on TICKS (192 PPQ) to ensure stability during tempo changes.
+    // Tone.Transport.seconds is unstable/approximated during aggressive tempo ramps.
+    const totalTicks = songLength * 192;
+    const progressTicks = lastReleaseTick > 0 ? lastReleaseTick : totalTicks;
+
+    // Check loop points
+    if (
+      loopEnabled &&
+      loopStartTick !== null &&
+      loopEndTick !== null &&
+      currentTicks >= loopEndTick
+    ) {
+      // 1. Release currently playing notes gracefully at the scheduled boundary time
+      engine.releaseAllNotes(time);
+      engine.releaseAllNotes(); // immediate fallback to prevent stuck/held notes
+      
+      // 2. Jump transport back to loopStartTick immediately without recreating parts
+      Tone.Transport.ticks = loopStartTick;
+
+      // 3. Play the starting chord notes at the loop start offset
+      resumeMidChordPlayback(loopStartTick, currentChordEvents);
+      
+      // 4. Clear visual tracking cache to force updates on the next animation frame
+      progressTrackingChordId = null;
+      progressTrackingMelodyId = null;
+      lastVisualTicks = -1;
+      return;
+    }
+
     // Loop to beginning when section ends
     if (
       lastReleaseTick > 0 &&
@@ -899,19 +1156,25 @@ function setupProgressTracking() {
       restartSectionFromBeginning({ autoPlay: true }).finally(() => {
         sectionLoopInProgress = false;
       });
+      return;
     }
   });
 }
 
-function handleSeek(ratio) {
+function handleSeek(ratio, time) {
   if (!currentSong || songLength <= 0) return;
   // Store current playback state
   const wasPlaying = Tone.Transport.state === "started";
   
+  // Clear visual tracking cache to force updates on next animation frame
+  progressTrackingChordId = null;
+  progressTrackingMelodyId = null;
+  lastVisualTicks = -1;
+  
   // CRITICAL: Release all currently playing notes FIRST, before canceling parts
   // This ensures that any notes currently in their attack/sustain phase are stopped
   // This is especially important for arpeggiated chords which have many individual note events
-  engine.releaseAllNotes();
+  engine.releaseAllNotes(time);
   
   // Cancel all scheduled parts to prevent events from firing at wrong times
   engine.cancelAllParts();
@@ -1041,6 +1304,10 @@ function createChordEvents(chordsArray, key, sectionKeys = currentSectionKeys) {
   const events = [];
   chordsArray.forEach((chord) => {
     if (chord.isRest) return;
+
+    // Check if this chord is masked in the integrated cloze quiz
+    const isMasked = quizClozeActive && Number(quizClozeMaskedBeat) === Number(chord.beat);
+
     const chordBeat = chord.beat === 0 ? 1 : chord.beat;
     const activeKey = activeSectionKeyAtBeat(sectionKeys, chordBeat, key);
     const chordData = interpretChord(chord, activeKey);
@@ -1053,6 +1320,8 @@ function createChordEvents(chordsArray, key, sectionKeys = currentSectionKeys) {
     const normalizedBeat = chord.beat === 0 ? 1 : chord.beat;
     const startTick = (normalizedBeat - 1) * 192;
     const endTick = startTick + (chord.duration * 192);
+
+
 
     if (isArpeggiationActive() && chordNotes.length > 1) {
       const noteCount = chordNotes.length;
@@ -1606,5 +1875,218 @@ async function updatePlaybackSettings() {
   } else {
     controls.resetPlayState();
   }
+}
+
+// Integrated Cloze Quiz Helper Functions
+function handleToggleCloze() {
+  if (quizClozeActive) {
+    stopClozeQuiz();
+  } else {
+    startClozeQuiz();
+  }
+}
+
+function startClozeQuiz() {
+  const entries = buildQuizSongContext()?.entries;
+  if (!entries || !entries.length) {
+    alert("Please load a song section to play the quiz.");
+    return;
+  }
+  
+  quizClozeActive = true;
+  if (quizClozeBtn) {
+    quizClozeBtn.classList.add("active");
+    quizClozeBtn.textContent = "⏹ Stop cloze quiz";
+    quizClozeBtn.style.background = "#dc2626";
+    quizClozeBtn.style.borderColor = "#b91c1c";
+  }
+  
+  quizClozeStats = { correct: 0, total: 0 };
+  updateQuizBarScore();
+  
+  const quizInfoContainer = chordRing.getQuizClozeInfo();
+  if (quizInfoContainer) quizInfoContainer.style.display = "flex";
+  
+  nextClozeQuestion();
+}
+
+function stopClozeQuiz() {
+  quizClozeActive = false;
+  quizClozeMaskedBeat = null;
+  quizClozeCorrectChord = null;
+  if (quizClozeBtn) {
+    quizClozeBtn.classList.remove("active");
+    quizClozeBtn.textContent = "🎯 Start cloze quiz";
+    quizClozeBtn.style.background = "#4f46e5";
+    quizClozeBtn.style.borderColor = "#4338ca";
+  }
+  
+  timeline.setMaskedChords([]);
+  chordRing.setChordSelectHandler(null);
+  
+  const quizInfoContainer = chordRing.getQuizClozeInfo();
+  if (quizInfoContainer) quizInfoContainer.style.display = "none";
+  
+  loopStartTick = null;
+  loopEndTick = null;
+  updateTimelineLoopPoints();
+  
+  restartSectionFromBeginning({ autoPlay: false });
+}
+
+async function nextClozeQuestion() {
+  const entries = buildQuizSongContext()?.entries;
+  if (!entries || !entries.length) return;
+  
+  timeline.setMaskedChords([]);
+  chordRing.update(null);
+  
+  const profile = buildFrequencyProfile(entries);
+  const lastSymbol = quizSession.lastSymbol;
+  const chosenEntry = pickFrequencyBiased(entries, quizSession, lastSymbol, profile, "normal");
+  if (!chosenEntry) return;
+  
+  quizClozeMaskedBeat = chosenEntry.chord.beat;
+  quizClozeCorrectChord = chosenEntry.chord;
+  
+  timeline.setMaskedChords([quizClozeMaskedBeat]);
+  
+  chordRing.setChordSelectHandler((guessChord) => {
+    handleQuizClozeGuess(guessChord);
+  });
+  
+  // Set default loop points: 2 chords before and 1 chord after the masked chord
+  if (quizClozeCorrectChord && currentRawChords && currentRawChords.length > 0) {
+    const idx = currentRawChords.findIndex(c => Number(c.beat) === Number(quizClozeCorrectChord.beat));
+    if (idx !== -1) {
+      // Find the 3rd unique chord before the masked chord
+      function getChordSymbol(c) {
+        if (c.isRest) return null;
+        return `${c.roman || ""}_${c.root || ""}_${c.type || ""}`;
+      }
+      
+      let thirdUniqueChordIdx = -1;
+      const seenSymbols = [];
+      for (let i = idx - 1; i >= 0; i--) {
+        const c = currentRawChords[i];
+        const sym = getChordSymbol(c);
+        if (!sym) continue; // Skip rests
+        if (!seenSymbols.includes(sym)) {
+          seenSymbols.push(sym);
+        }
+        if (seenSymbols.length === 3) {
+          thirdUniqueChordIdx = i;
+          break;
+        }
+      }
+      
+      if (thirdUniqueChordIdx !== -1 && thirdUniqueChordIdx + 1 < idx) {
+        const startChord = currentRawChords[thirdUniqueChordIdx + 1];
+        const startBeat = startChord.beat === 0 ? 1 : startChord.beat;
+        loopStartTick = ((startBeat - 1) * 192) + 24; // 24 ticks (a 32nd note) later to prevent previous chord overlap
+      } else {
+        loopStartTick = 24;
+      }
+      
+      const endChord = currentRawChords[Math.min(currentRawChords.length - 1, idx + 1)];
+      const endBeat = (endChord.beat === 0 ? 1 : endChord.beat) + endChord.duration;
+      loopEndTick = ((endBeat - 1) * 192) - 24; // 24 ticks earlier to prevent triggering boundary chord
+      
+      const totalTicks = songLength * 192;
+      const progressTicks = lastReleaseTick > 0 ? lastReleaseTick : totalTicks;
+      if (loopEndTick > progressTicks - 24) loopEndTick = progressTicks - 24;
+      
+      if (loopEndTick <= loopStartTick) {
+        loopStartTick = 24;
+        loopEndTick = progressTicks - 24;
+      }
+      
+      updateTimelineLoopPoints();
+    }
+  }
+  
+  await restartSectionFromBeginning({ autoPlay: true });
+  
+  if (loopEnabled && loopStartTick !== null) {
+    const totalTicks = songLength * 192;
+    handleSeek(loopStartTick / totalTicks);
+  }
+  
+  updateQuizBarFeedback("Identify the masked chord by clicking its symbol on the Chord Ring. Playback is looping.");
+  
+  const nextBtn = chordRing.getQuizClozeNextBtn();
+  if (nextBtn) nextBtn.disabled = false;
+}
+
+function handleQuizClozeGuess(guessChord) {
+  if (!quizClozeCorrectChord) return;
+  
+  const cid = (c) => {
+    if (!c) return "";
+    const root = Number(c.root);
+    const type = Number(c.type || 5);
+    const inv = Number(c.inversion || 0);
+    const borrowed = Array.isArray(c.borrowed) ? "custom" : (c.borrowed || "none");
+    const applied = Number(c.applied || 0);
+    return `r${root}|t${type}|i${inv}|b${borrowed}|a${applied}`;
+  };
+  const correct = cid(guessChord) === cid(quizClozeCorrectChord);
+  const correctSymbol = getChordSymbol(quizClozeCorrectChord, currentKey);
+  const guessSymbol = getChordSymbol(guessChord, currentKey);
+  
+  quizClozeStats.total++;
+  
+  if (correct) {
+    quizClozeStats.correct++;
+    chordRing.flashCorrect(correctSymbol);
+    timeline.setMaskedChords([]);
+    
+    quizClozeMaskedBeat = null;
+    
+    const melodyEvents = createMelodyEvents(currentRawNotes, currentKey, currentSectionKeys);
+    const chordEvents = createChordEvents(currentRawChords, currentKey, currentSectionKeys);
+    currentMelodyEvents = melodyEvents;
+    currentChordEvents = chordEvents;
+    engine.rescheduleParts(melodyEvents, chordEvents);
+    
+    const chordBeat = quizClozeCorrectChord.beat === 0 ? 1 : quizClozeCorrectChord.beat;
+    const activeKey = activeSectionKeyAtBeat(currentSectionKeys, chordBeat, currentKey);
+    const chordData = interpretChord(quizClozeCorrectChord, activeKey);
+    previewChordWithSettings(chordData.notes, isArpeggiationActive());
+    
+    noteIndicator.updateChord(chordData.notes, quizClozeCorrectChord.root, chordData.chordDegrees, quizClozeCorrectChord.borrowed, activeKey, quizClozeCorrectChord);
+    chordRing.update(quizClozeCorrectChord);
+    
+    updateQuizBarFeedback(`🎉 Correct! It is ${correctSymbol}.`);
+    quizSession.record(correctSymbol, true);
+  } else {
+    chordRing.flashWrong(guessSymbol);
+    setTimeout(() => {
+      chordRing.flashCorrect(correctSymbol);
+    }, 400);
+    
+    updateQuizBarFeedback(`❌ Incorrect. The answer is ${correctSymbol}.`);
+    quizSession.record(correctSymbol, false);
+  }
+  
+  updateQuizBarScore();
+  chordRing.setChordSelectHandler(null);
+  
+  if (statsDrawerOpen && freqPanel) {
+    freqPanel.refresh();
+  }
+  
+  const nextBtn = chordRing.getQuizClozeNextBtn();
+  if (nextBtn) nextBtn.disabled = false;
+}
+
+function updateQuizBarFeedback(text) {
+  const feedbackEl = chordRing.getQuizClozeFeedback();
+  if (feedbackEl) feedbackEl.textContent = text;
+}
+
+function updateQuizBarScore() {
+  const scoreEl = chordRing.getQuizClozeScore();
+  if (scoreEl) scoreEl.textContent = `${quizClozeStats.correct} / ${quizClozeStats.total}`;
 }
 

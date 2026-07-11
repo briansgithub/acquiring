@@ -44,6 +44,7 @@ export const qualityFlash = {
     const base = requireSong(el, ctx);
     if (!base) return {};
     let answered = false;
+    let answeredCorrectFirstTry = false;
     let current = null;
 
     el.innerHTML = `
@@ -67,6 +68,7 @@ export const qualityFlash = {
 
     function showQuestion() {
       answered = false;
+      answeredCorrectFirstTry = false;
       feedbackEl.innerHTML = "";
       chordTools.clearPanels();
       const difficulty = diffEl.value;
@@ -83,9 +85,17 @@ export const qualityFlash = {
         choicesEl,
         mcChoices(answerLabel, labels, choiceCount(difficulty)),
         (label, btn) => {
-          if (answered) return;
+          if (answered) {
+            if (answeredCorrectFirstTry && label === answerLabel) {
+              el.querySelector("#qf-next")?.click();
+            }
+            return;
+          }
           answered = true;
           const correct = label === answerLabel;
+          if (correct) {
+            answeredCorrectFirstTry = true;
+          }
           btn.classList.add(correct ? "quiz-correct" : "quiz-wrong");
           quizRecord(ctx, "mode-quality", correct, {
             chord: current.chord,
@@ -113,7 +123,7 @@ export const qualityFlash = {
       cueQuestionAudio(playCurrent);
     }
 
-    wireKeyQuizTransport(el, "qf", {
+    wireKeyQuizTransport(el, "qf", { getSongCtx: () => base.songCtx,
       onTonicize: () => tonicizeKey(base.songCtx, ctx.audio),
       onRepeat: playCurrent,
       onNext: showQuestion,

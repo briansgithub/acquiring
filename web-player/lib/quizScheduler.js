@@ -80,8 +80,12 @@ export class QuizScheduler {
   }
 
   save() {
-    if (typeof localStorage === "undefined") return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+    try {
+      if (typeof localStorage === "undefined") return;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+    } catch (e) {
+      console.warn("localStorage.setItem failed:", e);
+    }
   }
 
   ensureCard(id) {

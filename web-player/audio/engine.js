@@ -72,7 +72,10 @@ export class AudioEngine {
     const part = new Tone.Part((time, event) => {
       if (event.type === "attack") {
         this.melodySynth.triggerAttack(event.name, time);
-        event.onTrigger?.();
+        if (event.onTrigger) {
+          if (Tone.Draw) Tone.Draw.schedule(event.onTrigger, time);
+          else event.onTrigger();
+        }
       } else if (event.type === "release") {
         this.melodySynth.triggerRelease(time);
       }
@@ -87,7 +90,10 @@ export class AudioEngine {
       if (event.type === "arpeggio") {
         if (!event.note) return;
         this.arpeggioSynth.triggerAttackRelease(event.note, event.duration, time);
-        event.onTrigger?.();
+        if (event.onTrigger) {
+          if (Tone.Draw) Tone.Draw.schedule(event.onTrigger, time);
+          else event.onTrigger();
+        }
         return;
       }
 
@@ -97,7 +103,10 @@ export class AudioEngine {
         this.chordSynth.triggerAttack(event.notes, time);
         this.currentChordNotes = event.notes;
         event.notes.forEach((note) => this.activeChordNotes.add(note));
-        event.onTrigger?.();
+        if (event.onTrigger) {
+          if (Tone.Draw) Tone.Draw.schedule(event.onTrigger, time);
+          else event.onTrigger();
+        }
       } else if (event.type === "release") {
         if (typeof this.chordSynth.releaseAll === "function") {
           this.chordSynth.releaseAll(time);
@@ -137,6 +146,9 @@ export class AudioEngine {
     this.releaseAllNotes();
     this.currentChordNotes = null;
     this.activeChordNotes.clear();
+    if (Tone && Tone.Draw) {
+      Tone.Draw.cancel();
+    }
   }
 
   onTick(callback) {
@@ -256,33 +268,33 @@ export class AudioEngine {
     this.melodySynth.triggerAttackRelease(note, duration);
   }
 
-  releaseAllNotes() {
+  releaseAllNotes(time) {
     const Tone = window.Tone;
     try {
       if (this.melodySynth?.triggerRelease) {
-        this.melodySynth.triggerRelease();
+        this.melodySynth.triggerRelease(time);
       }
       if (this.arpeggioSynth?.triggerRelease) {
-        this.arpeggioSynth.triggerRelease();
+        this.arpeggioSynth.triggerRelease(time);
       }
       if (this.droneSynth?.triggerRelease) {
-        this.droneSynth.triggerRelease();
+        this.droneSynth.triggerRelease(time);
       }
       if (this.chordSynth) {
         const trackedNotes =
           this.activeChordNotes.size > 0 ? Array.from(this.activeChordNotes) : null;
         if (typeof this.chordSynth.releaseAll === "function") {
-          this.chordSynth.releaseAll();
+          this.chordSynth.releaseAll(time);
         }
         if (trackedNotes?.length) {
           try {
-            this.chordSynth.triggerRelease(trackedNotes);
+            this.chordSynth.triggerRelease(trackedNotes, time);
           } catch {
             // ignore
           }
         }
         if (typeof this.chordSynth.releaseAll === "function") {
-          this.chordSynth.releaseAll();
+          this.chordSynth.releaseAll(time);
         }
         this.activeChordNotes.clear();
       }
@@ -293,8 +305,12 @@ export class AudioEngine {
   }
 
   cancelAllParts() {
+    const Tone = window.Tone;
     for (const part of this.parts) {
       part.cancel();
+    }
+    if (Tone && Tone.Draw) {
+      Tone.Draw.cancel();
     }
   }
 

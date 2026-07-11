@@ -358,6 +358,13 @@ export function renderNoteIndicator(container, options = {}) {
     const { notes, root, key, chordObj } = currentChordData;
     const effKey = key || activeKey;
 
+    const isMasked = chordObj && options.isChordMasked?.(chordObj);
+    if (isMasked) {
+      chordRootEl.innerHTML = `Chord: <span class="chord-roman-line">?</span>`;
+      chordRootEl.style.visibility = "visible";
+      return;
+    }
+
     if (chordObj?.isRest || !notes?.length) {
       chordRootEl.textContent = "Chord: Rest";
       chordRootEl.style.visibility = "visible";
@@ -390,6 +397,48 @@ export function renderNoteIndicator(container, options = {}) {
     // Clear existing pills
     chordList.innerHTML = "";
     chordDegreesPillsList.innerHTML = "";
+    
+    const isMasked = chordObj && options.isChordMasked?.(chordObj);
+    if (isMasked) {
+      (notes || []).forEach((n) => {
+        const pill = document.createElement("span");
+        pill.className = "pill";
+        pill.textContent = "?";
+        pill.style.background = "rgba(107, 114, 128, 0.12)";
+        pill.style.borderColor = "rgba(107, 114, 128, 0.4)";
+        pill.style.color = "#6b7280";
+        pill.style.cursor = "pointer";
+        
+        // Add click handler to play note audio
+        pill.addEventListener("click", () => {
+          if (options.onNoteClick) {
+            options.onNoteClick(normalizeToneNotes([n])[0], { isChord: true });
+          }
+        });
+        chordList.appendChild(pill);
+      });
+      
+      if (chordDegrees && Array.isArray(chordDegrees)) {
+        chordDegrees.forEach((degree, index) => {
+          const pill = document.createElement("span");
+          pill.className = "pill";
+          pill.textContent = "?";
+          pill.style.background = "rgba(107, 114, 128, 0.12)";
+          pill.style.borderColor = "rgba(107, 114, 128, 0.4)";
+          pill.style.color = "#6b7280";
+          pill.style.cursor = "pointer";
+          
+          const correspondingNote = notes ? notes[index] : null;
+          pill.addEventListener("click", () => {
+            if (options.onNoteClick && correspondingNote) {
+              options.onNoteClick(normalizeToneNotes([correspondingNote])[0], { isChord: true });
+            }
+          });
+          chordDegreesPillsList.appendChild(pill);
+        });
+      }
+      return;
+    }
     
     // Check if it's a rest or no chord
     const isRest = chordObj?.isRest || !notes?.length;

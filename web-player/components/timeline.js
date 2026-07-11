@@ -75,6 +75,11 @@ export function renderTimeline(container, options = {}) {
     // Quiz overlay state
     let quizHighlightRange = null;
     let quizMarkers = null;
+    let maskedBeats = [];
+
+    // Loop points state
+    let loopStartRatio = null;
+    let loopEndRatio = null;
 
     const AXIS_HEIGHT = 13;
     const BLOCK_HEIGHT_RATIO = 0.9; // shorter blocks to make vertical room for title row
@@ -193,6 +198,29 @@ export function renderTimeline(container, options = {}) {
             const isCurrentlyPlayingSection = chord.beat >= currentSectionStartBeat && chord.beat < currentSectionEndBeat;
             
             ctx.globalAlpha = isCurrentlyPlayingSection ? 1.0 : 0.35;
+
+            const isMasked = maskedBeats.includes(Number(chord.beat));
+            if (isMasked) {
+                // Draw a large dark gray rectangle
+                ctx.fillStyle = "#27272a"; // Zinc 800
+                ctx.fillRect(x, y, w, blockHeight);
+
+                // Border
+                ctx.strokeStyle = "#1a1a1a";
+                ctx.lineWidth = 1;
+                ctx.strokeRect(x, y, w, blockHeight);
+
+                // Question mark instead of chord label
+                if (innerW > 12 && innerH > 12) {
+                    ctx.fillStyle = "#a1a1aa"; // Zinc 400
+                    ctx.font = `bold ${Math.min(innerH * 0.7, innerW * 0.7, 24)}px sans-serif`;
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.shadowBlur = 0;
+                    ctx.fillText("?", x + w / 2, y + blockHeight / 2);
+                }
+                return;
+            }
 
             const renderKey = timelineRenderKey();
             const c = getColor(chord.root, renderKey.scale, chord.borrowed);
@@ -365,6 +393,74 @@ export function renderTimeline(container, options = {}) {
         }
 
         drawQuizOverlays(pixelsPerBeat, y, blockHeight);
+
+        // Draw Loop points
+        if (loopStartRatio !== null) {
+            const startX = loopStartRatio * logicalWidth;
+            
+            // Draw loop region shading if both are set
+            if (loopEndRatio !== null) {
+                const endX = loopEndRatio * logicalWidth;
+                ctx.fillStyle = "rgba(34, 211, 238, 0.08)";
+                ctx.fillRect(startX, 0, endX - startX, logicalHeight);
+            }
+            
+            // Draw start line
+            ctx.strokeStyle = "#22d3ee";
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(startX, 0);
+            ctx.lineTo(startX, logicalHeight);
+            ctx.stroke();
+            ctx.setLineDash([]); // Reset
+            
+            // Draw bracket/flag at top
+            ctx.fillStyle = "#22d3ee";
+            ctx.beginPath();
+            ctx.moveTo(startX, 0);
+            ctx.lineTo(startX + 12, 0);
+            ctx.lineTo(startX + 12, 14);
+            ctx.lineTo(startX, 8);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.fillStyle = "#0f172a";
+            ctx.font = "bold 9px sans-serif";
+            ctx.textAlign = "left";
+            ctx.textBaseline = "middle";
+            ctx.fillText("A", startX + 3, 6);
+        }
+        
+        if (loopEndRatio !== null) {
+            const endX = loopEndRatio * logicalWidth;
+            
+            // Draw end line
+            ctx.strokeStyle = "#f43f5e";
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(endX, 0);
+            ctx.lineTo(endX, logicalHeight);
+            ctx.stroke();
+            ctx.setLineDash([]); // Reset
+            
+            // Draw bracket/flag at top
+            ctx.fillStyle = "#f43f5e";
+            ctx.beginPath();
+            ctx.moveTo(endX, 0);
+            ctx.lineTo(endX - 12, 0);
+            ctx.lineTo(endX - 12, 14);
+            ctx.lineTo(endX, 8);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.fillStyle = "#0f172a";
+            ctx.font = "bold 9px sans-serif";
+            ctx.textAlign = "right";
+            ctx.textBaseline = "middle";
+            ctx.fillText("B", endX - 3, 6);
+        }
     }
 
     function drawQuizOverlays(pixelsPerBeat, blockY, blockHeight) {
@@ -749,7 +845,7 @@ export function renderTimeline(container, options = {}) {
             currentHoveredChord = null;
             clearTimeout(hideTimeout);
             showKeyTooltip(keyNode);
-        } else if (chordNode) {
+        } else if (chordNode && !maskedBeats.includes(Number(chordNode.chord.beat))) {
             currentHoveredChord = chordNode.chord;
             clearTimeout(hideTimeout);
             showTooltip(chordNode);
@@ -808,6 +904,7 @@ export function renderTimeline(container, options = {}) {
                 ? [...metadata.keys].sort((a, b) => (a?.beat ?? 1) - (b?.beat ?? 1))
                 : [];
             songLengthBeats = lengthBeats || 1;
+            maskedBeats = [];
             
             // Get firstBeat and numBeats from metadata.meters
             if (metadata?.meters && metadata.meters.length > 0) {
@@ -869,9 +966,19 @@ export function renderTimeline(container, options = {}) {
             quizMarkers = markers;   // array of { beat, status }
             draw();
         },
+        setMaskedChords(beats) {
+            maskedBeats = (beats || []).map(Number);
+            draw();
+        },
         clearQuizOverlays() {
             quizHighlightRange = null;
             quizMarkers = null;
+            maskedBeats = [];
+            draw();
+        },
+        setLoopPoints(startRatio, endRatio) {
+            loopStartRatio = startRatio;
+            loopEndRatio = endRatio;
             draw();
         },
     };

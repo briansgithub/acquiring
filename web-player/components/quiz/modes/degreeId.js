@@ -3,6 +3,7 @@ import {
   songDiatonicDistractors,
   songPoolDistractors,
   songTransitionDistractors,
+  pickFrequencyBiased,
 } from "../quizPool.js";
 import { mountChordDrillTools } from "../quizChordInspect.js";
 import {
@@ -64,10 +65,20 @@ export const degreeId = {
 
     let choicesCleanup = null;
 
+    let answeredCorrectFirstTry = false;
+
     function handleChoice(symbol) {
-      if (answered) return;
+      if (answered) {
+        if (answeredCorrectFirstTry && symbol === target.symbol) {
+          el.querySelector("#di-next")?.click();
+        }
+        return;
+      }
       answered = true;
       const correct = symbol === target.symbol;
+      if (correct) {
+        answeredCorrectFirstTry = true;
+      }
 
       // Highlight the button if it exists
       const btns = choicesEl.querySelectorAll(".quiz-choice-btn");
@@ -104,10 +115,11 @@ export const degreeId = {
 
     function showQuestion() {
       answered = false;
+      answeredCorrectFirstTry = false;
       feedbackEl.innerHTML = "";
       chordTools.clearPanels();
       const pool = base.pool;
-      target = ctx.session.pickEntry(pool);
+      target = pickFrequencyBiased(pool, ctx.session, ctx.session.lastSymbol, ctx.getFrequencyProfile?.(), diffEl.value);
       if (!target) return;
       quizNotify(ctx, { symbols: [target.symbol] });
 
@@ -149,7 +161,7 @@ export const degreeId = {
       cueQuestionAudio(() => chordTools.playEntry(target));
     }
 
-    wireKeyQuizTransport(el, "di", {
+    wireKeyQuizTransport(el, "di", { getSongCtx: () => base.songCtx,
       onTonicize: () => tonicizeKey(base.songCtx, ctx.audio),
       onRepeat: () => chordTools.playEntry(target),
       onNext: showQuestion,

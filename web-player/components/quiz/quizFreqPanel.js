@@ -8,7 +8,11 @@ export function renderQuizFreqPanel(container, ctx) {
   panel.id = "quiz-freq-panel";
   panel.className = "quiz-freq-panel";
   panel.innerHTML = `
-    <div class="quiz-freq-dual">
+    <div class="quiz-freq-header" id="quiz-freq-toggle" title="Toggle score table">
+      <span class="quiz-freq-header-title">Section Score Table</span>
+      <span class="quiz-freq-toggle-icon">▼</span>
+    </div>
+    <div class="quiz-freq-dual" id="quiz-freq-dual">
       <section class="quiz-freq-section">
         <h3 class="quiz-freq-section-title">Chords</h3>
         <div id="quiz-freq-chords"></div>
@@ -20,6 +24,17 @@ export function renderQuizFreqPanel(container, ctx) {
     </div>
   `;
   container.appendChild(panel);
+
+  const toggleBtn = panel.querySelector("#quiz-freq-toggle");
+  const dualContainer = panel.querySelector("#quiz-freq-dual");
+  const toggleIcon = panel.querySelector(".quiz-freq-toggle-icon");
+  let isCollapsed = false;
+
+  toggleBtn.addEventListener("click", () => {
+    isCollapsed = !isCollapsed;
+    dualContainer.style.display = isCollapsed ? "none" : "flex";
+    toggleIcon.textContent = isCollapsed ? "▶" : "▼";
+  });
 
   const chordsEl = panel.querySelector("#quiz-freq-chords");
   const transEl = panel.querySelector("#quiz-freq-trans");
@@ -36,30 +51,23 @@ export function renderQuizFreqPanel(container, ctx) {
     return "";
   }
 
-  function compactRows(rows) {
-    return rows.filter(
-      (r) =>
-        r.expectedCount > 0 ||
-        r.sessionAsked > 0 ||
-        r.songAsked > 0 ||
-        r.globalAsked > 0,
-    );
-  }
-
   function renderTable(sectionEl, rows, kind, labelFn) {
     if (!rows.length) {
       sectionEl.innerHTML = '<div class="quiz-freq-empty">No data for this section.</div>';
       return;
     }
 
+    // Sort by descending frequency
+    rows.sort((a, b) => b.expectedCount - a.expectedCount);
+
     const maxCount = Math.max(...rows.map((r) => r.expectedCount || 0));
 
-    const useTwoCols = rows.length > 8;
     sectionEl.innerHTML = `
-      <div class="quiz-freq-tbl${useTwoCols ? " quiz-freq-tbl-split" : ""}">
+      <div class="quiz-freq-tbl">
         <div class="quiz-freq-tbl-hd">
+          <span class="quiz-freq-col-rank" title="Rank">#</span>
           <span class="quiz-freq-col-sym">Symbol</span>
-          <span class="quiz-freq-col-n" title="Count in section">#</span>
+          <span class="quiz-freq-col-n" title="Count in section">n</span>
           <span class="quiz-freq-col-pct" title="Section frequency">%</span>
           <span class="quiz-freq-col-stat" title="Session correct/asked">Sess</span>
           <span class="quiz-freq-col-stat" title="This song correct/asked">Song</span>
@@ -67,11 +75,12 @@ export function renderQuizFreqPanel(container, ctx) {
         </div>
         <div class="quiz-freq-tbl-body">
           ${rows
-            .map((r) => {
+            .map((r, idx) => {
               const key = kind === "symbol" ? r.symbol : r.key;
               const barWidth = maxCount > 0 ? (r.expectedCount / maxCount) * 100 : 0;
               return `<div class="quiz-freq-tbl-row ${rowClasses(kind, key)}" data-key="${key}">
                 <div class="quiz-freq-row-bg" style="width: ${barWidth}%"></div>
+                <span class="quiz-freq-col-rank">${idx + 1}</span>
                 <span class="quiz-freq-col-sym quiz-freq-cell-sym">${labelFn(r)}</span>
                 <span class="quiz-freq-col-n">${r.expectedCount}</span>
                 <span class="quiz-freq-col-pct">${r.expectedPct}</span>
@@ -111,7 +120,6 @@ export function renderQuizFreqPanel(container, ctx) {
       rowNode.addEventListener("mouseenter", highlight);
       rowNode.addEventListener("mouseleave", clear);
       rowNode.addEventListener("click", () => {
-        // Toggle active row styling
         const active = rowNode.classList.contains("quiz-freq-row-active");
         sectionEl.querySelectorAll(".quiz-freq-tbl-row").forEach(r => r.classList.remove("quiz-freq-row-active"));
         if (!active) {
@@ -133,7 +141,7 @@ export function renderQuizFreqPanel(container, ctx) {
       return;
     }
 
-    const chordRows = compactRows(ctx.session.mergedChordRows(songKey, stats, ctx.romanHtml));
+    const chordRows = ctx.session.mergedChordRows(songKey, stats, ctx.romanHtml);
     renderTable(
       chordsEl,
       chordRows,
@@ -141,7 +149,7 @@ export function renderQuizFreqPanel(container, ctx) {
       (r) => `<span class="quiz-chord-sym" data-quiz-symbol="${r.symbol}">${r.labelHtml}</span>`,
     );
 
-    const transRows = compactRows(ctx.session.mergedTransitionRows(songKey, stats));
+    const transRows = ctx.session.mergedTransitionRows(songKey, stats);
     renderTable(transEl, transRows, "transition", (r) =>
       `<span class="quiz-chord-sym" data-quiz-symbol="${r.from}">${ctx.romanHtml(r.from)}</span><span class="quiz-freq-arrow">→</span><span class="quiz-chord-sym" data-quiz-symbol="${r.to}">${ctx.romanHtml(r.to)}</span>`,
     );

@@ -1,0 +1,4500 @@
+{
+  "summary": {
+    "total": 21335,
+    "romanExact": 20227,
+    "romanExactPct": "94.8",
+    "romanCore": 21058,
+    "romanCorePct": "98.7",
+    "mismatchCount": 1108
+  },
+  "mismatches": [
+    {
+      "id": "elton-john__your-song/Verse/21",
+      "truthRoman": "vi4(add11)2",
+      "engRoman": "vi42(add11)",
+      "truthCanon": "vi4(add11)2",
+      "engCanon": "vi42(add11)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "vi"
+        },
+        {
+          "kind": "super",
+          "text": "4"
+        },
+        {
+          "kind": "sub",
+          "text": "2"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add11)"
+        }
+      ]
+    },
+    {
+      "id": "duke-ellington__take-the-a-train/Chorus/29",
+      "truthRoman": "I9(add13)(mix)",
+      "engRoman": "I9(mix)(add13)",
+      "truthCanon": "I9(add13)(mix)",
+      "engCanon": "I9(mix)(add13)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "super",
+          "text": "9"
+        },
+        {
+          "kind": "suffix",
+          "text": "(mix)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add13)"
+        }
+      ]
+    },
+    {
+      "id": "frank-sinatra__fly-me-to-the-moon/Verse/53",
+      "truthRoman": "V7(add13)sus2sus4",
+      "engRoman": "Vsus2sus47(add13)",
+      "truthCanon": "V7(add13)sus2sus4",
+      "engCanon": "Vsus2sus47(add13)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "sub",
+          "text": "sus2sus4"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add13)"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__eleanor-rigby/Chorus/5",
+      "truthRoman": "i(add6)(dor)",
+      "engRoman": "i(dor)(add6)",
+      "truthCanon": "i(add6)(dor)",
+      "engCanon": "i(dor)(add6)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "i"
+        },
+        {
+          "kind": "suffix",
+          "text": "(dor)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add6)"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__eleanor-rigby/Chorus/21",
+      "truthRoman": "i(add6)(dor)",
+      "engRoman": "i(dor)(add6)",
+      "truthCanon": "i(add6)(dor)",
+      "engCanon": "i(dor)(add6)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "i"
+        },
+        {
+          "kind": "suffix",
+          "text": "(dor)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add6)"
+        }
+      ]
+    },
+    {
+      "id": "miles-davis__blue-in-green/Intro/11",
+      "truthRoman": "V+7(#5#9)/v(maj)",
+      "engRoman": "V+7(#5#9)/v",
+      "truthCanon": "V+7(#5#9)/v(maj)",
+      "engCanon": "V+7(#5#9)/v",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V+"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "suffix",
+          "text": "(#5#9)"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "v"
+        }
+      ]
+    },
+    {
+      "id": "thelonious-monk__round-midnight/Verse/26",
+      "truthRoman": "V7(b5)/bII(maj)(phr)",
+      "engRoman": "V7(b5)/ii°",
+      "truthCanon": "V7(b5)/bII(maj)(phr)",
+      "engCanon": "V7(b5)/ii°",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "suffix",
+          "text": "(b5)"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "ii°"
+        }
+      ]
+    },
+    {
+      "id": "journey__dont-stop-believin/Pre-Chorus/9.5",
+      "truthRoman": "Isus4sus27",
+      "engRoman": "I7sus4sus2",
+      "truthCanon": "Isus4sus27",
+      "engCanon": "I7sus4sus2",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "sub",
+          "text": "sus4sus2"
+        }
+      ]
+    },
+    {
+      "id": "the-beach-boys__god-only-knows/Bridge/4.5",
+      "truthRoman": "V46",
+      "engRoman": "V64",
+      "truthCanon": "V46",
+      "engCanon": "V64",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        }
+      ]
+    },
+    {
+      "id": "the-beach-boys__god-only-knows/Bridge/12.5",
+      "truthRoman": "V46",
+      "engRoman": "V64",
+      "truthCanon": "V46",
+      "engCanon": "V64",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__penny-lane/Verse/3.5",
+      "truthRoman": "I",
+      "engRoman": "I64",
+      "truthCanon": "I",
+      "engCanon": "I64",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__penny-lane/Verse/4.5",
+      "truthRoman": "I△42",
+      "engRoman": "I",
+      "truthCanon": "I△42",
+      "engCanon": "I",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__penny-lane/Verse/6",
+      "truthRoman": "vi7",
+      "engRoman": "I△42",
+      "truthCanon": "vi7",
+      "engCanon": "I△42",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "super",
+          "text": "△"
+        },
+        {
+          "kind": "super",
+          "text": "4"
+        },
+        {
+          "kind": "sub",
+          "text": "2"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__penny-lane/Verse/7",
+      "truthRoman": "I64",
+      "engRoman": "vi7",
+      "truthCanon": "I64",
+      "engCanon": "vi7",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "vi"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__penny-lane/Verse/8",
+      "truthRoman": "ii65",
+      "engRoman": "I64",
+      "truthCanon": "ii65",
+      "engCanon": "I64",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__penny-lane/Verse/9",
+      "truthRoman": "ii7",
+      "engRoman": "ii65",
+      "truthCanon": "ii7",
+      "engCanon": "ii65",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "ii"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "5"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__penny-lane/Verse/10",
+      "truthRoman": "V7",
+      "engRoman": "ii7",
+      "truthCanon": "V7",
+      "engCanon": "ii7",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "ii"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__penny-lane/Verse/11",
+      "truthRoman": "I",
+      "engRoman": "V7",
+      "truthCanon": "I",
+      "engCanon": "V7",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__penny-lane/Verse/13",
+      "truthRoman": "I△42",
+      "engRoman": "I",
+      "truthCanon": "I△42",
+      "engCanon": "I",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__penny-lane/Verse/14",
+      "truthRoman": "vi7",
+      "engRoman": "I△42",
+      "truthCanon": "vi7",
+      "engCanon": "I△42",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "super",
+          "text": "△"
+        },
+        {
+          "kind": "super",
+          "text": "4"
+        },
+        {
+          "kind": "sub",
+          "text": "2"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__penny-lane/Verse/15",
+      "truthRoman": "I64",
+      "engRoman": "vi7",
+      "truthCanon": "I64",
+      "engCanon": "vi7",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "vi"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__penny-lane/Verse/16",
+      "truthRoman": "i",
+      "engRoman": "I64",
+      "truthCanon": "i",
+      "engCanon": "I64",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        }
+      ]
+    },
+    {
+      "id": "thelonious-monk__round-midnight/Verse/13",
+      "truthRoman": "vi7(bor)",
+      "engRoman": "♭vi7(bor)",
+      "truthCanon": "vi7(bor)",
+      "engCanon": "bvi7(bor)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "♭vi"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "suffix",
+          "text": "(bor)"
+        }
+      ]
+    },
+    {
+      "id": "frank-sinatra__fly-me-to-the-moon/Verse/31",
+      "truthRoman": "V7/iv(maj)",
+      "engRoman": "V7/iv",
+      "truthCanon": "V7/iv(maj)",
+      "engCanon": "V7/iv",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "iv"
+        }
+      ]
+    },
+    {
+      "id": "george-gershwin__summertime/Verse/9",
+      "truthRoman": "V7/bV(loc)",
+      "engRoman": "V7/V",
+      "truthCanon": "V7/bV(loc)",
+      "engCanon": "V7/V",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "V"
+        }
+      ]
+    },
+    {
+      "id": "george-gershwin__summertime/Chorus/3",
+      "truthRoman": "V/i(maj)",
+      "engRoman": "V/i",
+      "truthCanon": "V/i(maj)",
+      "engCanon": "V/i",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "i"
+        }
+      ]
+    },
+    {
+      "id": "george-gershwin__summertime/Chorus/7",
+      "truthRoman": "V7/i(maj)",
+      "engRoman": "V7/i",
+      "truthCanon": "V7/i(maj)",
+      "engCanon": "V7/i",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "i"
+        }
+      ]
+    },
+    {
+      "id": "george-gershwin__summertime/Chorus/11",
+      "truthRoman": "V7/i(maj)",
+      "engRoman": "V7/i",
+      "truthCanon": "V7/i(maj)",
+      "engCanon": "V7/i",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "i"
+        }
+      ]
+    },
+    {
+      "id": "george-gershwin__summertime/Chorus/15",
+      "truthRoman": "V7/i(maj)",
+      "engRoman": "V7/i",
+      "truthCanon": "V7/i(maj)",
+      "engCanon": "V7/i",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "i"
+        }
+      ]
+    },
+    {
+      "id": "george-gershwin__summertime/Chorus/19",
+      "truthRoman": "V7/i(maj)",
+      "engRoman": "V7/i",
+      "truthCanon": "V7/i(maj)",
+      "engCanon": "V7/i",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "i"
+        }
+      ]
+    },
+    {
+      "id": "george-gershwin__summertime/Chorus/27",
+      "truthRoman": "vii°/v(maj)",
+      "engRoman": "vii°/v",
+      "truthCanon": "vii°/v(maj)",
+      "engCanon": "vii°/v",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "vii"
+        },
+        {
+          "kind": "super",
+          "text": "°"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "v"
+        }
+      ]
+    },
+    {
+      "id": "george-gershwin__summertime/Chorus/29",
+      "truthRoman": "V/i(maj)",
+      "engRoman": "V/i",
+      "truthCanon": "V/i(maj)",
+      "engCanon": "V/i",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "i"
+        }
+      ]
+    },
+    {
+      "id": "george-gershwin__summertime/Chorus/31",
+      "truthRoman": "V7/v(maj)",
+      "engRoman": "V7/v",
+      "truthCanon": "V7/v(maj)",
+      "engCanon": "V7/v",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "v"
+        }
+      ]
+    },
+    {
+      "id": "george-gershwin__summertime/Chorus/33",
+      "truthRoman": "V/i(maj)",
+      "engRoman": "V/i",
+      "truthCanon": "V/i(maj)",
+      "engCanon": "V/i",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "i"
+        }
+      ]
+    },
+    {
+      "id": "george-gershwin__summertime/Chorus/39",
+      "truthRoman": "V7/i(maj)",
+      "engRoman": "V7/i",
+      "truthCanon": "V7/i(maj)",
+      "engCanon": "V7/i",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "i"
+        }
+      ]
+    },
+    {
+      "id": "george-gershwin__summertime/Chorus/43",
+      "truthRoman": "V7/i(maj)",
+      "engRoman": "V7/i",
+      "truthCanon": "V7/i(maj)",
+      "engCanon": "V7/i",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "i"
+        }
+      ]
+    },
+    {
+      "id": "george-gershwin__summertime/Chorus/47",
+      "truthRoman": "V7/i(maj)",
+      "engRoman": "V7/i",
+      "truthCanon": "V7/i(maj)",
+      "engCanon": "V7/i",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "i"
+        }
+      ]
+    },
+    {
+      "id": "george-gershwin__summertime/Chorus/51",
+      "truthRoman": "V7/VII(maj)",
+      "engRoman": "V7/VII",
+      "truthCanon": "V7/VII(maj)",
+      "engCanon": "V7/VII",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "VII"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__while-my-guitar-gently-weeps/Intro/25",
+      "truthRoman": "V/VII(maj)",
+      "engRoman": "V/VII",
+      "truthCanon": "V/VII(maj)",
+      "engCanon": "V/VII",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "VII"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__while-my-guitar-gently-weeps/Verse/25",
+      "truthRoman": "V/VII(maj)",
+      "engRoman": "V/VII",
+      "truthCanon": "V/VII(maj)",
+      "engCanon": "V/VII",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "VII"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__while-my-guitar-gently-weeps/Solo/33",
+      "truthRoman": "V/VII(maj)",
+      "engRoman": "V/VII",
+      "truthCanon": "V/VII(maj)",
+      "engCanon": "V/VII",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "VII"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__while-my-guitar-gently-weeps/Solo/65",
+      "truthRoman": "V/VII(maj)",
+      "engRoman": "V/VII",
+      "truthCanon": "V/VII(maj)",
+      "engCanon": "V/VII",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "VII"
+        }
+      ]
+    },
+    {
+      "id": "thelonious-monk__round-midnight/Verse/5",
+      "truthRoman": "vii°7/VII(maj)",
+      "engRoman": "vii°7/VII",
+      "truthCanon": "vii°7/VII(maj)",
+      "engCanon": "vii°7/VII",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "vii"
+        },
+        {
+          "kind": "super",
+          "text": "°7"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "VII"
+        }
+      ]
+    },
+    {
+      "id": "thelonious-monk__round-midnight/Verse/14",
+      "truthRoman": "V7/bV(maj)(bor)",
+      "engRoman": "V7/v",
+      "truthCanon": "V7/bV(maj)(bor)",
+      "engCanon": "V7/v",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "v"
+        }
+      ]
+    },
+    {
+      "id": "thelonious-monk__round-midnight/Verse/16",
+      "truthRoman": "V7/iv(maj)",
+      "engRoman": "V7/iv",
+      "truthCanon": "V7/iv(maj)",
+      "engCanon": "V7/iv",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "iv"
+        }
+      ]
+    },
+    {
+      "id": "rem__losing-my-religion/Intro/15",
+      "truthRoman": "iiø11(no3no5)",
+      "engRoman": "iiø11(no3)(no5)",
+      "truthCanon": "iiø11(no3no5)",
+      "engCanon": "iiø11(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "ii"
+        },
+        {
+          "kind": "super",
+          "text": "ø11"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "soundgarden__black-hole-sun/Intro/5",
+      "truthRoman": "i6(add4)(dor)",
+      "engRoman": "i6(dor)(add4)",
+      "truthCanon": "i6(add4)(dor)",
+      "engCanon": "i6(dor)(add4)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "i"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "suffix",
+          "text": "(dor)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add4)"
+        }
+      ]
+    },
+    {
+      "id": "the-police__every-breath-you-take/Bridge/61",
+      "truthRoman": "vi4(add11)2",
+      "engRoman": "vi42(add11)",
+      "truthCanon": "vi4(add11)2",
+      "engCanon": "vi42(add11)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "vi"
+        },
+        {
+          "kind": "super",
+          "text": "4"
+        },
+        {
+          "kind": "sub",
+          "text": "2"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add11)"
+        }
+      ]
+    },
+    {
+      "id": "billy-joel__piano-man/Instrumental Intro/12",
+      "truthRoman": "ii°(add6)(hmin)",
+      "engRoman": "ii°(hmin)(add6)",
+      "truthCanon": "ii°(add6)(hmin)",
+      "engCanon": "ii°(hmin)(add6)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "ii"
+        },
+        {
+          "kind": "super",
+          "text": "°"
+        },
+        {
+          "kind": "suffix",
+          "text": "(hmin)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add6)"
+        }
+      ]
+    },
+    {
+      "id": "carole-king__its-too-late/Verse/4.5",
+      "truthRoman": "V/ii(add6)",
+      "engRoman": "V(add6)/ii",
+      "truthCanon": "V/ii(add6)",
+      "engCanon": "V(add6)/ii",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add6)"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "ii"
+        }
+      ]
+    },
+    {
+      "id": "carole-king__its-too-late/Verse/12.5",
+      "truthRoman": "V/ii(add6)",
+      "engRoman": "V(add6)/ii",
+      "truthCanon": "V/ii(add6)",
+      "engCanon": "V(add6)/ii",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add6)"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "ii"
+        }
+      ]
+    },
+    {
+      "id": "earth-wind-and-fire__september/Verse/29",
+      "truthRoman": "V9(add13)sus4/IV",
+      "engRoman": "V9sus4(add13)/IV",
+      "truthCanon": "V9(add13)sus4/IV",
+      "engCanon": "V9sus4(add13)/IV",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "9"
+        },
+        {
+          "kind": "sub",
+          "text": "sus4"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add13)"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "IV"
+        }
+      ]
+    },
+    {
+      "id": "earth-wind-and-fire__september/Verse/61",
+      "truthRoman": "V9(add13)sus4/IV",
+      "engRoman": "V9sus4(add13)/IV",
+      "truthCanon": "V9(add13)sus4/IV",
+      "engCanon": "V9sus4(add13)/IV",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "9"
+        },
+        {
+          "kind": "sub",
+          "text": "sus4"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add13)"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "IV"
+        }
+      ]
+    },
+    {
+      "id": "earth-wind-and-fire__september/Chorus/25",
+      "truthRoman": "IV6(add6)sus2/IV",
+      "engRoman": "IV6sus2(add6)/IV",
+      "truthCanon": "IV6(add6)sus2/IV",
+      "engCanon": "IV6sus2(add6)/IV",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "sus2"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add6)"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "IV"
+        }
+      ]
+    },
+    {
+      "id": "fleetwood-mac__dreams/Chorus/9",
+      "truthRoman": "i4(add13)2",
+      "engRoman": "i42(add13)",
+      "truthCanon": "i4(add13)2",
+      "engCanon": "i42(add13)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "i"
+        },
+        {
+          "kind": "super",
+          "text": "4"
+        },
+        {
+          "kind": "sub",
+          "text": "2"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add13)"
+        }
+      ]
+    },
+    {
+      "id": "fleetwood-mac__dreams/Chorus/17",
+      "truthRoman": "i4(add13)2",
+      "engRoman": "i42(add13)",
+      "truthCanon": "i4(add13)2",
+      "engCanon": "i42(add13)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "i"
+        },
+        {
+          "kind": "super",
+          "text": "4"
+        },
+        {
+          "kind": "sub",
+          "text": "2"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add13)"
+        }
+      ]
+    },
+    {
+      "id": "fleetwood-mac__dreams/Chorus/25",
+      "truthRoman": "i4(add13)2",
+      "engRoman": "i42(add13)",
+      "truthCanon": "i4(add13)2",
+      "engCanon": "i42(add13)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "i"
+        },
+        {
+          "kind": "super",
+          "text": "4"
+        },
+        {
+          "kind": "sub",
+          "text": "2"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add13)"
+        }
+      ]
+    },
+    {
+      "id": "fleetwood-mac__dreams/Chorus/33",
+      "truthRoman": "i4(add13)2",
+      "engRoman": "i42(add13)",
+      "truthCanon": "i4(add13)2",
+      "engCanon": "i42(add13)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "i"
+        },
+        {
+          "kind": "super",
+          "text": "4"
+        },
+        {
+          "kind": "sub",
+          "text": "2"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add13)"
+        }
+      ]
+    },
+    {
+      "id": "fleetwood-mac__dreams/Chorus/41",
+      "truthRoman": "i4(add13)2",
+      "engRoman": "i42(add13)",
+      "truthCanon": "i4(add13)2",
+      "engCanon": "i42(add13)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "i"
+        },
+        {
+          "kind": "super",
+          "text": "4"
+        },
+        {
+          "kind": "sub",
+          "text": "2"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add13)"
+        }
+      ]
+    },
+    {
+      "id": "fleetwood-mac__dreams/Chorus/49",
+      "truthRoman": "i4(add13)2",
+      "engRoman": "i42(add13)",
+      "truthCanon": "i4(add13)2",
+      "engCanon": "i42(add13)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "i"
+        },
+        {
+          "kind": "super",
+          "text": "4"
+        },
+        {
+          "kind": "sub",
+          "text": "2"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add13)"
+        }
+      ]
+    },
+    {
+      "id": "fleetwood-mac__dreams/Chorus/57",
+      "truthRoman": "i4(add13)2",
+      "engRoman": "i42(add13)",
+      "truthCanon": "i4(add13)2",
+      "engCanon": "i42(add13)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "i"
+        },
+        {
+          "kind": "super",
+          "text": "4"
+        },
+        {
+          "kind": "sub",
+          "text": "2"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add13)"
+        }
+      ]
+    },
+    {
+      "id": "fleetwood-mac__dreams/Chorus/65",
+      "truthRoman": "i4(add13)2",
+      "engRoman": "i42(add13)",
+      "truthCanon": "i4(add13)2",
+      "engCanon": "i42(add13)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "i"
+        },
+        {
+          "kind": "super",
+          "text": "4"
+        },
+        {
+          "kind": "sub",
+          "text": "2"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add13)"
+        }
+      ]
+    },
+    {
+      "id": "the-police__every-breath-you-take/Chorus/5",
+      "truthRoman": "viø4(add13)3(dor)",
+      "engRoman": "viø43(dor)(add13)",
+      "truthCanon": "viø4(add13)3(dor)",
+      "engCanon": "viø43(dor)(add13)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "vi"
+        },
+        {
+          "kind": "super",
+          "text": "ø4"
+        },
+        {
+          "kind": "sub",
+          "text": "3"
+        },
+        {
+          "kind": "suffix",
+          "text": "(dor)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add13)"
+        }
+      ]
+    },
+    {
+      "id": "billy-joel__piano-man/Verse/19",
+      "truthRoman": "V/V(add9)",
+      "engRoman": "V(add9)/V",
+      "truthCanon": "V/V(add9)",
+      "engCanon": "V(add9)/V",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add9)"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "V"
+        }
+      ]
+    },
+    {
+      "id": "tom-petty__free-fallin/Chorus/2.5",
+      "truthRoman": "IV6(add9)4",
+      "engRoman": "IV64(add9)",
+      "truthCanon": "IV6(add9)4",
+      "engCanon": "IV64(add9)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add9)"
+        }
+      ]
+    },
+    {
+      "id": "tom-petty__free-fallin/Chorus/5",
+      "truthRoman": "IV6(add9)4",
+      "engRoman": "IV64(add9)",
+      "truthCanon": "IV6(add9)4",
+      "engCanon": "IV64(add9)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add9)"
+        }
+      ]
+    },
+    {
+      "id": "tom-petty__free-fallin/Chorus/10.5",
+      "truthRoman": "IV6(add9)4",
+      "engRoman": "IV64(add9)",
+      "truthCanon": "IV6(add9)4",
+      "engCanon": "IV64(add9)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add9)"
+        }
+      ]
+    },
+    {
+      "id": "tom-petty__free-fallin/Chorus/13",
+      "truthRoman": "IV6(add9)4",
+      "engRoman": "IV64(add9)",
+      "truthCanon": "IV6(add9)4",
+      "engCanon": "IV64(add9)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add9)"
+        }
+      ]
+    },
+    {
+      "id": "carole-king__its-too-late/Chorus/31",
+      "truthRoman": "vii7(#5)",
+      "engRoman": "vii+ø7(#5)",
+      "truthCanon": "vii7(#5)",
+      "engCanon": "vii+ø7(#5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "vii+"
+        },
+        {
+          "kind": "super",
+          "text": "ø7"
+        },
+        {
+          "kind": "suffix",
+          "text": "(#5)"
+        }
+      ]
+    },
+    {
+      "id": "pink-floyd__money/Chorus/8",
+      "truthRoman": "vii/V(maj)(#5)(maj)",
+      "engRoman": "vii+°(#5)/v",
+      "truthCanon": "vii/V(maj)(#5)(maj)",
+      "engCanon": "vii+°(#5)/v",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "vii+"
+        },
+        {
+          "kind": "super",
+          "text": "°"
+        },
+        {
+          "kind": "suffix",
+          "text": "(#5)"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "v"
+        }
+      ]
+    },
+    {
+      "id": "amy-winehouse__back-to-black/Verse/15.5",
+      "truthRoman": "bVsus27(b5)(loc)",
+      "engRoman": "♭V7sus2(b5)(loc)",
+      "truthCanon": "bVsus27(b5)(loc)",
+      "engCanon": "bV7sus2(b5)(loc)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "♭V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "sub",
+          "text": "sus2"
+        },
+        {
+          "kind": "suffix",
+          "text": "(b5)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(loc)"
+        }
+      ]
+    },
+    {
+      "id": "amy-winehouse__back-to-black/Verse/47.5",
+      "truthRoman": "bVsus27(b5)(loc)",
+      "engRoman": "♭V7sus2(b5)(loc)",
+      "truthCanon": "bVsus27(b5)(loc)",
+      "engCanon": "bV7sus2(b5)(loc)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "♭V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "sub",
+          "text": "sus2"
+        },
+        {
+          "kind": "suffix",
+          "text": "(b5)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(loc)"
+        }
+      ]
+    },
+    {
+      "id": "amy-winehouse__back-to-black/Verse/79.5",
+      "truthRoman": "bVsus27(b5)(loc)",
+      "engRoman": "♭V7sus2(b5)(loc)",
+      "truthCanon": "bVsus27(b5)(loc)",
+      "engCanon": "bV7sus2(b5)(loc)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "♭V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "sub",
+          "text": "sus2"
+        },
+        {
+          "kind": "suffix",
+          "text": "(b5)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(loc)"
+        }
+      ]
+    },
+    {
+      "id": "amy-winehouse__back-to-black/Verse/111.5",
+      "truthRoman": "bVsus27(b5)(loc)",
+      "engRoman": "♭V7sus2(b5)(loc)",
+      "truthCanon": "bVsus27(b5)(loc)",
+      "engCanon": "bV7sus2(b5)(loc)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "♭V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "sub",
+          "text": "sus2"
+        },
+        {
+          "kind": "suffix",
+          "text": "(b5)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(loc)"
+        }
+      ]
+    },
+    {
+      "id": "amy-winehouse__back-to-black/Instrumental/15.5",
+      "truthRoman": "bVsus27(b5)(loc)",
+      "engRoman": "♭V7sus2(b5)(loc)",
+      "truthCanon": "bVsus27(b5)(loc)",
+      "engCanon": "bV7sus2(b5)(loc)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "♭V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "sub",
+          "text": "sus2"
+        },
+        {
+          "kind": "suffix",
+          "text": "(b5)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(loc)"
+        }
+      ]
+    },
+    {
+      "id": "simon-and-garfunkel__bridge-over-troubled-water/Intro/11",
+      "truthRoman": "iiø6(b5)5/ii",
+      "engRoman": "ii6(b5)5/ii",
+      "truthCanon": "iiø6(b5)5/ii",
+      "engCanon": "ii6(b5)5/ii",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "ii"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "suffix",
+          "text": "(b5)"
+        },
+        {
+          "kind": "super",
+          "text": "5"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "ii"
+        }
+      ]
+    },
+    {
+      "id": "stevie-wonder__superstition/Chorus/7",
+      "truthRoman": "bII9(b5)/V(∆-sub)(maj)",
+      "engRoman": "V9(b5)/v",
+      "truthCanon": "bII9(b5)/V(∆-sub)(maj)",
+      "engCanon": "V9(b5)/v",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "9"
+        },
+        {
+          "kind": "suffix",
+          "text": "(b5)"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "v"
+        }
+      ]
+    },
+    {
+      "id": "stevie-wonder__superstition/Chorus/11",
+      "truthRoman": "bII9(b5)/IV(∆-sub)",
+      "engRoman": "V9(b5)/IV",
+      "truthCanon": "bII9(b5)/IV(∆-sub)",
+      "engCanon": "V9(b5)/IV",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "9"
+        },
+        {
+          "kind": "suffix",
+          "text": "(b5)"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "IV"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__strawberry-fields-forever/Verse/8",
+      "truthRoman": "iv°(b5)(min)",
+      "engRoman": "iv(b5)(min)",
+      "truthCanon": "iv°(b5)(min)",
+      "engCanon": "iv(b5)(min)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "iv"
+        },
+        {
+          "kind": "suffix",
+          "text": "(b5)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(min)"
+        }
+      ]
+    },
+    {
+      "id": "the-police__every-breath-you-take/Chorus/64.5",
+      "truthRoman": "vi°△7(b5)(bor)",
+      "engRoman": "vi△7(b5)(bor)",
+      "truthCanon": "vi°△7(b5)(bor)",
+      "engCanon": "vi△7(b5)(bor)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "vi"
+        },
+        {
+          "kind": "super",
+          "text": "△7"
+        },
+        {
+          "kind": "suffix",
+          "text": "(b5)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(bor)"
+        }
+      ]
+    },
+    {
+      "id": "stevie-wonder__superstition/Chorus Lead-Out/5",
+      "truthRoman": "bII9(b5)/V(∆-sub)(maj)",
+      "engRoman": "V7(maj)",
+      "truthCanon": "bII9(b5)/V(∆-sub)(maj)",
+      "engCanon": "V7(maj)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "suffix",
+          "text": "(maj)"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__blackbird/Verse/14",
+      "truthRoman": "bVI(min)(no5)",
+      "engRoman": "♭VI(no5)(min)",
+      "truthCanon": "bVI(min)(no5)",
+      "engCanon": "bVI(no5)(min)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "♭VI"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(min)"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__blackbird/Verse/26",
+      "truthRoman": "V7(no5)sus4",
+      "engRoman": "V7sus4(no5)",
+      "truthCanon": "V7(no5)sus4",
+      "engCanon": "V7sus4(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "sub",
+          "text": "sus4"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__blackbird/Verse/34",
+      "truthRoman": "V7(no5)sus4",
+      "engRoman": "V7sus4(no5)",
+      "truthCanon": "V7(no5)sus4",
+      "engCanon": "V7sus4(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "sub",
+          "text": "sus4"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "the-beatles__blackbird/Chorus/17",
+      "truthRoman": "vi7(no5)sus4",
+      "engRoman": "vi7sus4(no5)",
+      "truthCanon": "vi7(no5)sus4",
+      "engCanon": "vi7sus4(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "vi"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "sub",
+          "text": "sus4"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "duke-ellington__in-a-sentimental-mood/Verse/21",
+      "truthRoman": "V7/iv(maj)",
+      "engRoman": "V7/iv",
+      "truthCanon": "V7/iv(maj)",
+      "engCanon": "V7/iv",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "iv"
+        }
+      ]
+    },
+    {
+      "id": "duke-ellington__in-a-sentimental-mood/Verse/27",
+      "truthRoman": "V7/#vi(maj)(maj)",
+      "engRoman": "V7/VI",
+      "truthCanon": "V7/#vi(maj)(maj)",
+      "engCanon": "V7/VI",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "VI"
+        }
+      ]
+    },
+    {
+      "id": "green-day__boulevard-of-broken-dreams/Outro/11",
+      "truthRoman": "V/#iii(maj)(maj)",
+      "engRoman": "V/III",
+      "truthCanon": "V/#iii(maj)(maj)",
+      "engCanon": "V/III",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "III"
+        }
+      ]
+    },
+    {
+      "id": "red-hot-chili-peppers__under-the-bridge/Intro/9",
+      "truthRoman": "V/vi(maj)",
+      "engRoman": "V/vi",
+      "truthCanon": "V/vi(maj)",
+      "engCanon": "V/vi",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "vi"
+        }
+      ]
+    },
+    {
+      "id": "red-hot-chili-peppers__under-the-bridge/Intro/25",
+      "truthRoman": "V/vi(maj)",
+      "engRoman": "V/vi",
+      "truthCanon": "V/vi(maj)",
+      "engCanon": "V/vi",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "vi"
+        }
+      ]
+    },
+    {
+      "id": "red-hot-chili-peppers__under-the-bridge/Intro/41",
+      "truthRoman": "V/vi(maj)",
+      "engRoman": "V/vi",
+      "truthCanon": "V/vi(maj)",
+      "engCanon": "V/vi",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "vi"
+        }
+      ]
+    },
+    {
+      "id": "red-hot-chili-peppers__under-the-bridge/Intro/57",
+      "truthRoman": "V/vi(maj)",
+      "engRoman": "V/vi",
+      "truthCanon": "V/vi(maj)",
+      "engCanon": "V/vi",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "vi"
+        }
+      ]
+    },
+    {
+      "id": "simon-and-garfunkel__bridge-over-troubled-water/Chorus/7",
+      "truthRoman": "Vsus47/ii",
+      "engRoman": "V7sus4/ii",
+      "truthCanon": "Vsus47/ii",
+      "engCanon": "V7sus4/ii",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "sub",
+          "text": "sus4"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "ii"
+        }
+      ]
+    },
+    {
+      "id": "simon-and-garfunkel__bridge-over-troubled-water/Chorus/23",
+      "truthRoman": "Vsus47/ii",
+      "engRoman": "V7sus4/ii",
+      "truthCanon": "Vsus47/ii",
+      "engCanon": "V7sus4/ii",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "sub",
+          "text": "sus4"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "ii"
+        }
+      ]
+    },
+    {
+      "id": "ariana-grande__7-rings/Bridge/61",
+      "truthRoman": "V6(add11)5",
+      "engRoman": "V65(add11)",
+      "truthCanon": "V6(add11)5",
+      "engCanon": "V65(add11)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "5"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add11)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__obsessed/Pre-Chorus/23",
+      "truthRoman": "III6(add4)4",
+      "engRoman": "III64(add4)",
+      "truthCanon": "III6(add4)4",
+      "engCanon": "III64(add4)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "III"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add4)"
+        }
+      ]
+    },
+    {
+      "id": "alicia-keys__3-hour-drive-ft-sampha/Verse and Pre-Chorus/13",
+      "truthRoman": "V/III(maj)(add6)",
+      "engRoman": "V(add6)/III",
+      "truthCanon": "V/III(maj)(add6)",
+      "engCanon": "V(add6)/III",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add6)"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "III"
+        }
+      ]
+    },
+    {
+      "id": "alicia-keys__3-hour-drive-ft-sampha/Verse and Pre-Chorus/29",
+      "truthRoman": "V/III(maj)(add6)",
+      "engRoman": "V(add6)/III",
+      "truthCanon": "V/III(maj)(add6)",
+      "engCanon": "V(add6)/III",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "V"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add6)"
+        },
+        {
+          "kind": "base",
+          "text": "/"
+        },
+        {
+          "kind": "base",
+          "text": "III"
+        }
+      ]
+    },
+    {
+      "id": "missy-elliott__get-ur-freak-on/Chorus/25",
+      "truthRoman": "i6(add6)4",
+      "engRoman": "i64(add6)",
+      "truthCanon": "i6(add6)4",
+      "engCanon": "i64(add6)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "i"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add6)"
+        }
+      ]
+    },
+    {
+      "id": "the-kinks__waterloo-sunset/Bridge/41",
+      "truthRoman": "iiiø4(add13)2",
+      "engRoman": "iiiø42(add13)",
+      "truthCanon": "iiiø4(add13)2",
+      "engCanon": "iiiø42(add13)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "iii"
+        },
+        {
+          "kind": "super",
+          "text": "ø4"
+        },
+        {
+          "kind": "sub",
+          "text": "2"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add13)"
+        }
+      ]
+    },
+    {
+      "id": "air__cherry-blossom-girl/Verse/1",
+      "truthRoman": "I(add9)(maj)",
+      "engRoman": "I(maj)(add9)",
+      "truthCanon": "I(add9)(maj)",
+      "engCanon": "I(maj)(add9)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(maj)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add9)"
+        }
+      ]
+    },
+    {
+      "id": "air__cherry-blossom-girl/Verse/5",
+      "truthRoman": "I(add9)(maj)",
+      "engRoman": "I(maj)(add9)",
+      "truthCanon": "I(add9)(maj)",
+      "engCanon": "I(maj)(add9)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(maj)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(add9)"
+        }
+      ]
+    },
+    {
+      "id": "adele__set-fire-to-the-rain/Chorus/6.5",
+      "truthRoman": "iiø11(no3no5)",
+      "engRoman": "iiø11(no3)(no5)",
+      "truthCanon": "iiø11(no3no5)",
+      "engCanon": "iiø11(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "ii"
+        },
+        {
+          "kind": "super",
+          "text": "ø11"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "adele__set-fire-to-the-rain/Chorus/14.5",
+      "truthRoman": "i11(no3no5)",
+      "engRoman": "i11(no3)(no5)",
+      "truthCanon": "i11(no3no5)",
+      "engCanon": "i11(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "i"
+        },
+        {
+          "kind": "super",
+          "text": "11"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "adele__set-fire-to-the-rain/Chorus/26.5",
+      "truthRoman": "iiø11(no3no5)",
+      "engRoman": "iiø11(no3)(no5)",
+      "truthCanon": "iiø11(no3no5)",
+      "engCanon": "iiø11(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "ii"
+        },
+        {
+          "kind": "super",
+          "text": "ø11"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "adele__set-fire-to-the-rain/Outro/10.5",
+      "truthRoman": "iiø11(no3no5)",
+      "engRoman": "iiø11(no3)(no5)",
+      "truthCanon": "iiø11(no3no5)",
+      "engCanon": "iiø11(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "ii"
+        },
+        {
+          "kind": "super",
+          "text": "ø11"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "adele__set-fire-to-the-rain/Outro/30.5",
+      "truthRoman": "iiø11(no3no5)",
+      "engRoman": "iiø11(no3)(no5)",
+      "truthCanon": "iiø11(no3no5)",
+      "engCanon": "iiø11(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "ii"
+        },
+        {
+          "kind": "super",
+          "text": "ø11"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "adele__set-fire-to-the-rain/Outro/42.5",
+      "truthRoman": "iiø11(no3no5)",
+      "engRoman": "iiø11(no3)(no5)",
+      "truthCanon": "iiø11(no3no5)",
+      "engCanon": "iiø11(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "ii"
+        },
+        {
+          "kind": "super",
+          "text": "ø11"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "allie-x__milk/Chorus/1",
+      "truthRoman": "iv6(no3)4",
+      "engRoman": "iv64(no3)",
+      "truthCanon": "iv6(no3)4",
+      "engCanon": "iv64(no3)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "iv"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        }
+      ]
+    },
+    {
+      "id": "allie-x__milk/Chorus/3",
+      "truthRoman": "v6(no3)4",
+      "engRoman": "v64(no3)",
+      "truthCanon": "v6(no3)4",
+      "engCanon": "v64(no3)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "v"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        }
+      ]
+    },
+    {
+      "id": "ancient__willothewisp/Intro/85",
+      "truthRoman": "#vii°43(hmin)",
+      "engRoman": "♯viiø43(hmin)",
+      "truthCanon": "#vii°43(hmin)",
+      "engCanon": "#viiø43(hmin)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "♯vii"
+        },
+        {
+          "kind": "super",
+          "text": "ø4"
+        },
+        {
+          "kind": "sub",
+          "text": "3"
+        },
+        {
+          "kind": "suffix",
+          "text": "(hmin)"
+        }
+      ]
+    },
+    {
+      "id": "ancient__willothewisp/Chorus/17",
+      "truthRoman": "vi(bor)",
+      "engRoman": "♭vi(bor)",
+      "truthCanon": "vi(bor)",
+      "engCanon": "bvi(bor)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "♭vi"
+        },
+        {
+          "kind": "suffix",
+          "text": "(bor)"
+        }
+      ]
+    },
+    {
+      "id": "chic__le-freak/Chorus/4.5",
+      "truthRoman": "VII(no3no5)",
+      "engRoman": "VII(no3)(no5)",
+      "truthCanon": "VII(no3no5)",
+      "engCanon": "VII(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "VII"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "chic__le-freak/Chorus/18.75",
+      "truthRoman": "v7(no5)sus2sus4",
+      "engRoman": "vsus2sus47(no5)",
+      "truthCanon": "v7(no5)sus2sus4",
+      "engCanon": "vsus2sus47(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "v"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "sub",
+          "text": "sus2sus4"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "faith-evans__love-like-this/Chorus/6.5",
+      "truthRoman": "i",
+      "engRoman": "IV7",
+      "truthCanon": "i",
+      "engCanon": "IV7",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        }
+      ]
+    },
+    {
+      "id": "faith-evans__love-like-this/Chorus/9",
+      "truthRoman": "IV7",
+      "engRoman": "i",
+      "truthCanon": "IV7",
+      "engCanon": "i",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "i"
+        }
+      ]
+    },
+    {
+      "id": "faith-evans__love-like-this/Chorus/10.5",
+      "truthRoman": "i",
+      "engRoman": "IV",
+      "truthCanon": "i",
+      "engCanon": "IV",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        }
+      ]
+    },
+    {
+      "id": "faith-evans__love-like-this/Chorus/13",
+      "truthRoman": "IV",
+      "engRoman": "i",
+      "truthCanon": "IV",
+      "engCanon": "i",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "i"
+        }
+      ]
+    },
+    {
+      "id": "faith-evans__love-like-this/Chorus/14.5",
+      "truthRoman": "i",
+      "engRoman": "IV7",
+      "truthCanon": "i",
+      "engCanon": "IV7",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        }
+      ]
+    },
+    {
+      "id": "faith-evans__love-like-this/Chorus/17",
+      "truthRoman": "IV7",
+      "engRoman": "i",
+      "truthCanon": "IV7",
+      "engCanon": "i",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "i"
+        }
+      ]
+    },
+    {
+      "id": "faith-evans__love-like-this/Chorus/18.5",
+      "truthRoman": "i",
+      "engRoman": "IV",
+      "truthCanon": "i",
+      "engCanon": "IV",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        }
+      ]
+    },
+    {
+      "id": "faith-evans__love-like-this/Chorus/21",
+      "truthRoman": "IV",
+      "engRoman": "i",
+      "truthCanon": "IV",
+      "engCanon": "i",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "i"
+        }
+      ]
+    },
+    {
+      "id": "faith-evans__love-like-this/Chorus/22.5",
+      "truthRoman": "i",
+      "engRoman": "IV7",
+      "truthCanon": "i",
+      "engCanon": "IV7",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        }
+      ]
+    },
+    {
+      "id": "faith-evans__love-like-this/Chorus/25",
+      "truthRoman": "IV7",
+      "engRoman": "i",
+      "truthCanon": "IV7",
+      "engCanon": "i",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "i"
+        }
+      ]
+    },
+    {
+      "id": "faith-evans__love-like-this/Chorus/26.5",
+      "truthRoman": "i",
+      "engRoman": "IV",
+      "truthCanon": "i",
+      "engCanon": "IV",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        }
+      ]
+    },
+    {
+      "id": "faith-evans__love-like-this/Chorus/29",
+      "truthRoman": "IV",
+      "engRoman": "i",
+      "truthCanon": "IV",
+      "engCanon": "i",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "i"
+        }
+      ]
+    },
+    {
+      "id": "faith-evans__love-like-this/Chorus/30.5",
+      "truthRoman": "i",
+      "engRoman": "IV7",
+      "truthCanon": "i",
+      "engCanon": "IV7",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        }
+      ]
+    },
+    {
+      "id": "faith-evans__love-like-this/Chorus/37",
+      "truthRoman": "IV7",
+      "engRoman": "i",
+      "truthCanon": "IV7",
+      "engCanon": "i",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "i"
+        }
+      ]
+    },
+    {
+      "id": "george-michael__freedom-90/Verse/9",
+      "truthRoman": "VII46",
+      "engRoman": "VII64",
+      "truthCanon": "VII46",
+      "engCanon": "VII64",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "VII"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        }
+      ]
+    },
+    {
+      "id": "george-michael__freedom-90/Verse/9.75",
+      "truthRoman": "VII46",
+      "engRoman": "VII64",
+      "truthCanon": "VII46",
+      "engCanon": "VII64",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "VII"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        }
+      ]
+    },
+    {
+      "id": "george-michael__freedom-90/Verse/13",
+      "truthRoman": "VII46",
+      "engRoman": "VII64",
+      "truthCanon": "VII46",
+      "engCanon": "VII64",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "VII"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        }
+      ]
+    },
+    {
+      "id": "george-michael__freedom-90/Verse/13.75",
+      "truthRoman": "VII46",
+      "engRoman": "VII64",
+      "truthCanon": "VII46",
+      "engCanon": "VII64",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "VII"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        }
+      ]
+    },
+    {
+      "id": "george-michael__freedom-90/Verse/25",
+      "truthRoman": "VII46",
+      "engRoman": "VII64",
+      "truthCanon": "VII46",
+      "engCanon": "VII64",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "VII"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        }
+      ]
+    },
+    {
+      "id": "george-michael__freedom-90/Verse/25.75",
+      "truthRoman": "VII46",
+      "engRoman": "VII64",
+      "truthCanon": "VII46",
+      "engCanon": "VII64",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "VII"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        }
+      ]
+    },
+    {
+      "id": "george-michael__freedom-90/Verse/29",
+      "truthRoman": "VII46",
+      "engRoman": "VII64",
+      "truthCanon": "VII46",
+      "engCanon": "VII64",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "VII"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        }
+      ]
+    },
+    {
+      "id": "george-michael__freedom-90/Verse/29.75",
+      "truthRoman": "VII46",
+      "engRoman": "VII64",
+      "truthCanon": "VII46",
+      "engCanon": "VII64",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "VII"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        }
+      ]
+    },
+    {
+      "id": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29/Bridge/60",
+      "truthRoman": "VI46",
+      "engRoman": "VI64",
+      "truthCanon": "VI46",
+      "engCanon": "VI64",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "VI"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        }
+      ]
+    },
+    {
+      "id": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29/Bridge/84",
+      "truthRoman": "VI46",
+      "engRoman": "VI64",
+      "truthCanon": "VI46",
+      "engCanon": "VI64",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "VI"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        }
+      ]
+    },
+    {
+      "id": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29/Instrumental/12",
+      "truthRoman": "VI46",
+      "engRoman": "VI64",
+      "truthCanon": "VI46",
+      "engCanon": "VI64",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "VI"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        }
+      ]
+    },
+    {
+      "id": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29/Instrumental/36",
+      "truthRoman": "VI46",
+      "engRoman": "VI64",
+      "truthCanon": "VI46",
+      "engCanon": "VI64",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "VI"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        }
+      ]
+    },
+    {
+      "id": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29/Instrumental/60",
+      "truthRoman": "VI46",
+      "engRoman": "VI64",
+      "truthCanon": "VI46",
+      "engCanon": "VI64",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "VI"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "4"
+        }
+      ]
+    },
+    {
+      "id": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29/Pre-Outro/30",
+      "truthRoman": "IIIsus27",
+      "engRoman": "III7sus2",
+      "truthCanon": "IIIsus27",
+      "engCanon": "III7sus2",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "III"
+        },
+        {
+          "kind": "super",
+          "text": "7"
+        },
+        {
+          "kind": "sub",
+          "text": "sus2"
+        }
+      ]
+    },
+    {
+      "id": "lorde__royals/Intro and Verse/5",
+      "truthRoman": "I(no3no5)",
+      "engRoman": "I(no3)(no5)",
+      "truthCanon": "I(no3no5)",
+      "engCanon": "I(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "marvin-gaye__whats-going-on/Pre-Chorus and Chorus/4.5",
+      "truthRoman": "iv6(no5)5(min)",
+      "engRoman": "iv65(no5)(min)",
+      "truthCanon": "iv6(no5)5(min)",
+      "engCanon": "iv65(no5)(min)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "iv"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "5"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(min)"
+        }
+      ]
+    },
+    {
+      "id": "marvin-gaye__whats-going-on/Pre-Chorus and Chorus/12.5",
+      "truthRoman": "iv6(no5)5(min)",
+      "engRoman": "iv65(no5)(min)",
+      "truthCanon": "iv6(no5)5(min)",
+      "engCanon": "iv65(no5)(min)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "iv"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "5"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(min)"
+        }
+      ]
+    },
+    {
+      "id": "marvin-gaye__whats-going-on/Pre-Chorus and Chorus/20.5",
+      "truthRoman": "iv6(no5)5(min)",
+      "engRoman": "iv65(no5)(min)",
+      "truthCanon": "iv6(no5)5(min)",
+      "engCanon": "iv65(no5)(min)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "iv"
+        },
+        {
+          "kind": "super",
+          "text": "6"
+        },
+        {
+          "kind": "sub",
+          "text": "5"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(min)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/1",
+      "truthRoman": "I(no3no5)",
+      "engRoman": "I(no3)(no5)",
+      "truthCanon": "I(no3no5)",
+      "engCanon": "I(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/1.5",
+      "truthRoman": "I(no3no5)",
+      "engRoman": "I(no3)(no5)",
+      "truthCanon": "I(no3no5)",
+      "engCanon": "I(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/2",
+      "truthRoman": "IV(no3no5)",
+      "engRoman": "IV(no3)(no5)",
+      "truthCanon": "IV(no3no5)",
+      "engCanon": "IV(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/2.5",
+      "truthRoman": "v(no3no5)",
+      "engRoman": "v(no3)(no5)",
+      "truthCanon": "v(no3no5)",
+      "engCanon": "v(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "v"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/3",
+      "truthRoman": "IV(no3no5)",
+      "engRoman": "IV(no3)(no5)",
+      "truthCanon": "IV(no3no5)",
+      "engCanon": "IV(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/3.5",
+      "truthRoman": "IV(no3no5)",
+      "engRoman": "IV(no3)(no5)",
+      "truthCanon": "IV(no3no5)",
+      "engCanon": "IV(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/4",
+      "truthRoman": "VII(no3no5)",
+      "engRoman": "VII(no3)(no5)",
+      "truthCanon": "VII(no3no5)",
+      "engCanon": "VII(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "VII"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/4.5",
+      "truthRoman": "I(no3no5)",
+      "engRoman": "I(no3)(no5)",
+      "truthCanon": "I(no3no5)",
+      "engCanon": "I(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/5",
+      "truthRoman": "I(no3no5)",
+      "engRoman": "I(no3)(no5)",
+      "truthCanon": "I(no3no5)",
+      "engCanon": "I(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/5.5",
+      "truthRoman": "I(no3no5)",
+      "engRoman": "I(no3)(no5)",
+      "truthCanon": "I(no3no5)",
+      "engCanon": "I(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/6",
+      "truthRoman": "IV(no3no5)",
+      "engRoman": "IV(no3)(no5)",
+      "truthCanon": "IV(no3no5)",
+      "engCanon": "IV(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/6.5",
+      "truthRoman": "v(no3no5)",
+      "engRoman": "v(no3)(no5)",
+      "truthCanon": "v(no3no5)",
+      "engCanon": "v(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "v"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/7",
+      "truthRoman": "IV(no3no5)",
+      "engRoman": "IV(no3)(no5)",
+      "truthCanon": "IV(no3no5)",
+      "engCanon": "IV(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/7.5",
+      "truthRoman": "IV(no3no5)",
+      "engRoman": "IV(no3)(no5)",
+      "truthCanon": "IV(no3no5)",
+      "engCanon": "IV(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/8",
+      "truthRoman": "VII(no3no5)",
+      "engRoman": "VII(no3)(no5)",
+      "truthCanon": "VII(no3no5)",
+      "engCanon": "VII(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "VII"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/8.5",
+      "truthRoman": "I(no3no5)",
+      "engRoman": "I(no3)(no5)",
+      "truthCanon": "I(no3no5)",
+      "engCanon": "I(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/9",
+      "truthRoman": "I(no3no5)",
+      "engRoman": "I(no3)(no5)",
+      "truthCanon": "I(no3no5)",
+      "engCanon": "I(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/9.5",
+      "truthRoman": "I(no3no5)",
+      "engRoman": "I(no3)(no5)",
+      "truthCanon": "I(no3no5)",
+      "engCanon": "I(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/10",
+      "truthRoman": "IV(no3no5)",
+      "engRoman": "IV(no3)(no5)",
+      "truthCanon": "IV(no3no5)",
+      "engCanon": "IV(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/10.5",
+      "truthRoman": "v(no3no5)",
+      "engRoman": "v(no3)(no5)",
+      "truthCanon": "v(no3no5)",
+      "engCanon": "v(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "v"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/11",
+      "truthRoman": "IV(no3no5)",
+      "engRoman": "IV(no3)(no5)",
+      "truthCanon": "IV(no3no5)",
+      "engCanon": "IV(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/11.5",
+      "truthRoman": "IV(no3no5)",
+      "engRoman": "IV(no3)(no5)",
+      "truthCanon": "IV(no3no5)",
+      "engCanon": "IV(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/12",
+      "truthRoman": "VII(no3no5)",
+      "engRoman": "VII(no3)(no5)",
+      "truthCanon": "VII(no3no5)",
+      "engCanon": "VII(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "VII"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/12.5",
+      "truthRoman": "I(no3no5)",
+      "engRoman": "I(no3)(no5)",
+      "truthCanon": "I(no3no5)",
+      "engCanon": "I(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/13",
+      "truthRoman": "I(no3no5)",
+      "engRoman": "I(no3)(no5)",
+      "truthCanon": "I(no3no5)",
+      "engCanon": "I(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/13.5",
+      "truthRoman": "I(no3no5)",
+      "engRoman": "I(no3)(no5)",
+      "truthCanon": "I(no3no5)",
+      "engCanon": "I(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/14",
+      "truthRoman": "IV(no3no5)",
+      "engRoman": "IV(no3)(no5)",
+      "truthCanon": "IV(no3no5)",
+      "engCanon": "IV(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/14.5",
+      "truthRoman": "v(no3no5)",
+      "engRoman": "v(no3)(no5)",
+      "truthCanon": "v(no3no5)",
+      "engCanon": "v(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "v"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/15",
+      "truthRoman": "IV(no3no5)",
+      "engRoman": "IV(no3)(no5)",
+      "truthCanon": "IV(no3no5)",
+      "engCanon": "IV(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/15.5",
+      "truthRoman": "IV(no3no5)",
+      "engRoman": "IV(no3)(no5)",
+      "truthCanon": "IV(no3no5)",
+      "engCanon": "IV(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/16",
+      "truthRoman": "VII(no3no5)",
+      "engRoman": "VII(no3)(no5)",
+      "truthCanon": "VII(no3no5)",
+      "engCanon": "VII(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "VII"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/16.5",
+      "truthRoman": "I(no3no5)",
+      "engRoman": "I(no3)(no5)",
+      "truthCanon": "I(no3no5)",
+      "engCanon": "I(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/17",
+      "truthRoman": "I(no3no5)",
+      "engRoman": "I(no3)(no5)",
+      "truthCanon": "I(no3no5)",
+      "engCanon": "I(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/17.5",
+      "truthRoman": "I(no3no5)",
+      "engRoman": "I(no3)(no5)",
+      "truthCanon": "I(no3no5)",
+      "engCanon": "I(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/18",
+      "truthRoman": "IV(no3no5)",
+      "engRoman": "IV(no3)(no5)",
+      "truthCanon": "IV(no3no5)",
+      "engCanon": "IV(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/18.5",
+      "truthRoman": "v(no3no5)",
+      "engRoman": "v(no3)(no5)",
+      "truthCanon": "v(no3no5)",
+      "engCanon": "v(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "v"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/19",
+      "truthRoman": "IV(no3no5)",
+      "engRoman": "IV(no3)(no5)",
+      "truthCanon": "IV(no3no5)",
+      "engCanon": "IV(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/19.5",
+      "truthRoman": "IV(no3no5)",
+      "engRoman": "IV(no3)(no5)",
+      "truthCanon": "IV(no3no5)",
+      "engCanon": "IV(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/20",
+      "truthRoman": "VII(no3no5)",
+      "engRoman": "VII(no3)(no5)",
+      "truthCanon": "VII(no3no5)",
+      "engCanon": "VII(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "VII"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/20.5",
+      "truthRoman": "I(no3no5)",
+      "engRoman": "I(no3)(no5)",
+      "truthCanon": "I(no3no5)",
+      "engCanon": "I(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/21",
+      "truthRoman": "I(no3no5)",
+      "engRoman": "I(no3)(no5)",
+      "truthCanon": "I(no3no5)",
+      "engCanon": "I(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/21.5",
+      "truthRoman": "I(no3no5)",
+      "engRoman": "I(no3)(no5)",
+      "truthCanon": "I(no3no5)",
+      "engCanon": "I(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/22",
+      "truthRoman": "IV(no3no5)",
+      "engRoman": "IV(no3)(no5)",
+      "truthCanon": "IV(no3no5)",
+      "engCanon": "IV(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/22.5",
+      "truthRoman": "v(no3no5)",
+      "engRoman": "v(no3)(no5)",
+      "truthCanon": "v(no3no5)",
+      "engCanon": "v(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "v"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/23",
+      "truthRoman": "IV(no3no5)",
+      "engRoman": "IV(no3)(no5)",
+      "truthCanon": "IV(no3no5)",
+      "engCanon": "IV(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/23.5",
+      "truthRoman": "IV(no3no5)",
+      "engRoman": "IV(no3)(no5)",
+      "truthCanon": "IV(no3no5)",
+      "engCanon": "IV(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/24",
+      "truthRoman": "VII(no3no5)",
+      "engRoman": "VII(no3)(no5)",
+      "truthCanon": "VII(no3no5)",
+      "engCanon": "VII(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "VII"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/24.5",
+      "truthRoman": "I(no3no5)",
+      "engRoman": "I(no3)(no5)",
+      "truthCanon": "I(no3no5)",
+      "engCanon": "I(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/25",
+      "truthRoman": "I(no3no5)",
+      "engRoman": "I(no3)(no5)",
+      "truthCanon": "I(no3no5)",
+      "engCanon": "I(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/25.5",
+      "truthRoman": "I(no3no5)",
+      "engRoman": "I(no3)(no5)",
+      "truthCanon": "I(no3no5)",
+      "engCanon": "I(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "I"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/26",
+      "truthRoman": "IV(no3no5)",
+      "engRoman": "IV(no3)(no5)",
+      "truthCanon": "IV(no3no5)",
+      "engCanon": "IV(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/26.5",
+      "truthRoman": "v(no3no5)",
+      "engRoman": "v(no3)(no5)",
+      "truthCanon": "v(no3no5)",
+      "engCanon": "v(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "v"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/27",
+      "truthRoman": "IV(no3no5)",
+      "engRoman": "IV(no3)(no5)",
+      "truthCanon": "IV(no3no5)",
+      "engCanon": "IV(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Verse/27.5",
+      "truthRoman": "IV(no3no5)",
+      "engRoman": "IV(no3)(no5)",
+      "truthCanon": "IV(no3no5)",
+      "engCanon": "IV(no3)(no5)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "IV"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no3)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(no5)"
+        }
+      ]
+    }
+  ]
+}

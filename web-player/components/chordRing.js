@@ -76,6 +76,7 @@ export function renderChordRing(container, options = {}) {
 
   let currentOctave = 3;
   let activeDroneButton = null;
+  let chordSelectHandler = null;
 
   octaveUpBtn.addEventListener("click", () => {
     if (currentOctave < 8) {
@@ -356,6 +357,7 @@ export function renderChordRing(container, options = {}) {
   transitionTableOverlay.style.right = "10px";
   transitionTableOverlay.style.pointerEvents = "auto";
   transitionTableOverlay.style.zIndex = "10";
+  transitionTableOverlay.style.width = "220px";
   transitionTableOverlay.style.maxWidth = "300px";
   transitionTableOverlay.style.maxHeight = "400px";
   transitionTableOverlay.style.overflowY = "auto";
@@ -367,14 +369,28 @@ export function renderChordRing(container, options = {}) {
   transitionTableOverlay.style.display = "none"; // Hidden by default until transitions exist
   
   const tableTitle = document.createElement("div");
-  tableTitle.textContent = "Chord Transitions";
+  tableTitle.textContent = "Chord Transitions ▾";
   tableTitle.style.fontSize = "12px";
   tableTitle.style.fontWeight = "600";
   tableTitle.style.color = "#cbd5e1";
   tableTitle.style.marginBottom = "6px";
   tableTitle.style.paddingBottom = "4px";
   tableTitle.style.borderBottom = "1px solid rgba(255, 255, 255, 0.2)";
+  tableTitle.style.cursor = "pointer";
+  tableTitle.style.userSelect = "none";
+  tableTitle.title = "Click to collapse/expand chord transitions";
   transitionTableOverlay.appendChild(tableTitle);
+
+  const transitionTableBody = document.createElement("div");
+  transitionTableBody.id = "transition-table-body";
+  transitionTableOverlay.appendChild(transitionTableBody);
+
+  let transitionsCollapsed = false;
+  tableTitle.addEventListener("click", () => {
+    transitionsCollapsed = !transitionsCollapsed;
+    transitionTableBody.style.display = transitionsCollapsed ? "none" : "block";
+    tableTitle.textContent = transitionsCollapsed ? "Chord Transitions ▸" : "Chord Transitions ▾";
+  });
 
   // Key filter selector (hidden when only one key)
   const keyFilterWrap = document.createElement("div");
@@ -416,11 +432,11 @@ export function renderChordRing(container, options = {}) {
   
   keyFilterWrap.appendChild(keyFilterSelect);
   keyFilterWrap.appendChild(autoFilterWrap);
-  transitionTableOverlay.appendChild(keyFilterWrap);
+  transitionTableBody.appendChild(keyFilterWrap);
 
   const transitionGroupsContainer = document.createElement("div");
   transitionGroupsContainer.className = "transition-groups";
-  transitionTableOverlay.appendChild(transitionGroupsContainer);
+  transitionTableBody.appendChild(transitionGroupsContainer);
 
   const rootOnlyCheckboxContainer = document.createElement("div");
   rootOnlyCheckboxContainer.style.marginTop = "8px";
@@ -469,9 +485,115 @@ export function renderChordRing(container, options = {}) {
   redundantSubstringLabel.appendChild(redundantSubstringCheckbox);
   redundantSubstringLabel.appendChild(redundantSubstringSpan);
   rootOnlyCheckboxContainer.appendChild(redundantSubstringLabel);
-  transitionTableOverlay.appendChild(rootOnlyCheckboxContainer);
+  transitionTableBody.appendChild(rootOnlyCheckboxContainer);
 
   wrapper.appendChild(transitionTableOverlay);
+
+  // Create quiz overlay panel at upper left
+  const quizOverlayPanel = document.createElement("div");
+  quizOverlayPanel.id = "quiz-overlay-panel";
+  quizOverlayPanel.style.position = "absolute";
+  quizOverlayPanel.style.top = "10px";
+  quizOverlayPanel.style.left = "10px";
+  quizOverlayPanel.style.pointerEvents = "auto";
+  quizOverlayPanel.style.zIndex = "10";
+  quizOverlayPanel.style.width = "160px";
+  quizOverlayPanel.style.background = "rgba(17, 24, 39, 0.95)";
+  quizOverlayPanel.style.border = "1px solid rgba(255, 255, 255, 0.2)";
+  quizOverlayPanel.style.borderRadius = "8px";
+  quizOverlayPanel.style.padding = "8px";
+  quizOverlayPanel.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.4)";
+
+  const quizTitle = document.createElement("div");
+  quizTitle.textContent = "Quiz & Stats ▾";
+  quizTitle.style.fontSize = "12px";
+  quizTitle.style.fontWeight = "600";
+  quizTitle.style.color = "#cbd5e1";
+  quizTitle.style.marginBottom = "6px";
+  quizTitle.style.paddingBottom = "4px";
+  quizTitle.style.borderBottom = "1px solid rgba(255, 255, 255, 0.2)";
+  quizTitle.style.cursor = "pointer";
+  quizTitle.style.userSelect = "none";
+  quizTitle.title = "Click to collapse/expand quiz controls";
+  quizOverlayPanel.appendChild(quizTitle);
+
+  const quizBody = document.createElement("div");
+  quizBody.id = "quiz-overlay-body";
+  quizBody.style.display = "flex";
+  quizBody.style.flexDirection = "column";
+  quizBody.style.gap = "6px";
+  quizOverlayPanel.appendChild(quizBody);
+
+  const clozeBtn = document.createElement("button");
+  clozeBtn.id = "quiz-cloze-btn";
+  clozeBtn.type = "button";
+  clozeBtn.className = "quiz-cloze-btn";
+  clozeBtn.style.cssText = "width:100%; background:#4f46e5; color:#fff; border:1px solid #4338ca; border-radius:6px; padding:6px 10px; font-size:11px; font-weight:700; cursor:pointer; transition:all 0.15s ease;";
+  clozeBtn.textContent = "🎯 Start cloze quiz";
+  quizBody.appendChild(clozeBtn);
+
+  const quizInfoContainer = document.createElement("div");
+  quizInfoContainer.id = "quiz-cloze-info";
+  quizInfoContainer.style.display = "none";
+  quizInfoContainer.style.flexDirection = "column";
+  quizInfoContainer.style.gap = "6px";
+  quizInfoContainer.style.marginTop = "4px";
+  quizInfoContainer.style.borderTop = "1px solid rgba(255, 255, 255, 0.1)";
+  quizInfoContainer.style.paddingTop = "6px";
+  
+  const feedbackEl = document.createElement("div");
+  feedbackEl.id = "quiz-cloze-feedback";
+  feedbackEl.style.fontSize = "10px";
+  feedbackEl.style.color = "#94a3b8";
+  feedbackEl.style.lineHeight = "1.3";
+  feedbackEl.textContent = "Identify the masked chord...";
+  quizInfoContainer.appendChild(feedbackEl);
+
+  const scoreRow = document.createElement("div");
+  scoreRow.style.display = "flex";
+  scoreRow.style.justifyContent = "space-between";
+  scoreRow.style.alignItems = "center";
+  scoreRow.style.fontSize = "10px";
+  scoreRow.style.color = "#94a3b8";
+  
+  const scoreLabel = document.createElement("span");
+  scoreLabel.textContent = "Score:";
+  scoreRow.appendChild(scoreLabel);
+  
+  const scoreEl = document.createElement("span");
+  scoreEl.id = "quiz-cloze-score";
+  scoreEl.style.fontWeight = "700";
+  scoreEl.style.color = "#22d3ee";
+  scoreEl.style.fontVariantNumeric = "tabular-nums";
+  scoreEl.textContent = "0 / 0";
+  scoreRow.appendChild(scoreEl);
+  quizInfoContainer.appendChild(scoreRow);
+
+  const nextBtn = document.createElement("button");
+  nextBtn.id = "quiz-cloze-next-btn";
+  nextBtn.type = "button";
+  nextBtn.disabled = true;
+  nextBtn.style.cssText = "width:100%; background:#0284c7; color:#fff; border:1px solid #0369a1; border-radius:6px; padding:5px 8px; font-size:10px; font-weight:700; cursor:pointer; transition:all 0.15s ease;";
+  nextBtn.textContent = "Next Question";
+  quizInfoContainer.appendChild(nextBtn);
+  
+  quizBody.appendChild(quizInfoContainer);
+
+  const statsBtn = document.createElement("button");
+  statsBtn.id = "ring-stats-btn";
+  statsBtn.type = "button";
+  statsBtn.style.cssText = "width:100%; background:#1e293b; color:#94a3b8; border:1px solid #334155; border-radius:6px; padding:6px 10px; font-size:11px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px; transition:all 0.15s ease;";
+  statsBtn.innerHTML = "📊 Stats";
+  quizBody.appendChild(statsBtn);
+
+  let quizCollapsed = false;
+  quizTitle.addEventListener("click", () => {
+    quizCollapsed = !quizCollapsed;
+    quizBody.style.display = quizCollapsed ? "none" : "flex";
+    quizTitle.textContent = quizCollapsed ? "Quiz & Stats ▸" : "Quiz & Stats ▾";
+  });
+
+  wrapper.appendChild(quizOverlayPanel);
 
   if (!document.getElementById("chord-tooltip-styles")) {
     const styleTag = document.createElement("style");
@@ -748,6 +870,9 @@ export function renderChordRing(container, options = {}) {
   }
 
   function isNodeActive(entry) {
+    if (activeChord && options.isChordMasked?.(activeChord)) {
+      return false;
+    }
     return activeChordSymbol !== null && entry.symbol === activeChordSymbol;
   }
 
@@ -952,34 +1077,46 @@ export function renderChordRing(container, options = {}) {
         const dx = toNode.x - fromNode.x;
         const dy = toNode.y - fromNode.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        // Control point perpendicular to midpoint, offset inward toward center
-        const perpX = -dy / dist;
-        const perpY = dx / dist;
-        const cpOffset = dist * 0.3;
-        const cpX = midX + perpX * cpOffset;
-        const cpY = midY + perpY * cpOffset;
+        
+        if (dist > 0) {
+          // Control point perpendicular to midpoint, offset inward toward center
+          const perpX = -dy / dist;
+          const perpY = dx / dist;
+          const cpOffset = dist * 0.3;
+          const cpX = midX + perpX * cpOffset;
+          const cpY = midY + perpY * cpOffset;
 
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(fromNode.x, fromNode.y);
-        ctx.quadraticCurveTo(cpX, cpY, toNode.x, toNode.y);
-        ctx.strokeStyle = "rgba(168, 85, 247, 0.7)";
-        ctx.lineWidth = 2.5 * zoom;
-        ctx.stroke();
+          // Adjust start and end points to sit exactly on the node radius
+          const rStart = fromNode.r * 1.25;
+          const rEnd = toNode.r * 1.25;
 
-        // Arrowhead at destination
-        const t = 0.92;
-        const ax = (1 - t) * (1 - t) * fromNode.x + 2 * (1 - t) * t * cpX + t * t * toNode.x;
-        const ay = (1 - t) * (1 - t) * fromNode.y + 2 * (1 - t) * t * cpY + t * t * toNode.y;
-        const arrowAngle = Math.atan2(toNode.y - ay, toNode.x - ax);
-        const arrowLen = 10 * zoom;
-        ctx.beginPath();
-        ctx.moveTo(toNode.x, toNode.y);
-        ctx.lineTo(toNode.x - arrowLen * Math.cos(arrowAngle - 0.4), toNode.y - arrowLen * Math.sin(arrowAngle - 0.4));
-        ctx.moveTo(toNode.x, toNode.y);
-        ctx.lineTo(toNode.x - arrowLen * Math.cos(arrowAngle + 0.4), toNode.y - arrowLen * Math.sin(arrowAngle + 0.4));
-        ctx.stroke();
-        ctx.restore();
+          const distStart = Math.hypot(cpX - fromNode.x, cpY - fromNode.y);
+          const startX = fromNode.x + ((cpX - fromNode.x) / distStart) * rStart;
+          const startY = fromNode.y + ((cpY - fromNode.y) / distStart) * rStart;
+
+          const distEnd = Math.hypot(toNode.x - cpX, toNode.y - cpY);
+          const endX = toNode.x - ((toNode.x - cpX) / distEnd) * rEnd;
+          const endY = toNode.y - ((toNode.y - cpY) / distEnd) * rEnd;
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(startX, startY);
+          ctx.quadraticCurveTo(cpX, cpY, endX, endY);
+          ctx.strokeStyle = "rgba(168, 85, 247, 0.7)";
+          ctx.lineWidth = 2.5 * zoom;
+          ctx.stroke();
+
+          // Arrowhead at destination
+          const arrowAngle = Math.atan2(endY - cpY, endX - cpX);
+          const arrowLen = 10 * zoom;
+          ctx.beginPath();
+          ctx.moveTo(endX, endY);
+          ctx.lineTo(endX - arrowLen * Math.cos(arrowAngle - 0.4), endY - arrowLen * Math.sin(arrowAngle - 0.4));
+          ctx.moveTo(endX, endY);
+          ctx.lineTo(endX - arrowLen * Math.cos(arrowAngle + 0.4), endY - arrowLen * Math.sin(arrowAngle + 0.4));
+          ctx.stroke();
+          ctx.restore();
+        }
       }
     }
 
@@ -1204,14 +1341,28 @@ export function renderChordRing(container, options = {}) {
 
     // Draw Chord Transition in the center of the circle (vertically aligned to cy)
     if (activeChord) {
-      const currSymbol = getCenterDisplayLabel(activeChord);
-      const currColorObj = getColor(activeChord.root, key.scale, activeChord.borrowed) || "#ffffff";
-      const currColor = currColorObj.hexColor || currColorObj;
+      let currSymbol;
+      let currColor;
+      if (options.isChordMasked?.(activeChord)) {
+        currSymbol = "?";
+        currColor = "#6b7280";
+      } else {
+        currSymbol = getCenterDisplayLabel(activeChord);
+        const currColorObj = getColor(activeChord.root, key.scale, activeChord.borrowed) || "#ffffff";
+        currColor = currColorObj.hexColor || currColorObj;
+      }
 
       if (previousChord) {
-        const prevSymbol = getCenterDisplayLabel(previousChord);
-        const prevColorObj = getColor(previousChord.root, key.scale, previousChord.borrowed) || "#ffffff";
-        const prevColor = prevColorObj.hexColor || prevColorObj;
+        let prevSymbol;
+        let prevColor;
+        if (options.isChordMasked?.(previousChord)) {
+          prevSymbol = "?";
+          prevColor = "#6b7280";
+        } else {
+          prevSymbol = getCenterDisplayLabel(previousChord);
+          const prevColorObj = getColor(previousChord.root, key.scale, previousChord.borrowed) || "#ffffff";
+          prevColor = prevColorObj.hexColor || prevColorObj;
+        }
 
         const line1TargetW = r * 1.35;
         const line2TargetW = r * 1.55;
@@ -1769,19 +1920,34 @@ export function renderChordRing(container, options = {}) {
   }
 
   function playDiatonicTriad(degree) {
-    // Logic for playing the placeholder triad
     const triadData = rootToDiatonicTriad(degree, currentKey, 3);
+    const chordObj = {
+      root: degree,
+      type: 5,
+      inversion: 0,
+      applied: 0,
+      borrowed: null
+    };
+    if (chordSelectHandler) {
+      chordSelectHandler(chordObj);
+      return;
+    }
     if (options.onChordClick) {
       options.onChordClick({
         notes: triadData.notes,
         root: degree,
         chordDegrees: triadData.chordDegrees,
-        borrowed: null
+        borrowed: null,
+        chord: chordObj
       }, options.getArpeggiated?.() ?? false);
     }
   }
 
   function playChord(chordObj) {
+    if (chordSelectHandler) {
+      chordSelectHandler(chordObj);
+      return;
+    }
     const chordData = chordInterpreter(chordObj, currentKey, {
       forceRootPosition: options.getForceRootPosition?.() ?? false,
     });
@@ -2270,6 +2436,27 @@ export function renderChordRing(container, options = {}) {
       if (keySig !== prevKeySig) {
         updateTransitionTable();
       }
+    },
+    setChordSelectHandler(handler) {
+      chordSelectHandler = handler;
+    },
+    getQuizClozeBtn() {
+      return clozeBtn;
+    },
+    getStatsBtn() {
+      return statsBtn;
+    },
+    getQuizClozeInfo() {
+      return quizInfoContainer;
+    },
+    getQuizClozeFeedback() {
+      return feedbackEl;
+    },
+    getQuizClozeScore() {
+      return scoreEl;
+    },
+    getQuizClozeNextBtn() {
+      return nextBtn;
     },
   };
 }

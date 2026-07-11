@@ -156,7 +156,7 @@ export const dictation = {
       cueQuestionAudio(playRun);
     }
 
-    wireKeyQuizTransport(el, "dt", {
+    wireKeyQuizTransport(el, "dt", { getSongCtx: () => base.songCtx,
       onTonicize: () => tonicizeKey(base.songCtx, ctx.audio),
       onRepeat: playRun,
       onNext: showQuestion,
