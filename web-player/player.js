@@ -1114,8 +1114,16 @@ function setupProgressTracking() {
       loopEndTick !== null &&
       currentTicks >= loopEndTick
     ) {
-      const startRatio = loopStartTick / progressTicks;
-      handleSeek(startRatio, time);
+      // 1. Release currently playing notes gracefully at the scheduled boundary time
+      engine.releaseAllNotes(time);
+      
+      // 2. Jump transport back to loopStartTick immediately without recreating parts
+      Tone.Transport.ticks = loopStartTick;
+      
+      // 3. Clear visual tracking cache to force updates on the next animation frame
+      progressTrackingChordId = null;
+      progressTrackingMelodyId = null;
+      lastVisualTicks = -1;
       return;
     }
 
