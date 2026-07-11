@@ -611,6 +611,10 @@ function clearPlayerState() {
   loopEndTick = null;
   updateTimelineLoopPoints();
   
+  progressTrackingChordId = null;
+  progressTrackingMelodyId = null;
+  lastVisualTicks = -1;
+  
   quizMode?.refresh();
 }
 
@@ -1016,11 +1020,85 @@ async function restartSectionFromBeginning({ autoPlay = false } = {}) {
   }
 }
 
+let progressTrackingChordId = null;
+let progressTrackingMelodyId = null;
+let lastVisualTicks = -1;
+
+function startVisualPlaybackLoop() {
+  function tick() {
+    requestAnimationFrame(tick);
+    
+    const ToneObj = window.Tone;
+    if (!ToneObj || ToneObj.Transport.state !== "started" || !currentSong || songLength <= 0) {
+      return;
+    }
+    
+    const currentTicks = ToneObj.Transport.ticks;
+    if (currentTicks === lastVisualTicks) {
+      return;
+    }
+    lastVisualTicks = currentTicks;
+    
+    const totalTicks = songLength * 192;
+    const progressTicks = lastReleaseTick > 0 ? lastReleaseTick : totalTicks;
+    const ratio = progressTicks > 0 ? Math.min(1, currentTicks / progressTicks) : 0;
+    const currentBeat = (currentTicks / 192) + 1;
+    
+    syncDisplayedKeyAtBeat(currentBeat);
+    controls.updateProgress(ratio);
+    timeline.updateProgress(ratio);
+    
+    // Update melody display (including rests) based on current position
+    const currentMelodyInfo = findCurrentMelodyAtTick(currentTicks);
+    const currentMelodyId = currentMelodyInfo ? 
+      `${currentMelodyInfo.note?.beat || 'none'}-${currentMelodyInfo.note?.duration || 'none'}-${currentMelodyInfo.isRest || false}` : 
+      'none';
+    
+    if (currentMelodyId !== progressTrackingMelodyId) {
+      progressTrackingMelodyId = currentMelodyId;
+      if (currentMelodyInfo) {
+        if (currentMelodyInfo.isRest) {
+          noteIndicator.updateMelody(null, null);
+        } else {
+          noteIndicator.updateMelody(currentMelodyInfo.absoluteLabel, currentMelodyInfo.relativeLabel);
+        }
+      } else {
+        noteIndicator.updateMelody(null, null);
+      }
+    }
+    
+    // Update chord display (including rests) based on current position
+    const currentChordInfo = findCurrentChordAtTick(currentTicks);
+    const currentChordId = currentChordInfo ? 
+      `${currentChordInfo.chord?.beat || 'none'}-${currentChordInfo.chord?.duration || 'none'}-${currentChordInfo.chord?.isRest || false}` : 
+      'none';
+    
+    if (currentChordId !== progressTrackingChordId) {
+      progressTrackingChordId = currentChordId;
+      if (currentChordInfo) {
+        noteIndicator.updateChord(
+          currentChordInfo.notes,
+          currentChordInfo.root,
+          currentChordInfo.degrees,
+          currentChordInfo.borrowed,
+          currentChordInfo.key || currentKey,
+          currentChordInfo.chord
+        );
+        chordRing.update(currentChordInfo.chord);
+      } else {
+        noteIndicator.reset();
+        chordRing.update(null);
+      }
+    }
+  }
+  requestAnimationFrame(tick);
+}
+
+// Start the loop immediately
+startVisualPlaybackLoop();
+
 function setupProgressTracking() {
-  let lastChordId = null; // Track last chord to avoid redundant updates
-  let lastMelodyId = null; // Track last melody to avoid redundant updates
-  
-  engine.onTick((currentTicks, time) => {
+  engine.onTick((currentTicks) => {
     // songLength is in Beats.
     // Progress calculation based on TICKS (192 PPQ) to ensure stability during tempo changes.
     // Tone.Transport.seconds is unstable/approximated during aggressive tempo ramps.
@@ -1051,65 +1129,6 @@ function setupProgressTracking() {
         sectionLoopInProgress = false;
       });
       return;
-    }
-
-    // Defer visual updates to match the actual play timing using Tone.Draw
-    const ToneObj = window.Tone;
-    if (ToneObj && ToneObj.Draw) {
-      ToneObj.Draw.add(() => {
-        const visualTicks = ToneObj.Transport.ticks;
-        const ratio = progressTicks > 0 ? Math.min(1, visualTicks / progressTicks) : 0;
-        const currentBeat = (visualTicks / 192) + 1;
-        syncDisplayedKeyAtBeat(currentBeat);
-
-        controls.updateProgress(ratio);
-        timeline.updateProgress(ratio);
-        
-        // Update melody display (including rests) based on current position
-        const currentMelodyInfo = findCurrentMelodyAtTick(visualTicks);
-        const currentMelodyId = currentMelodyInfo ? 
-          `${currentMelodyInfo.note?.beat || 'none'}-${currentMelodyInfo.note?.duration || 'none'}-${currentMelodyInfo.isRest || false}` : 
-          'none';
-        
-        if (currentMelodyId !== lastMelodyId) {
-          lastMelodyId = currentMelodyId;
-          if (currentMelodyInfo) {
-            if (currentMelodyInfo.isRest) {
-              noteIndicator.updateMelody(null, null);
-            } else {
-              noteIndicator.updateMelody(currentMelodyInfo.absoluteLabel, currentMelodyInfo.relativeLabel);
-            }
-          } else {
-            // No melody at this position
-            noteIndicator.updateMelody(null, null);
-          }
-        }
-        
-        // Update chord display (including rests) based on current position
-        const currentChordInfo = findCurrentChordAtTick(visualTicks);
-        const currentChordId = currentChordInfo ? 
-          `${currentChordInfo.chord?.beat || 'none'}-${currentChordInfo.chord?.duration || 'none'}-${currentChordInfo.chord?.isRest || false}` : 
-          'none';
-        
-        if (currentChordId !== lastChordId) {
-          lastChordId = currentChordId;
-          if (currentChordInfo) {
-            noteIndicator.updateChord(
-              currentChordInfo.notes,
-              currentChordInfo.root,
-              currentChordInfo.degrees,
-              currentChordInfo.borrowed,
-              currentChordInfo.key || currentKey,
-              currentChordInfo.chord
-            );
-            chordRing.update(currentChordInfo.chord);
-          } else {
-            // No chord at this position (shouldn't happen if chords cover the whole song, but handle it)
-            noteIndicator.reset();
-            chordRing.update(null);
-          }
-        }
-      }, time);
     }
   });
 }
