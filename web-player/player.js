@@ -26,6 +26,11 @@ import {
 
 const Tone = window.Tone;
 
+let progressTrackingChordId = null;
+let progressTrackingMelodyId = null;
+let lastVisualTicks = -1;
+
+
 const ringPane = document.getElementById("ring-pane");
 const indicatorPane = document.getElementById("indicator-pane");
 const timelinePane = document.getElementById("timeline-pane");
@@ -1020,9 +1025,6 @@ async function restartSectionFromBeginning({ autoPlay = false } = {}) {
   }
 }
 
-let progressTrackingChordId = null;
-let progressTrackingMelodyId = null;
-let lastVisualTicks = -1;
 
 function startVisualPlaybackLoop() {
   function tick() {
