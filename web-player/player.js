@@ -1962,10 +1962,9 @@ async function nextClozeQuestion() {
         }
       }
       
-      if (thirdUniqueChordIdx !== -1) {
-        const startChord = currentRawChords[thirdUniqueChordIdx];
-        const baseBeat = startChord.beat === 0 ? 1 : startChord.beat;
-        const startBeat = baseBeat + startChord.duration;
+      if (thirdUniqueChordIdx !== -1 && thirdUniqueChordIdx + 1 < idx) {
+        const startChord = currentRawChords[thirdUniqueChordIdx + 1];
+        const startBeat = startChord.beat === 0 ? 1 : startChord.beat;
         loopStartTick = (startBeat - 1) * 192;
       } else {
         loopStartTick = 0;
@@ -1999,7 +1998,7 @@ async function nextClozeQuestion() {
   updateQuizBarFeedback("Identify the masked chord by clicking its symbol on the Chord Ring. Playback is looping.");
   
   const nextBtn = chordRing.getQuizClozeNextBtn();
-  if (nextBtn) nextBtn.disabled = true;
+  if (nextBtn) nextBtn.disabled = false;
 }
 
 function handleQuizClozeGuess(guessChord) {

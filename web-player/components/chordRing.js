@@ -1341,22 +1341,28 @@ export function renderChordRing(container, options = {}) {
 
     // Draw Chord Transition in the center of the circle (vertically aligned to cy)
     if (activeChord) {
+      let currSymbol;
+      let currColor;
       if (options.isChordMasked?.(activeChord)) {
-        ctx.fillStyle = "#6b7280";
-        ctx.font = `bold ${32 * zoom}px sans-serif`;
-        ctx.textBaseline = "middle";
-        ctx.textAlign = "center";
-        ctx.fillText("?", cx, cy);
-        return;
+        currSymbol = "?";
+        currColor = "#6b7280";
+      } else {
+        currSymbol = getCenterDisplayLabel(activeChord);
+        const currColorObj = getColor(activeChord.root, key.scale, activeChord.borrowed) || "#ffffff";
+        currColor = currColorObj.hexColor || currColorObj;
       }
-      const currSymbol = getCenterDisplayLabel(activeChord);
-      const currColorObj = getColor(activeChord.root, key.scale, activeChord.borrowed) || "#ffffff";
-      const currColor = currColorObj.hexColor || currColorObj;
 
       if (previousChord) {
-        const prevSymbol = getCenterDisplayLabel(previousChord);
-        const prevColorObj = getColor(previousChord.root, key.scale, previousChord.borrowed) || "#ffffff";
-        const prevColor = prevColorObj.hexColor || prevColorObj;
+        let prevSymbol;
+        let prevColor;
+        if (options.isChordMasked?.(previousChord)) {
+          prevSymbol = "?";
+          prevColor = "#6b7280";
+        } else {
+          prevSymbol = getCenterDisplayLabel(previousChord);
+          const prevColorObj = getColor(previousChord.root, key.scale, previousChord.borrowed) || "#ffffff";
+          prevColor = prevColorObj.hexColor || prevColorObj;
+        }
 
         const line1TargetW = r * 1.35;
         const line2TargetW = r * 1.55;
