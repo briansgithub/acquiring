@@ -3384,8 +3384,26 @@ body {
    Selector stays collapsed (36px strip). Indicator hidden. */
 
 #app.quiz-mode {
-  grid-template-columns: var(--selector-width) 1fr minmax(300px, 380px);
+  --quiz-width: 1fr;
+  --quiz-ring-width: minmax(300px, 380px);
+  grid-template-columns: var(--selector-width) var(--quiz-width) var(--quiz-ring-width);
   grid-template-rows: 130px 1fr;
+}
+
+#app.quiz-collapsed {
+  --quiz-width: 36px;
+  --quiz-ring-width: 1fr;
+}
+
+#app.quiz-mode #quiz-pane.collapsible-pane.is-collapsed {
+  padding: 12px 2px 0 2px;
+}
+
+#ring-pane.disabled {
+  pointer-events: none;
+  opacity: 0.35;
+  filter: grayscale(80%);
+  transition: opacity 0.22s ease, filter 0.22s ease;
 }
 
 #app.quiz-mode #selector-pane {

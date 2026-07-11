@@ -608,6 +608,7 @@ function clearPlayerState() {
   chordRing.setSongData([], null);
   chordRing.update(null, null, null);
   chordRing.updateTransitions([], []);
+  ringPane?.classList.add("disabled");
   timeline.setSongData([], null, 0);
   timeline.setSongInfo(null, null);
   timeline.updateProgress(0);
@@ -677,6 +678,12 @@ function init() {
 }
 
 const quizPane = document.getElementById("quiz-pane");
+const quizCollapsible = makeCollapsible(quizPane, {
+  collapseClass: "quiz",
+  label: "Quiz",
+  expandedWidth: 290,
+  startCollapsed: true,
+});
 const quizAudio = createQuizAudio();
 const quizSession = new QuizSession();
 
@@ -693,7 +700,8 @@ function getSectionStats() {
 }
 
 if (quizPane) {
-  quizMode = renderQuizMode(quizPane, {
+  const quizContentEl = quizPane.querySelector(".pane-content") || quizPane;
+  quizMode = renderQuizMode(quizContentEl, {
     getSongContext: buildQuizSongContext,
     getSongTitle: getLoadedSongTitle,
     getSectionName: getLoadedSectionName,
@@ -1005,6 +1013,7 @@ async function loadSection(songIndex, sectionIndex) {
       freqPanel?.refresh();
     }
     console.log("Section loaded successfully.");
+    ringPane?.classList.remove("disabled");
   } catch (err) {
     console.error("Error during playback setup in loadSection:", err);
   } finally {
