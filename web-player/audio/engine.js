@@ -73,7 +73,7 @@ export class AudioEngine {
       if (event.type === "attack") {
         this.melodySynth.triggerAttack(event.name, time);
         if (event.onTrigger) {
-          if (Tone.Draw) Tone.Draw.add(event.onTrigger, time);
+          if (Tone.Draw) Tone.Draw.schedule(event.onTrigger, time);
           else event.onTrigger();
         }
       } else if (event.type === "release") {
@@ -91,7 +91,7 @@ export class AudioEngine {
         if (!event.note) return;
         this.arpeggioSynth.triggerAttackRelease(event.note, event.duration, time);
         if (event.onTrigger) {
-          if (Tone.Draw) Tone.Draw.add(event.onTrigger, time);
+          if (Tone.Draw) Tone.Draw.schedule(event.onTrigger, time);
           else event.onTrigger();
         }
         return;
@@ -104,7 +104,7 @@ export class AudioEngine {
         this.currentChordNotes = event.notes;
         event.notes.forEach((note) => this.activeChordNotes.add(note));
         if (event.onTrigger) {
-          if (Tone.Draw) Tone.Draw.add(event.onTrigger, time);
+          if (Tone.Draw) Tone.Draw.schedule(event.onTrigger, time);
           else event.onTrigger();
         }
       } else if (event.type === "release") {
