@@ -2019,6 +2019,7 @@ async function nextClozeQuestion() {
   if (loopEnabled && loopStartTick !== null) {
     const totalTicks = songLength * 192;
     handleSeek(loopStartTick / totalTicks);
+    resumeMidChordPlayback(loopStartTick, currentChordEvents);
   }
   
   await engine.play();
