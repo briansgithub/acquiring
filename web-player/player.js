@@ -633,6 +633,22 @@ function updateTimelineLoopPoints() {
   } else {
     timeline.setLoopPoints(null, null);
   }
+
+  // Sync native Tone.Transport loop settings
+  const ToneObj = window.Tone;
+  if (ToneObj && ToneObj.Transport) {
+    if (loopEnabled && loopStartTick !== null && loopEndTick !== null) {
+      const newStart = ToneObj.Transport.ticksToSeconds(loopStartTick);
+      const newEnd = ToneObj.Transport.ticksToSeconds(loopEndTick);
+      // Safe update order: ensure loopStart <= loopEnd at all times
+      ToneObj.Transport.loopStart = 0;
+      ToneObj.Transport.loopEnd = newEnd;
+      ToneObj.Transport.loopStart = newStart;
+      ToneObj.Transport.loop = true;
+    } else {
+      ToneObj.Transport.loop = false;
+    }
+  }
 }
 
 function resetIdleState() {
