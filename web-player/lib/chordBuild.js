@@ -180,9 +180,11 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
     ? { ...effBase, minorV13Stack: true }
     : policy.minorI13B13
       ? { ...effBase, minorI13B13: true }
-      : policy.customBorrowedHalfDim
-        ? { ...effBase, customBorrowedHalfDim: true }
-        : effBase;
+      : policy.hmBorrowedDominant13
+        ? { ...effBase, hmBorrowedDominant13: true }
+        : policy.customBorrowedHalfDim
+          ? { ...effBase, customBorrowedHalfDim: true }
+          : effBase;
 
   if (policy.rootShiftSemitones) {
     chordRootNoteName = shiftPitchClass(chordRootNoteName, policy.rootShiftSemitones);
@@ -218,7 +220,7 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
     && !!effModifierChord?.halfDim;
   applyTypeExtensions(
     toneJSNames, degreeIndices, chordRootNoteName, baseOctave, chordType, sdToToneJSNoteName, triadQuality,
-    { natural11: policy.natural11, skipNine, skipThirteenth: policy.skipThirteenth, customBorrowedHalfDimM7: policy.customBorrowedHalfDimM7 },
+    { natural11: policy.natural11, skipNine, skipThirteenth: policy.skipThirteenth, customBorrowedHalfDimM7: policy.customBorrowedHalfDimM7, customBorrowedDimNatural11: policy.customBorrowedDimNatural11 },
   );
 
   replaceTriadThird(toneJSNames, degreeIndices, chordRootNoteName, baseOctave, suspensions, sdToToneJSNoteName);

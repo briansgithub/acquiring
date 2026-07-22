@@ -16,6 +16,11 @@ export function applyTypeExtensions(toneJSNames, degreeIndices, chordRootNoteNam
       toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 1));
       degreeIndices.push(5);
     }
+  } else if (opts.customBorrowedDimNatural11 && triadQuality === "diminished" && chordType >= 11) {
+    if (!hasPc(toneJSNames, (rootPc + 5) % 12)) {
+      toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 5));
+      degreeIndices.push(5);
+    }
   } else if (chordType >= 11) {
     const natural11Pc = triadQuality === "diminished"
       ? (rootPc + (opts.skipNine ? 1 : 9)) % 12
