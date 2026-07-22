@@ -15,7 +15,14 @@ const DIM7_BB7_ENTRIES = [
 
 export function borrowedModeDimSeventhDegree(chordRootSD, scale, chordQuality, chordType, opts = {}) {
   if (chordType < 7 || chordQuality !== "diminished") return null;
-  if (opts.halfDim) return null;
+  // Major-key iiø: diatonic quality is minor — falls through to b7. Nat-dim + ø (e.g. minor ii°) → dim7.
+  if (!opts.halfDim) {
+    for (const entry of DIM7_BB7_ENTRIES) {
+      if (scale !== entry.scale) continue;
+      if (entry.degree === null || entry.degree === chordRootSD) return "bb7";
+    }
+    return null;
+  }
   for (const entry of DIM7_BB7_ENTRIES) {
     if (scale !== entry.scale) continue;
     if (entry.degree === null || entry.degree === chordRootSD) return "bb7";
@@ -108,6 +115,7 @@ export function resolveChordPolicy(ctx) {
   const minorExtended13Stack = modifiedKey.scale === "minor"
     && chordType >= 13
     && chordQuality === "minor"
+    && (chordRootSD === 1 || chordRootSD === 5)
     && !useSusFrame
     && !omitTriad35;
 
