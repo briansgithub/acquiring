@@ -1686,8 +1686,8 @@
     "truthRoman": "#vii°6(no3)4(maj)",
     "truthLetter": "g#°(n3)/D",
     "truthPcs": [
-      1,
-      7
+      2,
+      8
     ],
     "pianoNotes": [
       "F###2",
@@ -1714,8 +1714,8 @@
       "rootPcMatch": true,
       "bassPcMatch": true,
       "rootInPcs": true,
-      "bassInNotes": false,
-      "pcsExact": false,
+      "bassInNotes": true,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
@@ -1723,10 +1723,10 @@
       "orderOk": true,
       "degreesOk": true
     },
-    "notesOk": false,
+    "notesOk": true,
     "orderOk": true,
     "romanExact": false,
-    "failureClass": "piano_noise",
+    "failureClass": null,
     "buckets": [
       "type=5",
       "inversion=2",
@@ -2881,8 +2881,8 @@
     "truthRoman": "bIV6(no3)4(maj)",
     "truthLetter": "F5/C",
     "truthPcs": [
-      1,
-      6
+      0,
+      5
     ],
     "pianoNotes": null,
     "pianoPcs": null,
@@ -2903,8 +2903,8 @@
       "rootPcMatch": true,
       "bassPcMatch": true,
       "rootInPcs": true,
-      "bassInNotes": false,
-      "pcsExact": false,
+      "bassInNotes": true,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
@@ -2912,10 +2912,10 @@
       "orderOk": true,
       "degreesOk": true
     },
-    "notesOk": false,
+    "notesOk": true,
     "orderOk": true,
     "romanExact": false,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=5",
       "inversion=2",
@@ -3190,8 +3190,8 @@
     "truthRoman": "bIV6(no3)4(maj)",
     "truthLetter": "F5/C",
     "truthPcs": [
-      1,
-      6
+      0,
+      5
     ],
     "pianoNotes": null,
     "pianoPcs": null,
@@ -3212,8 +3212,8 @@
       "rootPcMatch": true,
       "bassPcMatch": true,
       "rootInPcs": true,
-      "bassInNotes": false,
-      "pcsExact": false,
+      "bassInNotes": true,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
@@ -3221,10 +3221,10 @@
       "orderOk": true,
       "degreesOk": true
     },
-    "notesOk": false,
+    "notesOk": true,
     "orderOk": true,
     "romanExact": false,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=5",
       "inversion=2",
