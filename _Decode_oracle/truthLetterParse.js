@@ -23,9 +23,13 @@ function stripForQuality(letter) {
   return s;
 }
 
+function numeratorRoman(roman) {
+  return String(roman || '').split('/')[0];
+}
+
 function triadQualityFromLetter(letter, roman) {
   const l = stripForQuality(letter).toLowerCase();
-  const r = (roman || '').toLowerCase();
+  const r = stripForQuality(numeratorRoman(roman)).toLowerCase();
   if (/°|ø|dim/.test(l + r)) return 'diminished';
   if (/\+|aug/.test(l)) return 'augmented';
   const m = (letter || '').match(/^([b#]{0,2})([A-Ga-g])/);
@@ -154,6 +158,6 @@ function mergeMods(letter, roman, chord) {
 }
 
 module.exports = {
-  allParenTags, stripForQuality, triadQualityFromLetter, triadQualityFromRoman, seventhKind,
+  allParenTags, stripForQuality, numeratorRoman, triadQualityFromLetter, triadQualityFromRoman, seventhKind,
   susFromText, addsFromText, omitsFromText, altsFromText, extensionsFromType, mergeMods,
 };

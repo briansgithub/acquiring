@@ -40,7 +40,7 @@ function activeKeyAtBeat(keys, beat) {
   return { tonic, scale: chosen.scale || 'major' };
 }
 
-const { mergeMods } = require('./truthLetterParse');
+const { mergeMods, numeratorRoman } = require('./truthLetterParse');
 
 function appliedDenomMajFromRoman(roman) {
   const denom = String(roman || '').split('/')[1] || '';
@@ -48,8 +48,9 @@ function appliedDenomMajFromRoman(roman) {
 }
 
 function enrichChordFromSymbol(chord, roman, letter) {
-  const halfDim = chord.halfDim || /ø/.test(roman || "") || /\(b5b9\)|b5b9/i.test(letter || "");
-  const dimTriad = chord.dimTriad || (/°/.test(roman || "") && !halfDim);
+  const numRoman = numeratorRoman(roman);
+  const halfDim = chord.halfDim || /ø/.test(numRoman) || /\(b5b9\)|b5b9/i.test(letter || "");
+  const dimTriad = chord.dimTriad || (/°/.test(numRoman) && !halfDim);
   if (chord._truthEnriched) {
     return { ...chord, halfDim, dimTriad: chord.dimTriad, flattenHalfDimB5: chord.flattenHalfDimB5 };
   }
