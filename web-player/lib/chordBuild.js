@@ -176,8 +176,8 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
     customBorrowed: Array.isArray(borrowed),
     autoAlterations: policy.autoAlterations,
   });
-  const effModifierChord = policy.minorExtended13Stack
-    ? { ...effBase, minorV13Stack: true, minorExtended13Stack: true }
+  const effModifierChord = policy.minorV13Stack
+    ? { ...effBase, minorV13Stack: true }
     : policy.customBorrowedHalfDim
       ? { ...effBase, customBorrowedHalfDim: true }
       : effBase;
@@ -210,14 +210,6 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
       customScaleIntervals, getNoteLabel,
     });
     addSeventhNote(toneJSNames, degreeIndices, chordRootNoteName, baseOctave, seventh);
-  } else if (
-    chordQuality === "diminished" &&
-    modifierChord?.omits?.includes(5) &&
-    !modifierChord?.omits?.includes(3) &&
-    !useSusFrame
-  ) {
-    toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 6));
-    degreeIndices.push(3);
   }
   // Upper extensions (9 / 11 / 13) for extended chord types.
   const skipNine = effModifierChord?.omits?.includes(3) && effModifierChord?.omits?.includes(5)
@@ -283,14 +275,6 @@ export function buildChordFromNoteName(rootNoteName, quality, originalKey, baseO
     });
     const seventhName = sdToToneJSNoteName(seventhDegree, 0, rootKey, baseOctave);
     toneJSNames.push(seventhName);
-    degreeIndices.push(3);
-  } else if (
-    triadQuality === "diminished"
-    && modifierChord?.omits?.includes(5)
-    && !modifierChord?.omits?.includes(3)
-    && !useSusFrame
-  ) {
-    toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 6));
     degreeIndices.push(3);
   }
   applyTypeExtensions(toneJSNames, degreeIndices, rootNoteName, baseOctave, chordType, sdToToneJSNoteName);

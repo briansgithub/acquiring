@@ -21,6 +21,8 @@ const MAJOR_LABELS = {
 };
 
 const BORROWED_SCALE = {
+  major: 'major',
+  maj: 'major',
   minor: 'minor',
   min: 'minor',
   dorian: 'dorian',

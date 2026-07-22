@@ -904,6 +904,27 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 **048 (same branch):** `vii°(no3no5)` — skip dim+omit5 dim7 injection when omit 3 as well (`viiDimNo35` fixture). Regression **16/16**.
 
+---
+
+## Fix 049 — dim omit5 + i13 stack scope (2026-07-22, `feat/fix-047-halfdim-inv`)
+
+**049a:** Remove triad-type dim7 injection on `omits:[5]` — `ii°(no5)`, `iii°6(no5)`, `vii°(add6)(no5)` were getting spurious dim7 (PC 6). Same class as 048 but omit-5-only.
+
+**049b:** Drop `minorExtended13Stack` for **i13** — catalog `i13`/`em11(b13)` voices natural 11/13 + letter `b13` (pc 0), not the v13 empirical `b9`/`b13` stack (pc 5). **v13** stack unchanged.
+
+**Fixtures:** `iiDimNo5`, `i13minor` (E minor, catalog mandolay voicing) in `policyRegression.mjs`.
+
+**Catalog resync post-046–048:** 723 → **552** engine fails (927 slugs). Post-049 resync: **513** (932 slugs).
+
+---
+
+## Fix 050 — harness `borrowed:major` root PC (2026-07-22)
+
+**Problem:** `chordRootPc.js` `BORROWED_SCALE` lacked `major`/`maj`, so `borrowed:"major"` chords resolved roots against the **parent** scale (e.g. E-minor iii = G) instead of parallel major (G#). `resolveTruthRootPc` then preferred the wrong JSON root → **14 false** `bor=major inv=2` engine failures where engine letters/PCs already matched HT (`g#m/D#`).
+
+**Fix:** Add `major`/`maj` → `'major'` in `BORROWED_SCALE`.
+
+**Deferred:** `i13` letter voicing (`em11(b13)`) — needs degree-specific stack (b9 + compound b13 + natural 11), not v13 flat-13; engine natural extensions are close (7/8 PCs).
 
 **When:** 2026-07-22 (`feat/chord-pronunciation-review`)  
 **Done:** Functional readings no longer inject `;` / `,` before “secondary dominant to” / “borrowed from”; bare letter names get triad quality when `getChordLetterName` returns root only; `substitutions:["tri"]` speaks “tritone substitution”.  

@@ -151,7 +151,7 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
       continue;
     }
 
-    if (key === "b13" && (chord?.minorExtended13Stack || chord?.minorV13Stack)) {
+    if (key === "b13" && chord?.minorV13Stack) {
       const flat13Pc = (rootPc + 8) % 12;
       if (!hasPc(toneJSNames, flat13Pc) && sdToToneJSNoteName) {
         toneJSNames.push(sdToToneJSNoteName("b6", 1, rk, baseOctave));
