@@ -60,13 +60,18 @@ export function chordInterpreter(chord, key, opts = {}) {
     const appliedQualities = getScaleChordQualities(appliedScale);
     const chordQuality = appliedQualities[effective.applied - 1];
 
-    const fullyDiminished = effective.applied === 7 && chordQuality === "diminished";
+    const sharp5AppliedMinorTriad = effective.applied === 7
+      && chordQuality === "diminished"
+      && (effective.alterations || []).includes("#5")
+      && chordType < 7;
+    const fullyDiminished = !sharp5AppliedMinorTriad
+      && effective.applied === 7 && chordQuality === "diminished";
     const halfDimApplied = chordType >= 7 && chordQuality === "diminished" && effective.applied !== 7;
     const useMaj7 = effective.useMaj7
       || (chordType >= 7 && chordQuality === "major" && effective.applied === 4);
 
     return buildChordFromNoteName(
-      actualRootNote, chordQuality, key, defaultChordOctave, chordType, inversion,
+      actualRootNote, sharp5AppliedMinorTriad ? "minor" : chordQuality, key, defaultChordOctave, chordType, inversion,
       fullyDiminished, suspensions, {
         ...effective,
         appliedDenomMaj,

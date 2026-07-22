@@ -48,6 +48,11 @@ const BASELINE = {
     key: { tonic: "G", scale: "mixolydian" },
     pcs: [2, 6, 10],
   },
+  appliedViiSharp5: {
+    chord: { root: 6, type: 5, applied: 7, inversion: 2, alterations: ["#5"] },
+    key: { tonic: "E", scale: "harmonicMinor" },
+    pcs: [2, 7, 11],
+  },
   iiDimNo5: {
     chord: { root: 2, type: 5, omits: [5] },
     key: { tonic: "B", scale: "minor" },
