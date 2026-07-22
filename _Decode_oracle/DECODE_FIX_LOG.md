@@ -967,6 +967,20 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 **Files:** `chordPolicy.js`, `chordAlterations.js`, `chordBuild.js`, `truthLetterParse.js`, `engineRun.js`, `compare.js`, `policyRegression.mjs`.
 
+---
+
+## Fix 053 — ø(no5) + custom °11 + hm V13(b9b13) (2026-07-22, `feat/fix-053-engine-wave3`)
+
+**053a:** `halfDim` + `omit:[5]` — skip omit-5 on ø sevenths; HT voices dim5 despite `no5` letter (`iiø7(no5)`).
+
+**053b:** `customBorrowedDimNatural11` — custom-array **°11** (not ø): natural 11th at +5 semitones (Mars `c°7(b9b11)`).
+
+**053c:** `hmBorrowedDominant13` — hm-borrowed **V13** with letter `b9`/`b13`: additive flat-13 without stripping natural 13th.
+
+**Gate:** `policyRegression.mjs` **22/22**.
+
+**Files:** `chordOmits.js`, `chordModifiers.js`, `chordPolicy.js`, `chordBuild.js`, `chordExtensions.js`, `chordAlterations.js`, `policyRegression.mjs`.
+
 **Files:** `web-player/lib/speakRules/{formatReadings,speakLetter,buildParts}.js`, `_Research_testing/pronunciationFixtures.json`
 
 ---

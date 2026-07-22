@@ -88,6 +88,21 @@ const BASELINE = {
     key: { tonic: "A", scale: "major" },
     pcs: [8],
   },
+  iio7no5: {
+    chord: { root: 2, type: 7, omits: [5], halfDim: true },
+    key: { tonic: "B", scale: "minor" },
+    pcs: [1, 4, 7, 10],
+  },
+  customDim11bor: {
+    chord: { root: 1, type: 11, borrowed: [0, 1, 3, 4, 6, 8, 9], dimTriad: true, alterations: ["b9", "b11"] },
+    key: { tonic: "C", scale: "phrygianDominant" },
+    pcs: [0, 1, 3, 5, 6, 9],
+  },
+  hmV13bor: {
+    chord: { root: 5, type: 13, borrowed: "harmonicMinor", alterations: ["b9", "b13"] },
+    key: { tonic: "E", scale: "minor" },
+    pcs: [0, 3, 4, 6, 7, 8, 9, 11],
+  },
 };
 
 function pcs(chord, key) {
