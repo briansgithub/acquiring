@@ -77,7 +77,7 @@ Wired in:
 
 | Component | When |
 |-----------|------|
-| `noteIndicator.js` | `#chord-pronunciation` under the roman numeral in Now Playing |
+| `noteIndicator.js` | `#chord-pronunciation` under chord label in Now Playing (follows Roman/Letter toggle) |
 | `timeline.js` | Chord hover tooltip |
 | `chordRing.js` | Degree-segment hover tooltip; center reading tooltip; follows Roman Numerals toggle |
 
@@ -104,6 +104,7 @@ const letterHtml = pronunciationDisplayHtml({ analytic, functional, letter, func
 
 ```bash
 npm run test:pronunciation
+npm run test:note-order
 ```
 
 Runs three suites in order:

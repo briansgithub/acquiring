@@ -1,0 +1,1249 @@
+{
+  "summary": {
+    "total": 5707,
+    "inv0AscendingPass": 4772,
+    "inv0AscendingFail": 0,
+    "invGt0TruthBassInfo": 49,
+    "invGt0LetterBassInfo": 61,
+    "byInversion": {
+      "0": {
+        "pass": 4772,
+        "fail": 0
+      },
+      "1": {
+        "pass": 398,
+        "info": 16
+      },
+      "2": {
+        "pass": 299,
+        "info": 20
+      },
+      "3": {
+        "pass": 177,
+        "info": 25
+      }
+    },
+    "fixtureFails": 0,
+    "strict": false
+  },
+  "hardFailures": [],
+  "infoFailures": [
+    {
+      "id": "the-beach-boys__god-only-knows/Verse/21",
+      "inv": 3,
+      "issues": [
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-letter",
+        "engLetter": "D#°7/C#",
+        "actualBassPc": 0,
+        "engBassPc": 1,
+        "notes": [
+          "C3",
+          "D#4",
+          "F#4",
+          "A4"
+        ]
+      }
+    },
+    {
+      "id": "the-beach-boys__god-only-knows/Bridge/37",
+      "inv": 3,
+      "issues": [
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-letter",
+        "engLetter": "G#°7/F#",
+        "actualBassPc": 5,
+        "engBassPc": 6,
+        "notes": [
+          "F3",
+          "G#4",
+          "B4",
+          "D4"
+        ]
+      }
+    },
+    {
+      "id": "earth-wind-and-fire__september/Chorus/25",
+      "inv": 1,
+      "issues": [
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-letter",
+        "engLetter": "Gsus2/B",
+        "actualBassPc": 9,
+        "engBassPc": 11,
+        "notes": [
+          "A2",
+          "E4",
+          "G4"
+        ]
+      }
+    },
+    {
+      "id": "the-doors__light-my-fire/Verse and Pre-Chorus/8.5",
+      "inv": 2,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "Db++(#5)/Ab",
+        "engLetter": "Db+/Ab",
+        "actualBassPc": 9,
+        "truthBassPc": 8,
+        "notes": [
+          "A3",
+          "Db4",
+          "F4"
+        ]
+      }
+    },
+    {
+      "id": "missy-elliott__get-ur-freak-on/Chorus/25",
+      "inv": 2,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "fm6/C",
+        "engLetter": "Fm/C",
+        "actualBassPc": 2,
+        "truthBassPc": 0,
+        "notes": [
+          "D4",
+          "F4",
+          "Ab4"
+        ]
+      }
+    },
+    {
+      "id": "allie-x__milk/Chorus/1",
+      "inv": 2,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "G#5/D#",
+        "engLetter": "G#5/D#",
+        "actualBassPc": 8,
+        "truthBassPc": 3,
+        "notes": [
+          "G#4",
+          "D#5"
+        ]
+      }
+    },
+    {
+      "id": "allie-x__milk/Chorus/3",
+      "inv": 2,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "A#5/E#",
+        "engLetter": "A#5/E#",
+        "actualBassPc": 10,
+        "truthBassPc": 5,
+        "notes": [
+          "A#4",
+          "E#5"
+        ]
+      }
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Chorus/20",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "E(n°3)/D",
+        "engLetter": "E7/D",
+        "actualBassPc": 4,
+        "truthBassPc": 2,
+        "notes": [
+          "E4",
+          "B4",
+          "D5"
+        ]
+      }
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Chorus/24",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "E(n°3)/D",
+        "engLetter": "E7/D",
+        "actualBassPc": 4,
+        "truthBassPc": 2,
+        "notes": [
+          "E4",
+          "B4",
+          "D5"
+        ]
+      }
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Chorus/28",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "E(n°3)/D",
+        "engLetter": "E7/D",
+        "actualBassPc": 4,
+        "truthBassPc": 2,
+        "notes": [
+          "E4",
+          "B4",
+          "D5"
+        ]
+      }
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Instrumental/20",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "E(n°3)/D",
+        "engLetter": "E7/D",
+        "actualBassPc": 4,
+        "truthBassPc": 2,
+        "notes": [
+          "E4",
+          "B4",
+          "D5"
+        ]
+      }
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Instrumental/24",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "E(n°3)/D",
+        "engLetter": "E7/D",
+        "actualBassPc": 4,
+        "truthBassPc": 2,
+        "notes": [
+          "E4",
+          "B4",
+          "D5"
+        ]
+      }
+    },
+    {
+      "id": "olivia-rodrigo__bad-idea-right/Instrumental/28",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "E(n°3)/D",
+        "engLetter": "E7/D",
+        "actualBassPc": 4,
+        "truthBassPc": 2,
+        "notes": [
+          "E4",
+          "B4",
+          "D5"
+        ]
+      }
+    },
+    {
+      "id": "a-perfect-circle__judith/Chorus/4",
+      "inv": 2,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "f#(add6)sus2/C#",
+        "engLetter": "F#msus2/C#",
+        "actualBassPc": 3,
+        "truthBassPc": 1,
+        "notes": [
+          "D#4",
+          "F#4",
+          "G#4"
+        ]
+      }
+    },
+    {
+      "id": "a-perfect-circle__judith/Chorus/16",
+      "inv": 2,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "f#(add6)sus2/C#",
+        "engLetter": "F#msus2/C#",
+        "actualBassPc": 3,
+        "truthBassPc": 1,
+        "notes": [
+          "D#4",
+          "F#4",
+          "G#4"
+        ]
+      }
+    },
+    {
+      "id": "a-perfect-circle__judith/Chorus/28",
+      "inv": 2,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "f#(add6)sus2/C#",
+        "engLetter": "F#msus2/C#",
+        "actualBassPc": 3,
+        "truthBassPc": 1,
+        "notes": [
+          "D#4",
+          "F#4",
+          "G#4"
+        ]
+      }
+    },
+    {
+      "id": "gorillaz__5-4/Chorus/15",
+      "inv": 2,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "d(add6)(#5)sus4/A",
+        "engLetter": "Dmsus4/A",
+        "actualBassPc": 10,
+        "truthBassPc": 9,
+        "notes": [
+          "Bb3",
+          "B3",
+          "D4",
+          "G4"
+        ]
+      }
+    },
+    {
+      "id": "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/15.5",
+      "inv": 1,
+      "issues": [
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-letter",
+        "engLetter": "Dbsus2/F",
+        "actualBassPc": 3,
+        "engBassPc": 5,
+        "notes": [
+          "Eb3",
+          "Ab3",
+          "Db4"
+        ]
+      }
+    },
+    {
+      "id": "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/47.5",
+      "inv": 1,
+      "issues": [
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-letter",
+        "engLetter": "Dbsus2/F",
+        "actualBassPc": 3,
+        "engBassPc": 5,
+        "notes": [
+          "Eb3",
+          "Ab3",
+          "Db4"
+        ]
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Chorus/91",
+      "inv": 2,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "Emaj7(#5)/B",
+        "engLetter": "E+maj7/B",
+        "actualBassPc": 0,
+        "truthBassPc": 11,
+        "notes": [
+          "C4",
+          "D#4",
+          "E4",
+          "G#4"
+        ]
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Chorus Lead-Out/133",
+      "inv": 2,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "F++(#5)/C",
+        "engLetter": "F+/C",
+        "actualBassPc": 1,
+        "truthBassPc": 0,
+        "notes": [
+          "Db4",
+          "F4",
+          "A4"
+        ]
+      }
+    },
+    {
+      "id": "jamiroquai__time-wont-wait/Chorus/31",
+      "inv": 2,
+      "issues": [
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-letter",
+        "engLetter": "C7/G",
+        "actualBassPc": 6,
+        "engBassPc": 7,
+        "notes": [
+          "Gb2",
+          "Bb4",
+          "D#4",
+          "Ab4",
+          "C4",
+          "E4"
+        ]
+      }
+    },
+    {
+      "id": "wolfgang-amadeus-mozart__a-little-night-music---1st-movement/Verse and Pre-Chorus/5",
+      "inv": 1,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "f#(3)susb2/G",
+        "engLetter": "F#°sus2/A",
+        "actualBassPc": 8,
+        "truthBassPc": 7,
+        "notes": [
+          "G#3",
+          "C#4",
+          "F#4"
+        ]
+      }
+    },
+    {
+      "id": "wolfgang-amadeus-mozart__a-little-night-music---1st-movement/Verse and Pre-Chorus/13",
+      "inv": 1,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "f#(3)susb2/G",
+        "engLetter": "F#°sus2/A",
+        "actualBassPc": 8,
+        "truthBassPc": 7,
+        "notes": [
+          "G#3",
+          "C#4",
+          "F#4"
+        ]
+      }
+    },
+    {
+      "id": "wolfgang-amadeus-mozart__a-little-night-music---1st-movement/Verse and Pre-Chorus/64",
+      "inv": 1,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "f#(3)susb2/G",
+        "engLetter": "F#°sus2/A",
+        "actualBassPc": 8,
+        "truthBassPc": 7,
+        "notes": [
+          "G#3",
+          "C#4",
+          "F#4"
+        ]
+      }
+    },
+    {
+      "id": "wolfgang-amadeus-mozart__a-little-night-music---1st-movement/Verse and Pre-Chorus/71",
+      "inv": 1,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "c#(3)susb2/D",
+        "engLetter": "C#°sus2/E",
+        "actualBassPc": 3,
+        "truthBassPc": 2,
+        "notes": [
+          "D#3",
+          "G#3",
+          "C#4"
+        ]
+      }
+    },
+    {
+      "id": "wolfgang-amadeus-mozart__a-little-night-music---1st-movement/Verse and Pre-Chorus/75",
+      "inv": 1,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "c#(3)susb2/D",
+        "engLetter": "C#°sus2/E",
+        "actualBassPc": 3,
+        "truthBassPc": 2,
+        "notes": [
+          "D#3",
+          "G#3",
+          "C#4"
+        ]
+      }
+    },
+    {
+      "id": "a-perfect-circle__judith/Chorus/1",
+      "inv": 2,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "G(b5)/D",
+        "engLetter": "G/D",
+        "actualBassPc": 1,
+        "truthBassPc": 2,
+        "notes": [
+          "Db4",
+          "G4",
+          "B4"
+        ]
+      }
+    },
+    {
+      "id": "a-perfect-circle__judith/Chorus/13",
+      "inv": 2,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "G(b5)/D",
+        "engLetter": "G/D",
+        "actualBassPc": 1,
+        "truthBassPc": 2,
+        "notes": [
+          "Db4",
+          "G4",
+          "B4"
+        ]
+      }
+    },
+    {
+      "id": "a-perfect-circle__judith/Chorus/25",
+      "inv": 2,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "G(b5)/D",
+        "engLetter": "G/D",
+        "actualBassPc": 1,
+        "truthBassPc": 2,
+        "notes": [
+          "Db4",
+          "G4",
+          "B4"
+        ]
+      }
+    },
+    {
+      "id": "a-perfect-circle__judith/Chorus/9.5",
+      "inv": 1,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "c#7susb2/D",
+        "engLetter": "C#m7sus2/E",
+        "actualBassPc": 3,
+        "truthBassPc": 2,
+        "notes": [
+          "D#3",
+          "G#3",
+          "B3",
+          "C#4"
+        ]
+      }
+    },
+    {
+      "id": "a-perfect-circle__judith/Chorus/21.5",
+      "inv": 1,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "c#7susb2/D",
+        "engLetter": "C#m7sus2/E",
+        "actualBassPc": 3,
+        "truthBassPc": 2,
+        "notes": [
+          "D#3",
+          "G#3",
+          "B3",
+          "C#4"
+        ]
+      }
+    },
+    {
+      "id": "a-perfect-circle__judith/Chorus/33.5",
+      "inv": 1,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "c#7susb2/D",
+        "engLetter": "C#m7sus2/E",
+        "actualBassPc": 3,
+        "truthBassPc": 2,
+        "notes": [
+          "D#3",
+          "G#3",
+          "B3",
+          "C#4"
+        ]
+      }
+    },
+    {
+      "id": "a-perfect-circle__judith/Chorus/46",
+      "inv": 1,
+      "issues": [
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-letter",
+        "engLetter": "C#sus2/E#",
+        "actualBassPc": 3,
+        "engBassPc": 5,
+        "notes": [
+          "D#3",
+          "G#3",
+          "C#4"
+        ]
+      }
+    },
+    {
+      "id": "bryan-scary__the-little-engine-who-couldnt-(think-straight)/Verse/24",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "a°/G",
+        "engLetter": "A°7/G",
+        "actualBassPc": 6,
+        "truthBassPc": 7,
+        "notes": [
+          "Gb4",
+          "A4",
+          "C5",
+          "Eb5"
+        ]
+      }
+    },
+    {
+      "id": "bryan-scary__the-little-engine-who-couldnt-(think-straight)/Verse/40",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "a°/G",
+        "engLetter": "A°7/G",
+        "actualBassPc": 6,
+        "truthBassPc": 7,
+        "notes": [
+          "Gb4",
+          "A4",
+          "C5",
+          "Eb5"
+        ]
+      }
+    },
+    {
+      "id": "capcom__sweet-home---mamiya--and-amp-ichirous/Instrumental/26",
+      "inv": 1,
+      "issues": [
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-letter",
+        "engLetter": "Gmsus4/Bb",
+        "actualBassPc": 0,
+        "engBassPc": 10,
+        "notes": [
+          "C4",
+          "D4",
+          "G4"
+        ]
+      }
+    },
+    {
+      "id": "capcom__sweet-home---mamiya--and-amp-ichirous/Instrumental/30",
+      "inv": 1,
+      "issues": [
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-letter",
+        "engLetter": "Bbsus2/D",
+        "actualBassPc": 0,
+        "engBassPc": 2,
+        "notes": [
+          "C4",
+          "F4",
+          "Bb4"
+        ]
+      }
+    },
+    {
+      "id": "coldplay__everythings-not-lost/Chorus/16.25",
+      "inv": 1,
+      "issues": [
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-letter",
+        "engLetter": "Esus4/G#",
+        "actualBassPc": 9,
+        "engBassPc": 8,
+        "notes": [
+          "A3",
+          "B3",
+          "E4"
+        ]
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/1",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "Db/C",
+        "engLetter": "Dbmaj7/C",
+        "actualBassPc": 1,
+        "truthBassPc": 0,
+        "notes": [
+          "C#4",
+          "D4",
+          "F#4",
+          "A4"
+        ]
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/20",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "Db/C",
+        "engLetter": "Dbmaj7/C",
+        "actualBassPc": 1,
+        "truthBassPc": 0,
+        "notes": [
+          "C#4",
+          "D4",
+          "F#4",
+          "A4"
+        ]
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/26",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "Db/C",
+        "engLetter": "Dbmaj7/C",
+        "actualBassPc": 1,
+        "truthBassPc": 0,
+        "notes": [
+          "C#4",
+          "D4",
+          "F#4",
+          "A4"
+        ]
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/30",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "Db/C",
+        "engLetter": "Dbmaj7/C",
+        "actualBassPc": 1,
+        "truthBassPc": 0,
+        "notes": [
+          "C#4",
+          "D4",
+          "F#4",
+          "A4"
+        ]
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/51",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "Db/C",
+        "engLetter": "Dbmaj7/C",
+        "actualBassPc": 1,
+        "truthBassPc": 0,
+        "notes": [
+          "C#4",
+          "D4",
+          "F#4",
+          "A4"
+        ]
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/55",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "Db/C",
+        "engLetter": "Dbmaj7/C",
+        "actualBassPc": 1,
+        "truthBassPc": 0,
+        "notes": [
+          "C#4",
+          "D4",
+          "F#4",
+          "A4"
+        ]
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/61",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "Db/C",
+        "engLetter": "Dbmaj7/C",
+        "actualBassPc": 1,
+        "truthBassPc": 0,
+        "notes": [
+          "C#4",
+          "D4",
+          "F#4",
+          "A4"
+        ]
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/65",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "Db/C",
+        "engLetter": "Dbmaj7/C",
+        "actualBassPc": 1,
+        "truthBassPc": 0,
+        "notes": [
+          "C#4",
+          "D4",
+          "F#4",
+          "A4"
+        ]
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/77.5",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "Db/C",
+        "engLetter": "Dbmaj7/C",
+        "actualBassPc": 1,
+        "truthBassPc": 0,
+        "notes": [
+          "C#4",
+          "D4",
+          "F#4",
+          "A4"
+        ]
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Chorus Lead-Out/41",
+      "inv": 2,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "g#°(n3)/D",
+        "engLetter": "G#5/D",
+        "actualBassPc": 8,
+        "truthBassPc": 2,
+        "notes": [
+          "G#4",
+          "D5"
+        ]
+      }
+    },
+    {
+      "id": "hertzdevil__stage-64/Instrumental/153",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "b#°/A#",
+        "engLetter": "B#°7/A#",
+        "actualBassPc": 9,
+        "truthBassPc": 10,
+        "notes": [
+          "A4",
+          "B#4",
+          "D#5",
+          "F#5"
+        ]
+      }
+    },
+    {
+      "id": "hitoshi-sakimoto__main-theme---bubble-ghost/Intro/1",
+      "inv": 2,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "C5/G",
+        "engLetter": "C5/G",
+        "actualBassPc": 0,
+        "truthBassPc": 7,
+        "notes": [
+          "C4",
+          "G4"
+        ]
+      }
+    },
+    {
+      "id": "hitoshi-sakimoto__main-theme---bubble-ghost/Intro/13",
+      "inv": 1,
+      "issues": [
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-letter",
+        "engLetter": "Csus2/E",
+        "actualBassPc": 2,
+        "engBassPc": 4,
+        "notes": [
+          "D3",
+          "G3",
+          "C4"
+        ]
+      }
+    },
+    {
+      "id": "hitoshi-sakimoto__main-theme---bubble-ghost/Solo/10",
+      "inv": 2,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "F5/C",
+        "engLetter": "F5/C",
+        "actualBassPc": 5,
+        "truthBassPc": 0,
+        "notes": [
+          "F4",
+          "C5"
+        ]
+      }
+    },
+    {
+      "id": "hitoshi-sakimoto__main-theme---bubble-ghost/Solo/26",
+      "inv": 2,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "F5/C",
+        "engLetter": "F5/C",
+        "actualBassPc": 5,
+        "truthBassPc": 0,
+        "notes": [
+          "F4",
+          "C5"
+        ]
+      }
+    },
+    {
+      "id": "hitoshi-sakimoto__main-theme---bubble-ghost/Solo/43",
+      "inv": 2,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "Fmaj7(n°3)/C",
+        "engLetter": "Fmaj7/C",
+        "actualBassPc": 4,
+        "truthBassPc": 0,
+        "notes": [
+          "E4",
+          "F4",
+          "C5"
+        ]
+      }
+    },
+    {
+      "id": "hitoshi-sakimoto__main-theme---bubble-ghost/Solo/59",
+      "inv": 2,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "Fmaj7(n°3)/C",
+        "engLetter": "Fmaj7/C",
+        "actualBassPc": 4,
+        "truthBassPc": 0,
+        "notes": [
+          "E4",
+          "F4",
+          "C5"
+        ]
+      }
+    },
+    {
+      "id": "johann-sebastian-bach__bwv-847---prelude-no-2-in-c-minor/Verse/9",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "d°/C",
+        "engLetter": "D°7/C",
+        "actualBassPc": 11,
+        "truthBassPc": 0,
+        "notes": [
+          "Cb4",
+          "D4",
+          "F4",
+          "Ab4"
+        ]
+      }
+    },
+    {
+      "id": "johann-sebastian-bach__bwv-847---prelude-no-2-in-c-minor/Verse/65",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "d°/C",
+        "engLetter": "D°7/C",
+        "actualBassPc": 11,
+        "truthBassPc": 0,
+        "notes": [
+          "Cb4",
+          "D4",
+          "F4",
+          "Ab4"
+        ]
+      }
+    },
+    {
+      "id": "kentarou-haneda__wizardry-v---heart-of-the-maelstrom---title/Instrumental/3",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "e°/D",
+        "engLetter": "E°7/D",
+        "actualBassPc": 1,
+        "truthBassPc": 2,
+        "notes": [
+          "Db4",
+          "E4",
+          "G4",
+          "Bb4"
+        ]
+      }
+    },
+    {
+      "id": "mike-thal__mega-man-42---mad-man-stage/Instrumental/47",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "c#°/B",
+        "engLetter": "C#°7/B",
+        "actualBassPc": 10,
+        "truthBassPc": 11,
+        "notes": [
+          "Bb3",
+          "C#4",
+          "E4",
+          "G4"
+        ]
+      }
+    },
+    {
+      "id": "joseph-haydn__12-easy-pieces-for-piano-no-1---andante-grazioso/Intro/23",
+      "inv": 3,
+      "issues": [
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-letter",
+        "engLetter": "C#°7/B",
+        "actualBassPc": 10,
+        "engBassPc": 11,
+        "notes": [
+          "Bb2",
+          "C#3",
+          "E3",
+          "G3"
+        ]
+      }
+    }
+  ]
+}
