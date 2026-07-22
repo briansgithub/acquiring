@@ -981,6 +981,18 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 **Files:** `chordOmits.js`, `chordModifiers.js`, `chordPolicy.js`, `chordBuild.js`, `chordExtensions.js`, `chordAlterations.js`, `policyRegression.mjs`.
 
+---
+
+## Fix 054 — applied vii#5 + truth-enrich halfDim leak (2026-07-22, `feat/fix-054-applied-sharp5`)
+
+**054a:** Applied `vii` + `#5` triad in hm — voice **minor+(#5)** not dim triad (`bm(#5)` pcs `[2,7,11]`).
+
+**054b:** `enrichChordFromSymbol` on `_truthEnriched` chords — stop overwriting `halfDim`/`dimTriad` from **engine** roman (e.g. `iø11` mis-label blocked custom `°11` voicing).
+
+**Gate:** `policyRegression.mjs` **23/23**.
+
+**Files:** `music.js`, `engineRun.js`, `policyRegression.mjs`.
+
 **Files:** `web-player/lib/speakRules/{formatReadings,speakLetter,buildParts}.js`, `_Research_testing/pronunciationFixtures.json`
 
 ---

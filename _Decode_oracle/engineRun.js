@@ -52,7 +52,7 @@ function enrichChordFromSymbol(chord, roman, letter) {
   const halfDim = chord.halfDim || /ø/.test(numRoman) || /\(b5b9\)|b5b9/i.test(letter || "");
   const dimTriad = chord.dimTriad || (/°/.test(numRoman) && !halfDim);
   if (chord._truthEnriched) {
-    return { ...chord, halfDim, dimTriad: chord.dimTriad, flattenHalfDimB5: chord.flattenHalfDimB5 };
+    return { ...chord, flattenHalfDimB5: chord.flattenHalfDimB5 };
   }
   const mods = mergeMods(letter, roman, chord);
   const alterations = [...new Set([...(chord.alterations || []), ...mods.alterations])];
