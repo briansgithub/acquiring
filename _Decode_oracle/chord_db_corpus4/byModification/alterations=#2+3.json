@@ -41,7 +41,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "♭V⁶sus2(#23)(#2)(3)(loc)",
+    "engRoman": "♭V6(#23)(#2)(3)sus2(loc)",
     "engLetter": "Dbsus2/F",
     "engNotes": [
       "Eb3",
@@ -65,7 +65,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": false
     },
     "notesOk": true,
     "orderOk": true,
@@ -123,7 +124,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "♭V⁶sus2(#23)(#2)(3)(loc)",
+    "engRoman": "♭V6(#23)(#2)(3)sus2(loc)",
     "engLetter": "Dbsus2/F",
     "engNotes": [
       "Eb3",
@@ -147,7 +148,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": false
     },
     "notesOk": true,
     "orderOk": true,

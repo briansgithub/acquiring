@@ -40,7 +40,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "V⁶⁵(#11)/iii",
+    "engRoman": "V6(#11)5/iii(maj)",
     "engLetter": "G7/B",
     "engNotes": [
       "B2",
@@ -68,7 +68,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": false
     },
     "notesOk": true,
     "orderOk": true,

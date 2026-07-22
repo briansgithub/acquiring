@@ -38,6 +38,14 @@ export function shiftNoteBySemitones(noteName, delta) {
   return `${PC_SPELL[newPc]}${newOct}`;
 }
 
+/** Shift a pitch-class label (no octave), e.g. Db +1 → D. */
+export function shiftPitchClass(label, delta) {
+  const abs = NOTE_NAME_TO_INTEGER_NOTATION[noteLabel(label)];
+  if (abs == null) return label;
+  const newPc = ((abs + delta) % 12 + 12) % 12;
+  return PC_SPELL[newPc];
+}
+
 /** Remove indices from parallel arrays (high to low). */
 export function spliceIndices(toneJSNames, degreeIndices, indices) {
   const sorted = [...new Set(indices)].sort((a, b) => b - a);

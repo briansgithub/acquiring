@@ -21,11 +21,17 @@ const { mergeMods } = require('./truthLetterParse');
 const { canonRoman, canonCore } = require('./normalize');
 const { expectedPcs, pcsEqual, noteNamesToPcs, notesExact, checkNoteOrder } = require('./truthNotes');
 
+function appliedDenomMajFromRoman(roman) {
+  const denom = String(roman || '').split('/')[1] || '';
+  return /\(maj\)/.test(denom);
+}
+
 function enrichChordFromTruth(chord, truthRoman, truthLetterRaw) {
   const mods = mergeMods(truthLetterRaw, truthRoman, chord);
   const halfDim = /ø/.test(truthRoman || '');
   const dimTriad = /°/.test(truthRoman || '') && !halfDim;
-  const flattenHalfDimB5 = halfDim && (chord.alterations || []).includes('b5');
+  const flattenHalfDimB5 = halfDim && mods.alterations.includes('b5');
+  const appliedDenomMaj = appliedDenomMajFromRoman(truthRoman);
   return {
     ...chord,
     adds: mods.adds,
@@ -36,6 +42,7 @@ function enrichChordFromTruth(chord, truthRoman, truthLetterRaw) {
     halfDim,
     dimTriad,
     flattenHalfDimB5,
+    appliedDenomMaj,
     _truthEnriched: true,
   };
 }

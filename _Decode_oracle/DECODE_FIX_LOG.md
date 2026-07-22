@@ -791,6 +791,105 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
-## Agent onboarding
+## Fix 040 — Catalog wave-1 engine fixes (b5→°, custom bor prefix, phdm II△7, ø harness)
+
+**When:** 2026-07-22 (catalog error-loop wave 1 post-fetch fix pass)  
+**Symptom:** Top failure clusters after first full-harvest wave: Tarkus `II4(no5)2sus4(bor)` rendered as `♭II42…`; 4lung `iii°6(b5)4` as `iii6(b5)4`; Holst Mars `II△42` PCs `[1,2,6,9]` vs `[0,1,5,8]`; widespread `viiø7` PC misses when letter carried `(b5)`.  
+**Root cause:** (1) `triadQualityWithAlts` not wired into `buildNumeral`; (2) custom-array accidental prefix compared to major instead of parent key scale; (3) `phdmIImaj7` root raise used `shiftNoteBySemitones` on label without octave (no-op); (4) compare harness set `flattenHalfDimB5` from raw JSON `alterations` before `mergeMods` injected `b5` from truth letter.  
+**Fix:** `triadQualityWithAlts` → `buildNumeral` via `opts.quality`; `customArrayPrefix` uses parent `SCALE_INTERVALS`; added `shiftPitchClass()` for label-only semitone shifts; `phdmIImaj7` in `music.js`; suppress implicit `(b5)` on ø symbols; `flattenHalfDimB5` checks merged alterations in `compare.js` / `engineRun.js`.  
+**Files:** `web-player/lib/jsonToSymbol.js`, `web-player/lib/chordNoteUtils.js`, `web-player/lib/music.js`, `_Decode_oracle/compare.js`, `_Decode_oracle/engineRun.js`  
+**Result (catalog resync):** engine failures **99 → 66** on 128 full-harvest slugs / 6582 compared rows (Tarkus 24, 4lung 10, Holst II△42 10, viiø7 cluster cleared).
+
+---
+
+## Fix 041 — Applied `(maj)` harness root PC + denominator tag
+
+**When:** 2026-07-22 (catalog wave-1 follow-up)  
+**Symptom:** `V42/VI(maj)`, `V42/VII(maj)`, `V64/VII(maj)` etc. showed PC mismatches (+1 semitone on all chord tones) despite correct engine notes; roman missing `(maj)` on denominator.  
+**Root cause:** `chordRootPc()` resolved applied-chord target degrees using **major** parent scale instead of the song key's scale (e.g. G mixolydian VII→F misread as F#), shifting `expectedPcs` one semitone. Not an engine note bug.  
+**Fix:** Use `effKey.scale` for applied target + fallback applied degree in `chordRootPc.js`. Emit `(maj)` denominator tag in `jsonToSymbol` when `appliedDenomMaj` is set (from truth roman or subtonic-minor heuristic). Wire `appliedDenomMaj` through compare enrichment.  
+**Files:** `_Decode_oracle/chordRootPc.js`, `_Decode_oracle/compare.js`, `_Decode_oracle/engineRun.js`, `web-player/lib/jsonToSymbol.js`, `web-player/lib/music.js`  
+**Result (catalog resync):** engine failures **66 → 54** on 137 full-harvest slugs / 7145 rows; Bizet `V42/VI(maj)` and Donna Summer `V42/VII(maj)` now `notesOk`.
+
+---
+
+## Fix 042 — Morning phdm bII△7 scope + custom-array triad quality
+
+**When:** 2026-07-22 (catalog error-loop morning resume)  
+**Symptom:** `bII△7(phdm)` in major/minor keys PCs off by semitone (e.g. C major → eng `[1,2,6,9]` vs truth `[0,1,5,8]`); custom-array `(bor)` chords like `bI(bor)` used wrong triad quality when degree-1 offset normalized negative (eng `[1,5,10]` vs `[2,5,10]`).  
+**Root cause:** `phdmIImaj7` root raise applied whenever `modifiedKey.scale === phrygianDominant`, including **borrowed** phdm on degree II in non-phdm keys (Holst native phdm key still needs the raise). `getChordQualityFromCustomScale` wrapped third/fifth by **index** order, not pitch height — broken when root interval > third interval after negative normalization.  
+**Fix:** Restrict `phdmIImaj7` to native phdm key **3rd inversion** only (`inversion === 3`, Holst `II△42`); borrowed phdm `bII△7` in major/minor uses diatonic root. Compare third/fifth intervals against root pitch (`if (thirdInterval < rootInterval) thirdInterval += 12`). Add augmented branch to custom quality. `chordRootPc` resolves custom-array roots from absolute offsets. `getChordLetterName` uses custom intervals for letter names.  
+**Files:** `web-player/lib/music.js`, `web-player/lib/jsonToSymbol.js`, `_Decode_oracle/chordRootPc.js`  
+**Result (catalog resync):** `type=7 bor=phrygianDominant` cluster cleared; `type=5 bor=custom` bI PCs match; engine failures **640 → 488** on 781 slugs / 41624 rows.
+
+---
+
+## Fix 043 — Harmonic-minor III+△7 voicing
+
+**When:** 2026-07-22 (catalog error-loop morning resume)  
+**Symptom:** `III+△7` in harmonic minor (e.g. barnyard) eng `[2,3,7,11]` (Eb G B D) vs truth `[2,3,7,10]` (Eb G D Bb).  
+**Root cause:** Augmented triad + type≥7 stacked full `#5` plus maj7; Hooktheory voices `+△7` as maj3 + maj7 + scale b7, omitting the augmented fifth.  
+**Fix:** `augMaj7Voicing` in `rootToDiatonicTriad`: drop `#5` from triad, add +11 maj7 and +7 scale b7 via `shiftNoteBySemitones`.  
+**Files:** `web-player/lib/music.js`  
+**Result (catalog resync):** `type=7` III+△7 cluster (~18 fails) cleared.
+
+---
+
+## Fix 044 — Policy extraction + unified seventh pipeline + tri-sub
+
+**When:** 2026-07-22 (musically honest engine dev plan)  
+**Symptom:** `music.js` ~990 lines with scattered Layer-B `if` branches; duplicate seventh/inversion paths; `substitutions:["tri"]` mis-voiced as parent-key dominant; `v13` in minor missing `m11(b9b13)` PCs; custom-array `ø11` injected spurious `b9`.  
+**Fix (Layer B refactor — zero behavior change on policy fixtures except targeted clusters):**
+- **`chordPolicy.js`** — `resolveChordPolicy()`, `enrichModifierChord()`, `borrowedModeDimSeventhDegree` table, `isMajorSeventh` for symbol layer.
+- **`chordSeventh.js`** — unified `resolveSeventhDegree` / `applySeventhToChord` / `applyAugMaj7Stack`.
+- **`chordBuild.js`** — `rootToDiatonicTriad` + `buildChordFromNoteName` (music.js now 77 lines).
+- **`scaleBorrowed.js`** — custom-array + `resolveBorrowedScale` (musicScale.js 295 lines).
+- **`chordSubstitutions.js`** — `substitutions:["tri"]` → `_triSubDominant` + tritone root in applied path.
+- **`chordExtensions.js`** — minor natural-11 via `+5` semitones (not major-frame `sd4`); `skipThirteenth` opt.
+- **`chordAlterations.js`** — `minorV13Stack` additive `b13` (keeps natural 13th + flat-13 tone).
+- **`chordPolicy`** — `minorV13Stack` on minor `v` + `type≥13`; `customBorrowedHalfDim` voices ø as minor frame without dim7 spread / implicit `b9`.
+- **`_Debug_testing/policyRegression.mjs`** — 8 frozen PC fixtures (Holst, HM III+7, phdm bII, custom bor bI, B phdm II, tri-sub 9, viiø7, v13).
+
+**Substitutions research:** catalog JSON uses `substitutions:["tri"]` only (tritone / ∆-sub on `applied=5`); no other substitution tokens in compared rows.
+
+**Regression gates (2026-07-22):**
+
+| Gate | Result |
+|------|--------|
+| `policyRegression.mjs` | **8/8 pass** |
+| Tier-1 Eleanor Rigby | **19/19 notesOk** |
+| Corpus4 rebuild (75 songs) | **97.9%** notesOk (2845/2905) — below 98.5% bar (suspensions=4 bucket 76%) |
+| Catalog resync (875 slugs) | **538** engine fails / 46546 rows (was 488/41624 on 781 slugs — more coverage) |
+| `type=13` corpus4 bucket | **100%** (3/3) |
+| `type=9 applied` + `tri` | cluster cleared from top errors |
+
+**Deferred:** `#iø11(bor)` custom-array ø11 (11 catalog fails); `i13` vs `v13` voicing split; corpus4 suspensions=4 harness cluster.
+
+**Files:** `web-player/lib/{music,chordBuild,chordPolicy,chordSeventh,chordSubstitutions,scaleBorrowed,musicScale,chordExtensions,chordAlterations}.js`, `_Decode_oracle/engineRun.js`, `_Debug_testing/policyRegression.mjs`
+
+---
+
+## Pronunciation review (2026-07-22) — partial; revisit after next corpus pass
+
+**When:** 2026-07-22 (`feat/chord-pronunciation-review`)  
+**Done:** Functional readings no longer inject `;` / `,` before “secondary dominant to” / “borrowed from”; bare letter names get triad quality when `getChordLetterName` returns root only; `substitutions:["tri"]` speaks “tritone substitution”.  
+**Tests:** `romanPronunciationTest.mjs` (77 fixtures), `pronunciationFixVerify.mjs` (5/5), corpus smoke (5650 chords, 0 UNKNOWN), letter cross-check 100%.
+
+**Deferred — schedule second pronunciation review after the next corpus review + engine update:**
+
+| Area | Why deferred |
+|------|----------------|
+| `#iø11(bor)` / custom-array ø | Roman ø vs letter `m11(b5b9)` mismatch; engine PCs still open (Fix 044) |
+| `i13` vs `v13` voicing | Minor `type=13` policy scoped to degree 5 only; `i13` cluster (~23 catalog) needs separate rule |
+| `suspensions=4` harness | Corpus4 97.9% notesOk — `iisus4(no5)` alignment, not pronunciation |
+| Roman-only symbol order | `Vsus47` vs `V⁷sus4` — defer unless `romanExact` becomes a gate |
+| Custom bor letter quality | Interval-derived quality may disagree with HT letter enrich (e.g. VII(bor) → `G` not `G°`) |
+| New substitution tokens | Only `tri` in catalog today; re-audit if JSON gains more `substitutions[]` values |
+
+**Re-run gate before next pronunciation pass:** `buildChordDb` corpus4 → `batchCompareCatalog --resync` → `queryTopErrors` → `romanPronunciationTest.mjs` + `generatePronunciationAudit.mjs`.
+
+**Files:** `web-player/lib/speakRules/{formatReadings,speakLetter,buildParts}.js`, `_Research_testing/pronunciationFixtures.json`
+
+---
 
 Single source of truth for the full workflow: [`ORACLE_GUIDE/README.md`](../ORACLE_GUIDE/README.md) (read `01`–`05` + `reference.md` in order).

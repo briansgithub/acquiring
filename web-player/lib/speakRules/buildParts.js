@@ -49,6 +49,7 @@ function buildSuffixParts(chord, ctx) {
     appliedOf: null,
     inversion: chord.inversion || 0,
     isSeventh: chord.type >= 7,
+    substitution: null,
     unknown: false,
   };
 
@@ -118,6 +119,10 @@ function buildSuffixParts(chord, ctx) {
 
   if (ctx.isApplied) {
     parts.appliedOf = speakAppliedTarget(ctx.denominatorDegree, ctx.denominatorQuality);
+  }
+
+  if (Array.isArray(chord.substitutions) && chord.substitutions.includes('tri')) {
+    parts.substitution = 'tritone substitution';
   }
 
   return parts;

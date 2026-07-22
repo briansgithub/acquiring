@@ -18,7 +18,8 @@ import {
   ROMAN_NUMERALS_HARMONIC_MINOR,
   ROMAN_NUMERALS_PHRYGIAN_DOMINANT
 } from "./scales.js";
-import { getNoteLabel } from "./music.js";
+import { getNoteLabel, getCustomBorrowedIntervals } from "./music.js";
+import { isMajorSeventh as policyIsMajorSeventh } from "./chordPolicy.js";
 
 // Helper function to get chord qualities for a scale type
 function getChordQualitiesForScale(scaleType) {
@@ -69,6 +70,23 @@ function getRomanNumeralsForScale(scaleType) {
 const ROMAN_MAP = { 1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI', 7: 'VII' };
 
 const MAJOR_OFFSETS = [0, 2, 4, 5, 7, 9, 11];
+const SCALE_INTERVALS = {
+    major: MAJOR_OFFSETS,
+    minor: [0, 2, 3, 5, 7, 8, 10],
+    dorian: [0, 2, 3, 5, 7, 9, 10],
+    phrygian: [0, 1, 3, 5, 7, 8, 10],
+    lydian: [0, 2, 4, 6, 7, 9, 11],
+    mixolydian: [0, 2, 4, 5, 7, 9, 10],
+    locrian: [0, 1, 3, 5, 6, 8, 10],
+    harmonicMinor: [0, 2, 3, 5, 7, 8, 11],
+    phrygianDominant: [0, 1, 4, 5, 7, 8, 10],
+};
+
+function triadQualityWithAlts(baseQuality, chord) {
+    const alts = chord.alterations || [];
+    if (alts.includes('b5') && baseQuality === 'minor') return 'diminished';
+    return baseQuality;
+}
 
 // Triad quality from a custom borrowed scale (array of absolute semitone offsets from tonic).
 function customArrayTriadQuality(arr, degree) {
@@ -86,8 +104,9 @@ function customArrayTriadQuality(arr, degree) {
 }
 
 // Accidental prefix for a custom borrowed root vs the major scale at the same degree.
-function customArrayPrefix(arr, degree) {
-    const diff = arr[degree - 1] - MAJOR_OFFSETS[degree - 1];
+function customArrayPrefix(arr, degree, key) {
+    const refOffsets = SCALE_INTERVALS[key?.scale] || MAJOR_OFFSETS;
+    const diff = arr[degree - 1] - refOffsets[degree - 1];
     if (diff === -1) return '♭';
     if (diff === -2) return '♭♭';
     if (diff === 1) return '♯';
@@ -132,15 +151,8 @@ function noteToPc(note) {
 
 // True when the diatonic seventh of the chord (degree d + a 7th, read in effKey) is a MAJOR
 // seventh (11 semitones) -> rendered "△7" / "maj7" (e.g. I△7, IV△7, bVI△7 in minor).
-function isMajorSeventh(degree, effKey) {
-    try {
-        const root = getNoteLabel(degree, effKey);
-        const seventhDeg = ((degree - 1 + 6) % 7) + 1;
-        const sev = getNoteLabel(seventhDeg, effKey);
-        const r = noteToPc(root), s = noteToPc(sev);
-        if (r == null || s == null) return false;
-        return ((s - r + 12) % 12) === 11;
-    } catch (e) { return false; }
+function isMajorSeventh(degree, effKey, customIntervals = null) {
+    return policyIsMajorSeventh(degree, effKey, customIntervals, getNoteLabel);
 }
 
 // Same, for a custom borrowed scale given as absolute semitone offsets from the tonic.
@@ -190,8 +202,12 @@ function buildSuffix(chord, quality, opts = {}) {
     const fullyDiminished = opts.fullyDiminished || false;
     const majorSeventh = opts.majorSeventh || false;
     const suspended = Array.isArray(chord.suspensions) && chord.suspensions.length > 0;
-    const alterations = Array.isArray(chord.alterations) ? chord.alterations : [];
-    const altInline = alterations.length ? alterations.map((a) => `(${a})`).join('') : '';
+  const alterations = Array.isArray(chord.alterations) ? chord.alterations : [];
+  const implicitHalfDimB5 = quality === 'diminished' && chord.type >= 7 && !fullyDiminished;
+  const displayAlts = implicitHalfDimB5
+    ? alterations.filter((a) => a !== 'b5')
+    : alterations;
+  const altInline = displayAlts.length ? displayAlts.map((a) => `(${a})`).join('') : '';
     let suffix = '';
     let alterationsEmbedded = false;
 
@@ -281,9 +297,12 @@ function buildSuffix(chord, quality, opts = {}) {
         suffix += chord.omits.map((v) => `(no${v})`).join('');
     }
 
-    if (alterations.length && !alterationsEmbedded) {
-        suffix += `(${alterations.join('')})`;
-    }
+  if (alterations.length && !alterationsEmbedded) {
+    const trailing = implicitHalfDimB5
+      ? alterations.filter((a) => a !== 'b5')
+      : alterations;
+    if (trailing.length) suffix += `(${trailing.join('')})`;
+  }
 
     return suffix;
 }
@@ -291,7 +310,7 @@ function buildSuffix(chord, quality, opts = {}) {
 // Builds a single numeral (no applied "/"), given the chord's degree and the quality array
 // to read its quality from. `prefix` is any accidental prefix for borrowed roots.
 function buildNumeral(degree, qualities, chord, prefix, opts = {}) {
-    const quality = (degree >= 1 && degree <= 7) ? qualities[degree - 1] : 'major';
+    const quality = opts.quality ?? ((degree >= 1 && degree <= 7) ? qualities[degree - 1] : 'major');
     let roman = ROMAN_MAP[degree] || '';
     if (quality === 'minor' || quality === 'diminished') roman = roman.toLowerCase();
     return (prefix || '') + roman + buildSuffix(chord, quality, opts);
@@ -314,11 +333,16 @@ export function getChordSymbol(chord, key) {
         const fullyDim = chord.applied === 7; // leading-tone applied chords are fully diminished
         const targetTonic = getNoteLabel(chord.root, key);
         const numeratorKey = { tonic: targetTonic, scale: 'major' };
-        const majorSeventh = chord.type >= 7 && isMajorSeventh(chord.applied, numeratorKey);
+        const parentQualities = getChordQualitiesForScale(key.scale);
+        const targetQual = parentQualities[chord.root - 1];
+        const appliedDenomMaj = chord.appliedDenomMaj
+            || (chord.applied === 5 && chord.type >= 7 && targetQual === 'minor');
+        const majorSeventh = chord.type >= 7 && chord.applied === 4 && isMajorSeventh(chord.applied, numeratorKey);
         const numerator = buildNumeral(chord.applied, MAJOR_SCALE_CHORD_QUALITIES, chord, '', { fullyDiminished: fullyDim, majorSeventh, applied: true });
         const targetRomans = getRomanNumeralsForScale(key.scale);
         const denominator = targetRomans[chord.root - 1] || '';
-        return `${numerator}/${denominator}`;
+        const denomTag = appliedDenomMaj ? '(maj)' : '';
+        return `${numerator}/${denominator}${denomTag}`;
     }
 
     // --- Normal / borrowed chords ---
@@ -336,8 +360,8 @@ export function getChordSymbol(chord, key) {
         // Custom borrowed scale: derive quality + accidental directly from the array of
         // absolute semitone offsets (matches the note builder), not the main key's scale.
         tag = '(bor)';
-        const quality = customArrayTriadQuality(borrowed, chord.root);
-        prefix = customArrayPrefix(borrowed, chord.root);
+        const quality = triadQualityWithAlts(customArrayTriadQuality(borrowed, chord.root), chord);
+        prefix = customArrayPrefix(borrowed, chord.root, key);
         const majorSeventh = chord.type >= 7 && quality !== 'diminished' && customArraySeventhMajor(borrowed, chord.root);
         let roman = ROMAN_MAP[chord.root] || '';
         if (quality === 'minor' || quality === 'diminished') roman = roman.toLowerCase();
@@ -348,10 +372,13 @@ export function getChordSymbol(chord, key) {
     }
 
     const qualities = getChordQualitiesForScale(scale);
-    const quality = (chord.root >= 1 && chord.root <= 7) ? qualities[chord.root - 1] : 'major';
+    const quality = triadQualityWithAlts(
+        (chord.root >= 1 && chord.root <= 7) ? qualities[chord.root - 1] : 'major',
+        chord,
+    );
     const majorSeventh = chord.type >= 7 && quality !== 'diminished' && isMajorSeventh(chord.root, { tonic: key.tonic, scale });
     const hasAdds = Array.isArray(chord.adds) && chord.adds.length > 0;
-    const suffixOpts = { majorSeventh };
+    const suffixOpts = { majorSeventh, quality };
     if (tag && hasAdds) suffixOpts.borrowedTag = tag;
     return buildNumeral(chord.root, qualities, chord, prefix, suffixOpts) + (tag && !hasAdds ? tag : '');
 }
@@ -369,21 +396,30 @@ export function getChordLetterName(chord, key) {
     // root note comes from the MAJOR scale of the tonicization target (degree `root`), and
     // the chord degree is `applied`.
     let degree, effKey, quality;
+    let customIntervals = null;
     if (chord.applied && chord.applied >= 1 && chord.applied <= 7) {
         const targetTonic = getNoteLabel(chord.root, key);
         effKey = { tonic: targetTonic, scale: 'major' };
         degree = chord.applied;
         quality = MAJOR_SCALE_CHORD_QUALITIES[degree - 1];
+    } else if (Array.isArray(chord.borrowed)) {
+        customIntervals = getCustomBorrowedIntervals(chord.borrowed);
+        effKey = { tonic: key.tonic, scale: 'custom' };
+        degree = chord.root;
+        quality = triadQualityWithAlts(customArrayTriadQuality(chord.borrowed, chord.root), chord);
     } else {
         let scale = key.scale;
         if (typeof chord.borrowed === 'string' && chord.borrowed && SUPPORTED_BORROWED.has(chord.borrowed)) scale = chord.borrowed;
         effKey = { tonic: key.tonic, scale };
         degree = chord.root;
-        quality = getChordQualitiesForScale(scale)[degree - 1];
+        quality = triadQualityWithAlts(getChordQualitiesForScale(scale)[degree - 1], chord);
     }
 
-    const rootNoteName = getNoteLabel(degree, effKey);
-    const majorSeventh = chord.type >= 7 && quality !== 'diminished' && quality !== 'augmented' && isMajorSeventh(degree, effKey);
+    const rootNoteName = getNoteLabel(degree, effKey, customIntervals);
+    const majorSeventh = chord.type >= 7 && quality !== 'diminished' && quality !== 'augmented'
+      && (customIntervals
+        ? customArraySeventhMajor(chord.borrowed, degree)
+        : isMajorSeventh(degree, effKey));
     const augmented = quality === 'augmented' || (Array.isArray(chord.alterations) && chord.alterations.includes('#5'));
 
     let suffix = "";
@@ -402,7 +438,7 @@ export function getChordLetterName(chord, key) {
     else if (chord.inversion === 3 && chord.type >= 7) bassOffset = 6; // seventh
     if (bassOffset != null) {
         const bassDegree = ((degree - 1 + bassOffset) % 7) + 1;
-        const bassNoteName = getNoteLabel(bassDegree, effKey);
+        const bassNoteName = getNoteLabel(bassDegree, effKey, customIntervals);
         return `${rootNoteName}${suffix}/${bassNoteName}`;
     }
 

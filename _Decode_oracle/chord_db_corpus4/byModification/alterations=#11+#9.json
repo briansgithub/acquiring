@@ -42,7 +42,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "I△⁷(no3)(#11)(#9)(maj)",
+    "engRoman": "I△7(no3)(#11#9)(maj)",
     "engLetter": "Cmaj7",
     "engNotes": [
       "C3",
@@ -59,7 +59,7 @@
       11
     ],
     "flags": {
-      "romanExact": false,
+      "romanExact": true,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": false,
@@ -70,11 +70,12 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": false
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": false,
+    "romanExact": true,
     "failureClass": null,
     "buckets": [
       "type=7",
@@ -129,7 +130,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "I△⁷(no3)(#11)(#9)(maj)",
+    "engRoman": "I△7(no3)(#11#9)(maj)",
     "engLetter": "Cmaj7",
     "engNotes": [
       "C3",
@@ -146,7 +147,7 @@
       11
     ],
     "flags": {
-      "romanExact": false,
+      "romanExact": true,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": false,
@@ -157,11 +158,12 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": false
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": false,
+    "romanExact": true,
     "failureClass": null,
     "buckets": [
       "type=7",
@@ -216,7 +218,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "I△⁷(no3)(#11)(#9)(maj)",
+    "engRoman": "I△7(no3)(#11#9)(maj)",
     "engLetter": "Cmaj7",
     "engNotes": [
       "C3",
@@ -233,7 +235,7 @@
       11
     ],
     "flags": {
-      "romanExact": false,
+      "romanExact": true,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": false,
@@ -244,11 +246,12 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": false
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": false,
+    "romanExact": true,
     "failureClass": null,
     "buckets": [
       "type=7",
@@ -303,7 +306,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "I△⁷(no3)(#11)(#9)(maj)",
+    "engRoman": "I△7(no3)(#11#9)(maj)",
     "engLetter": "Cmaj7",
     "engNotes": [
       "C3",
@@ -320,7 +323,7 @@
       11
     ],
     "flags": {
-      "romanExact": false,
+      "romanExact": true,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": false,
@@ -331,11 +334,12 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": false
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": false,
+    "romanExact": true,
     "failureClass": null,
     "buckets": [
       "type=7",

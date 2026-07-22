@@ -89,6 +89,8 @@ function migrateSchema(db) {
   for (const [name, type] of SONGS_PIPELINE_COLUMNS) {
     addColumnIfMissing(db, 'songs', name, type);
   }
+  const { ensureEngineErrorTables } = require('./engineErrorDb');
+  ensureEngineErrorTables(db);
 }
 
 module.exports = { migrateSchema, SONG_DETAILS_DDL };

@@ -20,8 +20,18 @@ node _Decode_oracle/testModification.js --list    --db-dir _Decode_oracle/chord_
 node _Decode_oracle/testModification.js --failing --db-dir _Decode_oracle/chord_db_corpus4
 node _Decode_oracle/testModification.js <bucket> --rerun --db-dir _Decode_oracle/chord_db_corpus4
 
+# --- catalog error loop (34k songs, SQL) ---
+node _Research_testing/hooktheory_catalog/cli/buildSignatureIndex.js
+node _Research_testing/hooktheory_catalog/cli/buildFetchQueue.js
+node _Research_testing/hooktheory_catalog/cli/runFetchDaemon.js --wave-size 20
+node _Debug_testing/watchFetchWaves.mjs
+node _Research_testing/hooktheory_catalog/cli/batchCompareCatalog.js --wave <wave-id> --resync
+node _Debug_testing/queryTopErrors.mjs --limit 20
+node _Debug_testing/diffSignature.cjs --sql type=7 inv=3
+
 # --- analyze failures ---
-node _Debug_testing/diffSignature.cjs                       # engine-failure signatures summary
+node _Debug_testing/diffSignature.cjs                       # engine-failure signatures summary (chord_db)
+node _Debug_testing/diffSignature.cjs --sql                  # same, from engine_errors SQL table
 node _Debug_testing/diffSignature.cjs type=7 inv=3          # filtered rows: truthPcs vs engPcs
 node _Debug_testing/diffSignature.cjs --db chord_db_corpus2 alt=b5 --all
 

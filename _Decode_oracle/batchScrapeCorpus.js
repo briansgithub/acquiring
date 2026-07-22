@@ -9,9 +9,11 @@
 
 const fs = require('fs');
 const path = require('path');
+const { getHarvestRoot } = require('../lib/dataRoot');
 const { resolveEntry, runResolvedSong, slugForUrl, scrapeOk } = require('./run');
+const { resolveScrapeFile } = require('../_Research_testing/hooktheory_catalog/lib/harvestPaths');
 
-const OUT = path.join(__dirname, 'out');
+const OUT = getHarvestRoot();
 
 function parseArgs(argv) {
   const out = {
@@ -36,7 +38,7 @@ function parseArgs(argv) {
 }
 
 function hasScrape(slug) {
-  const f = path.join(OUT, slug, 'scrape.json');
+  const f = resolveScrapeFile(slug);
   if (!fs.existsSync(f)) return false;
   try {
     const s = JSON.parse(fs.readFileSync(f, 'utf8'));

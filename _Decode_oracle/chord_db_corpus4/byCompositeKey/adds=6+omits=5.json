@@ -70,7 +70,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,

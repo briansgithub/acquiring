@@ -19,7 +19,8 @@ const { extractFromSong } = require('./chord_db/extractFromSong');
 const { rebuildDbMaps } = require('./chord_db/rebuildMaps');
 const { updateMeta } = require('./chord_db/updateMeta');
 const { writeDatabase } = require('./chord_db/writeOutput');
-const { OUT } = require('./chord_db/collectSongs');
+const { OUT, loadCorpusSlugs } = require('./chord_db/collectSongs');
+const { resolveScrapeFile } = require('../_Research_testing/hooktheory_catalog/lib/harvestPaths');
 const { resolveEntry, runResolvedSong, slugForUrl } = require('./run');
 
 function parseArgs(argv) {
@@ -51,7 +52,7 @@ function slugsFromCorpus(corpusFile) {
   const slugs = [];
   for (const e of entries) {
     const slug = e.slug || slugForUrl(e.url);
-    if (fs.existsSync(path.join(OUT, slug, 'scrape.json'))) slugs.push(slug);
+    if (fs.existsSync(resolveScrapeFile(slug))) slugs.push(slug);
   }
   return [...new Set(slugs)];
 }
@@ -61,7 +62,7 @@ async function runOracleForMissing(corpusFile, opts = {}) {
   const runOpts = { ...opts, browser: false };
   for (const entry of entries) {
     const slug = slugForUrl(entry.url);
-    const scrapeFile = path.join(OUT, slug, 'scrape.json');
+    const scrapeFile = resolveScrapeFile(slug);
     if (fs.existsSync(scrapeFile)) continue;
     console.log(`[updateChordDb] oracle scrape: ${entry.url}`);
     const resolved = await resolveEntry(entry, runOpts);

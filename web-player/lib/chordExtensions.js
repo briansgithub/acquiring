@@ -24,19 +24,17 @@ export function applyTypeExtensions(toneJSNames, degreeIndices, chordRootNoteNam
       if (useNatural11 && triadQuality === "diminished") {
         const semis = opts.skipNine ? 1 : 9;
         toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], semis));
+      } else if (useNatural11 && triadQuality === "minor") {
+        toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 5));
       } else {
-        const sd = useNatural11
-          ? (triadQuality === "minor" ? "4" : "6")
-          : "4";
-        const relOct = useNatural11
-          ? (triadQuality === "minor" ? 1 : 0)
-          : 1;
+        const sd = useNatural11 ? "6" : "4";
+        const relOct = useNatural11 ? 0 : 1;
         toneJSNames.push(sdToToneJSNoteName(sd, relOct, rk, baseOctave));
       }
       degreeIndices.push(5);
     }
   }
-  if (chordType >= 13 && !hasPc(toneJSNames, (rootPc + 9) % 12)) {
+  if (chordType >= 13 && !opts.skipThirteenth && !hasPc(toneJSNames, (rootPc + 9) % 12)) {
     toneJSNames.push(sdToToneJSNoteName("6", 1, rk, baseOctave));
     degreeIndices.push(6);
   }

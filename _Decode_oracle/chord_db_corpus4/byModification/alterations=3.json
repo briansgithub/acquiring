@@ -48,7 +48,7 @@
       8
     ],
     "pianoValidated": false,
-    "engRoman": "vii⁶sus2(3)",
+    "engRoman": "vii6(3)sus2",
     "engLetter": "F#°sus2/A",
     "engNotes": [
       "G#3",
@@ -61,7 +61,7 @@
       8
     ],
     "flags": {
-      "romanExact": false,
+      "romanExact": true,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": false,
@@ -72,11 +72,12 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": false,
+    "romanExact": true,
     "failureClass": null,
     "buckets": [
       "type=5",
@@ -137,7 +138,7 @@
       8
     ],
     "pianoValidated": false,
-    "engRoman": "vii⁶sus2(3)",
+    "engRoman": "vii6(3)sus2",
     "engLetter": "F#°sus2/A",
     "engNotes": [
       "G#3",
@@ -150,7 +151,7 @@
       8
     ],
     "flags": {
-      "romanExact": false,
+      "romanExact": true,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": false,
@@ -161,11 +162,12 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": false,
+    "romanExact": true,
     "failureClass": null,
     "buckets": [
       "type=5",
@@ -224,7 +226,7 @@
       5
     ],
     "pianoValidated": false,
-    "engRoman": "vii⁶sus2(3)",
+    "engRoman": "vii6(3)sus2",
     "engLetter": "F#°sus2/A",
     "engNotes": [
       "G#3",
@@ -237,7 +239,7 @@
       8
     ],
     "flags": {
-      "romanExact": false,
+      "romanExact": true,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": false,
@@ -248,11 +250,12 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": false,
+    "romanExact": true,
     "failureClass": null,
     "buckets": [
       "type=5",
@@ -311,7 +314,7 @@
       8
     ],
     "pianoValidated": false,
-    "engRoman": "vii⁶sus2(3)",
+    "engRoman": "vii6(3)sus2",
     "engLetter": "C#°sus2/E",
     "engNotes": [
       "D#3",
@@ -324,7 +327,7 @@
       8
     ],
     "flags": {
-      "romanExact": false,
+      "romanExact": true,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": false,
@@ -335,11 +338,12 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": false,
+    "romanExact": true,
     "failureClass": null,
     "buckets": [
       "type=5",
@@ -398,7 +402,7 @@
       8
     ],
     "pianoValidated": false,
-    "engRoman": "vii⁶sus2(3)",
+    "engRoman": "vii6(3)sus2",
     "engLetter": "C#°sus2/E",
     "engNotes": [
       "D#3",
@@ -411,7 +415,7 @@
       8
     ],
     "flags": {
-      "romanExact": false,
+      "romanExact": true,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": false,
@@ -422,11 +426,12 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": false,
+    "romanExact": true,
     "failureClass": null,
     "buckets": [
       "type=5",

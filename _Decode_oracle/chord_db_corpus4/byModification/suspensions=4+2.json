@@ -1,179 +1,5 @@
 [
   {
-    "id": "bill-wurtz__might-quit/Chorus/31",
-    "song": "bill-wurtz__might-quit",
-    "section": "Chorus",
-    "beat": 31,
-    "key": {
-      "tonic": "E",
-      "scale": "major"
-    },
-    "chord": {
-      "root": 5,
-      "beat": 31,
-      "duration": 6,
-      "type": 7,
-      "inversion": 0,
-      "applied": 5,
-      "adds": [
-        6
-      ],
-      "omits": [],
-      "alterations": [],
-      "suspensions": [
-        4,
-        2
-      ],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "V7(add13)sus4sus2/V",
-    "truthLetter": "F#7(add13)sus4sus2",
-    "truthPcs": [
-      1,
-      3,
-      4,
-      6,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "V⁷(add13)(add13)sus4sus2/V",
-    "engLetter": "F#7sus4sus2",
-    "engNotes": [
-      "F#3",
-      "B3",
-      "C#4",
-      "E4",
-      "D#5"
-    ],
-    "engPcs": [
-      1,
-      3,
-      4,
-      6,
-      11
-    ],
-    "flags": {
-      "romanExact": false,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": false,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=yes",
-      "borrowed=none",
-      "suspensions=4+2",
-      "adds=6"
-    ],
-    "compositeKey": "adds=6+suspensions=4+2"
-  },
-  {
-    "id": "bill-wurtz__might-quit/Chorus/43",
-    "song": "bill-wurtz__might-quit",
-    "section": "Chorus",
-    "beat": 43,
-    "key": {
-      "tonic": "E",
-      "scale": "major"
-    },
-    "chord": {
-      "root": 5,
-      "beat": 43,
-      "duration": 6,
-      "type": 7,
-      "inversion": 0,
-      "applied": 5,
-      "adds": [
-        6
-      ],
-      "omits": [],
-      "alterations": [],
-      "suspensions": [
-        4,
-        2
-      ],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "V7(add13)sus4sus2/V",
-    "truthLetter": "F#7(add13)sus4sus2",
-    "truthPcs": [
-      1,
-      3,
-      4,
-      6,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "V⁷(add13)(add13)sus4sus2/V",
-    "engLetter": "F#7sus4sus2",
-    "engNotes": [
-      "F#3",
-      "B3",
-      "C#4",
-      "E4",
-      "D#5"
-    ],
-    "engPcs": [
-      1,
-      3,
-      4,
-      6,
-      11
-    ],
-    "flags": {
-      "romanExact": false,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": false,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=yes",
-      "borrowed=none",
-      "suspensions=4+2",
-      "adds=6"
-    ],
-    "compositeKey": "adds=6+suspensions=4+2"
-  },
-  {
     "id": "georges-bizet__larlesienne-suite-no-2---iv-farandole/Verse/5",
     "song": "georges-bizet__larlesienne-suite-no-2---iv-farandole",
     "section": "Verse",
@@ -213,7 +39,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "I⁷sus4sus2",
+    "engRoman": "I7sus4sus2",
     "engLetter": "Dmaj7sus4sus2",
     "engNotes": [
       "D3",
@@ -239,7 +65,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -294,7 +121,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "I⁷sus4sus2",
+    "engRoman": "I7sus4sus2",
     "engLetter": "Dmaj7sus4sus2",
     "engNotes": [
       "D3",
@@ -320,7 +147,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -375,7 +203,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "I⁷sus4sus2",
+    "engRoman": "I7sus4sus2",
     "engLetter": "Dmaj7sus4sus2",
     "engNotes": [
       "D3",
@@ -401,7 +229,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -456,7 +285,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "I⁷sus4sus2",
+    "engRoman": "I7sus4sus2",
     "engLetter": "Dmaj7sus4sus2",
     "engNotes": [
       "D3",
@@ -482,7 +311,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -560,7 +390,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -571,165 +402,6 @@
       "inversion=0",
       "applied=no",
       "borrowed=major",
-      "suspensions=4+2"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "il-etait-une-fois__jai-encore-reve-delle/Intro/13",
-    "song": "il-etait-une-fois__jai-encore-reve-delle",
-    "section": "Intro",
-    "beat": 13,
-    "key": {
-      "tonic": "Db",
-      "scale": "major"
-    },
-    "chord": {
-      "root": 5,
-      "beat": 13,
-      "duration": 2,
-      "type": 7,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [],
-      "suspensions": [
-        4,
-        2
-      ],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "V7sus4sus2",
-    "truthLetter": "Ab7sus4sus2",
-    "truthPcs": [
-      1,
-      3,
-      6,
-      8
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "V⁷sus4sus2",
-    "engLetter": "Ab7sus4sus2",
-    "engNotes": [
-      "Ab3",
-      "Db4",
-      "Eb4",
-      "Gb4"
-    ],
-    "engPcs": [
-      1,
-      3,
-      6,
-      8
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "suspensions=4+2"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "kate-bush__cloudbusting/Verse/36.5",
-    "song": "kate-bush__cloudbusting",
-    "section": "Verse",
-    "beat": 36.5,
-    "key": {
-      "tonic": "C#",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 7,
-      "beat": 36.5,
-      "duration": 0.5,
-      "type": 5,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [],
-      "suspensions": [
-        4,
-        2
-      ],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": null,
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "VIIsus4sus2",
-    "truthLetter": "Bsus4sus2",
-    "truthPcs": [
-      4,
-      6,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "VIIsus4sus2",
-    "engLetter": "Bsus4sus2",
-    "engNotes": [
-      "B3",
-      "E4",
-      "F#4"
-    ],
-    "engPcs": [
-      4,
-      6,
-      11
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=5",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
       "suspensions=4+2"
     ],
     "compositeKey": null
@@ -775,7 +447,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "vi⁷sus4sus2",
+    "engRoman": "vi7sus4sus2",
     "engLetter": "F#m7sus4sus2",
     "engNotes": [
       "F#3",
@@ -801,7 +473,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -857,7 +530,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "vi⁷sus4sus2",
+    "engRoman": "vi7sus4sus2",
     "engLetter": "F#m7sus4sus2",
     "engNotes": [
       "F#3",
@@ -883,7 +556,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -939,7 +613,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "vi⁷sus4sus2",
+    "engRoman": "vi7sus4sus2",
     "engLetter": "G#m7sus4sus2",
     "engNotes": [
       "G#3",
@@ -965,7 +639,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -1050,7 +725,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -1106,7 +782,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "ii⁷sus4sus2",
+    "engRoman": "ii7sus4sus2",
     "engLetter": "Am7sus4sus2",
     "engNotes": [
       "A3",
@@ -1132,7 +808,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -1210,7 +887,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -1288,7 +966,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -1299,243 +978,6 @@
       "inversion=0",
       "applied=no",
       "borrowed=mixolydian",
-      "suspensions=4+2"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "lykke-li__i-follow-rivers/Verse and Pre-Chorus/6.5",
-    "song": "lykke-li__i-follow-rivers",
-    "section": "Verse and Pre-Chorus",
-    "beat": 6.5,
-    "key": {
-      "tonic": "A",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 4,
-      "beat": 6.5,
-      "duration": 1.5,
-      "type": 5,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [],
-      "suspensions": [
-        4,
-        2
-      ],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "ivsus4sus2",
-    "truthLetter": "dsus4sus2",
-    "truthPcs": [
-      2,
-      7,
-      9
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "ivsus4sus2",
-    "engLetter": "Dmsus4sus2",
-    "engNotes": [
-      "D3",
-      "G3",
-      "A3"
-    ],
-    "engPcs": [
-      2,
-      7,
-      9
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=5",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "suspensions=4+2"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "lykke-li__i-follow-rivers/Verse and Pre-Chorus/14.5",
-    "song": "lykke-li__i-follow-rivers",
-    "section": "Verse and Pre-Chorus",
-    "beat": 14.5,
-    "key": {
-      "tonic": "A",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 1,
-      "beat": 14.5,
-      "duration": 1.5,
-      "type": 5,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [],
-      "suspensions": [
-        4,
-        2
-      ],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "isus4sus2",
-    "truthLetter": "asus4sus2",
-    "truthPcs": [
-      2,
-      4,
-      9
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "isus4sus2",
-    "engLetter": "Amsus4sus2",
-    "engNotes": [
-      "A3",
-      "D4",
-      "E4"
-    ],
-    "engPcs": [
-      2,
-      4,
-      9
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=5",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "suspensions=4+2"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "lykke-li__i-follow-rivers/Verse and Pre-Chorus/22.5",
-    "song": "lykke-li__i-follow-rivers",
-    "section": "Verse and Pre-Chorus",
-    "beat": 22.5,
-    "key": {
-      "tonic": "A",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 4,
-      "beat": 22.5,
-      "duration": 1.5,
-      "type": 5,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [],
-      "suspensions": [
-        4,
-        2
-      ],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "ivsus4sus2",
-    "truthLetter": "dsus4sus2",
-    "truthPcs": [
-      2,
-      7,
-      9
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "ivsus4sus2",
-    "engLetter": "Dmsus4sus2",
-    "engNotes": [
-      "D3",
-      "G3",
-      "A3"
-    ],
-    "engPcs": [
-      2,
-      7,
-      9
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=5",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
       "suspensions=4+2"
     ],
     "compositeKey": null

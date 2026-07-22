@@ -62,7 +62,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -140,7 +141,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -218,7 +220,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -296,7 +299,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -374,7 +378,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -452,7 +457,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -530,7 +536,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -608,7 +615,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -662,7 +670,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "♭V⁶₄(b5)(loc)",
+    "engRoman": "♭V6(b5)4(loc)",
     "engLetter": "G/D",
     "engNotes": [
       "Db4",
@@ -675,7 +683,7 @@
       11
     ],
     "flags": {
-      "romanExact": false,
+      "romanExact": true,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": true,
@@ -686,11 +694,12 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": false,
+    "romanExact": true,
     "failureClass": null,
     "buckets": [
       "type=5",
@@ -741,8 +750,8 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "i⁶⁵(b5)",
-    "engLetter": "C#m7/E",
+    "engRoman": "iø65",
+    "engLetter": "C#°7/E",
     "engNotes": [
       "E3",
       "G3",
@@ -757,7 +766,7 @@
     ],
     "flags": {
       "romanExact": false,
-      "romanCore": false,
+      "romanCore": true,
       "rootPcMatch": false,
       "bassPcMatch": false,
       "rootInPcs": true,
@@ -767,7 +776,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -821,7 +831,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "♭V⁶₄(b5)(loc)",
+    "engRoman": "♭V6(b5)4(loc)",
     "engLetter": "G/D",
     "engNotes": [
       "Db4",
@@ -834,7 +844,7 @@
       11
     ],
     "flags": {
-      "romanExact": false,
+      "romanExact": true,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": true,
@@ -845,11 +855,12 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": false,
+    "romanExact": true,
     "failureClass": null,
     "buckets": [
       "type=5",
@@ -900,8 +911,8 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "i⁶⁵(b5)",
-    "engLetter": "C#m7/E",
+    "engRoman": "iø65",
+    "engLetter": "C#°7/E",
     "engNotes": [
       "E3",
       "G3",
@@ -916,7 +927,7 @@
     ],
     "flags": {
       "romanExact": false,
-      "romanCore": false,
+      "romanCore": true,
       "rootPcMatch": false,
       "bassPcMatch": false,
       "rootInPcs": true,
@@ -926,7 +937,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -980,7 +992,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "♭V⁶₄(b5)(loc)",
+    "engRoman": "♭V6(b5)4(loc)",
     "engLetter": "G/D",
     "engNotes": [
       "Db4",
@@ -993,7 +1005,7 @@
       11
     ],
     "flags": {
-      "romanExact": false,
+      "romanExact": true,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": true,
@@ -1004,11 +1016,12 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": false,
+    "romanExact": true,
     "failureClass": null,
     "buckets": [
       "type=5",
@@ -1059,8 +1072,8 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "i⁶⁵(b5)",
-    "engLetter": "C#m7/E",
+    "engRoman": "iø65",
+    "engLetter": "C#°7/E",
     "engNotes": [
       "E3",
       "G3",
@@ -1075,7 +1088,7 @@
     ],
     "flags": {
       "romanExact": false,
-      "romanCore": false,
+      "romanCore": true,
       "rootPcMatch": false,
       "bassPcMatch": false,
       "rootInPcs": true,
@@ -1085,7 +1098,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -1095,83 +1109,6 @@
       "type=7",
       "inversion=1",
       "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "david-byrne__marching-through-the-wilderness/Chorus/30.5",
-    "song": "david-byrne__marching-through-the-wilderness",
-    "section": "Chorus",
-    "beat": 30.5,
-    "key": {
-      "tonic": "D",
-      "scale": "major"
-    },
-    "chord": {
-      "root": 5,
-      "beat": 30.5,
-      "duration": 2.5,
-      "type": 5,
-      "inversion": 1,
-      "applied": 4,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "IV6(b5)/V",
-    "truthLetter": "D(b5)/F#",
-    "truthPcs": [
-      2,
-      6,
-      8
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "IV⁶(b5)/V",
-    "engLetter": "D/F#",
-    "engNotes": [
-      "F#2",
-      "Ab3",
-      "D3"
-    ],
-    "engPcs": [
-      2,
-      6,
-      8
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": true,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=5",
-      "inversion=1",
-      "applied=yes",
       "borrowed=none",
       "alterations=b5"
     ],
@@ -1219,16 +1156,16 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "V⁷sus2(b5)/III",
+    "engRoman": "V7sus2(b5)/III(maj)",
     "engLetter": "F#7sus2",
     "engNotes": [
-      "G3",
-      "A3",
-      "D4",
-      "F4"
+      "F##3",
+      "G##3",
+      "Db4",
+      "E#4"
     ],
     "engPcs": [
-      2,
+      1,
       5,
       7,
       9
@@ -1240,17 +1177,18 @@
       "bassPcMatch": false,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": false
     },
-    "notesOk": false,
+    "notesOk": true,
     "orderOk": true,
     "romanExact": false,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=7",
       "inversion=0",
@@ -1303,16 +1241,16 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "V⁷sus2(b5)/III",
+    "engRoman": "V7sus2(b5)/III(maj)",
     "engLetter": "F#7sus2",
     "engNotes": [
-      "G3",
-      "A3",
-      "D4",
-      "F4"
+      "F##3",
+      "G##3",
+      "Db4",
+      "E#4"
     ],
     "engPcs": [
-      2,
+      1,
       5,
       7,
       9
@@ -1324,17 +1262,18 @@
       "bassPcMatch": false,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": false
     },
-    "notesOk": false,
+    "notesOk": true,
     "orderOk": true,
     "romanExact": false,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=7",
       "inversion=0",
@@ -1344,167 +1283,6 @@
       "alterations=b5"
     ],
     "compositeKey": "alterations=b5+suspensions=2"
-  },
-  {
-    "id": "edvard-grieg__solveigs-song/Chorus/8",
-    "song": "edvard-grieg__solveigs-song",
-    "section": "Chorus",
-    "beat": 8,
-    "key": {
-      "tonic": "A",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 7,
-      "beat": 8,
-      "duration": 1,
-      "type": 7,
-      "inversion": 2,
-      "applied": 2,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "iiø4(b5)3/VII(maj)",
-    "truthLetter": "am7(b5)/Eb",
-    "truthPcs": [
-      1,
-      4,
-      7,
-      10
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "ii⁴³(b5)/VII",
-    "engLetter": "Am7/E",
-    "engNotes": [
-      "Eb3",
-      "Gb4",
-      "A4",
-      "C4"
-    ],
-    "engPcs": [
-      0,
-      3,
-      6,
-      9
-    ],
-    "flags": {
-      "romanExact": false,
-      "romanCore": false,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": false,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": false,
-    "orderOk": true,
-    "romanExact": false,
-    "failureClass": "engine",
-    "buckets": [
-      "type=7",
-      "inversion=2",
-      "applied=yes",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "electric-light-orchestra__latitude-88-north/Verse/45",
-    "song": "electric-light-orchestra__latitude-88-north",
-    "section": "Verse",
-    "beat": 45,
-    "key": {
-      "tonic": "G",
-      "scale": "major"
-    },
-    "chord": {
-      "root": 3,
-      "beat": 45,
-      "duration": 2,
-      "type": 7,
-      "inversion": 2,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": null,
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "iiiø4(b5)3",
-    "truthLetter": "bm7(b5)/F#",
-    "truthPcs": [
-      2,
-      5,
-      8,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "iii⁴³(b5)",
-    "engLetter": "Bm7/F#",
-    "engNotes": [
-      "F4",
-      "Ab4",
-      "B4",
-      "D5"
-    ],
-    "engPcs": [
-      2,
-      5,
-      8,
-      11
-    ],
-    "flags": {
-      "romanExact": false,
-      "romanCore": false,
-      "rootPcMatch": true,
-      "bassPcMatch": true,
-      "rootInPcs": true,
-      "bassInNotes": false,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": false,
-    "orderOk": true,
-    "romanExact": false,
-    "failureClass": "engine",
-    "buckets": [
-      "type=7",
-      "inversion=2",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
   },
   {
     "id": "george-harrison__this-guitar-(cant-keep-from-crying)/Verse/8.5",
@@ -1545,8 +1323,8 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "♯vi⁷(b5)(lyd)",
-    "engLetter": "Em7",
+    "engRoman": "♯viø7(lyd)",
+    "engLetter": "E°7",
     "engNotes": [
       "E3",
       "G3",
@@ -1561,7 +1339,7 @@
     ],
     "flags": {
       "romanExact": false,
-      "romanCore": false,
+      "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": false,
       "rootInPcs": true,
@@ -1571,7 +1349,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -1582,178 +1361,6 @@
       "inversion=0",
       "applied=no",
       "borrowed=lydian",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "grzegorz-turnau__w-prowincjonalnym-malym-miescie/Verse/41",
-    "song": "grzegorz-turnau__w-prowincjonalnym-malym-miescie",
-    "section": "Verse",
-    "beat": 41,
-    "key": {
-      "tonic": "Bb",
-      "scale": "major"
-    },
-    "chord": {
-      "root": 4,
-      "beat": 41,
-      "duration": 2,
-      "type": 5,
-      "inversion": 1,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "minor",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "iv°6(b5)(min)",
-    "truthLetter": "eb°(b5)/Gb",
-    "truthPcs": [
-      3,
-      6,
-      9
-    ],
-    "pianoNotes": [
-      "B2",
-      "C3",
-      "G3"
-    ],
-    "pianoPcs": [
-      0,
-      7,
-      11
-    ],
-    "pianoValidated": false,
-    "engRoman": "iv⁶(b5)(min)",
-    "engLetter": "Ebm/Gb",
-    "engNotes": [
-      "Gb3",
-      "Bbb3",
-      "Bbb3",
-      "Eb4"
-    ],
-    "engPcs": [
-      3,
-      6,
-      9
-    ],
-    "flags": {
-      "romanExact": false,
-      "romanCore": false,
-      "rootPcMatch": true,
-      "bassPcMatch": true,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": false,
-    "failureClass": null,
-    "buckets": [
-      "type=5",
-      "inversion=1",
-      "applied=no",
-      "borrowed=minor",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "grzegorz-turnau__w-prowincjonalnym-malym-miescie/Verse/43",
-    "song": "grzegorz-turnau__w-prowincjonalnym-malym-miescie",
-    "section": "Verse",
-    "beat": 43,
-    "key": {
-      "tonic": "Bb",
-      "scale": "major"
-    },
-    "chord": {
-      "root": 5,
-      "beat": 43,
-      "duration": 2,
-      "type": 5,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "minor",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "v°(b5)(min)",
-    "truthLetter": "f°(b5)",
-    "truthPcs": [
-      5,
-      8,
-      11
-    ],
-    "pianoNotes": [
-      "D#3",
-      "A3",
-      "C4"
-    ],
-    "pianoPcs": [
-      0,
-      3,
-      9
-    ],
-    "pianoValidated": false,
-    "engRoman": "v(b5)(min)",
-    "engLetter": "Fm",
-    "engNotes": [
-      "F3",
-      "Ab3",
-      "Cb4",
-      "Cb4"
-    ],
-    "engPcs": [
-      5,
-      8,
-      11
-    ],
-    "flags": {
-      "romanExact": false,
-      "romanCore": false,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": false,
-    "failureClass": null,
-    "buckets": [
-      "type=5",
-      "inversion=0",
-      "applied=no",
-      "borrowed=minor",
       "alterations=b5"
     ],
     "compositeKey": null
@@ -1798,7 +1405,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "I⁹(b5)(b9)",
+    "engRoman": "I9(b5b9)",
     "engLetter": "C9",
     "engNotes": [
       "C3",
@@ -1826,7 +1433,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -1888,8 +1496,8 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "ii△⁴²(b5)(bor)",
-    "engLetter": "B°7/A",
+    "engRoman": "iiø42(bor)",
+    "engLetter": "B°7/A#",
     "engNotes": [
       "Ab4",
       "F4",
@@ -1907,7 +1515,7 @@
       "romanExact": false,
       "romanCore": false,
       "rootPcMatch": true,
-      "bassPcMatch": false,
+      "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": false,
       "pcsExact": true,
@@ -1915,7 +1523,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": false,
     "orderOk": true,
@@ -1977,8 +1586,8 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "ii△⁴²(b5)(bor)",
-    "engLetter": "B°7/A",
+    "engRoman": "iiø42(bor)",
+    "engLetter": "B°7/A#",
     "engNotes": [
       "Ab4",
       "F4",
@@ -1996,7 +1605,7 @@
       "romanExact": false,
       "romanCore": false,
       "rootPcMatch": true,
-      "bassPcMatch": false,
+      "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": false,
       "pcsExact": true,
@@ -2004,7 +1613,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": false,
     "orderOk": true,
@@ -2066,8 +1676,8 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "ii△⁴²(b5)(bor)",
-    "engLetter": "B°7/A",
+    "engRoman": "iiø42(bor)",
+    "engLetter": "B°7/A#",
     "engNotes": [
       "Ab4",
       "F4",
@@ -2085,7 +1695,7 @@
       "romanExact": false,
       "romanCore": false,
       "rootPcMatch": true,
-      "bassPcMatch": false,
+      "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": false,
       "pcsExact": true,
@@ -2093,7 +1703,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": false,
     "orderOk": true,
@@ -2155,8 +1766,8 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "ii△⁴²(b5)(bor)",
-    "engLetter": "B°7/A",
+    "engRoman": "iiø42(bor)",
+    "engLetter": "B°7/A#",
     "engNotes": [
       "Ab4",
       "F4",
@@ -2174,7 +1785,7 @@
       "romanExact": false,
       "romanCore": false,
       "rootPcMatch": true,
-      "bassPcMatch": false,
+      "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": false,
       "pcsExact": true,
@@ -2182,7 +1793,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": false,
     "orderOk": true,
@@ -2263,7 +1875,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -2279,410 +1892,6 @@
       "omits=3"
     ],
     "compositeKey": "adds=9+alterations=b5+omits=3"
-  },
-  {
-    "id": "john-francis-wade__o-come-all-ye-faithful-arr-willcocks/Verse/24",
-    "song": "john-francis-wade__o-come-all-ye-faithful-arr-willcocks",
-    "section": "Verse",
-    "beat": 24,
-    "key": {
-      "tonic": "G",
-      "scale": "major"
-    },
-    "chord": {
-      "root": 1,
-      "beat": 24,
-      "duration": 0.5,
-      "type": 5,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "lydian",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "I(lyd)(b5)",
-    "truthLetter": "G(b5)",
-    "truthPcs": [
-      1,
-      7,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "I(b5)(lyd)",
-    "engLetter": "G",
-    "engNotes": [
-      "G3",
-      "B3",
-      "Db4"
-    ],
-    "engPcs": [
-      1,
-      7,
-      11
-    ],
-    "flags": {
-      "romanExact": false,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": false,
-    "failureClass": null,
-    "buckets": [
-      "type=5",
-      "inversion=0",
-      "applied=no",
-      "borrowed=lydian",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "john-francis-wade__o-come-all-ye-faithful-arr-willcocks/Verse/35.5",
-    "song": "john-francis-wade__o-come-all-ye-faithful-arr-willcocks",
-    "section": "Verse",
-    "beat": 35.5,
-    "key": {
-      "tonic": "G",
-      "scale": "major"
-    },
-    "chord": {
-      "root": 4,
-      "beat": 35.5,
-      "duration": 0.5,
-      "type": 5,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "IV(b5)",
-    "truthLetter": "C(b5)",
-    "truthPcs": [
-      0,
-      4,
-      6
-    ],
-    "pianoNotes": [
-      "A3",
-      "B3",
-      "C4"
-    ],
-    "pianoPcs": [
-      0,
-      9,
-      11
-    ],
-    "pianoValidated": false,
-    "engRoman": "IV(b5)",
-    "engLetter": "C",
-    "engNotes": [
-      "C3",
-      "E3",
-      "Gb3"
-    ],
-    "engPcs": [
-      0,
-      4,
-      6
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=5",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "john-francis-wade__o-come-all-ye-faithful-arr-willcocks/Chorus/33",
-    "song": "john-francis-wade__o-come-all-ye-faithful-arr-willcocks",
-    "section": "Chorus",
-    "beat": 33,
-    "key": {
-      "tonic": "G",
-      "scale": "major"
-    },
-    "chord": {
-      "root": 2,
-      "beat": 33,
-      "duration": 2,
-      "type": 7,
-      "inversion": 0,
-      "applied": 2,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": null,
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "iiø7(b5)/ii",
-    "truthLetter": "bm7(b5)",
-    "truthPcs": [
-      2,
-      5,
-      8,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "ii⁷(b5)/ii",
-    "engLetter": "Bm7",
-    "engNotes": [
-      "B3",
-      "D4",
-      "F4",
-      "Ab4"
-    ],
-    "engPcs": [
-      2,
-      5,
-      8,
-      11
-    ],
-    "flags": {
-      "romanExact": false,
-      "romanCore": false,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": false,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=yes",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "john-francis-wade__o-come-all-ye-faithful-arr-willcocks/Chorus/64",
-    "song": "john-francis-wade__o-come-all-ye-faithful-arr-willcocks",
-    "section": "Chorus",
-    "beat": 64,
-    "key": {
-      "tonic": "G",
-      "scale": "major"
-    },
-    "chord": {
-      "root": 2,
-      "beat": 64,
-      "duration": 1,
-      "type": 5,
-      "inversion": 2,
-      "applied": 2,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": null,
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "ii°6(b5)4/ii",
-    "truthLetter": "b°(b5)/F",
-    "truthPcs": [
-      2,
-      5,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "ii⁶₄(b5)/ii",
-    "engLetter": "Bm/F#",
-    "engNotes": [
-      "F3",
-      "F4",
-      "B4",
-      "D4"
-    ],
-    "engPcs": [
-      2,
-      5,
-      11
-    ],
-    "flags": {
-      "romanExact": false,
-      "romanCore": false,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": false,
-    "failureClass": null,
-    "buckets": [
-      "type=5",
-      "inversion=2",
-      "applied=yes",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "kaoru-akimoto__dress-down/Verse/32",
-    "song": "kaoru-akimoto__dress-down",
-    "section": "Verse",
-    "beat": 32,
-    "key": {
-      "tonic": "G",
-      "scale": "dorian"
-    },
-    "chord": {
-      "root": 4,
-      "beat": 32,
-      "duration": 0.75,
-      "type": 7,
-      "inversion": 1,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "minor",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "ivø6(b5)5(min)",
-    "truthLetter": "ebm6",
-    "truthPcs": [
-      0,
-      3,
-      6,
-      9
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "iv⁶⁵(b5)(min)",
-    "engLetter": "Cm7/Eb",
-    "engNotes": [
-      "Eb3",
-      "Gb3",
-      "A3",
-      "C4"
-    ],
-    "engPcs": [
-      0,
-      3,
-      6,
-      9
-    ],
-    "flags": {
-      "romanExact": false,
-      "romanCore": false,
-      "rootPcMatch": false,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": false,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=1",
-      "applied=no",
-      "borrowed=minor",
-      "alterations=b5"
-    ],
-    "compositeKey": null
   },
   {
     "id": "keith-and-matthew-strachan__500000-question-(wwtbam)/Instrumental/33",
@@ -2723,8 +1932,8 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "i(b5)",
-    "engLetter": "D#m",
+    "engRoman": "i°(b5)",
+    "engLetter": "D#°",
     "engNotes": [
       "D#3",
       "F#3",
@@ -2737,8 +1946,8 @@
       9
     ],
     "flags": {
-      "romanExact": false,
-      "romanCore": false,
+      "romanExact": true,
+      "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": false,
       "rootInPcs": true,
@@ -2748,11 +1957,12 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": false,
+    "romanExact": true,
     "failureClass": null,
     "buckets": [
       "type=5",
@@ -2802,8 +2012,8 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "i(b5)",
-    "engLetter": "Cm",
+    "engRoman": "i°(b5)",
+    "engLetter": "C°",
     "engNotes": [
       "C3",
       "Eb3",
@@ -2816,8 +2026,8 @@
       6
     ],
     "flags": {
-      "romanExact": false,
-      "romanCore": false,
+      "romanExact": true,
+      "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": false,
       "rootInPcs": true,
@@ -2827,1962 +2037,18 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": false,
+    "romanExact": true,
     "failureClass": null,
     "buckets": [
       "type=5",
       "inversion=0",
       "applied=no",
       "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "lorien-testard__lumiere-a-laube/Instrumental/5",
-    "song": "lorien-testard__lumiere-a-laube",
-    "section": "Instrumental",
-    "beat": 5,
-    "key": {
-      "tonic": "B",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 6,
-      "beat": 5,
-      "duration": 4,
-      "type": 7,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "VI△7(b5)",
-    "truthLetter": "Gmaj7(b5)",
-    "truthPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "VI△⁷(b5)",
-    "engLetter": "Gmaj7",
-    "engNotes": [
-      "G3",
-      "B3",
-      "Db4",
-      "F#4"
-    ],
-    "engPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "lorien-testard__lumiere-a-laube/Instrumental/21",
-    "song": "lorien-testard__lumiere-a-laube",
-    "section": "Instrumental",
-    "beat": 21,
-    "key": {
-      "tonic": "B",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 6,
-      "beat": 21,
-      "duration": 4,
-      "type": 7,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "VI△7(b5)",
-    "truthLetter": "Gmaj7(b5)",
-    "truthPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "VI△⁷(b5)",
-    "engLetter": "Gmaj7",
-    "engNotes": [
-      "G3",
-      "B3",
-      "Db4",
-      "F#4"
-    ],
-    "engPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "lorien-testard__lumiere-a-laube/Instrumental/37",
-    "song": "lorien-testard__lumiere-a-laube",
-    "section": "Instrumental",
-    "beat": 37,
-    "key": {
-      "tonic": "B",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 6,
-      "beat": 37,
-      "duration": 4,
-      "type": 7,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "VI△7(b5)",
-    "truthLetter": "Gmaj7(b5)",
-    "truthPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "VI△⁷(b5)",
-    "engLetter": "Gmaj7",
-    "engNotes": [
-      "G3",
-      "B3",
-      "Db4",
-      "F#4"
-    ],
-    "engPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "lorien-testard__lumiere-a-laube/Instrumental/53",
-    "song": "lorien-testard__lumiere-a-laube",
-    "section": "Instrumental",
-    "beat": 53,
-    "key": {
-      "tonic": "B",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 6,
-      "beat": 53,
-      "duration": 4,
-      "type": 7,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "VI△7(b5)",
-    "truthLetter": "Gmaj7(b5)",
-    "truthPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "VI△⁷(b5)",
-    "engLetter": "Gmaj7",
-    "engNotes": [
-      "G3",
-      "B3",
-      "Db4",
-      "F#4"
-    ],
-    "engPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "lorien-testard__lumiere-a-laube/Instrumental/69",
-    "song": "lorien-testard__lumiere-a-laube",
-    "section": "Instrumental",
-    "beat": 69,
-    "key": {
-      "tonic": "B",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 6,
-      "beat": 69,
-      "duration": 4,
-      "type": 7,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "VI△7(b5)",
-    "truthLetter": "Gmaj7(b5)",
-    "truthPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "VI△⁷(b5)",
-    "engLetter": "Gmaj7",
-    "engNotes": [
-      "G3",
-      "B3",
-      "Db4",
-      "F#4"
-    ],
-    "engPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "lorien-testard__lumiere-a-laube/Instrumental/85",
-    "song": "lorien-testard__lumiere-a-laube",
-    "section": "Instrumental",
-    "beat": 85,
-    "key": {
-      "tonic": "B",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 6,
-      "beat": 85,
-      "duration": 4,
-      "type": 7,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "VI△7(b5)",
-    "truthLetter": "Gmaj7(b5)",
-    "truthPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "VI△⁷(b5)",
-    "engLetter": "Gmaj7",
-    "engNotes": [
-      "G3",
-      "B3",
-      "Db4",
-      "F#4"
-    ],
-    "engPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "lorien-testard__lumiere-a-laube/Instrumental/101",
-    "song": "lorien-testard__lumiere-a-laube",
-    "section": "Instrumental",
-    "beat": 101,
-    "key": {
-      "tonic": "B",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 6,
-      "beat": 101,
-      "duration": 4,
-      "type": 7,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "VI△7(b5)",
-    "truthLetter": "Gmaj7(b5)",
-    "truthPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "VI△⁷(b5)",
-    "engLetter": "Gmaj7",
-    "engNotes": [
-      "G3",
-      "B3",
-      "Db4",
-      "F#4"
-    ],
-    "engPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "lorien-testard__lumiere-a-laube/Instrumental/117",
-    "song": "lorien-testard__lumiere-a-laube",
-    "section": "Instrumental",
-    "beat": 117,
-    "key": {
-      "tonic": "B",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 6,
-      "beat": 117,
-      "duration": 4,
-      "type": 7,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "VI△7(b5)",
-    "truthLetter": "Gmaj7(b5)",
-    "truthPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "VI△⁷(b5)",
-    "engLetter": "Gmaj7",
-    "engNotes": [
-      "G3",
-      "B3",
-      "Db4",
-      "F#4"
-    ],
-    "engPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "lorien-testard__lumiere-a-laube/Instrumental/133",
-    "song": "lorien-testard__lumiere-a-laube",
-    "section": "Instrumental",
-    "beat": 133,
-    "key": {
-      "tonic": "B",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 6,
-      "beat": 133,
-      "duration": 4,
-      "type": 7,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "VI△7(b5)",
-    "truthLetter": "Gmaj7(b5)",
-    "truthPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "VI△⁷(b5)",
-    "engLetter": "Gmaj7",
-    "engNotes": [
-      "G3",
-      "B3",
-      "Db4",
-      "F#4"
-    ],
-    "engPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "lorien-testard__lumiere-a-laube/Instrumental/149",
-    "song": "lorien-testard__lumiere-a-laube",
-    "section": "Instrumental",
-    "beat": 149,
-    "key": {
-      "tonic": "B",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 6,
-      "beat": 149,
-      "duration": 4,
-      "type": 7,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "VI△7(b5)",
-    "truthLetter": "Gmaj7(b5)",
-    "truthPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "VI△⁷(b5)",
-    "engLetter": "Gmaj7",
-    "engNotes": [
-      "G3",
-      "B3",
-      "Db4",
-      "F#4"
-    ],
-    "engPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "lorien-testard__lumiere-a-laube/Instrumental/165",
-    "song": "lorien-testard__lumiere-a-laube",
-    "section": "Instrumental",
-    "beat": 165,
-    "key": {
-      "tonic": "B",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 6,
-      "beat": 165,
-      "duration": 4,
-      "type": 7,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "VI△7(b5)",
-    "truthLetter": "Gmaj7(b5)",
-    "truthPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "VI△⁷(b5)",
-    "engLetter": "Gmaj7",
-    "engNotes": [
-      "G3",
-      "B3",
-      "Db4",
-      "F#4"
-    ],
-    "engPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "lorien-testard__lumiere-a-laube/Instrumental/181",
-    "song": "lorien-testard__lumiere-a-laube",
-    "section": "Instrumental",
-    "beat": 181,
-    "key": {
-      "tonic": "B",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 6,
-      "beat": 181,
-      "duration": 4,
-      "type": 7,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "VI△7(b5)",
-    "truthLetter": "Gmaj7(b5)",
-    "truthPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "VI△⁷(b5)",
-    "engLetter": "Gmaj7",
-    "engNotes": [
-      "G3",
-      "B3",
-      "Db4",
-      "F#4"
-    ],
-    "engPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "lorien-testard__lumiere-a-laube/Instrumental/197",
-    "song": "lorien-testard__lumiere-a-laube",
-    "section": "Instrumental",
-    "beat": 197,
-    "key": {
-      "tonic": "B",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 6,
-      "beat": 197,
-      "duration": 4,
-      "type": 7,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "VI△7(b5)",
-    "truthLetter": "Gmaj7(b5)",
-    "truthPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "VI△⁷(b5)",
-    "engLetter": "Gmaj7",
-    "engNotes": [
-      "G3",
-      "B3",
-      "Db4",
-      "F#4"
-    ],
-    "engPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "lorien-testard__lumiere-a-laube/Instrumental/213",
-    "song": "lorien-testard__lumiere-a-laube",
-    "section": "Instrumental",
-    "beat": 213,
-    "key": {
-      "tonic": "B",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 6,
-      "beat": 213,
-      "duration": 4,
-      "type": 7,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "VI△7(b5)",
-    "truthLetter": "Gmaj7(b5)",
-    "truthPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "VI△⁷(b5)",
-    "engLetter": "Gmaj7",
-    "engNotes": [
-      "G3",
-      "B3",
-      "Db4",
-      "F#4"
-    ],
-    "engPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "lorien-testard__lumiere-a-laube/Instrumental/229",
-    "song": "lorien-testard__lumiere-a-laube",
-    "section": "Instrumental",
-    "beat": 229,
-    "key": {
-      "tonic": "B",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 6,
-      "beat": 229,
-      "duration": 4,
-      "type": 7,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "VI△7(b5)",
-    "truthLetter": "Gmaj7(b5)",
-    "truthPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "VI△⁷(b5)",
-    "engLetter": "Gmaj7",
-    "engNotes": [
-      "G3",
-      "B3",
-      "Db4",
-      "F#4"
-    ],
-    "engPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "lorien-testard__lumiere-a-laube/Instrumental/245",
-    "song": "lorien-testard__lumiere-a-laube",
-    "section": "Instrumental",
-    "beat": 245,
-    "key": {
-      "tonic": "B",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 6,
-      "beat": 245,
-      "duration": 4,
-      "type": 7,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "VI△7(b5)",
-    "truthLetter": "Gmaj7(b5)",
-    "truthPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "VI△⁷(b5)",
-    "engLetter": "Gmaj7",
-    "engNotes": [
-      "G3",
-      "B3",
-      "Db4",
-      "F#4"
-    ],
-    "engPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "lorien-testard__lumiere-a-laube/Instrumental/261",
-    "song": "lorien-testard__lumiere-a-laube",
-    "section": "Instrumental",
-    "beat": 261,
-    "key": {
-      "tonic": "B",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 6,
-      "beat": 261,
-      "duration": 4,
-      "type": 7,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "VI△7(b5)",
-    "truthLetter": "Gmaj7(b5)",
-    "truthPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "VI△⁷(b5)",
-    "engLetter": "Gmaj7",
-    "engNotes": [
-      "G3",
-      "B3",
-      "Db4",
-      "F#4"
-    ],
-    "engPcs": [
-      1,
-      6,
-      7,
-      11
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "mazie__u-and-i-will-always-be-okay/Chorus/9",
-    "song": "mazie__u-and-i-will-always-be-okay",
-    "section": "Chorus",
-    "beat": 9,
-    "key": {
-      "tonic": "Db",
-      "scale": "major"
-    },
-    "chord": {
-      "root": 2,
-      "beat": 9,
-      "duration": 2,
-      "type": 7,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": null,
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "iiø7(b5)",
-    "truthLetter": "ebm7(b5)",
-    "truthPcs": [
-      0,
-      3,
-      6,
-      9
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "ii⁷(b5)",
-    "engLetter": "Ebm7",
-    "engNotes": [
-      "Eb3",
-      "Bbb3",
-      "C4",
-      "Gb4"
-    ],
-    "engPcs": [
-      0,
-      3,
-      6,
-      9
-    ],
-    "flags": {
-      "romanExact": false,
-      "romanCore": false,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": false,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "mazie__u-and-i-will-always-be-okay/Chorus/25",
-    "song": "mazie__u-and-i-will-always-be-okay",
-    "section": "Chorus",
-    "beat": 25,
-    "key": {
-      "tonic": "Db",
-      "scale": "major"
-    },
-    "chord": {
-      "root": 2,
-      "beat": 25,
-      "duration": 4,
-      "type": 7,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": null,
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "iiø7(b5)",
-    "truthLetter": "ebm7(b5)",
-    "truthPcs": [
-      0,
-      3,
-      6,
-      9
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "ii⁷(b5)",
-    "engLetter": "Ebm7",
-    "engNotes": [
-      "Eb3",
-      "Bbb3",
-      "C4",
-      "Gb4"
-    ],
-    "engPcs": [
-      0,
-      3,
-      6,
-      9
-    ],
-    "flags": {
-      "romanExact": false,
-      "romanCore": false,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": false,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "mel-han__q-star/Verse/8",
-    "song": "mel-han__q-star",
-    "section": "Verse",
-    "beat": 8,
-    "key": {
-      "tonic": "E",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 1,
-      "beat": 8,
-      "duration": 0.5,
-      "type": 5,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "i°(b5)",
-    "truthLetter": "e°(b5)",
-    "truthPcs": [
-      4,
-      7,
-      10
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "i(b5)",
-    "engLetter": "Em",
-    "engNotes": [
-      "E3",
-      "G3",
-      "Bb3",
-      "Bb3"
-    ],
-    "engPcs": [
-      4,
-      7,
-      10
-    ],
-    "flags": {
-      "romanExact": false,
-      "romanCore": false,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": false,
-    "failureClass": null,
-    "buckets": [
-      "type=5",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "mel-han__q-star/Verse/24",
-    "song": "mel-han__q-star",
-    "section": "Verse",
-    "beat": 24,
-    "key": {
-      "tonic": "E",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 1,
-      "beat": 24,
-      "duration": 0.5,
-      "type": 5,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "i°(b5)",
-    "truthLetter": "e°(b5)",
-    "truthPcs": [
-      4,
-      7,
-      10
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "i(b5)",
-    "engLetter": "Em",
-    "engNotes": [
-      "E3",
-      "G3",
-      "Bb3",
-      "Bb3"
-    ],
-    "engPcs": [
-      4,
-      7,
-      10
-    ],
-    "flags": {
-      "romanExact": false,
-      "romanCore": false,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": false,
-    "failureClass": null,
-    "buckets": [
-      "type=5",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "stevie-wonder__superstition/Chorus/7",
-    "song": "stevie-wonder__superstition",
-    "section": "Chorus",
-    "beat": 7,
-    "key": {
-      "tonic": "Eb",
-      "scale": "dorian"
-    },
-    "chord": {
-      "root": 5,
-      "beat": 7,
-      "duration": 2,
-      "type": 9,
-      "inversion": 0,
-      "applied": 5,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [
-        "tri"
-      ],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "major",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "bII9(b5)/V(∆-sub)(maj)",
-    "truthLetter": "Cb9(b5)",
-    "truthPcs": [
-      1,
-      3,
-      5,
-      9,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "V⁹(b5)/v",
-    "engLetter": "F9",
-    "engNotes": [
-      "F3",
-      "A3",
-      "B3",
-      "Eb4",
-      "G4"
-    ],
-    "engPcs": [
-      3,
-      5,
-      7,
-      9,
-      11
-    ],
-    "flags": {
-      "romanExact": false,
-      "romanCore": false,
-      "rootPcMatch": false,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": false,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": false,
-    "orderOk": true,
-    "romanExact": false,
-    "failureClass": "engine",
-    "buckets": [
-      "type=9",
-      "inversion=0",
-      "applied=yes",
-      "borrowed=major",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "stevie-wonder__superstition/Chorus/11",
-    "song": "stevie-wonder__superstition",
-    "section": "Chorus",
-    "beat": 11,
-    "key": {
-      "tonic": "Eb",
-      "scale": "dorian"
-    },
-    "chord": {
-      "root": 4,
-      "beat": 11,
-      "duration": 2,
-      "type": 9,
-      "inversion": 0,
-      "applied": 5,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "substitutions": [
-        "tri"
-      ],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "bII9(b5)/IV(∆-sub)",
-    "truthLetter": "Bbb9(b5)",
-    "truthPcs": [
-      1,
-      3,
-      7,
-      9,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "V⁹(b5)/IV",
-    "engLetter": "Eb9",
-    "engNotes": [
-      "Eb3",
-      "G3",
-      "A3",
-      "Db4",
-      "F4"
-    ],
-    "engPcs": [
-      1,
-      3,
-      5,
-      7,
-      9
-    ],
-    "flags": {
-      "romanExact": false,
-      "romanCore": false,
-      "rootPcMatch": false,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": false,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": false,
-    "orderOk": true,
-    "romanExact": false,
-    "failureClass": "engine",
-    "buckets": [
-      "type=9",
-      "inversion=0",
-      "applied=yes",
-      "borrowed=none",
-      "alterations=b5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "the-beatles__strawberry-fields-forever/Verse/8",
-    "song": "the-beatles__strawberry-fields-forever",
-    "section": "Verse",
-    "beat": 8,
-    "key": {
-      "tonic": "Bb",
-      "scale": "major"
-    },
-    "chord": {
-      "root": 4,
-      "beat": 8,
-      "duration": 1,
-      "type": 5,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b5"
-      ],
-      "suspensions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "minor",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "iv°(b5)(min)",
-    "truthLetter": "eb°(b5)",
-    "truthPcs": [
-      3,
-      6,
-      9
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "iv(b5)(min)",
-    "engLetter": "Ebm",
-    "engNotes": [
-      "Eb3",
-      "Gb3",
-      "Bbb3",
-      "Bbb3"
-    ],
-    "engPcs": [
-      3,
-      6,
-      9
-    ],
-    "flags": {
-      "romanExact": false,
-      "romanCore": false,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": false,
-    "failureClass": null,
-    "buckets": [
-      "type=5",
-      "inversion=0",
-      "applied=no",
-      "borrowed=minor",
       "alterations=b5"
     ],
     "compositeKey": null

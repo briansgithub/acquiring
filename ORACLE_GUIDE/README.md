@@ -43,6 +43,7 @@ flowchart LR
 | Decode scraper | `_Decode_oracle/scrapeSong.js` | Rich scrape (SVG truth + JSON + screenshots) |
 | Debug scripts | `_Debug_testing/` | e.g. `diffSignature.cjs` (truth-vs-engine PC diff) |
 | Research scripts | `_Research_testing/` | URL discovery, corpus backfill/status |
+| Catalog error loop | `_Research_testing/hooktheory_catalog/cli/` | 34k-song signature index, fetch queue, `engine_errors` SQL table |
 | Fix history | `_Decode_oracle/DECODE_FIX_LOG.md` | Append-only numbered fix log (read in order) |
 | Deferred failures | `_Decode_oracle/REMAINING_FAILURES.md` | Known non-engine / deferred issues |
 
@@ -56,6 +57,32 @@ flowchart LR
 | 4 | `corpus4.json` | 500 | 14603 | **98.5%** | `chord_db_corpus4/` |
 
 **Bar:** ≥99% `notesOk` per corpus. **Latest work:** Fix 036 (corpus4 hardest-property fixes) — see [`DECODE_FIX_LOG.md`](../_Decode_oracle/DECODE_FIX_LOG.md).
+
+## Catalog-scale error loop (34k songs)
+
+The Hooktheory catalog (`sacred_ring_data/catalog/hooktheory_catalog.db`) holds ~39k songs; most are **light-harvested** (API JSON only). Oracle ground truth still requires **full Fetch** (SVG `rendered[]`). This workflow distills failures locally and fetches the minimum song set to cover high-frequency chord signatures.
+
+```mermaid
+flowchart LR
+  Cache["playback cache"] --> SigIdx["buildSignatureIndex.js"]
+  SigIdx --> FetchQ["buildFetchQueue.js"]
+  Full["batchFullFetch.js"] --> Compare["batchCompareCatalog.js"]
+  Compare --> SQL["engine_errors table"]
+  SQL --> Report["queryTopErrors.mjs"]
+  Report --> Fix["web-player/lib fix"]
+```
+
+| Step | Command |
+|------|---------|
+| 1. Index chord signatures (local) | `node _Research_testing/hooktheory_catalog/cli/buildSignatureIndex.js` |
+| 2. Seed compare + build fetch queue | `node _Research_testing/hooktheory_catalog/cli/buildFetchQueue.js` |
+| 3. Full Fetch (rate-limited) | `node _Research_testing/hooktheory_catalog/cli/runFetchDaemon.js --wave-size 20` |
+| 3b. Watch for fix-ready waves (parallel terminal) | `node _Debug_testing/watchFetchWaves.mjs` |
+| 4. Compare → SQL error catalog | `node _Research_testing/hooktheory_catalog/cli/batchCompareCatalog.js --wave <id> --resync` |
+| 5. AI-ready fix brief | `node _Debug_testing/queryTopErrors.mjs --limit 20` |
+| 6. Diff by signature (SQL) | `node _Debug_testing/diffSignature.cjs --sql type=7 inv=3` |
+
+**Parallel fix workflow:** Each fetch wave compares slugs immediately and writes `ready_for_fix` to `sacred_ring_data/catalog/fetch_waves.json`. Run `watchFetchWaves.mjs` in a second terminal — it emits `top_errors_<wave>.md` when a wave completes while fetching continues. Touch `.fetch_pause_for_fix` to pause the fetch daemon during engine edits; delete to resume.
 
 ## Golden rules (full list in 05 + reference)
 
