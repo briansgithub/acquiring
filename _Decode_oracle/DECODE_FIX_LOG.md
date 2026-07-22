@@ -993,6 +993,18 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 **Files:** `music.js`, `engineRun.js`, `policyRegression.mjs`.
 
+---
+
+## Fix 055 — mixolydian borrowed ø65 → m6 (2026-07-22, `feat/fix-055-mix-m6`)
+
+**Problem:** `#iiiø65(mix)` letter `cm6` — HT voices **m6** (dim5 + 6th), not ø7 with perfect 5th.
+
+**Fix:** `mixBorrowedHalfDimM6` policy + `m6Stack` seventh — flatten fifth to +6, add 6th at +9.
+
+**Fixture:** `mixHalfDimM6` in `policyRegression.mjs` (**24/24**).
+
+**Files:** `chordPolicy.js`, `chordSeventh.js`, `policyRegression.mjs`.
+
 **Files:** `web-player/lib/speakRules/{formatReadings,speakLetter,buildParts}.js`, `_Research_testing/pronunciationFixtures.json`
 
 ---
