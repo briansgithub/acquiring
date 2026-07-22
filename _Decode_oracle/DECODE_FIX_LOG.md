@@ -869,4 +869,27 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Pronunciation review (2026-07-22) — partial; revisit after next corpus pass
+
+**When:** 2026-07-22 (`feat/chord-pronunciation-review`)  
+**Done:** Functional readings no longer inject `;` / `,` before “secondary dominant to” / “borrowed from”; bare letter names get triad quality when `getChordLetterName` returns root only; `substitutions:["tri"]` speaks “tritone substitution”.  
+**Tests:** `romanPronunciationTest.mjs` (77 fixtures), `pronunciationFixVerify.mjs` (5/5), corpus smoke (5650 chords, 0 UNKNOWN), letter cross-check 100%.
+
+**Deferred — schedule second pronunciation review after the next corpus review + engine update:**
+
+| Area | Why deferred |
+|------|----------------|
+| `#iø11(bor)` / custom-array ø | Roman ø vs letter `m11(b5b9)` mismatch; engine PCs still open (Fix 044) |
+| `i13` vs `v13` voicing | Minor `type=13` policy scoped to degree 5 only; `i13` cluster (~23 catalog) needs separate rule |
+| `suspensions=4` harness | Corpus4 97.9% notesOk — `iisus4(no5)` alignment, not pronunciation |
+| Roman-only symbol order | `Vsus47` vs `V⁷sus4` — defer unless `romanExact` becomes a gate |
+| Custom bor letter quality | Interval-derived quality may disagree with HT letter enrich (e.g. VII(bor) → `G` not `G°`) |
+| New substitution tokens | Only `tri` in catalog today; re-audit if JSON gains more `substitutions[]` values |
+
+**Re-run gate before next pronunciation pass:** `buildChordDb` corpus4 → `batchCompareCatalog --resync` → `queryTopErrors` → `romanPronunciationTest.mjs` + `generatePronunciationAudit.mjs`.
+
+**Files:** `web-player/lib/speakRules/{formatReadings,speakLetter,buildParts}.js`, `_Research_testing/pronunciationFixtures.json`
+
+---
+
 Single source of truth for the full workflow: [`ORACLE_GUIDE/README.md`](../ORACLE_GUIDE/README.md) (read `01`–`05` + `reference.md` in order).
