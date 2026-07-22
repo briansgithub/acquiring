@@ -902,6 +902,8 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 **Fixtures:** `iv13minor`, `iio65minor` in `policyRegression.mjs` (15/15).
 
+**048 (same branch):** `vii°(no3no5)` — skip dim+omit5 dim7 injection when omit 3 as well (`viiDimNo35` fixture). Regression **16/16**.
+
 
 **When:** 2026-07-22 (`feat/chord-pronunciation-review`)  
 **Done:** Functional readings no longer inject `;` / `,` before “secondary dominant to” / “borrowed from”; bare letter names get triad quality when `getChordLetterName` returns root only; `substitutions:["tri"]` speaks “tritone substitution”.  

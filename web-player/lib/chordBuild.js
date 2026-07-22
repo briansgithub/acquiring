@@ -213,6 +213,7 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
   } else if (
     chordQuality === "diminished" &&
     modifierChord?.omits?.includes(5) &&
+    !modifierChord?.omits?.includes(3) &&
     !useSusFrame
   ) {
     toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 6));
@@ -283,7 +284,12 @@ export function buildChordFromNoteName(rootNoteName, quality, originalKey, baseO
     const seventhName = sdToToneJSNoteName(seventhDegree, 0, rootKey, baseOctave);
     toneJSNames.push(seventhName);
     degreeIndices.push(3);
-  } else if (triadQuality === "diminished" && modifierChord?.omits?.includes(5) && !useSusFrame) {
+  } else if (
+    triadQuality === "diminished"
+    && modifierChord?.omits?.includes(5)
+    && !modifierChord?.omits?.includes(3)
+    && !useSusFrame
+  ) {
     toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 6));
     degreeIndices.push(3);
   }

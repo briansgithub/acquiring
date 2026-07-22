@@ -68,6 +68,11 @@ const BASELINE = {
     key: { tonic: "E", scale: "minor" },
     pcs: [0, 2, 4, 6, 7, 9, 11],
   },
+  viiDimNo35: {
+    chord: { root: 7, type: 5, omits: [3, 5] },
+    key: { tonic: "A", scale: "major" },
+    pcs: [8],
+  },
 };
 
 function pcs(chord, key) {
