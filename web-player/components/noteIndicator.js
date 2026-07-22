@@ -2,6 +2,7 @@ import { normalizeToneNotes, noteToMidi } from "../lib/chordVoicing.js";
 import { getScaleDegreeColor, NOTE_NAME_TO_INTEGER_NOTATION } from "../lib/scales.js";
 import { getChordSymbol, getChordLetterName, stripBorrowedTags, borrowedAbbrev } from "../lib/jsonToSymbol.js";
 import { romanNumeralToHtml } from "../lib/romanNumeralCanvas.js";
+import { getChordPronunciation, pronunciationDisplayHtml } from "../lib/romanNumeralSpeak.js";
 import { verifyScaleDegrees } from "../lib/scaleDegreeVerifier.js";
 import { CONTROL_DEFAULTS } from "./controls.js";
 import { ARP_SLIDER_MAX, ARP_SLIDER_MIN, formatArpCyclesLabel } from "../lib/timing.js";
@@ -112,6 +113,7 @@ export function renderNoteIndicator(container, options = {}) {
             <div class="chord-root" id="chord-root"></div>
           </div>
         </div>
+        <div id="chord-pronunciation" class="chord-pronunciation"></div>
         <div class="notes-list notes-list--chord" id="chord-notes" style="min-height:32px;margin-top:2px;"></div>
         <div class="notes-list notes-list--chord" id="chord-degrees-pills" style="min-height:32px;margin-top:4px;"></div>
         <div class="indicator-volume-row">
@@ -165,6 +167,7 @@ export function renderNoteIndicator(container, options = {}) {
   const chordVolumeSlider = container.querySelector("#chord-volume");
   const chordVolumeLabel = container.querySelector("#chord-volume-label");
   const chordRootEl = container.querySelector("#chord-root");
+  const chordPronunciationEl = container.querySelector("#chord-pronunciation");
   const chordList = container.querySelector("#chord-notes");
   const chordDegreesPillsList = container.querySelector("#chord-degrees-pills");
   const chordBorrowedEl = container.querySelector("#chord-borrowed");
@@ -362,12 +365,14 @@ export function renderNoteIndicator(container, options = {}) {
     if (isMasked) {
       chordRootEl.innerHTML = `Chord: <span class="chord-roman-line">?</span>`;
       chordRootEl.style.visibility = "visible";
+      if (chordPronunciationEl) chordPronunciationEl.innerHTML = "";
       return;
     }
 
     if (chordObj?.isRest || !notes?.length) {
       chordRootEl.textContent = "Chord: Rest";
       chordRootEl.style.visibility = "visible";
+      if (chordPronunciationEl) chordPronunciationEl.innerHTML = "";
       return;
     }
 
@@ -378,8 +383,16 @@ export function renderNoteIndicator(container, options = {}) {
       const labelHtml = useRomanNumerals ? romanNumeralToHtml(symbol) : symbol;
       chordRootEl.innerHTML = `Chord: <span class="chord-roman-line">${labelHtml}</span>`;
       chordRootEl.style.visibility = "visible";
+      if (chordPronunciationEl) {
+        chordPronunciationEl.innerHTML = pronunciationDisplayHtml(
+          getChordPronunciation(chordObj, effKey),
+          { useRoman: useRomanNumerals },
+        );
+      }
       return;
     }
+
+    if (chordPronunciationEl) chordPronunciationEl.innerHTML = "";
 
     if (root) {
       chordRootEl.textContent = `Chord: ${root.toString()}`;

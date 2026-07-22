@@ -44,7 +44,7 @@ for (const entry of entries) {
   if (!entry.chord?.root || entry.chord.isRest) continue;
   const p = getChordPronunciation(entry.chord, entry.key);
   if (!p.analytic || !p.functional) empty.push(entry.id);
-  if (p.analytic === UNKNOWN || p.functional === UNKNOWN) {
+  if (p.analytic === UNKNOWN || p.functional === UNKNOWN || p.functionalLetter === UNKNOWN) {
     unknowns.push({
       id: entry.id,
       truthRoman: entry.truthRoman,
