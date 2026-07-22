@@ -12,13 +12,8 @@ function joinWords(words) {
   return words.filter(Boolean).join(' ');
 }
 
-function appendDelimitedPhrase(words, delimiter, phrase, value) {
-  if (!phrase || !value) return;
-  const lastIdx = words.length - 1;
-  if (lastIdx >= 0 && words[lastIdx]) {
-    words[lastIdx] = `${words[lastIdx]}${delimiter}`;
-  }
-  words.push(phrase, value);
+function appendPhrase(words, phrase, value) {
+  if (phrase && value) words.push(phrase, value);
 }
 
 function borrowedRedundantWithCase(parts) {
@@ -32,7 +27,7 @@ function appendBorrowed(words, parts) {
 
 function appendBorrowedFunctional(words, parts) {
   if (!parts.borrowed || borrowedRedundantWithCase(parts)) return;
-  appendDelimitedPhrase(words, ',', 'borrowed from', parts.borrowed);
+  appendPhrase(words, 'borrowed from', parts.borrowed);
 }
 
 function inversionFunctionalLabel(parts) {
@@ -65,6 +60,7 @@ export function formatAnalytic(parts) {
     ...parts.omits,
     ...parts.alterations,
   ];
+  if (parts.substitution) words.push(parts.substitution);
   if (parts.appliedOf) words.push('of', parts.appliedOf);
   appendBorrowed(words, parts);
   return joinWords(words);
@@ -93,9 +89,10 @@ export function formatFunctional(parts, ctx) {
   if (parts.adds.length) words.push(...parts.adds);
   if (parts.omits.length) words.push(...parts.omits);
   if (parts.alterations.length) words.push(...parts.alterations);
+  if (parts.substitution) words.push(parts.substitution);
 
   if (ctx?.isApplied) {
-    appendDelimitedPhrase(words, ';', 'secondary dominant to', parts.appliedOf || speakDegree(ctx.denominatorDegree));
+    appendPhrase(words, 'secondary dominant to', parts.appliedOf || speakDegree(ctx.denominatorDegree));
   }
 
   appendBorrowedFunctional(words, parts);
@@ -152,9 +149,10 @@ export function formatFunctionalLetter(parts, ctx, key, chord) {
   if (parts.adds.length) words.push(...parts.adds);
   if (parts.omits.length) words.push(...parts.omits);
   if (parts.alterations.length) words.push(...parts.alterations);
+  if (parts.substitution) words.push(parts.substitution);
 
   if (ctx?.isApplied) {
-    appendDelimitedPhrase(words, ';', 'secondary dominant to', speakAppliedTargetLetter(ctx, key));
+    appendPhrase(words, 'secondary dominant to', speakAppliedTargetLetter(ctx, key));
   }
 
   appendBorrowedFunctional(words, parts);

@@ -1,4 +1,5 @@
 import { getChordLetterName } from '../jsonToSymbol.js';
+import { buildSpeakParts } from './buildParts.js';
 
 const NOTE_NAMES = {
   C: 'C', D: 'D', E: 'E', F: 'F', G: 'G', A: 'A', B: 'B',
@@ -62,5 +63,18 @@ export function speakLetterSymbol(letterSymbol) {
 }
 
 export function speakLetterChord(chord, key) {
-  return speakLetterSymbol(getChordLetterName(chord, key));
+  const letterName = getChordLetterName(chord, key);
+  const spoken = speakLetterSymbol(letterName);
+  if (!/^[A-Ga-g][#bx]*$/.test(letterName || '')) return spoken;
+
+  const { parts } = buildSpeakParts(chord, key);
+  if (!parts) return spoken;
+
+  const tail = [];
+  if (parts.caseQuality) tail.push(parts.caseQuality);
+  for (const g of parts.glyphs) {
+    if (g === 'augmented' || g === 'half-diminished' || g === 'major seven') tail.push(g);
+  }
+
+  return [spoken, ...tail].filter(Boolean).join(' ');
 }
