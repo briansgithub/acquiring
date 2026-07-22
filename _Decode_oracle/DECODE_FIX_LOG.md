@@ -1005,6 +1005,18 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 **Files:** `chordPolicy.js`, `chordSeventh.js`, `policyRegression.mjs`.
 
+---
+
+## Fix 056 — omit-3 power letters + hm/major ø65 m6 (2026-07-22, `feat/fix-056-omit3-power`)
+
+**056a:** `getChordLetterName` — `omits:[3]` (no 5th omit) → `5` suffix (`D5/A`), not `Dm/A`.
+
+**056b:** Generalize `mixBorrowedHalfDimM6` → `halfDimInv1M6Stack`: mix-borrowed ø65, hm `iiø65`, major `viiø65` inv=1 voice as **m6** (dim5 + 6th), not ø7 perfect 5th. Minor-key `iiø65` inv=1 keeps dim7 stack.
+
+**Gate:** `policyRegression.mjs` **27/27**.
+
+**Files:** `chordPolicy.js`, `chordSeventh.js`, `jsonToSymbol.js`, `policyRegression.mjs`.
+
 **Files:** `web-player/lib/speakRules/{formatReadings,speakLetter,buildParts}.js`, `_Research_testing/pronunciationFixtures.json`
 
 ---

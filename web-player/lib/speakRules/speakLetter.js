@@ -47,7 +47,8 @@ export function speakLetterSymbol(letterSymbol) {
   if (rest.includes('°')) quality.push('diminished');
   if (rest.includes('ø')) quality.push('half-diminished');
   if (rest.includes('+')) quality.push('augmented');
-  if (/maj7/.test(rest)) quality.push('major seven');
+  if (/^5/.test(rest)) quality.push('five');
+  else if (/maj7/.test(rest)) quality.push('major seven');
   else if (/m/.test(rest) && !/maj/.test(rest)) quality.push('minor');
   const extMatch = rest.match(/(7|9|11|13)/);
   if (extMatch && !/maj7/.test(rest)) {

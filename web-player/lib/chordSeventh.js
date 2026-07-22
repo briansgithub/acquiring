@@ -43,7 +43,7 @@ export function resolveSeventhDegree({
   customScaleIntervals, getNoteLabel,
 }) {
   if (policy.augMaj7Voicing) return "augMaj7Stack";
-  if (policy.mixBorrowedHalfDimM6) return "m6Stack";
+  if (policy.halfDimInv1M6Stack) return "m6Stack";
   if (useSusFrame) return "b7";
   if (policy.hmBorrowedMinor7) return "b7";
   if (policy.customBorrowedHalfDim) {
