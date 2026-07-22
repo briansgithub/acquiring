@@ -45,12 +45,16 @@ export function resolveSeventhDegree({
   if (policy.augMaj7Voicing) return "augMaj7Stack";
   if (useSusFrame) return "b7";
   if (policy.hmBorrowedMinor7) return "b7";
+  if (policy.customBorrowedHalfDim) return "bb7";
   if (effModifierChord?.dimTriad) return "bb7";
   if (policy.customDimMaj7) return "7";
   if (policy.phdmIImaj7) return "7";
   const hasSharp5 = effModifierChord?.alterations?.includes("#5");
   if ((policy.triadQuality === "diminished" && hasSharp5) || policy.sharp5Minor) return "b7";
-  return borrowedModeDimSeventhDegree(chordRootSD, modifiedKey.scale, chordQuality, 7)
+  return borrowedModeDimSeventhDegree(
+    chordRootSD, modifiedKey.scale, chordQuality, 7,
+    { halfDim: effModifierChord?.halfDim },
+  )
     ?? diatonicSeventhDegreeStr(chordRootSD, modifiedKey, customScaleIntervals, getNoteLabel);
 }
 
@@ -61,7 +65,10 @@ export function resolveOmitTriad35Seventh({
 }) {
   if (effModifierChord?.halfDim) return "bb7";
   if (useSusFrame) return "b7";
-  return borrowedModeDimSeventhDegree(chordRootSD, modifiedKey.scale, chordQuality, 7)
+  return borrowedModeDimSeventhDegree(
+    chordRootSD, modifiedKey.scale, chordQuality, 7,
+    { halfDim: effModifierChord?.halfDim },
+  )
     ?? diatonicSeventhDegreeStr(chordRootSD, modifiedKey, customScaleIntervals, getNoteLabel);
 }
 

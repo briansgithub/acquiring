@@ -84,7 +84,10 @@ function triadSemis(quality, suspensions, omits) {
     semis.push(2);
   }
   if (omits.includes(3)) semis = semis.filter((s) => s !== 3 && s !== 4);
-  if (omits.includes(5)) semis = semis.filter((s) => s !== 7);
+  if (omits.includes(5)) {
+    semis = semis.filter((s) => s !== 7);
+    if (quality === 'diminished') semis = semis.filter((s) => s !== 6);
+  }
   return semis;
 }
 

@@ -117,7 +117,7 @@
     "engRoman": "♯ivø42(lyd)",
     "engLetter": "A°7/G",
     "engNotes": [
-      "Gb4",
+      "G4",
       "A4",
       "C5",
       "Eb5"
@@ -125,7 +125,7 @@
     "engPcs": [
       0,
       3,
-      6,
+      7,
       9
     ],
     "flags": {
@@ -135,7 +135,7 @@
       "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": true,
+      "pcsExact": false,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
@@ -143,10 +143,10 @@
       "orderOk": true,
       "degreesOk": true
     },
-    "notesOk": true,
+    "notesOk": false,
     "orderOk": true,
     "romanExact": true,
-    "failureClass": null,
+    "failureClass": "engine",
     "buckets": [
       "type=7",
       "inversion=3",
@@ -273,7 +273,7 @@
     "engRoman": "♯ivø42(lyd)",
     "engLetter": "A°7/G",
     "engNotes": [
-      "Gb4",
+      "G4",
       "A4",
       "C5",
       "Eb5"
@@ -281,7 +281,7 @@
     "engPcs": [
       0,
       3,
-      6,
+      7,
       9
     ],
     "flags": {
@@ -291,7 +291,7 @@
       "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": true,
+      "pcsExact": false,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
@@ -299,10 +299,10 @@
       "orderOk": true,
       "degreesOk": true
     },
-    "notesOk": true,
+    "notesOk": false,
     "orderOk": true,
     "romanExact": true,
-    "failureClass": null,
+    "failureClass": "engine",
     "buckets": [
       "type=7",
       "inversion=3",
@@ -2748,7 +2748,7 @@
     "engNotes": [
       "G3",
       "Db4",
-      "Fb4",
+      "E4",
       "Bb4"
     ],
     "engPcs": [

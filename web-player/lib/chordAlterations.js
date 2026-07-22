@@ -55,6 +55,19 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
 
 
     if (key === "b5" || key === "#5") {
+      if (key === "b5" && chord?.customBorrowedHalfDim) {
+        const dim5Pc = (rootPc + 6) % 12;
+        for (let i = 0; i < toneJSNames.length; i++) {
+          if (degreeIndices[i] === 2) {
+            toneJSNames[i] = sdToToneJSNoteName("b5", 0, rk, baseOctave);
+            if (noteNameToPc(toneJSNames[i]) !== dim5Pc) {
+              toneJSNames[i] = shiftNoteBySemitones(toneJSNames[0], 6);
+            }
+            break;
+          }
+        }
+        continue;
+      }
       if (key === "b5" && chord?.halfDim && chord?.flattenHalfDimB5) {
         // ø with an explicit (b5) renders as a full diminished seventh: force the
         // fifth to dim5 (in case the triad came out perfect) and the m7 down to dim7.
@@ -138,7 +151,7 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
       continue;
     }
 
-    if (key === "b13" && chord?.minorV13Stack) {
+    if (key === "b13" && (chord?.minorExtended13Stack || chord?.minorV13Stack)) {
       const flat13Pc = (rootPc + 8) % 12;
       if (!hasPc(toneJSNames, flat13Pc) && sdToToneJSNoteName) {
         toneJSNames.push(sdToToneJSNoteName("b6", 1, rk, baseOctave));

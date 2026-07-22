@@ -8534,7 +8534,6 @@
     "truthLetter": "a#°(n5)",
     "truthPcs": [
       1,
-      4,
       10
     ],
     "pianoNotes": [
@@ -8565,7 +8564,7 @@
       "bassPcMatch": false,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": true,
+      "pcsExact": false,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
@@ -8573,10 +8572,10 @@
       "orderOk": true,
       "degreesOk": false
     },
-    "notesOk": true,
+    "notesOk": false,
     "orderOk": true,
     "romanExact": true,
-    "failureClass": null,
+    "failureClass": "piano_noise",
     "buckets": [
       "type=5",
       "inversion=0",
