@@ -890,7 +890,15 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 **Deferred (unchanged):** `bor=major` inv=2 `#vii°6` vs `64` — remaining failures are harness/piano_noise (engine PCs G#+D match letter `G#°/D`); figured-bass 6 vs 64 roman mismatch.
 
-**Files:** `chordBuild.js`, `chordPolicy.js`, `chordSeventh.js`, `chordSubstitutions.js`, `chordAlterations.js`, `music.js`, `truthNotes.js`, `policyRegression.mjs`
+---
+
+## Fix 046 — iv13 natural voicing scope (2026-07-22, `feat/fix-046-iv13-scope`)
+
+**Problem:** Fix 045 `minorExtended13Stack` applied `b9`/`b13` to all minor triads; catalog `iv13` expects diatonic extensions (no altered stack).
+
+**Fix:** Scope altered stack to **i** and **v** only (`chordRootSD === 1 || chordRootSD === 5`); subdominant `iv13` keeps natural 13 voicing.
+
+**Files:** `chordPolicy.js`, `policyRegression.mjs` (+`iv13minor` fixture)
 
 ---
 

@@ -108,6 +108,7 @@ export function resolveChordPolicy(ctx) {
   const minorExtended13Stack = modifiedKey.scale === "minor"
     && chordType >= 13
     && chordQuality === "minor"
+    && (chordRootSD === 1 || chordRootSD === 5)
     && !useSusFrame
     && !omitTriad35;
 

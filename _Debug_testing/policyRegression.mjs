@@ -58,6 +58,11 @@ const BASELINE = {
     key: { tonic: "E", scale: "major" },
     pcs: [0, 3, 6, 9],
   },
+  iv13minor: {
+    chord: { root: 4, type: 13 },
+    key: { tonic: "E", scale: "minor" },
+    pcs: [0, 2, 4, 6, 7, 9, 11],
+  },
 };
 
 function pcs(chord, key) {
