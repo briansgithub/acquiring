@@ -1,7 +1,7 @@
 /**
  * Seventh selection — unified diatonic + policy override resolution.
  */
-import { shiftNoteBySemitones } from "./chordNoteUtils.js";
+import { shiftNoteBySemitones, hasPc, noteLabel, noteNameToPc } from "./chordNoteUtils.js";
 import { borrowedModeDimSeventhDegree } from "./chordPolicy.js";
 
 const NOTE_PC = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
@@ -43,6 +43,7 @@ export function resolveSeventhDegree({
   customScaleIntervals, getNoteLabel,
 }) {
   if (policy.augMaj7Voicing) return "augMaj7Stack";
+  if (policy.mixBorrowedHalfDimM6) return "m6Stack";
   if (useSusFrame) return "b7";
   if (policy.hmBorrowedMinor7) return "b7";
   if (policy.customBorrowedHalfDim) {
@@ -105,9 +106,31 @@ export function applyAugMaj7Stack(toneJSNames, degreeIndices) {
   degreeIndices.push(4);
 }
 
+/** HT mix-borrowed ø65: letter m6 — dim5 (+6) + 6th (+9), not ø7 stack. */
+export function applyMixBorrowedM6Voicing(toneJSNames, degreeIndices) {
+  const rootPc = noteNameToPc(noteLabel(toneJSNames[0]));
+  if (rootPc == null) return;
+  const fifthPc = (rootPc + 7) % 12;
+  const sixthPc = (rootPc + 9) % 12;
+  for (let i = 0; i < toneJSNames.length; i++) {
+    if (noteNameToPc(toneJSNames[i]) === fifthPc) {
+      toneJSNames[i] = shiftNoteBySemitones(toneJSNames[i], -1);
+      break;
+    }
+  }
+  if (!hasPc(toneJSNames, sixthPc)) {
+    toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 9));
+    degreeIndices.push(3);
+  }
+}
+
 export function applySeventhToChord(toneJSNames, degreeIndices, seventhKind, chordRootNoteName, baseOctave, sdToToneJSNoteName) {
   if (seventhKind === "augMaj7Stack") {
     applyAugMaj7Stack(toneJSNames, degreeIndices);
+    return;
+  }
+  if (seventhKind === "m6Stack") {
+    applyMixBorrowedM6Voicing(toneJSNames, degreeIndices);
     return;
   }
   if (seventhKind === "customHalfDimM7") {

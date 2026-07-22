@@ -108,6 +108,11 @@ const BASELINE = {
     key: { tonic: "E", scale: "minor" },
     pcs: [0, 3, 4, 6, 7, 8, 9, 11],
   },
+  mixHalfDimM6: {
+    chord: { root: 3, type: 7, inversion: 1, borrowed: "mixolydian", halfDim: true },
+    key: { tonic: "F", scale: "dorian" },
+    pcs: [0, 3, 6, 9],
+  },
 };
 
 function pcs(chord, key) {
