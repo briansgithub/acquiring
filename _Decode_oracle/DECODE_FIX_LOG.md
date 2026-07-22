@@ -924,7 +924,19 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 **Fix:** Add `major`/`maj` → `'major'` in `BORROWED_SCALE`.
 
-**Deferred:** `i13` letter voicing (`em11(b13)`) — needs degree-specific stack (b9 + compound b13 + natural 11), not v13 flat-13; engine natural extensions are close (7/8 PCs).
+**Deferred:** `i13` letter voicing (`em11(b13)`) — oracle eng/truth PC encoding mismatch on b9/m7 coords; needs harness align or dedicated stack (Fix 051 engine attempt reverted).
+
+---
+
+## Fix 051 — custom-array ø11 m7 + 11th (2026-07-22)
+
+**Problem:** `#iø11(bor)` — engine voiced bb7 dim stack + wrong 11th; truth `a#m11(b5b9)` = m7 + natural 11 (11 fails).
+
+**Fix:** Split `customBorrowedHalfDim` by extension depth:
+- **ø7** (`type<11`): keep `bb7` dim7 voice (Fix 045 regression unchanged)
+- **ø11+** (`type≥11`): `customHalfDimM7` seventh (+9 semitones), skip add9, 11th at +1 from root; `b5` via direct +6 shift (no errant `sdToToneJSNoteName("b5")` spelling)
+
+**Fixture:** `customHalfDim11` in `policyRegression.mjs` (18/18).
 
 **When:** 2026-07-22 (`feat/chord-pronunciation-review`)  
 **Done:** Functional readings no longer inject `;` / `,` before “secondary dominant to” / “borrowed from”; bare letter names get triad quality when `getChordLetterName` returns root only; `substitutions:["tri"]` speaks “tritone substitution”.  

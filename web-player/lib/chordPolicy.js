@@ -98,6 +98,7 @@ export function resolveChordPolicy(ctx) {
   const halfDimIi = isHalfDiminishedIi(chordRootSD, modifiedKey, chordType, useSusFrame, modifierChord);
 
   const customBorrowedHalfDim = Array.isArray(borrowed) && modifierChord?.halfDim && chordQuality === "diminished";
+  const customBorrowedHalfDimM7 = customBorrowedHalfDim && chordType >= 11;
 
   const triadQuality = halfDimIi
     ? "diminished"
@@ -130,6 +131,7 @@ export function resolveChordPolicy(ctx) {
     customDimMaj7: Array.isArray(borrowed) && chordQuality === "diminished",
     natural11: modifiedKey.scale === "minor" && chordRootSD === 5,
     customBorrowedHalfDim,
+    customBorrowedHalfDimM7,
     minorV13Stack,
     autoAlterations: minorV13Stack ? ["b9", "b13"] : [],
     skipThirteenth: false,

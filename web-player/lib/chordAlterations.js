@@ -56,13 +56,9 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
 
     if (key === "b5" || key === "#5") {
       if (key === "b5" && chord?.customBorrowedHalfDim) {
-        const dim5Pc = (rootPc + 6) % 12;
         for (let i = 0; i < toneJSNames.length; i++) {
           if (degreeIndices[i] === 2) {
-            toneJSNames[i] = sdToToneJSNoteName("b5", 0, rk, baseOctave);
-            if (noteNameToPc(toneJSNames[i]) !== dim5Pc) {
-              toneJSNames[i] = shiftNoteBySemitones(toneJSNames[0], 6);
-            }
+            toneJSNames[i] = shiftNoteBySemitones(toneJSNames[0], 6);
             break;
           }
         }

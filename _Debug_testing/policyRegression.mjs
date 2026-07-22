@@ -63,6 +63,11 @@ const BASELINE = {
     key: { tonic: "E", scale: "major" },
     pcs: [0, 3, 6, 9],
   },
+  customHalfDim11: {
+    chord: { root: 1, type: 11, borrowed: [1, 2, 4, 6, 7, 9, 11], halfDim: true },
+    key: { tonic: "A", scale: "minor" },
+    pcs: [1, 4, 7, 10, 11],
+  },
   iio65minor: {
     chord: { root: 2, type: 7, inversion: 1, halfDim: true },
     key: { tonic: "D", scale: "minor" },

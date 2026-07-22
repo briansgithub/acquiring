@@ -216,7 +216,7 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
     && !!effModifierChord?.halfDim;
   applyTypeExtensions(
     toneJSNames, degreeIndices, chordRootNoteName, baseOctave, chordType, sdToToneJSNoteName, triadQuality,
-    { natural11: policy.natural11, skipNine, skipThirteenth: policy.skipThirteenth },
+    { natural11: policy.natural11, skipNine, skipThirteenth: policy.skipThirteenth, customBorrowedHalfDimM7: policy.customBorrowedHalfDimM7 },
   );
 
   replaceTriadThird(toneJSNames, degreeIndices, chordRootNoteName, baseOctave, suspensions, sdToToneJSNoteName);
