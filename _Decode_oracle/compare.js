@@ -17,7 +17,7 @@
 
 const { sectionTruth, parseLetter } = require('./svgTruth');
 const { runSection, runChord, activeKeyAtBeat } = require('./engineRun');
-const { mergeMods } = require('./truthLetterParse');
+const { mergeMods, numeratorRoman } = require('./truthLetterParse');
 const { canonRoman, canonCore } = require('./normalize');
 const { expectedPcs, pcsEqual, noteNamesToPcs, notesExact, checkNoteOrder } = require('./truthNotes');
 
@@ -27,9 +27,10 @@ function appliedDenomMajFromRoman(roman) {
 }
 
 function enrichChordFromTruth(chord, truthRoman, truthLetterRaw) {
+  const numRoman = numeratorRoman(truthRoman);
   const mods = mergeMods(truthLetterRaw, truthRoman, chord);
-  const halfDim = /ø/.test(truthRoman || '');
-  const dimTriad = /°/.test(truthRoman || '') && !halfDim;
+  const halfDim = /ø/.test(numRoman);
+  const dimTriad = /°/.test(numRoman) && !halfDim;
   const flattenHalfDimB5 = halfDim && mods.alterations.includes('b5');
   const appliedDenomMaj = appliedDenomMajFromRoman(truthRoman);
   return {

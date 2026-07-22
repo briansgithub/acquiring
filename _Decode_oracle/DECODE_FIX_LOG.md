@@ -955,6 +955,18 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 **Re-run gate before next pronunciation pass:** `buildChordDb` corpus4 → `batchCompareCatalog --resync` → `queryTopErrors` → `romanPronunciationTest.mjs` + `generatePronunciationAudit.mjs`.
 
+---
+
+## Fix 052 — i13 b13 + applied denominator isolation (2026-07-22, `feat/fix-052-i13-b13`)
+
+**052a — `minorI13B13`:** Minor-key **i13** gets natural 11 + compound **b13** (pc 0) per catalog `em11(b13)` voicing — without the v13 `b9` stack.
+
+**052b — Roman denominator leak:** `triadQualityFromLetter`, `enrichChordFromSymbol`, and `enrichChordFromTruth` now parse quality/`dimTriad`/`halfDim` from the **numerator** only (`V7/vii°` no longer inherits `°` from denominator). Clears false applied `#5` and `V7/vii°` PC mismatches.
+
+**Gate:** `policyRegression.mjs` **19/19**; catalog resync **454 → 374** engine fails (−80).
+
+**Files:** `chordPolicy.js`, `chordAlterations.js`, `chordBuild.js`, `truthLetterParse.js`, `engineRun.js`, `compare.js`, `policyRegression.mjs`.
+
 **Files:** `web-player/lib/speakRules/{formatReadings,speakLetter,buildParts}.js`, `_Research_testing/pronunciationFixtures.json`
 
 ---

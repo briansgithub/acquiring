@@ -178,9 +178,11 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
   });
   const effModifierChord = policy.minorV13Stack
     ? { ...effBase, minorV13Stack: true }
-    : policy.customBorrowedHalfDim
-      ? { ...effBase, customBorrowedHalfDim: true }
-      : effBase;
+    : policy.minorI13B13
+      ? { ...effBase, minorI13B13: true }
+      : policy.customBorrowedHalfDim
+        ? { ...effBase, customBorrowedHalfDim: true }
+        : effBase;
 
   if (policy.rootShiftSemitones) {
     chordRootNoteName = shiftPitchClass(chordRootNoteName, policy.rootShiftSemitones);

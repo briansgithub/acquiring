@@ -41,7 +41,12 @@ const BASELINE = {
   i13minor: {
     chord: { root: 1, type: 13 },
     key: { tonic: "E", scale: "minor" },
-    pcs: [1, 2, 4, 6, 7, 9, 11],
+    pcs: [0, 1, 2, 4, 6, 7, 9, 11],
+  },
+  appliedSharp5Aug: {
+    chord: { root: 3, type: 5, applied: 5, alterations: ["#5"] },
+    key: { tonic: "G", scale: "mixolydian" },
+    pcs: [2, 6, 10],
   },
   iiDimNo5: {
     chord: { root: 2, type: 5, omits: [5] },
