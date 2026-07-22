@@ -41,7 +41,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "♯ii+⁶(add4)(#5)(dor)",
+    "engRoman": "♯ii+6(#5)(dor)(add4)",
     "engLetter": "D#m/F#",
     "engNotes": [
       "F#3",
@@ -67,7 +67,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -125,7 +126,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "♯ii+⁶(add4)(#5)(dor)",
+    "engRoman": "♯ii+6(#5)(dor)(add4)",
     "engLetter": "D#m/F#",
     "engNotes": [
       "F#3",
@@ -151,7 +152,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -209,7 +211,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "♯ii+⁶(add4)(#5)(dor)",
+    "engRoman": "♯ii+6(#5)(dor)(add4)",
     "engLetter": "D#m/F#",
     "engNotes": [
       "F#3",
@@ -235,7 +237,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,

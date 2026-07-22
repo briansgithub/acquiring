@@ -42,16 +42,22 @@ function activeKeyAtBeat(keys, beat) {
 
 const { mergeMods } = require('./truthLetterParse');
 
+function appliedDenomMajFromRoman(roman) {
+  const denom = String(roman || '').split('/')[1] || '';
+  return /\(maj\)/.test(denom);
+}
+
 function enrichChordFromSymbol(chord, roman, letter) {
   const halfDim = chord.halfDim || /ø/.test(roman || "") || /\(b5b9\)|b5b9/i.test(letter || "");
   const dimTriad = chord.dimTriad || (/°/.test(roman || "") && !halfDim);
-  const flattenHalfDimB5 = chord.flattenHalfDimB5
-    || (halfDim && (chord.alterations || []).includes('b5'));
   if (chord._truthEnriched) {
     return { ...chord, halfDim, dimTriad: chord.dimTriad, flattenHalfDimB5: chord.flattenHalfDimB5 };
   }
   const mods = mergeMods(letter, roman, chord);
   const alterations = [...new Set([...(chord.alterations || []), ...mods.alterations])];
+  const appliedDenomMaj = chord.appliedDenomMaj || appliedDenomMajFromRoman(roman);
+  const flattenHalfDimB5 = chord.flattenHalfDimB5
+    || (halfDim && alterations.includes('b5'));
   if (halfDim && (mods.type ?? 5) >= 9) {
     for (const a of ["b5", "b9"]) {
       if (!alterations.includes(a)) alterations.push(a);
@@ -67,6 +73,7 @@ function enrichChordFromSymbol(chord, roman, letter) {
     halfDim,
     dimTriad,
     flattenHalfDimB5,
+    appliedDenomMaj,
   };
 }
 const libUrl = (p) => require('url').pathToFileURL(require('path').join(__dirname, '..', 'web-player', 'lib', p)).href;

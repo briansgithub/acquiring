@@ -49,7 +49,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "♭II¹³(b9)(bor)",
+    "engRoman": "♭II13(b9)(bor)",
     "engLetter": "B°13",
     "engNotes": [
       "Bb3",
@@ -81,7 +81,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -93,352 +94,6 @@
       "applied=no",
       "borrowed=custom-array",
       "alterations=b9"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "gwen-stefani__u-started-it/Chorus/5",
-    "song": "gwen-stefani__u-started-it",
-    "section": "Chorus",
-    "beat": 5,
-    "key": {
-      "tonic": "D",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 5,
-      "beat": 5,
-      "duration": 4,
-      "type": 13,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [],
-      "suspensions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "v13",
-    "truthLetter": "am11(b9b13)",
-    "truthPcs": [
-      0,
-      2,
-      4,
-      5,
-      6,
-      7,
-      9,
-      10
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "v¹³(b9)(b13)",
-    "engLetter": "Am13",
-    "engNotes": [
-      "A3",
-      "C4",
-      "E4",
-      "G4",
-      "Bb4",
-      "D5",
-      "F5"
-    ],
-    "engPcs": [
-      0,
-      2,
-      4,
-      5,
-      7,
-      9,
-      10
-    ],
-    "flags": {
-      "romanExact": false,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": false,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": false,
-    "orderOk": true,
-    "romanExact": false,
-    "failureClass": "engine",
-    "buckets": [
-      "type=13",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "gwen-stefani__u-started-it/Chorus/9",
-    "song": "gwen-stefani__u-started-it",
-    "section": "Chorus",
-    "beat": 9,
-    "key": {
-      "tonic": "D",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 6,
-      "beat": 9,
-      "duration": 4,
-      "type": 13,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [],
-      "suspensions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "VI△13",
-    "truthLetter": "Bbmaj13(#11)",
-    "truthPcs": [
-      0,
-      2,
-      4,
-      5,
-      7,
-      9,
-      10
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "VI△¹³(#11)",
-    "engLetter": "Bbmaj13",
-    "engNotes": [
-      "Bb3",
-      "D4",
-      "F4",
-      "A4",
-      "C5",
-      "E5",
-      "G5"
-    ],
-    "engPcs": [
-      0,
-      2,
-      4,
-      5,
-      7,
-      9,
-      10
-    ],
-    "flags": {
-      "romanExact": false,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": false,
-    "failureClass": null,
-    "buckets": [
-      "type=13",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "gwen-stefani__u-started-it/Chorus/21",
-    "song": "gwen-stefani__u-started-it",
-    "section": "Chorus",
-    "beat": 21,
-    "key": {
-      "tonic": "D",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 5,
-      "beat": 21,
-      "duration": 4,
-      "type": 13,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [],
-      "suspensions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "v13",
-    "truthLetter": "am11(b9b13)",
-    "truthPcs": [
-      0,
-      2,
-      4,
-      5,
-      6,
-      7,
-      9,
-      10
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "v¹³(b9)(b13)",
-    "engLetter": "Am13",
-    "engNotes": [
-      "A3",
-      "C4",
-      "E4",
-      "G4",
-      "Bb4",
-      "D5",
-      "F5"
-    ],
-    "engPcs": [
-      0,
-      2,
-      4,
-      5,
-      7,
-      9,
-      10
-    ],
-    "flags": {
-      "romanExact": false,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": false,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": false,
-    "orderOk": true,
-    "romanExact": false,
-    "failureClass": "engine",
-    "buckets": [
-      "type=13",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "gwen-stefani__u-started-it/Chorus/25",
-    "song": "gwen-stefani__u-started-it",
-    "section": "Chorus",
-    "beat": 25,
-    "key": {
-      "tonic": "D",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 6,
-      "beat": 25,
-      "duration": 4,
-      "type": 13,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [],
-      "suspensions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "VI△13",
-    "truthLetter": "Bbmaj13(#11)",
-    "truthPcs": [
-      0,
-      2,
-      4,
-      5,
-      7,
-      9,
-      10
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "VI△¹³(#11)",
-    "engLetter": "Bbmaj13",
-    "engNotes": [
-      "Bb3",
-      "D4",
-      "F4",
-      "A4",
-      "C5",
-      "E5",
-      "G5"
-    ],
-    "engPcs": [
-      0,
-      2,
-      4,
-      5,
-      7,
-      9,
-      10
-    ],
-    "flags": {
-      "romanExact": false,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": false,
-    "failureClass": null,
-    "buckets": [
-      "type=13",
-      "inversion=0",
-      "applied=no",
-      "borrowed=none"
     ],
     "compositeKey": null
   },
@@ -485,7 +140,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "V¹³(b9)/ii",
+    "engRoman": "V13(b9)/ii",
     "engLetter": "F#13",
     "engNotes": [
       "F#3",
@@ -517,7 +172,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -575,7 +231,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "V¹³/vi",
+    "engRoman": "V13/vi",
     "engLetter": "C#13",
     "engNotes": [
       "C#3",
@@ -607,7 +263,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": false,
     "orderOk": true,
@@ -617,93 +274,6 @@
       "type=13",
       "inversion=0",
       "applied=yes",
-      "borrowed=none"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "kendrick-lamar__untitled-08/Solo/5",
-    "song": "kendrick-lamar__untitled-08",
-    "section": "Solo",
-    "beat": 5,
-    "key": {
-      "tonic": "E",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 7,
-      "beat": 5,
-      "duration": 4,
-      "type": 13,
-      "inversion": 0,
-      "applied": 0,
-      "adds": [],
-      "omits": [],
-      "alterations": [],
-      "suspensions": [],
-      "substitutions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "VII13",
-    "truthLetter": "D13",
-    "truthPcs": [
-      0,
-      2,
-      4,
-      6,
-      7,
-      9,
-      11
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "VII¹³",
-    "engLetter": "D13",
-    "engNotes": [
-      "D3",
-      "F#3",
-      "A3",
-      "C4",
-      "E4",
-      "G4",
-      "B4"
-    ],
-    "engPcs": [
-      0,
-      2,
-      4,
-      6,
-      7,
-      9,
-      11
-    ],
-    "flags": {
-      "romanExact": true,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": true,
-    "failureClass": null,
-    "buckets": [
-      "type=13",
-      "inversion=0",
-      "applied=no",
       "borrowed=none"
     ],
     "compositeKey": null

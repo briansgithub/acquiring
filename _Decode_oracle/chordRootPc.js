@@ -66,15 +66,28 @@ function resolveBorrowedScale(key, borrowed) {
   return { tonic: key.tonic, scale };
 }
 
+function customArrayRootPc(tonic, borrowedArray, degree) {
+  if (!Array.isArray(borrowedArray) || degree < 1 || degree > 7) return null;
+  const tonicPc = noteToPc(normTonic(tonic));
+  if (tonicPc == null) return null;
+  let offset = borrowedArray[degree - 1];
+  if (offset == null) return null;
+  if (offset < 0) offset = 12 + offset;
+  return (tonicPc + (offset % 12)) % 12;
+}
+
 function chordRootPc(chord, key) {
   if (!chord?.root || chord.root < 1 || chord.root > 7) return null;
+  if (Array.isArray(chord.borrowed)) {
+    return customArrayRootPc(key.tonic, chord.borrowed, chord.root);
+  }
   const effKey = resolveBorrowedScale(key, chord.borrowed);
   if (chord.applied && chord.applied >= 1 && chord.applied <= 7) {
-    const targetPc = scaleNoteAtDegree(effKey.tonic, 'major', chord.root);
+    const targetPc = scaleNoteAtDegree(effKey.tonic, effKey.scale || 'major', chord.root);
     if (targetPc == null) return null;
     const targetName = Object.entries(MAJOR_LABELS).find(([, labels]) =>
       noteToPc(labels[chord.root - 1]) === targetPc)?.[1]?.[chord.root - 1];
-    if (!targetName) return scaleNoteAtDegree(effKey.tonic, 'major', chord.applied);
+    if (!targetName) return scaleNoteAtDegree(effKey.tonic, effKey.scale || 'major', chord.applied);
     const appliedKey = { tonic: targetName, scale: 'major' };
     return scaleNoteAtDegree(appliedKey.tonic, 'major', chord.applied);
   }

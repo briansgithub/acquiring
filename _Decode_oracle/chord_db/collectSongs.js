@@ -4,11 +4,13 @@
 
 const fs = require('fs');
 const path = require('path');
+const { getHarvestRoot } = require('../../lib/dataRoot');
 const { compareSong } = require('../compare');
 const { activeKeyAtBeat } = require('../engineRun');
 const { slugForUrl } = require('../run');
+const { discoverAllScrapeDirs, resolveHarvestDir } = require('../../_Research_testing/hooktheory_catalog/lib/harvestPaths');
 
-const OUT = path.join(__dirname, '..', 'out');
+const OUT = getHarvestRoot();
 
 function reportIsComplete(report) {
   if (!report?.sections?.length) return false;
@@ -30,32 +32,23 @@ function loadCorpusSlugs(corpusFile) {
   return slugs;
 }
 
-function discoverScrapeDirs({ corpusFile } = {}) {
-  const corpusSlugs = corpusFile ? loadCorpusSlugs(corpusFile) : null;
-  const dirs = [];
-  if (!fs.existsSync(OUT)) return dirs;
-  for (const name of fs.readdirSync(OUT)) {
-    const dir = path.join(OUT, name);
-    if (!fs.statSync(dir).isDirectory()) continue;
-    const scrapeFile = path.join(dir, 'scrape.json');
-    if (!fs.existsSync(scrapeFile)) continue;
-    if (corpusSlugs && !corpusSlugs.has(name)) continue;
-    dirs.push({ slug: name, dir, scrapeFile });
-  }
-  dirs.sort((a, b) => a.slug.localeCompare(b.slug));
-  return dirs;
+function discoverScrapeDirs(opts = {}) {
+  const corpusSlugs = opts.corpusFile ? loadCorpusSlugs(opts.corpusFile) : opts.corpusSlugs || null;
+  return discoverAllScrapeDirs({ corpusSlugs, fullTruthOnly: opts.fullTruthOnly });
 }
 
 async function loadSongCompare({ slug, dir, scrapeFile }, { useReports = false } = {}) {
-  const scrape = JSON.parse(fs.readFileSync(scrapeFile, 'utf8'));
-  const reportFile = path.join(dir, 'report.json');
+  const resolvedDir = dir || resolveHarvestDir(slug);
+  const resolvedFile = scrapeFile || path.join(resolvedDir, 'scrape.json');
+  const scrape = JSON.parse(fs.readFileSync(resolvedFile, 'utf8'));
+  const reportFile = path.join(resolvedDir, 'report.json');
   let compareResult = null;
   if (useReports && fs.existsSync(reportFile)) {
     const report = JSON.parse(fs.readFileSync(reportFile, 'utf8'));
     if (reportIsComplete(report)) compareResult = report;
   }
   if (!compareResult) compareResult = await compareSong(scrape);
-  return { slug, scrape, compareResult };
+  return { slug, scrape, compareResult, dir: resolvedDir, scrapeFile: resolvedFile };
 }
 
 function enrichRowsWithKeys(slug, scrape, compareResult) {

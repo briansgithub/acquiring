@@ -1,345 +1,90 @@
 {
   "meta": {
-    "built": "2026-06-29T08:40:44.410Z",
-    "lastUpdated": "2026-06-29T08:40:44.411Z",
+    "built": "2026-07-22T06:31:47.640Z",
+    "lastUpdated": "2026-07-22T06:31:47.641Z",
     "sources": [
       "100-gecs__757",
-      "2pac__2-of-amerikaz-most-wanted",
-      "3-doors-down__kryptonite",
-      "65daysofstatic__escape-velocity---no-mans-sky",
-      "95sandalen__90gq-is-magic",
-      "a-ha__take-on-me",
-      "a-r-rahman__roja",
-      "aaron__u-turn--lili-",
-      "acdc__you-shook-me-all-night-long",
-      "adam-green-and-binki-shapiro__here-i-am",
-      "adele__hello",
-      "adele__rolling-in-the-deep",
-      "adele__set-fire-to-the-rain",
-      "adele__someone-like-you",
-      "air__cherry-blossom-girl",
-      "air__jai-dormi-sous-leau",
-      "aisel__x-my-heart",
-      "ak-ausserkontrolle-und-pashanim__6561",
-      "akito-nakatsuka__zelda-ii---the-adventure-of-link---village",
-      "alan-silvestri__night-at-the-museum",
-      "alanis-morissette__head-over-feet",
-      "alessia-cara__here",
-      "alicia-keys__3-hour-drive-ft-sampha",
-      "alina-baraz-and-galimatias__pretty-thoughts---fkj-remix",
-      "alizee__a-contre-courant",
-      "allie-x__milk",
-      "alligatoah__lass-liegen",
-      "amerie__1-thing",
       "amy-winehouse__back-to-black",
-      "anamanaguchi__another-winter",
-      "ancient__willothewisp",
-      "andrew-huang__7-4-cabbage-metal",
-      "arctic-monkeys__r-u-mine",
-      "aretha-franklin__respect",
-      "ariana-grande__7-rings",
-      "ariana-grande__hate-that-i-made-you-love-me",
-      "ariana-grande__positions",
-      "ariana-grande__thank-u-next",
-      "bad-bunny__dtmf",
-      "ben-e-king__stand-by-me",
-      "beyonce__crazy-in-love-ft-jay-z",
-      "billie-eilish__birds-of-a-feather",
-      "billy-joel__piano-man",
-      "bob-dylan__knockin-on-heavens-door",
-      "bob-dylan__like-a-rolling-stone",
-      "bob-marley__no-woman-no-cry",
-      "bob-marley__three-little-birds",
-      "bruce-springsteen__born-to-run",
-      "bruno-mars__i-just-might",
-      "bruno-mars__just-the-way-you-are",
-      "buddy-holly__thatll-be-the-day",
-      "calvin-harris__my-way",
-      "carly-rae-jepsen__call-me-maybe",
-      "carole-king__its-too-late",
-      "carrie-underwood__so-small",
-      "cascada__every-time-we-touch",
-      "chappell-roan__pink-pony-club",
-      "chic__le-freak",
-      "coldplay__clocks",
-      "coldplay__fix-you",
-      "coldplay__the-scientist",
-      "coldplay__viva-la-vida",
-      "coldplay__yellow",
-      "counting-crows__anna-begins",
-      "cyndi-lauper__time-after-time",
-      "daft-punk__get-lucky",
-      "dave-brubeck__take-five",
-      "david-bowie__heroes",
-      "david-bowie__space-oddity",
-      "dionne-warwick__walk-on-by",
-      "djo__end-of-beginning",
-      "dolly-parton__jolene",
       "dua-lipa__levitating-%28ft-dababy%29",
-      "duke-ellington__in-a-sentimental-mood",
-      "duke-ellington__take-the-a-train",
-      "eagles__hotel-california",
-      "earth-wind-and-fire__september",
-      "ed-sheeran__perfect",
-      "ella-langley__be-her",
-      "ella-langley__choosin-texas",
       "ella-langley__i-cant-love-you-anymore-%28with-morgan-wallen%29",
-      "elton-john__rocket-man",
-      "elton-john__your-song",
-      "eminem__lose-yourself",
-      "faith-evans__love-like-this",
-      "fleetwood-mac__dreams",
-      "fleetwood-mac__go-your-own-way",
-      "frank-sinatra__fly-me-to-the-moon",
-      "frank-sinatra__o-little-town-of-bethlehem",
-      "george-gershwin__summertime",
-      "george-michael__freedom-90",
-      "gladys-knight-and-the-pips__midnight-train-to-georgia",
-      "gnarls-barkley__crazy",
-      "goo-goo-dolls__iris",
-      "green-day__boulevard-of-broken-dreams",
-      "guns-n-roses__knockin-on-heavens-door",
-      "guns-n-roses__sweet-child-o-mine",
-      "hall-and-oates__maneater",
-      "harry-styles__as-it-was",
-      "herbie-hancock__watermelon-man",
-      "jason-mraz__im-yours",
-      "jimi-hendrix__purple-haze",
-      "john-coltrane__giant-steps",
-      "john-denver__take-me-home-country-roads",
-      "john-legend__all-of-me",
-      "john-lennon__imagine",
-      "johnny-cash__ring-of-fire",
-      "journey__dont-stop-believin",
-      "joy-division__love-will-tear-us-apart",
-      "justin-bieber__daisies",
-      "kanye-west__runaway",
-      "kate-bush__running-up-that-hill",
-      "lady-gaga__abracadabra",
+      "lady-gaga__bad-romance",
       "lady-gaga__die-with-a-smile-%28with-bruno-mars%29",
-      "lana-del-rey__summertime-sadness",
-      "lizzo__good-as-hell",
-      "lorde__royals",
-      "lynyrd-skynyrd__sweet-home-alabama",
-      "marvin-gaye__whats-going-on",
-      "mgmt__kids",
-      "michael-jackson__beat-it",
-      "michael-jackson__billie-jean",
-      "michael-jackson__human-nature",
-      "miles-davis__blue-in-green",
-      "miles-davis__so-what",
-      "missy-elliott__get-ur-freak-on",
-      "neil-young__heart-of-gold",
-      "new-order__blue-monday",
-      "nirvana__come-as-you-are",
-      "nirvana__smells-like-teen-spirit",
-      "noah-kahan__stick-season",
-      "oasis__dont-look-back-in-anger",
-      "oasis__wonderwall",
       "olivia-dean__so-easy-%28to-fall-in-love%29",
-      "olivia-rodrigo__all-american-bitch",
-      "olivia-rodrigo__bad-idea-right",
-      "olivia-rodrigo__drivers-license",
-      "olivia-rodrigo__get-him-back",
-      "olivia-rodrigo__girl-ive-always-been",
-      "olivia-rodrigo__good-4-u",
-      "olivia-rodrigo__lacy",
-      "olivia-rodrigo__logical",
-      "olivia-rodrigo__making-the-bed",
-      "olivia-rodrigo__obsessed",
-      "olivia-rodrigo__pretty-isnt-pretty",
-      "olivia-rodrigo__scared-of-my-guitar",
-      "olivia-rodrigo__the-grudge",
-      "olivia-rodrigo__vampire",
-      "outkast__hey-ya",
-      "passenger__let-her-go",
-      "pink-floyd__money",
-      "prince__purple-rain",
-      "queen__somebody-to-love",
-      "radiohead__creep",
-      "radiohead__karma-police",
-      "raye__where-is-my-husband",
-      "red-hot-chili-peppers__under-the-bridge",
-      "rem__losing-my-religion",
-      "sabrina-carpenter__espresso",
-      "sam-cooke__a-change-is-gonna-come",
-      "scott-joplin__maple-leaf-rag",
-      "simon-and-garfunkel__bridge-over-troubled-water",
-      "soundgarden__black-hole-sun",
-      "stevie-wonder__isnt-she-lovely",
-      "stevie-wonder__sir-duke",
-      "stevie-wonder__superstition",
-      "taylor-swift__love-story",
-      "the-beach-boys__god-only-knows",
-      "the-beatles__blackbird",
-      "the-beatles__eleanor-rigby",
-      "the-beatles__hey-jude",
-      "the-beatles__i-want-to-hold-your-hand",
-      "the-beatles__let-it-be",
-      "the-beatles__lucy-in-the-sky-with-diamonds",
-      "the-beatles__penny-lane",
-      "the-beatles__something",
-      "the-beatles__strawberry-fields-forever",
-      "the-beatles__while-my-guitar-gently-weeps",
-      "the-clash__london-calling",
-      "the-cranberries__zombie",
-      "the-doors__light-my-fire",
-      "the-kinks__waterloo-sunset",
-      "the-neighbourhood__sweater-weather",
-      "the-police__every-breath-you-take",
-      "the-proclaimers__500-miles",
-      "the-rolling-stones__gimme-shelter",
-      "the-ronettes__be-my-baby",
-      "thelonious-monk__round-midnight",
-      "tlc__creep",
-      "tom-petty__free-fallin",
-      "toto__africa",
-      "tracy-chapman__fast-car",
-      "u2__one",
-      "u2__with-or-without-you",
-      "whitney-houston__i-will-always-love-you"
+      "the-proclaimers__500-miles"
     ],
-    "totalChords": 7416,
-    "uniqueChords": 7416,
+    "totalChords": 399,
+    "uniqueChords": 399,
     "corpus": "corpus3.json",
     "corpora": [
       {
         "file": "corpus3.json",
-        "added": "2026-06-29"
+        "added": "2026-07-22"
       }
     ],
     "useReports": false,
-    "notesOkPct": 99.6
+    "notesOkPct": 100
   },
   "bucketIndex": {
     "type=5": {
       "file": "byModification/type=5.json",
-      "total": 5154,
-      "notesOk": 5140,
-      "notesOkPct": 99.7,
-      "orderOk": 5154,
+      "total": 193,
+      "notesOk": 193,
+      "notesOkPct": 100,
+      "orderOk": 193,
       "orderOkPct": 100,
-      "romanExact": 4857,
-      "romanExactPct": 94.2,
-      "failing": 14,
+      "romanExact": 188,
+      "romanExactPct": 97.4,
+      "failing": 0,
       "byClass": {
         "engine": 0,
-        "harness": 14,
+        "harness": 0,
         "piano_noise": 0,
         "unknown": 0
       }
     },
     "inversion=0": {
       "file": "byModification/inversion=0.json",
-      "total": 6393,
-      "notesOk": 6368,
-      "notesOkPct": 99.6,
-      "orderOk": 6393,
+      "total": 330,
+      "notesOk": 330,
+      "notesOkPct": 100,
+      "orderOk": 330,
       "orderOkPct": 100,
-      "romanExact": 6008,
-      "romanExactPct": 94,
-      "failing": 25,
+      "romanExact": 316,
+      "romanExactPct": 95.8,
+      "failing": 0,
       "byClass": {
-        "engine": 2,
-        "harness": 21,
-        "piano_noise": 2,
+        "engine": 0,
+        "harness": 0,
+        "piano_noise": 0,
         "unknown": 0
       }
     },
     "applied=no": {
       "file": "byModification/applied=no.json",
-      "total": 7187,
-      "notesOk": 7159,
-      "notesOkPct": 99.6,
-      "orderOk": 7187,
+      "total": 394,
+      "notesOk": 394,
+      "notesOkPct": 100,
+      "orderOk": 394,
       "orderOkPct": 100,
-      "romanExact": 6800,
-      "romanExactPct": 94.6,
-      "failing": 28,
+      "romanExact": 375,
+      "romanExactPct": 95.2,
+      "failing": 0,
       "byClass": {
         "engine": 0,
-        "harness": 26,
-        "piano_noise": 2,
+        "harness": 0,
+        "piano_noise": 0,
         "unknown": 0
       }
     },
     "borrowed=none": {
       "file": "byModification/borrowed=none.json",
-      "total": 6936,
-      "notesOk": 6910,
-      "notesOkPct": 99.6,
-      "orderOk": 6936,
-      "orderOkPct": 100,
-      "romanExact": 6558,
-      "romanExactPct": 94.6,
-      "failing": 26,
-      "byClass": {
-        "engine": 1,
-        "harness": 25,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "inversion=1": {
-      "file": "byModification/inversion=1.json",
-      "total": 454,
-      "notesOk": 454,
+      "total": 370,
+      "notesOk": 370,
       "notesOkPct": 100,
-      "orderOk": 454,
+      "orderOk": 370,
       "orderOkPct": 100,
-      "romanExact": 441,
-      "romanExactPct": 97.1,
-      "failing": 0,
-      "byClass": {
-        "engine": 0,
-        "harness": 0,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "borrowed=major": {
-      "file": "byModification/borrowed=major.json",
-      "total": 90,
-      "notesOk": 88,
-      "notesOkPct": 97.8,
-      "orderOk": 90,
-      "orderOkPct": 100,
-      "romanExact": 84,
-      "romanExactPct": 93.3,
-      "failing": 2,
-      "byClass": {
-        "engine": 1,
-        "harness": 1,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "borrowed=dorian": {
-      "file": "byModification/borrowed=dorian.json",
-      "total": 77,
-      "notesOk": 77,
-      "notesOkPct": 100,
-      "orderOk": 77,
-      "orderOkPct": 100,
-      "romanExact": 64,
-      "romanExactPct": 83.1,
-      "failing": 0,
-      "byClass": {
-        "engine": 0,
-        "harness": 0,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "adds=9": {
-      "file": "byModification/adds=9.json",
-      "total": 121,
-      "notesOk": 121,
-      "notesOkPct": 100,
-      "orderOk": 121,
-      "orderOkPct": 100,
-      "romanExact": 112,
-      "romanExactPct": 92.6,
+      "romanExact": 352,
+      "romanExactPct": 95.1,
       "failing": 0,
       "byClass": {
         "engine": 0,
@@ -350,81 +95,13 @@
     },
     "type=7": {
       "file": "byModification/type=7.json",
-      "total": 1965,
-      "notesOk": 1951,
-      "notesOkPct": 99.3,
-      "orderOk": 1965,
-      "orderOkPct": 100,
-      "romanExact": 1849,
-      "romanExactPct": 94.1,
-      "failing": 14,
-      "byClass": {
-        "engine": 0,
-        "harness": 12,
-        "piano_noise": 2,
-        "unknown": 0
-      }
-    },
-    "inversion=2": {
-      "file": "byModification/inversion=2.json",
-      "total": 351,
-      "notesOk": 349,
-      "notesOkPct": 99.4,
-      "orderOk": 351,
-      "orderOkPct": 100,
-      "romanExact": 322,
-      "romanExactPct": 91.7,
-      "failing": 2,
-      "byClass": {
-        "engine": 0,
-        "harness": 2,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "borrowed=mixolydian": {
-      "file": "byModification/borrowed=mixolydian.json",
-      "total": 43,
-      "notesOk": 43,
+      "total": 175,
+      "notesOk": 175,
       "notesOkPct": 100,
-      "orderOk": 43,
+      "orderOk": 175,
       "orderOkPct": 100,
-      "romanExact": 37,
-      "romanExactPct": 86,
-      "failing": 0,
-      "byClass": {
-        "engine": 0,
-        "harness": 0,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "omits=3": {
-      "file": "byModification/omits=3.json",
-      "total": 96,
-      "notesOk": 96,
-      "notesOkPct": 100,
-      "orderOk": 96,
-      "orderOkPct": 100,
-      "romanExact": 88,
-      "romanExactPct": 91.7,
-      "failing": 0,
-      "byClass": {
-        "engine": 0,
-        "harness": 0,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "suspensions=4": {
-      "file": "byModification/suspensions=4.json",
-      "total": 162,
-      "notesOk": 162,
-      "notesOkPct": 100,
-      "orderOk": 162,
-      "orderOkPct": 100,
-      "romanExact": 148,
-      "romanExactPct": 91.4,
+      "romanExact": 165,
+      "romanExactPct": 94.3,
       "failing": 0,
       "byClass": {
         "engine": 0,
@@ -435,30 +112,13 @@
     },
     "inversion=3": {
       "file": "byModification/inversion=3.json",
-      "total": 218,
-      "notesOk": 215,
-      "notesOkPct": 98.6,
-      "orderOk": 218,
-      "orderOkPct": 100,
-      "romanExact": 199,
-      "romanExactPct": 91.3,
-      "failing": 3,
-      "byClass": {
-        "engine": 0,
-        "harness": 3,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "type=11": {
-      "file": "byModification/type=11.json",
-      "total": 89,
-      "notesOk": 89,
+      "total": 20,
+      "notesOk": 20,
       "notesOkPct": 100,
-      "orderOk": 89,
+      "orderOk": 20,
       "orderOkPct": 100,
-      "romanExact": 70,
-      "romanExactPct": 78.7,
+      "romanExact": 20,
+      "romanExactPct": 100,
       "failing": 0,
       "byClass": {
         "engine": 0,
@@ -467,12 +127,29 @@
         "unknown": 0
       }
     },
-    "omits=3+5": {
-      "file": "byModification/omits=3+5.json",
-      "total": 196,
-      "notesOk": 196,
+    "inversion=2": {
+      "file": "byModification/inversion=2.json",
+      "total": 22,
+      "notesOk": 22,
       "notesOkPct": 100,
-      "orderOk": 196,
+      "orderOk": 22,
+      "orderOkPct": 100,
+      "romanExact": 17,
+      "romanExactPct": 77.3,
+      "failing": 0,
+      "byClass": {
+        "engine": 0,
+        "harness": 0,
+        "piano_noise": 0,
+        "unknown": 0
+      }
+    },
+    "borrowed=locrian": {
+      "file": "byModification/borrowed=locrian.json",
+      "total": 5,
+      "notesOk": 5,
+      "notesOkPct": 100,
+      "orderOk": 5,
       "orderOkPct": 100,
       "romanExact": 0,
       "romanExactPct": 0,
@@ -486,33 +163,16 @@
     },
     "suspensions=2": {
       "file": "byModification/suspensions=2.json",
-      "total": 129,
-      "notesOk": 129,
+      "total": 6,
+      "notesOk": 6,
       "notesOkPct": 100,
-      "orderOk": 129,
+      "orderOk": 6,
       "orderOkPct": 100,
-      "romanExact": 119,
-      "romanExactPct": 92.2,
+      "romanExact": 0,
+      "romanExactPct": 0,
       "failing": 0,
       "byClass": {
         "engine": 0,
-        "harness": 0,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "type=9": {
-      "file": "byModification/type=9.json",
-      "total": 167,
-      "notesOk": 165,
-      "notesOkPct": 98.8,
-      "orderOk": 167,
-      "orderOkPct": 100,
-      "romanExact": 157,
-      "romanExactPct": 94,
-      "failing": 2,
-      "byClass": {
-        "engine": 2,
         "harness": 0,
         "piano_noise": 0,
         "unknown": 0
@@ -520,47 +180,13 @@
     },
     "alterations=b5": {
       "file": "byModification/alterations=b5.json",
-      "total": 23,
-      "notesOk": 21,
-      "notesOkPct": 91.3,
-      "orderOk": 23,
-      "orderOkPct": 100,
-      "romanExact": 12,
-      "romanExactPct": 52.2,
-      "failing": 2,
-      "byClass": {
-        "engine": 2,
-        "harness": 0,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "adds=6": {
-      "file": "byModification/adds=6.json",
-      "total": 105,
-      "notesOk": 104,
-      "notesOkPct": 99,
-      "orderOk": 105,
-      "orderOkPct": 100,
-      "romanExact": 68,
-      "romanExactPct": 64.8,
-      "failing": 1,
-      "byClass": {
-        "engine": 0,
-        "harness": 1,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "adds=4": {
-      "file": "byModification/adds=4.json",
-      "total": 101,
-      "notesOk": 101,
+      "total": 5,
+      "notesOk": 5,
       "notesOkPct": 100,
-      "orderOk": 101,
+      "orderOk": 5,
       "orderOkPct": 100,
-      "romanExact": 72,
-      "romanExactPct": 71.3,
+      "romanExact": 0,
+      "romanExactPct": 0,
       "failing": 0,
       "byClass": {
         "engine": 0,
@@ -569,117 +195,15 @@
         "unknown": 0
       }
     },
-    "borrowed=locrian": {
-      "file": "byModification/borrowed=locrian.json",
-      "total": 45,
-      "notesOk": 45,
-      "notesOkPct": 100,
-      "orderOk": 45,
-      "orderOkPct": 100,
-      "romanExact": 34,
-      "romanExactPct": 75.6,
-      "failing": 0,
-      "byClass": {
-        "engine": 0,
-        "harness": 0,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "borrowed=phrygian": {
-      "file": "byModification/borrowed=phrygian.json",
+    "type=11": {
+      "file": "byModification/type=11.json",
       "total": 23,
       "notesOk": 23,
       "notesOkPct": 100,
       "orderOk": 23,
       "orderOkPct": 100,
-      "romanExact": 21,
-      "romanExactPct": 91.3,
-      "failing": 0,
-      "byClass": {
-        "engine": 0,
-        "harness": 0,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "applied=yes": {
-      "file": "byModification/applied=yes.json",
-      "total": 229,
-      "notesOk": 227,
-      "notesOkPct": 99.1,
-      "orderOk": 229,
-      "orderOkPct": 100,
-      "romanExact": 170,
-      "romanExactPct": 74.2,
-      "failing": 2,
-      "byClass": {
-        "engine": 2,
-        "harness": 0,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "borrowed=custom-array": {
-      "file": "byModification/borrowed=custom-array.json",
-      "total": 24,
-      "notesOk": 22,
-      "notesOkPct": 91.7,
-      "orderOk": 24,
-      "orderOkPct": 100,
-      "romanExact": 17,
-      "romanExactPct": 70.8,
-      "failing": 2,
-      "byClass": {
-        "engine": 0,
-        "harness": 0,
-        "piano_noise": 2,
-        "unknown": 0
-      }
-    },
-    "type=13": {
-      "file": "byModification/type=13.json",
-      "total": 41,
-      "notesOk": 41,
-      "notesOkPct": 100,
-      "orderOk": 41,
-      "orderOkPct": 100,
-      "romanExact": 37,
-      "romanExactPct": 90.2,
-      "failing": 0,
-      "byClass": {
-        "engine": 0,
-        "harness": 0,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "borrowed=lydian": {
-      "file": "byModification/borrowed=lydian.json",
-      "total": 27,
-      "notesOk": 27,
-      "notesOkPct": 100,
-      "orderOk": 27,
-      "orderOkPct": 100,
-      "romanExact": 26,
-      "romanExactPct": 96.3,
-      "failing": 0,
-      "byClass": {
-        "engine": 0,
-        "harness": 0,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "borrowed=minor": {
-      "file": "byModification/borrowed=minor.json",
-      "total": 95,
-      "notesOk": 95,
-      "notesOkPct": 100,
-      "orderOk": 95,
-      "orderOkPct": 100,
-      "romanExact": 79,
-      "romanExactPct": 83.2,
+      "romanExact": 15,
+      "romanExactPct": 65.2,
       "failing": 0,
       "byClass": {
         "engine": 0,
@@ -690,13 +214,30 @@
     },
     "borrowed=harmonicMinor": {
       "file": "byModification/borrowed=harmonicMinor.json",
-      "total": 48,
-      "notesOk": 48,
+      "total": 10,
+      "notesOk": 10,
       "notesOkPct": 100,
-      "orderOk": 48,
+      "orderOk": 10,
       "orderOkPct": 100,
-      "romanExact": 43,
-      "romanExactPct": 89.6,
+      "romanExact": 10,
+      "romanExactPct": 100,
+      "failing": 0,
+      "byClass": {
+        "engine": 0,
+        "harness": 0,
+        "piano_noise": 0,
+        "unknown": 0
+      }
+    },
+    "type=13": {
+      "file": "byModification/type=13.json",
+      "total": 5,
+      "notesOk": 5,
+      "notesOkPct": 100,
+      "orderOk": 5,
+      "orderOkPct": 100,
+      "romanExact": 5,
+      "romanExactPct": 100,
       "failing": 0,
       "byClass": {
         "engine": 0,
@@ -707,114 +248,12 @@
     },
     "alterations=b9": {
       "file": "byModification/alterations=b9.json",
-      "total": 12,
-      "notesOk": 12,
-      "notesOkPct": 100,
-      "orderOk": 12,
-      "orderOkPct": 100,
-      "romanExact": 12,
-      "romanExactPct": 100,
-      "failing": 0,
-      "byClass": {
-        "engine": 0,
-        "harness": 0,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "alterations=#9": {
-      "file": "byModification/alterations=#9.json",
-      "total": 9,
-      "notesOk": 9,
-      "notesOkPct": 100,
-      "orderOk": 9,
-      "orderOkPct": 100,
-      "romanExact": 5,
-      "romanExactPct": 55.6,
-      "failing": 0,
-      "byClass": {
-        "engine": 0,
-        "harness": 0,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "alterations=#5": {
-      "file": "byModification/alterations=#5.json",
-      "total": 15,
-      "notesOk": 15,
-      "notesOkPct": 100,
-      "orderOk": 15,
-      "orderOkPct": 100,
-      "romanExact": 12,
-      "romanExactPct": 80,
-      "failing": 0,
-      "byClass": {
-        "engine": 0,
-        "harness": 0,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "suspensions=2+4": {
-      "file": "byModification/suspensions=2+4.json",
       "total": 5,
       "notesOk": 5,
       "notesOkPct": 100,
       "orderOk": 5,
       "orderOkPct": 100,
-      "romanExact": 2,
-      "romanExactPct": 40,
-      "failing": 0,
-      "byClass": {
-        "engine": 0,
-        "harness": 0,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "omits=5": {
-      "file": "byModification/omits=5.json",
-      "total": 69,
-      "notesOk": 69,
-      "notesOkPct": 100,
-      "orderOk": 69,
-      "orderOkPct": 100,
-      "romanExact": 58,
-      "romanExactPct": 84.1,
-      "failing": 0,
-      "byClass": {
-        "engine": 0,
-        "harness": 0,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "borrowed=phrygianDominant": {
-      "file": "byModification/borrowed=phrygianDominant.json",
-      "total": 8,
-      "notesOk": 8,
-      "notesOkPct": 100,
-      "orderOk": 8,
-      "orderOkPct": 100,
-      "romanExact": 7,
-      "romanExactPct": 87.5,
-      "failing": 0,
-      "byClass": {
-        "engine": 0,
-        "harness": 0,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "alterations=#11": {
-      "file": "byModification/alterations=#11.json",
-      "total": 1,
-      "notesOk": 1,
-      "notesOkPct": 100,
-      "orderOk": 1,
-      "orderOkPct": 100,
-      "romanExact": 1,
+      "romanExact": 5,
       "romanExactPct": 100,
       "failing": 0,
       "byClass": {
@@ -824,15 +263,100 @@
         "unknown": 0
       }
     },
-    "suspensions=4+2": {
-      "file": "byModification/suspensions=4+2.json",
+    "inversion=1": {
+      "file": "byModification/inversion=1.json",
+      "total": 27,
+      "notesOk": 27,
+      "notesOkPct": 100,
+      "orderOk": 27,
+      "orderOkPct": 100,
+      "romanExact": 23,
+      "romanExactPct": 85.2,
+      "failing": 0,
+      "byClass": {
+        "engine": 0,
+        "harness": 0,
+        "piano_noise": 0,
+        "unknown": 0
+      }
+    },
+    "borrowed=minor": {
+      "file": "byModification/borrowed=minor.json",
       "total": 2,
       "notesOk": 2,
       "notesOkPct": 100,
       "orderOk": 2,
+      "orderOkPct": 100,
+      "romanExact": 2,
+      "romanExactPct": 100,
+      "failing": 0,
+      "byClass": {
+        "engine": 0,
+        "harness": 0,
+        "piano_noise": 0,
+        "unknown": 0
+      }
+    },
+    "suspensions=4": {
+      "file": "byModification/suspensions=4.json",
+      "total": 3,
+      "notesOk": 3,
+      "notesOkPct": 100,
+      "orderOk": 3,
+      "orderOkPct": 100,
+      "romanExact": 3,
+      "romanExactPct": 100,
+      "failing": 0,
+      "byClass": {
+        "engine": 0,
+        "harness": 0,
+        "piano_noise": 0,
+        "unknown": 0
+      }
+    },
+    "adds=9": {
+      "file": "byModification/adds=9.json",
+      "total": 8,
+      "notesOk": 8,
+      "notesOkPct": 100,
+      "orderOk": 8,
+      "orderOkPct": 100,
+      "romanExact": 8,
+      "romanExactPct": 100,
+      "failing": 0,
+      "byClass": {
+        "engine": 0,
+        "harness": 0,
+        "piano_noise": 0,
+        "unknown": 0
+      }
+    },
+    "borrowed=major": {
+      "file": "byModification/borrowed=major.json",
+      "total": 8,
+      "notesOk": 8,
+      "notesOkPct": 100,
+      "orderOk": 8,
+      "orderOkPct": 100,
+      "romanExact": 8,
+      "romanExactPct": 100,
+      "failing": 0,
+      "byClass": {
+        "engine": 0,
+        "harness": 0,
+        "piano_noise": 0,
+        "unknown": 0
+      }
+    },
+    "applied=yes": {
+      "file": "byModification/applied=yes.json",
+      "total": 5,
+      "notesOk": 5,
+      "notesOkPct": 100,
+      "orderOk": 5,
       "orderOkPct": 100,
       "romanExact": 1,
-      "romanExactPct": 50,
+      "romanExactPct": 20,
       "failing": 0,
       "byClass": {
         "engine": 0,
@@ -841,66 +365,49 @@
         "unknown": 0
       }
     },
-    "alterations=#5+#9": {
-      "file": "byModification/alterations=#5+#9.json",
+    "type=9": {
+      "file": "byModification/type=9.json",
+      "total": 3,
+      "notesOk": 3,
+      "notesOkPct": 100,
+      "orderOk": 3,
+      "orderOkPct": 100,
+      "romanExact": 3,
+      "romanExactPct": 100,
+      "failing": 0,
+      "byClass": {
+        "engine": 0,
+        "harness": 0,
+        "piano_noise": 0,
+        "unknown": 0
+      }
+    },
+    "borrowed=dorian": {
+      "file": "byModification/borrowed=dorian.json",
+      "total": 3,
+      "notesOk": 3,
+      "notesOkPct": 100,
+      "orderOk": 3,
+      "orderOkPct": 100,
+      "romanExact": 3,
+      "romanExactPct": 100,
+      "failing": 0,
+      "byClass": {
+        "engine": 0,
+        "harness": 0,
+        "piano_noise": 0,
+        "unknown": 0
+      }
+    },
+    "borrowed=lydian": {
+      "file": "byModification/borrowed=lydian.json",
       "total": 1,
       "notesOk": 1,
       "notesOkPct": 100,
       "orderOk": 1,
       "orderOkPct": 100,
-      "romanExact": 0,
-      "romanExactPct": 0,
-      "failing": 0,
-      "byClass": {
-        "engine": 0,
-        "harness": 0,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "adds=6+9": {
-      "file": "byModification/adds=6+9.json",
-      "total": 2,
-      "notesOk": 2,
-      "notesOkPct": 100,
-      "orderOk": 2,
-      "orderOkPct": 100,
-      "romanExact": 0,
-      "romanExactPct": 0,
-      "failing": 0,
-      "byClass": {
-        "engine": 0,
-        "harness": 0,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "adds=4+9": {
-      "file": "byModification/adds=4+9.json",
-      "total": 1,
-      "notesOk": 1,
-      "notesOkPct": 100,
-      "orderOk": 1,
-      "orderOkPct": 100,
-      "romanExact": 0,
-      "romanExactPct": 0,
-      "failing": 0,
-      "byClass": {
-        "engine": 0,
-        "harness": 0,
-        "piano_noise": 0,
-        "unknown": 0
-      }
-    },
-    "alterations=b5+b9": {
-      "file": "byModification/alterations=b5+b9.json",
-      "total": 1,
-      "notesOk": 1,
-      "notesOkPct": 100,
-      "orderOk": 1,
-      "orderOkPct": 100,
-      "romanExact": 0,
-      "romanExactPct": 0,
+      "romanExact": 1,
+      "romanExactPct": 100,
       "failing": 0,
       "byClass": {
         "engine": 0,
@@ -911,41 +418,9 @@
     }
   },
   "compositeIndex": {
-    "adds=9+suspensions=4": {
-      "file": "byCompositeKey/adds=9+suspensions=4.json",
-      "count": 2
-    },
-    "adds=6+alterations=b5": {
-      "file": "byCompositeKey/adds=6+alterations=b5.json",
-      "count": 1
-    },
     "alterations=b5+suspensions=2": {
       "file": "byCompositeKey/alterations=b5+suspensions=2.json",
       "count": 5
-    },
-    "omits=5+suspensions=2+4": {
-      "file": "byCompositeKey/omits=5+suspensions=2+4.json",
-      "count": 1
-    },
-    "adds=6+suspensions=2": {
-      "file": "byCompositeKey/adds=6+suspensions=2.json",
-      "count": 4
-    },
-    "adds=6+suspensions=4": {
-      "file": "byCompositeKey/adds=6+suspensions=4.json",
-      "count": 6
-    },
-    "adds=6+suspensions=2+4": {
-      "file": "byCompositeKey/adds=6+suspensions=2+4.json",
-      "count": 3
-    },
-    "omits=5+suspensions=2": {
-      "file": "byCompositeKey/omits=5+suspensions=2.json",
-      "count": 1
-    },
-    "omits=5+suspensions=4": {
-      "file": "byCompositeKey/omits=5+suspensions=4.json",
-      "count": 4
     }
   }
 }

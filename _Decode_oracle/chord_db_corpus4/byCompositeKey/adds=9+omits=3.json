@@ -46,7 +46,7 @@
       5
     ],
     "pianoValidated": false,
-    "engRoman": "♭IV(add9)(no3)(maj)",
+    "engRoman": "♭IV(maj)(add9)(no3)",
     "engLetter": "F",
     "engNotes": [
       "F3",
@@ -59,7 +59,7 @@
       7
     ],
     "flags": {
-      "romanExact": true,
+      "romanExact": false,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": false,
@@ -70,11 +70,12 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": true,
+    "romanExact": false,
     "failureClass": null,
     "buckets": [
       "type=5",

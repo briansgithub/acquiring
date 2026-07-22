@@ -12,6 +12,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { discoverAllScrapeDirs } = require('../../_Research_testing/hooktheory_catalog/lib/harvestPaths');
 const { TIERS, tierForRank } = require('../corpus3/tierMeta');
 const {
   buildPool,
@@ -22,7 +23,6 @@ const {
 const { slugForUrl } = require('../run');
 
 const ROOT = path.join(__dirname, '..');
-const OUT = path.join(ROOT, 'out');
 const TARGET = 500;
 
 function parseArgs(argv) {
@@ -64,15 +64,9 @@ function isJunkUrl(url) {
 
 function loadProcessedSlugs() {
   const processed = new Set();
-  if (!fs.existsSync(OUT)) return processed;
-  for (const slug of fs.readdirSync(OUT)) {
-    if (isJunkSlug(slug)) continue;
-    const scrapeFile = path.join(OUT, slug, 'scrape.json');
-    if (!fs.existsSync(scrapeFile)) continue;
-    try {
-      const scrape = JSON.parse(fs.readFileSync(scrapeFile, 'utf8'));
-      if (scrapeOk(scrape)) processed.add(slug);
-    } catch (_) {}
+  for (const ent of discoverAllScrapeDirs({ fullTruthOnly: true })) {
+    if (isJunkSlug(ent.slug)) continue;
+    processed.add(ent.slug);
   }
   return processed;
 }
@@ -85,15 +79,12 @@ function artistTitleFromUrl(url) {
 
 function discoverScraped() {
   const items = [];
-  if (!fs.existsSync(OUT)) return items;
-  for (const slug of fs.readdirSync(OUT)) {
-    const scrapeFile = path.join(OUT, slug, 'scrape.json');
-    if (!fs.existsSync(scrapeFile)) continue;
+  for (const ent of discoverAllScrapeDirs({ fullTruthOnly: true })) {
     try {
-      const scrape = JSON.parse(fs.readFileSync(scrapeFile, 'utf8'));
+      const scrape = JSON.parse(fs.readFileSync(ent.scrapeFile, 'utf8'));
       if (!scrapeOk(scrape) || !scrape.url) continue;
-      if (isJunkSlug(slug) || isJunkUrl(scrape.url)) continue;
-      items.push({ slug, url: scrape.url, scrape });
+      if (isJunkSlug(ent.slug) || isJunkUrl(scrape.url)) continue;
+      items.push({ slug: ent.slug, url: scrape.url, scrape });
     } catch (_) {}
   }
   return items;
@@ -101,14 +92,11 @@ function discoverScraped() {
 
 function loadBlockedSlugs() {
   const blocked = loadProcessedSlugs();
-  if (!fs.existsSync(OUT)) return blocked;
-  for (const slug of fs.readdirSync(OUT)) {
-    if (isJunkSlug(slug)) continue;
-    const scrapeFile = path.join(OUT, slug, 'scrape.json');
-    if (!fs.existsSync(scrapeFile)) continue;
+  for (const ent of discoverAllScrapeDirs()) {
+    if (isJunkSlug(ent.slug)) continue;
     try {
-      const scrape = JSON.parse(fs.readFileSync(scrapeFile, 'utf8'));
-      if (scrape.errors?.some((e) => /404|not found/i.test(e))) blocked.add(slug);
+      const scrape = JSON.parse(fs.readFileSync(ent.scrapeFile, 'utf8'));
+      if (scrape.errors?.some((e) => /404|not found/i.test(e))) blocked.add(ent.slug);
     } catch (_) {}
   }
   return blocked;

@@ -42,7 +42,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "VII¹³(b9)",
+    "engRoman": "VII13(b9)",
     "engLetter": "C13",
     "engNotes": [
       "C3",
@@ -74,7 +74,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -132,7 +133,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "VII¹³(b9)",
+    "engRoman": "VII13(b9)",
     "engLetter": "C13",
     "engNotes": [
       "C3",
@@ -164,7 +165,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -222,7 +224,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "VII¹³(b9)",
+    "engRoman": "VII13(b9)",
     "engLetter": "C13",
     "engNotes": [
       "C3",
@@ -254,7 +256,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -312,7 +315,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "VII¹³(b9)",
+    "engRoman": "VII13(b9)",
     "engLetter": "C13",
     "engNotes": [
       "C3",
@@ -344,7 +347,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
@@ -402,7 +406,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "♭VII¹³(b9)(min)",
+    "engRoman": "♭VII13(b9)(min)",
     "engLetter": "C13",
     "engNotes": [
       "C3",
@@ -434,7 +438,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,

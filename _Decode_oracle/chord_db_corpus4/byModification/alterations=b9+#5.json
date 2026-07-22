@@ -40,7 +40,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "♭VI+⁷(b9)(#5)(loc)",
+    "engRoman": "♭VI+7(b9#5)(loc)",
     "engLetter": "Ab+7",
     "engNotes": [
       "Ab3",
@@ -57,7 +57,7 @@
       9
     ],
     "flags": {
-      "romanExact": false,
+      "romanExact": true,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": false,
@@ -68,101 +68,18 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": false,
+    "romanExact": true,
     "failureClass": null,
     "buckets": [
       "type=7",
       "inversion=0",
       "applied=no",
       "borrowed=locrian",
-      "alterations=b9+#5"
-    ],
-    "compositeKey": null
-  },
-  {
-    "id": "jamiroquai__time-wont-wait/Verse/29",
-    "song": "jamiroquai__time-wont-wait",
-    "section": "Verse",
-    "beat": 29,
-    "key": {
-      "tonic": "D",
-      "scale": "minor"
-    },
-    "chord": {
-      "root": 1,
-      "beat": 29,
-      "duration": 2,
-      "type": 7,
-      "inversion": 0,
-      "applied": 5,
-      "adds": [],
-      "omits": [],
-      "alterations": [
-        "b9",
-        "#5"
-      ],
-      "suspensions": [],
-      "pedal": null,
-      "alternate": "",
-      "borrowed": "",
-      "isRest": false,
-      "recordingEndBeat": null
-    },
-    "truthRoman": "V+7(b9#5)/i(maj)",
-    "truthLetter": "A+7+(b9#5)",
-    "truthPcs": [
-      1,
-      5,
-      7,
-      9,
-      10
-    ],
-    "pianoNotes": null,
-    "pianoPcs": null,
-    "pianoValidated": false,
-    "engRoman": "V+⁷(b9)(#5)/i",
-    "engLetter": "A+7",
-    "engNotes": [
-      "A3",
-      "C#4",
-      "F4",
-      "G4",
-      "Bb4"
-    ],
-    "engPcs": [
-      1,
-      5,
-      7,
-      9,
-      10
-    ],
-    "flags": {
-      "romanExact": false,
-      "romanCore": true,
-      "rootPcMatch": true,
-      "bassPcMatch": false,
-      "rootInPcs": true,
-      "bassInNotes": true,
-      "pcsExact": true,
-      "pianoExact": false,
-      "pianoPcsExact": false,
-      "pianoValidated": false,
-      "usePiano": false,
-      "orderOk": true
-    },
-    "notesOk": true,
-    "orderOk": true,
-    "romanExact": false,
-    "failureClass": null,
-    "buckets": [
-      "type=7",
-      "inversion=0",
-      "applied=yes",
-      "borrowed=none",
       "alterations=b9+#5"
     ],
     "compositeKey": null
