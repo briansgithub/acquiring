@@ -890,11 +890,20 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 **Deferred (unchanged):** `bor=major` inv=2 `#vii°6` vs `64` — remaining failures are harness/piano_noise (engine PCs G#+D match letter `G#°/D`); figured-bass 6 vs 64 roman mismatch.
 
-**Files:** `chordBuild.js`, `chordPolicy.js`, `chordSeventh.js`, `chordSubstitutions.js`, `chordAlterations.js`, `music.js`, `truthNotes.js`, `policyRegression.mjs`
-
 ---
 
-## Pronunciation review (2026-07-22) — partial; revisit after next corpus pass
+## Fix 046–047 — iv13 scope + minor iiø65 dim7 voice (2026-07-22, `feat/fix-047-halfdim-inv`)
+
+**046:** `minorExtended13Stack` scoped to **i** and **v** only — `iv13` keeps natural extensions.
+
+**047:** Fix 045 `halfDim` guard blocked all `bb7`; nat-dim **ø** (minor `ii°`) must keep dim7 voice per catalog (`iiø65` truth `[1,4,7,10]` not m7 `D`).
+
+**Fix:** `borrowedModeDimSeventhDegree` — when `halfDim` + `chordQuality === diminished`, still apply `DIM7_BB7_ENTRIES`; major-key `iiø` (minor triad quality) unchanged.
+
+**Fixtures:** `iv13minor`, `iio65minor` in `policyRegression.mjs` (15/15).
+
+**048 (same branch):** `vii°(no3no5)` — skip dim+omit5 dim7 injection when omit 3 as well (`viiDimNo35` fixture). Regression **16/16**.
+
 
 **When:** 2026-07-22 (`feat/chord-pronunciation-review`)  
 **Done:** Functional readings no longer inject `;` / `,` before “secondary dominant to” / “borrowed from”; bare letter names get triad quality when `getChordLetterName` returns root only; `substitutions:["tri"]` speaks “tritone substitution”.  
