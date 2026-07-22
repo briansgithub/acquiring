@@ -45,7 +45,9 @@ export function resolveSeventhDegree({
   if (policy.augMaj7Voicing) return "augMaj7Stack";
   if (useSusFrame) return "b7";
   if (policy.hmBorrowedMinor7) return "b7";
-  if (policy.customBorrowedHalfDim) return "bb7";
+  if (policy.customBorrowedHalfDim) {
+    return policy.customBorrowedHalfDimM7 ? "customHalfDimM7" : "bb7";
+  }
   if (effModifierChord?.dimTriad) return "bb7";
   if (policy.customDimMaj7) return "7";
   if (policy.phdmIImaj7) return "7";
@@ -106,6 +108,11 @@ export function applyAugMaj7Stack(toneJSNames, degreeIndices) {
 export function applySeventhToChord(toneJSNames, degreeIndices, seventhKind, chordRootNoteName, baseOctave, sdToToneJSNoteName) {
   if (seventhKind === "augMaj7Stack") {
     applyAugMaj7Stack(toneJSNames, degreeIndices);
+    return;
+  }
+  if (seventhKind === "customHalfDimM7") {
+    toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 9));
+    degreeIndices.push(3);
     return;
   }
   if (seventhKind) {

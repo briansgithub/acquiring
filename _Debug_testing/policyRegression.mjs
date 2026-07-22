@@ -40,8 +40,13 @@ const BASELINE = {
   },
   i13minor: {
     chord: { root: 1, type: 13 },
-    key: { tonic: "C", scale: "minor" },
-    pcs: [0, 1, 3, 5, 7, 8, 9, 10],
+    key: { tonic: "E", scale: "minor" },
+    pcs: [1, 2, 4, 6, 7, 9, 11],
+  },
+  iiDimNo5: {
+    chord: { root: 2, type: 5, omits: [5] },
+    key: { tonic: "B", scale: "minor" },
+    pcs: [1, 4],
   },
   III13notMinorStack: {
     chord: { root: 3, type: 13 },
@@ -57,6 +62,11 @@ const BASELINE = {
     chord: { root: 4, type: 7, borrowed: [-1, 1, 3, 5, 6, 8, 10], halfDim: true },
     key: { tonic: "E", scale: "major" },
     pcs: [0, 3, 6, 9],
+  },
+  customHalfDim11: {
+    chord: { root: 1, type: 11, borrowed: [1, 2, 4, 6, 7, 9, 11], halfDim: true },
+    key: { tonic: "A", scale: "minor" },
+    pcs: [1, 4, 7, 10, 11],
   },
   iio65minor: {
     chord: { root: 2, type: 7, inversion: 1, halfDim: true },

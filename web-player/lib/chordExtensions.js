@@ -7,11 +7,16 @@ export function applyTypeExtensions(toneJSNames, degreeIndices, chordRootNoteNam
   const rk = rootKey(chordRootNoteName);
   const rootPc = noteNameToPc(noteLabel(chordRootNoteName));
 
-  if (chordType >= 9 && !opts.skipNine && !hasPc(toneJSNames, (rootPc + 2) % 12)) {
+  if (chordType >= 9 && !opts.skipNine && !opts.customBorrowedHalfDimM7 && !hasPc(toneJSNames, (rootPc + 2) % 12)) {
     toneJSNames.push(sdToToneJSNoteName("2", 1, rk, baseOctave));
     degreeIndices.push(4);
   }
-  if (chordType >= 11) {
+  if (opts.customBorrowedHalfDimM7 && triadQuality === "minor" && chordType >= 11) {
+    if (!hasPc(toneJSNames, (rootPc + 1) % 12)) {
+      toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 1));
+      degreeIndices.push(5);
+    }
+  } else if (chordType >= 11) {
     const natural11Pc = triadQuality === "diminished"
       ? (rootPc + (opts.skipNine ? 1 : 9)) % 12
       : triadQuality === "minor"
