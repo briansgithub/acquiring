@@ -60,6 +60,7 @@ function enrichChordFromSymbol(chord, roman, letter) {
     || (halfDim && alterations.includes('b5'));
   if (halfDim && (mods.type ?? 5) >= 9) {
     for (const a of ["b5", "b9"]) {
+      if (Array.isArray(chord.borrowed) && a === "b9") continue;
       if (!alterations.includes(a)) alterations.push(a);
     }
   }

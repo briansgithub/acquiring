@@ -3828,7 +3828,7 @@
     ],
     "pianoValidated": false,
     "engRoman": "vi64(bor)",
-    "engLetter": "B/F#",
+    "engLetter": "Bm/F#",
     "engNotes": [
       "F#4",
       "B4",
@@ -4223,7 +4223,7 @@
     "pianoPcs": null,
     "pianoValidated": false,
     "engRoman": "III+△4(#5)3(bor)",
-    "engLetter": "Em7/B",
+    "engLetter": "E+maj7/B",
     "engNotes": [
       "C4",
       "D#4",
@@ -5280,6 +5280,556 @@
       0,
       5,
       8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "hertzdevil__stage-64/Instrumental/17",
+    "song": "hertzdevil__stage-64",
+    "section": "Instrumental",
+    "beat": 17,
+    "key": {
+      "tonic": "D#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 17,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": [
+        -1,
+        1,
+        3,
+        5,
+        6,
+        8,
+        10
+      ],
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "iii64(bor)",
+    "truthLetter": "f#m/C#",
+    "truthPcs": [
+      1,
+      6,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "iii64(bor)",
+    "engLetter": "F#m/C#",
+    "engNotes": [
+      "C#4",
+      "F#4",
+      "A4"
+    ],
+    "engPcs": [
+      1,
+      6,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=custom-array"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "hertzdevil__stage-64/Instrumental/21",
+    "song": "hertzdevil__stage-64",
+    "section": "Instrumental",
+    "beat": 21,
+    "key": {
+      "tonic": "D#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 21,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": [
+        -1,
+        1,
+        3,
+        4,
+        6,
+        8,
+        10
+      ],
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "bii64(bor)",
+    "truthLetter": "em/B",
+    "truthPcs": [
+      4,
+      7,
+      11
+    ],
+    "pianoNotes": [
+      "A#3",
+      "F#4"
+    ],
+    "pianoPcs": [
+      6,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "♭ii64(bor)",
+    "engLetter": "Em/B",
+    "engNotes": [
+      "B3",
+      "E4",
+      "G4"
+    ],
+    "engPcs": [
+      4,
+      7,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=custom-array"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "hertzdevil__stage-64/Instrumental/46.5",
+    "song": "hertzdevil__stage-64",
+    "section": "Instrumental",
+    "beat": 46.5,
+    "key": {
+      "tonic": "D#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 46.5,
+      "duration": 2.5,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "III64",
+    "truthLetter": "F#/C#",
+    "truthPcs": [
+      1,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "III64",
+    "engLetter": "F#/C#",
+    "engNotes": [
+      "C#4",
+      "F#4",
+      "A#4"
+    ],
+    "engPcs": [
+      1,
+      6,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "hertzdevil__stage-64/Instrumental/50.5",
+    "song": "hertzdevil__stage-64",
+    "section": "Instrumental",
+    "beat": 50.5,
+    "key": {
+      "tonic": "D#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 50.5,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 2,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        4
+      ],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V4sus46/iv(maj)",
+    "truthLetter": "D#sus4/A#",
+    "truthPcs": [
+      3,
+      8,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V64sus4/iv(maj)",
+    "engLetter": "D#sus4/A#",
+    "engNotes": [
+      "A#2",
+      "D#3",
+      "G#3"
+    ],
+    "engPcs": [
+      3,
+      8,
+      10
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=yes",
+      "borrowed=none",
+      "suspensions=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "hertzdevil__stage-64/Instrumental/52",
+    "song": "hertzdevil__stage-64",
+    "section": "Instrumental",
+    "beat": 52,
+    "key": {
+      "tonic": "D#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 52,
+      "duration": 1,
+      "type": 5,
+      "inversion": 2,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V64/iv(maj)",
+    "truthLetter": "D#/A#",
+    "truthPcs": [
+      3,
+      7,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V64/iv(maj)",
+    "engLetter": "D#/A#",
+    "engNotes": [
+      "A#2",
+      "D#3",
+      "F##3"
+    ],
+    "engPcs": [
+      3,
+      7,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=yes",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "hertzdevil__stage-64/Instrumental/123",
+    "song": "hertzdevil__stage-64",
+    "section": "Instrumental",
+    "beat": 123,
+    "key": {
+      "tonic": "Bb",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 123,
+      "duration": 2,
+      "type": 5,
+      "inversion": 2,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V64/VI(maj)",
+    "truthLetter": "Db/Ab",
+    "truthPcs": [
+      1,
+      5,
+      8
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V64/VI(maj)",
+    "engLetter": "Db/Ab",
+    "engNotes": [
+      "Ab2",
+      "Db3",
+      "F3"
+    ],
+    "engPcs": [
+      1,
+      5,
+      8
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=yes",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "hertzdevil__stage-64/Instrumental/135",
+    "song": "hertzdevil__stage-64",
+    "section": "Instrumental",
+    "beat": 135,
+    "key": {
+      "tonic": "D#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 135,
+      "duration": 1,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i64",
+    "truthLetter": "d#m/A#",
+    "truthPcs": [
+      3,
+      6,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "i64",
+    "engLetter": "D#m/A#",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "F#4"
+    ],
+    "engPcs": [
+      3,
+      6,
+      10
     ],
     "flags": {
       "romanExact": true,
@@ -7790,15 +8340,15 @@
     "truthRoman": "vii°43/III(maj)",
     "truthLetter": "c#°7/G",
     "truthPcs": [
-      2,
-      5,
-      8,
-      11
+      1,
+      4,
+      7,
+      10
     ],
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "vii°43/III",
+    "engRoman": "vii°43/III(maj)",
     "engLetter": "C#°7/G",
     "engNotes": [
       "G2",
@@ -7813,13 +8363,13 @@
       10
     ],
     "flags": {
-      "romanExact": false,
+      "romanExact": true,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": true,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
@@ -7827,10 +8377,10 @@
       "orderOk": true,
       "degreesOk": true
     },
-    "notesOk": false,
+    "notesOk": true,
     "orderOk": true,
-    "romanExact": false,
-    "failureClass": "engine",
+    "romanExact": true,
+    "failureClass": null,
     "buckets": [
       "type=7",
       "inversion=2",
@@ -9732,7 +10282,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "V43/v",
+    "engRoman": "V43/v(maj)",
     "engLetter": "E7/B",
     "engNotes": [
       "B2",
@@ -9747,7 +10297,7 @@
       11
     ],
     "flags": {
-      "romanExact": false,
+      "romanExact": true,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": true,
@@ -9763,7 +10313,7 @@
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": false,
+    "romanExact": true,
     "failureClass": null,
     "buckets": [
       "type=7",
@@ -9811,7 +10361,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "V43/v",
+    "engRoman": "V43/v(maj)",
     "engLetter": "E7/B",
     "engNotes": [
       "B2",
@@ -9826,7 +10376,7 @@
       11
     ],
     "flags": {
-      "romanExact": false,
+      "romanExact": true,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": true,
@@ -9842,7 +10392,7 @@
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": false,
+    "romanExact": true,
     "failureClass": null,
     "buckets": [
       "type=7",
@@ -11231,6 +11781,1222 @@
       "inversion=2",
       "applied=no",
       "borrowed=dorian"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Pre-Chorus and Chorus/15",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Pre-Chorus and Chorus",
+    "beat": 15,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 15,
+      "duration": 2,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "III64",
+    "truthLetter": "B/F#",
+    "truthPcs": [
+      3,
+      6,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "III64",
+    "engLetter": "B/F#",
+    "engNotes": [
+      "F#4",
+      "B4",
+      "D#5"
+    ],
+    "engPcs": [
+      3,
+      6,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus/15",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus",
+    "beat": 15,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 15,
+      "duration": 2,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "III64",
+    "truthLetter": "B/F#",
+    "truthPcs": [
+      3,
+      6,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "III64",
+    "engLetter": "B/F#",
+    "engNotes": [
+      "F#4",
+      "B4",
+      "D#5"
+    ],
+    "engPcs": [
+      3,
+      6,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Chorus Lead-Out/15",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Chorus Lead-Out",
+    "beat": 15,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 15,
+      "duration": 2,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "III64",
+    "truthLetter": "B/F#",
+    "truthPcs": [
+      3,
+      6,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "III64",
+    "engLetter": "B/F#",
+    "engNotes": [
+      "F#4",
+      "B4",
+      "D#5"
+    ],
+    "engPcs": [
+      3,
+      6,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "larc-en-ciel__lies-and-truth/Bridge/15",
+    "song": "larc-en-ciel__lies-and-truth",
+    "section": "Bridge",
+    "beat": 15,
+    "key": {
+      "tonic": "G#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 3,
+      "beat": 15,
+      "duration": 2,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "III64",
+    "truthLetter": "B/F#",
+    "truthPcs": [
+      3,
+      6,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "III64",
+    "engLetter": "B/F#",
+    "engNotes": [
+      "F#4",
+      "B4",
+      "D#5"
+    ],
+    "engPcs": [
+      3,
+      6,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ludwig-van-beethoven__joyful-joyful-we-adore-thee/Verse/5",
+    "song": "ludwig-van-beethoven__joyful-joyful-we-adore-thee",
+    "section": "Verse",
+    "beat": 5,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 5,
+      "duration": 1,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I64",
+    "truthLetter": "F/C",
+    "truthPcs": [
+      0,
+      5,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I64",
+    "engLetter": "F/C",
+    "engNotes": [
+      "C4",
+      "F4",
+      "A4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ludwig-van-beethoven__joyful-joyful-we-adore-thee/Verse/7",
+    "song": "ludwig-van-beethoven__joyful-joyful-we-adore-thee",
+    "section": "Verse",
+    "beat": 7,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 7,
+      "duration": 1,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I64",
+    "truthLetter": "F/C",
+    "truthPcs": [
+      0,
+      5,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I64",
+    "engLetter": "F/C",
+    "engNotes": [
+      "C4",
+      "F4",
+      "A4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ludwig-van-beethoven__joyful-joyful-we-adore-thee/Verse/13",
+    "song": "ludwig-van-beethoven__joyful-joyful-we-adore-thee",
+    "section": "Verse",
+    "beat": 13,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 13,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I64",
+    "truthLetter": "F/C",
+    "truthPcs": [
+      0,
+      5,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I64",
+    "engLetter": "F/C",
+    "engNotes": [
+      "C4",
+      "F4",
+      "A4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ludwig-van-beethoven__joyful-joyful-we-adore-thee/Verse/19",
+    "song": "ludwig-van-beethoven__joyful-joyful-we-adore-thee",
+    "section": "Verse",
+    "beat": 19,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 19,
+      "duration": 1,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV64",
+    "truthLetter": "Bb/F",
+    "truthPcs": [
+      2,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV64",
+    "engLetter": "Bb/F",
+    "engNotes": [
+      "F4",
+      "Bb4",
+      "D5"
+    ],
+    "engPcs": [
+      2,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ludwig-van-beethoven__joyful-joyful-we-adore-thee/Verse/25",
+    "song": "ludwig-van-beethoven__joyful-joyful-we-adore-thee",
+    "section": "Verse",
+    "beat": 25,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 25,
+      "duration": 2,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I64",
+    "truthLetter": "F/C",
+    "truthPcs": [
+      0,
+      5,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I64",
+    "engLetter": "F/C",
+    "engNotes": [
+      "C4",
+      "F4",
+      "A4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ludwig-van-beethoven__joyful-joyful-we-adore-thee/Verse/28",
+    "song": "ludwig-van-beethoven__joyful-joyful-we-adore-thee",
+    "section": "Verse",
+    "beat": 28,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 28,
+      "duration": 1,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I64",
+    "truthLetter": "F/C",
+    "truthPcs": [
+      0,
+      5,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I64",
+    "engLetter": "F/C",
+    "engNotes": [
+      "C4",
+      "F4",
+      "A4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ludwig-van-beethoven__joyful-joyful-we-adore-thee/Verse/35",
+    "song": "ludwig-van-beethoven__joyful-joyful-we-adore-thee",
+    "section": "Verse",
+    "beat": 35,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 35,
+      "duration": 2,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I64",
+    "truthLetter": "F/C",
+    "truthPcs": [
+      0,
+      5,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I64",
+    "engLetter": "F/C",
+    "engNotes": [
+      "C4",
+      "F4",
+      "A4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ludwig-van-beethoven__joyful-joyful-we-adore-thee/Verse/38",
+    "song": "ludwig-van-beethoven__joyful-joyful-we-adore-thee",
+    "section": "Verse",
+    "beat": 38,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 38,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I64",
+    "truthLetter": "F/C",
+    "truthPcs": [
+      0,
+      5,
+      9
+    ],
+    "pianoNotes": [
+      "A3",
+      "Bb3"
+    ],
+    "pianoPcs": [
+      9,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "I64",
+    "engLetter": "F/C",
+    "engNotes": [
+      "C4",
+      "F4",
+      "A4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ludwig-van-beethoven__joyful-joyful-we-adore-thee/Verse/39",
+    "song": "ludwig-van-beethoven__joyful-joyful-we-adore-thee",
+    "section": "Verse",
+    "beat": 39,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 39,
+      "duration": 2,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I64",
+    "truthLetter": "F/C",
+    "truthPcs": [
+      0,
+      5,
+      9
+    ],
+    "pianoNotes": [
+      "A3",
+      "Bb3"
+    ],
+    "pianoPcs": [
+      9,
+      10
+    ],
+    "pianoValidated": false,
+    "engRoman": "I64",
+    "engLetter": "F/C",
+    "engNotes": [
+      "C4",
+      "F4",
+      "A4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ludwig-van-beethoven__joyful-joyful-we-adore-thee/Verse/51",
+    "song": "ludwig-van-beethoven__joyful-joyful-we-adore-thee",
+    "section": "Verse",
+    "beat": 51,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 51,
+      "duration": 1,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV64",
+    "truthLetter": "Bb/F",
+    "truthPcs": [
+      2,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV64",
+    "engLetter": "Bb/F",
+    "engNotes": [
+      "F4",
+      "Bb4",
+      "D5"
+    ],
+    "engPcs": [
+      2,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ludwig-van-beethoven__joyful-joyful-we-adore-thee/Verse/57",
+    "song": "ludwig-van-beethoven__joyful-joyful-we-adore-thee",
+    "section": "Verse",
+    "beat": 57,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 57,
+      "duration": 2,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I64",
+    "truthLetter": "F/C",
+    "truthPcs": [
+      0,
+      5,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I64",
+    "engLetter": "F/C",
+    "engNotes": [
+      "C4",
+      "F4",
+      "A4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ludwig-van-beethoven__joyful-joyful-we-adore-thee/Verse/60",
+    "song": "ludwig-van-beethoven__joyful-joyful-we-adore-thee",
+    "section": "Verse",
+    "beat": 60,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 60,
+      "duration": 1,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "I64",
+    "truthLetter": "F/C",
+    "truthPcs": [
+      0,
+      5,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "I64",
+    "engLetter": "F/C",
+    "engNotes": [
+      "C4",
+      "F4",
+      "A4"
+    ],
+    "engPcs": [
+      0,
+      5,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=none"
     ],
     "compositeKey": null
   },

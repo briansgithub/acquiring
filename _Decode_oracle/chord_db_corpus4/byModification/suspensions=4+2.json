@@ -328,6 +328,85 @@
     "compositeKey": null
   },
   {
+    "id": "hertzdevil__stage-64/Instrumental/29",
+    "song": "hertzdevil__stage-64",
+    "section": "Instrumental",
+    "beat": 29,
+    "key": {
+      "tonic": "D#",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 29,
+      "duration": 1.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        4,
+        2
+      ],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "Vsus4sus2(maj)",
+    "truthLetter": "A#sus4sus2",
+    "truthPcs": [
+      3,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "Vsus4sus2(maj)",
+    "engLetter": "A#sus4sus2",
+    "engNotes": [
+      "A#3",
+      "D#4",
+      "E#4"
+    ],
+    "engPcs": [
+      3,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=major",
+      "suspensions=4+2"
+    ],
+    "compositeKey": null
+  },
+  {
     "id": "kazumi-totaka__5pm---animal-crossing-new-horizons/Intro and Verse/13",
     "song": "kazumi-totaka__5pm---animal-crossing-new-horizons",
     "section": "Intro and Verse",
@@ -741,6 +820,164 @@
       "inversion=0",
       "applied=no",
       "borrowed=none",
+      "suspensions=4+2"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ludwig-van-beethoven__joyful-joyful-we-adore-thee/Verse/21",
+    "song": "ludwig-van-beethoven__joyful-joyful-we-adore-thee",
+    "section": "Verse",
+    "beat": 21,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 21,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        4,
+        2
+      ],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "mixolydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IVsus4sus2(mix)",
+    "truthLetter": "Bbsus4sus2",
+    "truthPcs": [
+      3,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IVsus4sus2(mix)",
+    "engLetter": "Bbsus4sus2",
+    "engNotes": [
+      "Bb3",
+      "Eb4",
+      "F4"
+    ],
+    "engPcs": [
+      3,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=mixolydian",
+      "suspensions=4+2"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "ludwig-van-beethoven__joyful-joyful-we-adore-thee/Verse/53",
+    "song": "ludwig-van-beethoven__joyful-joyful-we-adore-thee",
+    "section": "Verse",
+    "beat": 53,
+    "key": {
+      "tonic": "F",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 53,
+      "duration": 1,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        4,
+        2
+      ],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "mixolydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IVsus4sus2(mix)",
+    "truthLetter": "Bbsus4sus2",
+    "truthPcs": [
+      3,
+      5,
+      10
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IVsus4sus2(mix)",
+    "engLetter": "Bbsus4sus2",
+    "engNotes": [
+      "Bb3",
+      "Eb4",
+      "F4"
+    ],
+    "engPcs": [
+      3,
+      5,
+      10
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=mixolydian",
       "suspensions=4+2"
     ],
     "compositeKey": null

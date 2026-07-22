@@ -835,4 +835,38 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 044 — Policy extraction + unified seventh pipeline + tri-sub
+
+**When:** 2026-07-22 (musically honest engine dev plan)  
+**Symptom:** `music.js` ~990 lines with scattered Layer-B `if` branches; duplicate seventh/inversion paths; `substitutions:["tri"]` mis-voiced as parent-key dominant; `v13` in minor missing `m11(b9b13)` PCs; custom-array `ø11` injected spurious `b9`.  
+**Fix (Layer B refactor — zero behavior change on policy fixtures except targeted clusters):**
+- **`chordPolicy.js`** — `resolveChordPolicy()`, `enrichModifierChord()`, `borrowedModeDimSeventhDegree` table, `isMajorSeventh` for symbol layer.
+- **`chordSeventh.js`** — unified `resolveSeventhDegree` / `applySeventhToChord` / `applyAugMaj7Stack`.
+- **`chordBuild.js`** — `rootToDiatonicTriad` + `buildChordFromNoteName` (music.js now 77 lines).
+- **`scaleBorrowed.js`** — custom-array + `resolveBorrowedScale` (musicScale.js 295 lines).
+- **`chordSubstitutions.js`** — `substitutions:["tri"]` → `_triSubDominant` + tritone root in applied path.
+- **`chordExtensions.js`** — minor natural-11 via `+5` semitones (not major-frame `sd4`); `skipThirteenth` opt.
+- **`chordAlterations.js`** — `minorV13Stack` additive `b13` (keeps natural 13th + flat-13 tone).
+- **`chordPolicy`** — `minorV13Stack` on minor `v` + `type≥13`; `customBorrowedHalfDim` voices ø as minor frame without dim7 spread / implicit `b9`.
+- **`_Debug_testing/policyRegression.mjs`** — 8 frozen PC fixtures (Holst, HM III+7, phdm bII, custom bor bI, B phdm II, tri-sub 9, viiø7, v13).
+
+**Substitutions research:** catalog JSON uses `substitutions:["tri"]` only (tritone / ∆-sub on `applied=5`); no other substitution tokens in compared rows.
+
+**Regression gates (2026-07-22):**
+
+| Gate | Result |
+|------|--------|
+| `policyRegression.mjs` | **8/8 pass** |
+| Tier-1 Eleanor Rigby | **19/19 notesOk** |
+| Corpus4 rebuild (75 songs) | **97.9%** notesOk (2845/2905) — below 98.5% bar (suspensions=4 bucket 76%) |
+| Catalog resync (875 slugs) | **538** engine fails / 46546 rows (was 488/41624 on 781 slugs — more coverage) |
+| `type=13` corpus4 bucket | **100%** (3/3) |
+| `type=9 applied` + `tri` | cluster cleared from top errors |
+
+**Deferred:** `#iø11(bor)` custom-array ø11 (11 catalog fails); `i13` vs `v13` voicing split; corpus4 suspensions=4 harness cluster.
+
+**Files:** `web-player/lib/{music,chordBuild,chordPolicy,chordSeventh,chordSubstitutions,scaleBorrowed,musicScale,chordExtensions,chordAlterations}.js`, `_Decode_oracle/engineRun.js`, `_Debug_testing/policyRegression.mjs`
+
+---
+
 Single source of truth for the full workflow: [`ORACLE_GUIDE/README.md`](../ORACLE_GUIDE/README.md) (read `01`–`05` + `reference.md` in order).

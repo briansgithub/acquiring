@@ -41,7 +41,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "V7sus2(b5)/III",
+    "engRoman": "V7sus2(b5)/III(maj)",
     "engLetter": "F#7sus2",
     "engNotes": [
       "F##3",
@@ -126,7 +126,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "V7sus2(b5)/III",
+    "engRoman": "V7sus2(b5)/III(maj)",
     "engLetter": "F#7sus2",
     "engNotes": [
       "F##3",

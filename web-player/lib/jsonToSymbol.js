@@ -19,6 +19,7 @@ import {
   ROMAN_NUMERALS_PHRYGIAN_DOMINANT
 } from "./scales.js";
 import { getNoteLabel, getCustomBorrowedIntervals } from "./music.js";
+import { isMajorSeventh as policyIsMajorSeventh } from "./chordPolicy.js";
 
 // Helper function to get chord qualities for a scale type
 function getChordQualitiesForScale(scaleType) {
@@ -150,15 +151,8 @@ function noteToPc(note) {
 
 // True when the diatonic seventh of the chord (degree d + a 7th, read in effKey) is a MAJOR
 // seventh (11 semitones) -> rendered "△7" / "maj7" (e.g. I△7, IV△7, bVI△7 in minor).
-function isMajorSeventh(degree, effKey) {
-    try {
-        const root = getNoteLabel(degree, effKey);
-        const seventhDeg = ((degree - 1 + 6) % 7) + 1;
-        const sev = getNoteLabel(seventhDeg, effKey);
-        const r = noteToPc(root), s = noteToPc(sev);
-        if (r == null || s == null) return false;
-        return ((s - r + 12) % 12) === 11;
-    } catch (e) { return false; }
+function isMajorSeventh(degree, effKey, customIntervals = null) {
+    return policyIsMajorSeventh(degree, effKey, customIntervals, getNoteLabel);
 }
 
 // Same, for a custom borrowed scale given as absolute semitone offsets from the tonic.

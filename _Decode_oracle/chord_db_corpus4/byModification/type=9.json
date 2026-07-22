@@ -2731,17 +2731,17 @@
     "engRoman": "V9/I",
     "engLetter": "F#9",
     "engNotes": [
-      "F#3",
-      "A#3",
-      "C#4",
-      "E4",
-      "G#4"
+      "C3",
+      "E3",
+      "G3",
+      "Bb3",
+      "D4"
     ],
     "engPcs": [
-      1,
+      0,
+      2,
       4,
-      6,
-      8,
+      7,
       10
     ],
     "flags": {
@@ -2749,9 +2749,9 @@
       "romanCore": false,
       "rootPcMatch": false,
       "bassPcMatch": false,
-      "rootInPcs": false,
+      "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
@@ -2759,10 +2759,10 @@
       "orderOk": true,
       "degreesOk": true
     },
-    "notesOk": false,
+    "notesOk": true,
     "orderOk": true,
     "romanExact": false,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=9",
       "inversion=0",
@@ -2900,7 +2900,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "V9/ii",
+    "engRoman": "V9/ii(maj)",
     "engLetter": "E9",
     "engNotes": [
       "E3",
@@ -2917,7 +2917,7 @@
       11
     ],
     "flags": {
-      "romanExact": true,
+      "romanExact": false,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": false,
@@ -2933,7 +2933,7 @@
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": true,
+    "romanExact": false,
     "failureClass": null,
     "buckets": [
       "type=9",
@@ -3154,7 +3154,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "V9/ii",
+    "engRoman": "V9/ii(maj)",
     "engLetter": "E9",
     "engNotes": [
       "E3",
@@ -3171,7 +3171,7 @@
       11
     ],
     "flags": {
-      "romanExact": true,
+      "romanExact": false,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": false,
@@ -3187,7 +3187,7 @@
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": true,
+    "romanExact": false,
     "failureClass": null,
     "buckets": [
       "type=9",
@@ -3245,10 +3245,10 @@
     "pianoPcs": null,
     "pianoValidated": false,
     "engRoman": "♯V9(bor)",
-    "engLetter": "D9",
+    "engLetter": "D#9",
     "engNotes": [
       "D#3",
-      "F#3",
+      "F##3",
       "A#3",
       "C#4",
       "E#4"
@@ -3257,17 +3257,17 @@
       1,
       3,
       5,
-      6,
+      7,
       10
     ],
     "flags": {
       "romanExact": true,
       "romanCore": true,
-      "rootPcMatch": false,
+      "rootPcMatch": true,
       "bassPcMatch": false,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
@@ -3275,10 +3275,10 @@
       "orderOk": true,
       "degreesOk": true
     },
-    "notesOk": false,
+    "notesOk": true,
     "orderOk": true,
     "romanExact": true,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=9",
       "inversion=0",
@@ -3416,7 +3416,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "V9/ii",
+    "engRoman": "V9/ii(maj)",
     "engLetter": "E9",
     "engNotes": [
       "E3",
@@ -3433,7 +3433,7 @@
       11
     ],
     "flags": {
-      "romanExact": true,
+      "romanExact": false,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": false,
@@ -3449,7 +3449,7 @@
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": true,
+    "romanExact": false,
     "failureClass": null,
     "buckets": [
       "type=9",
@@ -3670,7 +3670,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "V9/ii",
+    "engRoman": "V9/ii(maj)",
     "engLetter": "E9",
     "engNotes": [
       "E3",
@@ -3687,7 +3687,7 @@
       11
     ],
     "flags": {
-      "romanExact": true,
+      "romanExact": false,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": false,
@@ -3703,7 +3703,7 @@
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": true,
+    "romanExact": false,
     "failureClass": null,
     "buckets": [
       "type=9",
@@ -3761,10 +3761,10 @@
     "pianoPcs": null,
     "pianoValidated": false,
     "engRoman": "♯V9(bor)",
-    "engLetter": "D9",
+    "engLetter": "D#9",
     "engNotes": [
       "D#3",
-      "F#3",
+      "F##3",
       "A#3",
       "C#4",
       "E#4"
@@ -3773,17 +3773,17 @@
       1,
       3,
       5,
-      6,
+      7,
       10
     ],
     "flags": {
       "romanExact": true,
       "romanCore": true,
-      "rootPcMatch": false,
+      "rootPcMatch": true,
       "bassPcMatch": false,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
@@ -3791,10 +3791,10 @@
       "orderOk": true,
       "degreesOk": true
     },
-    "notesOk": false,
+    "notesOk": true,
     "orderOk": true,
     "romanExact": true,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=9",
       "inversion=0",
@@ -4350,7 +4350,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "V9/iii",
+    "engRoman": "V9/iii(maj)",
     "engLetter": "F#9",
     "engNotes": [
       "F3",
@@ -4432,7 +4432,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "V9/ii",
+    "engRoman": "V9/ii(maj)",
     "engLetter": "E9",
     "engNotes": [
       "E3",
@@ -4449,7 +4449,7 @@
       11
     ],
     "flags": {
-      "romanExact": true,
+      "romanExact": false,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": false,
@@ -4465,7 +4465,7 @@
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": true,
+    "romanExact": false,
     "failureClass": null,
     "buckets": [
       "type=9",
@@ -4802,6 +4802,88 @@
       "applied=no",
       "borrowed=none",
       "suspensions=4"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "mariah-carey__x-girlfriend/Bridge/1",
+    "song": "mariah-carey__x-girlfriend",
+    "section": "Bridge",
+    "beat": 1,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "beat": 1,
+      "duration": 4,
+      "type": 9,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "VI△9",
+    "truthLetter": "Fmaj9",
+    "truthPcs": [
+      0,
+      4,
+      5,
+      7,
+      9
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "VI△9",
+    "engLetter": "Fmaj9",
+    "engNotes": [
+      "F3",
+      "A3",
+      "C4",
+      "E4",
+      "G4"
+    ],
+    "engPcs": [
+      0,
+      4,
+      5,
+      7,
+      9
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=9",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none"
     ],
     "compositeKey": null
   },

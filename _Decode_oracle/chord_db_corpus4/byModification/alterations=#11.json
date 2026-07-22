@@ -40,7 +40,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "V6(#11)5/iii",
+    "engRoman": "V6(#11)5/iii(maj)",
     "engLetter": "G7/B",
     "engNotes": [
       "B2",
@@ -57,7 +57,7 @@
       11
     ],
     "flags": {
-      "romanExact": true,
+      "romanExact": false,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": true,
@@ -73,7 +73,7 @@
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": true,
+    "romanExact": false,
     "failureClass": null,
     "buckets": [
       "type=7",

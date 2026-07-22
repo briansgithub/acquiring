@@ -828,6 +828,174 @@
     "compositeKey": null
   },
   {
+    "id": "coldplay__everythings-not-lost/Chorus/23",
+    "song": "coldplay__everythings-not-lost",
+    "section": "Chorus",
+    "beat": 23,
+    "key": {
+      "tonic": "E",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 23,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(add9)",
+    "truthLetter": "A(add9)",
+    "truthPcs": [
+      1,
+      4,
+      9,
+      11
+    ],
+    "pianoNotes": [
+      "C#4",
+      "D4"
+    ],
+    "pianoPcs": [
+      1,
+      2
+    ],
+    "pianoValidated": false,
+    "engRoman": "IV(add9)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4",
+      "B4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "coldplay__everythings-not-lost/Chorus/25",
+    "song": "coldplay__everythings-not-lost",
+    "section": "Chorus",
+    "beat": 25,
+    "key": {
+      "tonic": "E",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 4,
+      "beat": 25,
+      "duration": 3,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "IV(add9)",
+    "truthLetter": "A(add9)",
+    "truthPcs": [
+      1,
+      4,
+      9,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "IV(add9)",
+    "engLetter": "A",
+    "engNotes": [
+      "A3",
+      "C#4",
+      "E4",
+      "B4"
+    ],
+    "engPcs": [
+      1,
+      4,
+      9,
+      11
+    ],
+    "flags": {
+      "romanExact": true,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": true,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "adds=9"
+    ],
+    "compositeKey": null
+  },
+  {
     "id": "emiko-shiratori__melodies-of-life---ffix/Verse/1",
     "song": "emiko-shiratori__melodies-of-life---ffix",
     "section": "Verse",
@@ -1803,27 +1971,27 @@
     ],
     "pianoValidated": false,
     "engRoman": "♭I(bor)(add9)",
-    "engLetter": "Am",
+    "engLetter": "Ab",
     "engNotes": [
       "Ab3",
-      "Cb4",
+      "C4",
       "Eb4",
       "Bb4"
     ],
     "engPcs": [
+      0,
       3,
       8,
-      10,
-      11
+      10
     ],
     "flags": {
       "romanExact": true,
       "romanCore": true,
-      "rootPcMatch": false,
+      "rootPcMatch": true,
       "bassPcMatch": false,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
@@ -1831,10 +1999,10 @@
       "orderOk": true,
       "degreesOk": true
     },
-    "notesOk": false,
+    "notesOk": true,
     "orderOk": true,
     "romanExact": true,
-    "failureClass": "piano_noise",
+    "failureClass": null,
     "buckets": [
       "type=5",
       "inversion=0",
@@ -1898,27 +2066,27 @@
     ],
     "pianoValidated": false,
     "engRoman": "♭I(bor)(add9)",
-    "engLetter": "Am",
+    "engLetter": "Ab",
     "engNotes": [
       "Ab3",
-      "Cb4",
+      "C4",
       "Eb4",
       "Bb4"
     ],
     "engPcs": [
+      0,
       3,
       8,
-      10,
-      11
+      10
     ],
     "flags": {
       "romanExact": true,
       "romanCore": true,
-      "rootPcMatch": false,
+      "rootPcMatch": true,
       "bassPcMatch": false,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
@@ -1926,10 +2094,10 @@
       "orderOk": true,
       "degreesOk": true
     },
-    "notesOk": false,
+    "notesOk": true,
     "orderOk": true,
     "romanExact": true,
-    "failureClass": "piano_noise",
+    "failureClass": null,
     "buckets": [
       "type=5",
       "inversion=0",
@@ -1992,27 +2160,27 @@
     ],
     "pianoValidated": false,
     "engRoman": "♭I(bor)(add9)",
-    "engLetter": "Am",
+    "engLetter": "Ab",
     "engNotes": [
       "Ab3",
-      "Cb4",
+      "C4",
       "Eb4",
       "Bb4"
     ],
     "engPcs": [
+      0,
       3,
       8,
-      10,
-      11
+      10
     ],
     "flags": {
       "romanExact": true,
       "romanCore": true,
-      "rootPcMatch": false,
+      "rootPcMatch": true,
       "bassPcMatch": false,
       "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
@@ -2020,10 +2188,10 @@
       "orderOk": true,
       "degreesOk": true
     },
-    "notesOk": false,
+    "notesOk": true,
     "orderOk": true,
     "romanExact": true,
-    "failureClass": "piano_noise",
+    "failureClass": null,
     "buckets": [
       "type=5",
       "inversion=0",

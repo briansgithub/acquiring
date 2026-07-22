@@ -138,6 +138,15 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
       continue;
     }
 
+    if (key === "b13" && chord?.minorV13Stack) {
+      const flat13Pc = (rootPc + 8) % 12;
+      if (!hasPc(toneJSNames, flat13Pc) && sdToToneJSNoteName) {
+        toneJSNames.push(sdToToneJSNoteName("b6", 1, rk, baseOctave));
+        degreeIndices.push(degreeIndices.length);
+      }
+      continue;
+    }
+
     const srcPc = (rootPc + rule.src) % 12;
 
     let found = false;

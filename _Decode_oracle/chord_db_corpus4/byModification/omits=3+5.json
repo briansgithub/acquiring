@@ -1490,5 +1490,91 @@
       "omits=3+5"
     ],
     "compositeKey": null
+  },
+  {
+    "id": "mariah-carey__x-girlfriend/Bridge/33",
+    "song": "mariah-carey__x-girlfriend",
+    "section": "Bridge",
+    "beat": 33,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "beat": 33,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [
+        3,
+        5
+      ],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "i(no3no5)",
+    "truthLetter": "am(n°3n5)",
+    "truthPcs": [
+      9
+    ],
+    "pianoNotes": [
+      "E3",
+      "G#3",
+      "A3",
+      "B3",
+      "C#4"
+    ],
+    "pianoPcs": [
+      1,
+      4,
+      8,
+      9,
+      11
+    ],
+    "pianoValidated": false,
+    "engRoman": "i(no3)(no5)",
+    "engLetter": "Am",
+    "engNotes": [
+      "A3"
+    ],
+    "engPcs": [
+      9
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=5",
+      "inversion=0",
+      "applied=no",
+      "borrowed=none",
+      "omits=3+5"
+    ],
+    "compositeKey": null
   }
 ]

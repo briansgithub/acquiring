@@ -50,7 +50,7 @@
     "pianoPcs": null,
     "pianoValidated": false,
     "engRoman": "♭II13(b9)(bor)",
-    "engLetter": "B°13",
+    "engLetter": "Bb13",
     "engNotes": [
       "Bb3",
       "D4",
@@ -72,7 +72,7 @@
     "flags": {
       "romanExact": true,
       "romanCore": true,
-      "rootPcMatch": false,
+      "rootPcMatch": true,
       "bassPcMatch": false,
       "rootInPcs": true,
       "bassInNotes": true,
@@ -140,7 +140,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "V13(b9)/ii",
+    "engRoman": "V13(b9)/ii(maj)",
     "engLetter": "F#13",
     "engNotes": [
       "F#3",
@@ -161,7 +161,7 @@
       11
     ],
     "flags": {
-      "romanExact": true,
+      "romanExact": false,
       "romanCore": true,
       "rootPcMatch": true,
       "bassPcMatch": false,
@@ -177,7 +177,7 @@
     },
     "notesOk": true,
     "orderOk": true,
-    "romanExact": true,
+    "romanExact": false,
     "failureClass": null,
     "buckets": [
       "type=13",
@@ -231,24 +231,24 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "V13/vi",
+    "engRoman": "V13/vi(maj)",
     "engLetter": "C#13",
     "engNotes": [
-      "C#3",
-      "E#3",
-      "G#3",
+      "G3",
       "B3",
-      "D#4",
-      "F#4",
-      "A#4"
+      "D4",
+      "F4",
+      "A4",
+      "C5",
+      "E5"
     ],
     "engPcs": [
-      1,
-      3,
+      0,
+      2,
+      4,
       5,
-      6,
-      8,
-      10,
+      7,
+      9,
       11
     ],
     "flags": {
@@ -256,9 +256,9 @@
       "romanCore": false,
       "rootPcMatch": false,
       "bassPcMatch": false,
-      "rootInPcs": false,
+      "rootInPcs": true,
       "bassInNotes": true,
-      "pcsExact": false,
+      "pcsExact": true,
       "pianoExact": false,
       "pianoPcsExact": false,
       "pianoValidated": false,
@@ -266,10 +266,10 @@
       "orderOk": true,
       "degreesOk": true
     },
-    "notesOk": false,
+    "notesOk": true,
     "orderOk": true,
     "romanExact": false,
-    "failureClass": "engine",
+    "failureClass": null,
     "buckets": [
       "type=13",
       "inversion=0",

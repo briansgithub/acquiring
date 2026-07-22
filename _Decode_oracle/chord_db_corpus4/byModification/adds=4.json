@@ -1063,7 +1063,7 @@
     ],
     "pianoValidated": false,
     "engRoman": "♭VII(bor)(add4)",
-    "engLetter": "G",
+    "engLetter": "Gb",
     "engNotes": [
       "Gb3",
       "Bb3",
@@ -1079,7 +1079,7 @@
     "flags": {
       "romanExact": true,
       "romanCore": true,
-      "rootPcMatch": false,
+      "rootPcMatch": true,
       "bassPcMatch": false,
       "rootInPcs": true,
       "bassInNotes": true,
@@ -1245,7 +1245,7 @@
     ],
     "pianoValidated": false,
     "engRoman": "♭VII(bor)(add4)",
-    "engLetter": "G",
+    "engLetter": "Gb",
     "engNotes": [
       "Gb3",
       "Bb3",
@@ -1261,7 +1261,7 @@
     "flags": {
       "romanExact": true,
       "romanCore": true,
-      "rootPcMatch": false,
+      "rootPcMatch": true,
       "bassPcMatch": false,
       "rootInPcs": true,
       "bassInNotes": true,

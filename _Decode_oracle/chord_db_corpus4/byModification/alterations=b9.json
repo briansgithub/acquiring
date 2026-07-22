@@ -50,7 +50,7 @@
     "pianoPcs": null,
     "pianoValidated": false,
     "engRoman": "♭II13(b9)(bor)",
-    "engLetter": "B°13",
+    "engLetter": "Bb13",
     "engNotes": [
       "Bb3",
       "D4",
@@ -72,7 +72,7 @@
     "flags": {
       "romanExact": true,
       "romanCore": true,
-      "rootPcMatch": false,
+      "rootPcMatch": true,
       "bassPcMatch": false,
       "rootInPcs": true,
       "bassInNotes": true,
@@ -140,7 +140,7 @@
     "pianoNotes": null,
     "pianoPcs": null,
     "pianoValidated": false,
-    "engRoman": "V13(b9)/ii",
+    "engRoman": "V13(b9)/ii(maj)",
     "engLetter": "F#13",
     "engNotes": [
       "F#3",
@@ -158,6 +158,91 @@
       6,
       7,
       10,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": true,
+      "rootPcMatch": true,
+      "bassPcMatch": false,
+      "rootInPcs": true,
+      "bassInNotes": true,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": true,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": null,
+    "buckets": [
+      "type=13",
+      "inversion=0",
+      "applied=yes",
+      "borrowed=none",
+      "alterations=b9"
+    ],
+    "compositeKey": null
+  },
+  {
+    "id": "mariah-carey__x-girlfriend/Bridge/5",
+    "song": "mariah-carey__x-girlfriend",
+    "section": "Bridge",
+    "beat": 5,
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 5,
+      "beat": 5,
+      "duration": 4,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b9"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "V7(b9)(hmin)",
+    "truthLetter": "E7(b9)",
+    "truthPcs": [
+      2,
+      4,
+      5,
+      8,
+      11
+    ],
+    "pianoNotes": null,
+    "pianoPcs": null,
+    "pianoValidated": false,
+    "engRoman": "V7(b9)(hmin)",
+    "engLetter": "E7",
+    "engNotes": [
+      "E3",
+      "G#3",
+      "B3",
+      "D4",
+      "F4"
+    ],
+    "engPcs": [
+      2,
+      4,
+      5,
+      8,
       11
     ],
     "flags": {
@@ -180,10 +265,10 @@
     "romanExact": true,
     "failureClass": null,
     "buckets": [
-      "type=13",
+      "type=7",
       "inversion=0",
-      "applied=yes",
-      "borrowed=none",
+      "applied=no",
+      "borrowed=harmonicMinor",
       "alterations=b9"
     ],
     "compositeKey": null
