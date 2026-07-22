@@ -108,12 +108,16 @@ export function resolveChordPolicy(ctx) {
     && chordType >= 13
     && !useSusFrame
     && !omitTriad35;
-  const mixBorrowedHalfDimM6 = borrowed === "mixolydian"
-    && modifierChord?.halfDim
+  const halfDimInv1M6Stack = !!modifierChord?.halfDim
     && chordType >= 7
     && inversion === 1
     && !useSusFrame
-    && !omitTriad35;
+    && !omitTriad35
+    && (
+      borrowed === "mixolydian"
+      || (modifiedKey.scale === "harmonicMinor" && chordRootSD === 2)
+      || (modifiedKey.scale === "major" && chordRootSD === 7)
+    );
 
   const triadQuality = halfDimIi
     ? "diminished"
@@ -155,7 +159,7 @@ export function resolveChordPolicy(ctx) {
     customBorrowedHalfDimM7,
     customBorrowedDimNatural11,
     hmBorrowedDominant13,
-    mixBorrowedHalfDimM6,
+    halfDimInv1M6Stack,
     minorV13Stack,
     minorI13B13,
     autoAlterations: minorV13Stack ? ["b9", "b13"] : minorI13B13 ? ["b13"] : [],

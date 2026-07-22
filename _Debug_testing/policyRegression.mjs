@@ -11,6 +11,7 @@
  */
 import { chordInterpreter } from "../web-player/lib/music.js";
 import { noteNameToPc } from "../web-player/lib/chordNoteUtils.js";
+import { getChordLetterName } from "../web-player/lib/jsonToSymbol.js";
 
 const BASELINE = {
   holst: { chord: { root: 2, type: 7, inversion: 3 }, key: { tonic: "C", scale: "phrygianDominant" }, pcs: [1, 2, 6, 9] },
@@ -113,6 +114,22 @@ const BASELINE = {
     key: { tonic: "F", scale: "dorian" },
     pcs: [0, 3, 6, 9],
   },
+  hmIiHalfDimM6: {
+    chord: { root: 2, type: 7, inversion: 1, halfDim: true },
+    key: { tonic: "C#", scale: "harmonicMinor" },
+    pcs: [0, 3, 6, 9],
+  },
+  majorViiHalfDimM6: {
+    chord: { root: 7, type: 7, inversion: 1, halfDim: true },
+    key: { tonic: "C", scale: "major" },
+    pcs: [2, 5, 8, 11],
+  },
+  omit3power: {
+    chord: { root: 7, type: 5, inversion: 2, omits: [3] },
+    key: { tonic: "E", scale: "phrygian" },
+    pcs: [2, 9],
+    letter: "D5/A",
+  },
 };
 
 function pcs(chord, key) {
@@ -120,12 +137,20 @@ function pcs(chord, key) {
 }
 
 let failed = 0;
-for (const [name, { chord, key, pcs: want }] of Object.entries(BASELINE)) {
+for (const [name, { chord, key, pcs: want, letter: wantLetter }] of Object.entries(BASELINE)) {
   const got = pcs(chord, key);
   const ok = got.length === want.length && got.every((v, i) => v === want[i]);
   if (!ok) {
     console.error(`FAIL ${name}: want [${want}] got [${got}]`);
     failed++;
+  } else if (wantLetter) {
+    const gotLetter = getChordLetterName(chord, key);
+    if (gotLetter !== wantLetter) {
+      console.error(`FAIL ${name} letter: want ${wantLetter} got ${gotLetter}`);
+      failed++;
+    } else {
+      console.log(`ok ${name}`);
+    }
   } else {
     console.log(`ok ${name}`);
   }

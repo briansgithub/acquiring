@@ -49,7 +49,7 @@
       9
     ],
     "pianoValidated": false,
-    "engRoman": "ii+⁶₄(add6)sus4(#5)(maj)",
+    "engRoman": "ii+6(#5)4sus4(maj)(add6)",
     "engLetter": "Dmsus4/A",
     "engNotes": [
       "Bb3",
@@ -75,7 +75,8 @@
       "pianoPcsExact": false,
       "pianoValidated": false,
       "usePiano": false,
-      "orderOk": true
+      "orderOk": true,
+      "degreesOk": true
     },
     "notesOk": false,
     "orderOk": true,

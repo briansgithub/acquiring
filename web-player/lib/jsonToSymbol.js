@@ -422,8 +422,11 @@ export function getChordLetterName(chord, key) {
         : isMajorSeventh(degree, effKey));
     const augmented = quality === 'augmented' || (Array.isArray(chord.alterations) && chord.alterations.includes('#5'));
 
+    const omit3Only = Array.isArray(chord.omits) && chord.omits.includes(3) && !chord.omits.includes(5);
+    const omit3Power = omit3Only && chord.type < 7;
     let suffix = "";
-    if (quality === "minor") suffix += "m";
+    if (omit3Power) suffix += "5";
+    else if (quality === "minor") suffix += "m";
     else if (quality === "diminished") suffix += "°";
     else if (augmented) suffix += "+";
     if (chord.type >= 7) suffix += (majorSeventh ? 'maj' : '') + String(chord.type);

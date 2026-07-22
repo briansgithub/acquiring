@@ -1393,6 +1393,100 @@
     "compositeKey": null
   },
   {
+    "id": "gorillaz__5-4/Chorus/15",
+    "song": "gorillaz__5-4",
+    "section": "Chorus",
+    "beat": 15,
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "beat": 15,
+      "duration": 0.5,
+      "type": 5,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [
+        "#5"
+      ],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "truthRoman": "ii6(add6)(#5)4sus4(maj)",
+    "truthLetter": "d(add6)(#5)sus4/A",
+    "truthPcs": [
+      2,
+      7,
+      10,
+      11
+    ],
+    "pianoNotes": [
+      "A3",
+      "C#4"
+    ],
+    "pianoPcs": [
+      1,
+      9
+    ],
+    "pianoValidated": false,
+    "engRoman": "ii+6(#5)4sus4(maj)(add6)",
+    "engLetter": "Dmsus4/A",
+    "engNotes": [
+      "Bb3",
+      "B3",
+      "D4",
+      "G4"
+    ],
+    "engPcs": [
+      2,
+      7,
+      10,
+      11
+    ],
+    "flags": {
+      "romanExact": false,
+      "romanCore": false,
+      "rootPcMatch": true,
+      "bassPcMatch": true,
+      "rootInPcs": true,
+      "bassInNotes": false,
+      "pcsExact": true,
+      "pianoExact": false,
+      "pianoPcsExact": false,
+      "pianoValidated": false,
+      "usePiano": false,
+      "orderOk": true,
+      "degreesOk": true
+    },
+    "notesOk": false,
+    "orderOk": true,
+    "romanExact": false,
+    "failureClass": "engine",
+    "buckets": [
+      "type=5",
+      "inversion=2",
+      "applied=no",
+      "borrowed=major",
+      "suspensions=4",
+      "alterations=#5",
+      "adds=6"
+    ],
+    "compositeKey": "adds=6+alterations=#5+suspensions=4"
+  },
+  {
     "id": "gustav-holst__mars---bringer-of-war/Chorus/71",
     "song": "gustav-holst__mars---bringer-of-war",
     "section": "Chorus",

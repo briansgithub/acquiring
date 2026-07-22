@@ -929,7 +929,7 @@
     },
     "analytic": "six minor no third",
     "functional": "six minor no third",
-    "letter": "F sharp minor",
+    "letter": "F sharp five",
     "functionalLetter": "F sharp minor no third"
   },
   {
@@ -2048,7 +2048,7 @@
     },
     "analytic": "four add nine no third flat five",
     "functional": "four add nine no third flat five",
-    "letter": "F",
+    "letter": "F five",
     "functionalLetter": "F add nine no third flat five"
   },
   {
@@ -2080,7 +2080,7 @@
     },
     "analytic": "flat four add nine no third major",
     "functional": "flat four add nine no third borrowed from major",
-    "letter": "F",
+    "letter": "F five",
     "functionalLetter": "F add nine no third borrowed from major"
   },
   {
