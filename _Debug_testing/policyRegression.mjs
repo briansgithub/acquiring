@@ -33,6 +33,31 @@ const BASELINE = {
     key: { tonic: "C#", scale: "minor" },
     pcs: [1, 3, 4, 5, 6, 8, 9, 11],
   },
+  iisus4no5: {
+    chord: { root: 2, type: 5, suspensions: [4], omits: [5] },
+    key: { tonic: "G#", scale: "minor" },
+    pcs: [3, 10],
+  },
+  i13minor: {
+    chord: { root: 1, type: 13 },
+    key: { tonic: "C", scale: "minor" },
+    pcs: [0, 1, 3, 5, 7, 8, 9, 10],
+  },
+  III13notMinorStack: {
+    chord: { root: 3, type: 13 },
+    key: { tonic: "C", scale: "minor" },
+    pcs: [0, 2, 3, 5, 7, 8, 10],
+  },
+  triSubBorMinor: {
+    chord: { root: 1, type: 9, applied: 5, borrowed: "minor", substitutions: ["tri"] },
+    key: { tonic: "G", scale: "minor" },
+    pcs: [0, 3, 6, 8, 10],
+  },
+  ivHalfDim7Custom: {
+    chord: { root: 4, type: 7, borrowed: [-1, 1, 3, 5, 6, 8, 10], halfDim: true },
+    key: { tonic: "E", scale: "major" },
+    pcs: [0, 3, 6, 9],
+  },
 };
 
 function pcs(chord, key) {

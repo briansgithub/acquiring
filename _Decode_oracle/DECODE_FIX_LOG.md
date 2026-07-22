@@ -869,6 +869,31 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 045 — Engine Wave 2 (2026-07-22, `feat/fix-045-engine-wave2`)
+
+**Gate results (post-fix):**
+
+| Gate | Before | After |
+|------|--------|-------|
+| `policyRegression.mjs` | 8/8 | **13/13** |
+| corpus4 notesOk | 97.9% (2845/2905) | **98.7%** (2866/2905) |
+| `suspensions=4` bucket | 76.5% | **100%** |
+| `omits=5` bucket | 82.2% | **97.5%** |
+| catalog resync engineFails | ~545 / 47k rows | **720 / 48,367** (911 slugs; queue grew) |
+
+**Changes:**
+
+1. **`sus4(no5)`** — Skip dim+omit5 dim7 push when `useSusFrame`; `truthNotes` omit-5 removes dim fifth (semitone 6).
+2. **`minorExtended13Stack`** — Minor key + minor triad + `type≥13` → auto `b9`/`b13` (was degree-5-only `minorV13Stack`).
+3. **Tri-sub + borrowed applied** — `resolveTriSubRoot` in `chordSubstitutions.js`; wired through `resolveAppliedBorrowedChord`.
+4. **Custom-array ø7** — `halfDim` skips blanket `bb7` on `scale:custom`; `customBorrowedHalfDim` gets explicit dim5 + bb7 voicing.
+
+**Deferred (unchanged):** `bor=major` inv=2 `#vii°6` vs `64` — remaining failures are harness/piano_noise (engine PCs G#+D match letter `G#°/D`); figured-bass 6 vs 64 roman mismatch.
+
+**Files:** `chordBuild.js`, `chordPolicy.js`, `chordSeventh.js`, `chordSubstitutions.js`, `chordAlterations.js`, `music.js`, `truthNotes.js`, `policyRegression.mjs`
+
+---
+
 ## Pronunciation review (2026-07-22) — partial; revisit after next corpus pass
 
 **When:** 2026-07-22 (`feat/chord-pronunciation-review`)  
@@ -879,9 +904,9 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 | Area | Why deferred |
 |------|----------------|
-| `#iø11(bor)` / custom-array ø | Roman ø vs letter `m11(b5b9)` mismatch; engine PCs still open (Fix 044) |
-| `i13` vs `v13` voicing | Minor `type=13` policy scoped to degree 5 only; `i13` cluster (~23 catalog) needs separate rule |
-| `suspensions=4` harness | Corpus4 97.9% notesOk — `iisus4(no5)` alignment, not pronunciation |
+| `#iø11(bor)` / custom-array ø | **Fix 045** closed ø7 PCs; ø11 letter/roman still open |
+| `i13` vs `v13` voicing | **Fixed in Fix 045** (`minorExtended13Stack`) |
+| `suspensions=4` harness | **Fixed in Fix 045** (engine + truthNotes omit-5 dim fifth) |
 | Roman-only symbol order | `Vsus47` vs `V⁷sus4` — defer unless `romanExact` becomes a gate |
 | Custom bor letter quality | Interval-derived quality may disagree with HT letter enrich (e.g. VII(bor) → `G` not `G°`) |
 | New substitution tokens | Only `tri` in catalog today; re-audit if JSON gains more `substitutions[]` values |

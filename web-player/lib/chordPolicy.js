@@ -13,8 +13,9 @@ const DIM7_BB7_ENTRIES = [
   { scale: "locrian", degree: 1 },
 ];
 
-export function borrowedModeDimSeventhDegree(chordRootSD, scale, chordQuality, chordType) {
+export function borrowedModeDimSeventhDegree(chordRootSD, scale, chordQuality, chordType, opts = {}) {
   if (chordType < 7 || chordQuality !== "diminished") return null;
+  if (opts.halfDim) return null;
   for (const entry of DIM7_BB7_ENTRIES) {
     if (scale !== entry.scale) continue;
     if (entry.degree === null || entry.degree === chordRootSD) return "bb7";
@@ -33,9 +34,10 @@ export function isHalfDiminishedIi(chordRootSD, modifiedKey, chordType, useSusFr
 export function enrichModifierChord(modifierChord, chordType, opts = {}) {
   if (!modifierChord) return null;
   let alterations = [...(modifierChord.alterations || [])];
-  // Custom-array ø11: HT voices without implicit b9 (catalog #iø11(bor) cluster).
+  // Custom-array ø: HT voices without implicit b9; ø7/ø11 need explicit b5 on minor frame.
   if (opts.customBorrowed && modifierChord.halfDim) {
     alterations = alterations.filter((a) => a !== "b9");
+    if (chordType >= 7 && !alterations.includes("b5")) alterations.push("b5");
   } else if (modifierChord.halfDim && chordType >= 9 && !opts.customBorrowed) {
     for (const a of ["b5", "b9"]) {
       if (!alterations.includes(a)) alterations.push(a);
@@ -103,7 +105,11 @@ export function resolveChordPolicy(ctx) {
           : (useSusFrame && chordQuality === "diminished" ? "major" : chordQuality);
 
   const augMaj7Voicing = triadQuality === "augmented" && chordType >= 7 && !useSusFrame && !omitTriad35;
-  const minorV13Stack = modifiedKey.scale === "minor" && chordRootSD === 5 && chordType >= 13;
+  const minorExtended13Stack = modifiedKey.scale === "minor"
+    && chordType >= 13
+    && chordQuality === "minor"
+    && !useSusFrame
+    && !omitTriad35;
 
   return {
     triadQuality,
@@ -116,13 +122,17 @@ export function resolveChordPolicy(ctx) {
     customDimMaj7: Array.isArray(borrowed) && chordQuality === "diminished",
     natural11: modifiedKey.scale === "minor" && chordRootSD === 5,
     customBorrowedHalfDim,
-    minorV13Stack,
-    autoAlterations: minorV13Stack ? ["b9", "b13"] : [],
+    minorExtended13Stack,
+    minorV13Stack: minorExtended13Stack,
+    autoAlterations: minorExtended13Stack ? ["b9", "b13"] : [],
     skipThirteenth: false,
     dimSeventh: chordType >= 7 && !customBorrowedHalfDim && (
       chordQuality === "diminished"
       || halfDimIi
-      || borrowedModeDimSeventhDegree(chordRootSD, modifiedKey.scale, chordQuality, chordType) === "bb7"
+      || borrowedModeDimSeventhDegree(
+        chordRootSD, modifiedKey.scale, chordQuality, chordType,
+        { halfDim: modifierChord?.halfDim },
+      ) === "bb7"
     ),
   };
 }

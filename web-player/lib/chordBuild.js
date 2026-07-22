@@ -1,3 +1,4 @@
+import { resolveTriSubRoot } from "./chordSubstitutions.js";
 import { TRIAD_DEGREES, MAJOR_SCALE_CHORD_QUALITIES } from "./scales.js";
 import { replaceTriadThird } from "./chordSuspensions.js";
 import { applyChordModifiers, applyTypeExtensions } from "./chordModifiers.js";
@@ -109,6 +110,14 @@ function resolveAppliedBorrowedChord(targetSD, appliedSD, key, baseOctave, borro
 
   const { key: modifiedKey, customScaleIntervals } = resolveBorrowedScale(key, borrowed);
   const targetNote = getNoteLabel(targetSD, modifiedKey, customScaleIntervals);
+
+  if (modifierChord?._triSubDominant && appliedSD === 5) {
+    const subRoot = resolveTriSubRoot(targetNote);
+    return buildChordFromNoteName(
+      subRoot, "major", key, baseOctave, chordType, inversion, false, suspensions, modifierChord,
+    );
+  }
+
   const appliedKey = { tonic: targetNote, scale: "major" };
   const appliedQuality = MAJOR_SCALE_CHORD_QUALITIES[appliedSD - 1];
   const sharp5MinorApplied = modifierChord?.alterations?.includes("#5")
@@ -167,9 +176,11 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
     customBorrowed: Array.isArray(borrowed),
     autoAlterations: policy.autoAlterations,
   });
-  const effModifierChord = policy.minorV13Stack
-    ? { ...effBase, minorV13Stack: true }
-    : effBase;
+  const effModifierChord = policy.minorExtended13Stack
+    ? { ...effBase, minorV13Stack: true, minorExtended13Stack: true }
+    : policy.customBorrowedHalfDim
+      ? { ...effBase, customBorrowedHalfDim: true }
+      : effBase;
 
   if (policy.rootShiftSemitones) {
     chordRootNoteName = shiftPitchClass(chordRootNoteName, policy.rootShiftSemitones);
@@ -201,7 +212,8 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
     addSeventhNote(toneJSNames, degreeIndices, chordRootNoteName, baseOctave, seventh);
   } else if (
     chordQuality === "diminished" &&
-    modifierChord?.omits?.includes(5)
+    modifierChord?.omits?.includes(5) &&
+    !useSusFrame
   ) {
     toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 6));
     degreeIndices.push(3);
@@ -271,7 +283,7 @@ export function buildChordFromNoteName(rootNoteName, quality, originalKey, baseO
     const seventhName = sdToToneJSNoteName(seventhDegree, 0, rootKey, baseOctave);
     toneJSNames.push(seventhName);
     degreeIndices.push(3);
-  } else if (triadQuality === "diminished" && modifierChord?.omits?.includes(5)) {
+  } else if (triadQuality === "diminished" && modifierChord?.omits?.includes(5) && !useSusFrame) {
     toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 6));
     degreeIndices.push(3);
   }

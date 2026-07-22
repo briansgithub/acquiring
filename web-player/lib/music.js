@@ -1,5 +1,4 @@
-import { applyChordSubstitutions } from "./chordSubstitutions.js";
-import { shiftPitchClass } from "./chordNoteUtils.js";
+import { applyChordSubstitutions, resolveTriSubRoot } from "./chordSubstitutions.js";
 import {
   parseKey,
   getNoteLabel,
@@ -42,8 +41,7 @@ export function chordInterpreter(chord, key, opts = {}) {
     const targetTonicNote = getNoteLabel(effective.root, borrowedKey);
 
     if (effective._triSubDominant && effective.applied === 5) {
-      const domRoot = getNoteLabel(5, { tonic: targetTonicNote, scale: "major" });
-      const subRoot = shiftPitchClass(domRoot, 6);
+      const subRoot = resolveTriSubRoot(targetTonicNote);
       return buildChordFromNoteName(
         subRoot, "major", key, defaultChordOctave, chordType, inversion,
         false, suspensions, effective,

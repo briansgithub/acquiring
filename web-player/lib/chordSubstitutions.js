@@ -3,6 +3,15 @@
  * substitutions:["tri"] = tritone sub (∆-sub): V/x → ♭II/x (root a tritone below V).
  */
 
+import { shiftPitchClass } from "./chordNoteUtils.js";
+import { getNoteLabel } from "./musicScale.js";
+
+/** Tritone-sub dominant root: ♭II of a major tonicization target (V of target → +6 semitones). */
+export function resolveTriSubRoot(targetTonicNote) {
+  const domRoot = getNoteLabel(5, { tonic: targetTonicNote, scale: "major" });
+  return shiftPitchClass(domRoot, 6);
+}
+
 /** Mark chord for tritone-sub rewrite in chordInterpreter applied path. */
 function applyTritoneSub(chord) {
   if (!chord?.applied || chord.applied !== 5) return chord;

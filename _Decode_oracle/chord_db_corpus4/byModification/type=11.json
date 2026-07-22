@@ -1021,7 +1021,7 @@
     "engNotes": [
       "C3",
       "Eb3",
-      "G3",
+      "Gb3",
       "Bbb3",
       "D4",
       "F4"
@@ -1031,7 +1031,7 @@
       2,
       3,
       5,
-      7,
+      6,
       9
     ],
     "flags": {
@@ -1461,7 +1461,7 @@
     "engNotes": [
       "C3",
       "Eb3",
-      "G3",
+      "Gb3",
       "Bbb3",
       "D4",
       "F4"
@@ -1471,7 +1471,7 @@
       2,
       3,
       5,
-      7,
+      6,
       9
     ],
     "flags": {
@@ -4625,6 +4625,7 @@
       "G#3",
       "D4",
       "F4",
+      "F4",
       "A4",
       "B4"
     ],
@@ -4648,7 +4649,7 @@
       "pianoValidated": false,
       "usePiano": false,
       "orderOk": true,
-      "degreesOk": true
+      "degreesOk": false
     },
     "notesOk": true,
     "orderOk": true,
@@ -4877,6 +4878,7 @@
       "G#3",
       "D4",
       "F4",
+      "F4",
       "A4",
       "B4"
     ],
@@ -4900,7 +4902,7 @@
       "pianoValidated": false,
       "usePiano": false,
       "orderOk": true,
-      "degreesOk": true
+      "degreesOk": false
     },
     "notesOk": true,
     "orderOk": true,
@@ -5044,6 +5046,7 @@
       "G#3",
       "D4",
       "F4",
+      "F4",
       "A4",
       "B4"
     ],
@@ -5067,7 +5070,7 @@
       "pianoValidated": false,
       "usePiano": false,
       "orderOk": true,
-      "degreesOk": true
+      "degreesOk": false
     },
     "notesOk": true,
     "orderOk": true,
@@ -5296,6 +5299,7 @@
       "G#3",
       "D4",
       "F4",
+      "F4",
       "A4",
       "B4"
     ],
@@ -5319,7 +5323,7 @@
       "pianoValidated": false,
       "usePiano": false,
       "orderOk": true,
-      "degreesOk": true
+      "degreesOk": false
     },
     "notesOk": true,
     "orderOk": true,
