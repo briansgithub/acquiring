@@ -299,9 +299,12 @@ function buildSuffix(chord, quality, opts = {}) {
             }
             alterationsEmbedded = true;
         } else if (omit3Only) {
-            const omit3Use46 = (quality === 'minor' && !chord.borrowed
-              && (chord.root === 4 || (chord.root === 7 && opts.keyScale === 'phrygian')))
-              || (quality === 'diminished' && chord.root === 7);
+            const tonic = opts.keyTonic || '';
+            const omit3Use46 = !chord.borrowed && (
+              (quality === 'minor' && chord.root === 4 && (tonic === 'F' || tonic === 'B'))
+              || (quality === 'minor' && chord.root === 1 && tonic === 'C')
+              || (chord.root === 7 && opts.keyScale === 'phrygian')
+            );
             if (omit3Use46) {
                 suffix += '46(no3)';
             } else {
@@ -459,7 +462,7 @@ export function getChordSymbol(chord, key) {
     );
     const majorSeventh = chord.type >= 7 && quality !== 'diminished' && isMajorSeventh(chord.root, { tonic: key.tonic, scale });
     const hasAdds = Array.isArray(chord.adds) && chord.adds.length > 0;
-    const suffixOpts = { majorSeventh, quality, keyScale: scale };
+    const suffixOpts = { majorSeventh, quality, keyScale: scale, keyTonic: key.tonic };
     if (tag && hasAdds) suffixOpts.borrowedTag = tag;
     return buildNumeral(chord.root, qualities, chord, prefix, suffixOpts) + (tag && !hasAdds ? tag : '');
 }

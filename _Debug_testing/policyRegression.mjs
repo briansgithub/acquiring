@@ -131,6 +131,30 @@ const BASELINE = {
     letter: "D5/A",
     roman: "vii46(no3)",
   },
+  ivOmit3Inv2Amin: {
+    chord: { root: 4, type: 5, inversion: 2, omits: [3] },
+    key: { tonic: "A", scale: "minor" },
+    pcs: [2, 9],
+    roman: "iv6(no3)4",
+  },
+  ivOmit3Inv2Fmin: {
+    chord: { root: 4, type: 5, inversion: 2, omits: [3] },
+    key: { tonic: "F", scale: "minor" },
+    pcs: [5, 10],
+    roman: "iv46(no3)",
+  },
+  iOmit3Inv2Cmin: {
+    chord: { root: 1, type: 5, inversion: 2, omits: [3] },
+    key: { tonic: "C", scale: "minor" },
+    pcs: [0, 7],
+    roman: "i46(no3)",
+  },
+  viiDimOmit3Inv2Fmaj: {
+    chord: { root: 7, type: 5, inversion: 2, omits: [3] },
+    key: { tonic: "F", scale: "major" },
+    pcs: [4, 10],
+    roman: "vii°6(no3)4",
+  },
   sharp5Inv2: {
     chord: { root: 1, type: 5, inversion: 2, alterations: ["#5"] },
     key: { tonic: "B", scale: "minor" },

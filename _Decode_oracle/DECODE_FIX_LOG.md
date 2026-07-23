@@ -1103,6 +1103,18 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 062 — inv2 omit3 tonic-key split (2026-07-23, `feat/fix-062-omit3-inv2`)
+
+**062a:** inv=2 omit-3 → `46(no3)` only when tonic-key matches Hooktheory: **iv** in F/B minor, **i** in C minor, **vii** in phrygian. Default `6(no3)4`. Removed blanket `root=4` minor + `dim root=7` rules (wrong for F# min iv, F maj vii°).
+
+**Gate:** policy **40/40**, pronunciation **77/77**.
+
+**Resync:** 75.5k rows — engine fails **345** (−45 vs 390 pre-062 on full catalog).
+
+**Files:** `jsonToSymbol.js`, `policyRegression.mjs`.
+
+---
+
 ## Session handoff — 2026-07-23 (fetch + decode loop)
 
 ### Merged on `main`
