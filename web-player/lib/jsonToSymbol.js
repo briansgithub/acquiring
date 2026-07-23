@@ -263,7 +263,12 @@ function buildSuffix(chord, quality, opts = {}) {
         } else if (suspended) {
             if (Array.isArray(chord.adds) && chord.adds.length) {
                 const addBody = chord.adds.map((v) => `add${v}`).join('');
-                suffix += `6(${addBody})4${susStr}`;
+                const dualSus = chord.suspensions.includes(4) && chord.suspensions.includes(2);
+                if (dualSus) {
+                    suffix += `4${susStr}6(${addBody})`;
+                } else {
+                    suffix += `6(${addBody})4${susStr}`;
+                }
                 opts.susPlaced = true;
                 opts.addsPlaced = true;
             } else {

@@ -161,6 +161,12 @@ const BASELINE = {
     pcs: [2, 7, 11],
     roman: "iv6(add6)4sus4",
   },
+  sus24Add6Inv2: {
+    chord: { root: 1, type: 5, inversion: 2, suspensions: [4, 2], adds: [6] },
+    key: { tonic: "C", scale: "minor" },
+    pcs: [0, 5, 9],
+    roman: "i4sus4sus26(add6)",
+  },
   lydianSus4Inv1: {
     chord: { root: 1, type: 5, inversion: 1, suspensions: [4] },
     key: { tonic: "E", scale: "lydian" },
