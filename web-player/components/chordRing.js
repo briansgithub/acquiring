@@ -77,6 +77,7 @@ export function renderChordRing(container, options = {}) {
   let currentOctave = 3;
   let activeDroneButton = null;
   let chordSelectHandler = null;
+  let degreeSelectHandler = null;
 
   octaveUpBtn.addEventListener("click", () => {
     if (currentOctave < 8) {
@@ -117,13 +118,13 @@ export function renderChordRing(container, options = {}) {
   function getRelativeIonianDegree(scale) {
     switch (scale) {
       case "major": case "ionian": return 1;
-      case "dorian": return "b7";
-      case "phrygian": return "b6";
+      case "dorian": return 7;
+      case "phrygian": return 6;
       case "lydian": return 5;
       case "mixolydian": return 4;
       case "minor": case "aeolian": case "harmonicMinor": return 3;
-      case "locrian": return "b2";
-      case "phrygianDominant": return "b6";
+      case "locrian": return 2;
+      case "phrygianDominant": return 6;
       default: return 1;
     }
   }
@@ -226,21 +227,21 @@ export function renderChordRing(container, options = {}) {
     }
 
     const scale = currentKey.scale;
-    const tonicColor = getCssColorForDegree(1, scale);
+    const tonicColor = getCssColorForDegree(1, scale) || "#6b7280";
     const ionianDegree = getRelativeIonianDegree(scale);
-    const ionianColor = getCssColorForDegree(ionianDegree, scale);
+    const ionianColor = getCssColorForDegree(ionianDegree, scale) || "#6b7280";
 
     tonicBtn.style.setProperty('--btn-bg', tonicColor);
     ionianBtn.style.setProperty('--btn-bg', ionianColor);
 
     // Get base color for pattern/gradient contrast calculation
     let tonicBaseColor = tonicColor;
-    if (tonicColor.includes('gradient')) {
+    if (typeof tonicColor === "string" && tonicColor.includes("gradient")) {
       const result = getHooktheoryColor(1, scale);
       tonicBaseColor = result ? result.color1 : "#ff0000";
     }
     let ionianBaseColor = ionianColor;
-    if (ionianColor.includes('gradient')) {
+    if (typeof ionianColor === "string" && ionianColor.includes("gradient")) {
       const result = getHooktheoryColor(ionianDegree, scale);
       ionianBaseColor = result ? result.color1 : "#ff0000";
     }
@@ -532,6 +533,14 @@ export function renderChordRing(container, options = {}) {
   clozeBtn.textContent = "🎯 Start cloze quiz";
   quizBody.appendChild(clozeBtn);
 
+  const rootClozeBtn = document.createElement("button");
+  rootClozeBtn.id = "quiz-root-cloze-btn";
+  rootClozeBtn.type = "button";
+  rootClozeBtn.className = "quiz-cloze-btn";
+  rootClozeBtn.style.cssText = "width:100%; background:#0891b2; color:#fff; border:1px solid #0891b2; border-radius:6px; padding:6px 10px; font-size:11px; font-weight:700; cursor:pointer; transition:all 0.15s ease;";
+  rootClozeBtn.textContent = "🎯 Start root cloze";
+  quizBody.appendChild(rootClozeBtn);
+
   const quizInfoContainer = document.createElement("div");
   quizInfoContainer.id = "quiz-cloze-info";
   quizInfoContainer.style.display = "none";
@@ -568,6 +577,23 @@ export function renderChordRing(container, options = {}) {
   scoreEl.textContent = "0 / 0";
   scoreRow.appendChild(scoreEl);
   quizInfoContainer.appendChild(scoreRow);
+
+  const muteGapLabel = document.createElement("label");
+  muteGapLabel.htmlFor = "quiz-mute-gap-toggle";
+  muteGapLabel.title = "When enabled, the chord shown as “?” is silent during quiz playback.";
+  muteGapLabel.style.cssText = "display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:10px; color:#94a3b8; cursor:pointer; user-select:none;";
+  muteGapLabel.innerHTML = `
+    <span>Mute '?' chord</span>
+    <input
+      id="quiz-mute-gap-toggle"
+      type="checkbox"
+      role="switch"
+      aria-label="Mute question-mark chord"
+      style="margin:0; cursor:pointer; accent-color:#22d3ee;"
+    >
+  `;
+  quizInfoContainer.appendChild(muteGapLabel);
+  const muteGapToggle = muteGapLabel.querySelector("#quiz-mute-gap-toggle");
 
   const nextBtn = document.createElement("button");
   nextBtn.id = "quiz-cloze-next-btn";
@@ -784,6 +810,9 @@ export function renderChordRing(container, options = {}) {
   let quizFlashTimer = null;
   let quizTransitionArc = null;
   let quizFreqOverlay = null;
+  let quizDegreeAnswerMode = false;
+  let quizHighlightDegrees = null;
+  let quizFlashDegree = null;
 
   keyFilterSelect.addEventListener("change", (e) => {
     selectedKeyFilter = e.target.value;
@@ -1034,7 +1063,7 @@ export function renderChordRing(container, options = {}) {
   }
 
   function drawQuizOverlays(centerX, centerY) {
-    const hasOverlay = quizHighlightSymbols || quizFlashSymbol || quizTransitionArc || quizFreqOverlay;
+    const hasOverlay = quizHighlightSymbols || quizHighlightDegrees || quizFlashSymbol || quizFlashDegree != null || quizTransitionArc || quizFreqOverlay;
     if (!hasOverlay) return;
 
     const positions = getNodePositions(centerX, centerY);
@@ -1054,6 +1083,24 @@ export function renderChordRing(container, options = {}) {
       }
     }
 
+    if (quizHighlightDegrees) {
+      const highlightSet = new Set(quizHighlightDegrees);
+      for (let d = 1; d <= 7; d++) {
+        if (highlightSet.has(d)) continue;
+        const angle = (d - 1) * (2 * Math.PI / 7) - (Math.PI / 2);
+        const dist = DIATONIC_RING_RADIUS * zoom;
+        const x = centerX + dist * Math.cos(angle);
+        const y = centerY + dist * Math.sin(angle);
+        const r = NODE_RADIUS * zoom;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(x, y, r * 1.15, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
     // 2. Flash glow on correct/wrong
     if (quizFlashSymbol) {
       const node = positions.find(p => p.symbol === quizFlashSymbol);
@@ -1065,6 +1112,20 @@ export function renderChordRing(container, options = {}) {
         ctx.fill();
         ctx.restore();
       }
+    }
+
+    if (quizFlashDegree != null) {
+      const angle = (quizFlashDegree - 1) * (2 * Math.PI / 7) - (Math.PI / 2);
+      const dist = DIATONIC_RING_RADIUS * zoom;
+      const x = centerX + dist * Math.cos(angle);
+      const y = centerY + dist * Math.sin(angle);
+      const r = NODE_RADIUS * zoom;
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(x, y, r * 1.6, 0, Math.PI * 2);
+      ctx.fillStyle = quizFlashColor || "rgba(34, 197, 94, 0.6)";
+      ctx.fill();
+      ctx.restore();
     }
 
     // 3. Transition arc between two nodes
@@ -1206,6 +1267,13 @@ export function renderChordRing(container, options = {}) {
     const dx = centerX + diatonicDist * Math.cos(angle);
     const dy = centerY + diatonicDist * Math.sin(angle);
     const color = getColor(degree, currentKey.scale);
+
+    if (quizDegreeAnswerMode) {
+      const isDimmed = quizHighlightDegrees && !quizHighlightDegrees.includes(degree);
+      const displayLabel = String(degree);
+      drawNode(dx, dy, nodeRadius, color, displayLabel, isDimmed ? 0.35 : 1.0, false, false);
+      return;
+    }
 
     if (exactDiatonic) {
       const isActive = isNodeActive(exactDiatonic);
@@ -1860,6 +1928,20 @@ export function renderChordRing(container, options = {}) {
     const centerY = canvas.height / 2 + panY;
     const baseNodeRadius = NODE_RADIUS * zoom;
 
+    if (quizDegreeAnswerMode && degreeSelectHandler) {
+      for (let i = 1; i <= 7; i++) {
+        const angle = (i - 1) * (2 * Math.PI / 7) - (Math.PI / 2);
+        const dDist = DIATONIC_RING_RADIUS * zoom;
+        const dx = centerX + dDist * Math.cos(angle);
+        const dy = centerY + dDist * Math.sin(angle);
+        if (Math.hypot(mx - dx, my - dy) <= baseNodeRadius) {
+          degreeSelectHandler(i);
+          return;
+        }
+      }
+      return;
+    }
+
     const diatonicLabels = getRomanNumeralsForScale(currentKey.scale);
 
     for (let i = 1; i <= 7; i++) {
@@ -2262,13 +2344,57 @@ export function renderChordRing(container, options = {}) {
 
     clearQuizOverlays() {
       quizHighlightSymbols = null;
+      quizHighlightDegrees = null;
       quizFlashSymbol = null;
+      quizFlashDegree = null;
       quizFlashColor = null;
       if (quizFlashTimer) clearTimeout(quizFlashTimer);
       quizFlashTimer = null;
       quizTransitionArc = null;
       quizFreqOverlay = null;
       draw();
+    },
+
+    setDegreeAnswerMode(on) {
+      quizDegreeAnswerMode = !!on;
+      draw();
+    },
+
+    highlightDegreeChoices(degrees) {
+      quizHighlightDegrees = degrees?.length ? degrees : null;
+      draw();
+    },
+
+    setDegreeSelectHandler(handler) {
+      degreeSelectHandler = handler;
+    },
+
+    flashCorrectDegree(degree) {
+      if (quizFlashTimer) clearTimeout(quizFlashTimer);
+      quizFlashDegree = degree;
+      quizFlashSymbol = null;
+      quizFlashColor = "rgba(34, 197, 94, 0.6)";
+      draw();
+      quizFlashTimer = setTimeout(() => {
+        quizFlashDegree = null;
+        quizFlashColor = null;
+        quizFlashTimer = null;
+        draw();
+      }, 1200);
+    },
+
+    flashWrongDegree(degree) {
+      if (quizFlashTimer) clearTimeout(quizFlashTimer);
+      quizFlashDegree = degree;
+      quizFlashSymbol = null;
+      quizFlashColor = "rgba(239, 68, 68, 0.6)";
+      draw();
+      quizFlashTimer = setTimeout(() => {
+        quizFlashDegree = null;
+        quizFlashColor = null;
+        quizFlashTimer = null;
+        draw();
+      }, 1200);
     },
 
     setKeyFilter(label) {
@@ -2281,16 +2407,22 @@ export function renderChordRing(container, options = {}) {
         }
       }
     },
-    update(chord) {
+    update(chord, options = {}) {
       if (!chord || chord.isRest) {
         activeChordSymbol = null;
         activeChord = null;
         previousChord = null;
       } else {
         const sym = getChordSymbol(chord, currentKey);
-        // If it's a new chord event, shift the current to previous!
-        if (activeChord && activeChord !== chord) {
-          previousChord = activeChord;
+        if (options.previousChord !== undefined) {
+          previousChord = options.previousChord;
+        } else {
+          const progPrev = options.findProgressionPreviousChord?.(chord);
+          if (progPrev !== undefined) {
+            previousChord = progPrev;
+          } else if (activeChord && activeChord !== chord) {
+            previousChord = activeChord;
+          }
         }
         activeChordSymbol = sym;
         activeChord = chord;
@@ -2443,11 +2575,17 @@ export function renderChordRing(container, options = {}) {
     getQuizClozeBtn() {
       return clozeBtn;
     },
+    getQuizRootClozeBtn() {
+      return rootClozeBtn;
+    },
     getStatsBtn() {
       return statsBtn;
     },
     getQuizClozeInfo() {
       return quizInfoContainer;
+    },
+    getQuizMuteGapToggle() {
+      return muteGapToggle;
     },
     getQuizClozeFeedback() {
       return feedbackEl;

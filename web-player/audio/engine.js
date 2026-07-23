@@ -35,6 +35,8 @@ export class AudioEngine {
     }).toDestination();
 
     this.parts = [];
+    this.melodyPart = null;
+    this.chordPart = null;
     this.isSetup = false;
     this.tickId = null;
     this.currentChordNotes = null;
@@ -68,6 +70,12 @@ export class AudioEngine {
 
   scheduleMelody(events) {
     const Tone = window.Tone;
+    if (this.melodyPart) {
+      this.melodyPart.cancel();
+      this.melodyPart.dispose();
+      this.parts = this.parts.filter((p) => p !== this.melodyPart);
+      this.melodyPart = null;
+    }
     const partEvents = events.map((ev) => [ev.time, ev]);
     const part = new Tone.Part((time, event) => {
       if (event.type === "attack") {
@@ -80,11 +88,18 @@ export class AudioEngine {
         this.melodySynth.triggerRelease(time);
       }
     }, partEvents).start(0);
+    this.melodyPart = part;
     this.parts.push(part);
   }
 
   scheduleChords(events) {
     const Tone = window.Tone;
+    if (this.chordPart) {
+      this.chordPart.cancel();
+      this.chordPart.dispose();
+      this.parts = this.parts.filter((p) => p !== this.chordPart);
+      this.chordPart = null;
+    }
     const partEvents = events.map((ev) => [ev.time, ev]);
     const part = new Tone.Part((time, event) => {
       if (event.type === "arpeggio") {
@@ -116,6 +131,7 @@ export class AudioEngine {
         this.activeChordNotes.clear();
       }
     }, partEvents).start(0);
+    this.chordPart = part;
     this.parts.push(part);
   }
 
@@ -141,6 +157,8 @@ export class AudioEngine {
       part.dispose();
     }
     this.parts = [];
+    this.melodyPart = null;
+    this.chordPart = null;
     Tone.Transport.stop();
     Tone.Transport.position = 0;
     this.releaseAllNotes();
@@ -304,6 +322,49 @@ export class AudioEngine {
     }
   }
 
+  releaseChordVoicesImmediate() {
+    const Tone = window.Tone;
+    const now = Tone.now();
+    if (this.chordSynth?.releaseAll) {
+      this.chordSynth.releaseAll(now);
+    }
+    if (this.arpeggioSynth?.triggerRelease) {
+      this.arpeggioSynth.triggerRelease(now);
+    }
+    this.activeChordNotes.clear();
+    this.currentChordNotes = null;
+  }
+
+  rescheduleChordPart(chordEvents, { suppressAttackAtTick = null } = {}) {
+    if (this.chordPart) {
+      this.chordPart.cancel();
+      this.chordPart.dispose();
+      this.parts = this.parts.filter((p) => p !== this.chordPart);
+      this.chordPart = null;
+    }
+    if (chordEvents?.length) {
+      const events = suppressAttackAtTick == null
+        ? chordEvents
+        : chordEvents.filter((ev) => {
+            if (ev.type !== "attack" && ev.type !== "arpeggio") return true;
+            return parseInt(ev.time, 10) !== suppressAttackAtTick;
+          });
+      this.scheduleChords(events);
+    }
+  }
+
+  rescheduleMelodyPart(melodyEvents) {
+    if (this.melodyPart) {
+      this.melodyPart.cancel();
+      this.melodyPart.dispose();
+      this.parts = this.parts.filter((p) => p !== this.melodyPart);
+      this.melodyPart = null;
+    }
+    if (melodyEvents?.length) {
+      this.scheduleMelody(melodyEvents);
+    }
+  }
+
   cancelAllParts() {
     const Tone = window.Tone;
     for (const part of this.parts) {
@@ -320,6 +381,8 @@ export class AudioEngine {
       part.dispose();
     }
     this.parts = [];
+    this.melodyPart = null;
+    this.chordPart = null;
     this.activeChordNotes.clear();
 
     if (melodyEvents?.length > 0) {
@@ -330,11 +393,11 @@ export class AudioEngine {
     }
   }
 
-  resumeChordAttack(notes) {
+  resumeChordAttack(notes, attackTime = null) {
     const Tone = window.Tone;
     if (!notes?.length) return;
-    const now = Tone.now();
-    this.chordSynth.triggerAttack(notes, now);
+    const when = attackTime ?? Tone.now();
+    this.chordSynth.triggerAttack(notes, when);
     this.currentChordNotes = notes;
     notes.forEach((note) => this.activeChordNotes.add(note));
   }

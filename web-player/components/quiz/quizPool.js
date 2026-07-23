@@ -4,6 +4,7 @@
 import { chordInterpreter } from "../../lib/music.js";
 import { normalizeToneNotes } from "../../lib/chordVoicing.js";
 import { getChordSymbol } from "../../lib/jsonToSymbol.js";
+import { resolveChordRootSD } from "../../lib/musicScale.js";
 
 let corpusMemo = null;
 let corpusPromise = null;
@@ -293,6 +294,13 @@ export function distractorSymbols(corpus, scale, excludeSymbol, n = 3) {
 export function findPoolEntry(pool, symbol) {
   if (!pool?.length || !symbol) return null;
   return pool.find((e) => e.symbol === symbol) ?? null;
+}
+
+/** Scale degree (1–7) of the chord's sounding root in the section key. */
+export function entryRootDegree(entry) {
+  const note = entry?.rootNotes?.[0]?.replace(/\d+$/, "");
+  if (!note || !entry?.key) return null;
+  return resolveChordRootSD(note, entry.key);
 }
 
 export function buildSongEntries(rawChords, sectionKeys, fallbackKey, interpret) {

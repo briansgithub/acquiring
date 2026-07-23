@@ -412,6 +412,10 @@ export function renderNoteIndicator(container, options = {}) {
     chordDegreesPillsList.innerHTML = "";
     
     const isMasked = chordObj && options.isChordMasked?.(chordObj);
+    const rootOnly = !isMasked && options.isRootOnlyDisplay?.();
+    const displayNotes = rootOnly ? (notes || []).slice(0, 1) : (notes || []);
+    const displayDegrees = rootOnly ? (chordDegrees || []).slice(0, 1) : (chordDegrees || []);
+
     if (isMasked) {
       (notes || []).forEach((n) => {
         const pill = document.createElement("span");
@@ -484,7 +488,7 @@ export function renderNoteIndicator(container, options = {}) {
     }
     
     // Create note label pills
-    (notes || []).forEach((n, index) => {
+    displayNotes.forEach((n) => {
       const pill = document.createElement("span");
       pill.className = "pill";
       pill.textContent = n;
@@ -511,15 +515,15 @@ export function renderNoteIndicator(container, options = {}) {
     });
     
     // Create scale degree pills below
-    if (chordDegrees && Array.isArray(chordDegrees) && notes && notes.length > 0) {
-      chordDegrees.forEach((degree, index) => {
+    if (displayDegrees.length && displayNotes.length) {
+      displayDegrees.forEach((degree, index) => {
         const pill = document.createElement("span");
         pill.className = "pill";
         pill.textContent = degree;
         pill.style.cursor = "pointer";
         
         // Store the corresponding note name for click handler
-        const correspondingNote = notes[index];
+        const correspondingNote = displayNotes[index];
         if (correspondingNote) {
           pill.dataset.noteName = correspondingNote;
         }
