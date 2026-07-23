@@ -839,7 +839,9 @@ export function renderChordRing(container, options = {}) {
   const NODE_RADIUS = 30; // Radius of individual nodes
   const CENTER_RING_RADIUS = 80; // Radius of the labeling ring
   const DIATONIC_RING_RADIUS = 150; // Radius where diatonic chords sit
-  const VARIANT_SPACING = 70; // Spacing between concentric rings
+  const VARIANT_SPACING = 70; // Radial gap between rings along a spoke or before offset arc
+  const VARIANT_ARC_STEP_DEG = 10; // Angular spread per variant in arc fan
+  const MAX_VARIANTS_PER_SPOKE = 4; // Visible variants before +N overflow badge
 
   // Helper function to get roman numerals for a scale type
   function getRomanNumeralsForScale(scaleType) {
@@ -1037,22 +1039,182 @@ export function renderChordRing(container, options = {}) {
     return drawRomanNumeral(ctx, display.label, x, y, fontSize, options);
   }
 
-  function getVariantCountForDegree(degree) {
+  function isChordBorrowed(chord) {
+    return chord?.borrowed && chord.borrowed !== "" && chord.borrowed !== null;
+  }
+
+  function getExpectedDiatonicLabel(degree) {
+    return getRomanNumeralsForScale(currentKey.scale)[degree - 1];
+  }
+
+  function isVariantEntry(entry, expectedDiatonicLabel) {
+    return entry.symbol !== expectedDiatonicLabel || isChordBorrowed(entry.chord);
+  }
+
+  function getSpokeChordSplit(degree) {
     const chords = currentGroupedChords[degree] || [];
-    const diatonicLabels = getRomanNumeralsForScale(currentKey.scale);
-    const expectedDiatonicLabel = diatonicLabels[degree - 1];
-    return chords.filter((c) => {
-      const isBorrowed = c.chord.borrowed && c.chord.borrowed !== "" && c.chord.borrowed !== null;
-      return c.symbol !== expectedDiatonicLabel || isBorrowed;
-    }).length;
+    const expectedDiatonicLabel = getExpectedDiatonicLabel(degree);
+    const exactDiatonic = chords.find(
+      (c) => c.symbol === expectedDiatonicLabel && !isChordBorrowed(c.chord),
+    );
+    const variants = chords.filter((c) => isVariantEntry(c, expectedDiatonicLabel));
+    return { expectedDiatonicLabel, exactDiatonic, variants };
+  }
+
+  function getAccidentalDirection(symbol) {
+    const stripped = stripBorrowedTags(symbol || "");
+    if (/^♭/.test(stripped)) return "flat";
+    if (/^♯/.test(stripped)) return "sharp";
+    return null;
+  }
+
+  function splitVariantsByLayout(variants) {
+    const sorted = sortVariants(variants);
+    const radial = [];
+    const flats = [];
+    const sharps = [];
+    for (const entry of sorted) {
+      const dir = getAccidentalDirection(entry.symbol);
+      if (dir === "flat") flats.push(entry);
+      else if (dir === "sharp") sharps.push(entry);
+      else radial.push(entry);
+    }
+    return { radial, flats, sharps };
+  }
+
+  function getSpokeVariantDepth(degree) {
+    const { variants } = getSpokeChordSplit(degree);
+    const { radial, flats, sharps } = splitVariantsByLayout(variants);
+    const hasAccidentals = flats.length + sharps.length > 0;
+    return radial.length + (hasAccidentals ? 1 : 0);
+  }
+
+  function variantCategory(entry) {
+    const applied = Number(entry.chord?.applied);
+    if (Number.isInteger(applied) && applied >= 1 && applied <= 7) return 0;
+    if (getAccidentalDirection(entry.symbol) || isChordBorrowed(entry.chord)) return 1;
+    return 2;
+  }
+
+  function sortVariants(variants) {
+    return variants
+      .map((entry, songOrder) => ({ entry, songOrder }))
+      .sort((a, b) => {
+        const catA = variantCategory(a.entry);
+        const catB = variantCategory(b.entry);
+        if (catA !== catB) return catA - catB;
+        return a.songOrder - b.songOrder;
+      })
+      .map(({ entry }) => entry);
+  }
+
+  function getSpokeAngle(degree) {
+    return (degree - 1) * (2 * Math.PI / 7) - Math.PI / 2;
+  }
+
+  function getSpokeLayout(degree, centerX, centerY) {
+    const { expectedDiatonicLabel, exactDiatonic, variants: rawVariants } = getSpokeChordSplit(degree);
+    const { radial: radialEntries, flats: flatEntries, sharps: sharpEntries } = splitVariantsByLayout(rawVariants);
+
+    const baseAngle = getSpokeAngle(degree);
+    const nodeRadius = NODE_RADIUS * zoom;
+    const diatonicDist = DIATONIC_RING_RADIUS * zoom;
+    const arcStepRad = (VARIANT_ARC_STEP_DEG * Math.PI) / 180;
+
+    const inner = {
+      x: centerX + diatonicDist * Math.cos(baseAngle),
+      y: centerY + diatonicDist * Math.sin(baseAngle),
+      r: nodeRadius,
+      entry: exactDiatonic,
+      placeholder: !exactDiatonic,
+      expectedDiatonicLabel,
+      degree,
+    };
+
+    const variants = [];
+    let variantSlot = 0;
+
+    radialEntries.forEach((entry) => {
+      variantSlot += 1;
+      const dist = (DIATONIC_RING_RADIUS + VARIANT_SPACING * variantSlot) * zoom;
+      variants.push({
+        x: centerX + dist * Math.cos(baseAngle),
+        y: centerY + dist * Math.sin(baseAngle),
+        r: nodeRadius,
+        entry,
+        variantIndex: variantSlot,
+        degree,
+        layoutKind: "radial",
+        dist,
+      });
+    });
+
+    const accidentalEntries = [...flatEntries, ...sharpEntries];
+    const overflowCount = Math.max(0, accidentalEntries.length - MAX_VARIANTS_PER_SPOKE);
+    const visibleFlats = flatEntries.slice(0, MAX_VARIANTS_PER_SPOKE);
+    const visibleSharps = sharpEntries.slice(0, Math.max(0, MAX_VARIANTS_PER_SPOKE - visibleFlats.length));
+    const hiddenAccidentals = [
+      ...flatEntries.slice(visibleFlats.length),
+      ...sharpEntries.slice(visibleSharps.length),
+    ];
+
+    let overflow = null;
+
+    if (visibleFlats.length + visibleSharps.length > 0) {
+      variantSlot += 1;
+      const accidentalDist = (DIATONIC_RING_RADIUS + VARIANT_SPACING * variantSlot) * zoom;
+
+      visibleFlats.forEach((entry, idx) => {
+        const angle = baseAngle - arcStepRad * (idx + 1);
+        variants.push({
+          x: centerX + accidentalDist * Math.cos(angle),
+          y: centerY + accidentalDist * Math.sin(angle),
+          r: nodeRadius,
+          entry,
+          variantIndex: variantSlot,
+          degree,
+          layoutKind: "flat",
+          angle,
+          dist: accidentalDist,
+        });
+      });
+
+      visibleSharps.forEach((entry, idx) => {
+        const angle = baseAngle + arcStepRad * (idx + 1);
+        variants.push({
+          x: centerX + accidentalDist * Math.cos(angle),
+          y: centerY + accidentalDist * Math.sin(angle),
+          r: nodeRadius,
+          entry,
+          variantIndex: variantSlot,
+          degree,
+          layoutKind: "sharp",
+          angle,
+          dist: accidentalDist,
+        });
+      });
+
+      if (overflowCount > 0) {
+        overflow = {
+          x: centerX + accidentalDist * Math.cos(baseAngle),
+          y: centerY + accidentalDist * Math.sin(baseAngle),
+          r: nodeRadius * 0.72,
+          count: overflowCount,
+          hiddenVariants: hiddenAccidentals,
+          degree,
+        };
+      }
+    }
+
+    return { inner, variants, overflow, expectedDiatonicLabel };
   }
 
   function getLayoutRadius() {
-    let maxVariantCount = 0;
+    let maxDepth = 0;
     for (let i = 1; i <= 7; i++) {
-      maxVariantCount = Math.max(maxVariantCount, getVariantCountForDegree(i));
+      maxDepth = Math.max(maxDepth, getSpokeVariantDepth(i));
     }
-    const outerDist = DIATONIC_RING_RADIUS + VARIANT_SPACING * maxVariantCount;
+    const outerDist = DIATONIC_RING_RADIUS + VARIANT_SPACING * maxDepth;
     const nodePad = NODE_RADIUS * 1.3;
     return Math.max(outerDist + nodePad, CENTER_RING_RADIUS + nodePad);
   }
@@ -1143,37 +1305,51 @@ export function renderChordRing(container, options = {}) {
     }
 
     const positions = [];
-    const diatonicLabels = getRomanNumeralsForScale(currentKey.scale);
     for (let degree = 1; degree <= 7; degree++) {
-      const angle = (degree - 1) * (2 * Math.PI / 7) - (Math.PI / 2);
-      const chords = currentGroupedChords[degree] || [];
-      const expectedDiatonicLabel = diatonicLabels[degree - 1];
-      const exactDiatonic = chords.find(c =>
-        c.symbol === expectedDiatonicLabel &&
-        (!c.chord.borrowed || c.chord.borrowed === "" || c.chord.borrowed === null)
-      );
-      const variants = chords.filter(c => {
-        const isBorrowed = c.chord.borrowed && c.chord.borrowed !== "" && c.chord.borrowed !== null;
-        return c.symbol !== expectedDiatonicLabel || isBorrowed;
-      });
+      const layout = getSpokeLayout(degree, centerX, centerY);
+      const { inner, variants, overflow, expectedDiatonicLabel } = layout;
 
-      const diatonicDist = DIATONIC_RING_RADIUS * zoom;
-      const nodeRadius = NODE_RADIUS * zoom;
-      const dx = centerX + diatonicDist * Math.cos(angle);
-      const dy = centerY + diatonicDist * Math.sin(angle);
-
-      if (exactDiatonic) {
-        positions.push({ symbol: exactDiatonic.symbol, x: dx, y: dy, r: nodeRadius, degree });
+      if (inner.entry) {
+        positions.push({
+          symbol: inner.entry.symbol,
+          x: inner.x,
+          y: inner.y,
+          r: inner.r,
+          degree,
+        });
       } else {
-        positions.push({ symbol: expectedDiatonicLabel, x: dx, y: dy, r: nodeRadius, degree, placeholder: true });
+        positions.push({
+          symbol: expectedDiatonicLabel,
+          x: inner.x,
+          y: inner.y,
+          r: inner.r,
+          degree,
+          placeholder: true,
+        });
       }
 
-      variants.forEach((v, idx) => {
-        const dist = (DIATONIC_RING_RADIUS + VARIANT_SPACING * (idx + 1)) * zoom;
-        const vx = centerX + dist * Math.cos(angle);
-        const vy = centerY + dist * Math.sin(angle);
-        positions.push({ symbol: v.symbol, x: vx, y: vy, r: nodeRadius, degree });
-      });
+      for (const v of variants) {
+        positions.push({
+          symbol: v.entry.symbol,
+          x: v.x,
+          y: v.y,
+          r: v.r,
+          degree,
+        });
+      }
+
+      if (overflow) {
+        for (const hidden of overflow.hiddenVariants) {
+          positions.push({
+            symbol: hidden.symbol,
+            x: overflow.x,
+            y: overflow.y,
+            r: overflow.r,
+            degree,
+            overflow: true,
+          });
+        }
+      }
     }
     return positions;
   }
@@ -1357,73 +1533,77 @@ export function renderChordRing(container, options = {}) {
   }
 
   function drawScaleDegreeNodes(degree, centerX, centerY) {
-    // 1 at Top (-PI/2)
-    const angle = (degree - 1) * (2 * Math.PI / 7) - (Math.PI / 2);
-
-    // Get Diatonic Label for this key/degree
-    const diatonicLabels = getRomanNumeralsForScale(currentKey.scale);
-    const expectedDiatonicLabel = diatonicLabels[degree - 1];
-
-    const chords = currentGroupedChords[degree] || [];
-
-    // Separate Exact Diatonic Match vs Variants
-    // For exactDiatonic, ONLY use non-borrowed chords (borrowed chords should always be variants)
-    const exactDiatonic = chords.find(c => 
-      c.symbol === expectedDiatonicLabel && 
-      (!c.chord.borrowed || c.chord.borrowed === "" || c.chord.borrowed === null)
-    );
-    
-    // Variants include: chords with different symbols OR borrowed chords (even if symbol matches)
-    const variants = chords.filter(c => {
-      const isBorrowed = c.chord.borrowed && c.chord.borrowed !== "" && c.chord.borrowed !== null;
-      return c.symbol !== expectedDiatonicLabel || isBorrowed;
-    });
-
-    // 1. Draw Diatonic Slot (Inner Ring)
-    const diatonicDist = DIATONIC_RING_RADIUS * zoom;
+    const layout = getSpokeLayout(degree, centerX, centerY);
+    const { inner, variants, overflow, expectedDiatonicLabel } = layout;
     const nodeRadius = NODE_RADIUS * zoom;
-
-    const dx = centerX + diatonicDist * Math.cos(angle);
-    const dy = centerY + diatonicDist * Math.sin(angle);
     const color = getColor(degree, currentKey.scale);
 
     if (quizDegreeAnswerMode) {
       const isDimmed = quizHighlightDegrees && !quizHighlightDegrees.includes(degree);
       const isActive = isDegreeAnswerNodeActive(degree);
-      const displayLabel = String(degree);
-      drawNode(dx, dy, nodeRadius, color, displayLabel, isDimmed ? 0.35 : 1.0, isActive, false, null, true);
+      drawNode(inner.x, inner.y, nodeRadius, color, String(degree), isDimmed ? 0.35 : 1.0, isActive, false, null, true);
       return;
     }
 
-    if (exactDiatonic) {
-      const isActive = isNodeActive(exactDiatonic);
-      const chord = exactDiatonic.chord;
-      const colorDegree = exactDiatonic.colorDegree ?? degree;
+    if (inner.entry) {
+      const isActive = isNodeActive(inner.entry);
+      const chord = inner.entry.chord;
+      const colorDegree = inner.entry.colorDegree ?? degree;
       const subLabel = borrowedAbbrev(chord?.borrowed);
       const displayLabel = useRomanNumerals
-        ? (subLabel ? stripBorrowedTags(exactDiatonic.symbol) : exactDiatonic.symbol)
+        ? (subLabel ? stripBorrowedTags(inner.entry.symbol) : inner.entry.symbol)
         : getChordLetterName(chord, currentKey);
-      drawNode(dx, dy, nodeRadius, getColor(colorDegree, currentKey.scale, chord?.borrowed), displayLabel, 1.0, isActive, false, subLabel);
+      drawNode(
+        inner.x, inner.y, nodeRadius,
+        getColor(colorDegree, currentKey.scale, chord?.borrowed),
+        displayLabel, 1.0, isActive, false, subLabel,
+      );
     } else {
-      // Placeholder
       const placeholderLabel = useRomanNumerals ? expectedDiatonicLabel : getNoteLabel(degree, currentKey);
-      drawNode(dx, dy, nodeRadius, color, placeholderLabel, 0.3, false, true);
+      drawNode(inner.x, inner.y, nodeRadius, color, placeholderLabel, 0.3, false, true);
     }
 
-    // 2. Draw Variants (Outer Rings)
-    variants.forEach((v, idx) => {
-      const dist = (DIATONIC_RING_RADIUS + VARIANT_SPACING * (idx + 1)) * zoom;
-      const vx = centerX + dist * Math.cos(angle);
-      const vy = centerY + dist * Math.sin(angle);
-      const isActive = isNodeActive(v);
-      const chord = v.chord;
-      const colorDegree = v.colorDegree ?? degree;
+    for (const v of variants) {
+      const isActive = isNodeActive(v.entry);
+      const chord = v.entry.chord;
+      const colorDegree = v.entry.colorDegree ?? degree;
       const subLabel = borrowedAbbrev(chord?.borrowed);
       const displayLabel = useRomanNumerals
-        ? (subLabel ? stripBorrowedTags(v.symbol) : v.symbol)
-        : getChordLetterName(v.chord, currentKey);
-      drawNode(vx, vy, nodeRadius, getColor(colorDegree, currentKey.scale, chord?.borrowed), displayLabel, 0.9, isActive, false, subLabel);
-    });
+        ? (subLabel ? stripBorrowedTags(v.entry.symbol) : v.entry.symbol)
+        : getChordLetterName(v.entry.chord, currentKey);
+      drawNode(
+        v.x, v.y, nodeRadius,
+        getColor(colorDegree, currentKey.scale, chord?.borrowed),
+        displayLabel, 0.9, isActive, false, subLabel,
+      );
+    }
+
+    if (overflow) {
+      drawOverflowBadge(overflow.x, overflow.y, overflow.r, overflow.count);
+    }
+  }
+
+  function drawOverflowBadge(x, y, r, count) {
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.save();
+    ctx.globalAlpha = 0.85;
+    ctx.fillStyle = "#334155";
+    ctx.fill();
+    ctx.restore();
+    ctx.save();
+    ctx.lineWidth = 2 * zoom;
+    ctx.strokeStyle = "#94a3b8";
+    ctx.setLineDash([4 * zoom, 3 * zoom]);
+    ctx.stroke();
+    ctx.restore();
+    ctx.save();
+    ctx.fillStyle = "#e2e8f0";
+    ctx.font = `700 ${Math.max(10, r * 0.9)}px system-ui, sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(`+${count}`, x, y);
+    ctx.restore();
   }
 
   function drawNode(x, y, r, color, label, opacity, isActive = false, isPlaceholder = false, subLabel = null, isDegreeLabel = false) {
@@ -1703,78 +1883,69 @@ export function renderChordRing(container, options = {}) {
     const centerY = canvas.height / 2 + panY;
     const baseNodeRadius = NODE_RADIUS * zoom;
 
-    const diatonicLabels = getRomanNumeralsForScale(currentKey.scale);
-
     for (let i = 1; i <= 7; i++) {
-      const angle = (i - 1) * (2 * Math.PI / 7) - (Math.PI / 2);
-      const degreeChords = currentGroupedChords[i] || [];
-      const expectedDiatonicLabel = diatonicLabels[i - 1];
+      const layout = getSpokeLayout(i, centerX, centerY);
+      const sortedVariants = [...layout.variants].sort((a, b) => (b.dist ?? 0) - (a.dist ?? 0));
 
-      const exactDiatonic = degreeChords.find(c => 
-        c.symbol === expectedDiatonicLabel && 
-        (!c.chord.borrowed || c.chord.borrowed === "" || c.chord.borrowed === null)
-      );
-      
-      const variants = degreeChords.filter(c => {
-        const isBorrowed = c.chord.borrowed && c.chord.borrowed !== "" && c.chord.borrowed !== null;
-        return c.symbol !== expectedDiatonicLabel || isBorrowed;
-      });
-
-      // Check Variants first (outer rings)
-      for (let vIdx = 0; vIdx < variants.length; vIdx++) {
-        const v = variants[vIdx];
-        const vDist = (DIATONIC_RING_RADIUS + VARIANT_SPACING * (vIdx + 1)) * zoom;
-        const vx = centerX + vDist * Math.cos(angle);
-        const vy = centerY + vDist * Math.sin(angle);
-        
-        const isActive = isNodeActive(v);
+      for (const v of sortedVariants) {
+        const isActive = isNodeActive(v.entry);
         const effectiveRadius = isActive ? baseNodeRadius * 1.3 : baseNodeRadius;
-
-        if (Math.hypot(mx - vx, my - vy) <= effectiveRadius) {
-          return { 
-            type: 'chord', 
-            chord: v.chord, 
-            symbol: v.symbol, 
-            x: vx, 
-            y: vy, 
+        if (Math.hypot(mx - v.x, my - v.y) <= effectiveRadius) {
+          const entry = v.entry;
+          return {
+            type: "chord",
+            chord: entry.chord,
+            symbol: entry.symbol,
+            x: v.x,
+            y: v.y,
             radius: effectiveRadius,
             degree: i,
             placementDegree: i,
-            colorDegree: v.colorDegree ?? i,
-            color: getColor(v.colorDegree ?? i, currentKey.scale, v.chord?.borrowed),
+            colorDegree: entry.colorDegree ?? i,
+            color: getColor(entry.colorDegree ?? i, currentKey.scale, entry.chord?.borrowed),
             isVariant: true,
-            variantIndex: vIdx + 1
+            variantIndex: v.variantIndex,
           };
         }
       }
 
-      // Check Diatonic
-      const dDist = DIATONIC_RING_RADIUS * zoom;
-      const dx = centerX + dDist * Math.cos(angle);
-      const dy = centerY + dDist * Math.sin(angle);
-      
+      if (layout.overflow) {
+        const { overflow } = layout;
+        if (Math.hypot(mx - overflow.x, my - overflow.y) <= overflow.r) {
+          return {
+            type: "overflow",
+            x: overflow.x,
+            y: overflow.y,
+            radius: overflow.r,
+            degree: i,
+            placementDegree: i,
+            hiddenVariants: overflow.hiddenVariants,
+            overflowCount: overflow.count,
+          };
+        }
+      }
+
+      const { inner } = layout;
       let effectiveRadius = baseNodeRadius;
-      if (exactDiatonic) {
-        const isActive = isNodeActive(exactDiatonic);
+      if (inner.entry) {
+        const isActive = isNodeActive(inner.entry);
         effectiveRadius = isActive ? baseNodeRadius * 1.3 : baseNodeRadius;
       }
-
-      if (Math.hypot(mx - dx, my - dy) <= effectiveRadius) {
-        if (exactDiatonic) {
-          return { 
-            type: 'chord', 
-            chord: exactDiatonic.chord, 
-            symbol: exactDiatonic.symbol, 
-            x: dx, 
-            y: dy, 
-            radius: effectiveRadius,
-            degree: i,
-            placementDegree: i,
-            colorDegree: exactDiatonic.colorDegree ?? i,
-            color: getColor(exactDiatonic.colorDegree ?? i, currentKey.scale, exactDiatonic.chord?.borrowed),
-            isVariant: false
-          };
-        }
+      if (Math.hypot(mx - inner.x, my - inner.y) <= effectiveRadius && inner.entry) {
+        const entry = inner.entry;
+        return {
+          type: "chord",
+          chord: entry.chord,
+          symbol: entry.symbol,
+          x: inner.x,
+          y: inner.y,
+          radius: effectiveRadius,
+          degree: i,
+          placementDegree: i,
+          colorDegree: entry.colorDegree ?? i,
+          color: getColor(entry.colorDegree ?? i, currentKey.scale, entry.chord?.borrowed),
+          isVariant: false,
+        };
       }
     }
     return null;
@@ -1834,24 +2005,29 @@ export function renderChordRing(container, options = {}) {
 
   function positionTooltip(node) {
     if (!node) return;
-    const centerX = canvas.width / 2 + panX;
-    const centerY = canvas.height / 2 + panY;
-    const placementDegree = node.placementDegree ?? node.degree;
-    const angle = (placementDegree - 1) * (2 * Math.PI / 7) - (Math.PI / 2);
-    let dist = DIATONIC_RING_RADIUS * zoom;
-    if (node.isVariant) {
-      dist = (DIATONIC_RING_RADIUS + VARIANT_SPACING * node.variantIndex) * zoom;
-    }
-    const x = centerX + dist * Math.cos(angle);
-    const y = centerY + dist * Math.sin(angle);
-    const radius = getNodeEffectiveRadius(node);
-    const anchorY = y - radius;
+    const radius = node.radius ?? getNodeEffectiveRadius(node);
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width > 0 ? rect.width / canvas.width : 1;
     const scaleY = canvas.height > 0 ? rect.height / canvas.height : 1;
-    tooltip.style.left = `${x * scaleX}px`;
-    tooltip.style.top = `${anchorY * scaleY}px`;
+    tooltip.style.left = `${node.x * scaleX}px`;
+    tooltip.style.top = `${(node.y - radius) * scaleY}px`;
     tooltip.style.transform = "translate(-50%, -100%)";
+  }
+
+  function showOverflowTooltip(node) {
+    const items = node.hiddenVariants.map((v) => {
+      const label = useRomanNumerals ? stripBorrowedTags(v.symbol) : getChordLetterName(v.chord, currentKey);
+      return `<div style="padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.06);">${label}</div>`;
+    }).join("");
+    tooltip.innerHTML = `
+      <div style="font-size: 12px; font-weight: 600; color: #94a3b8; margin-bottom: 6px;">
+        +${node.overflowCount} more on degree ${ROMAN_MAP[node.degree] || node.degree}
+      </div>
+      ${items}
+    `;
+    positionTooltip(node);
+    tooltip.style.display = "block";
+    tooltip.style.opacity = "1";
   }
 
   function showTooltip(node) {
@@ -1922,10 +2098,8 @@ export function renderChordRing(container, options = {}) {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width > 0 ? rect.width / canvas.width : 1;
     const scaleY = canvas.height > 0 ? rect.height / canvas.height : 1;
-    const anchorX = (region.x + region.w / 2) * scaleX;
-    const anchorY = region.y * scaleY;
-    centerReadingTooltip.style.left = `${anchorX}px`;
-    centerReadingTooltip.style.top = `${anchorY}px`;
+    centerReadingTooltip.style.left = `${(region.x + region.w / 2) * scaleX}px`;
+    centerReadingTooltip.style.top = `${region.y * scaleY}px`;
     centerReadingTooltip.style.transform = "translate(-50%, -100%)";
   }
 
@@ -2003,7 +2177,11 @@ export function renderChordRing(container, options = {}) {
       hideCenterReadingTooltip();
       currentHoveredNode = node;
       clearTimeout(hideTimeout);
-      showTooltip(node);
+      if (node.type === "overflow") {
+        showOverflowTooltip(node);
+      } else {
+        showTooltip(node);
+      }
       canvas.style.cursor = "pointer";
     } else {
       canvas.style.cursor = isDragging ? "grabbing" : "default";
@@ -2055,13 +2233,10 @@ export function renderChordRing(container, options = {}) {
 
     if (quizDegreeAnswerMode && degreeSelectHandler) {
       for (let i = 1; i <= 7; i++) {
-        const angle = (i - 1) * (2 * Math.PI / 7) - (Math.PI / 2);
-        const dDist = DIATONIC_RING_RADIUS * zoom;
-        const dx = centerX + dDist * Math.cos(angle);
-        const dy = centerY + dDist * Math.sin(angle);
+        const layout = getSpokeLayout(i, centerX, centerY);
         const isActive = isDegreeAnswerNodeActive(i);
         const hitRadius = isActive ? baseNodeRadius * 1.3 : baseNodeRadius;
-        if (Math.hypot(mx - dx, my - dy) <= hitRadius) {
+        if (Math.hypot(mx - layout.inner.x, my - layout.inner.y) <= hitRadius) {
           degreeSelectHandler(i);
           return;
         }
@@ -2069,57 +2244,38 @@ export function renderChordRing(container, options = {}) {
       return;
     }
 
-    const diatonicLabels = getRomanNumeralsForScale(currentKey.scale);
-
     for (let i = 1; i <= 7; i++) {
-      const angle = (i - 1) * (2 * Math.PI / 7) - (Math.PI / 2);
-      const degreeChords = currentGroupedChords[i] || [];
-      const expectedDiatonicLabel = diatonicLabels[i - 1];
+      const layout = getSpokeLayout(i, centerX, centerY);
+      const sortedVariants = [...layout.variants].sort((a, b) => (b.dist ?? 0) - (a.dist ?? 0));
 
-      // Use the same logic as drawScaleDegreeNodes to separate exactDiatonic and variants
-      const exactDiatonic = degreeChords.find(c => 
-        c.symbol === expectedDiatonicLabel && 
-        (!c.chord.borrowed || c.chord.borrowed === "" || c.chord.borrowed === null)
-      );
-      
-      const variants = degreeChords.filter(c => {
-        const isBorrowed = c.chord.borrowed && c.chord.borrowed !== "" && c.chord.borrowed !== null;
-        return c.symbol !== expectedDiatonicLabel || isBorrowed;
-      });
-
-      // Check Variants first (they're on outer rings, so check them before inner ring to avoid conflicts)
-      for (let vIdx = 0; vIdx < variants.length; vIdx++) {
-        const v = variants[vIdx];
-        const vDist = (DIATONIC_RING_RADIUS + VARIANT_SPACING * (vIdx + 1)) * zoom;
-        const vx = centerX + vDist * Math.cos(angle);
-        const vy = centerY + vDist * Math.sin(angle);
-        
-        // Use effective radius (larger if active)
-        const isActive = isNodeActive(v);
+      for (const v of sortedVariants) {
+        const isActive = isNodeActive(v.entry);
         const effectiveRadius = isActive ? baseNodeRadius * 1.3 : baseNodeRadius;
-
-        if (Math.hypot(mx - vx, my - vy) <= effectiveRadius) {
-          playChord(v.chord);
+        if (Math.hypot(mx - v.x, my - v.y) <= effectiveRadius) {
+          playChord(v.entry.chord);
           return;
         }
       }
 
-      // Check Diatonic/Placeholder Node (check after variants to avoid conflicts)
-      const dDist = DIATONIC_RING_RADIUS * zoom;
-      const dx = centerX + dDist * Math.cos(angle);
-      const dy = centerY + dDist * Math.sin(angle);
-      
-      // Use effective radius (larger if active)
-      let effectiveRadius = baseNodeRadius;
-      if (exactDiatonic) {
-        const isActive = isNodeActive(exactDiatonic);
-        effectiveRadius = isActive ? baseNodeRadius * 1.3 : baseNodeRadius;
+      if (layout.overflow) {
+        const { overflow } = layout;
+        if (Math.hypot(mx - overflow.x, my - overflow.y) <= overflow.r) {
+          if (overflow.hiddenVariants.length > 0) {
+            playChord(overflow.hiddenVariants[0].chord);
+          }
+          return;
+        }
       }
 
-      if (Math.hypot(mx - dx, my - dy) <= effectiveRadius) {
-        // Clicked Inner Node
-        if (exactDiatonic) {
-          playChord(exactDiatonic.chord);
+      const { inner } = layout;
+      let effectiveRadius = baseNodeRadius;
+      if (inner.entry) {
+        const isActive = isNodeActive(inner.entry);
+        effectiveRadius = isActive ? baseNodeRadius * 1.3 : baseNodeRadius;
+      }
+      if (Math.hypot(mx - inner.x, my - inner.y) <= effectiveRadius) {
+        if (inner.entry) {
+          playChord(inner.entry.chord);
         } else {
           playDiatonicTriad(i);
         }
