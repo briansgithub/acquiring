@@ -143,6 +143,24 @@ const BASELINE = {
     pcs: [4, 9, 11],
     roman: "Isus46(lyd)",
   },
+  sus24Inv1: {
+    chord: { root: 1, type: 5, inversion: 1, suspensions: [2, 4] },
+    key: { tonic: "E", scale: "major" },
+    pcs: [4, 9, 11],
+    roman: "I6sus2sus4",
+  },
+  dimSharp5Inv2: {
+    chord: { root: 7, type: 5, inversion: 2, alterations: ["#5"] },
+    key: { tonic: "C", scale: "major" },
+    pcs: [2, 7, 11],
+    roman: "vii6(#5)4",
+  },
+  susAdd6Inv2: {
+    chord: { root: 4, type: 5, inversion: 2, suspensions: [4], adds: [6] },
+    key: { tonic: "A", scale: "minor" },
+    pcs: [2, 7, 11],
+    roman: "iv6(add6)4sus4",
+  },
 };
 
 function pcs(chord, key) {

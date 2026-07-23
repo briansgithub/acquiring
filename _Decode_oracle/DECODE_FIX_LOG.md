@@ -1039,4 +1039,22 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 058 — sus figured-bass + half-dim inv3 (2026-07-23, `feat/fix-058-sus-figured-bass`)
+
+**058a:** inv=1 triad sus2 (or sus2+sus4) → `6sus2` / `6sus2sus4`; sus4-only keeps `sus46`.
+
+**058b:** inv=2 triad sus + add6 → `6(add6)4sus4` (adds before trailing sus).
+
+**058c:** inv=2 dim `#5` → `vii6(#5)4` (no `°`/`+` prefix).
+
+**058d:** inv=3 type≥7 half-dim `b5` → `4(b5)2`; `buildNumeral` applies `triadQualityWithAlts` for applied `b5`→ø.
+
+**Gate:** policy **33/33**, pronunciation **77/77**.
+
+**Resync:** engine fails **509→346** (−163) on 64.0k rows (1263 slugs).
+
+**Files:** `jsonToSymbol.js`, `policyRegression.mjs`.
+
+---
+
 Single source of truth for the full workflow: [`ORACLE_GUIDE/README.md`](../ORACLE_GUIDE/README.md) (read `01`–`05` + `reference.md` in order).

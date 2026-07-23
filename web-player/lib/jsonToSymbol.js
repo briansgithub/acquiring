@@ -213,6 +213,8 @@ function buildSuffix(chord, quality, opts = {}) {
     const sharp5Only = displayAlts.length === 1 && displayAlts[0] === '#5';
     const suppressPlusForSharp5 = chord.type < 7 && sharp5Only
       && (chord.inversion === 1 || chord.inversion === 2);
+    const suppressDimForSharp5Inv2 = sharp5Only && quality === 'diminished'
+      && chord.inversion === 2 && chord.type < 7;
     let suffix = '';
     let alterationsEmbedded = false;
 
@@ -220,7 +222,7 @@ function buildSuffix(chord, quality, opts = {}) {
     if (augmented) suffix += '+';
 
     if (!suspended) {
-        if (quality === 'diminished') {
+        if (quality === 'diminished' && !suppressDimForSharp5Inv2) {
             suffix += (chord.type >= 7 && !fullyDiminished) ? 'ø' : '°';
         } else if (chord.type >= 7 && majorSeventh) {
             suffix += '△';
@@ -240,7 +242,12 @@ function buildSuffix(chord, quality, opts = {}) {
             suffix += `6${altInline}`;
             alterationsEmbedded = true;
         } else if (suspended) {
-            suffix += `sus${chord.suspensions.join('')}6`;
+            const sus4Only = chord.suspensions.includes(4) && !chord.suspensions.includes(2);
+            if (sus4Only) {
+                suffix += `sus${chord.suspensions.join('')}6`;
+            } else {
+                suffix += `6${susStr}`;
+            }
             opts.susPlaced = true;
         } else {
             suffix += '6';
@@ -254,12 +261,21 @@ function buildSuffix(chord, quality, opts = {}) {
                 suffix += '43';
             }
         } else if (suspended) {
-            suffix += `4${susStr}6`;
-            opts.susPlaced = true;
+            if (Array.isArray(chord.adds) && chord.adds.length) {
+                const addBody = chord.adds.map((v) => `add${v}`).join('');
+                suffix += `6(${addBody})4${susStr}`;
+                opts.susPlaced = true;
+                opts.addsPlaced = true;
+            } else {
+                suffix += `4${susStr}6`;
+                opts.susPlaced = true;
+            }
         } else if (sharp5Only) {
             const iMinorTonicSharp5 = quality === 'minor' && chord.root === 1 && !chord.borrowed;
             if (iMinorTonicSharp5) {
                 suffix += `46${altInline}`;
+            } else if (quality === 'diminished') {
+                suffix += `6${altInline}4`;
             } else {
                 suffix += `+6${altInline}4`;
             }
@@ -274,7 +290,15 @@ function buildSuffix(chord, quality, opts = {}) {
             suffix += '64';
         }
     } else if (chord.inversion === 3) {
-        suffix += '42';
+        if (chord.type >= 7 && implicitHalfDimB5 && alterations.includes('b5')) {
+            suffix += '4(b5)2';
+            alterationsEmbedded = true;
+        } else if (chord.type >= 7 && altInline) {
+            suffix += `4${altInline}2`;
+            alterationsEmbedded = true;
+        } else {
+            suffix += '42';
+        }
     }
 
     if (suspended && !opts.susPlaced) {
@@ -306,7 +330,7 @@ function buildSuffix(chord, quality, opts = {}) {
 
     if (opts.borrowedTag) suffix += opts.borrowedTag;
 
-    if (Array.isArray(chord.adds) && chord.adds.length) {
+    if (Array.isArray(chord.adds) && chord.adds.length && !opts.addsPlaced) {
         const addBody = chord.adds.map((v) => {
             const n = (v <= 6 && chord.type >= 7) ? v + 7 : v;
             return `add${n}`;
@@ -331,7 +355,8 @@ function buildSuffix(chord, quality, opts = {}) {
 // Builds a single numeral (no applied "/"), given the chord's degree and the quality array
 // to read its quality from. `prefix` is any accidental prefix for borrowed roots.
 function buildNumeral(degree, qualities, chord, prefix, opts = {}) {
-    const quality = opts.quality ?? ((degree >= 1 && degree <= 7) ? qualities[degree - 1] : 'major');
+    const baseQuality = opts.quality ?? ((degree >= 1 && degree <= 7) ? qualities[degree - 1] : 'major');
+    const quality = triadQualityWithAlts(baseQuality, chord);
     let roman = ROMAN_MAP[degree] || '';
     if (quality === 'minor' || quality === 'diminished') roman = roman.toLowerCase();
     return (prefix || '') + roman + buildSuffix(chord, quality, opts);
