@@ -487,16 +487,18 @@ const songSelector = renderSongSelector(selectorPane, {
   },
   onLoad: async ({ cacheKey }) => {
     try {
+      const res = await fetch(`/api/songs/entry?key=${encodeURIComponent(cacheKey)}`);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `HTTP ${res.status}`);
+      }
+      const entry = await res.json();
       let idx = library.findIndex((s) => s.artist === cacheKey);
       if (idx < 0) {
-        const res = await fetch(`/api/songs/entry?key=${encodeURIComponent(cacheKey)}`);
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          throw new Error(err.error || `HTTP ${res.status}`);
-        }
-        const entry = await res.json();
         library.push(entry);
         idx = library.length - 1;
+      } else {
+        library[idx] = entry;
       }
       loadedCacheKey = cacheKey;
       handleSongChange(String(idx));

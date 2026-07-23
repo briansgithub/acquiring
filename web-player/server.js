@@ -58,12 +58,10 @@ async function loadLibraryEntry(artistName) {
 
   let sections;
   if (metadata?.sections?.length) {
-    const seenSongIds = new Set();
     sections = [];
     const sortedMeta = [...metadata.sections].sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
     for (const meta of sortedMeta) {
-      if (!meta.songId || seenSongIds.has(meta.songId)) continue;
-      seenSongIds.add(meta.songId);
+      if (!meta.songId) continue;
       const file = findFileForMeta(meta);
       if (!file) continue;
       const entry = sectionEntryFromFile(file);
