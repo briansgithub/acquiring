@@ -1021,4 +1021,22 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 057 — inv1/inv2 figured-bass ordering (2026-07-23, `feat/fix-057-roman-order`)
+
+**057a:** `buildSuffix` inv=1 triad + sus → `sus46` (`Isus46`) not `6sus4`. inv=2 triad + sus → `4sus46`.
+
+**057b:** inv=2 triad omit-3 → `6(no3)4` (default), not `46(no3)` / `64`. `omitsPlaced` suppresses trailing `(no3)`.
+
+**057c:** inv=2 triad `#5` only → `+6(#5)4` (e.g. `I+6(#5)4`); exception: minor tonic `i` → `i46(#5)`. `suppressPlusForSharp5` keeps `V+7(#5)` for type≥7.
+
+**057d:** `getChordLetterName` — `(#5)` letter parens only for inv=2 (no sus) or inv=1 sus4-only; type≥7 uses `+` only. `sus#4` when both apply.
+
+**Gate:** policy **30/30**, pronunciation **77/77**, roman corpus unchanged baseline.
+
+**Resync:** engine fails **850→509** (−341) on 63.7k rows (1257 slugs).
+
+**Files:** `jsonToSymbol.js`, `policyRegression.mjs`.
+
+---
+
 Single source of truth for the full workflow: [`ORACLE_GUIDE/README.md`](../ORACLE_GUIDE/README.md) (read `01`–`05` + `reference.md` in order).
