@@ -1087,6 +1087,22 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 061 — custom bor °△ + augmented omit combo (2026-07-23, `feat/fix-061-symbol-batch`)
+
+**061a:** custom borrowed dim type≥7 with maj7 interval → `°△` not `ø` (`v°△4(b5)2(bor)`). `fullyDiminished` + `majorSeventh` passed for custom-array path; `buildSuffix` appends `△` after `°` when both set.
+
+**061b:** augmented triad omit 3+5 → `(no5no3)` not `(no5)(no3)`. Symbol-only — cluster still fails on PC (missing 9th).
+
+**Deferred:** inv2 sus4+add6 — key/root split (C min `v4sus46` vs A min `iv6(add6)4sus4`); needs probe before rule.
+
+**Gate:** policy **36/36**, pronunciation **77/77**.
+
+**Resync:** 75.5k rows (1556 slugs) — engine fails **387** (−3 vs 390 pre-061).
+
+**Files:** `jsonToSymbol.js`.
+
+---
+
 ## Session handoff — 2026-07-23 (fetch + decode loop)
 
 ### Merged on `main`
