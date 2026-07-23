@@ -1059,7 +1059,7 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ## Fix 059 — omit3/lydian sus4/minor #5 inv2 edge cases (2026-07-23, `feat/fix-059-edge-cases`)
 
-**059a:** inv=2 omit-3 → `46(no3)` for minor/dim triads, `6(no3)4` for major (phryg `vii46(no3)`).
+**059a:** inv=2 omit-3 → `46(no3)` for **iv** minor + **phryg vii** only; default `6(no3)4` (incl. minor `i`, mixolydian `v`).
 
 **059b:** inv=1 sus4 → `6sus4` unless explicit `borrowed:lydian` (`sus46`).
 
@@ -1072,6 +1072,50 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 **Resync:** 64.9k rows — engine fails **344** (−7 vs pre-059 baseline of 351).
 
 **Files:** `jsonToSymbol.js`, `policyRegression.mjs`.
+
+---
+
+## Session handoff — 2026-07-23 (fetch + decode loop)
+
+### Merged on `main`
+- PR #12 Fix 056, #13 verification, #14 Fix 057, #15 Fix 058, #16 Fix 059
+- Engine fails trajectory: ~850 → 509 (057) → 346 (058) → **344** (059)
+
+### Catalog / fetch (data NOT in git)
+- **Path:** `sacred_ring_data/catalog/hooktheory_catalog.db`, `sacred_ring_data/harvest/<slug>/`
+- **Queue:** 1556 slugs, **~1313 full** (~84%), ~243 pending
+- **Compared:** ~65.2k chord rows, **344 engine fails**, 2119 error signature groups
+- **Fetch daemon:** dies sporadically mid-wave (no pause file). Last restart: `runFetchDaemon.js --wave-size 20`. Watcher: `watchFetchWaves.mjs` (polls waves, writes `_Debug_testing/top_errors_wave-*.md`)
+- **Resume fetch:** `node _Research_testing/hooktheory_catalog/cli/runFetchDaemon.js --wave-size 20` (or `overnightFetch.ps1` for auto-restart)
+- **Resync after fixes:** `node _Research_testing/hooktheory_catalog/cli/batchCompareCatalog.js --resync`
+- **Top errors brief:** `node _Debug_testing/queryTopErrors.mjs --limit 15`
+
+### Gates (must pass before merge)
+```bash
+node _Debug_testing/policyRegression.mjs          # 35/35
+npm run test:pronunciation                        # 77/77
+npm run test:roman-symbols
+npm run test:note-order
+node _Research_testing/hooktheory_catalog/cli/batchCompareCatalog.js --resync
+```
+
+### Top remaining clusters (Fix 060+ candidates)
+
+| Priority | Signature | ~Fails | Type | Notes |
+|----------|-----------|-------:|------|-------|
+| 1 | `type=5 inv=2 omit=3` | 41 | Symbol | Hooktheory inconsistent: `iv6(no3)4` vs `iv46(no3)` by key (F# min iv wants `6`, F min iv wants `46`). Current rule: `46` only for iv minor + phryg vii. **Risky** — probe before changing |
+| 2 | `type=5 inv=2 sus=4&2 add=6` | 8 | Symbol | truth `i4sus4sus26(add6)` vs eng `i6(add6)4sus4sus2` — **best ROI** |
+| 3 | `type=7 inv=3 bor=custom alt=b5` | 7 | Symbol+letter | `v°△4(b5)2(bor)` vs `vø4(b5)2(bor)` |
+| 4 | `type=11 applied alt=b13` | 6 | **Real PC** | eng missing pitch (PC 6 vs truth 8) |
+| 5 | `type=5 inv=1 bor=major sus=7 omit=3` | 6 | **Real PC** | eng missing notes |
+
+### Key files
+- `web-player/lib/jsonToSymbol.js` — `buildSuffix`, `getChordLetterName` (roman/letter ordering)
+- `_Debug_testing/policyRegression.mjs` — 35 fixtures (optional `roman` field)
+- `_Decode_oracle/DECODE_FIX_LOG.md` — this file
+
+### Suggested next branch
+`feat/fix-060-sus-dual-add6` — inv2 sus4+sus2+add6 figured-bass ordering (`4sus4sus26(add6)`)
 
 ---
 
