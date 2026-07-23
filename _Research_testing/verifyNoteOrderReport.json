@@ -4,15 +4,15 @@
     "inv0AscendingPass": 4772,
     "inv0AscendingFail": 0,
     "invGt0TruthBassInfo": 49,
-    "invGt0LetterBassInfo": 61,
+    "invGt0LetterBassInfo": 59,
     "byInversion": {
       "0": {
         "pass": 4772,
         "fail": 0
       },
       "1": {
-        "pass": 398,
-        "info": 16
+        "pass": 400,
+        "info": 14
       },
       "2": {
         "pass": 299,
@@ -94,7 +94,7 @@
       "detail": {
         "rule": "bass-vs-truth",
         "truthLetter": "Db++(#5)/Ab",
-        "engLetter": "Db+/Ab",
+        "engLetter": "Db(#5)/Ab",
         "actualBassPc": 9,
         "truthBassPc": 8,
         "notes": [
@@ -430,7 +430,7 @@
       "detail": {
         "rule": "bass-vs-truth",
         "truthLetter": "F++(#5)/C",
-        "engLetter": "F+/C",
+        "engLetter": "F(#5)/C",
         "actualBassPc": 1,
         "truthBassPc": 0,
         "notes": [
@@ -745,24 +745,6 @@
       }
     },
     {
-      "id": "capcom__sweet-home---mamiya--and-amp-ichirous/Instrumental/26",
-      "inv": 1,
-      "issues": [
-        "bass-vs-letter"
-      ],
-      "detail": {
-        "rule": "bass-vs-letter",
-        "engLetter": "Gmsus4/Bb",
-        "actualBassPc": 0,
-        "engBassPc": 10,
-        "notes": [
-          "C4",
-          "D4",
-          "G4"
-        ]
-      }
-    },
-    {
       "id": "capcom__sweet-home---mamiya--and-amp-ichirous/Instrumental/30",
       "inv": 1,
       "issues": [
@@ -777,24 +759,6 @@
           "C4",
           "F4",
           "Bb4"
-        ]
-      }
-    },
-    {
-      "id": "coldplay__everythings-not-lost/Chorus/16.25",
-      "inv": 1,
-      "issues": [
-        "bass-vs-letter"
-      ],
-      "detail": {
-        "rule": "bass-vs-letter",
-        "engLetter": "Esus4/G#",
-        "actualBassPc": 9,
-        "engBassPc": 8,
-        "notes": [
-          "A3",
-          "B3",
-          "E4"
         ]
       }
     },

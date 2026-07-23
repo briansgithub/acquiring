@@ -1,11 +1,11 @@
 {
   "summary": {
     "total": 5709,
-    "romanExact": 5137,
-    "romanExactPct": "90.0",
-    "romanCore": 5618,
-    "romanCorePct": "98.4",
-    "mismatchCount": 572
+    "romanExact": 5150,
+    "romanExactPct": "90.2",
+    "romanCore": 5626,
+    "romanCorePct": "98.5",
+    "mismatchCount": 559
   },
   "mismatches": [
     {
@@ -1378,17 +1378,21 @@
     {
       "id": "earth-wind-and-fire__september/Chorus/25",
       "truthRoman": "IV6(add6)sus2/IV",
-      "engRoman": "IVsus26(add6)/IV",
+      "engRoman": "IV6sus2(add6)/IV",
       "truthCanon": "IV6(add6)sus2/IV",
-      "engCanon": "IVsus26(add6)/IV",
+      "engCanon": "IV6sus2(add6)/IV",
       "tokens": [
         {
           "kind": "base",
           "text": "IV"
         },
         {
+          "kind": "super",
+          "text": "6"
+        },
+        {
           "kind": "sub",
-          "text": "sus26"
+          "text": "sus2"
         },
         {
           "kind": "suffix",
