@@ -683,7 +683,7 @@ export function renderChordRing(container, options = {}) {
 
   // Create the hover bubble tooltip
   const tooltip = document.createElement("div");
-  tooltip.style.position = "absolute";
+  tooltip.style.position = "fixed";
   tooltip.style.display = "none";
   tooltip.style.pointerEvents = "auto"; // Essential for hovering over JSON trigger inside bubble
   tooltip.style.background = "rgba(15, 23, 42, 0.96)"; // Sleek dark slate
@@ -704,7 +704,7 @@ export function renderChordRing(container, options = {}) {
   const centerReadingTooltip = document.createElement("div");
   centerReadingTooltip.className = "center-reading-tooltip";
   centerReadingTooltip.style.cssText = `
-    position: absolute;
+    position: fixed;
     display: none;
     pointer-events: auto;
     background: rgba(15, 23, 42, 0.96);
@@ -2003,14 +2003,23 @@ export function renderChordRing(container, options = {}) {
     return isActive ? baseNodeRadius * 1.3 : baseNodeRadius;
   }
 
-  function positionTooltip(node) {
-    if (!node) return;
-    const radius = node.radius ?? getNodeEffectiveRadius(node);
+  function canvasPointToViewport(cx, cy) {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width > 0 ? rect.width / canvas.width : 1;
     const scaleY = canvas.height > 0 ? rect.height / canvas.height : 1;
-    tooltip.style.left = `${node.x * scaleX}px`;
-    tooltip.style.top = `${(node.y - radius) * scaleY}px`;
+    return {
+      x: rect.left + cx * scaleX,
+      y: rect.top + cy * scaleY,
+    };
+  }
+
+  function positionTooltip(node) {
+    if (!node) return;
+    const radius = node.radius ?? getNodeEffectiveRadius(node);
+    const anchor = canvasPointToViewport(node.x, node.y - radius);
+    tooltip.style.position = "fixed";
+    tooltip.style.left = `${anchor.x}px`;
+    tooltip.style.top = `${anchor.y}px`;
     tooltip.style.transform = "translate(-50%, -100%)";
   }
 
@@ -2095,11 +2104,10 @@ export function renderChordRing(container, options = {}) {
 
   function positionCenterReadingTooltip(region) {
     if (!region) return;
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width > 0 ? rect.width / canvas.width : 1;
-    const scaleY = canvas.height > 0 ? rect.height / canvas.height : 1;
-    centerReadingTooltip.style.left = `${(region.x + region.w / 2) * scaleX}px`;
-    centerReadingTooltip.style.top = `${region.y * scaleY}px`;
+    const anchor = canvasPointToViewport(region.x + region.w / 2, region.y);
+    centerReadingTooltip.style.position = "fixed";
+    centerReadingTooltip.style.left = `${anchor.x}px`;
+    centerReadingTooltip.style.top = `${anchor.y}px`;
     centerReadingTooltip.style.transform = "translate(-50%, -100%)";
   }
 
