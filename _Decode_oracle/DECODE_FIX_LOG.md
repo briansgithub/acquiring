@@ -1075,6 +1075,18 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 060 — inv2 dual-sus + add6 figured-bass ordering (2026-07-23, `feat/fix-060-sus-dual-add6`)
+
+**060a:** inv=2 triad sus4+sus2 + add6 → `4sus4sus26(add6)` not `6(add6)4sus4sus2`. sus4-only keeps 058b `6(add6)4sus4`.
+
+**Gate:** policy **36/36**, pronunciation **77/77**.
+
+**Resync:** 65.4k rows — engine fails **341** (−3 vs 344 pre-060).
+
+**Files:** `jsonToSymbol.js`, `policyRegression.mjs`.
+
+---
+
 ## Session handoff — 2026-07-23 (fetch + decode loop)
 
 ### Merged on `main`
