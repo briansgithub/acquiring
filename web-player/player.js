@@ -397,8 +397,6 @@ const noteIndicator = renderNoteIndicator(indicatorPane, {
 });
 
 const controls = renderControls({
-  topContainer: indicatorPane.querySelector("#now-playing-controls"),
-  tempoContainer: indicatorPane.querySelector("#now-playing-tempo"),
   footerContainer: indicatorPane.querySelector("#now-playing-footer"),
   playbackContainer: ringPane.querySelector("#ring-playback-controls"),
 }, {

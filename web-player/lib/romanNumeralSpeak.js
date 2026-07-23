@@ -41,36 +41,35 @@ const LETTER_ANALYTIC_HINT =
 const LETTER_FUNCTIONAL_HINT =
   'Theory shorthand using note names — inversions, secondary dominants, and borrowed-scale context.';
 
+function pronunciationShellHtml(useRoman, analyticText = "", functionalText = "", { masked = false } = {}) {
+  const analyticHint = useRoman ? ROMAN_ANALYTIC_HINT : LETTER_ANALYTIC_HINT;
+  const functionalHint = useRoman ? ROMAN_FUNCTIONAL_HINT : LETTER_FUNCTIONAL_HINT;
+  const maskedClass = masked ? " pronunciation-masked" : "";
+  return `
+    <div class="chord-pronunciation${maskedClass}">
+      <div class="pronunciation-analytic chord-tooltip-pronunciation">
+        <div class="pronunciation-label" title="${analyticHint}">Analytic Reading:</div>
+        <div class="pronunciation-text">${analyticText}</div>
+      </div>
+      <div class="pronunciation-functional">
+        <div class="pronunciation-label" title="${functionalHint}">Functional Reading:</div>
+        <div class="pronunciation-text">${functionalText}</div>
+      </div>
+    </div>
+  `;
+}
+
 /** HTML block for tooltip / Now Playing pronunciation lines. */
 export function pronunciationDisplayHtml(pronunciation, options = {}) {
   const useRoman = options.useRoman !== false;
+  if (options.masked) {
+    return pronunciationShellHtml(useRoman, "", "", { masked: true });
+  }
   if (useRoman) {
     if (!pronunciation?.analytic) return '';
-    return `
-    <div class="chord-pronunciation">
-      <div class="pronunciation-analytic chord-tooltip-pronunciation">
-        <div class="pronunciation-label" title="${ROMAN_ANALYTIC_HINT}">Analytic Reading:</div>
-        <div class="pronunciation-text">${pronunciation.analytic}</div>
-      </div>
-      <div class="pronunciation-functional">
-        <div class="pronunciation-label" title="${ROMAN_FUNCTIONAL_HINT}">Functional Reading:</div>
-        <div class="pronunciation-text">${pronunciation.functional}</div>
-      </div>
-    </div>
-  `;
+    return pronunciationShellHtml(useRoman, pronunciation.analytic, pronunciation.functional);
   }
 
   if (!pronunciation?.letter) return '';
-  return `
-    <div class="chord-pronunciation">
-      <div class="pronunciation-analytic chord-tooltip-pronunciation">
-        <div class="pronunciation-label" title="${LETTER_ANALYTIC_HINT}">Analytic Reading:</div>
-        <div class="pronunciation-text">${pronunciation.letter}</div>
-      </div>
-      <div class="pronunciation-functional">
-        <div class="pronunciation-label" title="${LETTER_FUNCTIONAL_HINT}">Functional Reading:</div>
-        <div class="pronunciation-text">${pronunciation.functionalLetter}</div>
-      </div>
-    </div>
-  `;
+  return pronunciationShellHtml(useRoman, pronunciation.letter, pronunciation.functionalLetter);
 }

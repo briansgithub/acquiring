@@ -21,24 +21,38 @@ export function renderControls({ topContainer, tempoContainer, footerContainer, 
 }) {
   if (playbackContainer) {
     playbackContainer.innerHTML = `
-      <button id="play-toggle" type="button" data-state="paused">Play</button>
-      <button id="restart-btn" type="button">Restart</button>
-      <div class="controls-loop-toggle" style="display:inline-flex; align-items:center; gap:4px; margin-left:12px; font-size:11px; font-weight:600; color:#94a3b8; user-select:none; cursor:pointer;">
-        <input type="checkbox" id="loop-cb" checked style="cursor:pointer;" />
-        <label for="loop-cb" style="cursor:pointer;">Loop</label>
+      <div class="ring-playback-buttons-row">
+        <button id="play-toggle" type="button" data-state="paused">Play</button>
+        <button id="restart-btn" type="button">Restart</button>
+        <div class="controls-loop-toggle">
+          <input type="checkbox" id="loop-cb" checked />
+          <label for="loop-cb">Loop</label>
+        </div>
+      </div>
+      <div class="row ring-playback-section-row">
+        <label for="section-select" class="ring-playback-section-label">Section:</label>
+        <select id="section-select" class="select ring-playback-section-select"></select>
+      </div>
+      <div class="row now-playing-tempo-row ring-playback-tempo-row">
+        <label for="tempo-slider" class="now-playing-tempo-label">Tempo:</label>
+        <input type="range" id="tempo-slider" min="1" max="${TEMPO_MAX_PERCENT}" value="100" step="1" class="volume-slider">
+        <span id="tempo-label" class="now-playing-tempo-value">100%</span>
+        <button
+          type="button"
+          id="tempo-reset-btn"
+          class="tempo-reset-btn"
+          title="Reset tempo to 100%"
+          aria-label="Reset tempo to 100%"
+        >
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+            <path d="M3 3v5h5" />
+          </svg>
+        </button>
       </div>
     `;
     playbackContainer.hidden = true;
-  }
-
-  topContainer.innerHTML = `
-    <div class="row">
-      <label for="section-select" style="font-size:18px;color:#9ca3af;width:60px;">Section:</label>
-      <select id="section-select" class="select"></select>
-    </div>
-  `;
-
-  if (tempoContainer) {
+  } else if (tempoContainer) {
     tempoContainer.innerHTML = `
       <div class="row now-playing-tempo-row">
         <label for="tempo-slider" class="now-playing-tempo-label">Tempo:</label>
@@ -60,6 +74,15 @@ export function renderControls({ topContainer, tempoContainer, footerContainer, 
     `;
   }
 
+  if (topContainer) {
+    topContainer.innerHTML = `
+      <div class="row">
+        <label for="section-select" style="font-size:18px;color:#9ca3af;width:60px;">Section:</label>
+        <select id="section-select" class="select"></select>
+      </div>
+    `;
+  }
+
   footerContainer.innerHTML = `
     <button id="reset-defaults-btn" type="button">Reset to default</button>
   `;
@@ -67,10 +90,11 @@ export function renderControls({ topContainer, tempoContainer, footerContainer, 
   const playBtn = playbackContainer?.querySelector("#play-toggle");
   const restartBtn = playbackContainer?.querySelector("#restart-btn");
   const loopCb = playbackContainer?.querySelector("#loop-cb");
-  const sectionSelect = topContainer.querySelector("#section-select");
-  const tempoSlider = (tempoContainer ?? topContainer).querySelector("#tempo-slider");
-  const tempoLabel = (tempoContainer ?? topContainer).querySelector("#tempo-label");
-  const tempoResetBtn = (tempoContainer ?? topContainer).querySelector("#tempo-reset-btn");
+  const sectionSelect = (playbackContainer ?? topContainer)?.querySelector("#section-select");
+  const tempoRoot = playbackContainer ?? tempoContainer ?? topContainer;
+  const tempoSlider = tempoRoot.querySelector("#tempo-slider");
+  const tempoLabel = tempoRoot.querySelector("#tempo-label");
+  const tempoResetBtn = tempoRoot.querySelector("#tempo-reset-btn");
   const resetDefaultsBtn = footerContainer.querySelector("#reset-defaults-btn");
 
   resetDefaultsBtn.addEventListener("click", () => {
@@ -96,7 +120,7 @@ export function renderControls({ topContainer, tempoContainer, footerContainer, 
     onToggleLoop?.(loopCb.checked);
   });
 
-  sectionSelect.addEventListener("change", (e) => {
+  sectionSelect?.addEventListener("change", (e) => {
     onSectionChange?.(e.target.value);
   });
 
@@ -131,6 +155,7 @@ export function renderControls({ topContainer, tempoContainer, footerContainer, 
       tempoLabel.textContent = `${tempoSlider.value}%`;
     },
     setSections(sections) {
+      if (!sectionSelect) return;
       if (!Array.isArray(sections) || !sections.length) {
         sectionSelect.innerHTML = '<option value="">No sections</option>';
         return;

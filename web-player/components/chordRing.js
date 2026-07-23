@@ -22,8 +22,7 @@ export function renderChordRing(container, options = {}) {
   const header = document.createElement("div");
   header.className = "pane-panel-head ring-panel-head";
   header.innerHTML = `
-    <div class="ring-head-row">
-      <div id="ring-playback-controls" class="ring-playback-controls" hidden></div>
+    <div class="ring-title-row">
       <h2 class="pane-panel-title ring-panel-title">Chord Ring</h2>
       <div class="ring-color-scheme-toggle-wrap">
         <button class="ring-color-scheme-toggle" id="ring-color-scheme-toggle" title="Color Scheme" aria-expanded="false">
@@ -42,23 +41,26 @@ export function renderChordRing(container, options = {}) {
         </div>
       </div>
     </div>
-    <div id="chord-ring-key-wrap" style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-      <div id="chord-ring-key" class="chord-ring-key">—</div>
-      <div id="chord-ring-key-actions" class="chord-ring-key-actions" style="display:flex; gap:6px; align-items:center;">
-        <button id="ring-ionian-btn" class="chord-ring-tonic-btn">Rel. Ionian <br>♪ Tonic ♪</button>
-        <div class="chord-ring-octave-controls" style="display:flex; flex-direction:column; gap:1px; align-items:center; margin-right:2px; margin-left:2px;">
-          <button id="ring-octave-up-btn" class="chord-ring-octave-btn" title="Octave Up">▲</button>
-          <span id="ring-octave-display" style="font-size:9px; color:#94a3b8; font-weight:bold; line-height:1; min-width:10px; text-align:center;">3</span>
-          <button id="ring-octave-down-btn" class="chord-ring-octave-btn" title="Octave Down">▼</button>
-        </div>
-        <button id="ring-tonic-btn" class="chord-ring-tonic-btn">Scale<br>♪ Tonic ♪</button>
-        <label class="chord-ring-drone-wrap" title="Enable Drone to keep notes playing indefinitely on click instead of holding" style="display:flex; align-items:center; gap:4px; font-size:10px; color:#94a3b8; font-weight:600; cursor:pointer; user-select:none; margin-left:4px;">
-          <input type="checkbox" id="ring-drone-toggle" style="cursor:pointer; margin:0;">
-          Drone
-        </label>
-        <div class="chord-ring-drone-vol-wrap" style="display:flex; align-items:center; gap:4px; margin-left:4px;">
-          <span style="font-size:9px; color:#94a3b8; font-weight:bold; cursor:default;" title="Drone Volume">🔊</span>
-          <input type="range" id="ring-drone-volume" min="0" max="100" value="80" style="width:45px; height:4px; cursor:pointer; accent-color:#22d3ee; margin:0; padding:0; background:#334155; border-radius:2px; outline:none; border:none; appearance:slider-horizontal;">
+    <div class="ring-toolbar-row">
+      <div id="ring-playback-controls" class="ring-playback-controls" hidden></div>
+      <div id="chord-ring-key-wrap" class="chord-ring-key-wrap">
+        <div id="chord-ring-key" class="chord-ring-key">—</div>
+        <div id="chord-ring-key-actions" class="chord-ring-key-actions">
+          <button id="ring-ionian-btn" class="chord-ring-tonic-btn">Rel. Ionian <br>♪ Tonic ♪</button>
+          <div class="chord-ring-octave-controls">
+            <button id="ring-octave-up-btn" class="chord-ring-octave-btn" title="Octave Up">▲</button>
+            <span id="ring-octave-display" class="chord-ring-octave-display">3</span>
+            <button id="ring-octave-down-btn" class="chord-ring-octave-btn" title="Octave Down">▼</button>
+          </div>
+          <button id="ring-tonic-btn" class="chord-ring-tonic-btn">Scale<br>♪ Tonic ♪</button>
+          <label class="chord-ring-drone-wrap" title="Enable Drone to keep notes playing indefinitely on click instead of holding">
+            <input type="checkbox" id="ring-drone-toggle">
+            Drone
+          </label>
+          <div class="chord-ring-drone-vol-wrap">
+            <span class="chord-ring-drone-vol-icon" title="Drone Volume">🔊</span>
+            <input type="range" id="ring-drone-volume" min="0" max="100" value="80" class="chord-ring-drone-volume">
+          </div>
         </div>
       </div>
     </div>
@@ -905,6 +907,13 @@ export function renderChordRing(container, options = {}) {
     return activeChordSymbol !== null && entry.symbol === activeChordSymbol;
   }
 
+  function isDegreeAnswerNodeActive(degree) {
+    if (!quizDegreeAnswerMode || !activeChord) return false;
+    if (options.isChordMasked?.(activeChord)) return false;
+    const placementDegree = getChordPlacementDegree(activeChord, currentKey);
+    return placementDegree === degree;
+  }
+
   function resolvePlacementDegreeFromNote(noteName, key, exactOnly = false) {
     if (!noteName || !key) return null;
     for (let degree = 1; degree <= 7; degree++) {
@@ -939,6 +948,93 @@ export function renderChordRing(container, options = {}) {
     return useRomanNumerals
       ? stripBorrowedTags(getChordSymbol(chord, currentKey) || "")
       : getChordLetterName(chord, currentKey);
+  }
+
+  function scaleDegreeFont(fontSize) {
+    return `700 ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+  }
+
+  function measureScaleDegreeGlyph(ctx, degree, fontSize) {
+    const label = String(degree);
+    ctx.font = scaleDegreeFont(fontSize);
+    const numW = ctx.measureText(label).width;
+    const caretW = fontSize * 0.52;
+    return Math.max(numW, caretW);
+  }
+
+  function drawScaleDegreeGlyph(ctx, degree, centerX, centerY, fontSize, options = {}) {
+    const align = options.align || "center";
+    const label = String(degree);
+    const width = measureScaleDegreeGlyph(ctx, degree, fontSize);
+    const glyphCenterX = align === "left" ? centerX + width / 2 : centerX;
+
+    const caretH = fontSize * 0.2;
+    const caretW = fontSize * 0.52;
+    const gap = fontSize * 0.1;
+    const blockH = caretH + gap + fontSize;
+    const topY = centerY - blockH / 2;
+    const caretBaseY = topY + caretH;
+    const caretTipY = topY;
+    const numY = topY + caretH + gap + fontSize / 2;
+
+    ctx.save();
+    ctx.font = scaleDegreeFont(fontSize);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.strokeStyle = ctx.fillStyle;
+    ctx.lineWidth = Math.max(1.5, fontSize * 0.07);
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+    ctx.moveTo(glyphCenterX - caretW / 2, caretBaseY);
+    ctx.lineTo(glyphCenterX, caretTipY);
+    ctx.lineTo(glyphCenterX + caretW / 2, caretBaseY);
+    ctx.stroke();
+    ctx.fillText(label, glyphCenterX, numY);
+    ctx.restore();
+    return width;
+  }
+
+  function resolveCenterChordDisplay(chord, key) {
+    if (!chord) return null;
+    if (options.isChordMasked?.(chord)) {
+      return { type: "masked", label: "?", color: "#6b7280" };
+    }
+    if (quizDegreeAnswerMode) {
+      const degree = getChordPlacementDegree(chord, key);
+      if (degree == null) {
+        return { type: "masked", label: "?", color: "#6b7280" };
+      }
+      const colorObj = getColor(degree, key.scale);
+      return {
+        type: "degree",
+        degree,
+        color: colorObj?.hexColor || colorObj || "#ffffff",
+      };
+    }
+    const label = getCenterDisplayLabel(chord);
+    const colorObj = getColor(chord.root, key.scale, chord.borrowed) || "#ffffff";
+    return {
+      type: "symbol",
+      label,
+      color: colorObj.hexColor || colorObj,
+    };
+  }
+
+  function measureCenterDisplay(ctx, display, fontSize) {
+    if (!display) return 0;
+    if (display.type === "degree") {
+      return measureScaleDegreeGlyph(ctx, display.degree, fontSize);
+    }
+    return measureRomanNumeral(ctx, display.label, fontSize);
+  }
+
+  function drawCenterDisplay(ctx, display, x, y, fontSize, options = {}) {
+    if (!display) return 0;
+    if (display.type === "degree") {
+      return drawScaleDegreeGlyph(ctx, display.degree, x, y, fontSize, options);
+    }
+    return drawRomanNumeral(ctx, display.label, x, y, fontSize, options);
   }
 
   function getVariantCountForDegree(degree) {
@@ -1024,8 +1120,28 @@ export function renderChordRing(container, options = {}) {
     drawQuizOverlays(centerX, centerY);
   }
 
+  function getDegreeNodePositions(centerX, centerY) {
+    const positions = [];
+    const nodeRadius = NODE_RADIUS * zoom;
+    const diatonicDist = DIATONIC_RING_RADIUS * zoom;
+    for (let degree = 1; degree <= 7; degree++) {
+      const angle = (degree - 1) * (2 * Math.PI / 7) - (Math.PI / 2);
+      positions.push({
+        degree,
+        x: centerX + diatonicDist * Math.cos(angle),
+        y: centerY + diatonicDist * Math.sin(angle),
+        r: nodeRadius,
+      });
+    }
+    return positions;
+  }
+
   // --- Quiz overlay rendering ---
   function getNodePositions(centerX, centerY) {
+    if (quizDegreeAnswerMode) {
+      return getDegreeNodePositions(centerX, centerY);
+    }
+
     const positions = [];
     const diatonicLabels = getRomanNumeralsForScale(currentKey.scale);
     for (let degree = 1; degree <= 7; degree++) {
@@ -1063,13 +1179,16 @@ export function renderChordRing(container, options = {}) {
   }
 
   function drawQuizOverlays(centerX, centerY) {
-    const hasOverlay = quizHighlightSymbols || quizHighlightDegrees || quizFlashSymbol || quizFlashDegree != null || quizTransitionArc || quizFreqOverlay;
-    if (!hasOverlay) return;
+    const hasSymbolOverlay = !quizDegreeAnswerMode && (
+      quizHighlightSymbols || quizFlashSymbol || quizTransitionArc || quizFreqOverlay
+    );
+    const hasDegreeOverlay = quizHighlightDegrees || quizFlashDegree != null;
+    if (!hasSymbolOverlay && !hasDegreeOverlay) return;
 
     const positions = getNodePositions(centerX, centerY);
 
     // 1. Dim non-highlighted nodes
-    if (quizHighlightSymbols) {
+    if (!quizDegreeAnswerMode && quizHighlightSymbols) {
       const highlightSet = new Set(quizHighlightSymbols);
       for (const pos of positions) {
         if (!highlightSet.has(pos.symbol)) {
@@ -1102,7 +1221,7 @@ export function renderChordRing(container, options = {}) {
     }
 
     // 2. Flash glow on correct/wrong
-    if (quizFlashSymbol) {
+    if (!quizDegreeAnswerMode && quizFlashSymbol) {
       const node = positions.find(p => p.symbol === quizFlashSymbol);
       if (node) {
         ctx.save();
@@ -1129,7 +1248,7 @@ export function renderChordRing(container, options = {}) {
     }
 
     // 3. Transition arc between two nodes
-    if (quizTransitionArc) {
+    if (!quizDegreeAnswerMode && quizTransitionArc) {
       const fromNode = positions.find(p => p.symbol === quizTransitionArc.from);
       const toNode = positions.find(p => p.symbol === quizTransitionArc.to);
       if (fromNode && toNode) {
@@ -1182,7 +1301,7 @@ export function renderChordRing(container, options = {}) {
     }
 
     // 4. Frequency overlay rings
-    if (quizFreqOverlay) {
+    if (!quizDegreeAnswerMode && quizFreqOverlay) {
       const counts = quizFreqOverlay;
       let maxCount = 0;
       for (const [, count] of counts) {
@@ -1270,8 +1389,9 @@ export function renderChordRing(container, options = {}) {
 
     if (quizDegreeAnswerMode) {
       const isDimmed = quizHighlightDegrees && !quizHighlightDegrees.includes(degree);
+      const isActive = isDegreeAnswerNodeActive(degree);
       const displayLabel = String(degree);
-      drawNode(dx, dy, nodeRadius, color, displayLabel, isDimmed ? 0.35 : 1.0, false, false);
+      drawNode(dx, dy, nodeRadius, color, displayLabel, isDimmed ? 0.35 : 1.0, isActive, false, null, true);
       return;
     }
 
@@ -1306,7 +1426,7 @@ export function renderChordRing(container, options = {}) {
     });
   }
 
-  function drawNode(x, y, r, color, label, opacity, isActive = false, isPlaceholder = false, subLabel = null) {
+  function drawNode(x, y, r, color, label, opacity, isActive = false, isPlaceholder = false, subLabel = null, isDegreeLabel = false) {
     const effectiveRadius = isActive ? r * 1.3 : r;
 
     ctx.beginPath();
@@ -1365,8 +1485,23 @@ export function renderChordRing(container, options = {}) {
     
     ctx.fillStyle = isPlaceholder ? "#ffffff" : getTextContrastColor(hexColor);
     
+    if (isDegreeLabel) {
+      let labelFontSize = isActive
+        ? Math.max(24, effectiveRadius * 0.88)
+        : Math.max(20, effectiveRadius * 0.76);
+      const maxTextWidth = effectiveRadius * 1.35;
+      while (measureScaleDegreeGlyph(ctx, Number(label), labelFontSize) > maxTextWidth && labelFontSize > 12) {
+        labelFontSize -= 0.5;
+      }
+      drawScaleDegreeGlyph(ctx, Number(label), x, y, labelFontSize);
+      ctx.restore();
+      return;
+    }
+
     // Scale text with node size
-    let labelFontSize = isActive ? Math.max(16, 22 * zoom) : Math.max(12, 16 * zoom);
+    let labelFontSize = isActive
+      ? Math.max(16, 22 * zoom)
+      : Math.max(12, 16 * zoom);
     const maxTextWidth = effectiveRadius * 1.45; // Safe padding inside the circular boundary
 
     if (subLabel) {
@@ -1409,35 +1544,19 @@ export function renderChordRing(container, options = {}) {
 
     // Draw Chord Transition in the center of the circle (vertically aligned to cy)
     if (activeChord) {
-      let currSymbol;
-      let currColor;
-      if (options.isChordMasked?.(activeChord)) {
-        currSymbol = "?";
-        currColor = "#6b7280";
-      } else {
-        currSymbol = getCenterDisplayLabel(activeChord);
-        const currColorObj = getColor(activeChord.root, key.scale, activeChord.borrowed) || "#ffffff";
-        currColor = currColorObj.hexColor || currColorObj;
-      }
+      const currDisplay = resolveCenterChordDisplay(activeChord, key);
+      const currColor = currDisplay?.color || "#ffffff";
 
       if (previousChord) {
-        let prevSymbol;
-        let prevColor;
-        if (options.isChordMasked?.(previousChord)) {
-          prevSymbol = "?";
-          prevColor = "#6b7280";
-        } else {
-          prevSymbol = getCenterDisplayLabel(previousChord);
-          const prevColorObj = getColor(previousChord.root, key.scale, previousChord.borrowed) || "#ffffff";
-          prevColor = prevColorObj.hexColor || prevColorObj;
-        }
+        const prevDisplay = resolveCenterChordDisplay(previousChord, key);
+        const prevColor = prevDisplay?.color || "#ffffff";
 
         const line1TargetW = r * 1.35;
         const line2TargetW = r * 1.55;
 
         let line1Font = 24 * zoom;
         const line1Min = 12 * zoom;
-        while (line1Font >= line1Min && measureRomanNumeral(ctx, prevSymbol, line1Font) > line1TargetW) {
+        while (line1Font >= line1Min && measureCenterDisplay(ctx, prevDisplay, line1Font) > line1TargetW) {
           line1Font -= 1;
         }
 
@@ -1448,7 +1567,7 @@ export function renderChordRing(container, options = {}) {
 
         const arrowBlockW = 32 * zoom;
         while (line2CurrFont >= line2CurrMin) {
-          const wCurr = measureRomanNumeral(ctx, currSymbol, line2CurrFont);
+          const wCurr = measureCenterDisplay(ctx, currDisplay, line2CurrFont);
           if (arrowBlockW + wCurr <= line2TargetW) break;
           line2CurrFont -= 1;
         }
@@ -1461,11 +1580,12 @@ export function renderChordRing(container, options = {}) {
         ctx.textAlign = "center";
 
         ctx.fillStyle = prevColor;
-        const wPrev = measureRomanNumeral(ctx, prevSymbol, line1Font);
-        drawRomanNumeral(ctx, prevSymbol, cx, y1, line1Font, { align: "center" });
+        ctx.strokeStyle = prevColor;
+        const wPrev = measureCenterDisplay(ctx, prevDisplay, line1Font);
+        drawCenterDisplay(ctx, prevDisplay, cx, y1, line1Font, { align: "center" });
         registerCenterChordHit(previousChord, cx - wPrev / 2, y1, wPrev, line1Font);
 
-        const wCurr = measureRomanNumeral(ctx, currSymbol, line2CurrFont);
+        const wCurr = measureCenterDisplay(ctx, currDisplay, line2CurrFont);
         const line2StartX = cx - line2TargetW / 2;
 
         ctx.textAlign = "left";
@@ -1491,7 +1611,8 @@ export function renderChordRing(container, options = {}) {
 
         const currStartX = line2StartX + arrowBlockW;
         ctx.fillStyle = currColor;
-        drawRomanNumeral(ctx, currSymbol, currStartX, y2, line2CurrFont, { align: "left" });
+        ctx.strokeStyle = currColor;
+        drawCenterDisplay(ctx, currDisplay, currStartX, y2, line2CurrFont, { align: "left" });
         registerCenterChordHit(activeChord, currStartX, y2, wCurr, line2CurrFont);
       } else {
         const maxSingleFont = 48 * zoom;
@@ -1500,14 +1621,15 @@ export function renderChordRing(container, options = {}) {
 
         let fontSize = maxSingleFont;
         while (fontSize >= minSingleFont) {
-          if (measureRomanNumeral(ctx, currSymbol, fontSize) <= targetW) break;
+          if (measureCenterDisplay(ctx, currDisplay, fontSize) <= targetW) break;
           fontSize -= 1;
         }
 
         ctx.textBaseline = "middle";
         ctx.fillStyle = currColor;
-        const wSingle = measureRomanNumeral(ctx, currSymbol, fontSize);
-        drawRomanNumeral(ctx, currSymbol, cx, cy, fontSize, { align: 'center' });
+        ctx.strokeStyle = currColor;
+        const wSingle = measureCenterDisplay(ctx, currDisplay, fontSize);
+        drawCenterDisplay(ctx, currDisplay, cx, cy, fontSize, { align: "center" });
         registerCenterChordHit(activeChord, cx - wSingle / 2, cy, wSingle, fontSize);
       }
     } else {
@@ -1808,10 +1930,13 @@ export function renderChordRing(container, options = {}) {
   }
 
   function showCenterReadingTooltip(chord, region) {
-    const pronunciationHtml = pronunciationDisplayHtml(
-      getChordPronunciation(chord, currentKey),
-      { useRoman: useRomanNumerals }
-    );
+    const isMasked = options.isChordMasked?.(chord);
+    const pronunciationHtml = isMasked
+      ? pronunciationDisplayHtml(null, { useRoman: useRomanNumerals, masked: true })
+      : pronunciationDisplayHtml(
+          getChordPronunciation(chord, currentKey),
+          { useRoman: useRomanNumerals },
+        );
     if (!pronunciationHtml) return;
 
     centerReadingTooltip.innerHTML = pronunciationHtml;
@@ -1934,7 +2059,9 @@ export function renderChordRing(container, options = {}) {
         const dDist = DIATONIC_RING_RADIUS * zoom;
         const dx = centerX + dDist * Math.cos(angle);
         const dy = centerY + dDist * Math.sin(angle);
-        if (Math.hypot(mx - dx, my - dy) <= baseNodeRadius) {
+        const isActive = isDegreeAnswerNodeActive(i);
+        const hitRadius = isActive ? baseNodeRadius * 1.3 : baseNodeRadius;
+        if (Math.hypot(mx - dx, my - dy) <= hitRadius) {
           degreeSelectHandler(i);
           return;
         }
@@ -2302,6 +2429,7 @@ export function renderChordRing(container, options = {}) {
 
   return {
     highlightChoices(symbols) {
+      if (quizDegreeAnswerMode) return;
       quizHighlightSymbols = symbols && symbols.length > 0 ? symbols : null;
       draw();
     },
@@ -2338,6 +2466,7 @@ export function renderChordRing(container, options = {}) {
     },
 
     setFrequencyOverlay(symbolCountMap) {
+      if (quizDegreeAnswerMode) return;
       quizFreqOverlay = symbolCountMap instanceof Map && symbolCountMap.size > 0 ? symbolCountMap : null;
       draw();
     },
@@ -2357,6 +2486,12 @@ export function renderChordRing(container, options = {}) {
 
     setDegreeAnswerMode(on) {
       quizDegreeAnswerMode = !!on;
+      if (quizDegreeAnswerMode) {
+        quizHighlightSymbols = null;
+        quizFlashSymbol = null;
+        quizTransitionArc = null;
+        quizFreqOverlay = null;
+      }
       draw();
     },
 

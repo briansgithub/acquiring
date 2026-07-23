@@ -76,8 +76,6 @@ function analyzeMelodyTension(melodyNote, chordNotes, chordRootSd, key) {
 export function renderNoteIndicator(container, options = {}) {
   container.innerHTML = `
     <h2 class="now-playing-title">Now Playing</h2>
-    <div id="now-playing-key" class="now-playing-key" style="font-size: 13px; color: #94a3b8; margin-bottom: 8px; font-weight: 500;"></div>
-    <div id="now-playing-controls" class="now-playing-controls"></div>
     <div class="now-playing-body">
     <div class="indicator-stack">
       <div class="indicator-melody-section">
@@ -147,14 +145,12 @@ export function renderNoteIndicator(container, options = {}) {
         </div>
         <div class="chord-borrowed" id="chord-borrowed" style="position:absolute;top:34px;right:10px;font-style:italic;color:#9ca3af;font-size:0.9em;visibility:hidden;"></div>
       </div>
-      <div id="now-playing-tempo" class="now-playing-tempo"></div>
     </div>
     </div>
     <div id="now-playing-footer" class="now-playing-footer"></div>
   `;
 
   const melodyNoteLabelEl = container.querySelector("#melody-note-label");
-  const nowPlayingKey = container.querySelector("#now-playing-key");
   const melodyScaleDegreeEl = container.querySelector("#melody-scale-degree");
   const melodySection = container.querySelector("#melody-section");
   const melodyContentWrapper = container.querySelector("#melody-content-wrapper");
@@ -365,7 +361,12 @@ export function renderNoteIndicator(container, options = {}) {
     if (isMasked) {
       chordRootEl.innerHTML = `Chord: <span class="chord-roman-line">?</span>`;
       chordRootEl.style.visibility = "visible";
-      if (chordPronunciationEl) chordPronunciationEl.innerHTML = "";
+      if (chordPronunciationEl) {
+        chordPronunciationEl.innerHTML = pronunciationDisplayHtml(null, {
+          useRoman: useRomanNumerals,
+          masked: true,
+        });
+      }
       return;
     }
 
@@ -645,11 +646,6 @@ export function renderNoteIndicator(container, options = {}) {
       )
         return;
       activeKey = key;
-      if (nowPlayingKey && key && key.tonic && key.scale) {
-        nowPlayingKey.textContent = `${key.tonic} ${key.scale.charAt(0).toUpperCase() + key.scale.slice(1)}`;
-      } else if (nowPlayingKey) {
-        nowPlayingKey.textContent = "";
-      }
       this.updateChord(
         activeNotes,
         activeRoot,
