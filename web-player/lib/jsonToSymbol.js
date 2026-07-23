@@ -223,7 +223,12 @@ function buildSuffix(chord, quality, opts = {}) {
 
     if (!suspended) {
         if (quality === 'diminished' && !suppressDimForSharp5Inv2) {
-            suffix += (chord.type >= 7 && !fullyDiminished) ? 'ø' : '°';
+            if (chord.type >= 7 && !fullyDiminished) {
+                suffix += 'ø';
+            } else {
+                suffix += '°';
+                if (majorSeventh) suffix += '△';
+            }
         } else if (chord.type >= 7 && majorSeventh) {
             suffix += '△';
         }
@@ -359,7 +364,13 @@ function buildSuffix(chord, quality, opts = {}) {
     }
 
     if (Array.isArray(chord.omits) && chord.omits.length && !opts.omitsPlaced) {
-        suffix += chord.omits.map((v) => `(no${v})`).join('');
+        const omit3 = chord.omits.includes(3);
+        const omit5 = chord.omits.includes(5);
+        if (omit3 && omit5 && quality === 'augmented') {
+            suffix += '(no5no3)';
+        } else {
+            suffix += chord.omits.map((v) => `(no${v})`).join('');
+        }
     }
 
   if (alterations.length && !alterationsEmbedded) {
@@ -428,11 +439,15 @@ export function getChordSymbol(chord, key) {
         tag = '(bor)';
         const quality = triadQualityWithAlts(customArrayTriadQuality(borrowed, chord.root), chord);
         prefix = customArrayPrefix(borrowed, chord.root, key);
-        const majorSeventh = chord.type >= 7 && quality !== 'diminished' && customArraySeventhMajor(borrowed, chord.root);
+        const dimTriad = quality === 'diminished';
+        const majorSeventh = chord.type >= 7 && customArraySeventhMajor(borrowed, chord.root);
         let roman = ROMAN_MAP[chord.root] || '';
         if (quality === 'minor' || quality === 'diminished') roman = roman.toLowerCase();
         const hasAdds = Array.isArray(chord.adds) && chord.adds.length > 0;
-        const suffixOpts = { majorSeventh };
+        const suffixOpts = {
+            majorSeventh,
+            fullyDiminished: dimTriad && chord.type >= 7,
+        };
         if (hasAdds) suffixOpts.borrowedTag = tag;
         return prefix + roman + buildSuffix(chord, quality, suffixOpts) + (hasAdds ? '' : tag);
     }
