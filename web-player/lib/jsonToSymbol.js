@@ -243,7 +243,7 @@ function buildSuffix(chord, quality, opts = {}) {
             alterationsEmbedded = true;
         } else if (suspended) {
             const sus4Only = chord.suspensions.includes(4) && !chord.suspensions.includes(2);
-            if (sus4Only) {
+            if (sus4Only && (chord.borrowed === 'lydian' || opts.borrowedTag === '(lyd)')) {
                 suffix += `sus${chord.suspensions.join('')}6`;
             } else {
                 suffix += `6${susStr}`;
@@ -274,14 +274,29 @@ function buildSuffix(chord, quality, opts = {}) {
             const iMinorTonicSharp5 = quality === 'minor' && chord.root === 1 && !chord.borrowed;
             if (iMinorTonicSharp5) {
                 suffix += `46${altInline}`;
-            } else if (quality === 'diminished') {
+            } else if (Array.isArray(chord.adds) && chord.adds.length) {
+                const addBody = chord.adds.map((v) => `add${v}`).join('');
+                if (quality === 'minor' || quality === 'diminished') {
+                    suffix += `6(${addBody})${altInline}4`;
+                } else {
+                    suffix += `+6(${addBody})${altInline}4`;
+                }
+                opts.addsPlaced = true;
+            } else if (quality === 'minor' || quality === 'diminished') {
                 suffix += `6${altInline}4`;
             } else {
                 suffix += `+6${altInline}4`;
             }
             alterationsEmbedded = true;
         } else if (omit3Only) {
-            suffix += '6(no3)4';
+            const omit3Use46 = (quality === 'minor' && !chord.borrowed
+              && (chord.root === 4 || (chord.root === 7 && opts.keyScale === 'phrygian')))
+              || (quality === 'diminished' && chord.root === 7);
+            if (omit3Use46) {
+                suffix += '46(no3)';
+            } else {
+                suffix += '6(no3)4';
+            }
             opts.omitsPlaced = true;
         } else if (altInline) {
             suffix += `6${altInline}4`;
@@ -424,7 +439,7 @@ export function getChordSymbol(chord, key) {
     );
     const majorSeventh = chord.type >= 7 && quality !== 'diminished' && isMajorSeventh(chord.root, { tonic: key.tonic, scale });
     const hasAdds = Array.isArray(chord.adds) && chord.adds.length > 0;
-    const suffixOpts = { majorSeventh, quality };
+    const suffixOpts = { majorSeventh, quality, keyScale: scale };
     if (tag && hasAdds) suffixOpts.borrowedTag = tag;
     return buildNumeral(chord.root, qualities, chord, prefix, suffixOpts) + (tag && !hasAdds ? tag : '');
 }

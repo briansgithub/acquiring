@@ -129,7 +129,7 @@ const BASELINE = {
     key: { tonic: "E", scale: "phrygian" },
     pcs: [2, 9],
     letter: "D5/A",
-    roman: "vii6(no3)4",
+    roman: "vii46(no3)",
   },
   sharp5Inv2: {
     chord: { root: 1, type: 5, inversion: 2, alterations: ["#5"] },
@@ -160,6 +160,18 @@ const BASELINE = {
     key: { tonic: "A", scale: "minor" },
     pcs: [2, 7, 11],
     roman: "iv6(add6)4sus4",
+  },
+  lydianSus4Inv1: {
+    chord: { root: 1, type: 5, inversion: 1, suspensions: [4] },
+    key: { tonic: "E", scale: "lydian" },
+    pcs: [4, 9, 11],
+    roman: "I6sus4",
+  },
+  minorSharp5Add6Inv2: {
+    chord: { root: 4, type: 5, inversion: 2, alterations: ["#5"], adds: [6], borrowed: "minor" },
+    key: { tonic: "D", scale: "major" },
+    pcs: [3, 4, 7, 10],
+    roman: "iv6(add6)(#5)4(min)",
   },
 };
 

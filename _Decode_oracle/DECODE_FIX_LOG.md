@@ -1057,4 +1057,22 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 059 — omit3/lydian sus4/minor #5 inv2 edge cases (2026-07-23, `feat/fix-059-edge-cases`)
+
+**059a:** inv=2 omit-3 → `46(no3)` for minor/dim triads, `6(no3)4` for major (phryg `vii46(no3)`).
+
+**059b:** inv=1 sus4 → `6sus4` unless explicit `borrowed:lydian` (`sus46`).
+
+**059c:** inv=2 `#5` → `6(#5)4` for minor/dim (no `+`); major keeps `+6(#5)4`; `i` tonic keeps `46(#5)`.
+
+**059d:** inv=2 `#5` + add6 → `6(add6)(#5)4` for minor borrowed.
+
+**Gate:** policy **35/35**, pronunciation **77/77**.
+
+**Resync:** 64.9k rows — engine fails **344** (−7 vs pre-059 baseline of 351).
+
+**Files:** `jsonToSymbol.js`, `policyRegression.mjs`.
+
+---
+
 Single source of truth for the full workflow: [`ORACLE_GUIDE/README.md`](../ORACLE_GUIDE/README.md) (read `01`–`05` + `reference.md` in order).
