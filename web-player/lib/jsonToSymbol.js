@@ -208,10 +208,15 @@ function buildSuffix(chord, quality, opts = {}) {
     ? alterations.filter((a) => a !== 'b5')
     : alterations;
   const altInline = displayAlts.length ? displayAlts.map((a) => `(${a})`).join('') : '';
+    const susStr = suspended ? chord.suspensions.map((s) => `sus${s}`).join('') : '';
+    const omit3Only = Array.isArray(chord.omits) && chord.omits.includes(3) && !chord.omits.includes(5);
+    const sharp5Only = displayAlts.length === 1 && displayAlts[0] === '#5';
+    const suppressPlusForSharp5 = chord.type < 7 && sharp5Only
+      && (chord.inversion === 1 || chord.inversion === 2);
     let suffix = '';
     let alterationsEmbedded = false;
 
-    const augmented = quality === 'augmented' || alterations.includes('#5');
+    const augmented = quality === 'augmented' || (alterations.includes('#5') && !suppressPlusForSharp5);
     if (augmented) suffix += '+';
 
     if (!suspended) {
@@ -234,6 +239,9 @@ function buildSuffix(chord, quality, opts = {}) {
         } else if (altInline) {
             suffix += `6${altInline}`;
             alterationsEmbedded = true;
+        } else if (suspended) {
+            suffix += `sus${chord.suspensions.join('')}6`;
+            opts.susPlaced = true;
         } else {
             suffix += '6';
         }
@@ -245,6 +253,20 @@ function buildSuffix(chord, quality, opts = {}) {
             } else {
                 suffix += '43';
             }
+        } else if (suspended) {
+            suffix += `4${susStr}6`;
+            opts.susPlaced = true;
+        } else if (sharp5Only) {
+            const iMinorTonicSharp5 = quality === 'minor' && chord.root === 1 && !chord.borrowed;
+            if (iMinorTonicSharp5) {
+                suffix += `46${altInline}`;
+            } else {
+                suffix += `+6${altInline}4`;
+            }
+            alterationsEmbedded = true;
+        } else if (omit3Only) {
+            suffix += '6(no3)4';
+            opts.omitsPlaced = true;
         } else if (altInline) {
             suffix += `6${altInline}4`;
             alterationsEmbedded = true;
@@ -255,8 +277,7 @@ function buildSuffix(chord, quality, opts = {}) {
         suffix += '42';
     }
 
-    const susStr = suspended ? chord.suspensions.map((s) => `sus${s}`).join('') : '';
-    if (suspended) {
+    if (suspended && !opts.susPlaced) {
         const hasFigured = /[0-9]/.test(suffix);
         const omitInline = Array.isArray(chord.omits) && chord.omits.length
             ? chord.omits.map((v) => `(no${v})`).join('')
@@ -420,7 +441,14 @@ export function getChordLetterName(chord, key) {
       && (customIntervals
         ? customArraySeventhMajor(chord.borrowed, degree)
         : isMajorSeventh(degree, effKey));
-    const augmented = quality === 'augmented' || (Array.isArray(chord.alterations) && chord.alterations.includes('#5'));
+    const augmented = quality === 'augmented';
+    const sharp5 = Array.isArray(chord.alterations) && chord.alterations.includes('#5');
+    const suspended = Array.isArray(chord.suspensions) && chord.suspensions.length > 0;
+    const sus4Only = chord.suspensions?.includes(4) && !chord.suspensions?.includes(2);
+    const sharp5ParenLetter = sharp5 && chord.type < 7 && (
+      (chord.inversion === 2 && !suspended) ||
+      (chord.inversion === 1 && sus4Only)
+    );
 
     const omit3Only = Array.isArray(chord.omits) && chord.omits.includes(3) && !chord.omits.includes(5);
     const omit3Power = omit3Only && chord.type < 7;
@@ -428,15 +456,19 @@ export function getChordLetterName(chord, key) {
     if (omit3Power) suffix += "5";
     else if (quality === "minor") suffix += "m";
     else if (quality === "diminished") suffix += "°";
-    else if (augmented) suffix += "+";
+    else if (augmented || (sharp5 && !sharp5ParenLetter)) suffix += "+";
     if (chord.type >= 7) suffix += (majorSeventh ? 'maj' : '') + String(chord.type);
+    if (sharp5ParenLetter) suffix += "(#5)";
     if (Array.isArray(chord.suspensions) && chord.suspensions.length) {
-        suffix += chord.suspensions.map((s) => `sus${s}`).join('');
+        suffix += chord.suspensions.map((s) => (s === 4 && sharp5ParenLetter ? 'sus#4' : `sus${s}`)).join('');
     }
 
     // Inversion bass note: nth chord tone read within the effective key.
     let bassOffset = null;
-    if (chord.inversion === 1) bassOffset = 2;        // third
+    if (chord.inversion === 1) {
+      const sus4Bass = chord.type < 7 && chord.suspensions?.includes(4) && !chord.suspensions?.includes(2);
+      bassOffset = sus4Bass ? 3 : 2;
+    }
     else if (chord.inversion === 2) bassOffset = 4;   // fifth
     else if (chord.inversion === 3 && chord.type >= 7) bassOffset = 6; // seventh
     if (bassOffset != null) {

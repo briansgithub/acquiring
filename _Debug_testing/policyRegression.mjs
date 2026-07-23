@@ -11,7 +11,7 @@
  */
 import { chordInterpreter } from "../web-player/lib/music.js";
 import { noteNameToPc } from "../web-player/lib/chordNoteUtils.js";
-import { getChordLetterName } from "../web-player/lib/jsonToSymbol.js";
+import { getChordLetterName, getChordSymbol } from "../web-player/lib/jsonToSymbol.js";
 
 const BASELINE = {
   holst: { chord: { root: 2, type: 7, inversion: 3 }, key: { tonic: "C", scale: "phrygianDominant" }, pcs: [1, 2, 6, 9] },
@@ -129,6 +129,19 @@ const BASELINE = {
     key: { tonic: "E", scale: "phrygian" },
     pcs: [2, 9],
     letter: "D5/A",
+    roman: "vii6(no3)4",
+  },
+  sharp5Inv2: {
+    chord: { root: 1, type: 5, inversion: 2, alterations: ["#5"] },
+    key: { tonic: "B", scale: "minor" },
+    pcs: [2, 7, 11],
+    roman: "i46(#5)",
+  },
+  sus46Inv1: {
+    chord: { root: 1, type: 5, inversion: 1, suspensions: [4], borrowed: "lydian" },
+    key: { tonic: "E", scale: "minor" },
+    pcs: [4, 9, 11],
+    roman: "Isus46(lyd)",
   },
 };
 
@@ -137,23 +150,31 @@ function pcs(chord, key) {
 }
 
 let failed = 0;
-for (const [name, { chord, key, pcs: want, letter: wantLetter }] of Object.entries(BASELINE)) {
+for (const [name, { chord, key, pcs: want, letter: wantLetter, roman: wantRoman }] of Object.entries(BASELINE)) {
   const got = pcs(chord, key);
   const ok = got.length === want.length && got.every((v, i) => v === want[i]);
   if (!ok) {
     console.error(`FAIL ${name}: want [${want}] got [${got}]`);
     failed++;
-  } else if (wantLetter) {
+    continue;
+  }
+  if (wantRoman) {
+    const gotRoman = getChordSymbol(chord, key);
+    if (gotRoman !== wantRoman) {
+      console.error(`FAIL ${name} roman: want ${wantRoman} got ${gotRoman}`);
+      failed++;
+      continue;
+    }
+  }
+  if (wantLetter) {
     const gotLetter = getChordLetterName(chord, key);
     if (gotLetter !== wantLetter) {
       console.error(`FAIL ${name} letter: want ${wantLetter} got ${gotLetter}`);
       failed++;
-    } else {
-      console.log(`ok ${name}`);
+      continue;
     }
-  } else {
-    console.log(`ok ${name}`);
   }
+  console.log(`ok ${name}`);
 }
 
 if (failed) {
