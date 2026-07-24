@@ -210,6 +210,20 @@ const BASELINE = {
     letter: "F++/E",
     roman: "III+△42",
   },
+  appliedIIIM7: {
+    chord: { root: 2, type: 7, inversion: 0, applied: 3 },
+    key: { tonic: "F#", scale: "major" },
+    pcs: [0, 3, 7, 10],
+    letter: "B#m7",
+    roman: "iii7/ii",
+  },
+  triSubInv3: {
+    chord: { root: 2, type: 7, inversion: 3, applied: 5, substitutions: ["tri"] },
+    key: { tonic: "E", scale: "minor" },
+    pcs: [2, 5, 7, 11],
+    letter: "G7/F",
+    roman: "♭ii42/ii°(∆-sub)",
+  },
 };
 
 function pcs(chord, key) {
