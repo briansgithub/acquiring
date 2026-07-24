@@ -252,6 +252,17 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
   return { notes: toneJSNames, chordDegrees: baseKeyDegrees };
 }
 
+const TRIAD_SEMITONES = {
+  major: [0, 4, 7],
+  minor: [0, 3, 7],
+  diminished: [0, 3, 6],
+  augmented: [0, 4, 8],
+};
+
+function labelWithOctave(label, octave) {
+  return `${label}${octave}`;
+}
+
 // Helper function to build a chord directly from a note name and quality
 export function buildChordFromNoteName(rootNoteName, quality, originalKey, baseOctave, chordType, inversion, fullyDiminished = false, suspensions = [], modifierChord = null) {
   const useSusFrame = suspensions && suspensions.length > 0;
@@ -259,16 +270,10 @@ export function buildChordFromNoteName(rootNoteName, quality, originalKey, baseO
     ? "diminished"
     : useSusFrame && quality === "diminished" ? "major" : quality;
   const chordDegrees = TRIAD_DEGREES[triadQuality];
-  
-  // Create a temporary key with the root note as tonic (major scale)
-  const rootKey = { tonic: rootNoteName, scale: "major" };
-  
-  // Build the chord notes
-  const firstName = sdToToneJSNoteName(chordDegrees[0], 0, rootKey, baseOctave);
-  const thirdName = sdToToneJSNoteName(chordDegrees[1], 0, rootKey, baseOctave);
-  const fifthName = sdToToneJSNoteName(chordDegrees[2], 0, rootKey, baseOctave);
-  
-  let toneJSNames = [firstName, thirdName, fifthName];
+  const triadOffsets = TRIAD_SEMITONES[triadQuality] || TRIAD_SEMITONES.major;
+
+  const firstName = labelWithOctave(rootNoteName, baseOctave);
+  let toneJSNames = triadOffsets.map((offset) => shiftNoteBySemitones(firstName, offset));
   let degreeIndices = [0, 1, 2];
   
   // Add 7th if needed. Fully-diminished sevenths (vii°7) use a diminished 7th (bb7);
@@ -277,7 +282,10 @@ export function buildChordFromNoteName(rootNoteName, quality, originalKey, baseO
     const seventhDegree = resolveAppliedSeventhDegree({
       fullyDiminished, modifierChord, quality, chordType,
     });
-    const seventhName = sdToToneJSNoteName(seventhDegree, 0, rootKey, baseOctave);
+    const seventhSemitones = seventhDegree === "bb7" ? 9
+      : seventhDegree === "7" ? 11
+        : 10;
+    const seventhName = shiftNoteBySemitones(toneJSNames[0], seventhSemitones);
     toneJSNames.push(seventhName);
     degreeIndices.push(3);
   }

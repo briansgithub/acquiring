@@ -1,4 +1,5 @@
 import { applyChordSubstitutions, resolveTriSubRoot } from "./chordSubstitutions.js";
+import { MAJOR_SCALE_CHORD_QUALITIES } from "./scales.js";
 import {
   parseKey,
   getNoteLabel,
@@ -51,14 +52,11 @@ export function chordInterpreter(chord, key, opts = {}) {
     const targetQual = parentChordQualities[effective.root - 1];
     const appliedDenomMaj = effective.appliedDenomMaj
       || (effective.applied === 5 && chordType >= 7 && targetQual === 'minor');
-    const useMinorTonicization = (targetQual === "minor" || targetQual === "diminished")
-      && [2, 3].includes(effective.applied);
-    const appliedScale = useMinorTonicization ? "minor" : "major";
-    const appliedKey = { tonic: targetTonicNote, scale: appliedScale };
+    // Hooktheory: numerator is always read from the MAJOR scale of the tonicization target.
+    const appliedKey = { tonic: targetTonicNote, scale: "major" };
 
     const actualRootNote = getNoteLabel(effective.applied, appliedKey);
-    const appliedQualities = getScaleChordQualities(appliedScale);
-    const chordQuality = appliedQualities[effective.applied - 1];
+    const chordQuality = MAJOR_SCALE_CHORD_QUALITIES[effective.applied - 1];
 
     const sharp5AppliedMinorTriad = effective.applied === 7
       && chordQuality === "diminished"
