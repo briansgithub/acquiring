@@ -42,7 +42,8 @@ export function resolveSeventhDegree({
   policy, useSusFrame, effModifierChord, chordRootSD, modifiedKey, chordQuality,
   customScaleIntervals, getNoteLabel,
 }) {
-  if (policy.augMaj7Voicing) return "augMaj7Stack";
+  if (policy.augMaj7StackVoicing) return "augMaj7Stack";
+  if (policy.augMaj7Inv3Voicing) return "7";
   if (policy.halfDimInv1M6Stack) return "m6Stack";
   if (useSusFrame) return "b7";
   if (policy.hmBorrowedMinor7) return "b7";

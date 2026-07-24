@@ -203,6 +203,13 @@ const BASELINE = {
     pcs: [3, 4, 7, 10],
     roman: "iv6(add6)(#5)4(min)",
   },
+  hmIIIaugMaj7Inv3: {
+    chord: { root: 3, type: 7, inversion: 3 },
+    key: { tonic: "D", scale: "harmonicMinor" },
+    pcs: [1, 4, 5, 9],
+    letter: "F++/E",
+    roman: "III+△42",
+  },
 };
 
 function pcs(chord, key) {

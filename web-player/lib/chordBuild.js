@@ -195,7 +195,7 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
 
   // Build triad tones (3-note chord)
   let { toneJSNames, degreeIndices } = buildTriadTones(chordRootNoteName, chordDegrees, baseOctave);
-  if (policy.augMaj7Voicing) {
+  if (policy.augMaj7StackVoicing) {
     toneJSNames.splice(2, 1);
     degreeIndices.splice(2, 1);
   }

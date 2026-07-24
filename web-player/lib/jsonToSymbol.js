@@ -500,11 +500,16 @@ export function getChordLetterName(chord, key) {
     }
 
     const rootNoteName = getNoteLabel(degree, effKey, customIntervals);
-    const majorSeventh = chord.type >= 7 && quality !== 'diminished' && quality !== 'augmented'
+    const augmented = quality === 'augmented';
+    const majorSeventh = chord.type >= 7 && quality !== 'diminished' && !augmented
       && (customIntervals
         ? customArraySeventhMajor(chord.borrowed, degree)
         : isMajorSeventh(degree, effKey));
-    const augmented = quality === 'augmented';
+    const augMaj7Letter = augmented && chord.type >= 7 && (
+      customIntervals
+        ? customArraySeventhMajor(chord.borrowed, degree)
+        : isMajorSeventh(degree, effKey)
+    );
     const sharp5 = Array.isArray(chord.alterations) && chord.alterations.includes('#5');
     const suspended = Array.isArray(chord.suspensions) && chord.suspensions.length > 0;
     const sus4Only = chord.suspensions?.includes(4) && !chord.suspensions?.includes(2);
@@ -519,8 +524,9 @@ export function getChordLetterName(chord, key) {
     if (omit3Power) suffix += "5";
     else if (quality === "minor") suffix += "m";
     else if (quality === "diminished") suffix += "°";
+    else if (augMaj7Letter) suffix += "++";
     else if (augmented || (sharp5 && !sharp5ParenLetter)) suffix += "+";
-    if (chord.type >= 7) suffix += (majorSeventh ? 'maj' : '') + String(chord.type);
+    if (chord.type >= 7 && !augMaj7Letter) suffix += (majorSeventh ? 'maj' : '') + String(chord.type);
     if (sharp5ParenLetter) suffix += "(#5)";
     if (Array.isArray(chord.suspensions) && chord.suspensions.length) {
         suffix += chord.suspensions.map((s) => (s === 4 && sharp5ParenLetter ? 'sus#4' : `sus${s}`)).join('');
