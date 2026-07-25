@@ -35,6 +35,7 @@ export const TRIAD_FRAME_RULES = [
     minType: 7,
     noAlts: ["#5"],
     triadFrame: "major",
+    inversionNot: 3,
   },
   {
     id: "nativePhdmIImaj7",
@@ -59,6 +60,7 @@ function ruleMatches(rule, ctx) {
   if (rule.scale != null && ctx.modifiedKey?.scale !== rule.scale) return false;
   if (rule.degree != null && ctx.chordRootSD !== rule.degree) return false;
   if (rule.inversion != null && ctx.inversion !== rule.inversion) return false;
+  if (rule.inversionNot != null && ctx.inversion === rule.inversionNot) return false;
   if (rule.minType != null && ctx.chordType < rule.minType) return false;
   if (rule.nativeScale != null) {
     const native = ctx.key?.scale === rule.nativeScale

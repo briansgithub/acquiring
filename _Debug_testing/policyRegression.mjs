@@ -325,6 +325,26 @@ const BASELINE = {
     letter: "Db7(#11)sus#4",
     roman: "VI7(#11)sus4",
   },
+  hmIIIaugB5: {
+    chord: { root: 3, type: 5, alterations: ["b5"] },
+    key: { tonic: "D#", scale: "harmonicMinor" },
+    pcs: [0, 6, 10],
+  },
+  hmIIIaugNo5: {
+    chord: { root: 3, type: 5, omits: [5] },
+    key: { tonic: "D#", scale: "harmonicMinor" },
+    pcs: [2, 6, 10],
+  },
+  bVIphdmAugMaj7Inv3: {
+    chord: { root: 6, type: 7, inversion: 3, borrowed: "phrygianDominant" },
+    key: { tonic: "A", scale: "mixolydian" },
+    pcs: [1, 4, 5, 9],
+  },
+  phdmIiiDim7Inv3: {
+    chord: { root: 3, type: 7, inversion: 3, borrowed: "phrygianDominant" },
+    key: { tonic: "C", scale: "minor" },
+    pcs: [1, 4, 7, 10],
+  },
 };
 
 function pcs(chord, key) {
