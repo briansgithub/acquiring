@@ -27,6 +27,9 @@ function appliedDenomMajFromRoman(roman) {
 }
 
 function enrichChordFromTruth(chord, truthRoman, truthLetterRaw) {
+  const { parseLetter } = require('./svgTruth');
+  const { triadQualityFromLetter } = require('./truthLetterParse');
+  const parsed = parseLetter(truthLetterRaw);
   const numRoman = numeratorRoman(truthRoman);
   const mods = mergeMods(truthLetterRaw, truthRoman, chord);
   const halfDim = /ø/.test(numRoman);
@@ -45,6 +48,11 @@ function enrichChordFromTruth(chord, truthRoman, truthLetterRaw) {
     flattenHalfDimB5,
     appliedDenomMaj,
     _truthEnriched: true,
+    _truthLetter: truthLetterRaw,
+    _truthRoman: truthRoman,
+    _letterRootName: parsed.rootName,
+    _letterBassName: parsed.bassName,
+    _letterQuality: triadQualityFromLetter(truthLetterRaw, truthRoman),
   };
 }
 

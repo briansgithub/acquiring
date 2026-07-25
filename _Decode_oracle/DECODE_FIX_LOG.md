@@ -1115,6 +1115,20 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 063 — aug maj7 inv3 voicing + `++` letter (2026-07-24, `feat/fix-063-aug-inv3`)
+
+**063a:** Split `augMaj7Stack` policy: inv≠3 keeps Fix 043 stack (omit #5, maj7+b7); inv=3 keeps full aug triad + maj7 (`III+△42` → pcs `[1,4,5,9]`).
+
+**063b:** Letter suffix for aug+△ → `++` not `+7` (`F++/E`).
+
+**Gate:** policy **41/41**, pronunciation **77/77**, note-order pass.
+
+**Resync:** 75.5k rows — engine fails **340** (−5 vs 345 pre-063).
+
+**Files:** `chordPolicy.js`, `chordSeventh.js`, `chordBuild.js`, `jsonToSymbol.js`, `policyRegression.mjs`.
+
+---
+
 ## Session handoff — 2026-07-23 (fetch + decode loop)
 
 ### Merged on `main`

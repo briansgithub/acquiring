@@ -42,18 +42,19 @@ export function resolveSeventhDegree({
   policy, useSusFrame, effModifierChord, chordRootSD, modifiedKey, chordQuality,
   customScaleIntervals, getNoteLabel,
 }) {
-  if (policy.augMaj7Voicing) return "augMaj7Stack";
+  if (policy.augMaj7StackVoicing) return "augMaj7Stack";
+  if (policy.augMaj7Inv3Voicing) return "7";
   if (policy.halfDimInv1M6Stack) return "m6Stack";
   if (useSusFrame) return "b7";
   if (policy.hmBorrowedMinor7) return "b7";
   if (policy.customBorrowedHalfDim) {
     return policy.customBorrowedHalfDimM7 ? "customHalfDimM7" : "bb7";
   }
+  const hasSharp5 = effModifierChord?.alterations?.includes("#5");
+  if ((policy.triadQuality === "diminished" && hasSharp5) || policy.sharp5Minor) return "b7";
   if (effModifierChord?.dimTriad) return "bb7";
   if (policy.customDimMaj7) return "7";
   if (policy.phdmIImaj7) return "7";
-  const hasSharp5 = effModifierChord?.alterations?.includes("#5");
-  if ((policy.triadQuality === "diminished" && hasSharp5) || policy.sharp5Minor) return "b7";
   return borrowedModeDimSeventhDegree(
     chordRootSD, modifiedKey.scale, chordQuality, 7,
     { halfDim: effModifierChord?.halfDim },
@@ -92,8 +93,18 @@ export function resolveAppliedSeventhDegree({
 }
 
 export function addSeventhNote(toneJSNames, degreeIndices, chordRootNoteName, baseOctave, seventhDegree, sdToToneJSNoteName) {
-  const rootKey = { tonic: chordRootNoteName, scale: "major" };
-  const seventhName = sdToToneJSNoteName(seventhDegree, 0, rootKey, baseOctave);
+  const rootNote = `${chordRootNoteName}${baseOctave}`;
+  let seventhName;
+  if (seventhDegree === "b7") {
+    seventhName = shiftNoteBySemitones(rootNote, 10);
+  } else if (seventhDegree === "7") {
+    seventhName = shiftNoteBySemitones(rootNote, 11);
+  } else if (seventhDegree === "bb7") {
+    seventhName = shiftNoteBySemitones(rootNote, 9);
+  } else {
+    const rootKey = { tonic: chordRootNoteName, scale: "major" };
+    seventhName = sdToToneJSNoteName(seventhDegree, 0, rootKey, baseOctave);
+  }
   toneJSNames.push(seventhName);
   degreeIndices.push(3);
 }

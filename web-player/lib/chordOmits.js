@@ -12,6 +12,10 @@ export function applyOmits(toneJSNames, degreeIndices, omits, chord = null) {
   if (chord?.halfDim && omits.includes(5)) {
     effective = omits.filter((o) => o !== 5);
   }
+  // HT aug(no5no3): symbol omits 3+#5 but voices aug 5th.
+  if (chord?.augmentedTriad && omits.includes(3) && omits.includes(5)) {
+    effective = omits.filter((o) => o !== 5);
+  }
   const slots = new Set();
   for (const o of effective) {
     if (OMIT_SLOT[o] != null) slots.add(OMIT_SLOT[o]);

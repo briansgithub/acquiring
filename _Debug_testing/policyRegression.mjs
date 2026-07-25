@@ -135,6 +135,7 @@ const BASELINE = {
     chord: { root: 4, type: 5, inversion: 2, omits: [3] },
     key: { tonic: "A", scale: "minor" },
     pcs: [2, 9],
+    letter: "D5/A",
     roman: "iv6(no3)4",
   },
   ivOmit3Inv2Fmin: {
@@ -202,6 +203,68 @@ const BASELINE = {
     key: { tonic: "D", scale: "major" },
     pcs: [3, 4, 7, 10],
     roman: "iv6(add6)(#5)4(min)",
+  },
+  hmIIIaugMaj7Inv3: {
+    chord: { root: 3, type: 7, inversion: 3 },
+    key: { tonic: "D", scale: "harmonicMinor" },
+    pcs: [1, 4, 5, 9],
+    letter: "F++/E",
+    roman: "III+△42",
+  },
+  appliedIIIM7: {
+    chord: { root: 2, type: 7, inversion: 0, applied: 3 },
+    key: { tonic: "F#", scale: "major" },
+    pcs: [0, 3, 7, 10],
+    letter: "B#m7",
+    roman: "iii7/ii",
+  },
+  triSubInv3: {
+    chord: { root: 2, type: 7, inversion: 3, applied: 5, substitutions: ["tri"] },
+    key: { tonic: "E", scale: "minor" },
+    pcs: [2, 5, 7, 11],
+    letter: "G7/F",
+    roman: "♭ii42/ii°(∆-sub)",
+  },
+  customBorSharp5M7: {
+    chord: { root: 7, type: 7, inversion: 1, alterations: ["#5"], borrowed: [1, 3, 5, 6, 8, 10, 12] },
+    key: { tonic: "C", scale: "harmonicMinor" },
+    pcs: [0, 3, 8, 10],
+  },
+  letterRoot0: {
+    chord: {
+      root: 0, type: 7, inversion: 3, beat: 89,
+      _letterRootName: "B", _letterBassName: "Ab", _letterQuality: "major",
+    },
+    key: { tonic: "C", scale: "minor" },
+    pcs: [3, 6, 9, 11],
+  },
+  hmIiHalfDimInv3: {
+    chord: { root: 2, type: 7, inversion: 3 },
+    key: { tonic: "D", scale: "harmonicMinor" },
+    pcs: [1, 4, 7, 10],
+    letter: "E°7/D",
+    roman: "iiø42",
+  },
+  majorViiHalfDimInv3: {
+    chord: { root: 7, type: 7, inversion: 3 },
+    key: { tonic: "C", scale: "major" },
+    pcs: [2, 5, 8, 11],
+    letter: "B°7/A",
+    roman: "viiø42",
+  },
+  phdmAugOmit35: {
+    chord: { root: 6, type: 5, omits: [5, 3] },
+    key: { tonic: "F", scale: "phrygianDominant" },
+    pcs: [1, 9],
+    letter: "Db++(n°5n3)",
+    roman: "VI+(no5no3)",
+  },
+  appliedIV7sus2: {
+    chord: { root: 3, type: 7, applied: 4, suspensions: [2] },
+    key: { tonic: "Bb", scale: "major" },
+    pcs: [2, 5, 7, 9],
+    letter: "G7sus2",
+    roman: "IV7sus2/iii",
   },
 };
 
