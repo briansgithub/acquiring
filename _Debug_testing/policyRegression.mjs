@@ -135,6 +135,7 @@ const BASELINE = {
     chord: { root: 4, type: 5, inversion: 2, omits: [3] },
     key: { tonic: "A", scale: "minor" },
     pcs: [2, 9],
+    letter: "D5/A",
     roman: "iv6(no3)4",
   },
   ivOmit3Inv2Fmin: {
@@ -228,6 +229,14 @@ const BASELINE = {
     chord: { root: 7, type: 7, inversion: 1, alterations: ["#5"], borrowed: [1, 3, 5, 6, 8, 10, 12] },
     key: { tonic: "C", scale: "harmonicMinor" },
     pcs: [0, 3, 8, 10],
+  },
+  letterRoot0: {
+    chord: {
+      root: 0, type: 7, inversion: 3, beat: 89,
+      _letterRootName: "B", _letterBassName: "Ab", _letterQuality: "major",
+    },
+    key: { tonic: "C", scale: "minor" },
+    pcs: [3, 6, 9, 11],
   },
 };
 

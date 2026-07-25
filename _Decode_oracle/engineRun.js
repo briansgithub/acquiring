@@ -76,6 +76,11 @@ function enrichChordFromSymbol(chord, roman, letter) {
     dimTriad,
     flattenHalfDimB5,
     appliedDenomMaj,
+    _letterRootName: chord._letterRootName,
+    _letterBassName: chord._letterBassName,
+    _letterQuality: chord._letterQuality,
+    _truthLetter: chord._truthLetter,
+    _truthRoman: chord._truthRoman,
   };
 }
 const libUrl = (p) => require('url').pathToFileURL(require('path').join(__dirname, '..', 'web-player', 'lib', p)).href;
@@ -105,9 +110,15 @@ async function runChord(chord, key) {
   };
   try {
     quiet(() => {
-      out.roman = sym.getChordSymbol(chord, key);
-      out.letter = sym.getChordLetterName(chord, key);
-      const enriched = enrichChordFromSymbol(chord, out.roman, out.letter);
+      let enriched = enrichChordFromSymbol(chord, '', '');
+      if (chord._truthLetter) {
+        out.letter = chord._truthLetter;
+        out.roman = chord._truthRoman || '';
+      } else {
+        out.roman = sym.getChordSymbol(chord, key);
+        out.letter = sym.getChordLetterName(chord, key);
+        enriched = enrichChordFromSymbol(chord, out.roman, out.letter);
+      }
       const interp = music.chordInterpreter(enriched, key);
       out.notes = interp.notes;
       out.chordDegrees = interp.chordDegrees;

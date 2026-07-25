@@ -2,7 +2,7 @@ import { resolveTriSubRoot } from "./chordSubstitutions.js";
 import { TRIAD_DEGREES, MAJOR_SCALE_CHORD_QUALITIES } from "./scales.js";
 import { replaceTriadThird } from "./chordSuspensions.js";
 import { applyChordModifiers, applyTypeExtensions } from "./chordModifiers.js";
-import { shiftNoteBySemitones, shiftPitchClass } from "./chordNoteUtils.js";
+import { shiftNoteBySemitones, shiftPitchClass, noteLabel, noteNameToPc } from "./chordNoteUtils.js";
 import { finalizeVoicing } from "./chordVoicing.js";
 import { resolveChordPolicy, enrichModifierChord } from "./chordPolicy.js";
 import {
@@ -98,6 +98,55 @@ function applySecondaryDominant(toneJSNames, degreeIndices, chordRootNoteName, c
   
   // No modifications needed for basic secondary dominant behavior
   // The chord tones are already correct from buildTriadTones/addSeventhNote
+}
+
+function noteToMidiLocal(noteName) {
+  const pc = noteNameToPc(noteLabel(noteName));
+  const m = String(noteName).match(/(\d+)$/);
+  if (pc == null || !m) return 0;
+  return (parseInt(m[1], 10) + 1) * 12 + pc;
+}
+
+/** omit-3 power chord: inv2 = 6/4 → fifth in the bass (D5/A not A/D). */
+function applyOmit3PowerInv2Bass(toneJSNames, degreeIndices) {
+  if (toneJSNames.length !== 2) return;
+  const rootIdx = degreeIndices.findIndex((d) => d === 0);
+  const fifthIdx = degreeIndices.findIndex((d) => d === 2);
+  if (rootIdx < 0 || fifthIdx < 0) return;
+  const root = toneJSNames[rootIdx];
+  const fifth = toneJSNames[fifthIdx];
+  let bass = fifth;
+  while (noteToMidiLocal(bass) >= noteToMidiLocal(root)) {
+    bass = shiftNoteBySemitones(bass, -12);
+  }
+  let upper = root;
+  if (noteToMidiLocal(upper) <= noteToMidiLocal(bass)) {
+    upper = shiftNoteBySemitones(root, 12);
+  }
+  toneJSNames.length = 0;
+  degreeIndices.length = 0;
+  toneJSNames.push(bass, upper);
+  degreeIndices.push(2, 0);
+}
+
+/** Rotate voicing so slash-bass letter matches lowest note (when bass PC is in the chord). */
+export function voicingWithSlashBass(notes, chordDegrees, bassName) {
+  if (!bassName || !notes?.length) return { notes, chordDegrees };
+  const bassPc = noteNameToPc(bassName);
+  if (bassPc == null) return { notes, chordDegrees };
+  const idx = notes.findIndex((n) => noteNameToPc(noteLabel(n)) === bassPc);
+  if (idx < 0) return { notes, chordDegrees };
+  const paired = notes.map((n, i) => ({ n, d: chordDegrees?.[i] ?? 0 }));
+  const rotated = [...paired.slice(idx), ...paired.slice(0, idx)];
+  let bass = rotated[0].n;
+  while (rotated.length > 1 && noteToMidiLocal(bass) >= noteToMidiLocal(rotated[1].n)) {
+    bass = shiftNoteBySemitones(bass, -12);
+  }
+  rotated[0] = { ...rotated[0], n: bass };
+  return {
+    notes: rotated.map((p) => p.n),
+    chordDegrees: rotated.map((p) => p.d),
+  };
 }
 
 // Applied + borrowed: numerator from major of the borrowed-scale target; locrian applied===root → i(min7).
@@ -232,6 +281,12 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
 
   // Apply inversion
   applyInversion(toneJSNames, degreeIndices, inversion, baseOctave);
+  const omit3Power = modifierChord?.omits?.includes(3)
+    && !modifierChord?.omits?.includes(5)
+    && chordType < 7;
+  if (omit3Power && inversion === 2) {
+    applyOmit3PowerInv2Bass(toneJSNames, degreeIndices);
+  }
 
   const dimSeventh = policy.dimSeventh;
   [toneJSNames, degreeIndices] = finalizeVoicing(toneJSNames, degreeIndices, {
