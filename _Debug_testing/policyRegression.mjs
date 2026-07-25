@@ -14,13 +14,13 @@ import { noteNameToPc } from "../web-player/lib/chordNoteUtils.js";
 import { getChordLetterName, getChordSymbol } from "../web-player/lib/jsonToSymbol.js";
 
 const BASELINE = {
-  holst: { chord: { root: 2, type: 7, inversion: 3 }, key: { tonic: "C", scale: "phrygianDominant" }, pcs: [1, 2, 6, 9] },
+  holst: { chord: { root: 2, type: 7, inversion: 3 }, key: { tonic: "C", scale: "phrygianDominant" }, pcs: [0, 1, 5, 8] },
   hmIII7: { chord: { root: 3, type: 7 }, key: { tonic: "C", scale: "harmonicMinor" }, pcs: [2, 3, 7, 10] },
   bIIphdm: { chord: { root: 2, type: 7, borrowed: "phrygianDominant" }, key: { tonic: "C", scale: "major" }, pcs: [0, 1, 5, 8] },
   bIIphdm64: {
     chord: { root: 2, type: 5, inversion: 2, borrowed: "phrygianDominant" },
     key: { tonic: "C", scale: "major" },
-    pcs: [2, 6, 9],
+    pcs: [1, 5, 8],
   },
   bVIphdmAug: {
     chord: { root: 6, type: 5, borrowed: "phrygianDominant" },
