@@ -16,6 +16,10 @@ export function applyOmits(toneJSNames, degreeIndices, omits, chord = null) {
   if (omits.includes(3) && (chord?.suspensions?.includes(2) || chord?.suspensions?.includes(4))) {
     effective = omits.filter((o) => o !== 3);
   }
+  // HT aug(no5): symbol omits 5th but voices augmented #5.
+  if (chord?.augmentedTriad && omits.includes(5) && !omits.includes(3)) {
+    effective = omits.filter((o) => o !== 5);
+  }
   // HT aug(no5no3): symbol omits 3+#5 but voices aug 5th.
   if (chord?.augmentedTriad && omits.includes(3) && omits.includes(5)) {
     effective = omits.filter((o) => o !== 5);

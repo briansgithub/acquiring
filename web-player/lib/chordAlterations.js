@@ -84,6 +84,20 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
         continue;
       }
 
+      // b5 on augmented: flatten #5 (+8); dim/ø fifth is +6 and handled below.
+      const sharpFifthPc = (rootPc + 8) % 12;
+      if (key === "b5" && chord?.augmentedTriad) {
+        let foundAug = false;
+        for (let i = 0; i < toneJSNames.length; i++) {
+          if (noteNameToPc(toneJSNames[i]) === sharpFifthPc) {
+            foundAug = true;
+            toneJSNames[i] = shiftNoteBySemitones(toneJSNames[i], -2);
+            break;
+          }
+        }
+        if (foundAug) continue;
+      }
+
       // b5 only flattens a perfect fifth; dim triads already carry the b5 at +6.
       const fifthPcs = key === "b5"
         ? [(rootPc + 7) % 12]
