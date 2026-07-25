@@ -1269,6 +1269,28 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 075 — halfDim b5 scope to type <= 7 (2026-07-25, `refactor/harmonic-intent-pipeline`)
+
+**075a (engine/harness):** `harmonicIntent.js`, `compare.js`, `engineRun.js` — scope `flattenHalfDimB5` to `chordType <= 7`. Was erroneously flattening the 5th to dim5 on `ø9(b5)` chords (e.g. `beach-house__days-of-candy` `iiø9(b5)`), which expect a natural 5th.
+
+**Gate:** policy **62/62** (`halfDim9B5`). Cleared `type=9 alt=b5` cluster from top failure signatures.
+
+**Files:** `harmonicIntent.js`, `compare.js`, `engineRun.js`, `policyRegression.mjs`.
+
+---
+
+## Fix 076 — custom bor inv1 denominator major & b5 nat11 cleanup (2026-07-25, `refactor/harmonic-intent-pipeline`)
+
+**076a (engine):** `chordBuild.js` — extend `resolveAppliedBorrowedChord` custom `borrowed[]` denominator major triad voicing to `inversion === 1` (`V6/#i°(maj)(bor)`, `kenji-hiramatsu`).
+
+**076b (engine):** `chordAlterations.js` — remove natural 11th (PC root+5) when `b5` alteration is set on `type >= 13` chords (`bVI+△13(b5)(phdm)`, `katamari-damacy`).
+
+**Gate:** policy **64/64** (`bVIphdmAugMaj13B5`, `appliedCustomBorV61`). Cleared `type=13 bor=phrygianDominant alt=b5` and `type=5 inv=1 applied bor=custom` clusters.
+
+**Files:** `chordBuild.js`, `chordAlterations.js`, `policyRegression.mjs`, `probe_fix076.mjs`.
+
+---
+
 ## Session handoff — 2026-07-23 (fetch + decode loop)
 
 ### Merged on `main`
