@@ -265,7 +265,16 @@ function saveDetails(db, slug, details) {
   `).run({ slug, ...details, ts });
 }
 
+function dedupeSections(sections) {
+  const byName = new Map();
+  for (const row of sections) {
+    if (row?.section_name) byName.set(row.section_name, row);
+  }
+  return [...byName.values()];
+}
+
 function saveSections(db, slug, sections) {
+  const rows = dedupeSections(sections);
   const del = db.prepare('DELETE FROM song_sections WHERE slug = ?');
   const ins = db.prepare(`
     INSERT INTO song_sections (
@@ -286,7 +295,7 @@ function saveSections(db, slug, sections) {
       ins.run({ slug, ...row });
     }
   });
-  tx(sections);
+  tx(rows);
 }
 
 function setSongStatus(db, slug, status, errorMessage = null) {

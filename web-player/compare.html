@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Progression Compare — Sacred Ring</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { margin: 0; background: #0f1115; color: #e8e8e8; font-family: system-ui, sans-serif; }
+    .compare-app { display: grid; grid-template-columns: 280px 1fr 1fr; min-height: 100vh; gap: 8px; padding: 8px; box-sizing: border-box; }
+    .compare-side { background: #1a1d24; border-radius: 8px; padding: 12px; overflow: auto; }
+    .compare-side h2 { margin: 0 0 8px; font-size: 1rem; }
+    .compare-meta { font-size: 0.85rem; opacity: 0.8; margin-bottom: 12px; }
+    .compare-timeline { height: 48px; background: #252932; border-radius: 4px; margin: 8px 0; position: relative; }
+    .compare-highlight { position: absolute; top: 4px; bottom: 4px; background: rgba(100, 180, 255, 0.35); border-radius: 3px; }
+    .compare-controls { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .compare-controls button { padding: 6px 12px; cursor: pointer; }
+    .compare-list { list-style: none; padding: 0; margin: 0; }
+    .compare-list li { padding: 6px 0; border-bottom: 1px solid #333; font-size: 0.9rem; }
+    .compare-active { outline: 2px solid #6af; }
+    @media (max-width: 900px) { .compare-app { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="compare-app">
+    <aside class="compare-side" id="compare-sidebar">
+      <h2>Compare</h2>
+      <p class="compare-meta" id="compare-url-hint">Load songs from URL params <code>a</code> and <code>b</code>.</p>
+      <ul class="compare-list" id="compare-pair-list"></ul>
+      <p><a href="/">← Back to player</a></p>
+    </aside>
+    <section class="compare-side" id="pane-a">
+      <h2 id="title-a">Song A</h2>
+      <div class="compare-meta" id="meta-a"></div>
+      <div class="compare-timeline" id="tl-a"><div class="compare-highlight" id="hl-a" hidden></div></div>
+      <div class="compare-controls">
+        <button type="button" id="play-a">Play A</button>
+        <button type="button" id="load-a">Reload A</button>
+      </div>
+      <pre id="prog-a" class="compare-meta"></pre>
+    </section>
+    <section class="compare-side" id="pane-b">
+      <h2 id="title-b">Song B</h2>
+      <div class="compare-meta" id="meta-b"></div>
+      <div class="compare-timeline" id="tl-b"><div class="compare-highlight" id="hl-b" hidden></div></div>
+      <div class="compare-controls">
+        <button type="button" id="play-b">Play B</button>
+        <button type="button" id="load-b">Reload B</button>
+      </div>
+      <pre id="prog-b" class="compare-meta"></pre>
+    </section>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+  <script type="module" src="compare.js"></script>
+</body>
+</html>

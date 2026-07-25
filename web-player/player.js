@@ -7,6 +7,7 @@ import { renderQuizFreqPanel } from "./components/quiz/quizFreqPanel.js";
 import { renderNoteIndicator } from "./components/noteIndicator.js";
 import { renderTimeline } from "./components/timeline.js";
 import { renderSongSelector } from "./components/songSelector.js";
+import { createProgressionResultsManager } from "./components/progressionResultsView.js";
 import { renderQuizMode } from "./components/quiz/quizMode.js";
 import { createQuizAudio } from "./components/quiz/quizAudio.js";
 import { fetchCorpusStats, buildSongEntries, poolStats, buildFrequencyProfile, pickFrequencyBiased, entryRootDegree } from "./components/quiz/quizPool.js";
@@ -474,9 +475,22 @@ const timeline = renderTimeline(timelinePane, {
 
 
 
+const progressionResultsManager = createProgressionResultsManager(ringPane);
+
 const songSelector = renderSongSelector(selectorPane, {
   isSongLoaded: (cacheKey) => !!cacheKey && cacheKey === loadedCacheKey,
+  onEnterProgressionMode: () => {
+    ringPane?.classList.remove("disabled");
+    progressionResultsManager.enterProgressionMode();
+  },
+  onExitProgressionMode: () => {
+    progressionResultsManager.exitProgressionMode();
+  },
+  onProgressionResults: (results, searchMetadata, deps) => {
+    progressionResultsManager.setResults(results, searchMetadata, deps);
+  },
   onSongPageOpen: () => {
+    progressionResultsManager.exitProgressionMode();
     clearPlayerState();
     loadedCacheKey = null;
   },
@@ -485,7 +499,7 @@ const songSelector = renderSongSelector(selectorPane, {
     loadedCacheKey = null;
     loadingSplash.show();
   },
-  onLoad: async ({ cacheKey }) => {
+  onLoad: async ({ cacheKey, sectionName, seekBeat }) => {
     try {
       const res = await fetch(`/api/songs/entry?key=${encodeURIComponent(cacheKey)}`);
       if (!res.ok) {
@@ -501,7 +515,10 @@ const songSelector = renderSongSelector(selectorPane, {
         library[idx] = entry;
       }
       loadedCacheKey = cacheKey;
-      handleSongChange(String(idx));
+      const loadOpts = {};
+      if (sectionName) loadOpts.sectionName = sectionName;
+      if (seekBeat != null) loadOpts.seekBeat = seekBeat;
+      handleSongChange(String(idx), loadOpts);
     } catch (err) {
       console.error("Selector load failed:", err);
       loadingSplash.hide();
@@ -847,7 +864,7 @@ function setAppMode(mode, { stopQuiz = true } = {}) {
 modePlayerBtn?.addEventListener("click", () => setAppMode("player"));
 modeQuizBtn?.addEventListener("click", () => setAppMode("quiz"));
 
-async function loadSection(songIndex, sectionIndex) {
+async function loadSection(songIndex, sectionIndex, loadOpts = {}) {
   if (isLoading) return;
   isLoading = true;
   loadingSplash.show();
@@ -1027,6 +1044,13 @@ async function loadSection(songIndex, sectionIndex) {
     }
     console.log("Section loaded successfully.");
     ringPane?.classList.remove("disabled");
+
+    if (loadOpts.seekBeat != null && Number.isFinite(loadOpts.seekBeat)) {
+      const beat = loadOpts.seekBeat === 0 ? 1 : loadOpts.seekBeat;
+      const tick = (beat - 1) * 192;
+      seekTransportToTick(tick);
+      syncChordDisplayAtTick(tick, { force: true });
+    }
   } catch (err) {
     console.error("Error during playback setup in loadSection:", err);
   } finally {
@@ -1345,7 +1369,7 @@ function handleSeek(ratio, time) {
   isManualChordPreview = false;
 }
 
-function handleSongChange(songIdx) {
+function handleSongChange(songIdx, loadOpts = {}) {
   if (quizClozeActive) {
     stopClozeQuiz({ restartPlayback: false });
   }
@@ -1359,7 +1383,16 @@ function handleSongChange(songIdx) {
       return;
     }
     controls.setSections(song.sections);
-    loadSection(idx, 0).catch(err => console.error("LoadSection failed inside song change:", err));
+    let sectionIndex = 0;
+    if (loadOpts.sectionName) {
+      const found = song.sections.findIndex(
+        (s) => s.sectionName === loadOpts.sectionName,
+      );
+      if (found >= 0) sectionIndex = found;
+    } else if (loadOpts.sectionIndex != null) {
+      sectionIndex = loadOpts.sectionIndex;
+    }
+    loadSection(idx, sectionIndex, loadOpts).catch((err) => console.error("LoadSection failed inside song change:", err));
   } catch (e) {
     console.error("HandleSongChange failed:", e);
   }

@@ -9,6 +9,7 @@ const { nowIso } = require('./db');
 const { CACHE_ROOT } = require('./cacheSync');
 const { computeFlags, canLoad, loadGateMissing } = require('./pipelineFlags');
 const { resetCacheSync } = require('./library');
+const { indexSongAfterProcessed, removeSongFromIndex } = require('./progression/progressionHook');
 const { harvestSong } = require('./harvest');
 const { loadHarvest, clearHarvestArtifact, isLightHarvest } = require('./harvestArtifact');
 const { setHarvestMode } = require('./db');
@@ -111,11 +112,12 @@ async function runProcessed(db, slug) {
   const proc = await writeProcessedCacheFromHarvest(harvest);
   commitProcessed(db, slug, proc);
   resetCacheSync();
+  const progressionIndex = await indexSongAfterProcessed(slug);
   const updated = getSongRow(db, slug);
   if (!updated?.cache_dir || !updated?.processed_at) {
     return wrapErr(db, slug, 'processed commit failed — cache_dir not set', 500);
   }
-  return wrapOk(db, slug);
+  return wrapOk(db, slug, { progressionIndex });
 }
 
 async function runTested(db, slug) {
@@ -177,6 +179,7 @@ function clearProcessed(db, slug) {
   db.prepare(`
     UPDATE songs SET cache_dir = NULL, processed_at = NULL WHERE slug = ?
   `).run(slug);
+  removeSongFromIndex(slug);
   resetCacheSync();
   return wrapOk(db, slug);
 }

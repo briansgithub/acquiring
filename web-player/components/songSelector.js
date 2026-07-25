@@ -13,6 +13,7 @@ import {
   createLazyPlayableCaches,
   wirePlayablePicker,
 } from "./songSelectorPlayable.js";
+import { showProgressionView } from "./songSelectorProgression.js";
 
 const MIN_CHARS = 3;
 const MAX_SUGGESTIONS = 10;
@@ -50,7 +51,10 @@ export function renderSongSelector(container, options = {}) {
   container.innerHTML = `
     <div class="selector-head pane-panel-head">
       <button id="sel-back" type="button" class="sel-back" hidden>Back</button>
-      <h2 class="pane-panel-title">Song Selector</h2>
+      <select id="sel-mode-select" class="sel-mode-select" aria-label="Window Mode">
+        <option value="select_song">Select Song</option>
+        <option value="progression_matcher">Progression Matcher</option>
+      </select>
     </div>
     <div id="sel-song-nav" class="sel-song-nav" hidden>
       <div id="sel-song-nav-browse">
@@ -97,6 +101,7 @@ export function renderSongSelector(container, options = {}) {
   `;
 
   const body = container.querySelector("#sel-body");
+  const modeSelect = container.querySelector("#sel-mode-select");
   const songNav = container.querySelector("#sel-song-nav");
   const backBtn = container.querySelector("#sel-back");
   const songNavBrowse = container.querySelector("#sel-song-nav-browse");
@@ -110,6 +115,14 @@ export function renderSongSelector(container, options = {}) {
   const urlInput = container.querySelector("#sel-url-input");
   const urlAddBtn = container.querySelector("#sel-url-add");
   const urlStatus = container.querySelector("#sel-url-status");
+
+  modeSelect?.addEventListener("change", (e) => {
+    if (e.target.value === "progression_matcher") {
+      showProgression();
+    } else {
+      showSearch();
+    }
+  });
 
   function setUrlFooterVisible(visible) {
     if (urlFooter) urlFooter.hidden = !visible;
@@ -182,7 +195,7 @@ export function renderSongSelector(container, options = {}) {
 
   function showSongNav({ activeSlug = null, showBack = false, mode = "browse" } = {}) {
     if (!songNav) return;
-    songNav.hidden = false;
+    songNav.hidden = mode !== "browse" && mode !== "search";
     if (navPlayableSort) navPlayableSort.value = playableSortMode;
     if (backBtn) backBtn.hidden = !showBack;
     if (songNavBrowse) songNavBrowse.hidden = mode !== "browse";
@@ -302,6 +315,8 @@ export function renderSongSelector(container, options = {}) {
 
   // ---- Search view ----
   function showSearch() {
+    if (modeSelect) modeSelect.value = "select_song";
+    options.onExitProgressionMode?.();
     setUrlFooterVisible(true);
     showSongNav({ showBack: false, mode: "browse" });
     body.innerHTML = `
@@ -540,7 +555,7 @@ export function renderSongSelector(container, options = {}) {
   }
 
   // ---- Song detail view ----
-  async function loadSongIntoPlayer(slug, { auto = false } = {}) {
+  async function loadSongIntoPlayer(slug, { auto = false, sectionName = null, seekBeat = null } = {}) {
     options.onLoadStart?.();
     const loadBtn = body.querySelector("#sel-load-btn");
     const statusEl = body.querySelector("#pipeline-status");
@@ -554,7 +569,7 @@ export function renderSongSelector(container, options = {}) {
       const res = await fetch(`/api/library/load?slug=${encodeURIComponent(slug)}`, { method: "POST" });
       const payload = await res.json();
       if (!res.ok) throw new Error(payload.error || `HTTP ${res.status}`);
-      await options.onLoad?.({ slug, cacheKey: payload.cacheKey });
+      await options.onLoad?.({ slug, cacheKey: payload.cacheKey, sectionName, seekBeat });
       if (loadBtn) {
         loadBtn.textContent = "Loaded";
         loadBtn.hidden = true;
@@ -644,6 +659,27 @@ export function renderSongSelector(container, options = {}) {
     }
   }
 
+  function showProgression() {
+    if (modeSelect) modeSelect.value = "progression_matcher";
+    options.onEnterProgressionMode?.();
+    showProgressionView({
+      body,
+      songs,
+      esc,
+      showSongNav,
+      setUrlFooterVisible,
+      onEnterProgressionMode: options.onEnterProgressionMode,
+      onProgressionResults: options.onProgressionResults,
+      onPlayResult: async ({ slug, sectionType, seekBeat }) => {
+        await loadSongIntoPlayer(slug, { sectionName: sectionType, seekBeat });
+      },
+      onCompare: ({ slug, sectionType, seekBeat }) => {
+        const b = `${slug}:${sectionType}@${seekBeat}`;
+        window.open(`/compare.html?b=${encodeURIComponent(b)}`, "_blank");
+      },
+    });
+  }
+
   // init: render once, load index, refresh hint (don't wipe inputs)
   wireAddUrl(urlInput, urlAddBtn, urlStatus);
   showSearch();
@@ -656,6 +692,7 @@ export function renderSongSelector(container, options = {}) {
     showSearch,
     showArtist,
     showSongDetail,
+    showProgression,
     reload: () => loadIndex().then(() => showSearch()),
   };
 }
