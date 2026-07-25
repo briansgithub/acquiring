@@ -154,9 +154,14 @@ export function renderTimeline(container, options = {}) {
         draw();
     }
     window.addEventListener("resize", resize);
+    if (typeof ResizeObserver !== "undefined") {
+        const ro = new ResizeObserver(() => resize());
+        ro.observe(canvasWrapper);
+    }
 
     // Initial Resize
-    setTimeout(resize, 0); // Defer slightly to ensure container has size
+    setTimeout(resize, 0);
+    setTimeout(resize, 50);
 
     function draw() {
         if (logicalWidth === 0 || logicalHeight === 0) return;

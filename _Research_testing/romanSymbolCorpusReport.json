@@ -1,11 +1,11 @@
 {
   "summary": {
     "total": 5709,
-    "romanExact": 5150,
-    "romanExactPct": "90.2",
-    "romanCore": 5626,
-    "romanCorePct": "98.5",
-    "mismatchCount": 559
+    "romanExact": 5157,
+    "romanExactPct": "90.3",
+    "romanCore": 5633,
+    "romanCorePct": "98.7",
+    "mismatchCount": 552
   },
   "mismatches": [
     {
@@ -242,6 +242,27 @@
       ]
     },
     {
+      "id": "the-beach-boys__god-only-knows/Verse/29",
+      "truthRoman": "#iø7(bor)",
+      "engRoman": "♯i°7(bor)",
+      "truthCanon": "#iø7(bor)",
+      "engCanon": "#i°7(bor)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "♯i"
+        },
+        {
+          "kind": "super",
+          "text": "°7"
+        },
+        {
+          "kind": "suffix",
+          "text": "(bor)"
+        }
+      ]
+    },
+    {
       "id": "the-beach-boys__god-only-knows/Bridge/4.5",
       "truthRoman": "V46",
       "engRoman": "V64",
@@ -280,6 +301,27 @@
         {
           "kind": "sub",
           "text": "4"
+        }
+      ]
+    },
+    {
+      "id": "the-beach-boys__god-only-knows/Bridge/45",
+      "truthRoman": "#iø7(bor)",
+      "engRoman": "♯i°7(bor)",
+      "truthCanon": "#iø7(bor)",
+      "engCanon": "#i°7(bor)",
+      "tokens": [
+        {
+          "kind": "base",
+          "text": "♯i"
+        },
+        {
+          "kind": "super",
+          "text": "°7"
+        },
+        {
+          "kind": "suffix",
+          "text": "(bor)"
         }
       ]
     },
@@ -1765,9 +1807,9 @@
     {
       "id": "amy-winehouse__back-to-black/Verse/15.5",
       "truthRoman": "bVsus27(b5)(loc)",
-      "engRoman": "♭V7sus2(b5)(loc)",
+      "engRoman": "♭V7(b5)sus2(loc)",
       "truthCanon": "bVsus27(b5)(loc)",
-      "engCanon": "bV7sus2(b5)(loc)",
+      "engCanon": "bV7(b5)sus2(loc)",
       "tokens": [
         {
           "kind": "base",
@@ -1778,12 +1820,12 @@
           "text": "7"
         },
         {
-          "kind": "sub",
-          "text": "sus2"
-        },
-        {
           "kind": "suffix",
           "text": "(b5)"
+        },
+        {
+          "kind": "sub",
+          "text": "sus2"
         },
         {
           "kind": "suffix",
@@ -1794,9 +1836,9 @@
     {
       "id": "amy-winehouse__back-to-black/Verse/47.5",
       "truthRoman": "bVsus27(b5)(loc)",
-      "engRoman": "♭V7sus2(b5)(loc)",
+      "engRoman": "♭V7(b5)sus2(loc)",
       "truthCanon": "bVsus27(b5)(loc)",
-      "engCanon": "bV7sus2(b5)(loc)",
+      "engCanon": "bV7(b5)sus2(loc)",
       "tokens": [
         {
           "kind": "base",
@@ -1807,12 +1849,12 @@
           "text": "7"
         },
         {
-          "kind": "sub",
-          "text": "sus2"
-        },
-        {
           "kind": "suffix",
           "text": "(b5)"
+        },
+        {
+          "kind": "sub",
+          "text": "sus2"
         },
         {
           "kind": "suffix",
@@ -1823,9 +1865,9 @@
     {
       "id": "amy-winehouse__back-to-black/Verse/79.5",
       "truthRoman": "bVsus27(b5)(loc)",
-      "engRoman": "♭V7sus2(b5)(loc)",
+      "engRoman": "♭V7(b5)sus2(loc)",
       "truthCanon": "bVsus27(b5)(loc)",
-      "engCanon": "bV7sus2(b5)(loc)",
+      "engCanon": "bV7(b5)sus2(loc)",
       "tokens": [
         {
           "kind": "base",
@@ -1836,12 +1878,12 @@
           "text": "7"
         },
         {
-          "kind": "sub",
-          "text": "sus2"
-        },
-        {
           "kind": "suffix",
           "text": "(b5)"
+        },
+        {
+          "kind": "sub",
+          "text": "sus2"
         },
         {
           "kind": "suffix",
@@ -1852,9 +1894,9 @@
     {
       "id": "amy-winehouse__back-to-black/Verse/111.5",
       "truthRoman": "bVsus27(b5)(loc)",
-      "engRoman": "♭V7sus2(b5)(loc)",
+      "engRoman": "♭V7(b5)sus2(loc)",
       "truthCanon": "bVsus27(b5)(loc)",
-      "engCanon": "bV7sus2(b5)(loc)",
+      "engCanon": "bV7(b5)sus2(loc)",
       "tokens": [
         {
           "kind": "base",
@@ -1865,12 +1907,12 @@
           "text": "7"
         },
         {
-          "kind": "sub",
-          "text": "sus2"
-        },
-        {
           "kind": "suffix",
           "text": "(b5)"
+        },
+        {
+          "kind": "sub",
+          "text": "sus2"
         },
         {
           "kind": "suffix",
@@ -1881,9 +1923,9 @@
     {
       "id": "amy-winehouse__back-to-black/Instrumental/15.5",
       "truthRoman": "bVsus27(b5)(loc)",
-      "engRoman": "♭V7sus2(b5)(loc)",
+      "engRoman": "♭V7(b5)sus2(loc)",
       "truthCanon": "bVsus27(b5)(loc)",
-      "engCanon": "bV7sus2(b5)(loc)",
+      "engCanon": "bV7(b5)sus2(loc)",
       "tokens": [
         {
           "kind": "base",
@@ -1894,37 +1936,16 @@
           "text": "7"
         },
         {
+          "kind": "suffix",
+          "text": "(b5)"
+        },
+        {
           "kind": "sub",
           "text": "sus2"
         },
         {
           "kind": "suffix",
-          "text": "(b5)"
-        },
-        {
-          "kind": "suffix",
           "text": "(loc)"
-        }
-      ]
-    },
-    {
-      "id": "the-police__every-breath-you-take/Chorus/64.5",
-      "truthRoman": "vi°△7(b5)(bor)",
-      "engRoman": "viø7(bor)",
-      "truthCanon": "vi°△7(b5)(bor)",
-      "engCanon": "viø7(bor)",
-      "tokens": [
-        {
-          "kind": "base",
-          "text": "vi"
-        },
-        {
-          "kind": "super",
-          "text": "ø7"
-        },
-        {
-          "kind": "suffix",
-          "text": "(bor)"
         }
       ]
     },
@@ -2006,21 +2027,17 @@
     {
       "id": "stevie-wonder__superstition/Chorus/7",
       "truthRoman": "bII9(b5)/V(∆-sub)(maj)",
-      "engRoman": "V9(b5)/v(maj)",
+      "engRoman": "♭iiø9/v(maj)(∆-sub)",
       "truthCanon": "bII9(b5)/V(∆-sub)(maj)",
-      "engCanon": "V9(b5)/v(maj)",
+      "engCanon": "biiø9/v(maj)(∆-sub)",
       "tokens": [
         {
           "kind": "base",
-          "text": "V"
+          "text": "♭ii"
         },
         {
           "kind": "super",
-          "text": "9"
-        },
-        {
-          "kind": "suffix",
-          "text": "(b5)"
+          "text": "ø9"
         },
         {
           "kind": "base",
@@ -2033,6 +2050,10 @@
         {
           "kind": "suffix",
           "text": "(maj)"
+        },
+        {
+          "kind": "suffix",
+          "text": "(∆-sub)"
         }
       ]
     },
@@ -2218,21 +2239,17 @@
     {
       "id": "stevie-wonder__superstition/Chorus/11",
       "truthRoman": "bII9(b5)/IV(∆-sub)",
-      "engRoman": "V9(b5)/IV",
+      "engRoman": "♭iiø9/IV(∆-sub)",
       "truthCanon": "bII9(b5)/IV(∆-sub)",
-      "engCanon": "V9(b5)/IV",
+      "engCanon": "biiø9/IV(∆-sub)",
       "tokens": [
         {
           "kind": "base",
-          "text": "V"
+          "text": "♭ii"
         },
         {
           "kind": "super",
-          "text": "9"
-        },
-        {
-          "kind": "suffix",
-          "text": "(b5)"
+          "text": "ø9"
         },
         {
           "kind": "base",
@@ -2241,6 +2258,10 @@
         {
           "kind": "base",
           "text": "IV"
+        },
+        {
+          "kind": "suffix",
+          "text": "(∆-sub)"
         }
       ]
     },
@@ -4660,27 +4681,6 @@
         {
           "kind": "base",
           "text": "IV"
-        },
-        {
-          "kind": "suffix",
-          "text": "(no3)"
-        },
-        {
-          "kind": "suffix",
-          "text": "(no5)"
-        }
-      ]
-    },
-    {
-      "id": "olivia-rodrigo__bad-idea-right/Chorus/12",
-      "truthRoman": "VII(no3no5)",
-      "engRoman": "VII(no3)(no5)",
-      "truthCanon": "VII(no3no5)",
-      "engCanon": "VII(no3)(no5)",
-      "tokens": [
-        {
-          "kind": "base",
-          "text": "VII"
         },
         {
           "kind": "suffix",

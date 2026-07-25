@@ -9,6 +9,7 @@ const { prepareMetadataFromHarvest, commitMetadata } = require('./metadataFromHa
 const { writeProcessedCacheFromHarvest, commitProcessed } = require('./processedFromHarvest');
 const { nowIso } = require('./db');
 const { resetCacheSync } = require('./library');
+const { indexSongAfterProcessed } = require('./progression/progressionHook');
 
 function runCompareInWorker(scrapePath) {
   return new Promise((resolve, reject) => {
@@ -74,6 +75,7 @@ async function runLocalsParallel(db, slug, opts = {}) {
     if (r.kind === 'processed') {
       commitProcessed(db, slug, r.proc);
       resetCacheSync();
+      indexSongAfterProcessed(slug).catch(() => {});
     }
     if (r.kind === 'tested') {
       commitTested(db, slug, r.testRep);

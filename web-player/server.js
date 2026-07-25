@@ -9,6 +9,7 @@ const { handleAddSong } = require("../_Research_testing/hooktheory_catalog/web/a
 const { getPlaybackCacheDir } = require("../lib/dataRoot");
 const { loadLibrary: loadCachedLibrary } = require("./playbackLibraryCache");
 const { handleCorpusStats } = require("./corpusStatsApi");
+const { handleProgressionSearch, handleProgressionStatus } = require("../_Research_testing/hooktheory_catalog/web/progressionApi");
 
 const PORT = process.env.PORT || 3000;
 const CACHE_ROOT = getPlaybackCacheDir();
@@ -192,6 +193,8 @@ const server = http.createServer((req, res) => {
   if (reqUrl.pathname === "/api/catalog/songs") return handleCatalogSongs(res);
   if (reqUrl.pathname === "/api/catalog/song") return handleCatalogSongDetail(reqUrl, res);
   if (reqUrl.pathname === "/api/quiz/corpus-stats") return handleCorpusStats(req, res);
+  if (reqUrl.pathname === "/api/progression/search") return handleProgressionSearch(reqUrl, res);
+  if (reqUrl.pathname === "/api/progression/status") return handleProgressionStatus(res);
   if (reqUrl.pathname === "/api/library") return handleLibraryList(req, res);
   if (reqUrl.pathname === "/api/library/song") return handleLibrarySong(reqUrl, res);
   if (reqUrl.pathname === "/api/library/load" && req.method === "POST") return handleLibraryLoad(reqUrl, res);

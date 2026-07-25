@@ -226,7 +226,28 @@ The page scraper ([`lib/scraper/pageScraper.js`](../lib/scraper/pageScraper.js),
 
 ---
 
-## 8. Conventions
+## 8. Progression search index
+
+Separate SQLite DB: `sacred_ring_data/catalog/progression_index.db` (see `lib/dataRoot.js` `getProgressionIndexPath()`).
+
+| Table | Role |
+|---|---|
+| `system_metadata` | Single row: `max_shared_length` — longest progression length shared by ≥2 songs |
+| `ngrams` | Pipe-delimited progression tokens, `search_mode` (`pitch_class` \| `functional`), `slug`, `section_type`, `start_position`, `beat_duration`, `attribute_flags`, `metadata` JSON |
+
+**Pipeline:** playback cache JSON → [`lib/progression/normalize.js`](../_Research_testing/hooktheory_catalog/lib/progression/normalize.js) (reuses `getChordSymbol`, `chordRootPc`, `activeKeyAtBeat`) → n-gram windows up to `PROBE_CAP` (32) → prune rows where `length > max_shared_length`.
+
+**CLI:** `node _Research_testing/hooktheory_catalog/cli/buildProgressionIndex.js [--workers 8] [--limit N]`
+
+**Incremental:** `processed` pipeline step calls `progressionHook.indexSongAfterProcessed(slug)`; clear processed calls `removeSongFromIndex(slug)`.
+
+**API:** `GET /api/progression/search`, `GET /api/progression/status`
+
+**UI:** Song Selector → “Search by progression”; results play in main player with seek-to-match. Side-by-side: [`web-player/compare.html`](../web-player/compare.html) (`?b=slug:Section@beat`).
+
+---
+
+## 9. Conventions
 
 - Files ≤ 400 lines; debug scripts in `_Debug_testing/`, research scripts/output in `_Research_testing/`.
 - Distinguish engine vs harness failures before "fixing" voicing — check `countMatch` / `orderOk` first.

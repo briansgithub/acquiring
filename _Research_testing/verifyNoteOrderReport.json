@@ -3,8 +3,8 @@
     "total": 5707,
     "inv0AscendingPass": 4772,
     "inv0AscendingFail": 0,
-    "invGt0TruthBassInfo": 49,
-    "invGt0LetterBassInfo": 59,
+    "invGt0TruthBassInfo": 36,
+    "invGt0LetterBassInfo": 49,
     "byInversion": {
       "0": {
         "pass": 4772,
@@ -15,12 +15,12 @@
         "info": 14
       },
       "2": {
-        "pass": 299,
-        "info": 20
+        "pass": 305,
+        "info": 14
       },
       "3": {
-        "pass": 177,
-        "info": 25
+        "pass": 180,
+        "info": 22
       }
     },
     "fixtureFails": 0,
@@ -36,13 +36,13 @@
       ],
       "detail": {
         "rule": "bass-vs-letter",
-        "engLetter": "D#°7/C#",
+        "engLetter": "D#°7/Db",
         "actualBassPc": 0,
         "engBassPc": 1,
         "notes": [
           "C3",
-          "D#4",
-          "F#4",
+          "Eb4",
+          "Gb4",
           "A4"
         ]
       }
@@ -55,12 +55,12 @@
       ],
       "detail": {
         "rule": "bass-vs-letter",
-        "engLetter": "G#°7/F#",
+        "engLetter": "G#°7/Gb",
         "actualBassPc": 5,
         "engBassPc": 6,
         "notes": [
           "F3",
-          "G#4",
+          "Ab4",
           "B4",
           "D4"
         ]
@@ -94,7 +94,7 @@
       "detail": {
         "rule": "bass-vs-truth",
         "truthLetter": "Db++(#5)/Ab",
-        "engLetter": "Db(#5)/Ab",
+        "engLetter": "Db(#5)(#5)/Ab",
         "actualBassPc": 9,
         "truthBassPc": 8,
         "notes": [
@@ -121,44 +121,6 @@
           "D4",
           "F4",
           "Ab4"
-        ]
-      }
-    },
-    {
-      "id": "allie-x__milk/Chorus/1",
-      "inv": 2,
-      "issues": [
-        "bass-vs-truth",
-        "bass-vs-letter"
-      ],
-      "detail": {
-        "rule": "bass-vs-truth",
-        "truthLetter": "G#5/D#",
-        "engLetter": "G#5/D#",
-        "actualBassPc": 8,
-        "truthBassPc": 3,
-        "notes": [
-          "G#4",
-          "D#5"
-        ]
-      }
-    },
-    {
-      "id": "allie-x__milk/Chorus/3",
-      "inv": 2,
-      "issues": [
-        "bass-vs-truth",
-        "bass-vs-letter"
-      ],
-      "detail": {
-        "rule": "bass-vs-truth",
-        "truthLetter": "A#5/E#",
-        "engLetter": "A#5/E#",
-        "actualBassPc": 10,
-        "truthBassPc": 5,
-        "notes": [
-          "A#4",
-          "E#5"
         ]
       }
     },
@@ -352,7 +314,7 @@
       "detail": {
         "rule": "bass-vs-truth",
         "truthLetter": "d(add6)(#5)sus4/A",
-        "engLetter": "Dmsus4/A",
+        "engLetter": "Dmsus4(#5)/A",
         "actualBassPc": 10,
         "truthBassPc": 9,
         "notes": [
@@ -371,7 +333,7 @@
       ],
       "detail": {
         "rule": "bass-vs-letter",
-        "engLetter": "Dbsus2/F",
+        "engLetter": "Dbsus2(#2)(3)/F",
         "actualBassPc": 3,
         "engBassPc": 5,
         "notes": [
@@ -389,7 +351,7 @@
       ],
       "detail": {
         "rule": "bass-vs-letter",
-        "engLetter": "Dbsus2/F",
+        "engLetter": "Dbsus2(#2)(3)/F",
         "actualBassPc": 3,
         "engBassPc": 5,
         "notes": [
@@ -409,12 +371,12 @@
       "detail": {
         "rule": "bass-vs-truth",
         "truthLetter": "Emaj7(#5)/B",
-        "engLetter": "E+maj7/B",
+        "engLetter": "E+maj7(#5)/B",
         "actualBassPc": 0,
         "truthBassPc": 11,
         "notes": [
           "C4",
-          "D#4",
+          "Eb4",
           "E4",
           "G#4"
         ]
@@ -430,7 +392,7 @@
       "detail": {
         "rule": "bass-vs-truth",
         "truthLetter": "F++(#5)/C",
-        "engLetter": "F(#5)/C",
+        "engLetter": "F(#5)(#5)/C",
         "actualBassPc": 1,
         "truthBassPc": 0,
         "notes": [
@@ -448,7 +410,7 @@
       ],
       "detail": {
         "rule": "bass-vs-letter",
-        "engLetter": "C7/G",
+        "engLetter": "C7(#9)(b5)(b13)/G",
         "actualBassPc": 6,
         "engBassPc": 7,
         "notes": [
@@ -471,7 +433,7 @@
       "detail": {
         "rule": "bass-vs-truth",
         "truthLetter": "f#(3)susb2/G",
-        "engLetter": "F#°sus2/A",
+        "engLetter": "F#sus2(3)/A",
         "actualBassPc": 8,
         "truthBassPc": 7,
         "notes": [
@@ -491,7 +453,7 @@
       "detail": {
         "rule": "bass-vs-truth",
         "truthLetter": "f#(3)susb2/G",
-        "engLetter": "F#°sus2/A",
+        "engLetter": "F#sus2(3)/A",
         "actualBassPc": 8,
         "truthBassPc": 7,
         "notes": [
@@ -511,7 +473,7 @@
       "detail": {
         "rule": "bass-vs-truth",
         "truthLetter": "f#(3)susb2/G",
-        "engLetter": "F#°sus2/A",
+        "engLetter": "F#sus2(3)/A",
         "actualBassPc": 8,
         "truthBassPc": 7,
         "notes": [
@@ -531,7 +493,7 @@
       "detail": {
         "rule": "bass-vs-truth",
         "truthLetter": "c#(3)susb2/D",
-        "engLetter": "C#°sus2/E",
+        "engLetter": "C#sus2(3)/E",
         "actualBassPc": 3,
         "truthBassPc": 2,
         "notes": [
@@ -551,7 +513,7 @@
       "detail": {
         "rule": "bass-vs-truth",
         "truthLetter": "c#(3)susb2/D",
-        "engLetter": "C#°sus2/E",
+        "engLetter": "C#sus2(3)/E",
         "actualBassPc": 3,
         "truthBassPc": 2,
         "notes": [
@@ -571,7 +533,7 @@
       "detail": {
         "rule": "bass-vs-truth",
         "truthLetter": "G(b5)/D",
-        "engLetter": "G/D",
+        "engLetter": "G(b5)/D",
         "actualBassPc": 1,
         "truthBassPc": 2,
         "notes": [
@@ -591,7 +553,7 @@
       "detail": {
         "rule": "bass-vs-truth",
         "truthLetter": "G(b5)/D",
-        "engLetter": "G/D",
+        "engLetter": "G(b5)/D",
         "actualBassPc": 1,
         "truthBassPc": 2,
         "notes": [
@@ -611,13 +573,89 @@
       "detail": {
         "rule": "bass-vs-truth",
         "truthLetter": "G(b5)/D",
-        "engLetter": "G/D",
+        "engLetter": "G(b5)/D",
         "actualBassPc": 1,
         "truthBassPc": 2,
         "notes": [
           "Db4",
           "G4",
           "B4"
+        ]
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Chorus Lead-Out/83",
+      "inv": 3,
+      "issues": [
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-letter",
+        "engLetter": "B°7(b5)/A",
+        "actualBassPc": 10,
+        "engBassPc": 9,
+        "notes": [
+          "Bb4",
+          "B4",
+          "D5",
+          "F5"
+        ]
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Chorus Lead-Out/93",
+      "inv": 3,
+      "issues": [
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-letter",
+        "engLetter": "B°7(b5)/A",
+        "actualBassPc": 10,
+        "engBassPc": 9,
+        "notes": [
+          "Bb4",
+          "B4",
+          "D5",
+          "F5"
+        ]
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Chorus Lead-Out/103",
+      "inv": 3,
+      "issues": [
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-letter",
+        "engLetter": "B°7(b5)/A",
+        "actualBassPc": 10,
+        "engBassPc": 9,
+        "notes": [
+          "Bb4",
+          "B4",
+          "D5",
+          "F5"
+        ]
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Chorus Lead-Out/119",
+      "inv": 3,
+      "issues": [
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-letter",
+        "engLetter": "B°7(b5)/A",
+        "actualBassPc": 10,
+        "engBassPc": 9,
+        "notes": [
+          "Bb4",
+          "B4",
+          "D5",
+          "F5"
         ]
       }
     },
@@ -763,210 +801,22 @@
       }
     },
     {
-      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/1",
+      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/129",
       "inv": 3,
       "issues": [
-        "bass-vs-truth",
-        "bass-vs-letter"
+        "bass-vs-truth"
       ],
       "detail": {
         "rule": "bass-vs-truth",
-        "truthLetter": "Db/C",
-        "engLetter": "Dbmaj7/C",
-        "actualBassPc": 1,
+        "truthLetter": "Db7sus#2/C",
+        "engLetter": "Db7sus2/B",
+        "actualBassPc": 11,
         "truthBassPc": 0,
         "notes": [
-          "C#4",
-          "D4",
-          "F#4",
-          "A4"
-        ]
-      }
-    },
-    {
-      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/20",
-      "inv": 3,
-      "issues": [
-        "bass-vs-truth",
-        "bass-vs-letter"
-      ],
-      "detail": {
-        "rule": "bass-vs-truth",
-        "truthLetter": "Db/C",
-        "engLetter": "Dbmaj7/C",
-        "actualBassPc": 1,
-        "truthBassPc": 0,
-        "notes": [
-          "C#4",
-          "D4",
-          "F#4",
-          "A4"
-        ]
-      }
-    },
-    {
-      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/26",
-      "inv": 3,
-      "issues": [
-        "bass-vs-truth",
-        "bass-vs-letter"
-      ],
-      "detail": {
-        "rule": "bass-vs-truth",
-        "truthLetter": "Db/C",
-        "engLetter": "Dbmaj7/C",
-        "actualBassPc": 1,
-        "truthBassPc": 0,
-        "notes": [
-          "C#4",
-          "D4",
-          "F#4",
-          "A4"
-        ]
-      }
-    },
-    {
-      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/30",
-      "inv": 3,
-      "issues": [
-        "bass-vs-truth",
-        "bass-vs-letter"
-      ],
-      "detail": {
-        "rule": "bass-vs-truth",
-        "truthLetter": "Db/C",
-        "engLetter": "Dbmaj7/C",
-        "actualBassPc": 1,
-        "truthBassPc": 0,
-        "notes": [
-          "C#4",
-          "D4",
-          "F#4",
-          "A4"
-        ]
-      }
-    },
-    {
-      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/51",
-      "inv": 3,
-      "issues": [
-        "bass-vs-truth",
-        "bass-vs-letter"
-      ],
-      "detail": {
-        "rule": "bass-vs-truth",
-        "truthLetter": "Db/C",
-        "engLetter": "Dbmaj7/C",
-        "actualBassPc": 1,
-        "truthBassPc": 0,
-        "notes": [
-          "C#4",
-          "D4",
-          "F#4",
-          "A4"
-        ]
-      }
-    },
-    {
-      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/55",
-      "inv": 3,
-      "issues": [
-        "bass-vs-truth",
-        "bass-vs-letter"
-      ],
-      "detail": {
-        "rule": "bass-vs-truth",
-        "truthLetter": "Db/C",
-        "engLetter": "Dbmaj7/C",
-        "actualBassPc": 1,
-        "truthBassPc": 0,
-        "notes": [
-          "C#4",
-          "D4",
-          "F#4",
-          "A4"
-        ]
-      }
-    },
-    {
-      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/61",
-      "inv": 3,
-      "issues": [
-        "bass-vs-truth",
-        "bass-vs-letter"
-      ],
-      "detail": {
-        "rule": "bass-vs-truth",
-        "truthLetter": "Db/C",
-        "engLetter": "Dbmaj7/C",
-        "actualBassPc": 1,
-        "truthBassPc": 0,
-        "notes": [
-          "C#4",
-          "D4",
-          "F#4",
-          "A4"
-        ]
-      }
-    },
-    {
-      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/65",
-      "inv": 3,
-      "issues": [
-        "bass-vs-truth",
-        "bass-vs-letter"
-      ],
-      "detail": {
-        "rule": "bass-vs-truth",
-        "truthLetter": "Db/C",
-        "engLetter": "Dbmaj7/C",
-        "actualBassPc": 1,
-        "truthBassPc": 0,
-        "notes": [
-          "C#4",
-          "D4",
-          "F#4",
-          "A4"
-        ]
-      }
-    },
-    {
-      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/77.5",
-      "inv": 3,
-      "issues": [
-        "bass-vs-truth",
-        "bass-vs-letter"
-      ],
-      "detail": {
-        "rule": "bass-vs-truth",
-        "truthLetter": "Db/C",
-        "engLetter": "Dbmaj7/C",
-        "actualBassPc": 1,
-        "truthBassPc": 0,
-        "notes": [
-          "C#4",
-          "D4",
-          "F#4",
-          "A4"
-        ]
-      }
-    },
-    {
-      "id": "gustav-holst__mars---bringer-of-war/Chorus Lead-Out/41",
-      "inv": 2,
-      "issues": [
-        "bass-vs-truth",
-        "bass-vs-letter"
-      ],
-      "detail": {
-        "rule": "bass-vs-truth",
-        "truthLetter": "g#°(n3)/D",
-        "engLetter": "G#5/D",
-        "actualBassPc": 8,
-        "truthBassPc": 2,
-        "notes": [
-          "G#4",
-          "D5"
+          "B3",
+          "Db4",
+          "Eb4",
+          "Ab4"
         ]
       }
     },
@@ -980,33 +830,14 @@
       "detail": {
         "rule": "bass-vs-truth",
         "truthLetter": "b#°/A#",
-        "engLetter": "B#°7/A#",
+        "engLetter": "B#°7/Bb",
         "actualBassPc": 9,
         "truthBassPc": 10,
         "notes": [
-          "A4",
+          "A3",
           "B#4",
           "D#5",
           "F#5"
-        ]
-      }
-    },
-    {
-      "id": "hitoshi-sakimoto__main-theme---bubble-ghost/Intro/1",
-      "inv": 2,
-      "issues": [
-        "bass-vs-truth",
-        "bass-vs-letter"
-      ],
-      "detail": {
-        "rule": "bass-vs-truth",
-        "truthLetter": "C5/G",
-        "engLetter": "C5/G",
-        "actualBassPc": 0,
-        "truthBassPc": 7,
-        "notes": [
-          "C4",
-          "G4"
         ]
       }
     },
@@ -1025,44 +856,6 @@
           "D3",
           "G3",
           "C4"
-        ]
-      }
-    },
-    {
-      "id": "hitoshi-sakimoto__main-theme---bubble-ghost/Solo/10",
-      "inv": 2,
-      "issues": [
-        "bass-vs-truth",
-        "bass-vs-letter"
-      ],
-      "detail": {
-        "rule": "bass-vs-truth",
-        "truthLetter": "F5/C",
-        "engLetter": "F5/C",
-        "actualBassPc": 5,
-        "truthBassPc": 0,
-        "notes": [
-          "F4",
-          "C5"
-        ]
-      }
-    },
-    {
-      "id": "hitoshi-sakimoto__main-theme---bubble-ghost/Solo/26",
-      "inv": 2,
-      "issues": [
-        "bass-vs-truth",
-        "bass-vs-letter"
-      ],
-      "detail": {
-        "rule": "bass-vs-truth",
-        "truthLetter": "F5/C",
-        "engLetter": "F5/C",
-        "actualBassPc": 5,
-        "truthBassPc": 0,
-        "notes": [
-          "F4",
-          "C5"
         ]
       }
     },
@@ -1120,7 +913,7 @@
         "actualBassPc": 11,
         "truthBassPc": 0,
         "notes": [
-          "Cb4",
+          "B3",
           "D4",
           "F4",
           "Ab4"
@@ -1141,7 +934,7 @@
         "actualBassPc": 11,
         "truthBassPc": 0,
         "notes": [
-          "Cb4",
+          "B3",
           "D4",
           "F4",
           "Ab4"
@@ -1191,6 +984,27 @@
       }
     },
     {
+      "id": "wolfgang-amadeus-mozart__a-little-night-music---1st-movement/Chorus/25",
+      "inv": 3,
+      "issues": [
+        "bass-vs-truth",
+        "bass-vs-letter"
+      ],
+      "detail": {
+        "rule": "bass-vs-truth",
+        "truthLetter": "c#°/B",
+        "engLetter": "C#°7/B",
+        "actualBassPc": 10,
+        "truthBassPc": 11,
+        "notes": [
+          "Bb3",
+          "C#4",
+          "E4",
+          "G4"
+        ]
+      }
+    },
+    {
       "id": "joseph-haydn__12-easy-pieces-for-piano-no-1---andante-grazioso/Intro/23",
       "inv": 3,
       "issues": [
@@ -1203,7 +1017,7 @@
         "engBassPc": 11,
         "notes": [
           "Bb2",
-          "C#3",
+          "Db3",
           "E3",
           "G3"
         ]

@@ -17,8 +17,11 @@ const CORPUS_DIRS = [
 const { getChordSymbol } = await import(
   pathToFileURL(path.join(REPO, 'web-player', 'lib', 'jsonToSymbol.js')).href
 );
-const { getChordPronunciation, UNKNOWN } = await import(
+const { getChordPronunciation } = await import(
   pathToFileURL(path.join(REPO, 'web-player', 'lib', 'romanNumeralSpeak.js')).href
+);
+const { flagPronunciationIssues } = await import(
+  pathToFileURL(path.join(__dirname, 'pronunciationAuditFlags.mjs')).href
 );
 
 function loadEntries() {
@@ -36,42 +39,6 @@ function loadEntries() {
     }
   }
   return [...byId.values()];
-}
-
-function flagIssues(row) {
-  const flags = [];
-  const { analytic, functional, letter } = row.pronunciation;
-  const sym = row.symbol;
-
-  if (!analytic || analytic === UNKNOWN) flags.push('EMPTY/UNKNOWN');
-  if (/\b(undefined|null)\b/i.test(analytic + functional + letter)) flags.push('UNDEFINED_TOKEN');
-  if (/\b(seven seven|major seven seven|minor minor|diminished diminished)\b/i.test(analytic)) {
-    flags.push('DUPLICATE_WORD');
-  }
-  if (/\b(one one|two two|five five)\b/i.test(analytic)) flags.push('DUPLICATE_DEGREE');
-  if (analytic && functional && analytic === functional && row.chord.inversion) {
-    flags.push('FUNC_SAME_AS_ANALYTIC_WITH_INVERSION');
-  }
-  if (sym.includes('°') && !/diminished|half-diminished/.test(analytic + functional)) {
-    flags.push('MISSING_DIM_QUALITY');
-  }
-  if (sym.includes('△') && !/major seven/.test(analytic + functional)) {
-    flags.push('MISSING_MAJ7');
-  }
-  if (sym.includes('/') && !/of |secondary dominant/.test(analytic + functional)) {
-    flags.push('MISSING_APPLIED');
-  }
-  if (/\(mix\)|\(min\)|\(dor\)/.test(sym) && !/mixolydian|minor|dorian|borrowed/.test(analytic + functional)) {
-    flags.push('MISSING_BORROWED');
-  }
-  if (/sus/.test(sym) && !/suspended/.test(analytic + functional)) flags.push('MISSING_SUS');
-  if (/\(add/.test(sym) && !/add /.test(analytic + functional)) flags.push('MISSING_ADD');
-  if (/\(no\d/.test(sym) && !/no (third|fifth)/.test(analytic + functional)) flags.push('MISSING_OMIT');
-  if (/#11|b9|#9/.test(sym) && !/sharp|flat/.test(analytic + functional)) flags.push('MISSING_ALTERATION');
-  if (analytic.split(' ').length > 14) flags.push('VERY_LONG');
-  if (/^\d/.test(letter) || /\badd \d\b/.test(analytic)) flags.push('RAW_DIGIT');
-
-  return flags;
 }
 
 const all = loadEntries();
@@ -113,14 +80,14 @@ const rows = [];
 for (const e of selected.values()) {
   const symbol = getChordSymbol(e.chord, e.key);
   const pronunciation = getChordPronunciation(e.chord, e.key);
-  const flags = flagIssues({ ...e, symbol, pronunciation });
+  const flags = flagPronunciationIssues({ ...e, symbol, pronunciation });
   rows.push({ id: e.id, bucket: e.bucket, key: e.key, symbol, truthRoman: e.truthRoman, pronunciation, flags });
 }
 
 for (const c of curated) {
   const symbol = getChordSymbol(c.chord, c.key);
   const pronunciation = getChordPronunciation(c.chord, c.key);
-  const flags = flagIssues({ chord: c.chord, key: c.key, symbol, pronunciation });
+  const flags = flagPronunciationIssues({ chord: c.chord, key: c.key, symbol, pronunciation });
   rows.push({ id: c.label, bucket: 'curated', key: c.key, symbol, truthRoman: symbol, pronunciation, flags });
 }
 
