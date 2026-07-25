@@ -348,7 +348,7 @@ const BASELINE = {
   halfDim9B5: {
     chord: { root: 2, type: 9, alterations: ["b5"], halfDim: true },
     key: { tonic: "C", scale: "major" },
-    pcs: [0, 2, 3, 5, 8],
+    pcs: [0, 2, 4, 5, 8],
   },
   bVIphdmAugMaj13B5: {
     chord: { root: 6, type: 13, inversion: 0, borrowed: "phrygianDominant", alterations: ["b5"] },
@@ -360,10 +360,80 @@ const BASELINE = {
     key: { tonic: "Ab", scale: "mixolydian" },
     pcs: [1, 4, 9],
   },
+  hmIII64sus2: {
+    chord: { root: 3, type: 5, inversion: 2, suspensions: [2], borrowed: "harmonicMinor" },
+    key: { tonic: "A", scale: "minor" },
+    pcs: [0, 2, 7],
+  },
+  phdmbVIAugMaj7No5: {
+    chord: { root: 6, type: 7, inversion: 0, omits: [5] },
+    key: { tonic: "A", scale: "phrygianDominant" },
+    pcs: [4, 5, 9],
+  },
+  halfDim9B5Ext: {
+    chord: { root: 2, type: 9, alterations: ["b5"], halfDim: true, flattenHalfDimB5: true },
+    key: { tonic: "Eb", scale: "major" },
+    pcs: [2, 5, 7, 8, 11],
+  },
+  locrianHalfDim9B5: {
+    chord: { root: 3, type: 9, alterations: ["b5"], borrowed: "locrian", halfDim: true, flattenHalfDimB5: true },
+    key: { tonic: "Ab", scale: "major" },
+    pcs: [1, 2, 5, 8, 11],
+  },
+  lydianHalfDim11B5: {
+    chord: { root: 6, type: 11, alterations: ["b5"], borrowed: "lydian", halfDim: true },
+    key: { tonic: "C", scale: "minor" },
+    pcs: [0, 2, 3, 7, 9],
+  },
+  appliedV11B5: {
+    chord: { root: 1, type: 11, applied: 5, alterations: ["b5"] },
+    key: { tonic: "A", scale: "major" },
+    pcs: [1, 2, 4, 6, 8, 10],
+  },
+  hmViiDim11: {
+    chord: { root: 7, type: 11, borrowed: "harmonicMinor" },
+    key: { tonic: "C", scale: "major" },
+    pcs: [0, 2, 4, 5, 8, 11],
+  },
+  mixolydianIi13Sharp9: {
+    chord: { root: 2, type: 13, borrowed: "mixolydian", alterations: ["#9"] },
+    key: { tonic: "Ab", scale: "major" },
+    pcs: [1, 3, 4, 5, 7, 8, 10],
+  },
+  appliedVOfbVLocrian: {
+    chord: { root: 5, type: 5, applied: 5, borrowed: "locrian" },
+    key: { tonic: "E", scale: "minor" },
+    pcs: [0, 5, 9],
+  },
+  appliedVii7Sharp5: {
+    chord: { root: 3, type: 7, applied: 7, alterations: ["#5"] },
+    key: { tonic: "Eb", scale: "major" },
+    pcs: [2, 4, 6, 9],
+  },
+  phdmIiiDim11: {
+    chord: { root: 3, type: 11, borrowed: "phrygianDominant" },
+    key: { tonic: "G", scale: "major" },
+    pcs: [0, 2, 4, 5, 8, 11],
+  },
+  appliedV7Sharp5Sharp9: {
+    chord: { root: 6, type: 7, applied: 5, alterations: ["#5", "#9"] },
+    key: { tonic: "G", scale: "major" },
+    pcs: [2, 3, 7, 9, 11],
+  },
+  appliedIVAugMaj7Sharp5: {
+    chord: { root: 7, type: 7, applied: 4, borrowed: "major", alterations: ["#5"] },
+    key: { tonic: "G", scale: "mixolydian" },
+    pcs: [3, 7, 10, 11],
+  },
+  appliedV7Sharp5Flat9: {
+    chord: { root: 2, type: 7, applied: 5, alterations: ["#5", "b9"] },
+    key: { tonic: "C", scale: "major" },
+    pcs: [1, 5, 7, 9, 10],
+  },
 };
 
 function pcs(chord, key) {
-  return chordInterpreter(chord, key).notes.map((n) => noteNameToPc(n)).sort((a, b) => a - b);
+  return [...new Set(chordInterpreter(chord, key).notes.map((n) => noteNameToPc(n)))].sort((a, b) => a - b);
 }
 
 let failed = 0;

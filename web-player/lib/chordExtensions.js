@@ -16,7 +16,11 @@ export function applyTypeExtensions(toneJSNames, degreeIndices, chordRootNoteNam
       toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 1));
       degreeIndices.push(5);
     }
-  } else if (opts.customBorrowedDimNatural11 && triadQuality === "diminished" && chordType >= 11) {
+  } else if ((opts.customBorrowedDimNatural11 || opts.dim11Natural) && triadQuality === "diminished" && chordType >= 11) {
+    if (!hasPc(toneJSNames, (rootPc + 1) % 12)) {
+      toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 1));
+      degreeIndices.push(4);
+    }
     if (!hasPc(toneJSNames, (rootPc + 5) % 12)) {
       toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 5));
       degreeIndices.push(5);
@@ -31,20 +35,25 @@ export function applyTypeExtensions(toneJSNames, degreeIndices, chordRootNoteNam
     const useNatural11 = triadQuality === "diminished" || !!opts.natural11;
     const targetPc = useNatural11 ? natural11Pc : sharp11Pc;
     if (!hasPc(toneJSNames, targetPc)) {
-      if (useNatural11 && triadQuality === "diminished") {
+      if (useNatural11 && triadQuality === "diminished" && !opts.halfDim) {
         const semis = opts.skipNine ? 1 : 9;
         toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], semis));
-      } else if (useNatural11 && triadQuality === "minor") {
-        toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 5));
       } else {
-        const sd = useNatural11 ? "6" : "4";
-        const relOct = useNatural11 ? 0 : 1;
-        toneJSNames.push(sdToToneJSNoteName(sd, relOct, rk, baseOctave));
+        toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 5));
       }
       degreeIndices.push(5);
     }
   }
   if (chordType >= 13 && !opts.skipThirteenth && !hasPc(toneJSNames, (rootPc + 9) % 12)) {
+    toneJSNames.push(sdToToneJSNoteName("6", 1, rk, baseOctave));
+    degreeIndices.push(6);
+  } else if (chordType >= 11 && opts.applied && opts.alterations?.includes("b5") && !hasPc(toneJSNames, (rootPc + 9) % 12)) {
+    const nat11Pc = (rootPc + 5) % 12;
+    const idx = toneJSNames.findIndex((n) => noteNameToPc(n) === nat11Pc);
+    if (idx >= 0) {
+      toneJSNames.splice(idx, 1);
+      degreeIndices.splice(idx, 1);
+    }
     toneJSNames.push(sdToToneJSNoteName("6", 1, rk, baseOctave));
     degreeIndices.push(6);
   }

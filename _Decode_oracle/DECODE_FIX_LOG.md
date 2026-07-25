@@ -1291,6 +1291,30 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 077 — hm sus2 major quality & aug maj7 omit-5 scope (2026-07-25, `feat/fix-077-applied-custom-sharp5-hm-sus2`)
+
+**077a (engine):** `chordPolicy.js` — `useSusFrame` on `augmented` scale quality forces triad quality to `"major"` (`III64sus2(hmin)`, `mayhem__life-eternal`), voicing perfect 5th (+7) instead of scale's augmented 5th (+8).
+
+**077b (engine):** `chordOmits.js` & `chordSeventh.js` — restrict augmented `(no5)` 5th retention to triads (`type < 7`); allow `(no5)` to strip the 5th tone on `type >= 7` sevenths (`VI+△7(no5)`, `korn__adidas`).
+
+**Gate:** policy **66/66** (`hmIII64sus2`, `phdmbVIAugMaj7No5`). Cleared `type=5 inv=2 bor=harmonicMinor sus=2`, `type=5 inv=1 applied bor=custom alt=#5`, and `type=7 omit=5` clusters. Reduced catalog engine errors to **45 total failures**.
+
+**Files:** `chordPolicy.js`, `chordOmits.js`, `chordSeventh.js`, `policyRegression.mjs`, `probe_fix077.mjs`.
+
+---
+
+## Fix 078 — extended b5 halfDim scope, lydian 11th skipNine & applied b5 11th 13th (2026-07-25, `feat/fix-077-applied-custom-sharp5-hm-sus2`)
+
+**078a (engine):** `harmonicIntent.js`, `compare.js`, `engineRun.js`, `chordPolicy.js` — extended `flattenHalfDimB5` half-diminished `b5` dim7 flattening gate to `type <= 9` (`iiø9(b5)`, `beach-house__days-of-candy`; `iø9(no3)(b5)`, `yugo-kanno`; `♭iiiø9(loc)`, `joni-mitchell`).
+
+**078b (engine):** `chordPolicy.js` & `chordExtensions.js` — added `skipNine` for lydian half-diminished 11ths (`♯viø11(lyd)`, `mariah-carey`) and replaced natural 11th with 13th (+9) on applied `b5` 11th chords (`V11(b5)/I`, `janet-jackson`).
+
+**Gate:** policy **70/70** (`halfDim9B5Ext`, `locrianHalfDim9B5`, `lydianHalfDim11B5`, `appliedV11B5`). Cleared Wave 1 extended `b5` clusters.
+
+**Files:** `harmonicIntent.js`, `chordPolicy.js`, `chordExtensions.js`, `chordBuild.js`, `chordAlterations.js`, `compare.js`, `engineRun.js`, `policyRegression.mjs`, `probe_wave1_b5.mjs`.
+
+---
+
 ## Session handoff — 2026-07-23 (fetch + decode loop)
 
 ### Merged on `main`

@@ -33,7 +33,7 @@ function enrichChordFromTruth(chord, truthRoman, truthLetterRaw) {
   const numRoman = numeratorRoman(truthRoman);
   const mods = mergeMods(truthLetterRaw, truthRoman, chord);
   const { halfDim, dimTriad } = dimFrameFromTruth(truthRoman, truthLetterRaw);
-  const flattenHalfDimB5 = halfDim && mods.alterations.includes('b5') && (mods.type || chord.type || 5) <= 7;
+  const flattenHalfDimB5 = halfDim && mods.alterations.includes('b5') && (mods.type || chord.type || 5) <= 9;
   const appliedDenomMaj = appliedDenomMajFromRoman(truthRoman);
   return {
     ...chord,
