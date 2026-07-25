@@ -1153,6 +1153,16 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 066 — borrowed phdm bII64 root shift (2026-07-25, `feat/fix-066-phdm-bII64`)
+
+**066a:** `TRIAD_FRAME_RULES` row `borrowedPhdmII64` — borrowed phdm deg2 inv=2 gets `rootShift: +1` (catalog spells bII as D not Db in 64 position).
+
+**Gate:** policy **51/51** (`bIIphdm64`).
+
+**Files:** `borrowedVoicingRules.js`, `policyRegression.mjs`.
+
+---
+
 ## Session handoff — 2026-07-23 (fetch + decode loop)
 
 ### Merged on `main`
