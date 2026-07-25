@@ -1,59 +1,80 @@
 import { buildSpeakParts, UNKNOWN } from './speakRules/buildParts.js';
-import { formatAnalytic, formatFunctional, formatFunctionalLetter } from './speakRules/formatReadings.js';
+import {
+  formatColloquial,
+  formatAcademic,
+  formatAcademicLetter,
+} from './speakRules/formatReadings.js';
 import { speakLetterChord } from './speakRules/speakLetter.js';
 
 /**
  * Spoken readings for a Hooktheory chord.
- * @returns {{ analytic: string, functional: string, letter: string, functionalLetter: string }}
+ * @returns {{ colloquial: string, academic: string, colloquialLetter: string, academicLetter: string, analytic: string, functional: string, letter: string, functionalLetter: string }}
  */
 export function getChordPronunciation(chord, key) {
   if (!chord || chord.isRest || !chord.root) {
-    return { analytic: '', functional: '', letter: '', functionalLetter: '' };
+    return {
+      colloquial: '', academic: '', colloquialLetter: '', academicLetter: '',
+      analytic: '', functional: '', letter: '', functionalLetter: '',
+    };
   }
 
   const { parts, ctx, unknown } = buildSpeakParts(chord, key);
+  const letter = speakLetterChord(chord, key);
+
   if (!parts) {
-    const letter = speakLetterChord(chord, key);
-    return { analytic: UNKNOWN, functional: UNKNOWN, letter, functionalLetter: letter ? UNKNOWN : '' };
+    return {
+      colloquial: UNKNOWN, academic: UNKNOWN, colloquialLetter: letter || UNKNOWN, academicLetter: letter || UNKNOWN,
+      analytic: UNKNOWN, functional: UNKNOWN, letter: letter || UNKNOWN, functionalLetter: letter ? UNKNOWN : '',
+    };
   }
 
-  const analytic = unknown ? UNKNOWN : formatAnalytic(parts);
-  const functional = unknown ? UNKNOWN : formatFunctional(parts, ctx);
-  const letter = speakLetterChord(chord, key);
-  const functionalLetter = unknown ? UNKNOWN : formatFunctionalLetter(parts, ctx, key, chord);
+  const colloquial = unknown ? UNKNOWN : formatColloquial(parts, ctx);
+  const academic = unknown ? UNKNOWN : formatAcademic(parts, ctx);
+  const colloquialLetter = letter;
+  const academicLetter = unknown ? UNKNOWN : formatAcademicLetter(parts, ctx, key, chord);
 
-  return { analytic, functional, letter, functionalLetter };
+  return {
+    colloquial,
+    academic,
+    colloquialLetter,
+    academicLetter,
+    // Backwards-compatibility aliases
+    analytic: colloquial,
+    functional: academic,
+    letter: colloquialLetter,
+    functionalLetter: academicLetter,
+  };
 }
 
-/** Analytic reading only. */
+/** Colloquial musician reading only. */
 export function speakRomanNumeral(chord, key) {
-  return getChordPronunciation(chord, key).analytic;
+  return getChordPronunciation(chord, key).colloquial;
 }
 
 export { UNKNOWN };
 
-const ROMAN_ANALYTIC_HINT =
-  'Reads the roman symbol left to right — degree, quality, figured bass, extensions, and alterations as written.';
-const ROMAN_FUNCTIONAL_HINT =
-  'Theory shorthand — names inversions, secondary dominants, and borrowed-scale context instead of repeating symbol fragments.';
-const LETTER_ANALYTIC_HINT =
-  'Reads the chord symbol left to right — root note, quality, extensions, and bass as written.';
-const LETTER_FUNCTIONAL_HINT =
-  'Theory shorthand using note names — inversions, secondary dominants, and borrowed-scale context.';
+const COLLOQUIAL_ROMAN_HINT =
+  'Efficient musician rehearsal reading — uses natural speech, lead-sheet terms, and figured-bass numbers.';
+const ACADEMIC_ROMAN_HINT =
+  'Academic & educational elucidation — explains structural inversions, harmonic functions, and scale derivations.';
+const COLLOQUIAL_LETTER_HINT =
+  'Efficient lead-sheet musician speech — root note, quality, extensions, and bass as spoken in rehearsal.';
+const ACADEMIC_LETTER_HINT =
+  'Academic & educational elucidation using note names — explains inversions and secondary target functions.';
 
-function pronunciationShellHtml(useRoman, analyticText = "", functionalText = "", { masked = false } = {}) {
-  const analyticHint = useRoman ? ROMAN_ANALYTIC_HINT : LETTER_ANALYTIC_HINT;
-  const functionalHint = useRoman ? ROMAN_FUNCTIONAL_HINT : LETTER_FUNCTIONAL_HINT;
+function pronunciationShellHtml(useRoman, colloquialText = "", academicText = "", { masked = false } = {}) {
+  const colloquialHint = useRoman ? COLLOQUIAL_ROMAN_HINT : COLLOQUIAL_LETTER_HINT;
+  const academicHint = useRoman ? ACADEMIC_ROMAN_HINT : ACADEMIC_LETTER_HINT;
   const maskedClass = masked ? " pronunciation-masked" : "";
   return `
     <div class="chord-pronunciation${maskedClass}">
       <div class="pronunciation-analytic chord-tooltip-pronunciation">
-        <div class="pronunciation-label" title="${analyticHint}">Analytic Reading:</div>
-        <div class="pronunciation-text">${analyticText}</div>
+        <div class="pronunciation-label" title="${colloquialHint}">Colloquial Reading:</div>
+        <div class="pronunciation-text">${colloquialText}</div>
       </div>
       <div class="pronunciation-functional">
-        <div class="pronunciation-label" title="${functionalHint}">Functional Reading:</div>
-        <div class="pronunciation-text">${functionalText}</div>
+        <div class="pronunciation-label" title="${academicHint}">Academic Reading:</div>
+        <div class="pronunciation-text">${academicText}</div>
       </div>
     </div>
   `;
@@ -66,10 +87,15 @@ export function pronunciationDisplayHtml(pronunciation, options = {}) {
     return pronunciationShellHtml(useRoman, "", "", { masked: true });
   }
   if (useRoman) {
-    if (!pronunciation?.analytic) return '';
-    return pronunciationShellHtml(useRoman, pronunciation.analytic, pronunciation.functional);
+    const col = pronunciation?.colloquial || pronunciation?.analytic;
+    const aca = pronunciation?.academic || pronunciation?.functional;
+    if (!col) return '';
+    return pronunciationShellHtml(useRoman, col, aca);
   }
 
-  if (!pronunciation?.letter) return '';
-  return pronunciationShellHtml(useRoman, pronunciation.letter, pronunciation.functionalLetter);
+  const colL = pronunciation?.colloquialLetter || pronunciation?.letter;
+  const acaL = pronunciation?.academicLetter || pronunciation?.functionalLetter;
+  if (!colL) return '';
+  return pronunciationShellHtml(useRoman, colL, acaL);
 }
+
