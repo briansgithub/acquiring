@@ -74,6 +74,14 @@ const BASELINE = {
     key: { tonic: "E", scale: "major" },
     pcs: [0, 3, 6, 9],
   },
+  ivHalfDim7CustomMinorDeg: {
+    chord: {
+      root: 4, type: 7, halfDim: true, alterations: ["b5"],
+      borrowed: [1, 2, 4, 6, 8, 9, 11],
+    },
+    key: { tonic: "Eb", scale: "major" },
+    pcs: [0, 3, 6, 9],
+  },
   customHalfDim11: {
     chord: { root: 1, type: 11, borrowed: [1, 2, 4, 6, 7, 9, 11], halfDim: true },
     key: { tonic: "A", scale: "minor" },
