@@ -224,6 +224,11 @@ const BASELINE = {
     letter: "G7/F",
     roman: "♭ii42/ii°(∆-sub)",
   },
+  customBorSharp5M7: {
+    chord: { root: 7, type: 7, inversion: 1, alterations: ["#5"], borrowed: [1, 3, 5, 6, 8, 10, 12] },
+    key: { tonic: "C", scale: "harmonicMinor" },
+    pcs: [0, 3, 8, 10],
+  },
 };
 
 function pcs(chord, key) {
