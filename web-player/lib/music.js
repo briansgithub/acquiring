@@ -82,7 +82,7 @@ export function chordInterpreter(chord, key, opts = {}) {
     const halfDimApplied = chordType >= 7 && chordQuality === "diminished" && effective.applied !== 7;
     const useSusFrame = suspensions.length > 0;
     const useMaj7 = effective.useMaj7
-      || (chordType >= 7 && chordQuality === "major" && effective.applied === 4 && !useSusFrame);
+      || (chordType >= 7 && chordQuality === "major" && effective.applied !== 5 && !useSusFrame);
 
     return buildChordFromNoteName(
       actualRootNote, sharp5AppliedMinorTriad ? "minor" : chordQuality, key, defaultChordOctave, chordType, inversion,
