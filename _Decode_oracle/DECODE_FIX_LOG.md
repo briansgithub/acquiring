@@ -1259,6 +1259,16 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 074 — phdm rootShift revert (2026-07-25, `feat/fix-074-phdm-inv3-clusters`)
+
+**074a (engine):** `borrowedVoicingRules.js` — remove erroneous `rootShift:+1` from `nativePhdmIImaj7` and `borrowedPhdmII64`. Fix 066 root raise was backwards for catalog truth: Holst `II△42` wants Db maj7 inv3 `[0,1,5,8]` not D stack `[1,2,6,9]`; borrowed `bII64(phdm)` wants `[1,5,8]` not `[2,6,9]`.
+
+**Gate:** policy **61/61** (`holst`, `bIIphdm64` pcs corrected).
+
+**Files:** `borrowedVoicingRules.js`, `policyRegression.mjs`, `probe_fix074.mjs`.
+
+---
+
 ## Session handoff — 2026-07-23 (fetch + decode loop)
 
 ### Merged on `main`
