@@ -45,6 +45,13 @@ export const TRIAD_FRAME_RULES = [
     triadFrame: "major",
     rootShift: 1,
   },
+  {
+    id: "borrowedPhdmII64",
+    borrowed: "phrygianDominant",
+    degree: 2,
+    inversion: 2,
+    rootShift: 1,
+  },
 ];
 
 function ruleMatches(rule, ctx) {
