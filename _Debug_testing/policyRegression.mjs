@@ -311,6 +311,20 @@ const BASELINE = {
     key: { tonic: "G", scale: "minor" },
     pcs: [2, 4, 9],
   },
+  appliedVii7Sus2: {
+    chord: { root: 5, type: 7, applied: 7, suspensions: [2] },
+    key: { tonic: "C", scale: "major" },
+    pcs: [1, 4, 6, 8],
+    letter: "F#7sus2",
+    roman: "vii7sus2/V",
+  },
+  vi7Sus4Sharp11: {
+    chord: { root: 6, type: 7, alterations: ["#11"], suspensions: [4] },
+    key: { tonic: "F", scale: "minor" },
+    pcs: [1, 6, 7, 8, 11],
+    letter: "Db7(#11)sus#4",
+    roman: "VI7(#11)sus4",
+  },
 };
 
 function pcs(chord, key) {

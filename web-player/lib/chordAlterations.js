@@ -158,6 +158,16 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
 
     const srcPc = (rootPc + rule.src) % 12;
 
+    // sus4 + #11: HT keeps natural 4th and adds #11 (do not sharpen sus4 in place).
+    if (key === "#11" && chord?.suspensions?.includes(4)) {
+      const sharp11Pc = (rootPc + 6) % 12;
+      if (!hasPc(toneJSNames, sharp11Pc) && rule.addSd && sdToToneJSNoteName) {
+        toneJSNames.push(sdToToneJSNoteName(rule.addSd, rule.addOct ?? 1, rk, baseOctave));
+        degreeIndices.push(degreeIndices.length);
+      }
+      continue;
+    }
+
     let found = false;
 
     for (let i = 0; i < toneJSNames.length; i++) {
