@@ -1129,6 +1129,16 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 064 — custom-array ø7 on minor-quality degrees (2026-07-24, `fix/type7-custom-bor-b5`)
+
+**064a:** `customBorrowedHalfDim` no longer requires `chordQuality === diminished`. Custom bor arrays often mark `#ivø7(b5)` where the borrowed scale degree is **minor** (e.g. Eb major `borrowed:[1,2,4,6,8,9,11]` → deg4 minor). Without `customBorrowedHalfDim`, explicit `b5` left the natural 5th (`eng [0,3,7,9]` vs truth `[0,3,6,9]`).
+
+**Gate:** policy **48/48** (`ivHalfDim7CustomMinorDeg`).
+
+**Files:** `chordPolicy.js`, `policyRegression.mjs`, `probe_custom_bor_b5.mjs`.
+
+---
+
 ## Session handoff — 2026-07-23 (fetch + decode loop)
 
 ### Merged on `main`
