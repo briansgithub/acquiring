@@ -306,6 +306,11 @@ const BASELINE = {
     key: { tonic: "D", scale: "minor" },
     pcs: [1, 4, 7],
   },
+  iiSusb7Omit3Inv1: {
+    chord: { root: 2, type: 5, inversion: 1, borrowed: "major", omits: [3], suspensions: [7, 4] },
+    key: { tonic: "G", scale: "minor" },
+    pcs: [2, 4, 9],
+  },
 };
 
 function pcs(chord, key) {
