@@ -84,6 +84,7 @@ export function resolveChordPolicy(ctx) {
 
   // Custom-array ø: HT may mark halfDim on a degree whose custom scale quality is minor (e.g. #ivø in major).
   const customBorrowedHalfDim = Array.isArray(borrowed) && !!modifierChord?.halfDim;
+  const isHalfDim = !!modifierChord?.halfDim || halfDimIi || (chordQuality === "diminished" && chordType >= 7 && !sharp5Minor && !customBorrowedHalfDim);
   const customBorrowedHalfDimM7 = customBorrowedHalfDim && chordType >= 11;
   const customBorrowedDimNatural11 = Array.isArray(borrowed)
     && modifierChord?.dimTriad
@@ -118,8 +119,7 @@ export function resolveChordPolicy(ctx) {
     && chordType >= 13
     && chordQuality === "minor"
     && chordRootSD === 5
-    && !useSusFrame
-    && !omitTriad35;
+    && !useSusFrame;
   const minorI13B13 = modifiedKey.scale === "minor"
     && chordType >= 13
     && chordQuality === "minor"
@@ -132,6 +132,7 @@ export function resolveChordPolicy(ctx) {
     rootShiftSemitones: triadOverride?.rootShift ?? 0,
     phdmIImaj7,
     sharp5Minor,
+    halfDim: isHalfDim,
     halfDimIi,
     augMaj7StackVoicing,
     augMaj7Inv3Voicing,
@@ -148,7 +149,8 @@ export function resolveChordPolicy(ctx) {
     minorI13B13,
     autoAlterations: minorV13Stack ? ["b9", "b13"] : minorI13B13 ? ["b13"] : [],
     skipNine: (borrowed === "lydian" && (modifierChord?.halfDim || triadQuality === "diminished") && chordType >= 11)
-      || ((borrowed === "harmonicMinor" || borrowed === "phrygianDominant") && chordType >= 11 && triadQuality === "diminished"),
+      || ((borrowed === "harmonicMinor" || borrowed === "phrygianDominant") && chordType >= 11 && triadQuality === "diminished")
+      || ((modifierChord?.halfDim || halfDimIi) && chordType >= 11 && modifierChord?.omits?.includes(3) && modifierChord?.omits?.includes(5)),
     skipThirteenth: false,
     dimSeventh: chordType >= 7 && !customBorrowedHalfDim && !sharp5Minor && (
       chordQuality === "diminished"

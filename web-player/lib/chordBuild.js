@@ -272,17 +272,17 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
   }
   // Upper extensions (9 / 11 / 13) for extended chord types.
   const skipNine = effModifierChord?.omits?.includes(3) && effModifierChord?.omits?.includes(5)
-    && !!effModifierChord?.halfDim;
+    && (!!effModifierChord?.halfDim || policy.halfDim);
   applyTypeExtensions(
     toneJSNames, degreeIndices, chordRootNoteName, baseOctave, chordType, sdToToneJSNoteName, triadQuality,
-    { natural11: policy.natural11, skipNine: skipNine || policy.skipNine, skipThirteenth: policy.skipThirteenth, customBorrowedHalfDimM7: policy.customBorrowedHalfDimM7, customBorrowedDimNatural11: policy.customBorrowedDimNatural11, dim11Natural: policy.dim11Natural, alterations: effModifierChord?.alterations, applied: !!effModifierChord?.appliedContext, halfDim: !!effModifierChord?.halfDim },
+    { natural11: policy.natural11, skipNine: skipNine || policy.skipNine, skipThirteenth: policy.skipThirteenth, customBorrowedHalfDimM7: policy.customBorrowedHalfDimM7, customBorrowedDimNatural11: policy.customBorrowedDimNatural11, dim11Natural: policy.dim11Natural, alterations: effModifierChord?.alterations, applied: !!effModifierChord?.appliedContext, halfDim: !!effModifierChord?.halfDim || policy.halfDim, borrowed },
   );
 
   replaceTriadThird(toneJSNames, degreeIndices, chordRootNoteName, baseOctave, suspensions, sdToToneJSNoteName);
 
   applyChordModifiers(
     toneJSNames, degreeIndices, chordRootNoteName, baseOctave,
-    triadQuality === "augmented" ? { ...effModifierChord, augmentedTriad: true } : effModifierChord,
+    { ...effModifierChord, triadQuality, halfDim: !effModifierChord?.dimTriad && (!!effModifierChord?.halfDim || policy.halfDim), augmentedTriad: triadQuality === "augmented" },
     sdToToneJSNoteName,
   );
 
