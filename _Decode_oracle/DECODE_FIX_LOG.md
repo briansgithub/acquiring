@@ -1309,9 +1309,15 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 **078b (engine):** `chordPolicy.js` & `chordExtensions.js` — added `skipNine` for lydian half-diminished 11ths (`♯viø11(lyd)`, `mariah-carey`) and replaced natural 11th with 13th (+9) on applied `b5` 11th chords (`V11(b5)/I`, `janet-jackson`).
 
-**Gate:** policy **70/70** (`halfDim9B5Ext`, `locrianHalfDim9B5`, `lydianHalfDim11B5`, `appliedV11B5`). Cleared Wave 1 extended `b5` clusters.
+**078c (engine):** `chordPolicy.js` & `chordExtensions.js` — added `dim11Natural` flag for `harmonicMinor` and `phrygianDominant` 11ths, voicing b9 (+1) and natural 11th (+5) for `vii°11(hmin)` (`kevin-macleod`) and `iii°11(phdm)` (`the-cardigans`).
 
-**Files:** `harmonicIntent.js`, `chordPolicy.js`, `chordExtensions.js`, `chordBuild.js`, `chordAlterations.js`, `compare.js`, `engineRun.js`, `policyRegression.mjs`, `probe_wave1_b5.mjs`.
+**078d (engine):** `chordBuild.js` — corrected `resolveAppliedBorrowedChord` locrian tonic check scope (`targetSD === 1 && appliedSD === 1`), resolving `V/bV(maj)(loc)` (`daisuke-ishiwatari`).
+
+**078e (engine):** `chordAlterations.js` & `chordPolicy.js` — added applied $\sharp 5$ `vii7` rule, `#9` 13th $\sharp 11$ extension, and `minorV13Stack` omit-3+5 support, resolving `vii7(#5)/iii` (`aiko`), `ii13(#9)(mix)` (`the-beach-boys`), `iiø11(no3)(no5)` (`twenty-one-pilots`), and `v13(no5)(no3)` (`lilthroatx`).
+
+**Gate:** policy **78/78** (`halfDim9B5Ext`, `locrianHalfDim9B5`, `lydianHalfDim11B5`, `appliedV11B5`, `hmViiDim11`, `mixolydianIi13Sharp9`, `appliedVOfbVLocrian`, `appliedVii7Sharp5`, `phdmIiiDim11`, `appliedV7Sharp5Sharp9`, `appliedIVAugMaj7Sharp5`, `appliedV7Sharp5Flat9`). Cleared Waves 1, 2, and 3 error clusters. Reduced catalog engine errors to **29 total failures** ($\approx 99.968\%$ catalog accuracy).
+
+**Files:** `harmonicIntent.js`, `chordPolicy.js`, `chordExtensions.js`, `chordBuild.js`, `chordAlterations.js`, `chordOmits.js`, `chordSeventh.js`, `compare.js`, `engineRun.js`, `policyRegression.mjs`, `probe_wave1_b5.mjs`, `probe_wave2.mjs`, `probe_wave3.mjs`.
 
 ---
 

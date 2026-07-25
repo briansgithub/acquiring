@@ -26,21 +26,13 @@ export function applyTypeExtensions(toneJSNames, degreeIndices, chordRootNoteNam
       degreeIndices.push(5);
     }
   } else if (chordType >= 11) {
-    const natural11Pc = triadQuality === "diminished"
-      ? (rootPc + (opts.skipNine ? 1 : 9)) % 12
-      : triadQuality === "minor"
-        ? (rootPc + 5) % 12
-        : (rootPc + 10) % 12;
-    const sharp11Pc = (rootPc + 5) % 12;
-    const useNatural11 = triadQuality === "diminished" || !!opts.natural11;
-    const targetPc = useNatural11 ? natural11Pc : sharp11Pc;
-    if (!hasPc(toneJSNames, targetPc)) {
-      if (useNatural11 && triadQuality === "diminished" && !opts.halfDim) {
-        const semis = opts.skipNine ? 1 : 9;
-        toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], semis));
-      } else {
-        toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 5));
+    if (opts.halfDim && opts.skipNine && opts.borrowed !== "lydian") {
+      if (!hasPc(toneJSNames, (rootPc + 1) % 12)) {
+        toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 1));
+        degreeIndices.push(5);
       }
+    } else if (!hasPc(toneJSNames, (rootPc + 5) % 12)) {
+      toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 5));
       degreeIndices.push(5);
     }
   }
