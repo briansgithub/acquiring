@@ -428,7 +428,8 @@ export function getChordSymbol(chord, key) {
         const triSub = isTriSubApplied(chord);
         const numDegree = triSub ? 2 : chord.applied;
         const numPrefix = triSub ? '♭' : '';
-        const majorSeventh = chord.type >= 7 && chord.applied === 4 && isMajorSeventh(chord.applied, numeratorKey);
+        const majorSeventh = chord.type >= 7 && chord.applied === 4 && isMajorSeventh(chord.applied, numeratorKey)
+            && !(Array.isArray(chord.suspensions) && chord.suspensions.length);
         const numerator = buildNumeral(
             numDegree, MAJOR_SCALE_CHORD_QUALITIES, chord, numPrefix,
             { fullyDiminished: fullyDim && !triSub, majorSeventh, applied: true },
@@ -523,12 +524,15 @@ export function getChordLetterName(chord, key) {
     const rootNoteName = getNoteLabel(degree, effKey, customIntervals);
     const augmented = quality === 'augmented';
     const triSub = isTriSubApplied(chord);
+    const sharp5 = Array.isArray(chord.alterations) && chord.alterations.includes('#5');
+    const suspended = Array.isArray(chord.suspensions) && chord.suspensions.length > 0;
+    const sus4Only = chord.suspensions?.includes(4) && !chord.suspensions?.includes(2);
     let majorSeventh = false;
     if (chord.type >= 7 && quality !== 'diminished' && !augmented) {
         if (chord.applied && chord.applied >= 1 && chord.applied <= 7) {
             if (!triSub) {
                 const targetTonic = getNoteLabel(chord.root, key);
-                majorSeventh = chord.applied === 4
+                majorSeventh = chord.applied === 4 && !suspended
                     && isMajorSeventh(4, { tonic: targetTonic, scale: 'major' });
             }
         } else if (customIntervals) {
@@ -544,9 +548,7 @@ export function getChordLetterName(chord, key) {
             ? isMajorSeventh(chord.applied, { tonic: getNoteLabel(chord.root, key), scale: 'major' })
             : isMajorSeventh(degree, effKey))
     );
-    const sharp5 = Array.isArray(chord.alterations) && chord.alterations.includes('#5');
-    const suspended = Array.isArray(chord.suspensions) && chord.suspensions.length > 0;
-    const sus4Only = chord.suspensions?.includes(4) && !chord.suspensions?.includes(2);
+    const augOmit35 = augmented && chord.omits?.includes(3) && chord.omits?.includes(5);
     const sharp5ParenLetter = sharp5 && chord.type < 7 && (
       (chord.inversion === 2 && !suspended) ||
       (chord.inversion === 1 && sus4Only)
@@ -558,10 +560,11 @@ export function getChordLetterName(chord, key) {
     if (omit3Power) suffix += "5";
     else if (quality === "minor") suffix += "m";
     else if (quality === "diminished") suffix += "°";
-    else if (augMaj7Letter) suffix += "++";
+    else if (augMaj7Letter || augOmit35) suffix += "++";
     else if (augmented || (sharp5 && !sharp5ParenLetter)) suffix += "+";
     if (chord.type >= 7 && !augMaj7Letter) suffix += (majorSeventh ? 'maj' : '') + String(chord.type);
     if (sharp5ParenLetter) suffix += "(#5)";
+    if (augOmit35) suffix += "(n°5n3)";
     if (Array.isArray(chord.suspensions) && chord.suspensions.length) {
         suffix += chord.suspensions.map((s) => (s === 4 && sharp5ParenLetter ? 'sus#4' : `sus${s}`)).join('');
     }

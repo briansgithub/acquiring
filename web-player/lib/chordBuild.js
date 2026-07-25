@@ -274,7 +274,11 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
 
   replaceTriadThird(toneJSNames, degreeIndices, chordRootNoteName, baseOctave, suspensions, sdToToneJSNoteName);
 
-  applyChordModifiers(toneJSNames, degreeIndices, chordRootNoteName, baseOctave, effModifierChord, sdToToneJSNoteName);
+  applyChordModifiers(
+    toneJSNames, degreeIndices, chordRootNoteName, baseOctave,
+    triadQuality === "augmented" ? { ...effModifierChord, augmentedTriad: true } : effModifierChord,
+    sdToToneJSNoteName,
+  );
 
   // Apply secondary dominant transformations
   applySecondaryDominant(toneJSNames, degreeIndices, chordRootNoteName, chordQuality, baseOctave);
