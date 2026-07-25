@@ -1227,6 +1227,20 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 072 — sus4+#11 and applied vii7sus2 voicing (2026-07-25, `feat/fix-072-sus-alt-clusters`)
+
+**072a (engine):** `chordAlterations.js` — `#11` with `suspensions:[4]` **adds** the #11 tone (+6) instead of sharpening the sus4 natural 4th in place. HT keeps both +5 and +6 (`maozon__sparkle` VI7(#11)sus4).
+
+**072b (engine):** `music.js` — applied `vii°7` with suspensions uses **b7** voicing (`fullyDiminished` false when `useSusFrame`). Was emitting bb7 dim7 stack `[1,3,6,8]` instead of sus2 dominant `[1,4,6,8]` (`grant-kirkhope__click-clock-wood`).
+
+**072c (symbols):** `jsonToSymbol.js` — no `°` on applied vii7sus2; `VI7(#11)sus4` / `Db7(#11)sus#4` ordering; suspended chords skip `maj7` letter tag.
+
+**Gate:** policy **57/57** (`appliedVii7Sus2`, `vi7Sus4Sharp11`).
+
+**Files:** `music.js`, `chordAlterations.js`, `jsonToSymbol.js`, `policyRegression.mjs`, `probe_sus4_sharp11.mjs`.
+
+---
+
 ## Session handoff — 2026-07-23 (fetch + decode loop)
 
 ### Merged on `main`

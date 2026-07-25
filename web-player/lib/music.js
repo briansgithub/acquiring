@@ -77,10 +77,11 @@ export function chordInterpreter(chord, key, opts = {}) {
       && chordQuality === "diminished"
       && (effective.alterations || []).includes("#5")
       && chordType < 7;
-    const fullyDiminished = !sharp5AppliedMinorTriad
-      && effective.applied === 7 && chordQuality === "diminished";
-    const halfDimApplied = chordType >= 7 && chordQuality === "diminished" && effective.applied !== 7;
     const useSusFrame = suspensions.length > 0;
+    const fullyDiminished = !sharp5AppliedMinorTriad
+      && effective.applied === 7 && chordQuality === "diminished"
+      && !useSusFrame;
+    const halfDimApplied = chordType >= 7 && chordQuality === "diminished" && effective.applied !== 7;
     const useMaj7 = effective.useMaj7
       || (chordType >= 7 && chordQuality === "major" && effective.applied !== 5 && !useSusFrame);
 
