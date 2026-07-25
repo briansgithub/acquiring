@@ -1163,6 +1163,20 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 067 — applied major △ extended voicing (2026-07-25, `feat/fix-067-applied-maj11-b13`)
+
+**067a:** Applied major numerators (`applied` deg 1/4, not deg 5 dominant) with `type≥7` → `useMaj7` in `buildChordFromNoteName` (was only `applied===4`). Fixes `I△11(b13)/V` PC stack — maj7 + b13 instead of min7 + wrong 13th spelling.
+
+**067b:** Roman `△` + letter `maj` for applied major extended chords (`applied≠5`); letter suffix now appends explicit `alterations[]` (e.g. `(b13)`).
+
+**Gate:** policy **52/52** (`appliedMaj11B13`).
+
+**Resync:** 91.1k rows (1969 slugs) — engine fails **178→166** (−12).
+
+**Files:** `music.js`, `jsonToSymbol.js`, `policyRegression.mjs`.
+
+---
+
 ## Session handoff — 2026-07-23 (fetch + decode loop)
 
 ### Merged on `main`

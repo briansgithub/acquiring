@@ -289,6 +289,13 @@ const BASELINE = {
     letter: "G7sus2",
     roman: "IV7sus2/iii",
   },
+  appliedMaj11B13: {
+    chord: { root: 5, type: 11, applied: 1, alterations: ["b13"] },
+    key: { tonic: "C#", scale: "harmonicMinor" },
+    pcs: [0, 1, 3, 4, 7, 8, 10],
+    letter: "G#maj11(b13)",
+    roman: "I△11(b13)/V",
+  },
 };
 
 function pcs(chord, key) {
