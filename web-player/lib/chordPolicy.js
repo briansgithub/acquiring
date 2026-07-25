@@ -99,7 +99,8 @@ export function resolveChordPolicy(ctx) {
   const sharp5Minor = alterations.includes("#5") && chordQuality === "diminished";
   const halfDimIi = isHalfDiminishedIi(chordRootSD, modifiedKey, chordType, useSusFrame, modifierChord);
 
-  const customBorrowedHalfDim = Array.isArray(borrowed) && modifierChord?.halfDim && chordQuality === "diminished";
+  // Custom-array ø: HT may mark halfDim on a degree whose custom scale quality is minor (e.g. #ivø in major).
+  const customBorrowedHalfDim = Array.isArray(borrowed) && !!modifierChord?.halfDim;
   const customBorrowedHalfDimM7 = customBorrowedHalfDim && chordType >= 11;
   const customBorrowedDimNatural11 = Array.isArray(borrowed)
     && modifierChord?.dimTriad
