@@ -177,8 +177,8 @@ function resolveAppliedBorrowedChord(targetSD, appliedSD, key, baseOctave, borro
       appliedRoot, "minor", key, baseOctave, chordType, inversion, false, suspensions, modifierChord,
     );
   }
-  // Custom-array applied inv2: HT voices major triad on borrowed denominator, not V/target.
-  if (Array.isArray(borrowed) && inversion === 2) {
+  // Custom-array applied inv1/inv2: HT voices major triad on borrowed denominator, not V/target.
+  if (Array.isArray(borrowed) && (inversion === 1 || inversion === 2)) {
     return buildChordFromNoteName(
       targetNote, "major", key, baseOctave, chordType, inversion, false, suspensions, modifierChord,
     );

@@ -52,7 +52,7 @@ export function enrichModifierChord(modifierChord, chordType, opts = {}) {
   }
   const flattenHalfDimB5 = (opts.customBorrowed && modifierChord.halfDim)
     ? false
-    : modifierChord.flattenHalfDimB5;
+    : (modifierChord.flattenHalfDimB5 ?? (modifierChord.halfDim && alterations.includes('b5') && chordType <= 7));
   return { ...modifierChord, alterations, flattenHalfDimB5 };
 }
 

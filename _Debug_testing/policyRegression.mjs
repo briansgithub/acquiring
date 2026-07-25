@@ -345,6 +345,21 @@ const BASELINE = {
     key: { tonic: "C", scale: "minor" },
     pcs: [1, 4, 7, 10],
   },
+  halfDim9B5: {
+    chord: { root: 2, type: 9, alterations: ["b5"], halfDim: true },
+    key: { tonic: "C", scale: "major" },
+    pcs: [0, 2, 3, 5, 8],
+  },
+  bVIphdmAugMaj13B5: {
+    chord: { root: 6, type: 13, inversion: 0, borrowed: "phrygianDominant", alterations: ["b5"] },
+    key: { tonic: "E", scale: "major" },
+    pcs: [0, 2, 4, 6, 9, 11],
+  },
+  appliedCustomBorV61: {
+    chord: { root: 1, applied: 5, type: 5, inversion: 1, borrowed: [1, 2, 4, 6, 7, 9, 11] },
+    key: { tonic: "Ab", scale: "mixolydian" },
+    pcs: [1, 4, 9],
+  },
 };
 
 function pcs(chord, key) {

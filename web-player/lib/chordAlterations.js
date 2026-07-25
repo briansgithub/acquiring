@@ -83,6 +83,17 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
         }
         continue;
       }
+      if (key === "b5" && (chord?.type || 5) >= 13) {
+        const nat11Pc = (rootPc + 5) % 12;
+        const idx = toneJSNames.findIndex((n) => noteNameToPc(n) === nat11Pc);
+        if (idx >= 0) {
+          toneJSNames.splice(idx, 1);
+          degreeIndices.splice(idx, 1);
+        }
+      }
+      if (key === "b5" && (chord?.halfDim || chord?.dimTriad)) {
+        continue;
+      }
 
       // b5 on augmented: flatten #5 (+8); dim/ø fifth is +6 and handled below.
       const sharpFifthPc = (rootPc + 8) % 12;
