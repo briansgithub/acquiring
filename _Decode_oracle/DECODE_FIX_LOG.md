@@ -1139,6 +1139,20 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 065 — borrowed voicing rule table + symbol-frame (2026-07-25, `feat/fix-065-borrowed-voicing`)
+
+**065a:** Extract `borrowedVoicingRules.js` — `DIM7_BB7_RULES`, `HALF_DIM_M6_STACK_RULES`, `TRIAD_FRAME_RULES` with lookup helpers. Codify symbol-frame invariant in `chordPolicy.js`.
+
+**065b:** `phdmMaj7` scoped to `type >= 7` only via `TRIAD_FRAME_RULES` — borrowed `bVI+(phdm)` triads now voice augmented from scale quality.
+
+**065c:** Native mixolydian `iiiø65` inv=1 → m6 stack (extend `HALF_DIM_M6_STACK_RULES` with `{ scale: mixolydian, degree: 3 }`).
+
+**Gate:** policy **50/50** (`bVIphdmAug`, `mixolydianIiiHalfDimM6`).
+
+**Files:** `borrowedVoicingRules.js`, `chordPolicy.js`, `policyRegression.mjs`.
+
+---
+
 ## Session handoff — 2026-07-23 (fetch + decode loop)
 
 ### Merged on `main`

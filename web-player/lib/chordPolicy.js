@@ -1,35 +1,19 @@
 /**
  * Layer B — Hooktheory voicing policy (when symbol semantics ≠ voiced notes).
  * Layer A diatonic defaults live in scales.js + chordSeventh.js.
+ *
+ * Invariant (symbol-frame): halfDim / dimTriad / explicit alts choose voicing frame;
+ * borrowed scale quality chooses root spelling and roman prefix only.
  */
 
-/** ø symbol, dim7 voice — catalog Fixes 025–027, 036d. */
-const DIM7_BB7_ENTRIES = [
-  { scale: "custom", degree: null },
-  { scale: "dorian", degree: 6 },
-  { scale: "lydian", degree: 4 },
-  { scale: "minor", degree: 2 },
-  { scale: "harmonicMinor", degree: 2 },
-  { scale: "major", degree: 7 },
-  { scale: "phrygian", degree: 5 },
-  { scale: "locrian", degree: 1 },
-];
+import {
+  matchesDim7Bb7,
+  matchesHalfDimM6Stack,
+  lookupTriadFrameOverride,
+} from "./borrowedVoicingRules.js";
 
 export function borrowedModeDimSeventhDegree(chordRootSD, scale, chordQuality, chordType, opts = {}) {
-  if (chordType < 7 || chordQuality !== "diminished") return null;
-  // Major-key iiø: diatonic quality is minor — falls through to b7. Nat-dim + ø (e.g. minor ii°) → dim7.
-  if (!opts.halfDim) {
-    for (const entry of DIM7_BB7_ENTRIES) {
-      if (scale !== entry.scale) continue;
-      if (entry.degree === null || entry.degree === chordRootSD) return "bb7";
-    }
-    return null;
-  }
-  for (const entry of DIM7_BB7_ENTRIES) {
-    if (scale !== entry.scale) continue;
-    if (entry.degree === null || entry.degree === chordRootSD) return "bb7";
-  }
-  return null;
+  return matchesDim7Bb7(chordRootSD, scale, chordQuality, chordType, opts) ? "bb7" : null;
 }
 
 export function isHalfDiminishedIi(chordRootSD, modifiedKey, chordType, useSusFrame, modifierChord) {
@@ -92,10 +76,11 @@ export function resolveChordPolicy(ctx) {
     chordQuality, modifierChord, useSusFrame, omitTriad35,
   } = ctx;
   const alterations = modifierChord?.alterations || [];
-  const nativePhdmKey = key.scale === "phrygianDominant" && (borrowed === null || borrowed === "");
-
-  const phdmMaj7 = borrowed === "phrygianDominant" && chordRootSD === 6 && !alterations.includes("#5");
-  const phdmIImaj7 = nativePhdmKey && chordRootSD === 2 && chordType >= 7 && inversion === 3;
+  const triadOverride = lookupTriadFrameOverride({
+    key, borrowed, modifiedKey, chordRootSD, chordType, inversion, modifierChord,
+  });
+  const phdmMaj7 = triadOverride?.id === "phdmBVImaj7";
+  const phdmIImaj7 = triadOverride?.id === "nativePhdmIImaj7";
   const sharp5Minor = alterations.includes("#5") && chordQuality === "diminished";
   const halfDimIi = isHalfDiminishedIi(chordRootSD, modifiedKey, chordType, useSusFrame, modifierChord);
 
@@ -111,16 +96,10 @@ export function resolveChordPolicy(ctx) {
     && chordType >= 13
     && !useSusFrame
     && !omitTriad35;
-  const halfDimInv1M6Stack = !!modifierChord?.halfDim
-    && chordType >= 7
-    && inversion === 1
-    && !useSusFrame
-    && !omitTriad35
-    && (
-      borrowed === "mixolydian"
-      || (modifiedKey.scale === "harmonicMinor" && chordRootSD === 2)
-      || (modifiedKey.scale === "major" && chordRootSD === 7)
-    );
+  const halfDimInv1M6Stack = matchesHalfDimM6Stack({
+    borrowed, modifiedKey, chordRootSD, chordType, inversion,
+    modifierChord, useSusFrame, omitTriad35,
+  });
 
   const triadQuality = halfDimIi
     ? "diminished"
@@ -152,7 +131,7 @@ export function resolveChordPolicy(ctx) {
 
   return {
     triadQuality,
-    rootShiftSemitones: phdmIImaj7 ? 1 : 0,
+    rootShiftSemitones: triadOverride?.rootShift ?? 0,
     phdmIImaj7,
     sharp5Minor,
     halfDimIi,

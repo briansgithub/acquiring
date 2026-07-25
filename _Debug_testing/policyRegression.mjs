@@ -17,6 +17,11 @@ const BASELINE = {
   holst: { chord: { root: 2, type: 7, inversion: 3 }, key: { tonic: "C", scale: "phrygianDominant" }, pcs: [1, 2, 6, 9] },
   hmIII7: { chord: { root: 3, type: 7 }, key: { tonic: "C", scale: "harmonicMinor" }, pcs: [2, 3, 7, 10] },
   bIIphdm: { chord: { root: 2, type: 7, borrowed: "phrygianDominant" }, key: { tonic: "C", scale: "major" }, pcs: [0, 1, 5, 8] },
+  bVIphdmAug: {
+    chord: { root: 6, type: 5, borrowed: "phrygianDominant" },
+    key: { tonic: "A", scale: "mixolydian" },
+    pcs: [1, 5, 9],
+  },
   bIbor: { chord: { root: 1, type: 5, borrowed: [-1, 1, 3, 5, 6, 8, 10] }, key: { tonic: "B", scale: "minor" }, pcs: [2, 5, 10] },
   BphdmII: { chord: { root: 2, type: 7 }, key: { tonic: "B", scale: "phrygianDominant" }, pcs: [0, 4, 7, 11] },
   triSub9: {
@@ -131,6 +136,11 @@ const BASELINE = {
     chord: { root: 7, type: 7, inversion: 1, halfDim: true },
     key: { tonic: "C", scale: "major" },
     pcs: [2, 5, 8, 11],
+  },
+  mixolydianIiiHalfDimM6: {
+    chord: { root: 3, type: 7, inversion: 1, halfDim: true },
+    key: { tonic: "A", scale: "mixolydian" },
+    pcs: [1, 4, 7, 10],
   },
   omit3power: {
     chord: { root: 7, type: 5, inversion: 2, omits: [3] },
