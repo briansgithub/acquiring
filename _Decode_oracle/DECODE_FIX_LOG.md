@@ -1241,6 +1241,24 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 073 — aug b5/omit5 + phdm inv3 (2026-07-25, `feat/fix-073-aug-b5-phdm-inv3`)
+
+**073a (engine):** `chordAlterations.js` — `(b5)` on augmented triads flattens **#5** (−2 semitones), not perfect 5th. Was leaving Cx alongside C on `III(b5)` hm (`10cc__dont-hang-up`).
+
+**073b (engine):** `chordOmits.js` — `omit=5` on augmented triads keeps **#5** in voicing (symbol-only omit, like ø/halfDim). `III+(no5)` hm (`primus__the-air-is-getting-slippery`).
+
+**073c (engine):** `borrowedVoicingRules.js` — `phdmBVImaj7` skips **inv=3** so `bVI+△42(phdm)` uses aug+maj7 inv3 path (`aiko__skirt`), not major-triad frame.
+
+**073d (harness):** `chordRootPc.js` — add `phrygianDominant` to borrowed-scale map + intervals. Was resolving phdm bor roots on host scale (mixo deg6→F# not F), breaking `#iii°42(phdm)` compare (`kikuo__aishite`).
+
+**Gate:** policy **61/61** (`hmIIIaugB5`, `hmIIIaugNo5`, `bVIphdmAugMaj7Inv3`, `phdmIiiDim7Inv3`).
+
+**Resync:** 91.1k rows (1969 slugs) — engine fails **104→75** (−29).
+
+**Files:** `chordAlterations.js`, `chordOmits.js`, `borrowedVoicingRules.js`, `chordRootPc.js`, `policyRegression.mjs`, `probe_fix073.mjs`.
+
+---
+
 ## Session handoff — 2026-07-23 (fetch + decode loop)
 
 ### Merged on `main`
