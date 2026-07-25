@@ -45,7 +45,7 @@ export function resolveSeventhDegree({
   if (policy.augMaj7StackVoicing) return "augMaj7Stack";
   if (policy.augMaj7Inv3Voicing) return "7";
   if (policy.halfDimInv1M6Stack) return "m6Stack";
-  if (useSusFrame) return "b7";
+  if (useSusFrame || (effModifierChord?.appliedContext?.appliedSD === 5) || (effModifierChord?.applied === 5 && !effModifierChord?.useMaj7)) return "b7";
   if (policy.hmBorrowedMinor7) return "b7";
   if (policy.customBorrowedHalfDim) {
     return policy.customBorrowedHalfDimM7 ? "customHalfDimM7" : "bb7";
@@ -110,11 +110,13 @@ export function addSeventhNote(toneJSNames, degreeIndices, chordRootNoteName, ba
 }
 
 /** HT +△7 on augmented: omit #5, stack maj7 (+11) + scale b7 (+7). */
-export function applyAugMaj7Stack(toneJSNames, degreeIndices) {
+export function applyAugMaj7Stack(toneJSNames, degreeIndices, effModifierChord = null) {
   toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 11));
   degreeIndices.push(3);
-  toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 7));
-  degreeIndices.push(4);
+  if (!effModifierChord?.omits?.includes(5)) {
+    toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 7));
+    degreeIndices.push(4);
+  }
 }
 
 /** HT mix-borrowed ø65: letter m6 — dim5 (+6) + 6th (+9), not ø7 stack. */
@@ -135,9 +137,9 @@ export function applyMixBorrowedM6Voicing(toneJSNames, degreeIndices) {
   }
 }
 
-export function applySeventhToChord(toneJSNames, degreeIndices, seventhKind, chordRootNoteName, baseOctave, sdToToneJSNoteName) {
+export function applySeventhToChord(toneJSNames, degreeIndices, seventhKind, chordRootNoteName, baseOctave, sdToToneJSNoteName, effModifierChord = null) {
   if (seventhKind === "augMaj7Stack") {
-    applyAugMaj7Stack(toneJSNames, degreeIndices);
+    applyAugMaj7Stack(toneJSNames, degreeIndices, effModifierChord);
     return;
   }
   if (seventhKind === "m6Stack") {

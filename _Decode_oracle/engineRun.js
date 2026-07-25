@@ -57,12 +57,9 @@ function enrichChordFromSymbol(chord, roman, letter) {
   const mods = mergeMods(letter, roman, chord);
   const alterations = [...new Set([...(chord.alterations || []), ...mods.alterations])];
   const appliedDenomMaj = chord.appliedDenomMaj || appliedDenomMajFromRoman(roman);
-  const flattenHalfDimB5 = (chord.flattenHalfDimB5 || (halfDim && alterations.includes('b5'))) && (mods.type || chord.type || 5) <= 7;
+  const flattenHalfDimB5 = (chord.flattenHalfDimB5 || (halfDim && alterations.includes('b5'))) && (mods.type || chord.type || 5) <= 9;
   if (halfDim && (mods.type ?? 5) >= 9) {
-    for (const a of ["b5", "b9"]) {
-      if (Array.isArray(chord.borrowed) && a === "b9") continue;
-      if (!alterations.includes(a)) alterations.push(a);
-    }
+    if (!alterations.includes("b5")) alterations.push("b5");
   }
   return {
     ...chord,

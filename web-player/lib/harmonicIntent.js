@@ -131,8 +131,8 @@ export function resolveHarmonicIntent(chord, key, opts = {}) {
       })
     : effective;
 
-  // Fix 075 Candidate Gate: flattenHalfDimB5 is valid for viiø7(b5) (type <= 7) but not ø9(b5)
-  if (effModifierChord && effModifierChord.flattenHalfDimB5 && chordType > 7) {
+  // Fix 075/076 Gate Strategy: flattenHalfDimB5 is valid for halfDim b5 up to 9ths (type <= 9)
+  if (effModifierChord && effModifierChord.flattenHalfDimB5 && chordType > 9) {
     effModifierChord.flattenHalfDimB5 = false;
   }
 

@@ -91,12 +91,25 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
           degreeIndices.splice(idx, 1);
         }
       }
-      if (key === "b5" && (chord?.halfDim || chord?.dimTriad)) {
+      if (key === "b5" && (chord?.halfDim || chord?.dimTriad || chord?.triadQuality === "diminished")) {
         continue;
       }
 
       // b5 on augmented: flatten #5 (+8); dim/ø fifth is +6 and handled below.
       const sharpFifthPc = (rootPc + 8) % 12;
+      if (key === "#5" && (chord?.applied === 7 || chord?.appliedContext?.appliedSD === 7) && (chord?.chordType || chord?.type || 5) >= 7) {
+        const fifthPc = (rootPc + 6) % 12;
+        const dimSeventhPc = (rootPc + 9) % 12;
+        for (let i = 0; i < toneJSNames.length; i++) {
+          if (noteNameToPc(toneJSNames[i]) === fifthPc) {
+            toneJSNames[i] = shiftNoteBySemitones(toneJSNames[0], 8);
+          }
+          if (noteNameToPc(toneJSNames[i]) === dimSeventhPc) {
+            toneJSNames[i] = shiftNoteBySemitones(toneJSNames[0], 10);
+          }
+        }
+        continue;
+      }
       if (key === "b5" && chord?.augmentedTriad) {
         let foundAug = false;
         for (let i = 0; i < toneJSNames.length; i++) {
@@ -153,6 +166,13 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
 
 
     if (key === "b9" || key === "#9" || key === "9") {
+      if (key === "#9" && (chord?.type || 5) >= 13) {
+        const sharp11Pc = (rootPc + 6) % 12;
+        if (!hasPc(toneJSNames, sharp11Pc)) {
+          toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 6));
+          degreeIndices.push(5);
+        }
+      }
       const ninthPc = (rootPc + 2) % 12;
       let found = false;
       for (let i = 0; i < toneJSNames.length; i++) {

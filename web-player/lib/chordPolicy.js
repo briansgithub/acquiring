@@ -32,9 +32,7 @@ export function enrichModifierChord(modifierChord, chordType, opts = {}) {
     alterations = alterations.filter((a) => a !== "b9");
     if (chordType >= 7 && !alterations.includes("b5")) alterations.push("b5");
   } else if (modifierChord.halfDim && chordType >= 9 && !opts.customBorrowed) {
-    for (const a of ["b5", "b9"]) {
-      if (!alterations.includes(a)) alterations.push(a);
-    }
+    if (!alterations.includes("b5")) alterations.push("b5");
     if (modifierChord.omits?.includes(3) && modifierChord.omits?.includes(5)) {
       const i = alterations.indexOf("b9");
       if (i >= 0) alterations.splice(i, 1);
@@ -107,11 +105,11 @@ export function resolveChordPolicy(ctx) {
       ? "minor"
       : sharp5Minor
         ? "minor"
-      : modifierChord?.dimTriad
-      ? "diminished"
+      : (modifierChord?.dimTriad || modifierChord?.halfDim)
+        ? "diminished"
       : phdmMaj7 || phdmIImaj7
         ? "major"
-        : (useSusFrame && chordQuality === "diminished" ? "major" : chordQuality);
+        : (useSusFrame && (chordQuality === "diminished" || chordQuality === "augmented") ? "major" : chordQuality);
 
   const augMaj7Base = triadQuality === "augmented" && chordType >= 7 && !useSusFrame && !omitTriad35;
   const augMaj7StackVoicing = augMaj7Base && inversion !== 3;
@@ -143,11 +141,14 @@ export function resolveChordPolicy(ctx) {
     customBorrowedHalfDim,
     customBorrowedHalfDimM7,
     customBorrowedDimNatural11,
+    dim11Natural: (borrowed === "harmonicMinor" || borrowed === "phrygianDominant") && chordType >= 11 && triadQuality === "diminished",
     hmBorrowedDominant13,
     halfDimInv1M6Stack,
     minorV13Stack,
     minorI13B13,
     autoAlterations: minorV13Stack ? ["b9", "b13"] : minorI13B13 ? ["b13"] : [],
+    skipNine: (borrowed === "lydian" && (modifierChord?.halfDim || triadQuality === "diminished") && chordType >= 11)
+      || ((borrowed === "harmonicMinor" || borrowed === "phrygianDominant") && chordType >= 11 && triadQuality === "diminished"),
     skipThirteenth: false,
     dimSeventh: chordType >= 7 && !customBorrowedHalfDim && !sharp5Minor && (
       chordQuality === "diminished"

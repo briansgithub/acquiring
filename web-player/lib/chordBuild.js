@@ -151,7 +151,7 @@ export function voicingWithSlashBass(notes, chordDegrees, bassName) {
 
 // Applied + borrowed: numerator from major of the borrowed-scale target; locrian applied===root → i(min7).
 function resolveAppliedBorrowedChord(targetSD, appliedSD, key, baseOctave, borrowed, chordType, inversion, suspensions, modifierChord) {
-  if (borrowed === "locrian" && appliedSD === targetSD && chordType < 7) {
+  if (borrowed === "locrian" && targetSD === 1 && appliedSD === 1 && chordType < 7) {
     const { key: modifiedKey, customScaleIntervals } = resolveBorrowedScale(key, borrowed);
     const tonicNote = getNoteLabel(1, modifiedKey, customScaleIntervals);
     return buildChordFromNoteName(tonicNote, "minor", key, baseOctave, chordType, inversion, false, suspensions, modifierChord);
@@ -262,7 +262,7 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
       policy, useSusFrame, effModifierChord, chordRootSD, modifiedKey, chordQuality,
       customScaleIntervals, getNoteLabel,
     });
-    applySeventhToChord(toneJSNames, degreeIndices, seventhKind, chordRootNoteName, baseOctave, sdToToneJSNoteName);
+    applySeventhToChord(toneJSNames, degreeIndices, seventhKind, chordRootNoteName, baseOctave, sdToToneJSNoteName, effModifierChord);
   } else if (omitTriad35 && chordType >= 7) {
     const seventh = resolveOmitTriad35Seventh({
       useSusFrame, effModifierChord, chordRootSD, modifiedKey, chordQuality,
@@ -275,7 +275,7 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
     && !!effModifierChord?.halfDim;
   applyTypeExtensions(
     toneJSNames, degreeIndices, chordRootNoteName, baseOctave, chordType, sdToToneJSNoteName, triadQuality,
-    { natural11: policy.natural11, skipNine, skipThirteenth: policy.skipThirteenth, customBorrowedHalfDimM7: policy.customBorrowedHalfDimM7, customBorrowedDimNatural11: policy.customBorrowedDimNatural11 },
+    { natural11: policy.natural11, skipNine: skipNine || policy.skipNine, skipThirteenth: policy.skipThirteenth, customBorrowedHalfDimM7: policy.customBorrowedHalfDimM7, customBorrowedDimNatural11: policy.customBorrowedDimNatural11, dim11Natural: policy.dim11Natural, alterations: effModifierChord?.alterations, applied: !!effModifierChord?.appliedContext, halfDim: !!effModifierChord?.halfDim },
   );
 
   replaceTriadThird(toneJSNames, degreeIndices, chordRootNoteName, baseOctave, suspensions, sdToToneJSNoteName);
@@ -354,7 +354,10 @@ export function buildChordFromNoteName(rootNoteName, quality, originalKey, baseO
     toneJSNames.push(seventhName);
     degreeIndices.push(3);
   }
-  applyTypeExtensions(toneJSNames, degreeIndices, rootNoteName, baseOctave, chordType, sdToToneJSNoteName);
+  applyTypeExtensions(
+    toneJSNames, degreeIndices, rootNoteName, baseOctave, chordType, sdToToneJSNoteName, quality,
+    { alterations: modifierChord?.alterations, applied: true },
+  );
 
   replaceTriadThird(toneJSNames, degreeIndices, rootNoteName, baseOctave, suspensions, sdToToneJSNoteName);
 
