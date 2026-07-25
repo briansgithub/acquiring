@@ -9,6 +9,8 @@ const DIM7_BB7_ENTRIES = [
   { scale: "dorian", degree: 6 },
   { scale: "lydian", degree: 4 },
   { scale: "minor", degree: 2 },
+  { scale: "harmonicMinor", degree: 2 },
+  { scale: "major", degree: 7 },
   { scale: "phrygian", degree: 5 },
   { scale: "locrian", degree: 1 },
 ];
