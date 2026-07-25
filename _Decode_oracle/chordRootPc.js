@@ -78,6 +78,12 @@ function customArrayRootPc(tonic, borrowedArray, degree) {
   return (tonicPc + (offset % 12)) % 12;
 }
 
+function isTriSubApplied(chord) {
+  return chord?.applied === 5
+    && Array.isArray(chord.substitutions)
+    && chord.substitutions.includes("tri");
+}
+
 function chordRootPc(chord, key) {
   if (!chord?.root || chord.root < 1 || chord.root > 7) return null;
   if (Array.isArray(chord.borrowed)) {
@@ -91,6 +97,10 @@ function chordRootPc(chord, key) {
       noteToPc(labels[chord.root - 1]) === targetPc)?.[1]?.[chord.root - 1];
     if (!targetName) return scaleNoteAtDegree(effKey.tonic, effKey.scale || 'major', chord.applied);
     const appliedKey = { tonic: targetName, scale: 'major' };
+    if (isTriSubApplied(chord)) {
+      const vPc = scaleNoteAtDegree(appliedKey.tonic, 'major', 5);
+      return vPc == null ? null : (vPc + 6) % 12;
+    }
     return scaleNoteAtDegree(appliedKey.tonic, 'major', chord.applied);
   }
   return scaleNoteAtDegree(effKey.tonic, effKey.scale || 'major', chord.root);
