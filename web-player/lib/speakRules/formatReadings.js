@@ -30,13 +30,13 @@ function appendBorrowedFunctional(words, parts) {
   appendPhrase(words, 'borrowed from', parts.borrowed);
 }
 
-function inversionFunctionalLabel(parts) {
+function inversionAcademicLabel(parts) {
   const inv = parts.inversion;
   const isSeventh = parts.isSeventh;
   if (!inv) return null;
   if (!isSeventh) {
-    if (inv === 1) return 'first inversion';
-    if (inv === 2) return 'second inversion';
+    if (inv === 1) return 'first inversion triad';
+    if (inv === 2) return 'second inversion triad';
     return null;
   }
   if (inv === 1) return 'first inversion seventh';
@@ -45,8 +45,8 @@ function inversionFunctionalLabel(parts) {
   return null;
 }
 
-/** Literal left-to-right analytic reading. */
-export function formatAnalytic(parts) {
+/** Efficient musician rehearsal reading (colloquial shorthand). */
+export function formatColloquial(parts) {
   if (!parts) return UNKNOWN;
   const words = [
     ...parts.prefix,
@@ -66,8 +66,8 @@ export function formatAnalytic(parts) {
   return joinWords(words);
 }
 
-/** Functional shorthand reading. */
-export function formatFunctional(parts, ctx) {
+/** Academic educational reading (explicit structural and functional elucidation). */
+export function formatAcademic(parts, ctx) {
   if (!parts) return UNKNOWN;
   const words = [
     ...parts.prefix,
@@ -75,7 +75,7 @@ export function formatFunctional(parts, ctx) {
     parts.caseQuality,
   ];
 
-  const invLabel = inversionFunctionalLabel(parts);
+  const invLabel = inversionAcademicLabel(parts);
   if (invLabel) {
     words.push(invLabel);
   } else {
@@ -92,7 +92,7 @@ export function formatFunctional(parts, ctx) {
   if (parts.substitution) words.push(parts.substitution);
 
   if (ctx?.isApplied) {
-    appendPhrase(words, 'secondary dominant to', parts.appliedOf || speakDegree(ctx.denominatorDegree));
+    appendPhrase(words, 'secondary dominant resolving to', parts.appliedOf || speakDegree(ctx.denominatorDegree));
   }
 
   appendBorrowedFunctional(words, parts);
@@ -129,13 +129,13 @@ function speakAppliedTargetLetter(ctx, key) {
   return words.join(' ');
 }
 
-/** Functional shorthand reading using note names instead of roman degrees. */
-export function formatFunctionalLetter(parts, ctx, key, chord) {
+/** Academic educational reading using note names instead of roman degrees. */
+export function formatAcademicLetter(parts, ctx, key, chord) {
   if (!parts) return UNKNOWN;
   const words = [speakRootNote(chord, key, ctx)];
   if (parts.caseQuality) words.push(parts.caseQuality);
 
-  const invLabel = inversionFunctionalLabel(parts);
+  const invLabel = inversionAcademicLabel(parts);
   if (invLabel) {
     words.push(invLabel);
   } else {
@@ -152,10 +152,16 @@ export function formatFunctionalLetter(parts, ctx, key, chord) {
   if (parts.substitution) words.push(parts.substitution);
 
   if (ctx?.isApplied) {
-    appendPhrase(words, 'secondary dominant to', speakAppliedTargetLetter(ctx, key));
+    appendPhrase(words, 'secondary dominant resolving to', speakAppliedTargetLetter(ctx, key));
   }
 
   appendBorrowedFunctional(words, parts);
 
   return joinWords(words);
 }
+
+// Backwards-compatibility aliases
+export const formatAnalytic = formatColloquial;
+export const formatFunctional = formatAcademic;
+export const formatFunctionalLetter = formatAcademicLetter;
+

@@ -20,8 +20,9 @@ let failed = 0;
 
 for (const fx of fixtures) {
   const got = getChordPronunciation(fx.chord, fx.key);
-  for (const field of ['analytic', 'functional', 'letter', 'functionalLetter']) {
-    if (got[field] !== fx[field]) {
+  const fields = ['colloquial', 'academic', 'colloquialLetter', 'academicLetter', 'analytic', 'functional', 'letter', 'functionalLetter'];
+  for (const field of fields) {
+    if (fx[field] != null && got[field] !== fx[field]) {
       console.error(`FAIL [${fx.id}] ${field}`);
       console.error(`  expected: ${fx[field]}`);
       console.error(`  got:      ${got[field]}`);

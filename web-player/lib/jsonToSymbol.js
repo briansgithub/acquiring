@@ -586,19 +586,14 @@ export function getChordLetterName(chord, key) {
         suffix += chord.alterations.map((a) => `(${a})`).join("");
     }
 
-    // Inversion bass note: nth chord tone read within the effective key (inv 1–2),
-    // or interval below root for third-inversion sevenths.
-    if (chord.inversion === 3 && chord.type >= 7) {
-        const bassSemitones = (majorSeventh || augMaj7Letter) ? -1 : -2;
-        const bassNoteName = noteLabel(shiftNoteBySemitones(`${rootNoteName}4`, bassSemitones));
-        return `${rootNoteName}${suffix}/${bassNoteName}`;
-    }
+    // Inversion bass note: nth chord tone read within the effective key (inv 1–3).
     let bassOffset = null;
     if (chord.inversion === 1) {
       const sus4Bass = chord.type < 7 && chord.suspensions?.includes(4) && !chord.suspensions?.includes(2);
       bassOffset = sus4Bass ? 3 : 2;
     }
     else if (chord.inversion === 2) bassOffset = 4;   // fifth
+    else if (chord.inversion === 3 && chord.type >= 7) bassOffset = 6; // seventh
     if (bassOffset != null) {
         const bassDegree = ((degree - 1 + bassOffset) % 7) + 1;
         const bassNoteName = getNoteLabel(bassDegree, effKey, customIntervals);

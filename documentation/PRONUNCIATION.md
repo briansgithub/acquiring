@@ -8,30 +8,30 @@ Rule-based spoken readings for Hooktheory chord JSON. Converts each chord object
 
 ## Readings
 
-`getChordPronunciation(chord, key)` returns three strings:
+`getChordPronunciation(chord, key)` returns two primary readings (with letter-mode variants and backwards-compatibility aliases):
 
 | Field | UI label | Meaning |
 |-------|----------|---------|
-| `analytic` | **Analytic Reading:** | Left-to-right decomposition of the roman symbol: degree, quality, figured bass, extensions, suspensions, adds/omits, alterations, applied `of` target, borrowed tag. |
-| `functional` | **Functional Reading:** | Theory shorthand: inversion names (`first inversion seventh`), secondary dominants (`secondary dominant to …`), borrowed-scale phrasing (`borrowed from …`), and other context-aware compressions. |
-| `letter` | **Analytic Reading** (letter-mode tooltips) | Spoken letter-name chord from `getChordLetterName()` via `speakLetterChord()`. |
-| `functionalLetter` | **Functional Reading** (letter-mode tooltips) | Theory shorthand using note names — inversions, secondary dominants, borrowed-scale phrasing. |
+| `colloquial` | **Colloquial Reading:** | Efficient musician rehearsal shorthand: figured bass numbers (`five six-five`), natural applied shorthand (`five-seven of five`), and lead-sheet terms. |
+| `academic` | **Academic Reading:** | Academic & educational elucidation: explicit structural inversion labels (`first inversion seventh`), secondary dominant targets (`secondary dominant resolving to …`), and borrowed-scale context (`borrowed from …`). |
+| `colloquialLetter` | **Colloquial Reading** (letter-mode) | Lead-sheet musician speech using note names (`D nine sharp 11 over F sharp`, `G over B`). |
+| `academicLetter` | **Academic Reading** (letter-mode) | Academic educational reading using note names — explicit inversions and secondary targets. |
 
-Rest chords and chords without `root` return empty analytic/functional strings.
+*Note: `analytic` and `functional` remain as backward-compatibility aliases mapping to `colloquial` and `academic` respectively.*
 
-Unknown symbol branches return `UNKNOWN` for analytic/functional; letter may still resolve.
+Rest chords and chords without `root` return empty strings.
+Unknown symbol branches return `UNKNOWN` for Roman readings; letter readings may still resolve.
 
 ### Example
 
-Chord: `V7` in G major (`root: 5, type: 7`).
+Chord: `V65/V` in C major (`root: 5, applied: 5, inversion: 1, type: 7`).
 
-| Reading | Output |
-|---------|--------|
-| Analytic | `five major seventh` |
-| Functional | `five major seventh` |
-| Letter | `D seven` |
-
-Applied / borrowed / inversion cases diverge — see `_Research_testing/pronunciationFixtures.json`.
+| Reading Mode | Spoken Output |
+|--------------|---------------|
+| **Colloquial (Roman)** | `five six-five of five` |
+| **Academic (Roman)** | `five first inversion seventh secondary dominant resolving to five` |
+| **Colloquial (Letter)** | `D7/F#` $\rightarrow$ `D seven over F sharp` |
+| **Academic (Letter)** | `D seven first inversion seventh secondary dominant resolving to G` |
 
 ---
 
@@ -41,13 +41,13 @@ Applied / borrowed / inversion cases diverge — see `_Research_testing/pronunci
 Hooktheory chord JSON + key
         │
         ▼
-  buildSpeakParts()     ← chordContext.js (scale, quality, applied, borrowed)
+  buildSpeakParts()           ← chordContext.js (scale, quality, applied, borrowed)
         │
-        ├── formatAnalytic()    ← literal symbol order
-        └── formatFunctional()  ← inversion labels, applied/borrowed phrasing
+        ├── formatColloquial() ← efficient musician shorthand & figured bass
+        └── formatAcademic()   ← structural inversion labels & educational elucidation
         │
         ▼
-  speakLetterChord()    ← jsonToSymbol.getChordLetterName → speakLetterSymbol()
+  speakLetterChord()          ← jsonToSymbol.getChordLetterName → speakLetterSymbol()
 ```
 
 ### Modules (`web-player/lib/`)
@@ -57,7 +57,7 @@ Hooktheory chord JSON + key
 | `romanNumeralSpeak.js` | Public API: `getChordPronunciation`, `speakRomanNumeral`, `pronunciationDisplayHtml` |
 | `speakRules/buildParts.js` | JSON → intermediate `parts` + `ctx` (mirrors `jsonToSymbol.js` branches) |
 | `speakRules/chordContext.js` | Scale-degree quality, applied chord, borrowed scale, denominator quality |
-| `speakRules/formatReadings.js` | `formatAnalytic`, `formatFunctional` |
+| `speakRules/formatReadings.js` | `formatColloquial`, `formatAcademic`, `formatAcademicLetter` |
 | `speakRules/words.js` | Degree/accidental/extension/alteration word tables |
 | `speakRules/speakLetter.js` | Letter-symbol tokenizer and speech |
 
