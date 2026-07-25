@@ -355,7 +355,12 @@ function buildSuffix(chord, quality, opts = {}) {
                 suffix += susStr;
             }
         } else if (chord.type >= 7 && !hasFigured) {
-            suffix += String(chord.type) + susStr;
+            if (altInline && chord.suspensions.length === 1) {
+                suffix += String(chord.type) + altInline + susStr;
+                alterationsEmbedded = true;
+            } else {
+                suffix += String(chord.type) + susStr;
+            }
         } else {
             suffix += susStr;
         }
@@ -418,7 +423,8 @@ export function getChordSymbol(chord, key) {
     // tonicization TARGET (denominator). The numerator chord is read from the MAJOR scale
     // of the target; the denominator numeral is read from the main key.
     if (chord.applied && chord.applied >= 1 && chord.applied <= 7) {
-        const fullyDim = chord.applied === 7; // leading-tone applied chords are fully diminished
+        const suspended = Array.isArray(chord.suspensions) && chord.suspensions.length > 0;
+        const fullyDim = chord.applied === 7 && !suspended; // leading-tone applied chords are fully diminished
         const targetTonic = getNoteLabel(chord.root, key);
         const numeratorKey = { tonic: targetTonic, scale: 'major' };
         const parentQualities = getChordQualitiesForScale(key.scale);
@@ -530,7 +536,7 @@ export function getChordLetterName(chord, key) {
     const suspended = Array.isArray(chord.suspensions) && chord.suspensions.length > 0;
     const sus4Only = chord.suspensions?.includes(4) && !chord.suspensions?.includes(2);
     let majorSeventh = false;
-    if (chord.type >= 7 && quality !== 'diminished' && !augmented) {
+    if (chord.type >= 7 && quality !== 'diminished' && !augmented && !suspended) {
         if (chord.applied && chord.applied >= 1 && chord.applied <= 7) {
             if (!triSub) {
                 const targetTonic = getNoteLabel(chord.root, key);
@@ -561,17 +567,23 @@ export function getChordLetterName(chord, key) {
     let suffix = "";
     if (omit3Power) suffix += "5";
     else if (quality === "minor") suffix += "m";
-    else if (quality === "diminished") suffix += "°";
+    else if (quality === "diminished" && !suspended) suffix += "°";
     else if (augMaj7Letter || augOmit35) suffix += "++";
     else if (augmented || (sharp5 && !sharp5ParenLetter)) suffix += "+";
     if (chord.type >= 7 && !augMaj7Letter) suffix += (majorSeventh ? 'maj' : '') + String(chord.type);
     if (sharp5ParenLetter) suffix += "(#5)";
     if (augOmit35) suffix += "(n°5n3)";
-    if (Array.isArray(chord.suspensions) && chord.suspensions.length) {
-        suffix += chord.suspensions.map((s) => (s === 4 && sharp5ParenLetter ? 'sus#4' : `sus${s}`)).join('');
+    const sharp11Sus4 = chord.alterations?.includes("#11") && sus4Only;
+    if (sharp11Sus4 && chord.alterations?.length) {
+        suffix += chord.alterations.map((a) => `(${a})`).join("");
     }
-    if (Array.isArray(chord.alterations) && chord.alterations.length) {
-        suffix += chord.alterations.map((a) => `(${a})`).join('');
+    if (Array.isArray(chord.suspensions) && chord.suspensions.length) {
+        suffix += chord.suspensions.map((s) => (
+            s === 4 && (sharp5ParenLetter || sharp11Sus4) ? "sus#4" : `sus${s}`
+        )).join("");
+    }
+    if (Array.isArray(chord.alterations) && chord.alterations.length && !sharp11Sus4) {
+        suffix += chord.alterations.map((a) => `(${a})`).join("");
     }
 
     // Inversion bass note: nth chord tone read within the effective key (inv 1–2),
