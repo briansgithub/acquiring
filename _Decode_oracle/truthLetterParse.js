@@ -72,7 +72,10 @@ function seventhKind(quality, letter, roman, chordType) {
 function susFromText(letter, roman) {
   const s = ((letter || '') + (roman || '')).toLowerCase();
   if (/sus2/.test(s)) return 2;
-  if (/sus4|sus(?!\d)/.test(s)) return 4;
+  // susb7 is handled in mergeMods (HT triad voicing = sus4, not bare sus7).
+  if (/susb7/.test(s)) return null;
+  if (/sus4/.test(s)) return 4;
+  if (/sus7/.test(s)) return 7;
   return null;
 }
 
@@ -171,6 +174,8 @@ function mergeMods(letter, roman, chord) {
   const susText = susFromText(letter, roman);
   const suspensions = [...(c.suspensions || [])];
   if (susText && !suspensions.includes(susText)) suspensions.push(susText);
+  // HT letter susb7 on triads voices sus4 (compare root + 4th + 5th), not a b7 suspension.
+  if (/susb7/i.test(letter || '') && !suspensions.includes(4)) suspensions.push(4);
   const adds = [...new Set([...addsFromText(letter, roman), ...(c.adds || [])])];
   const omits = [...new Set([...omitsFromText(letter, roman), ...(c.omits || [])])];
   const alterations = [...new Set([...altsFromText(letter, roman), ...(c.alterations || []).map(String)])];
