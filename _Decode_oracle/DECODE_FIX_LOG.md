@@ -1189,6 +1189,18 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 069 — letter ° wins over roman ø for omit5 inv3 (2026-07-25, `feat/fix-069-omit5-inv3-dim-frame`)
+
+**069a:** `dimFrameFromTruth` — when truth letter uses `°` (dim triad) but roman says `ø`, prefer `dimTriad` not `halfDim`. Fixes `iiø4(no5)2` / `e°(n5)/D` cluster where ø enrichment wrongly voiced dim5 shell.
+
+**Gate:** policy **54/54** (`iiDimNo5Inv3`).
+
+**Resync:** 91.1k rows (1969 slugs) — engine fails **160→151** (−9).
+
+**Files:** `truthLetterParse.js`, `compare.js`, `engineRun.js`, `policyRegression.mjs`.
+
+---
+
 ## Session handoff — 2026-07-23 (fetch + decode loop)
 
 ### Merged on `main`
