@@ -1215,6 +1215,18 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 071 — tri-sub applied rootPc for compare (2026-07-25, `feat/fix-071-trisub-root-pc`)
+
+**071a:** `chordRootPc` — `substitutions:["tri"]` + `applied:5` resolves **tritone-sub root** (+6 from V/target), not diatonic V. Fixes false `type=7 inv=3 applied` failures where engine G7/F already matched HT but `expectedPcs` used C# root.
+
+**Gate:** policy **55/55**; `probe_trisub_root_pc.mjs`.
+
+**Resync:** 91.1k rows (1969 slugs) — engine fails **142→120** (−22).
+
+**Files:** `chordRootPc.js`, `probe_trisub_root_pc.mjs`.
+
+---
+
 ## Session handoff — 2026-07-23 (fetch + decode loop)
 
 ### Merged on `main`
