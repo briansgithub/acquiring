@@ -301,6 +301,11 @@ const BASELINE = {
     key: { tonic: "C", scale: "minor" },
     pcs: [0, 3, 8],
   },
+  iiDimNo5Inv3: {
+    chord: { root: 2, type: 7, inversion: 3, omits: [5], dimTriad: true },
+    key: { tonic: "D", scale: "minor" },
+    pcs: [1, 4, 7],
+  },
 };
 
 function pcs(chord, key) {

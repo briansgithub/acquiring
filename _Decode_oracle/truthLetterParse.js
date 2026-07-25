@@ -27,6 +27,26 @@ function numeratorRoman(roman) {
   return String(roman || '').split('/')[0];
 }
 
+function numeratorLetter(letter) {
+  const s = String(letter || "");
+  const slash = s.lastIndexOf("/");
+  return slash >= 0 ? s.slice(0, slash) : s;
+}
+
+/** Letter °/ø wins over roman when they disagree (e.g. roman iiø + letter e°(n5)). */
+function dimFrameFromTruth(roman, letter) {
+  const numRoman = numeratorRoman(roman);
+  const numLetter = stripForQuality(numeratorLetter(letter));
+  const letterHalf = /ø/.test(numLetter);
+  const letterDim = /°/.test(numLetter) && !letterHalf;
+  const romanHalf = /ø/.test(numRoman);
+  const romanDim = /°/.test(numRoman) && !romanHalf;
+  const halfDim = letterHalf || (romanHalf && !letterDim);
+  const dimTriad = letterDim || (romanDim && !halfDim);
+  return { halfDim, dimTriad };
+}
+
+
 function triadQualityFromLetter(letter, roman) {
   const l = stripForQuality(letter).toLowerCase();
   const r = stripForQuality(numeratorRoman(roman)).toLowerCase();
@@ -158,6 +178,7 @@ function mergeMods(letter, roman, chord) {
 }
 
 module.exports = {
-  allParenTags, stripForQuality, numeratorRoman, triadQualityFromLetter, triadQualityFromRoman, seventhKind,
+  allParenTags, stripForQuality, numeratorRoman, numeratorLetter, dimFrameFromTruth,
+  triadQualityFromLetter, triadQualityFromRoman, seventhKind,
   susFromText, addsFromText, omitsFromText, altsFromText, extensionsFromType, mergeMods,
 };
