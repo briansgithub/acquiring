@@ -296,6 +296,11 @@ const BASELINE = {
     letter: "G#maj11(b13)",
     roman: "I△11(b13)/V",
   },
+  appliedCustomBorV64: {
+    chord: { root: 5, type: 5, applied: 5, inversion: 2, borrowed: [1, 2, 4, 6, 8, 9, 11] },
+    key: { tonic: "C", scale: "minor" },
+    pcs: [0, 3, 8],
+  },
 };
 
 function pcs(chord, key) {
