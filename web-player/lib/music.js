@@ -9,7 +9,7 @@ import {
   resolveBorrowedScale,
   getScaleChordQualities,
 } from "./musicScale.js";
-import { rootToDiatonicTriad, buildChordFromNoteName } from "./chordBuild.js";
+import { rootToDiatonicTriad, buildChordFromNoteName, voicingWithSlashBass } from "./chordBuild.js";
 
 export {
   parseKey,
@@ -31,6 +31,21 @@ export function chordInterpreter(chord, key, opts = {}) {
   const chordType = effective.type || 5;
   const inversion = effective.inversion || 0;
   const suspensions = effective.suspensions || [];
+
+  // Letter-anchored chords (Hooktheory root=0): build from scraped letter name.
+  if ((!effective.root || effective.root < 1) && effective._letterRootName) {
+    const quality = effective._letterQuality || "major";
+    const fullyDim = effective.dimTriad && chordType >= 7 && !effective.halfDim;
+    const built = buildChordFromNoteName(
+      effective._letterRootName, quality, key, defaultChordOctave, chordType, inversion,
+      fullyDim, suspensions, effective,
+    );
+    if (effective._letterBassName) {
+      const voiced = voicingWithSlashBass(built.notes, built.chordDegrees, effective._letterBassName);
+      return { notes: voiced.notes, chordDegrees: voiced.chordDegrees };
+    }
+    return built;
+  }
 
   // Handle Applied Chords (Secondary Dominants/Functions)
   // HOOKTHEORY DATA MODEL: `applied` is the NUMERATOR chord degree; `root` is the
