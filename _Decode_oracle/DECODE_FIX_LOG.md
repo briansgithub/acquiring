@@ -1201,6 +1201,20 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 070 — susb7 triad omit3 keeps sus4 (2026-07-25, `feat/fix-070-susb7-omit3-sus`)
+
+**070a:** `susb7` letter → explicit sus4 voicing in `mergeMods`; fix `susFromText` false `sus4` match on `susb7`.
+
+**070b:** `applyOmits` — skip omit-3 when sus2/sus4 replaced the third (was stripping the sus tone).
+
+**Gate:** policy **55/55** (`iiSusb7Omit3Inv1`).
+
+**Resync:** 91.1k rows (1969 slugs) — engine fails **151→142** (−9).
+
+**Files:** `truthLetterParse.js`, `chordOmits.js`, `policyRegression.mjs`.
+
+---
+
 ## Session handoff — 2026-07-23 (fetch + decode loop)
 
 ### Merged on `main`

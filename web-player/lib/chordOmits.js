@@ -12,6 +12,10 @@ export function applyOmits(toneJSNames, degreeIndices, omits, chord = null) {
   if (chord?.halfDim && omits.includes(5)) {
     effective = omits.filter((o) => o !== 5);
   }
+  // HT omit-3 + sus2/4: third already replaced — do not strip the sus tone.
+  if (omits.includes(3) && (chord?.suspensions?.includes(2) || chord?.suspensions?.includes(4))) {
+    effective = omits.filter((o) => o !== 3);
+  }
   // HT aug(no5no3): symbol omits 3+#5 but voices aug 5th.
   if (chord?.augmentedTriad && omits.includes(3) && omits.includes(5)) {
     effective = omits.filter((o) => o !== 5);
