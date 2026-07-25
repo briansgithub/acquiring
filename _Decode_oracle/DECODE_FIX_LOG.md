@@ -1177,6 +1177,18 @@ No regression on type=5 (98.9%) / type=7 (97.0→97.3%); corpus2/3 unchanged or 
 
 ---
 
+## Fix 068 — custom-array applied voices denominator major (2026-07-25, `feat/fix-068-applied-custom-bor`)
+
+**068a:** `resolveAppliedBorrowedChord` — custom `borrowed[]` **inv2** applied chords voice **major triad on the borrowed denominator** (`targetSD`), not `V` in major-of-target. Fixes `V64/#v°(bor)` (`G#` major inv2, not `D#` V). Scoped to `inversion === 2` only so `V/bvii(bor)` etc. keep V-of-target voicing.
+
+**Gate:** policy **53/53** (`appliedCustomBorV64`).
+
+**Resync:** 91.1k rows (1969 slugs) — engine fails **166→160** (−6).
+
+**Files:** `chordBuild.js`, `policyRegression.mjs`, `probe_applied_custom_inv2.mjs`.
+
+---
+
 ## Session handoff — 2026-07-23 (fetch + decode loop)
 
 ### Merged on `main`
