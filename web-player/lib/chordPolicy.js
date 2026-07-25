@@ -123,13 +123,13 @@ export function resolveChordPolicy(ctx) {
     ? "diminished"
     : customBorrowedHalfDim
       ? "minor"
-      : modifierChord?.dimTriad
-      ? "diminished"
       : sharp5Minor
         ? "minor"
-        : phdmMaj7 || phdmIImaj7
-          ? "major"
-          : (useSusFrame && chordQuality === "diminished" ? "major" : chordQuality);
+      : modifierChord?.dimTriad
+      ? "diminished"
+      : phdmMaj7 || phdmIImaj7
+        ? "major"
+        : (useSusFrame && chordQuality === "diminished" ? "major" : chordQuality);
 
   const augMaj7Base = triadQuality === "augmented" && chordType >= 7 && !useSusFrame && !omitTriad35;
   const augMaj7StackVoicing = augMaj7Base && inversion !== 3;
@@ -167,7 +167,7 @@ export function resolveChordPolicy(ctx) {
     minorI13B13,
     autoAlterations: minorV13Stack ? ["b9", "b13"] : minorI13B13 ? ["b13"] : [],
     skipThirteenth: false,
-    dimSeventh: chordType >= 7 && !customBorrowedHalfDim && (
+    dimSeventh: chordType >= 7 && !customBorrowedHalfDim && !sharp5Minor && (
       chordQuality === "diminished"
       || halfDimIi
       || borrowedModeDimSeventhDegree(
