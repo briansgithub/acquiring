@@ -48,6 +48,8 @@ function loadTooltip(missing) {
 }
 
 export function renderSongSelector(container, options = {}) {
+  const appEl = document.getElementById("app");
+  const progSearchPane = document.getElementById("progression-search-pane");
   container.innerHTML = `
     <div class="selector-head pane-panel-head">
       <button id="sel-back" type="button" class="sel-back" hidden>Back</button>
@@ -317,6 +319,8 @@ export function renderSongSelector(container, options = {}) {
   function showSearch() {
     if (modeSelect) modeSelect.value = "select_song";
     options.onExitProgressionMode?.();
+    appEl?.classList.remove("progression-mode");
+    if (progSearchPane) progSearchPane.hidden = true;
     setUrlFooterVisible(true);
     showSongNav({ showBack: false, mode: "browse" });
     body.innerHTML = `
@@ -661,12 +665,12 @@ export function renderSongSelector(container, options = {}) {
 
   function showProgression() {
     if (modeSelect) modeSelect.value = "progression_matcher";
-    options.onEnterProgressionMode?.();
+    appEl?.classList.add("progression-mode");
+    if (progSearchPane) progSearchPane.removeAttribute("hidden");
     showProgressionView({
-      body,
+      progSearchPane,
       songs,
       esc,
-      showSongNav,
       setUrlFooterVisible,
       onEnterProgressionMode: options.onEnterProgressionMode,
       onProgressionResults: options.onProgressionResults,
