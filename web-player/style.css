@@ -4226,3 +4226,105 @@ body {
   font-size: 11px;
   color: #f87171;
 }
+
+/* =====================================================================
+   PROGRESSION MATCHER FULL-PAGE LAYOUT
+   When #app.progression-mode is active:
+   - timeline-pane is hidden
+   - progression-search-pane spans full width at top
+   - selector-pane is hidden (its content moved to progression-search-pane)
+   - indicator-pane (Now Playing) takes left column
+   - ring-pane (results) takes right column
+   ===================================================================== */
+
+#app.progression-mode {
+  grid-template-columns: 290px 1fr;
+  grid-template-rows: auto 1fr;
+}
+
+#app.progression-mode #timeline-pane {
+  display: none !important;
+}
+
+#app.progression-mode #progression-search-pane {
+  display: block;
+  grid-column: 1 / -1;
+  grid-row: 1;
+  padding: 10px 16px;
+}
+
+#app.progression-mode #selector-pane {
+  display: none;
+}
+
+#app.progression-mode #indicator-pane {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+#app.progression-mode #ring-pane {
+  grid-column: 2;
+  grid-row: 2;
+  min-height: 0;
+}
+
+/* Horizontal layout for the search settings in the top bar */
+.prog-search-bar {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: nowrap;
+  width: 100%;
+  min-height: 0;
+}
+
+/* GPB (builder) takes most of horizontal space */
+.prog-search-bar .prog-bar-gpb {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Settings column (mode, length, section, beat, filters) */
+.prog-search-bar .prog-bar-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+  min-width: 180px;
+  max-width: 240px;
+}
+
+/* Horizontal row for Length + Section */
+.prog-bar-row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* Search button + status at right */
+.prog-search-bar .prog-bar-run {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+  align-self: stretch;
+}
+
+.prog-bar-run .sel-btn-primary {
+  white-space: nowrap;
+}
+
+.prog-bar-status {
+  font-size: 11px;
+  color: var(--muted);
+  min-height: 14px;
+}
+
+/* GPB wrap override: row-based in wide bar mode */
+.prog-bar-gpb .gpb-wrap {
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 0;
+}
+

@@ -3,7 +3,8 @@
  */
 
 const { resolveFilterKeys, FILTERS } = require('./filterRegistry');
-const { parseSequenceInput, sequenceToProgression } = require('./normalize');
+const { parseSequenceInput, sequenceToProgression, PROGRESSION_SEP } = require('./normalize');
+const { getMaxSharedLength } = require('./progressionDb');
 
 function buildFilterClauses(activeFilters) {
   const clauses = [];
@@ -21,7 +22,7 @@ function buildFilterClauses(activeFilters) {
   return { clauses, params };
 }
 
-function buildSearchQuery(opts) {
+function buildSearchQuery(opts, db = null) {
   const {
     mode = 'functional',
     sequence,
@@ -33,11 +34,34 @@ function buildSearchQuery(opts) {
   } = opts;
 
   const tokens = parseSequenceInput(sequence);
-  const length = lengthIn || tokens.length;
-  const progression = sequenceToProgression(tokens);
+  let length = lengthIn || tokens.length;
 
-  const where = ['n.search_mode = ?', 'n.length = ?', 'n.progression = ?'];
-  const params = [mode, length, progression];
+  // Clamp search length to max_shared_length in the index
+  if (db) {
+    const maxShared = getMaxSharedLength(db);
+    if (maxShared > 0 && length > maxShared) {
+      length = maxShared;
+    }
+  }
+
+  // Build all sub-sequences of clamped length from the user's tokens
+  const subSeqs = [];
+  if (tokens.length >= length) {
+    for (let i = 0; i <= tokens.length - length; i++) {
+      subSeqs.push(tokens.slice(i, i + length));
+    }
+  } else {
+    subSeqs.push(tokens);
+  }
+
+  // Deduplicate sub-progressions
+  const progressions = [...new Set(subSeqs.map((s) => sequenceToProgression(s)))];
+
+  // Build WHERE for matching ANY of the sub-progressions
+  const progPlaceholders = progressions.map(() => '?').join(', ');
+
+  const where = ['n.search_mode = ?', 'n.length = ?', `n.progression IN (${progPlaceholders})`];
+  const params = [mode, length, ...progressions];
 
   if (sectionType) {
     where.push('n.section_type = ?');
@@ -45,7 +69,7 @@ function buildSearchQuery(opts) {
   }
 
   if (beatThreshold > 0) {
-    where.push('CAST(json_extract(n.metadata, \'$.min_chord_duration\') AS REAL) >= ?');
+    where.push("CAST(json_extract(n.metadata, '$.min_chord_duration') AS REAL) >= ?");
     params.push(beatThreshold);
   }
 
@@ -66,7 +90,7 @@ function buildSearchQuery(opts) {
     INNER JOIN (
       SELECT progression, search_mode, COUNT(DISTINCT slug) AS song_count
       FROM ngrams
-      WHERE search_mode = ? AND length = ? AND progression = ?
+      WHERE search_mode = ? AND length = ? AND progression IN (${progPlaceholders})
       GROUP BY progression, search_mode
     ) stats ON stats.progression = n.progression AND stats.search_mode = n.search_mode
     WHERE ${where.join(' AND ')}
@@ -75,7 +99,7 @@ function buildSearchQuery(opts) {
   `;
 
   const allParams = [
-    mode, length, progression,
+    mode, length, ...progressions,
     ...params,
     limit,
   ];
@@ -83,7 +107,7 @@ function buildSearchQuery(opts) {
   return {
     sql,
     params: allParams,
-    progression,
+    progression: progressions.join(' + '),
     length,
     mode,
   };

@@ -20,7 +20,7 @@ function searchProgressions(opts, db = null) {
   const pDb = db || openProgressionDb();
   const shouldClose = !db;
   try {
-    const { sql, params, progression, length, mode } = buildSearchQuery(opts);
+    const { sql, params, progression, length, mode } = buildSearchQuery(opts, pDb);
     const rows = pDb.prepare(sql).all(...params);
     const songCount = rows.length
       ? rows[0].song_count

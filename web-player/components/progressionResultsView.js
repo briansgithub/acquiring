@@ -329,14 +329,12 @@ export function createProgressionResultsManager(ringPane, options = {}) {
       const fallbackKey = keys[0] || { tonic: "C", scale: "major" };
       const chords = bundle.data.chords || bundle.data.mainData || [];
 
-      tl.setSongData({
-        title: bundle.song.title || result.slug,
-        artist: bundle.song.artist || "",
-        chords: chords,
-        key: fallbackKey,
-        songLengthBeats: bundle.data.metadata?.endBeat || 16,
-        sectionKeys: keys,
-      });
+      tl.setSongData(
+        chords,
+        fallbackKey,
+        bundle.data.metadata?.endBeat || 16,
+        bundle.data.metadata || { keys }
+      );
 
       tl.forceRelayout?.();
       setTimeout(() => tl.forceRelayout?.(), 30);

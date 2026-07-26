@@ -902,11 +902,20 @@ export function renderTimeline(container, options = {}) {
             draw();
         },
         setSongData(chords, key, lengthBeats, metadata = null) {
+            if (chords && !Array.isArray(chords) && typeof chords === "object") {
+                const opts = chords;
+                chords = opts.chords || [];
+                key = opts.key || key || null;
+                lengthBeats = opts.lengthBeats || opts.songLengthBeats || lengthBeats || 1;
+                metadata = opts.metadata || { keys: opts.sectionKeys, meters: opts.meters } || metadata;
+            }
             currentChords = chords || [];
             currentKey = key;
             currentPlaybackKey = key || null;
             currentSectionKeys = Array.isArray(metadata?.keys)
                 ? [...metadata.keys].sort((a, b) => (a?.beat ?? 1) - (b?.beat ?? 1))
+                : Array.isArray(metadata?.sectionKeys)
+                ? [...metadata.sectionKeys].sort((a, b) => (a?.beat ?? 1) - (b?.beat ?? 1))
                 : [];
             songLengthBeats = lengthBeats || 1;
             maskedBeats = [];
