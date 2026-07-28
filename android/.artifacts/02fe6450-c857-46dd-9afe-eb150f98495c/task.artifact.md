@@ -1,4 +1,8 @@
-- `[x]` Add `getSearchSuggestions` to `SongDao.kt`
-- `[x]` Update `MainActivity.kt` with `ExposedDropdownMenuBox` and suggestion logic
-- `[x]` Implement debounce for suggestion fetching
-- `[x]` Verify build and functionality
+- `[ ]` Research and port dynamic scale label logic from `scales.js` and `musicScale.js` to `MusicTheory.kt`.
+- `[ ]` Implement `buildSuffix` in `ChordInterpreter.kt` to handle complex suffixes (inversions, suspensions, alterations).
+- `[ ]` Overhaul `getRomanSymbol` in `ChordInterpreter.kt` to support applied and borrowed chords.
+- `[ ]` Implement `getLetterName` in `ChordInterpreter.kt` with accurate root resolution.
+- `[ ]` Update `MainActivity.kt` UI:
+    - Add toggle for Letter Names in `ChordsTab`.
+    - Enhance `ChordsTab` layout for better display of complex symbols.
+- `[ ]` Verify with unit tests and manual harvesting of complex songs.

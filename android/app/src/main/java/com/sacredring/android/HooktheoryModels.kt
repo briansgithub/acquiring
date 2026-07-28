@@ -1,10 +1,7 @@
 package com.sacredring.android
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-
-import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.*
 
 @Serializable
 data class HooktheoryApiResult(
@@ -42,4 +39,15 @@ data class ExtractedSection(
     val chords: List<JsonObject>,
     val notes: JsonElement?,
     val metadata: JsonObject
-)
+) {
+    fun getParsedKey(): KeyInfo {
+        val keys = metadata["keys"]?.jsonArray
+        if (keys != null && keys.isNotEmpty()) {
+            val firstKey = keys[0].jsonObject
+            val tonic = firstKey["tonic"]?.jsonPrimitive?.content ?: "C"
+            val scale = firstKey["scale"]?.jsonPrimitive?.content ?: "major"
+            return KeyInfo(tonic, scale)
+        }
+        return KeyInfo("C", "major")
+    }
+}

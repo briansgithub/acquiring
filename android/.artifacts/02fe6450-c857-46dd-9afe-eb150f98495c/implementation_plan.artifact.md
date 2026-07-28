@@ -1,36 +1,54 @@
-# Implementation Plan - Song Search Suggestions
+# Porting Advanced Chord and Roman Numeral Logic to Android
 
-Implement real-time search suggestions as the user types in the search bar. This will help users find songs quickly without typing the full title.
+This plan outlines the porting of sophisticated music theory conversion logic from the Sacred Ring web player to the Android application. The goal is to provide accurate Roman Numeral and Letter Name representations of chords, including support for applied chords, borrowed modes, inversions, and proper musical symbols (♭/♯).
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Musical Symbols**: As requested, we will use the proper Unicode symbols for flat (♭, U+266D) and sharp (♯, U+266F) in all UI displays.
+> **Data Availability**: The current Android app downloads a ~2.4MB metadata catalog. The full harvested song JSON data (the `dataBlob` in the `Song` entity) is currently populated on-demand via web scraping in the `HarvestService`. If you have a pre-harvested bundle of all songs, we should discuss how to integrate its download or inclusion as an asset.
 
 ## Proposed Changes
 
-### Data Layer
+### 1. Music Theory Engine Refactor
+We will enhance `MusicTheory.kt` to support dynamic scale label generation and include more scale types, matching the web app's `musicScale.js` and `scales.js`.
 
-#### [MODIFY] [SongDao.kt](file:///H:/Desktop/3_sacred_ring/android/app/src/main/java/com/sacredring/android/SongDao.kt)
-- Add a query to fetch a limited number of song suggestions based on a partial title or artist.
-```kotlin
-@Query("SELECT * FROM songs WHERE title LIKE '%' || :query || '%' OR artist LIKE '%' || :query || '%' LIMIT 10")
-suspend fun getSearchSuggestions(query: String): List<Song>
-```
+#### [MODIFY] [MusicTheory.kt](file:///H:/Desktop/3_sacred_ring/android/app/src/main/java/com/sacredring/android/MusicTheory.kt)
+- Update `NOTE_TO_PC` and `SCALE_INTERVALS` to include Harmonic Minor and Phrygian Dominant.
+- Replace hardcoded `MAJOR_LABELS` with a dynamic `generateScaleLabels` function that correctly calculates note names based on the tonic and scale intervals.
+- Implement Unicode symbols (♭, ♯) in note labels.
 
-### UI Layer
+### 2. Advanced Chord Interpretation
+We will overhaul `ChordInterpreter.kt` to implement the full logic from `jsonToSymbol.js`.
+
+#### [MODIFY] [ChordInterpreter.kt](file:///H:/Desktop/3_sacred_ring/android/app/src/main/java/com/sacredring/android/ChordInterpreter.kt)
+- **Port `buildSuffix`**: Handle inversions (figured-bass), suspensions, extensions, alterations, additions, and omits.
+- **Port `getRomanSymbol`**: Full support for applied chords (secondary functions), borrowed chords, and complex suffixes.
+- **Port `getLetterName`**: Resolve root note name accurately for applied/borrowed contexts and append quality/extension suffixes.
+- **Support Inversions**: Correctly identify the bass note for slash-chord notation (e.g., C/G).
+
+### 3. UI Enhancements in Chords Tab
+Update the `ChordsTab` in `MainActivity.kt` to use the new interpreter and provide a toggle for letter names.
 
 #### [MODIFY] [MainActivity.kt](file:///H:/Desktop/3_sacred_ring/android/app/src/main/java/com/sacredring/android/MainActivity.kt)
-- Update `MainScreen` to include a suggestions state.
-- Use `ExposedDropdownMenuBox` (Material 3) around the search `OutlinedTextField` to display suggestions.
-- Implement a `LaunchedEffect` or character-change logic to fetch suggestions from the database as the user types.
-- Add a small delay (debounce) before querying the database to avoid excessive searches on every keystroke.
-- Handle selecting a suggestion to auto-fill the search query and trigger the search.
+- Enhance `ChordsTab` to display the refined Roman Numeral symbols.
+- Add a toggle switch or button to show/hide note pitch class letter names below the Roman Numerals.
+- Ensure chord cards are sized appropriately for complex symbols (e.g., `♭VII7sus4/V`).
 
 ## Verification Plan
 
 ### Automated Tests
-- Build the project to ensure `SongDao` and `MainActivity` compile correctly.
+- Create or update unit tests for `ChordInterpreter` with a suite of complex test cases:
+    - Applied chords: `V7/V`, `vii°7/ii`.
+    - Borrowed chords: `♭VI(min)`, `ii°(dor)`.
+    - Inversions: `I6`, `V43`, `ii65`.
+    - Alterations: `V7(#5)`, `I(add9)`.
+- Verify that `MusicTheory.getNoteLabel` produces correct results for remote keys (e.g., F♯ major, C♭ major).
 
 ### Manual Verification
-1. Open the app.
-2. Start typing a song title in the "Search by Title or Slug" field.
-3. Verify that a dropdown menu appears with up to 10 song suggestions.
-4. Verify that suggestions include both matching titles and artists.
-5. Click on a suggestion and verify that the search query is updated and the song details are displayed (or the search is triggered).
-6. Verify that the suggestions disappear when the text field loses focus or is cleared.
+1. Deploy the app to a device/emulator.
+2. Harvest a complex song (e.g., "Bohemian Rhapsody" or "Maple Leaf Rag").
+3. Navigate to the **Chords** tab.
+4. Verify that Roman Numerals match the web app's display.
+5. Toggle Letter Names and verify accuracy.
+6. Click chord names to confirm they play the correct notes audibly.
