@@ -1,25 +1,30 @@
-# Walkthrough - Fix Room Coroutines Support
+# Walkthrough - Song Search Suggestions
 
-I have fixed the issue where the Room annotation processor was unable to correctly handle `suspend` functions in the `SongDao` when using Kotlin 2.2.10 and AGP 9.3.1.
+I have implemented real-time search suggestions in the search bar. As you type, the app will now suggest songs from the database that match the title or artist.
 
 ## Changes
 
-### Build Configuration
+### Data Layer
 
-#### [app/build.gradle](file:///H:/Desktop/3_sacred_ring/android/app/build.gradle)
-- Updated **Room** from `2.5.2` to `2.8.4`. This version is required for full compatibility with the K2 compiler features in Kotlin 2.x.
-- Added explicit **Coroutines** dependencies (`1.11.0`) to ensure the Room compiler can correctly resolve `suspend` function types.
-- Configured `kapt { correctErrorTypes = true }` to allow the compiler to better handle intermediate stub generation issues.
-- Fixed the **Serialization** plugin application by removing the hardcoded version (which is now managed by the project's classpath).
+#### [SongDao.kt](file:///H:/Desktop/3_sacred_ring/android/app/src/main/java/com/sacredring/android/SongDao.kt)
+- Added `getSearchSuggestions(query: String)` which returns up to 10 songs matching either the title or the artist.
 
-#### [build.gradle](file:///H:/Desktop/3_sacred_ring/android/build.gradle)
-- Added `org.jetbrains.kotlin:kotlin-serialization:2.2.10` to the buildscript classpath to support the version-less plugin application in the app module.
+### UI Layer
+
+#### [MainActivity.kt](file:///H:/Desktop/3_sacred_ring/android/app/src/main/java/com/sacredring/android/MainActivity.kt)
+- **Debounced Fetching**: Added a `LaunchedEffect` with a 300ms delay to fetch suggestions from the database only after the user stops typing.
+- **ExposedDropdownMenuBox**: Wrapped the search text field in a Material 3 dropdown menu box to display suggestions.
+- **Suggestion Items**: Each suggestion shows the song title and artist. Clicking a suggestion auto-fills the search bar and displays the song information immediately.
+- **Visual Feedback**: Added a trailing dropdown icon to indicate the menu state.
 
 ## Verification Results
 
 ### Automated Tests
-- Successfully ran `:app:kaptDebugKotlin`.
-- Successfully ran `assembleDebug`.
+- Successfully ran `:app:assembleDebug`.
 
-> [!TIP]
-> While `kapt` is now working, keep an eye on build performance. With Kotlin 2.x, migrating to **KSP** is recommended once stable versions for your specific toolchain are available. I attempted KSP migration, but encountered an "unexpected jvm signature" error, suggesting it may still be in early development for Kotlin 2.2.10.
+### Manual Verification
+1. Open the app.
+2. Type "Har" (or any partial title) into the search bar.
+3. Observe that a dropdown menu appears with matching songs (e.g., songs by "Harry" or titles containing "Harmony").
+4. Click on a suggestion.
+5. The search bar updates, and the specific song is shown in the library list below.

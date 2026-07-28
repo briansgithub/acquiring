@@ -4,14 +4,20 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
+import kotlinx.serialization.json.JsonPrimitive
+
 @Serializable
 data class HooktheoryApiResult(
-    val ID: String,
+    val ID: JsonElement,
     val song: String,
     val artist: String? = null,
     val jsonData: String? = null,
     val xmlData: String? = null
-)
+) {
+    val idString: String
+        get() = if (ID is JsonPrimitive) ID.content else ID.toString()
+}
+
 
 @Serializable
 data class HooktheorySongData(

@@ -11,7 +11,7 @@ class HarvestService(private val db: AppDatabase) {
     private val client = OkHttpClient()
     private val json = Json { ignoreUnknownKeys = true }
 
-    suspend fun harvest(url: String, onProgress: (String) -> Unit): Result<Song> = withContext(Dispatchers.IO) {
+    suspend fun harvest(url: String, onProgress: (String) -> Unit = {}): Result<Song> = withContext(Dispatchers.IO) {
         try {
             onProgress("Scraping page...")
             val extraction = Scraper.extractSectionIds(url)
@@ -19,7 +19,8 @@ class HarvestService(private val db: AppDatabase) {
                 return@withContext Result.failure(Exception("No sections found on page"))
             }
 
-            val slug = url.substringAfter("theorytab/view/").replace("/", "__")
+            val cleanUrl = url.trim().trimEnd('/')
+            val slug = cleanUrl.substringAfter("theorytab/view/").replace("/", "__")
             val sections = mutableMapOf<String, ExtractedSection>()
             
             var songTitle = "Unknown"

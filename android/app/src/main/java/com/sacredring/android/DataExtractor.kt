@@ -34,9 +34,10 @@ object DataExtractor {
         }
 
         return ExtractedSection(
-            songId = apiResult.ID,
-            numericId = apiResult.ID, // In JS we use numericId = ID
+            songId = apiResult.idString,
+            numericId = apiResult.idString, // In JS we use numericId = ID
             sectionName = sectionName,
+
             songInfo = apiResult.song,
             chords = chords,
             notes = notes,

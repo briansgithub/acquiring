@@ -1,5 +1,4 @@
-- `[x]` Update Room dependencies to 2.8.4
-- `[x]` Add explicit Coroutines dependencies (1.11.0)
-- `[x]` Configure `kapt` with `correctErrorTypes = true`
-- `[x]` Revert `android.builtInKotlin` to `false` to avoid plugin conflicts
-- `[x]` Verify build
+- `[x]` Add `getSearchSuggestions` to `SongDao.kt`
+- `[x]` Update `MainActivity.kt` with `ExposedDropdownMenuBox` and suggestion logic
+- `[x]` Implement debounce for suggestion fetching
+- `[x]` Verify build and functionality
