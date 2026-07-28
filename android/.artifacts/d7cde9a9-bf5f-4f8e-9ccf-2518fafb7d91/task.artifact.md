@@ -1,0 +1,5 @@
+- [x] Implement Dark Mode Theme
+    - [x] Update `themes.xml` to use dark parent theme
+    - [x] Update `MainActivity.kt` with Material 3 Dark Color Scheme
+- [x] Verification
+    - [x] Build and verify UI colors in dark mode

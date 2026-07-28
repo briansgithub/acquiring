@@ -24,5 +24,11 @@ interface SongDao {
 
     @Query("SELECT * FROM songs WHERE title LIKE '%' || :query || '%' OR artist LIKE '%' || :query || '%' LIMIT 10")
     suspend fun getSearchSuggestions(query: String): List<Song>
+
+    @Query("SELECT * FROM songs WHERE lastSelectedAt IS NOT NULL ORDER BY lastSelectedAt DESC LIMIT :limit")
+    suspend fun getRecentSongs(limit: Int = 10): List<Song>
+
+    @Query("UPDATE songs SET lastSelectedAt = :timestamp WHERE slug = :slug")
+    suspend fun updateLastSelected(slug: String, timestamp: Long)
 }
 

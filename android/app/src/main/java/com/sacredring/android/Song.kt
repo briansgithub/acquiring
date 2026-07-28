@@ -12,5 +12,6 @@ data class Song(
     val title: String?,
     val url: String,
     val status: String = "pending",
-    val dataBlob: ByteArray? = null // Compressed JSON of all sections
+    val dataBlob: ByteArray? = null, // Compressed JSON of all sections
+    val lastSelectedAt: Long? = null
 )

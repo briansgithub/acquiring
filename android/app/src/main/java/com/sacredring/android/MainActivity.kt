@@ -36,10 +36,23 @@ class MainActivity : ComponentActivity() {
         db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java, "sacred-ring-db"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
+
+        val darkColorScheme = darkColorScheme(
+            primary = Color(0xFFD0BCFF),
+            secondary = Color(0xFFCCC2DC),
+            tertiary = Color(0xFFEFB8C8),
+            background = Color(0xFF1C1B1F),
+            surface = Color(0xFF1C1B1F),
+            onPrimary = Color(0xFF381E72),
+            onSecondary = Color(0xFF332D41),
+            onTertiary = Color(0xFF492532),
+            onBackground = Color(0xFFE6E1E5),
+            onSurface = Color(0xFFE6E1E5),
+        )
 
         setContent {
-            MaterialTheme {
+            MaterialTheme(colorScheme = darkColorScheme) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -149,6 +162,9 @@ fun MainScreen(db: AppDatabase) {
                 searchResult = searchResult,
                 allSongs = allSongs,
                 onSongClick = { song ->
+                    scope.launch {
+                        activeDb.songDao().updateLastSelected(song.slug, System.currentTimeMillis())
+                    }
                     song.dataBlob?.let { blob ->
                         val dataStr = blob.decodeToString()
                         val sections = json.decodeFromString<Map<String, ExtractedSection>>(dataStr)
