@@ -1,0 +1,5 @@
+- `[x]` Update Room dependencies to 2.8.4
+- `[x]` Add explicit Coroutines dependencies (1.11.0)
+- `[x]` Configure `kapt` with `correctErrorTypes = true`
+- `[x]` Revert `android.builtInKotlin` to `false` to avoid plugin conflicts
+- `[x]` Verify build
