@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -78,8 +79,10 @@ fun MainScreen(db: AppDatabase) {
     var isExpanded by remember { mutableStateOf(false) }
     var selectedSongSections by remember { mutableStateOf<Map<String, ExtractedSection>?>(null) }
     var selectedSectionId by remember { mutableStateOf<String?>(null) }
-    var currentTab by remember { mutableStateOf(0) }
+    var currentTab by remember { mutableStateOf(1) }
     var showLetterNames by remember { mutableStateOf(false) }
+    var isArpeggiated by remember { mutableStateOf(false) }
+    var arpeggioStepMs by remember { mutableStateOf(80f) }
     var isShowingRecent by remember { mutableStateOf(false) }
     
     val scope = rememberCoroutineScope()
@@ -246,6 +249,10 @@ fun MainScreen(db: AppDatabase) {
                 onTabChange = { currentTab = it },
                 showLetterNames = showLetterNames,
                 onShowLetterNamesChange = { showLetterNames = it },
+                isArpeggiated = isArpeggiated,
+                onArpeggiatedChange = { isArpeggiated = it },
+                arpeggioStepMs = arpeggioStepMs,
+                onArpeggioStepMsChange = { arpeggioStepMs = it },
                 onBack = { selectedSongSections = null }
             )
         }
@@ -415,14 +422,19 @@ fun SongDetailView(
     onTabChange: (Int) -> Unit,
     showLetterNames: Boolean,
     onShowLetterNamesChange: (Boolean) -> Unit,
+    isArpeggiated: Boolean,
+    onArpeggiatedChange: (Boolean) -> Unit,
+    arpeggioStepMs: Float,
+    onArpeggioStepMsChange: (Float) -> Unit,
     onBack: () -> Unit
 ) {
-    val selectedSection = sections[selectedSectionId] ?: sections.values.first()
+    val selectedSectionKey = selectedSectionId ?: sections.keys.firstOrNull()
+    val selectedSection = sections[selectedSectionKey] ?: sections.values.first()
     
     Column {
         Row(
             verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
             TextButton(onClick = onBack) { Text("< Back") }
             Text(
@@ -430,6 +442,23 @@ fun SongDetailView(
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.weight(1f).padding(start = 8.dp)
             )
+        }
+
+        // Section Selector Chips Row (Always visible across all tabs)
+        if (sections.size > 1) {
+            LazyRow(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(sections.toList()) { (id, section) ->
+                    val isSelected = id == selectedSectionKey
+                    FilterChip(
+                        selected = isSelected,
+                        onClick = { onSectionChange(id) },
+                        label = { Text(section.safeSectionName) }
+                    )
+                }
+            }
         }
 
         ScrollableTabRow(
@@ -445,8 +474,16 @@ fun SongDetailView(
         }
 
         when (currentTab) {
-            0 -> InfoTab(selectedSection, sections.keys.toList(), selectedSectionId, onSectionChange)
-            1 -> ChordsTab(selectedSection, showLetterNames, onShowLetterNamesChange)
+            0 -> InfoTab(selectedSection, sections, selectedSectionKey, onSectionChange)
+            1 -> ChordsTab(
+                section = selectedSection,
+                showLetterNames = showLetterNames,
+                onShowLetterNamesChange = onShowLetterNamesChange,
+                isArpeggiated = isArpeggiated,
+                onArpeggiatedChange = onArpeggiatedChange,
+                arpeggioStepMs = arpeggioStepMs,
+                onArpeggioStepMsChange = onArpeggioStepMsChange
+            )
         }
     }
 }
@@ -456,24 +493,12 @@ fun SongDetailView(
 @Composable
 fun InfoTab(
     section: ExtractedSection,
-    sectionIds: List<String>,
+    sections: Map<String, ExtractedSection>,
     selectedId: String?,
     onSectionChange: (String) -> Unit
 ) {
     Column(modifier = Modifier.padding(16.dp)) {
         Text("Section: ${section.safeSectionName}", style = MaterialTheme.typography.titleMedium)
-        Spacer(modifier = Modifier.height(8.dp))
-        Text("Switch Section:", style = MaterialTheme.typography.bodyMedium)
-        Row(modifier = Modifier.padding(top = 8.dp)) {
-            sectionIds.forEach { id ->
-                FilterChip(
-                    selected = id == selectedId,
-                    onClick = { onSectionChange(id) },
-                    label = { Text(id) },
-                    modifier = Modifier.padding(end = 4.dp)
-                )
-            }
-        }
         Spacer(modifier = Modifier.height(16.dp))
         Text("Metadata:", style = MaterialTheme.typography.titleSmall)
         Text(section.metadata.toString(), style = MaterialTheme.typography.bodySmall)
@@ -485,10 +510,17 @@ fun InfoTab(
 fun ChordsTab(
     section: ExtractedSection,
     showLetterNames: Boolean,
-    onShowLetterNamesChange: (Boolean) -> Unit
+    onShowLetterNamesChange: (Boolean) -> Unit,
+    isArpeggiated: Boolean,
+    onArpeggiatedChange: (Boolean) -> Unit,
+    arpeggioStepMs: Float,
+    onArpeggioStepMsChange: (Float) -> Unit
 ) {
     val key = section.getParsedKey()
     val scope = rememberCoroutineScope()
+    val displayChords = remember(section, key) {
+        ChordInterpreter.getUniqueDisplayChords(section.chords, key)
+    }
 
     Column(modifier = Modifier.padding(16.dp)) {
         Row(
@@ -497,16 +529,53 @@ fun ChordsTab(
             verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
         ) {
             Text("Key: ${key.tonic} ${key.scale}", style = MaterialTheme.typography.titleMedium)
-            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                Text("Letter Names", style = MaterialTheme.typography.bodySmall)
-                Switch(
-                    checked = showLetterNames,
-                    onCheckedChange = onShowLetterNamesChange,
-                    modifier = Modifier.scale(0.7f)
-                )
+            
+            Row(
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                    Text("Letters", style = MaterialTheme.typography.bodySmall)
+                    Switch(
+                        checked = showLetterNames,
+                        onCheckedChange = onShowLetterNamesChange,
+                        modifier = Modifier.scale(0.7f)
+                    )
+                }
+
+                Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                    Text("Arpeggiate", style = MaterialTheme.typography.bodySmall)
+                    Switch(
+                        checked = isArpeggiated,
+                        onCheckedChange = onArpeggiatedChange,
+                        modifier = Modifier.scale(0.7f)
+                    )
+                }
             }
         }
         
+        if (isArpeggiated) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Speed: ${arpeggioStepMs.toInt()} ms",
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.width(90.dp)
+                )
+                Slider(
+                    value = arpeggioStepMs,
+                    onValueChange = onArpeggioStepMsChange,
+                    valueRange = 30f..1000f,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
         
         LazyVerticalGrid(
@@ -514,14 +583,17 @@ fun ChordsTab(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(section.chords) { chord ->
+            items(displayChords) { chord ->
                 val symbol = ChordInterpreter.getRomanSymbol(chord, key)
                 val letterName = ChordInterpreter.getLetterName(chord, key)
+
                 Card(
                     onClick = {
                         val notes = ChordInterpreter.getChordNotes(chord, key)
-                        scope.launch {
-                            AudioEngine.playChord(notes)
+                        if (notes.isNotEmpty()) {
+                            scope.launch {
+                                AudioEngine.playChord(notes, arpeggiate = isArpeggiated, stepMs = arpeggioStepMs.toInt())
+                            }
                         }
                     },
                     modifier = Modifier.height(80.dp)

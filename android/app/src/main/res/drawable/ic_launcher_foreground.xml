@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Degree 1 -->
+    <path
+        android:fillColor="@color/degree_1"
+        android:pathData="M54,29.5a4.5,4.5 0 1,0 0,9a4.5,4.5 0 1,0 0,-9" />
+    <!-- Degree 2 -->
+    <path
+        android:fillColor="@color/degree_2"
+        android:pathData="M69.6,37.1a4.5,4.5 0 1,0 0,9a4.5,4.5 0 1,0 0,-9" />
+    <!-- Degree 3 -->
+    <path
+        android:fillColor="@color/degree_3"
+        android:pathData="M73.5,53.9a4.5,4.5 0 1,0 0,9a4.5,4.5 0 1,0 0,-9" />
+    <!-- Degree 4 -->
+    <path
+        android:fillColor="@color/degree_4"
+        android:pathData="M62.6,67.5a4.5,4.5 0 1,0 0,9a4.5,4.5 0 1,0 0,-9" />
+    <!-- Degree 5 -->
+    <path
+        android:fillColor="@color/degree_5"
+        android:pathData="M45.4,67.5a4.5,4.5 0 1,0 0,9a4.5,4.5 0 1,0 0,-9" />
+    <!-- Degree 6 -->
+    <path
+        android:fillColor="@color/degree_6"
+        android:pathData="M34.5,53.9a4.5,4.5 0 1,0 0,9a4.5,4.5 0 1,0 0,-9" />
+    <!-- Degree 7 -->
+    <path
+        android:fillColor="@color/degree_7"
+        android:pathData="M38.4,37.1a4.5,4.5 0 1,0 0,9a4.5,4.5 0 1,0 0,-9" />
+</vector>

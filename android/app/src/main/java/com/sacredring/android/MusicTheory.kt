@@ -62,12 +62,44 @@ object MusicTheory {
         "G" to listOf("G", "A", "B", "C", "D", "E", "F♯"),
         "A" to listOf("A", "B", "C♯", "D", "E", "F♯", "G♯"),
         "B" to listOf("B", "C♯", "D♯", "E", "F♯", "G♯", "A♯"),
+        "C♯" to listOf("C♯", "D♯", "E♯", "F♯", "G♯", "A♯", "B♯"),
+        "D♯" to listOf("D♯", "E♯", "Fx", "G♯", "A♯", "B♯", "Cx"),
+        "E♯" to listOf("E♯", "Fx", "Gx", "A♯", "B♯", "Cx", "Dx"),
         "F♯" to listOf("F♯", "G♯", "A♯", "B", "C♯", "D♯", "E♯"),
-        "G♭" to listOf("G♭", "A♭", "B♭", "C♭", "D♭", "E♭", "F"),
+        "G♯" to listOf("G♯", "A♯", "B♯", "C♯", "D♯", "E♯", "Fx"),
+        "A♯" to listOf("A♯", "B♯", "Cx", "D♯", "E♯", "Fx", "Gx"),
+        "B♯" to listOf("B♯", "Cx", "Dx", "E♯", "Fx", "Gx", "Ax"),
+        "C♭" to listOf("C♭", "D♭", "E♭", "F♭", "G♭", "A♭", "B♭"),
         "D♭" to listOf("D♭", "E♭", "F", "G♭", "A♭", "B♭", "C"),
         "E♭" to listOf("E♭", "F", "G", "A♭", "B♭", "C", "D"),
+        "F♭" to listOf("F♭", "G♭", "A♭", "B♭♭", "C♭", "D♭", "E♭"),
+        "G♭" to listOf("G♭", "A♭", "B♭", "C♭", "D♭", "E♭", "F"),
         "A♭" to listOf("A♭", "B♭", "C", "D♭", "E♭", "F", "G"),
         "B♭" to listOf("B♭", "C", "D", "E♭", "F", "G", "A")
+    )
+
+    val MINOR_LABELS = mapOf(
+        "C" to listOf("C", "D", "E♭", "F", "G", "A♭", "B♭"),
+        "D" to listOf("D", "E", "F", "G", "A", "B♭", "C"),
+        "E" to listOf("E", "F♯", "G", "A", "B", "C", "D"),
+        "F" to listOf("F", "G", "A♭", "B♭", "C", "D♭", "E♭"),
+        "G" to listOf("G", "A", "B♭", "C", "D", "E♭", "F"),
+        "A" to listOf("A", "B", "C", "D", "E", "F", "G"),
+        "B" to listOf("B", "C♯", "D", "E", "F♯", "G", "A"),
+        "C♯" to listOf("C♯", "D♯", "E", "F♯", "G♯", "A", "B"),
+        "D♯" to listOf("D♯", "E♯", "F♯", "G♯", "A♯", "B", "C♯"),
+        "E♯" to listOf("E♯", "Fx", "G♯", "A♯", "B♯", "C♯", "D♯"),
+        "F♯" to listOf("F♯", "G♯", "A", "B", "C♯", "D", "E"),
+        "G♯" to listOf("G♯", "A♯", "B", "C♯", "D♯", "E", "F♯"),
+        "A♯" to listOf("A♯", "B♯", "C♯", "D♯", "E♯", "F♯", "G♯"),
+        "B♯" to listOf("B♯", "Cx", "D♯", "E♯", "Fx", "G♯", "A♯"),
+        "C♭" to listOf("C♭", "D♭", "E♭♭", "F♭", "G♭", "A♭♭", "B♭♭"),
+        "D♭" to listOf("D♭", "E♭", "F♭", "G♭", "A♭", "B♭♭", "C♭"),
+        "E♭" to listOf("E♭", "F", "G♭", "A♭", "B♭", "C♭", "D♭"),
+        "F♭" to listOf("F♭", "G♭", "A♭♭", "B♭♭", "C♭", "D♭♭", "E♭♭"),
+        "G♭" to listOf("G♭", "A♭", "B♭♭", "C♭", "D♭", "E♭♭", "F♭"),
+        "A♭" to listOf("A♭", "B♭", "C♭", "D♭", "E♭", "F♭", "G♭"),
+        "B♭" to listOf("B♭", "C", "D♭", "E♭", "F", "G♭", "A♭")
     )
 
     fun generateScaleLabels(tonic: String, intervals: List<Int>): List<String> {
@@ -75,6 +107,7 @@ object MusicTheory {
         val normalizedTonic = normalizeTonic(tonic)
         val tonicBase = normalizedTonic.take(1).uppercase()
         val tonicIndex = noteOrder.indexOf(tonicBase)
+        if (tonicIndex == -1) return listOf("C", "D", "E", "F", "G", "A", "B")
         
         val tonicPc = NOTE_TO_PC[normalizedTonic] ?: 0
         
@@ -82,14 +115,13 @@ object MusicTheory {
             val targetPc = (tonicPc + intervals[i]) % 12
             val targetLetter = noteOrder[(tonicIndex + i) % 7]
             
-            // Find note name with target letter and target pitch class
-            val options = listOf("", "♯", "♭", "♯♯", "♭♭", "x")
-            options.asSequence().map { acc -> targetLetter + acc }.firstOrNull { 
-                (NOTE_TO_PC[it] ?: -1) == targetPc 
-            } ?: targetLetter
+            val options = listOf("", "♭", "♯", "♭♭", "♯♯", "x")
+            options.asSequence()
+                .map { acc -> targetLetter + acc }
+                .firstOrNull { (NOTE_TO_PC[it] ?: -1) == targetPc }
+                ?: targetLetter
         }
     }
-
 
     fun normalizeTonic(tonic: String): String {
         return tonic.trim()
@@ -100,19 +132,19 @@ object MusicTheory {
     fun getNoteLabel(degree: Int, tonic: String, scale: String, customIntervals: List<Int>? = null): String {
         val normalizedTonic = normalizeTonic(tonic)
         val intervals = if ((scale == "custom") && (customIntervals != null)) {
-
             customIntervals
         } else {
             SCALE_INTERVALS[scale] ?: SCALE_INTERVALS["major"]!!
         }
         
-        val labels = if (scale == "major") {
-            MAJOR_LABELS[normalizedTonic] ?: generateScaleLabels(normalizedTonic, intervals)
-        } else {
-            generateScaleLabels(normalizedTonic, intervals)
+        val labels = when (scale) {
+            "major" -> MAJOR_LABELS[normalizedTonic] ?: generateScaleLabels(normalizedTonic, intervals)
+            "minor" -> MINOR_LABELS[normalizedTonic] ?: generateScaleLabels(normalizedTonic, intervals)
+            else -> generateScaleLabels(normalizedTonic, intervals)
         }
         
-        return labels.getOrElse((degree - 1) % 7) { "C" }
+        val idx = ((degree - 1) % 7 + 7) % 7
+        return labels.getOrElse(idx) { "C" }
     }
 
     fun getModifierValue(sd: String): Int {
