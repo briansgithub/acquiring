@@ -191,21 +191,25 @@ Fix-by-fix detail: [`_Decode_oracle/DECODE_FIX_LOG.md`](../_Decode_oracle/DECODE
 
 ---
 
-## 7. Hooktheory cache + unified library
+## 7. Data Architecture: Cache + Unified Library
 
-Song data is cached under `.hooktheory_cache/<artist> - <Song_Title>/` by [`extract_hooktheory_data.js`](../extract_hooktheory_data.js) via `lib/cache/cacheManager.js`. One JSON per section plus `_metadata.json`. The web-player serves playback from here (`GET /api/songs`, `GET /api/song`).
+Bulky runtime data lives in a **Modular Data Root** (default: `sacred_ring_data/`), resolved by `lib/dataRoot.js`. This root contains the SQLite catalog, the playback cache, and harvest artifacts.
 
-The **catalog DB** (`_Research_testing/hooktheory_catalog/data/hooktheory_catalog.db`) is the search index for the Song Selector. Cache and catalog are joined by TheoryTab URL slug:
+### The Playback Cache
+Song data is cached under `playback/.hooktheory_cache/<artist> - <Song_Title>/`. Each folder contains one JSON per section plus `_metadata.json`. The web-player serves playback directly from this cache.
+
+### The Catalog Database: `hooktheory_catalog.db`
+Located at `catalog/hooktheory_catalog.db`, this SQLite database is the search index for the Song Selector and the source of frequency statistics for the quiz engine.
+
+Cache and catalog are joined by the TheoryTab URL slug.
 
 | `songs` column | Meaning |
 |---|---|
 | `cache_dir` | Folder name under `.hooktheory_cache/` (e.g. `the-beatles - Hey_Jude`) |
 | `processed_at` | When section JSON was written to cache |
-| `oracle_tested_at` | Oracle ground-truth compare (future) |
+| `oracle_tested_at` | When the oracle test was last run for this song |
 
 **Processed step:** `lib/cacheSync.js` `commitProcessedCache` sets `cache_dir` / `processed_at` on an **existing** catalog row only (no cache→DB import). Normal workflow: discover or add-by-URL → Fetch/light harvest → metadata → processed → tested.
-
-**Working set (2026-06):** six fetch+tested songs in `.hooktheory_cache/` (see [HANDOFF.md](../HANDOFF.md)). **Planned:** move DB + cache + harvest outputs to a portable data root outside git.
 
 | Route | Role |
 |---|---|
