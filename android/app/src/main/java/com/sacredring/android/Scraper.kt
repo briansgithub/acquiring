@@ -24,6 +24,8 @@ object Scraper {
                 val name = tab.text().trim()
                 
                 if (id.isNotEmpty() && name.lowercase() != "all sections") {
+                    // Only use the first name we find for a given ID, 
+                    // and prefer names from elements that look like actual tabs (in navigation)
                     if (!songIds.contains(id)) {
                         songIds.add(id)
                         sectionMapping[id] = name

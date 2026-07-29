@@ -29,7 +29,11 @@ class HarvestService(private val db: AppDatabase) {
             for ((index, id) in extraction.songIds.withIndex()) {
                 onProgress("Fetching section ${index + 1}/${extraction.songIds.size} ($id)...")
                 val apiResult = fetchSection(id)
-                val sectionName = extraction.sectionMapping[id] ?: "Section ${index + 1}"
+                
+                // Prefer section name from API, then scraper, then default
+                val rawName = apiResult.section ?: extraction.sectionMapping[id] ?: "Section ${index + 1}"
+                val sectionName = rawName.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+                
                 val extracted = DataExtractor.extractSection(apiResult, sectionName)
                 sections[id] = extracted
                 
@@ -60,7 +64,7 @@ class HarvestService(private val db: AppDatabase) {
     }
 
     private fun fetchSection(id: String): HooktheoryApiResult {
-        val apiUrl = "https://api.hooktheory.com/v1/songs/public/$id?fields=ID,song,jsonData"
+        val apiUrl = "https://api.hooktheory.com/v1/songs/public/$id?fields=ID,song,section,jsonData"
         val request = Request.Builder().url(apiUrl).build()
         client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) throw Exception("API Error: ${response.code}")

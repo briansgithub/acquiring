@@ -8,6 +8,7 @@ data class HooktheoryApiResult(
     val ID: JsonElement,
     val song: String,
     val artist: String? = null,
+    val section: String? = null,
     val jsonData: String? = null,
     val xmlData: String? = null
 ) {
