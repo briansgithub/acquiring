@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
         db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java, "sacred-ring-db"
-        ).fallbackToDestructiveMigration().build()
+        ).build()
 
         val darkColorScheme = darkColorScheme(
             primary = Color(0xFFD0BCFF),
@@ -72,6 +72,7 @@ fun MainScreen(db: AppDatabase) {
     var harvestStatus by remember { mutableStateOf("") }
     var searchQuery by remember { mutableStateOf("") }
     var searchResult by remember { mutableStateOf<String?>(null) }
+    var catalogStatus by remember { mutableStateOf("") }
     var allSongs by remember { mutableStateOf(listOf<Song>()) }
     var suggestions by remember { mutableStateOf(listOf<Song>()) }
     var isExpanded by remember { mutableStateOf(false) }
@@ -79,20 +80,74 @@ fun MainScreen(db: AppDatabase) {
     var selectedSectionId by remember { mutableStateOf<String?>(null) }
     var currentTab by remember { mutableStateOf(0) }
     var showLetterNames by remember { mutableStateOf(false) }
+    var isShowingRecent by remember { mutableStateOf(false) }
     
     val scope = rememberCoroutineScope()
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     val harvestService = remember(activeDb) { HarvestService(activeDb) }
     val json = remember { Json { ignoreUnknownKeys = true } }
 
     LaunchedEffect(searchQuery) {
-        if (searchQuery.length >= 2) {
+        if (searchQuery.isNotEmpty()) {
             delay(300) // Debounce
             suggestions = activeDb.songDao().getSearchSuggestions(searchQuery)
-            isExpanded = suggestions.isNotEmpty()
+            isExpanded = true // Always expand when typing to show suggestions or "No results"
+            isShowingRecent = false
         } else {
-            suggestions = emptyList()
-            isExpanded = false
+            // Show recent songs when empty from SharedPreferences
+            val slugs = HistoryManager.getRecentSlugs(context)
+            if (slugs.isNotEmpty()) {
+                val recentSongs = activeDb.songDao().getSongsBySlugs(slugs)
+                // Sort by the order in the slugs list (most recent first)
+                suggestions = slugs.mapNotNull { slug -> recentSongs.find { it.slug == slug } }
+                isShowingRecent = suggestions.isNotEmpty()
+                isExpanded = suggestions.isNotEmpty()
+            } else {
+                suggestions = emptyList()
+                isShowingRecent = false
+                isExpanded = false
+            }
+        }
+    }
+
+    val openSong: (Song) -> Unit = { song ->
+        HistoryManager.addSong(context, song.slug)
+        isExpanded = false
+
+        if (song.dataBlob != null) {
+            try {
+                val dataStr = DataUtils.decompress(song.dataBlob)
+                val sections = json.decodeFromString<Map<String, ExtractedSection>>(dataStr)
+                selectedSongSections = sections
+                selectedSectionId = sections.keys.firstOrNull()
+                currentTab = 1 // Switch to Chords tab
+            } catch (e: Exception) {
+                searchResult = "❌ Error loading song: ${e.message}"
+            }
+        } else {
+            // Auto-harvest on demand if dataBlob is missing
+            scope.launch {
+                harvestStatus = "Fetching chords for ${song.title ?: song.slug}..."
+                val result = harvestService.harvest(song.url) { harvestStatus = it }
+                result.onSuccess { harvestedSong ->
+                    harvestedSong.dataBlob?.let { blob ->
+                        try {
+                            val dataStr = DataUtils.decompress(blob)
+                            val sections = json.decodeFromString<Map<String, ExtractedSection>>(dataStr)
+                            selectedSongSections = sections
+                            selectedSectionId = sections.keys.firstOrNull()
+                            currentTab = 1 // Switch to Chords tab
+                            harvestStatus = "Loaded chords for ${song.title ?: song.slug}!"
+                        } catch (e: Exception) {
+                            harvestStatus = "❌ Error loading harvested song: ${e.message}"
+                        }
+                    }
+                }
+                result.onFailure { error ->
+                    harvestStatus = "❌ Error fetching song: ${error.message}"
+                }
+            }
         }
     }
 
@@ -126,12 +181,8 @@ fun MainScreen(db: AppDatabase) {
                 isExpanded = isExpanded,
                 onExpandedChange = { isExpanded = it },
                 suggestions = suggestions,
-                onSuggestionClick = { song ->
-                    searchQuery = song.title ?: song.slug
-                    allSongs = listOf(song)
-                    isExpanded = false
-                    searchResult = "Selected from suggestions: ${song.slug}"
-                },
+                isShowingRecent = isShowingRecent,
+                onSuggestionClick = openSong,
                 onSearchTitle = {
                     scope.launch {
                         val results = activeDb.songDao().searchSongsByTitle(searchQuery)
@@ -161,16 +212,27 @@ fun MainScreen(db: AppDatabase) {
                 },
                 searchResult = searchResult,
                 allSongs = allSongs,
-                onSongClick = { song ->
+                onSongClick = openSong,
+
+                catalogStatus = catalogStatus,
+                onDownloadCatalog = {
                     scope.launch {
-                        activeDb.songDao().updateLastSelected(song.slug, System.currentTimeMillis())
-                    }
-                    song.dataBlob?.let { blob ->
-                        val dataStr = blob.decodeToString()
-                        val sections = json.decodeFromString<Map<String, ExtractedSection>>(dataStr)
-                        selectedSongSections = sections
-                        selectedSectionId = sections.keys.firstOrNull()
-                        currentTab = 1 // Switch to Chords tab
+                        catalogStatus = "Starting download..."
+                        val result = DatabaseDownloader.downloadAndInstallCatalog(
+                            context = context,
+                            currentDb = activeDb
+                        ) { catalogStatus = it }
+                        
+                        if (result.isSuccess) {
+                            // Re-open DB
+                            activeDb = Room.databaseBuilder(
+                                context.applicationContext,
+                                AppDatabase::class.java, "sacred-ring-db"
+                            ).build()
+                            catalogStatus = "Database Refreshed!"
+                        } else {
+                            catalogStatus = "Error: ${result.exceptionOrNull()?.message}"
+                        }
                     }
                 }
             )
@@ -204,19 +266,42 @@ fun LibraryView(
     isExpanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     suggestions: List<Song>,
+    isShowingRecent: Boolean,
     onSuggestionClick: (Song) -> Unit,
     onSearchTitle: () -> Unit,
     onFindSlug: () -> Unit,
     onListAll: () -> Unit,
     searchResult: String?,
     allSongs: List<Song>,
-    onSongClick: (Song) -> Unit
+    onSongClick: (Song) -> Unit,
+    catalogStatus: String,
+    onDownloadCatalog: () -> Unit
 ) {
     Column {
-        // Harvest Section
+        // Harvest & Download Section
         Card(modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
             Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = "Harvest New Song", style = MaterialTheme.typography.titleMedium)
+                Text(text = "Songs Catalog", style = MaterialTheme.typography.titleMedium)
+                
+                Button(
+                    onClick = onDownloadCatalog,
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                ) {
+                    Text("Download Full Library (2.4 MB)")
+                }
+                
+                if (catalogStatus.isNotEmpty()) {
+                    Text(
+                        text = catalogStatus,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 4.dp),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                
+                Divider(modifier = Modifier.padding(vertical = 12.dp))
+
+                Text(text = "Harvest Individual Song", style = MaterialTheme.typography.titleSmall)
                 OutlinedTextField(
                     value = urlToHarvest,
                     onValueChange = onUrlChange,
@@ -248,11 +333,25 @@ fun LibraryView(
                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
             )
 
-            if (suggestions.isNotEmpty()) {
+            if (isExpanded) {
                 ExposedDropdownMenu(
                     expanded = isExpanded,
                     onDismissRequest = { onExpandedChange(false) }
                 ) {
+                    if (isShowingRecent) {
+                        DropdownMenuItem(
+                            text = { Text("Recent Selections", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary) },
+                            onClick = {},
+                            enabled = false
+                        )
+                    } else if (suggestions.isEmpty() && searchQuery.isNotEmpty()) {
+                        DropdownMenuItem(
+                            text = { Text("No results found for '$searchQuery'", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.secondary) },
+                            onClick = {},
+                            enabled = false
+                        )
+                    }
+
                     suggestions.forEach { song ->
                         DropdownMenuItem(
                             text = {
@@ -327,7 +426,7 @@ fun SongDetailView(
         ) {
             TextButton(onClick = onBack) { Text("< Back") }
             Text(
-                text = selectedSection.songInfo,
+                text = selectedSection.safeSongInfo,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.weight(1f).padding(start = 8.dp)
             )
@@ -362,7 +461,7 @@ fun InfoTab(
     onSectionChange: (String) -> Unit
 ) {
     Column(modifier = Modifier.padding(16.dp)) {
-        Text("Section: ${section.sectionName}", style = MaterialTheme.typography.titleMedium)
+        Text("Section: ${section.safeSectionName}", style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(8.dp))
         Text("Switch Section:", style = MaterialTheme.typography.bodyMedium)
         Row(modifier = Modifier.padding(top = 8.dp)) {

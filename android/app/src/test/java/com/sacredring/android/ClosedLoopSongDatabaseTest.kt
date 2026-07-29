@@ -102,8 +102,36 @@ class ClosedLoopSongDatabaseTest {
         }
     }
 
+    @Test
+    fun testExtractedSectionNumericIdParsing() {
+        val jsonStr = """
+            {
+              "kygzyeaqnmK": {
+                "songId": "kygzyeaqnmK",
+                "numericId": 1789507,
+                "sectionName": "Chorus",
+                "songInfo": "Poker Face",
+                "chords": [],
+                "notes": null,
+                "metadata": {}
+              }
+            }
+        """.trimIndent()
+
+        val json = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
+        val map = json.decodeFromString<Map<String, ExtractedSection>>(jsonStr)
+
+        assertNotNull("Map should contain kygzyeaqnmK", map["kygzyeaqnmK"])
+        val section = map["kygzyeaqnmK"]!!
+        assertEquals("1789507", section.safeNumericId)
+        assertEquals("Chorus", section.safeSectionName)
+        assertEquals("Poker Face", section.safeSongInfo)
+        println("✅ Successfully parsed numericId=1789507 as JsonElement!")
+    }
+
     private data class TestCase(
         val url: String,
         val expectedSlug: String
     )
 }
+

@@ -1,5 +1,6 @@
 # Gradle files
 .gradle/
+.artifacts/
 build/
 
 # Local configuration file (sdk path, etc)

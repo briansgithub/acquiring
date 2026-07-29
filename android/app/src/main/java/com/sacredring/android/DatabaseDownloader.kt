@@ -40,7 +40,8 @@ object DatabaseDownloader {
                 // Ensure parent database directory exists
                 targetDbFile.parentFile?.mkdirs()
 
-                onProgress("Downloading catalog database (2.4 MB)...")
+                onProgress("Downloading full library & chords (56.6 MB)...")
+
                 body.byteStream().use { inputStream ->
                     FileOutputStream(gzFile).use { outputStream ->
                         val buffer = ByteArray(8192)
@@ -82,7 +83,8 @@ object DatabaseDownloader {
                 // Delete temporary gzip file
                 if (gzFile.exists()) gzFile.delete()
 
-                onProgress("Catalog database installed! (39,215 songs ready)")
+                onProgress("Full library installed! (34,101 songs ready with chords)")
+
                 Result.success(true)
             }
         } catch (e: Exception) {

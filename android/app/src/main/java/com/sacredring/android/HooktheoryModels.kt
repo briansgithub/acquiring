@@ -32,16 +32,36 @@ data class HooktheorySongData(
 
 @Serializable
 data class ExtractedSection(
-    val songId: String,
-    val numericId: String,
-    val sectionName: String,
-    val songInfo: String,
-    val chords: List<JsonObject>,
-    val notes: JsonElement?,
-    val metadata: JsonObject
+    val songId: JsonElement? = null,
+    val numericId: JsonElement? = null,
+    val sectionName: String? = null,
+    val songInfo: String? = null,
+    val chords: List<JsonObject> = emptyList(),
+    val notes: JsonElement? = null,
+    val metadata: JsonObject? = null
 ) {
+    val safeSongId: String
+        get() = when (val el = songId) {
+            is JsonPrimitive -> el.content
+            null -> ""
+            else -> el.toString()
+        }
+
+    val safeNumericId: String
+        get() = when (val el = numericId) {
+            is JsonPrimitive -> el.content
+            null -> ""
+            else -> el.toString()
+        }
+
+    val safeSectionName: String
+        get() = sectionName ?: "Section"
+
+    val safeSongInfo: String
+        get() = songInfo ?: ""
+
     fun getParsedKey(): KeyInfo {
-        val keys = metadata["keys"]?.jsonArray
+        val keys = metadata?.get("keys")?.jsonArray
         if (keys != null && keys.isNotEmpty()) {
             val firstKey = keys[0].jsonObject
             val tonic = firstKey["tonic"]?.jsonPrimitive?.content ?: "C"
@@ -51,3 +71,4 @@ data class ExtractedSection(
         return KeyInfo("C", "major")
     }
 }
+
