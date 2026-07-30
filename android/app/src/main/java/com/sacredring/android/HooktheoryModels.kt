@@ -31,6 +31,19 @@ data class HooktheorySongData(
     val endBeat: Int? = null
 )
 
+data class KeyInfoWithBeat(
+    val key: KeyInfo,
+    val beat: Double
+)
+
+@Serializable
+data class MelodyNote(
+    val sd: String,
+    val beat: Double,
+    val duration: Double,
+    val octave: Int = 0
+)
+
 @Serializable
 data class ExtractedSection(
     val songId: JsonElement? = null,
@@ -61,15 +74,46 @@ data class ExtractedSection(
     val safeSongInfo: String
         get() = songInfo ?: ""
 
-    fun getParsedKey(): KeyInfo {
-        val keys = metadata?.get("keys")?.jsonArray
-        if (keys != null && keys.isNotEmpty()) {
-            val firstKey = keys[0].jsonObject
-            val tonic = firstKey["tonic"]?.jsonPrimitive?.content ?: "C"
-            val scale = firstKey["scale"]?.jsonPrimitive?.content ?: "major"
-            return KeyInfo(tonic, scale)
+    fun getKeys(): List<KeyInfoWithBeat> {
+        val keysArray = metadata?.get("keys") as? JsonArray
+        if (keysArray != null && keysArray.isNotEmpty()) {
+            val list = mutableListOf<KeyInfoWithBeat>()
+            for (element in keysArray) {
+                val obj = element as? JsonObject ?: continue
+                val tonic = (obj["tonic"] as? JsonPrimitive)?.content ?: "C"
+                val scale = (obj["scale"] as? JsonPrimitive)?.content ?: "major"
+                val beat = (obj["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                list.add(KeyInfoWithBeat(KeyInfo(tonic, scale), beat))
+            }
+            if (list.isNotEmpty()) {
+                return list.sortedBy { it.beat }
+            }
         }
-        return KeyInfo("C", "major")
+        return listOf(KeyInfoWithBeat(KeyInfo("C", "major"), 1.0))
+    }
+
+    fun getKeyAtBeat(beat: Double): KeyInfo {
+        val allKeys = getKeys()
+        var activeKey = allKeys.first().key
+        for (k in allKeys) {
+            if (k.beat <= beat) {
+                activeKey = k.key
+            } else {
+                break
+            }
+        }
+        return activeKey
+    }
+
+    fun getParsedKey(): KeyInfo = getKeyAtBeat(1.0)
+
+    fun getBpm(): Double {
+        val tempos = metadata?.get("tempos") as? JsonArray
+        if (tempos != null && tempos.isNotEmpty()) {
+            val firstTempo = tempos[0] as? JsonObject
+            return (firstTempo?.get("bpm") as? JsonPrimitive)?.doubleOrNull ?: 120.0
+        }
+        return 120.0
     }
 }
 

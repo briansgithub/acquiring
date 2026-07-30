@@ -21,7 +21,8 @@ class HarvestService(private val db: AppDatabase) {
 
             val cleanUrl = url.trim().trimEnd('/')
             val slug = cleanUrl.substringAfter("theorytab/view/").replace("/", "__")
-            val sections = mutableMapOf<String, ExtractedSection>()
+            // Preserve the tab order returned by Hooktheory when serializing the song.
+            val sections = linkedMapOf<String, ExtractedSection>()
             
             var songTitle = "Unknown"
             var artist = "Unknown"

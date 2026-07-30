@@ -9,7 +9,7 @@ object DataExtractor {
         val rawJson = apiResult.jsonData ?: throw IllegalArgumentException("No jsonData in API result")
         val data = json.decodeFromString<JsonObject>(rawJson)
         
-        val chords = data["chords"]?.jsonArray?.map { it.jsonObject } ?: emptyList()
+        val chords = (data["chords"] as? JsonArray)?.mapNotNull { it as? JsonObject } ?: emptyList()
         val notes = data["notes"]
         
         // Construct metadata object similar to JS
@@ -27,7 +27,7 @@ object DataExtractor {
             data["pickup"]?.let { put("pickup", it) }
             
             // From settings
-            val settings = data["settings"]?.jsonObject
+            val settings = data["settings"] as? JsonObject
             settings?.get("externalMP3URL")?.let { put("externalMp3Url", it) }
             settings?.get("externalMP3StartBeat")?.let { put("externalMp3StartBeat", it) }
             settings?.get("externalMP3Duration")?.let { put("externalMp3Duration", it) }
