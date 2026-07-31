@@ -264,7 +264,9 @@ export function resolveChordRootSD(rootNoteName, key) {
   return 1;
 }
 
-export function calculateScaleDegrees(toneJSNames, degreeIndices, chordRootSD, chordDegrees, chordType, originalKey) {
+// Calculate note labels in the key of the chord's actual root. The song key
+// remains the context for Roman-numeral notation and is not used here.
+export function calculateScaleDegrees(toneJSNames, degreeIndices, chordRootNoteName, chordDegrees, chordType) {
   const extensionBaseDegree = {
     3: "7", // chord seventh
     4: "2", // 9th
@@ -288,19 +290,18 @@ export function calculateScaleDegrees(toneJSNames, degreeIndices, chordRootSD, c
 
     const rawNumber = rawDegree(degree);
 
-    // Calculate the generic scale degree integer (1-7)
-    const calculatedDegree = ((((chordRootSD - 1) + (rawNumber - 1)) % 7) + 1);
-
     // Get the ACTUAL note name (strip octave, e.g., "Ab4" -> "Ab")
     const actualNote = noteName.replace(/[0-9]/g, '');
 
-    // Get the EXPECTED diatonic note for this degree in the ORIGINAL key
-    const diatonicNote = getNoteLabel(calculatedDegree, originalKey);
+    // Compare against the major scale built on the actual chord root. This
+    // preserves spellings such as b3 and b7 for minor and dominant chords.
+    const rootKey = { tonic: chordRootNoteName, scale: "major" };
+    const diatonicNote = getNoteLabel(rawNumber, rootKey);
 
     // Calculate the modifier by comparing the actual vs diatonic note
     const modifier = getModifierDifference(actualNote, diatonicNote);
 
-    return `${modifier}${calculatedDegree}`;
+    return `${modifier}${rawNumber}`;
   });
 }
 

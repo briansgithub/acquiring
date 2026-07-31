@@ -80,9 +80,9 @@ function runFixture(fixture) {
 
 function runKnownBadExample() {
   const bad = verifyScaleDegrees({
-    key: { tonic: "G", scale: "major" },
-    notes: ["E3", "G#3", "B3"],
-    chordDegrees: ["6", "3", "3"],
+    key: { tonic: "E", scale: "major" },
+    notes: ["E3", "G3", "B3"],
+    chordDegrees: ["1", "3", "5"],
   });
   return {
     pass: !bad.ok && bad.failures.length >= 1,

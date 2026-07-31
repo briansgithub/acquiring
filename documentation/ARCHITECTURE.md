@@ -110,6 +110,16 @@ Roman/letter symbols are built independently in [`lib/jsonToSymbol.js`](../web-p
 
 **Pronunciation** (spoken readings): [`lib/romanNumeralSpeak.js`](../web-player/lib/romanNumeralSpeak.js) — see [PRONUNCIATION.md](./PRONUNCIATION.md).
 
+### Quiz chord-tone degree labels
+
+Chord-note scale-degree labels are always relative to the chord's **actual sounding root**, using a major-scale frame rooted on that note. They are not degrees in the currently playing song key.
+
+- `V7` in C → `1, 3, 5, ♭7`
+- `V⁴₂` in C → `♭7, 1, 3, 5` (the inversion changes order only)
+- `V⁶/ii` in C → `3, 5, ♭7, 1` because the sounding root is A
+
+Roman numerals remain functional labels in the active song key: the last example is still `V⁶/ii`, not an A-key numeral. For applied chords, JSON `root` is the denominator/tonicization target; the chord-tone degree frame must instead use the resolved numerator root. JavaScript applies this in `calculateScaleDegrees`; Android uses root-position identification for the root reference while preserving the original inversion for display and playback.
+
 ### Chord ring placement semantics
 - Non-applied chords: node radius/angle placement follows `root`.
 - Applied chords (`applied` 1..7): node placement is computed by resolving the applied chord root note in the current key and mapping that note back to a scale degree (`placementDegree`).

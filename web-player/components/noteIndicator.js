@@ -3,7 +3,7 @@ import { getScaleDegreeColor, NOTE_NAME_TO_INTEGER_NOTATION } from "../lib/scale
 import { getChordSymbol, getChordLetterName, stripBorrowedTags, borrowedAbbrev } from "../lib/jsonToSymbol.js";
 import { romanNumeralToHtml } from "../lib/romanNumeralCanvas.js";
 import { getChordPronunciation, pronunciationDisplayHtml } from "../lib/romanNumeralSpeak.js";
-import { verifyScaleDegrees } from "../lib/scaleDegreeVerifier.js";
+import { chordDegreeKey, verifyScaleDegrees } from "../lib/scaleDegreeVerifier.js";
 import { CONTROL_DEFAULTS } from "./controls.js";
 import { ARP_SLIDER_MAX, ARP_SLIDER_MIN, formatArpCyclesLabel } from "../lib/timing.js";
 import { formatVolumePercent } from "../lib/volume.js";
@@ -603,8 +603,8 @@ export function renderNoteIndicator(container, options = {}) {
       // Update notes display
       updateChordNotesDisplay();
 
-      if (VERIFY_DEGREES && notes?.length && chordDegrees?.length && activeKey) {
-        const check = verifyScaleDegrees({ key: activeKey, notes, chordDegrees });
+      if (VERIFY_DEGREES && chordObj && notes?.length && chordDegrees?.length && activeKey) {
+        const check = verifyScaleDegrees({ key: chordDegreeKey(chordObj, activeKey), notes, chordDegrees });
         if (!check.ok) {
           console.warn("[scale-degree verify]", check.failures, { notes, chordDegrees, key: activeKey, chordObj });
         }
