@@ -134,11 +134,23 @@ export function verifyScaleDegrees({ key, notes, chordDegrees }) {
 export function verifyInterpretedChord(chord, key, opts = {}) {
   const interpreter = chordInterpreter(chord, key, opts);
   const verification = verifyScaleDegrees({
-    key,
+    key: chordDegreeKey(chord, key),
     notes: interpreter.notes,
     chordDegrees: interpreter.chordDegrees,
   });
   return { interpreter, verification };
+}
+
+/** Return the major-scale key used for chord-tone labels. */
+export function chordDegreeKey(chord, key) {
+  const rootPosition = chordInterpreter(chord, key, { forceRootPosition: true });
+  const rootDegreeIndex = (rootPosition?.chordDegrees || []).findIndex((label) => {
+    const parsed = parseDegreeLabel(label);
+    return parsed.degree === 1 && parsed.modifier === "";
+  });
+  const rootNoteIndex = rootDegreeIndex >= 0 ? rootDegreeIndex : 0;
+  const rootNote = String(rootPosition?.notes?.[rootNoteIndex] || "").replace(/-?\d+$/, "");
+  return rootNote ? { tonic: rootNote, scale: "major" } : key;
 }
 
 /**

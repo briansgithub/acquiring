@@ -18,7 +18,7 @@ export const SCALE_DEGREE_FIXTURES = [
     key: { tonic: "G", scale: "major" },
     chord: { root: 2, applied: 5, type: 5, inversion: 0, borrowed: null, isRest: false },
     expectOk: true,
-    expectDegrees: ["6", "#1", "3"],
+    expectDegrees: ["1", "3", "5"],
   },
   {
     id: "c-major-V",
@@ -26,7 +26,7 @@ export const SCALE_DEGREE_FIXTURES = [
     key: { tonic: "C", scale: "major" },
     chord: { root: 5, type: 5, inversion: 0, applied: 0, borrowed: null, isRest: false },
     expectOk: true,
-    expectDegrees: ["5", "7", "2"],
+    expectDegrees: ["1", "3", "5"],
   },
   {
     id: "a-minor-i",
@@ -34,7 +34,7 @@ export const SCALE_DEGREE_FIXTURES = [
     key: { tonic: "A", scale: "minor" },
     chord: { root: 1, type: 5, inversion: 0, applied: 0, borrowed: null, isRest: false },
     expectOk: true,
-    expectDegrees: ["1", "3", "5"],
+    expectDegrees: ["1", "b3", "5"],
   },
   {
     id: "g-major-V-V",
@@ -62,6 +62,22 @@ export const SCALE_DEGREE_FIXTURES = [
       adds: [], omits: [], alterations: [], suspensions: [], isRest: false,
     },
     expectOk: true,
+  },
+  {
+    id: "c-major-V42-root-relative",
+    description: "V42 in C major keeps chord-root degrees while inverted",
+    key: { tonic: "C", scale: "major" },
+    chord: { root: 5, type: 7, inversion: 3, applied: 0, borrowed: null, isRest: false },
+    expectOk: true,
+    expectDegrees: ["b7", "1", "3", "5"],
+  },
+  {
+    id: "c-major-V6-ii-root-relative",
+    description: "V6/ii in C labels tones relative to A, the sounding root",
+    key: { tonic: "C", scale: "major" },
+    chord: { root: 2, applied: 5, type: 7, inversion: 1, borrowed: null, isRest: false },
+    expectOk: true,
+    expectDegrees: ["3", "5", "b7", "1"],
   },
   {
     id: "c-major-I-force-root",

@@ -14,7 +14,6 @@ import {
   getNoteLabel,
   resolveBorrowedScale,
   getScaleChordQualities,
-  resolveChordRootSD,
   calculateScaleDegrees,
 } from "./musicScale.js";
 
@@ -308,10 +307,9 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
   const baseKeyDegrees = calculateScaleDegrees(
     toneJSNames,
     degreeIndices,
-    chordRootSD,
+    chordRootNoteName,
     chordDegrees,
     chordType,
-    originalKey
   );
 
   return { notes: toneJSNames, chordDegrees: baseKeyDegrees };
@@ -436,15 +434,12 @@ export function buildChordFromNoteName(rootNoteName, quality, originalKey, baseO
     chordType,
   });
 
-  // Scale degrees in the song key (same logic as diatonic chords).
-  const chordRootSD = resolveChordRootSD(rootNoteName, originalKey);
   const baseKeyDegrees = calculateScaleDegrees(
     toneJSNames,
     degreeIndices,
-    chordRootSD,
+    rootNoteName,
     chordDegrees,
     chordType,
-    originalKey,
   );
 
   return { notes: toneJSNames, chordDegrees: baseKeyDegrees };
