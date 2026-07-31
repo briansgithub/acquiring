@@ -536,6 +536,15 @@ object ChordInterpreter {
             }
         }
 
+        // Hooktheory-style density: extended suspended chords omit only an
+        // unaltered perfect fifth when no explicit omit was supplied. This
+        // keeps the root, suspension, seventh, and extension tones while
+        // preserving explicit omissions and altered fifths.
+        val hasAlteredFifth = alterations.any { it == "b5" || it == "#5" || it == "♭5" || it == "♯5" }
+        if (type >= 9 && suspensions.isNotEmpty() && !omits.contains(5) && !hasAlteredFifth && degrees[5] == 7) {
+            degrees.remove(5)
+        }
+
         // Build pitches
         val pitches = degrees.values.map { rootPc + 48 + it }.toMutableList()
         
