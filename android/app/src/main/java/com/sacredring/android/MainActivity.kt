@@ -661,8 +661,8 @@ fun QuizTab(
     globalTranspose: Int
 ) {
     val baseBpm = section.getBpm().toFloat().coerceIn(40f, 240f)
-    var playbackTempo by remember(section) { mutableStateOf(baseBpm) }
-    val bpm = playbackTempo.toDouble()
+    var tempoPercent by remember(section) { mutableStateOf(100f) }
+    val bpm = (baseBpm * tempoPercent / 100f).toDouble()
 
     val notesJson = (section.notes as? JsonArray) ?: emptyList()
     
@@ -690,7 +690,7 @@ fun QuizTab(
     var playbackTrigger by remember { mutableStateOf(0) }
     // 0 = chords only, 1 = melody only. The complementary gain keeps the
     // overall melody/chord balance intentional as the slider moves.
-    var melodyChordBalance by remember { mutableStateOf(0.7f) }
+    var melodyChordBalance by remember { mutableStateOf(0.2f) }
     val melodyVolume = melodyChordBalance
     val chordVolume = 1f - melodyChordBalance
     var isScrubbing by remember { mutableStateOf(false) }
@@ -739,6 +739,7 @@ fun QuizTab(
     }
 
     fun replayActiveNotesWithRemainingDuration() {
+        if (bpm <= 0.0) return
         val beat = currentBeat.coerceIn(1.0, endBeat)
         val secondsPerBeat = 60.0 / bpm
         activeNoteReplayJob?.cancel()
@@ -808,11 +809,13 @@ fun QuizTab(
     // These settings change which notes should exist at the current beat. Stop
     // stale tracks immediately, replay the active notes with their remaining
     // duration, then restart the scheduler from the same beat.
-    LaunchedEffect(playChords, playOnlyRoot, isSimpleMode, globalTranspose, playbackTempo, melodyChordBalance) {
+    LaunchedEffect(playChords, playOnlyRoot, isSimpleMode, globalTranspose, tempoPercent, melodyChordBalance) {
         activeNoteReplayJob?.cancel()
         AudioEngine.stopAllPlayback()
         AudioEngine.setLayerVolumes(melodyVolume, chordVolume)
-        if (isPlaying) {
+        if (isPlaying && bpm <= 0.0) {
+            isPlaying = false
+        } else if (isPlaying) {
             replayActiveNotesWithRemainingDuration()
             playbackTrigger++
         }
@@ -831,12 +834,13 @@ fun QuizTab(
         scrubPreviewBeat,
         isScrubbing,
         section,
-        playbackTempo,
+        tempoPercent,
         melodyChordBalance,
         globalTranspose
     ) {
         val beat = scrubPreviewBeat ?: return@LaunchedEffect
         if (!isScrubbing) return@LaunchedEffect
+        if (bpm <= 0.0) return@LaunchedEffect
         delay(35)
 
         val previewMelody = melody
@@ -893,7 +897,7 @@ fun QuizTab(
 
     // Playback loop
     LaunchedEffect(isPlaying, section, playbackTrigger) {
-        if (isPlaying) {
+        if (isPlaying && bpm > 0.0) {
             val startTime = System.currentTimeMillis()
             val startBeat = currentBeat
             while (isPlaying) {
@@ -1036,16 +1040,25 @@ fun QuizTab(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("Tempo", style = MaterialTheme.typography.labelSmall, modifier = Modifier.width(48.dp))
                     Slider(
-                        value = playbackTempo,
-                        onValueChange = { playbackTempo = it },
-                        valueRange = 40f..240f,
+                        value = tempoPercent,
+                        onValueChange = { tempoPercent = it },
+                        valueRange = 0f..200f,
                         modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
                     )
                     Text(
-                        text = "${playbackTempo.roundToInt()} BPM",
+                        text = "${tempoPercent.roundToInt()}%",
                         style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier.width(58.dp)
+                        modifier = Modifier.width(38.dp)
                     )
+                    IconButton(
+                        onClick = { tempoPercent = 100f },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Refresh,
+                            contentDescription = "Reset tempo to 100%"
+                        )
+                    }
                 }
             }
 
