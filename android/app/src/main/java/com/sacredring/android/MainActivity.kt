@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.offset
@@ -23,18 +25,19 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
-
-
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.TextStyle
 
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.Dp
@@ -43,6 +46,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.*
+import kotlin.math.roundToInt
 
 private fun Map<String, ExtractedSection>.playableSectionsInSourceOrder(): List<Map.Entry<String, ExtractedSection>> =
     entries
@@ -64,13 +68,13 @@ class MainActivity : ComponentActivity() {
         ).build()
 
         val darkColorScheme = darkColorScheme(
-            primary = Color(0xFFD0BCFF),
-            secondary = Color(0xFFCCC2DC),
+            primary = Color(0xFFA8C7FA),
+            secondary = Color(0xFFBAC8DB),
             tertiary = Color(0xFFEFB8C8),
             background = Color(0xFF1C1B1F),
             surface = Color(0xFF1C1B1F),
-            onPrimary = Color(0xFF381E72),
-            onSecondary = Color(0xFF332D41),
+            onPrimary = Color(0xFF00315C),
+            onSecondary = Color(0xFF263141),
             onTertiary = Color(0xFF492532),
             onBackground = Color(0xFFE6E1E5),
             onSurface = Color(0xFFE6E1E5),
@@ -103,12 +107,13 @@ fun MainScreen(db: AppDatabase) {
     var isExpanded by remember { mutableStateOf(false) }
     var selectedSongSections by remember { mutableStateOf<Map<String, ExtractedSection>?>(null) }
     var selectedSectionId by remember { mutableStateOf<String?>(null) }
-    var currentTab by remember { mutableStateOf(1) }
+    var currentTab by remember { mutableStateOf(2) }
     var showLetterNames by remember { mutableStateOf(false) }
     var isArpeggiated by remember { mutableStateOf(false) }
     var arpeggioStepMs by remember { mutableStateOf(80f) }
     var isShowingRecent by remember { mutableStateOf(false) }
-    var currentWaveform by remember { mutableStateOf(AudioEngine.Waveform.SAWTOOTH) }
+    var currentWaveform by remember { mutableStateOf(AudioEngine.Waveform.ELECTRIC_PIANO) }
+    var globalTranspose by remember { mutableStateOf(AudioEngine.globalTranspose) }
     
     val scope = rememberCoroutineScope()
     val context = androidx.compose.ui.platform.LocalContext.current
@@ -149,7 +154,7 @@ fun MainScreen(db: AppDatabase) {
                 val sections = json.decodeFromString<Map<String, ExtractedSection>>(dataStr)
                 selectedSongSections = sections
                 selectedSectionId = sections.playableSectionsInSourceOrder().firstOrNull()?.key ?: sections.keys.firstOrNull()
-                currentTab = 1 // Switch to Chords tab
+                currentTab = 2 // Switch to Quiz tab
             } catch (e: Exception) {
                 searchResult = "❌ Error loading song: ${e.message}"
             }
@@ -165,7 +170,7 @@ fun MainScreen(db: AppDatabase) {
                             val sections = json.decodeFromString<Map<String, ExtractedSection>>(dataStr)
                             selectedSongSections = sections
                             selectedSectionId = sections.playableSectionsInSourceOrder().firstOrNull()?.key ?: sections.keys.firstOrNull()
-                            currentTab = 1 // Switch to Chords tab
+                            currentTab = 2 // Switch to Quiz tab
                             harvestStatus = "Loaded chords for ${song.title ?: song.slug}!"
                         } catch (e: Exception) {
                             harvestStatus = "❌ Error loading harvested song: ${e.message}"
@@ -276,6 +281,11 @@ fun MainScreen(db: AppDatabase) {
                 onWaveformChange = { 
                     currentWaveform = it
                     AudioEngine.currentWaveform = it
+                },
+                globalTranspose = globalTranspose,
+                onTransposeChange = {
+                    globalTranspose = it
+                    AudioEngine.globalTranspose = it
                 },
                 onBack = { selectedSongSections = null }
             )
@@ -452,6 +462,8 @@ fun SongDetailView(
     onArpeggioStepMsChange: (Float) -> Unit,
     currentWaveform: AudioEngine.Waveform,
     onWaveformChange: (AudioEngine.Waveform) -> Unit,
+    globalTranspose: Int,
+    onTransposeChange: (Int) -> Unit,
     onBack: () -> Unit
 ) {
     val playableSections = remember(sections) { sections.playableSectionsInSourceOrder() }
@@ -461,7 +473,10 @@ fun SongDetailView(
         ?: sections.keys.firstOrNull()
     val selectedSection = sections[selectedSectionKey] ?: playableSections.firstOrNull()?.value ?: sections.values.first()
     var isSectionExpanded by remember { mutableStateOf(false) }
+    var isTransposeExpanded by remember { mutableStateOf(false) }
     var playChords by remember { mutableStateOf(true) }
+    var playOnlyRoot by remember { mutableStateOf(false) }
+    var isSimpleMode by remember { mutableStateOf(true) }
 
     val sectionPickerComposable: @Composable () -> Unit = {
         if (playableSections.size > 1) {
@@ -505,14 +520,49 @@ fun SongDetailView(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
             TextButton(onClick = onBack) { Text("< Back") }
-            Text(
-                text = selectedSection.safeSongInfo,
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.weight(1f).padding(start = 8.dp)
-            )
+            if (!isSimpleMode) {
+                Text(
+                    text = selectedSection.safeSongInfo,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.weight(1f).padding(start = 8.dp)
+                )
+
+                // Global Transpose Dropdown
+                ExposedDropdownMenuBox(
+                    expanded = isTransposeExpanded,
+                    onExpandedChange = { isTransposeExpanded = it },
+                    modifier = Modifier.width(100.dp).padding(end = 8.dp)
+                ) {
+                    OutlinedTextField(
+                        value = if (globalTranspose == 0) "0" else "+$globalTranspose",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Trp") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isTransposeExpanded) },
+                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                        modifier = Modifier.fillMaxWidth().menuAnchor(),
+                        textStyle = MaterialTheme.typography.bodyMedium
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = isTransposeExpanded,
+                        onDismissRequest = { isTransposeExpanded = false }
+                    ) {
+                        (0..12).forEach { valValue ->
+                            DropdownMenuItem(
+                                text = { Text(if (valValue == 0) "0" else "+$valValue") },
+                                onClick = {
+                                    onTransposeChange(valValue)
+                                    isTransposeExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
         }
 
-        if (currentTab == 2) {
+        if (currentTab == 2 && !isSimpleMode) {
             val key = selectedSection.getParsedKey()
             val displayScale = key.scale
                 .replace(Regex("([a-z])([A-Z])"), "$1 $2")
@@ -535,7 +585,7 @@ fun SongDetailView(
             }
         }
 
-        if (currentTab != 2) {
+        if (currentTab != 2 || !isSimpleMode) {
             ScrollableTabRow(
                 selectedTabIndex = currentTab,
                 edgePadding = 0.dp
@@ -567,6 +617,10 @@ fun SongDetailView(
                 section = selectedSection,
                 playChords = playChords,
                 onPlayChordsChange = { playChords = it },
+                playOnlyRoot = playOnlyRoot,
+                onPlayOnlyRootChange = { playOnlyRoot = it },
+                isSimpleMode = isSimpleMode,
+                onSimpleModeChange = { isSimpleMode = it },
                 currentWaveform = currentWaveform,
                 onWaveformChange = onWaveformChange,
                 sectionPicker = sectionPickerComposable
@@ -605,6 +659,10 @@ fun QuizTab(
     section: ExtractedSection,
     playChords: Boolean,
     onPlayChordsChange: (Boolean) -> Unit,
+    playOnlyRoot: Boolean,
+    onPlayOnlyRootChange: (Boolean) -> Unit,
+    isSimpleMode: Boolean,
+    onSimpleModeChange: (Boolean) -> Unit,
     currentWaveform: AudioEngine.Waveform,
     onWaveformChange: (AudioEngine.Waveform) -> Unit,
     sectionPicker: @Composable () -> Unit
@@ -617,11 +675,16 @@ fun QuizTab(
         notesJson.mapNotNull { el ->
             try {
                 val obj = el as? JsonObject ?: return@mapNotNull null
+                val rawBeat = (obj["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
                 MelodyNote(
                     sd = (obj["sd"] as? JsonPrimitive)?.contentOrNull ?: "1",
-                    beat = (obj["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0,
+                    // Hooktheory's XML-derived data occasionally uses beat 0.  The web
+                    // player treats that as the first beat, so keep the timelines aligned.
+                    beat = if (rawBeat == 0.0) 1.0 else rawBeat,
                     duration = (obj["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0,
-                    octave = (obj["octave"] as? JsonPrimitive)?.intOrNull ?: 0
+                    octave = (obj["octave"] as? JsonPrimitive)?.intOrNull ?: 0,
+                    isRest = (obj["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
+                        (obj["rest"] as? JsonPrimitive)?.booleanOrNull == true
                 )
             } catch (_: Exception) { null }
         }
@@ -629,6 +692,8 @@ fun QuizTab(
 
     var isPlaying by remember { mutableStateOf(false) }
     var currentBeat by remember { mutableStateOf(1.0) }
+    var playbackTrigger by remember { mutableStateOf(0) }
+    var melodyVolume by remember { mutableStateOf(0.7f) }
     var isWaveformExpanded by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     
@@ -638,12 +703,13 @@ fun QuizTab(
     val melodyLaneHeight = 180.dp
 
     LaunchedEffect(section) {
+        AudioEngine.stopAllPlayback()
         isPlaying = false
         currentBeat = 1.0
     }
 
     // Playback loop
-    LaunchedEffect(isPlaying, section, playChords) {
+    LaunchedEffect(isPlaying, section, playChords, playbackTrigger) {
         if (isPlaying) {
             val startTime = System.currentTimeMillis()
             val startBeat = currentBeat
@@ -654,27 +720,30 @@ fun QuizTab(
                 
                 // Trigger notes that start between currentBeat and newBeat
                 melody.forEach { note ->
-                    if (note.beat >= currentBeat && note.beat < newBeat) {
-                        scope.launch {
+                    if (!note.isRest && note.beat >= currentBeat && note.beat < newBeat) {
+                        // This is a child of the playback effect, rather than the UI scope.
+                        // It is therefore cancelled on pause, restart, or section change.
+                        launch {
                             val activeKey = section.getKeyAtBeat(note.beat)
                             val midi = MusicTheory.getMidiNote(note.sd, note.octave, activeKey)
-                            AudioEngine.playChord(listOf(midi), durationMs = (note.duration * 60000.0 / bpm).toInt())
+                            AudioEngine.playChord(listOf(midi), durationMs = (note.duration * 60000.0 / bpm).toInt(), volume = melodyVolume)
                         }
                     }
                 }
 
                 // Trigger chords if playChords is enabled
-                if (playChords) {
+                if (isSimpleMode || playChords) {
                     section.chords.forEach { chord ->
                         val beat = (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
                         val duration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
                         val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
                         if (!isRest && beat >= currentBeat && beat < newBeat) {
-                            scope.launch {
+                            launch {
                                 val activeKey = section.getKeyAtBeat(beat)
                                 val notes = ChordInterpreter.getChordNotes(chord, activeKey)
                                 if (notes.isNotEmpty()) {
-                                    AudioEngine.playChord(notes, durationMs = (duration * 60000.0 / bpm).toInt())
+                                    val notesToPlay = if (isSimpleMode || playOnlyRoot) listOf(notes.first()) else notes
+                                    AudioEngine.playChord(notesToPlay, durationMs = (duration * 60000.0 / bpm).toInt())
                                 }
                             }
                         }
@@ -691,83 +760,118 @@ fun QuizTab(
         }
     }
 
+    val waveformPickerComposable: @Composable () -> Unit = {
+        ExposedDropdownMenuBox(
+            expanded = if (isSimpleMode) false else isWaveformExpanded,
+            onExpandedChange = { if (!isSimpleMode) isWaveformExpanded = it },
+            modifier = Modifier.width(170.dp)
+        ) {
+            OutlinedTextField(
+                value = currentWaveform.name.lowercase().split("_").joinToString(" ") { it.replaceFirstChar { c -> c.uppercase() } },
+                onValueChange = {},
+                readOnly = true,
+                enabled = !isSimpleMode,
+                label = { Text("Sound") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isWaveformExpanded) },
+                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                modifier = Modifier.fillMaxWidth().menuAnchor()
+            )
+
+            ExposedDropdownMenu(
+                expanded = isWaveformExpanded,
+                onDismissRequest = { isWaveformExpanded = false }
+            ) {
+                AudioEngine.Waveform.entries.forEach { waveform ->
+                    DropdownMenuItem(
+                        text = { Text(waveform.name.lowercase().split("_").joinToString(" ") { it.replaceFirstChar { c -> c.uppercase() } }) },
+                        onClick = {
+                            onWaveformChange(waveform)
+                            isWaveformExpanded = false
+                        }
+                    )
+                }
+            }
+        }
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // Upper Right Beat Counter & Waveform Dropdown
+            // Header Row: volume control (left) and the currently active key (right).
+            // Key lookup is beat-aware so a modulation is reflected immediately in Quiz.
+            val activeKey = section.getKeyAtBeat(currentBeat)
+            val displayScale = activeKey.scale
+                .replace(Regex("([a-z])([A-Z])"), "$1 $2")
+                .replaceFirstChar { it.titlecase() }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Waveform Dropdown
-                ExposedDropdownMenuBox(
-                    expanded = isWaveformExpanded,
-                    onExpandedChange = { isWaveformExpanded = it },
-                    modifier = Modifier.width(140.dp)
-                ) {
-                    OutlinedTextField(
-                        value = currentWaveform.name.lowercase().replaceFirstChar { it.uppercase() },
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("Sound") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isWaveformExpanded) },
-                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                        modifier = Modifier.fillMaxWidth().menuAnchor()
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("Melody", style = MaterialTheme.typography.labelSmall)
+                    Slider(
+                        value = melodyVolume,
+                        onValueChange = { melodyVolume = it },
+                        modifier = Modifier.width(100.dp).padding(start = 8.dp)
                     )
-
-                    ExposedDropdownMenu(
-                        expanded = isWaveformExpanded,
-                        onDismissRequest = { isWaveformExpanded = false }
-                    ) {
-                        AudioEngine.Waveform.entries.forEach { waveform ->
-                            DropdownMenuItem(
-                                text = { Text(waveform.name.lowercase().replaceFirstChar { it.uppercase() }) },
-                                onClick = {
-                                    onWaveformChange(waveform)
-                                    isWaveformExpanded = false
-                                }
-                            )
-                        }
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = activeKey.tonic,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = " $displayScale",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = ringModeColor(activeKey.scale)
+                    )
+                    if (!isSimpleMode) {
+                        Text(
+                            text = "  •  ${String.format("%.2f", currentBeat)} / ${endBeat.toInt()}",
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
-
-                Text(
-                    text = "Beat: ${String.format("%.2f", currentBeat)} / ${endBeat.toInt()}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // Visual Timeline
-            val scrollState = rememberScrollState()
             var timelineViewportWidth by remember { mutableStateOf(0) }
             val primaryColor = MaterialTheme.colorScheme.primary
             val secondaryColor = MaterialTheme.colorScheme.secondary
-            
-            // Keep the playhead centered while there is timeline content on both sides.
-            LaunchedEffect(currentBeat, timelineViewportWidth) {
-                if (isPlaying && timelineViewportWidth > 0) {
-                    val playheadX = (currentBeat - 1) * pixelsPerBeat
-                    val scrollPos = (playheadX - timelineViewportWidth / 2f)
-                        .toInt()
-                        .coerceAtLeast(0)
-                    scrollState.scrollTo(scrollPos)
-                }
-            }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(chordLaneHeight + melodyLaneHeight)
-                    .onSizeChanged { timelineViewportWidth = it.width }
-                    .horizontalScroll(scrollState)
-            ) {
+            if (!isSimpleMode) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(chordLaneHeight + melodyLaneHeight)
+                        .onSizeChanged { timelineViewportWidth = it.width }
+                ) {
                 Canvas(
                     modifier = Modifier
-                        .width((endBeat * pixelsPerBeat).dp)
-                        .fillMaxHeight()
+                        .fillMaxSize()
+                        .pointerInput(endBeat) {
+                            detectTapGestures { offset ->
+                                isPlaying = false
+                                val centerX = size.width / 2f
+                                val deltaX = offset.x - centerX
+                                currentBeat = (currentBeat + deltaX / pixelsPerBeat.dp.toPx()).coerceIn(1.0, endBeat)
+                            }
+                        }
+                        .pointerInput(endBeat) {
+                            detectDragGestures(
+                                onDragStart = { isPlaying = false },
+                                onDrag = { change, dragAmount ->
+                                    change.consume()
+                                    val deltaBeat = dragAmount.x / pixelsPerBeat.dp.toPx()
+                                    currentBeat = (currentBeat - deltaBeat).coerceIn(1.0, endBeat)
+                                }
+                            )
+                        }
                 ) {
                     val totalHeight = size.height
                     val mLaneHeightPx = melodyLaneHeight.toPx()
@@ -775,6 +879,12 @@ fun QuizTab(
                     
                     val noteHeight = 12f
                     val melodyBaseY = mLaneHeightPx / 2
+
+                    val centerX = size.width / 2f
+                    val translationX = centerX - (currentBeat - 1).toFloat() * pixelsPerBeat
+
+                    drawContext.canvas.save()
+                    drawContext.canvas.translate(translationX, 0f)
 
                     // Draw Melody Notes
                     melody.forEach { note ->
@@ -827,17 +937,23 @@ fun QuizTab(
                         )
                     }
 
-                    // Playhead
-                    val playheadX = (currentBeat - 1).toFloat() * pixelsPerBeat
+                    drawContext.canvas.restore()
+
+                    // Fixed Center Playhead
                     drawLine(
                         color = Color.Red,
-                        start = Offset(playheadX, 0f),
-                        end = Offset(playheadX, totalHeight),
+                        start = Offset(centerX, 0f),
+                        end = Offset(centerX, totalHeight),
                         strokeWidth = 3f
                     )
                 }
 
                 // Chord Labels (Overlay - Bottom, Centered)
+                val density = androidx.compose.ui.platform.LocalDensity.current
+                val pxPerBeat = with(density) { pixelsPerBeat.dp.toPx() }
+                val centerX = timelineViewportWidth / 2f
+                val yOffsetPx = with(density) { melodyLaneHeight.roundToPx() }
+
                 section.chords.forEach { chord ->
                     val beat = (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
                     val duration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
@@ -847,10 +963,19 @@ fun QuizTab(
                     val symbol = if (isRest) "Rest" else ChordInterpreter.getRomanSymbol(chord, chordKey)
                     val isActive = currentBeat >= beat && currentBeat < (beat + duration)
 
+                    // Calculate screen X in pixels exactly like the Canvas
+                    val screenX = centerX + (beat.toFloat() - currentBeat.toFloat()) * pxPerBeat
+                    val widthPx = duration.toFloat() * pxPerBeat
+                    
+                    // Optimization: Only render labels that are currently visible
+                    if (screenX + widthPx < 0 || screenX > timelineViewportWidth) return@forEach
+
+                    val widthDp = with(density) { widthPx.toDp() }
+
                     Box(
                         modifier = Modifier
-                            .offset(x = ((beat - 1) * pixelsPerBeat).dp, y = melodyLaneHeight)
-                            .width((duration * pixelsPerBeat).dp)
+                            .offset { IntOffset(screenX.roundToInt(), yOffsetPx) }
+                            .width(widthDp)
                             .height(chordLaneHeight),
                         contentAlignment = Alignment.Center
                     ) {
@@ -864,8 +989,9 @@ fun QuizTab(
                     }
                 }
             }
+            }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(if (isSimpleMode) 0.dp else 24.dp))
 
             // Interactive Buttons Section
             val currentChord = remember(currentBeat) {
@@ -876,78 +1002,142 @@ fun QuizTab(
                 }
             }
 
-            currentChord?.let { chord ->
-                val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
-                if (!isRest) {
-                    val activeKey = section.getKeyAtBeat(currentBeat)
-                    val symbol = ChordInterpreter.getRomanSymbol(chord, activeKey)
-                    val notes = ChordInterpreter.getChordNotes(chord, activeKey)
-                    val rootMidi = notes.firstOrNull() ?: 0
-                    val chordDuration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
-                    val chordDurationMs = (chordDuration * 60000.0 / bpm).toInt()
+            if (isSimpleMode) {
+                currentChord?.let { chord ->
+                    val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
+                    if (!isRest) {
+                        val activeKey = section.getKeyAtBeat(currentBeat)
+                        val symbol = ChordInterpreter.getRomanSymbol(chord, activeKey)
+                        val notes = ChordInterpreter.getChordNotes(chord, activeKey)
+                        val rootMidi = notes.firstOrNull() ?: 0
+                        val rootDegreeLabel = if (rootMidi > 0) MusicTheory.getDegreeLabelFromMidi(rootMidi, activeKey) else ""
 
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                        Column(
+                            modifier = Modifier.fillMaxWidth().fillMaxHeight(0.7f),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
                         ) {
-                            // Main Chord Object
+                            // Large Root Button
                             Button(
-                                onClick = { scope.launch { AudioEngine.playChord(notes, durationMs = chordDurationMs) } },
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(96.dp),
-                                shape = RoundedCornerShape(20.dp)
+                                onClick = { scope.launch { if (rootMidi > 0) AudioEngine.playChord(listOf(rootMidi)) } },
+                                modifier = Modifier.fillMaxWidth().height(250.dp),
+                                shape = RoundedCornerShape(32.dp)
                             ) {
-                                Text(symbol, fontSize = 36.sp, fontWeight = FontWeight.Bold)
+                                if (rootDegreeLabel.isNotEmpty()) {
+                                    HattedNumber(
+                                        numberText = rootDegreeLabel,
+                                        numberStyle = TextStyle(fontSize = 120.sp, fontWeight = FontWeight.Bold),
+                                        hatStyle = TextStyle(fontSize = 100.sp, fontWeight = FontWeight.Bold),
+                                        hatOffset = (-50).dp
+                                    )
+                                } else {
+                                    Text(symbol, fontSize = 80.sp, fontWeight = FontWeight.Bold)
+                                }
                             }
+                            
+                            Spacer(modifier = Modifier.height(48.dp))
 
-                            // Root Note Object (if applicable)
-                            if (rootMidi > 0) {
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    val rootDegreeLabel = MusicTheory.getDegreeLabelFromMidi(rootMidi, activeKey)
-                                    Button(
-                                        onClick = { scope.launch { AudioEngine.playChord(listOf(rootMidi)) } },
-                                        modifier = Modifier
-                                            .width(120.dp)
-                                            .height(96.dp),
-                                        shape = RoundedCornerShape(20.dp)
-                                    ) {
-                                        HattedNumber(
-                                            numberText = rootDegreeLabel,
-                                            numberStyle = TextStyle(fontSize = 36.sp, fontWeight = FontWeight.Bold),
-                                            hatStyle = TextStyle(fontSize = 30.sp, fontWeight = FontWeight.Bold)
-                                        )
+                            // Skip Back 10s Button
+                            OutlinedButton(
+                                onClick = {
+                                    AudioEngine.stopAllPlayback()
+                                    val beatsToSkip = 10.0 * (bpm / 60.0)
+                                    currentBeat = (currentBeat - beatsToSkip).coerceAtLeast(1.0)
+                                    if (isPlaying) playbackTrigger++
+                                },
+                                modifier = Modifier.height(64.dp),
+                                shape = RoundedCornerShape(16.dp)
+                            ) {
+                                Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.scale(-1f, 1f))
+                                Spacer(Modifier.width(12.dp))
+                                Text("Skip back 10s", fontSize = 20.sp)
+                            }
+                        }
+                    } else {
+                        Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.7f), contentAlignment = Alignment.Center) {
+                            Text("Rest", fontSize = 60.sp, color = Color.Gray)
+                        }
+                    }
+                }
+            } else {
+                currentChord?.let { chord ->
+                    val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
+                    if (!isRest) {
+                        val activeKey = section.getKeyAtBeat(currentBeat)
+                        val symbol = ChordInterpreter.getRomanSymbol(chord, activeKey)
+                        val notes = ChordInterpreter.getChordNotes(chord, activeKey)
+                        val rootMidi = notes.firstOrNull() ?: 0
+                        val chordDuration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                        val chordDurationMs = (chordDuration * 60000.0 / bpm).toInt()
+
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // Main Chord Object
+                                Button(
+                                    onClick = { 
+                                        scope.launch { 
+                                            val notesToPlay = if (playOnlyRoot) listOf(notes.first()) else notes
+                                            AudioEngine.playChord(notesToPlay, durationMs = chordDurationMs) 
+                                        } 
+                                    },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(96.dp),
+                                    shape = RoundedCornerShape(20.dp)
+                                ) {
+                                    Text(symbol, fontSize = 36.sp, fontWeight = FontWeight.Bold)
+                                }
+
+                                // Root Note Object (if applicable)
+                                if (rootMidi > 0) {
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        val rootDegreeLabel = MusicTheory.getDegreeLabelFromMidi(rootMidi, activeKey)
+                                        Button(
+                                            onClick = { scope.launch { AudioEngine.playChord(listOf(rootMidi)) } },
+                                            modifier = Modifier
+                                                .width(120.dp)
+                                                .height(96.dp),
+                                            shape = RoundedCornerShape(20.dp)
+                                        ) {
+                                            HattedNumber(
+                                                numberText = rootDegreeLabel,
+                                                numberStyle = TextStyle(fontSize = 36.sp, fontWeight = FontWeight.Bold),
+                                                hatStyle = TextStyle(fontSize = 30.sp, fontWeight = FontWeight.Bold)
+                                            )
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        if (rootMidi > 0) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                notes.forEach { note ->
-                                    val internalLabel = MusicTheory.getRelativeDegreeLabel(note, rootMidi)
-                                    OutlinedButton(
-                                        onClick = { scope.launch { AudioEngine.playChord(listOf(note)) } },
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .height(84.dp),
-                                        shape = RoundedCornerShape(18.dp),
-                                        contentPadding = PaddingValues(0.dp)
-                                    ) {
-                                        HattedNumber(
-                                            numberText = internalLabel,
-                                            numberStyle = TextStyle(fontSize = 32.sp, fontWeight = FontWeight.Bold),
-                                            hatStyle = TextStyle(fontSize = 26.sp, fontWeight = FontWeight.Bold)
-                                        )
+                            if (rootMidi > 0) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    notes.forEach { note ->
+                                        val internalLabel = MusicTheory.getRelativeDegreeLabel(note, rootMidi)
+                                        OutlinedButton(
+                                            onClick = { scope.launch { AudioEngine.playChord(listOf(note)) } },
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .height(84.dp),
+                                            shape = RoundedCornerShape(18.dp),
+                                            contentPadding = PaddingValues(0.dp)
+                                        ) {
+                                            HattedNumber(
+                                                numberText = internalLabel,
+                                                numberStyle = TextStyle(fontSize = 32.sp, fontWeight = FontWeight.Bold),
+                                                hatStyle = TextStyle(fontSize = 26.sp, fontWeight = FontWeight.Bold)
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -957,45 +1147,93 @@ fun QuizTab(
             }
         }
 
-        // Bottom-Right Controls Overlay
-        Column(
+        // Bottom Overlays
+        Box(
             modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
-            // Play and Restart Controls Row (above section selector)
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            // Lower-Left: Toggles and Waveform Picker
+            Column(
+                modifier = Modifier.align(Alignment.BottomStart),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                IconButton(onClick = { 
-                    isPlaying = false
-                    currentBeat = 1.0 
-                }) {
-                    Icon(Icons.Default.Refresh, contentDescription = "Reset")
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Chords Toggle
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.graphicsLayer { alpha = if (isSimpleMode) 0f else 1f }
+                    ) {
+                        Text("Chords", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Switch(
+                            checked = playChords,
+                            onCheckedChange = if (isSimpleMode) ({}) else onPlayChordsChange,
+                            enabled = !isSimpleMode
+                        )
+                    }
+                    // Root Only Toggle
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.graphicsLayer { alpha = if (isSimpleMode) 0f else 1f }
+                    ) {
+                        Text("Root Only", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Switch(
+                            checked = playOnlyRoot,
+                            onCheckedChange = if (isSimpleMode) ({}) else onPlayOnlyRootChange,
+                            enabled = !isSimpleMode
+                        )
+                    }
+                    // Simple Toggle
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = "Simple",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.graphicsLayer { alpha = if (isSimpleMode) 0f else 1f }
+                        )
+                        Switch(
+                            checked = isSimpleMode,
+                            onCheckedChange = onSimpleModeChange
+                        )
+                    }
                 }
-                Button(onClick = { isPlaying = !isPlaying }) {
-                    Icon(if (isPlaying) Icons.Default.Search else Icons.Default.PlayArrow, contentDescription = null)
-                    Spacer(Modifier.width(8.dp))
-                    Text(if (isPlaying) "Pause" else "Play")
+                Box(modifier = Modifier.graphicsLayer { alpha = if (isSimpleMode) 0f else 1f }) {
+                    waveformPickerComposable()
                 }
             }
 
-            // Bottom Row: Chords Switch with small "Chords" label above it, to the left of section selector
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            // Lower-Right: Controls Overlay
+            Column(
+                modifier = Modifier.align(Alignment.BottomEnd),
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("Chords", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Switch(
-                        checked = playChords,
-                        onCheckedChange = onPlayChordsChange
-                    )
+                // Play and Restart Controls Row (above section selector)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    IconButton(onClick = { 
+                        AudioEngine.stopAllPlayback()
+                        isPlaying = false
+                        currentBeat = 1.0 
+                    }) {
+                        Icon(Icons.Default.Refresh, contentDescription = "Reset")
+                    }
+                    Button(onClick = {
+                        if (isPlaying) AudioEngine.stopAllPlayback()
+                        isPlaying = !isPlaying
+                    }) {
+                        Icon(if (isPlaying) Icons.Default.Search else Icons.Default.PlayArrow, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text(if (isPlaying) "Pause" else "Play")
+                    }
                 }
 
+                // Bottom Row: Section picker
                 sectionPicker()
             }
         }
@@ -1152,7 +1390,8 @@ fun HattedNumber(
     numberText: String,
     modifier: Modifier = Modifier,
     numberStyle: TextStyle,
-    hatStyle: TextStyle
+    hatStyle: TextStyle,
+    hatOffset: Dp = (-14).dp
 ) {
     // Degree-label builders return a combining circumflex (U+0302). Render the
     // mark independently so it is consistently visible above the degree digit.
@@ -1182,7 +1421,7 @@ fun HattedNumber(
                 style = hatStyle,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .offset(y = (-14).dp)
+                    .offset(y = hatOffset)
             )
         }
 

@@ -41,7 +41,8 @@ data class MelodyNote(
     val sd: String,
     val beat: Double,
     val duration: Double,
-    val octave: Int = 0
+    val octave: Int = 0,
+    val isRest: Boolean = false
 )
 
 @Serializable
