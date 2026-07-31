@@ -295,6 +295,23 @@
     ]
   },
   {
+    "id": "V9sus4",
+    "json": "{\"root\":5,\"type\":9,\"suspensions\":[4]}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "V9sus4",
+    "expectedLetter": "G9sus4",
+    "expectedPcs": [
+      0,
+      2,
+      5,
+      7,
+      9
+    ]
+  },
+  {
     "id": "V13",
     "json": "{\"root\":5,\"type\":13}",
     "key": {

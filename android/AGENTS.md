@@ -9,4 +9,5 @@ Follow the least-context, risk-proportional procedure below.
 - Run the smallest relevant Gradle/device check. Use `python scripts/compact_check.py --name <label> -- <command>` for noisy output, and allow at most two fix/retest cycles before asking to expand.
 - Ask before optional repository-wide analysis, exhaustive logs, or full validation that materially expands scope.
 
-Concurrent agents require separate Git worktrees. Never overwrite unrelated user work.
+Concurrent agents require separate Git worktrees. Use sibling folders beside the primary checkout, one normal branch per worktree; pushes publish that branch, while an authorized merge/PR from the primary checkout lands it in the default branch. Never overwrite unrelated user work.
+- After an authorized merge, verify the feature tip is reachable from the default branch, then remove the sibling worktree and delete its local branch with `git branch -d`; delete remote branches only after authorization. Preserve dirty or unmerged work and never force-delete another agent's checkout.

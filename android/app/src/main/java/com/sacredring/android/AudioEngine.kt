@@ -21,19 +21,87 @@ object AudioEngine {
         SINE, SQUARE, SAWTOOTH, TRIANGLE, STRINGS, ELECTRIC_PIANO
     }
 
+    enum class PlaybackChannel {
+        MELODY, CHORD, PREVIEW
+    }
+
     var currentWaveform = Waveform.ELECTRIC_PIANO
     var globalTranspose = 0
 
-    private val activeTracks = java.util.Collections.synchronizedList(mutableListOf<AudioTrack>())
+    private data class ActiveTrack(
+        val track: AudioTrack,
+        val channel: PlaybackChannel,
+        val baseVolume: Float,
+        val sampleCount: Int
+    )
+
+    private val activeTracks = mutableListOf<ActiveTrack>()
+    private var melodyGain = 1f
+    private var chordGain = 1f
+    // Incremented whenever the timeline is replaced. A synthesis job that
+    // started before the replacement must not register a late AudioTrack.
+    private var playbackGeneration = 0L
+
+    private fun gainFor(channel: PlaybackChannel): Float = when (channel) {
+        PlaybackChannel.MELODY -> melodyGain
+        PlaybackChannel.CHORD -> chordGain
+        PlaybackChannel.PREVIEW -> 1f
+    }
+
+    private fun applyTrackGain(active: ActiveTrack) {
+        try {
+            active.track.setVolume((active.baseVolume * gainFor(active.channel)).coerceIn(0f, 1f))
+        } catch (_: Exception) {}
+    }
+
+    fun setLayerVolumes(melody: Float, chords: Float) {
+        synchronized(activeTracks) {
+            melodyGain = melody.coerceIn(0f, 1f)
+            chordGain = chords.coerceIn(0f, 1f)
+            activeTracks.forEach(::applyTrackGain)
+        }
+    }
+
+    fun pauseAllPlayback() {
+        synchronized(activeTracks) {
+            activeTracks.forEach { active ->
+                try {
+                    if (active.track.playState == AudioTrack.PLAYSTATE_PLAYING) active.track.pause()
+                } catch (_: Exception) {}
+            }
+        }
+    }
+
+    fun resumeAllPlayback() {
+        synchronized(activeTracks) {
+            activeTracks.forEach { active ->
+                try {
+                    if (active.track.playState == AudioTrack.PLAYSTATE_PAUSED) active.track.play()
+                } catch (_: Exception) {}
+            }
+        }
+    }
+
+    fun stopPreviewPlayback() {
+        synchronized(activeTracks) {
+            val previews = activeTracks.filter { it.channel == PlaybackChannel.PREVIEW }
+            previews.forEach { active ->
+                try {
+                    active.track.stop()
+                    active.track.release()
+                } catch (_: Exception) {}
+                activeTracks.remove(active)
+            }
+        }
+    }
 
     fun stopAllPlayback() {
         synchronized(activeTracks) {
-            val iterator = activeTracks.iterator()
-            while (iterator.hasNext()) {
-                val track = iterator.next()
+            playbackGeneration++
+            activeTracks.forEach { active ->
                 try {
-                    track.stop()
-                    track.release()
+                    active.track.stop()
+                    active.track.release()
                 } catch (_: Exception) {}
             }
             activeTracks.clear()
@@ -45,8 +113,11 @@ object AudioEngine {
         durationMs: Int = 450,
         arpeggiate: Boolean = false,
         stepMs: Int = 80,
-        volume: Float = 1.0f
+        volume: Float = 1.0f,
+        channel: PlaybackChannel = PlaybackChannel.CHORD
     ) = withContext(Dispatchers.Default) {
+        val generation = synchronized(activeTracks) { playbackGeneration }
+        val playbackContext = currentCoroutineContext()
         val validNotes = midiNotes.filter { it > 0 }.map { it + globalTranspose }
         if (validNotes.isEmpty()) return@withContext
 
@@ -84,6 +155,12 @@ object AudioEngine {
         }
 
         for (i in 0 until numSamples) {
+            // Synthesis can take longer than a short note. Stop promptly when
+            // its parent playback job is cancelled or the timeline is replaced.
+            if ((i and 2047) == 0 &&
+                (!playbackContext.isActive || synchronized(activeTracks) { playbackGeneration != generation })) {
+                return@withContext
+            }
             var sum = 0.0
 
             if (!arpeggiate || numNotes <= 1) {
@@ -122,7 +199,7 @@ object AudioEngine {
                     }
                     
                     state.phase = (state.phase + state.freq / SAMPLE_RATE) % 1.0
-                    sum += wave * (0.25 / numNotes) * env * volume
+                    sum += wave * (0.25 / numNotes) * env
                 }
             } else {
                 // Non-overlapping monophonic arpeggiated chord
@@ -164,7 +241,7 @@ object AudioEngine {
                 }
                 
                 state.phase = (state.phase + state.freq / SAMPLE_RATE) % 1.0
-                sum = wave * 0.45 * env * volume
+                sum = wave * 0.45 * env
             }
 
             samples[i] = (sum * Short.MAX_VALUE).toInt().coerceIn(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt()).toShort()
@@ -172,7 +249,9 @@ object AudioEngine {
 
         // A paused/restarted timeline cancels its child playback jobs.  Do not
         // create a late AudioTrack after that cancellation has already happened.
-        if (!currentCoroutineContext().isActive) return@withContext
+        if (!playbackContext.isActive || synchronized(activeTracks) { playbackGeneration != generation }) {
+            return@withContext
+        }
 
         try {
             val bufferSizeBytes = numSamples * 2
@@ -196,13 +275,34 @@ object AudioEngine {
 
             val written = track.write(samples, 0, numSamples)
             if (written > 0) {
-                track.play()
-                activeTracks.add(track)
-                val totalDurationMs = (numSamples * 1000L / SAMPLE_RATE) + 100L
+                val active = ActiveTrack(track, channel, volume.coerceIn(0f, 1f), numSamples)
+                synchronized(activeTracks) {
+                    // Cancellation and stopAllPlayback are both respected
+                    // while holding the same lock used for track replacement.
+                    if (!playbackContext.isActive || playbackGeneration != generation) {
+                        try {
+                            track.stop()
+                            track.release()
+                        } catch (_: Exception) {}
+                        return@withContext
+                    }
+                    applyTrackGain(active)
+                    track.play()
+                    activeTracks.add(active)
+                }
                 CoroutineScope(Dispatchers.Default).launch {
-                    delay(totalDurationMs)
+                    while (true) {
+                        val stillPlaying = try {
+                            track.playState != AudioTrack.PLAYSTATE_STOPPED &&
+                                track.playbackHeadPosition < numSamples
+                        } catch (_: Exception) {
+                            false
+                        }
+                        if (!stillPlaying) break
+                        delay(20)
+                    }
                     try {
-                        activeTracks.remove(track)
+                        synchronized(activeTracks) { activeTracks.remove(active) }
                         track.stop()
                         track.release()
                     } catch (_: Exception) {}
