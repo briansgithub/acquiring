@@ -44,6 +44,20 @@ const BASELINE = {
     key: { tonic: "C#", scale: "minor" },
     pcs: [1, 3, 4, 5, 6, 8, 9, 11],
   },
+  pianoManV9sus4: {
+    chord: { root: 5, type: 9, suspensions: [4] },
+    key: { tonic: "C", scale: "major" },
+    pcs: [0, 5, 7, 9],
+    letter: "G9sus4",
+    roman: "V9sus4",
+  },
+  v9KeepsFifth: {
+    chord: { root: 5, type: 9 },
+    key: { tonic: "C", scale: "major" },
+    pcs: [2, 5, 7, 9, 11],
+    letter: "G9",
+    roman: "V9",
+  },
   iisus4no5: {
     chord: { root: 2, type: 5, suspensions: [4], omits: [5] },
     key: { tonic: "G#", scale: "minor" },

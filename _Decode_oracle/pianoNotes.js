@@ -31,10 +31,10 @@ async function extractAllNoteViews(page, containerId, expectedChordCount = 0) {
     const items = await page.evaluate((cid) => {
       const c = document.getElementById(cid);
       if (!c) return [];
-      const staffSvg = [...c.querySelectorAll('svg')].find((s) => s.querySelector('g.chord-view'));
-      if (!staffSvg) return [];
-      const sr = staffSvg.getBoundingClientRect();
-      return [...staffSvg.querySelectorAll('g.note-view')].map((nv) => {
+      return [...c.querySelectorAll('g.note-view')].map((nv) => {
+        const staffSvg = nv.closest('svg');
+        if (!staffSvg) return null;
+        const sr = staffSvg.getBoundingClientRect();
         const nb = nv.getBoundingClientRect();
         const stableX = Math.round(nb.x - sr.x);
         return {
@@ -43,7 +43,7 @@ async function extractAllNoteViews(page, containerId, expectedChordCount = 0) {
           octave: nv.getAttribute('data-octave'),
           cy: Math.round(nb.y + nb.height / 2),
         };
-      });
+      }).filter(Boolean);
     }, containerId);
     for (const it of items) {
       const key = `${Math.round(it.stableX / 6)}:${it.sd}:${it.octave}:${it.cy}`;
@@ -73,14 +73,49 @@ async function extractAllNoteViews(page, containerId, expectedChordCount = 0) {
 
 function groupNotesToRendered(noteViews, rendered) {
   if (!rendered?.length) return [];
-  return rendered.map((r) => {
-    const raw = noteViews.filter((n) => Math.abs(n.stableX - r.stableX) <= 22);
+  const ordered = [...rendered].sort((a, b) => a.stableX - b.stableX);
+  const groups = ordered.map((r) => ({ rendered: r, pianoRaw: [] }));
+
+  // Note glyphs can span most of a chord-view's horizontal box. A fixed
+  // 22px radius silently discarded outer tones, especially in dense extended
+  // chords. Assign each note to the nearest chord center within the midpoint
+  // boundaries between neighboring chord views.
+  for (const note of noteViews || []) {
+    const boxMatches = ordered
+      .map((r, i) => ({ r, i }))
+      .filter(({ r }) => r.rightX != null && note.stableX >= r.stableX - 2 && note.stableX <= r.rightX + 2);
+    if (boxMatches.length === 1) {
+      groups[boxMatches[0].i].pianoRaw.push(note);
+      continue;
+    }
+
+    let nearest = -1;
+    let distance = Infinity;
+    for (let i = 0; i < ordered.length; i++) {
+      const d = Math.abs(note.stableX - ordered[i].stableX);
+      if (d < distance) {
+        distance = d;
+        nearest = i;
+      }
+    }
+    if (nearest < 0) continue;
+    const left = nearest === 0
+      ? -Infinity
+      : (ordered[nearest - 1].stableX + ordered[nearest].stableX) / 2;
+    const right = nearest === ordered.length - 1
+      ? Infinity
+      : (ordered[nearest].stableX + ordered[nearest + 1].stableX) / 2;
+    if (note.stableX < left || note.stableX > right) continue;
+    groups[nearest].pianoRaw.push(note);
+  }
+
+  return groups.map(({ rendered: r, pianoRaw: raw }) => {
     const dedup = new Map();
     for (const n of raw) {
       const k = `${n.sd}|${n.octave}|${n.cy}`;
       if (!dedup.has(k)) dedup.set(k, n);
     }
-    return { order: r.order, stableX: r.stableX, pianoRaw: [...dedup.values()] };
+    return { order: r.order, stableX: r.stableX, rightX: r.rightX, pianoRaw: [...dedup.values()] };
   });
 }
 

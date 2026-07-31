@@ -1,7 +1,7 @@
 /**
  * chordVoicing.js — Hooktheory-style voicing layout and pitch-ascending note order.
  */
-import { shiftNoteBySemitones } from "./chordNoteUtils.js";
+import { noteLabel, noteNameToPc, shiftNoteBySemitones } from "./chordNoteUtils.js";
 
 const TONE_PC_SPELL = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
 
@@ -34,6 +34,34 @@ export function sortVoicingByPitch(toneJSNames, degreeIndices) {
   const paired = toneJSNames.map((n, i) => ({ n, d: degreeIndices[i] ?? 0 }));
   paired.sort((a, b) => noteToMidi(a.n) - noteToMidi(b.n));
   return [paired.map((p) => p.n), paired.map((p) => p.d)];
+}
+
+/**
+ * Apply Hooktheory-style density for extended suspended chords.
+ *
+ * Hooktheory's JSON identifies the suspension and extension but does not send
+ * an explicit omit for the fifth. Its rendered/playable voicing drops only an
+ * unaltered perfect fifth in this case, keeping the root, suspension, seventh,
+ * and extension tones. Explicit omissions and altered fifths remain governed
+ * by the chord data and are never changed here.
+ */
+export function applySuspendedExtensionVoicing(toneJSNames, degreeIndices, chordRootNoteName, chord = {}) {
+  const chordType = Number(chord?.type ?? 5);
+  const suspensions = Array.isArray(chord?.suspensions) ? chord.suspensions : [];
+  if (chordType < 9 || suspensions.length === 0) return;
+  if (chord?.omits?.includes(5)) return;
+  if ((chord?.alterations || []).some((a) => ["b5", "#5", "♭5", "♯5"].includes(String(a)))) return;
+
+  const rootPc = noteNameToPc(noteLabel(chordRootNoteName));
+  const fifthIndex = degreeIndices.findIndex((degree, index) => {
+    if (degree !== 2) return false;
+    const notePc = noteNameToPc(noteLabel(toneJSNames[index]));
+    return rootPc != null && notePc != null && ((notePc - rootPc + 12) % 12) === 7;
+  });
+  if (fifthIndex < 0) return;
+
+  toneJSNames.splice(fifthIndex, 1);
+  degreeIndices.splice(fifthIndex, 1);
 }
 
 /** Lift dim7 3rd/5th when still in the root's octave (Hooktheory spread voicing). */

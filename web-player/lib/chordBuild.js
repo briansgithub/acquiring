@@ -3,7 +3,7 @@ import { TRIAD_DEGREES, MAJOR_SCALE_CHORD_QUALITIES } from "./scales.js";
 import { replaceTriadThird } from "./chordSuspensions.js";
 import { applyChordModifiers, applyTypeExtensions } from "./chordModifiers.js";
 import { shiftNoteBySemitones, shiftPitchClass, noteLabel, noteNameToPc } from "./chordNoteUtils.js";
-import { finalizeVoicing } from "./chordVoicing.js";
+import { applySuspendedExtensionVoicing, finalizeVoicing } from "./chordVoicing.js";
 import { resolveChordPolicy, enrichModifierChord } from "./chordPolicy.js";
 import {
   resolveSeventhDegree, resolveOmitTriad35Seventh, resolveAppliedSeventhDegree,
@@ -285,6 +285,8 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
     sdToToneJSNoteName,
   );
 
+  applySuspendedExtensionVoicing(toneJSNames, degreeIndices, chordRootNoteName, modifierChord);
+
   // Apply secondary dominant transformations
   applySecondaryDominant(toneJSNames, degreeIndices, chordRootNoteName, chordQuality, baseOctave);
 
@@ -360,6 +362,8 @@ export function buildChordFromNoteName(rootNoteName, quality, originalKey, baseO
   replaceTriadThird(toneJSNames, degreeIndices, rootNoteName, baseOctave, suspensions, sdToToneJSNoteName);
 
   applyChordModifiers(toneJSNames, degreeIndices, rootNoteName, baseOctave, modifierChord, sdToToneJSNoteName);
+
+  applySuspendedExtensionVoicing(toneJSNames, degreeIndices, rootNoteName, modifierChord);
   
   // Apply inversion
   if (inversion > 0) {
