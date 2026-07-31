@@ -572,12 +572,7 @@ fun SongDetailView(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = key.tonic,
-                    fontSize = 30.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = " $displayScale",
+                    text = displayScale,
                     fontSize = 30.sp,
                     fontWeight = FontWeight.Bold,
                     color = ringModeColor(key.scale)
@@ -817,12 +812,7 @@ fun QuizTab(
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = activeKey.tonic,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = " $displayScale",
+                        text = displayScale,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         color = ringModeColor(activeKey.scale)
