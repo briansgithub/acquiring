@@ -15,6 +15,7 @@ import { romanNumeralToHtml } from "./lib/romanNumeralCanvas.js";
 import { chordInterpreter, getSongLength, parseKey, sdToToneJSNoteName } from "./lib/music.js";
 import { normalizeToneNotes } from "./lib/chordVoicing.js";
 import { getChordSymbol } from "./lib/jsonToSymbol.js";
+import { migrateLegacySectionData } from "./lib/hooktheoryDataCompat.js";
 import {
   arpOffsetTicks,
   arpStepMs,
@@ -887,7 +888,7 @@ async function loadSection(songIndex, sectionIndex) {
       }
       return r.json();
     });
-    currentSong = data;
+    currentSong = migrateLegacySectionData(data);
     currentSongIdx = songIndex;
     currentSectionIdx = sectionIndex;
     loadedCacheKey = song.artist;
@@ -911,7 +912,7 @@ async function loadSection(songIndex, sectionIndex) {
 
     // Store raw data for tempo recalculation
     currentRawNotes = notesArray;
-    currentRawChords = data.chords || [];
+    currentRawChords = currentSong.chords || [];
 
     const melodyEvents = createMelodyEvents(notesArray, key, currentSectionKeys);
     const chordEvents = createChordEvents(currentRawChords, key, currentSectionKeys);

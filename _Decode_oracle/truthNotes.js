@@ -154,6 +154,13 @@ function expectedPcs(truthLetter, roman, chord, key = null) {
   semis = applyAdds(semis, mods.adds, !!sev, mods.type);
   semis = applyAlts(semis, mods.alterations, quality);
 
+  // Hooktheory's rendered voicing drops an unaltered fifth from extended
+  // suspended chords even though the JSON does not encode an explicit omit.
+  const hasAlteredFifth = mods.alterations.some((a) => ['b5', '#5', '♭5', '♯5'].includes(String(a)));
+  if (mods.type >= 9 && mods.suspensions.length > 0 && !mods.omits.includes(5) && !hasAlteredFifth) {
+    semis = semis.filter((s) => s !== 7);
+  }
+
   return [...new Set(semis.map((i) => (rootPc + i) % 12))].sort((a, b) => a - b);
 }
 

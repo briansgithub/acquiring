@@ -75,7 +75,12 @@ async function extractAllRendered(page, containerId, expectedCount = 0) {
             return { s: (t.textContent || '').trim(), relX: Math.round(b.x - gb.x), y: Math.round(b.y), fill };
           })
           .filter((t) => t.s.length);
-        return { stableX, raw: (g.textContent || '').trim(), texts };
+        return {
+          stableX,
+          rightX: Math.round(gb.x - sr.x + gb.width),
+          raw: (g.textContent || '').trim(),
+          texts,
+        };
       });
     }, containerId);
     for (const it of items) {
