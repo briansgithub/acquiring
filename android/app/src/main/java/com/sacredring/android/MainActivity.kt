@@ -737,7 +737,10 @@ fun QuizTab(
                                 val activeKey = section.getKeyAtBeat(beat)
                                 val notes = ChordInterpreter.getChordNotes(chord, activeKey)
                                 if (notes.isNotEmpty()) {
-                                    val notesToPlay = if (isSimpleMode || playOnlyRoot) listOf(notes.first()) else notes
+                                    val notesToPlay = if (isSimpleMode || playOnlyRoot) {
+                                        val rootNote = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull()
+                                        if (rootNote != null) listOf(rootNote) else emptyList()
+                                    } else notes
                                     AudioEngine.playChord(notesToPlay, durationMs = (duration * 60000.0 / bpm).toInt())
                                 }
                             }
@@ -999,7 +1002,7 @@ fun QuizTab(
                         val activeKey = section.getKeyAtBeat(currentBeat)
                         val symbol = ChordInterpreter.getRomanSymbol(chord, activeKey)
                         val notes = ChordInterpreter.getChordNotes(chord, activeKey)
-                        val rootMidi = notes.firstOrNull() ?: 0
+                        val rootMidi = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull() ?: 0
                         val rootDegreeLabel = if (rootMidi > 0) MusicTheory.getDegreeLabelFromMidi(rootMidi, activeKey) else ""
 
                         Column(
@@ -1056,7 +1059,7 @@ fun QuizTab(
                         val activeKey = section.getKeyAtBeat(currentBeat)
                         val symbol = ChordInterpreter.getRomanSymbol(chord, activeKey)
                         val notes = ChordInterpreter.getChordNotes(chord, activeKey)
-                        val rootMidi = notes.firstOrNull() ?: 0
+                        val rootMidi = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull() ?: 0
                         val chordDuration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
                         val chordDurationMs = (chordDuration * 60000.0 / bpm).toInt()
 
@@ -1074,7 +1077,7 @@ fun QuizTab(
                                 Button(
                                     onClick = { 
                                         scope.launch { 
-                                            val notesToPlay = if (playOnlyRoot) listOf(notes.first()) else notes
+                                            val notesToPlay = if (playOnlyRoot) listOf(rootMidi) else notes
                                             AudioEngine.playChord(notesToPlay, durationMs = chordDurationMs) 
                                         } 
                                     },

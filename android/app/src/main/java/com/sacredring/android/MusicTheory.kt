@@ -243,7 +243,11 @@ object MusicTheory {
             val diff = relativePc - scalePc
             val absDiff = if (diff > 6) Math.abs(diff - 12) else if (diff < -6) Math.abs(diff + 12) else Math.abs(diff)
             
-            if (absDiff < bestDiff) {
+            // When a chromatic chord tone is equally close to two diatonic
+            // degrees, prefer the higher degree. For example, G relative to
+            // A is b7 (not 6), which is the conventional chord-relative
+            // spelling for a dominant seventh.
+            if (absDiff < bestDiff || (absDiff == bestDiff && i + 1 > bestDegree)) {
                 bestDiff = absDiff
                 bestDegree = i + 1
             }

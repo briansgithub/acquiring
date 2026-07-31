@@ -553,6 +553,20 @@ object ChordInterpreter {
         return pitches
     }
 
+    /**
+     * Returns the same chord voiced in root position, regardless of the
+     * inversion encoded in the source JSON.  The quiz uses this only to
+     * identify/display the chord root; normal chord playback must continue to
+     * use getChordNotes() so the written inversion is preserved.
+     */
+    fun getRootPositionChordNotes(chordJson: JsonObject, key: KeyInfo): List<Int> {
+        val rootPositionChord = buildJsonObject {
+            chordJson.forEach { (name, value) -> put(name, value) }
+            put("inversion", 0)
+        }
+        return getChordNotes(rootPositionChord, key)
+    }
+
     fun getUniqueDisplayChords(chords: List<JsonObject>, key: KeyInfo): List<JsonObject> {
         val result = mutableListOf<JsonObject>()
         val seenSignatures = mutableSetOf<String>()
