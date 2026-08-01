@@ -199,7 +199,10 @@ object AudioEngine {
                     }
                     
                     state.phase = (state.phase + state.freq / SAMPLE_RATE) % 1.0
-                    sum += wave * (0.25 / numNotes) * env
+                    // Use a fixed scaling factor instead of 1/numNotes so that the 
+                    // root note volume remains consistent relative to the melody 
+                    // regardless of the chord's complexity.
+                    sum += wave * 0.15 * env
                 }
             } else {
                 // Non-overlapping monophonic arpeggiated chord
@@ -241,7 +244,8 @@ object AudioEngine {
                 }
                 
                 state.phase = (state.phase + state.freq / SAMPLE_RATE) % 1.0
-                sum = wave * 0.45 * env
+                // Match the perceived loudness of the block chord scaling.
+                sum = wave * 0.25 * env
             }
 
             samples[i] = (sum * Short.MAX_VALUE).toInt().coerceIn(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt()).toShort()

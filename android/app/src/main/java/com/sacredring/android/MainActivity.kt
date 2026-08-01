@@ -820,7 +820,7 @@ fun QuizTab(
     var isPlaying by remember { mutableStateOf(false) }
     var currentBeat by remember { mutableStateOf(1.0) }
     var playbackTrigger by remember { mutableStateOf(0) }
-    var melodyChordBalance by remember { mutableStateOf(0.2f) }
+    var melodyChordBalance by remember { mutableStateOf(0.55f) }
     val melodyVolume = melodyChordBalance
     val chordVolume = 1f - melodyChordBalance
     var isScrubbing by remember { mutableStateOf(false) }
@@ -1096,7 +1096,7 @@ fun QuizTab(
                         if (!isSimpleMode) { Box(modifier = Modifier.align(Alignment.CenterEnd)) { transposePicker() } }
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Bal.", style = MaterialTheme.typography.labelSmall, modifier = Modifier.width(36.dp))
+                        Text("Chord / Melody\nVol.", style = MaterialTheme.typography.labelSmall, modifier = Modifier.width(96.dp))
                         Slider(value = melodyChordBalance, onValueChange = { melodyChordBalance = it }, modifier = Modifier.weight(1f).padding(horizontal = 8.dp))
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
