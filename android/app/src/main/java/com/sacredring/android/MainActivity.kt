@@ -61,8 +61,6 @@ private enum class SongParentPage {
     ARTIST
 }
 
-private fun canonicalArtistName(artistName: String): String = artistName.replace('-', ' ')
-
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
     private lateinit var db: AppDatabase
@@ -138,6 +136,7 @@ fun MainScreen(db: AppDatabase) {
     var isArpeggiated by remember { mutableStateOf(false) }
     var arpeggioStepMs by remember { mutableStateOf(80f) }
     var isShowingRecent by remember { mutableStateOf(false) }
+    var isShowingRecentArtists by remember { mutableStateOf(false) }
     var currentWaveform by remember { mutableStateOf(AudioEngine.Waveform.SAWTOOTH) }
     var globalTranspose by remember { mutableStateOf(AudioEngine.globalTranspose) }
     
@@ -195,19 +194,22 @@ fun MainScreen(db: AppDatabase) {
         }
     }
 
-    LaunchedEffect(searchArtistQuery) {
+    LaunchedEffect(searchArtistQuery, selectedSong, selectedArtistSongs) {
         if (searchArtistQuery.isNotEmpty()) {
+            isShowingRecentArtists = false
             delay(300) // Debounce
             artistSuggestions = activeDb.songDao().getArtistSuggestions(searchArtistQuery)
             isArtistExpanded = true
-        } else {
-            artistSuggestions = emptyList()
+        } else if (selectedSong == null && selectedArtistSongs == null) {
+            artistSuggestions = HistoryManager.getRecentArtists(context)
+            isShowingRecentArtists = artistSuggestions.isNotEmpty()
             isArtistExpanded = false
         }
     }
 
     val openSong: (Song) -> Unit = { song ->
         HistoryManager.addSong(context, song.slug)
+        HistoryManager.addArtist(context, song.artist)
         isExpanded = false
         songParentPage = if (selectedArtistSongs != null) SongParentPage.ARTIST else SongParentPage.LIBRARY
         quizReturnTab = null
@@ -237,6 +239,7 @@ fun MainScreen(db: AppDatabase) {
                             val sections = HooktheoryDataCompat.migrateSections(
                                 json.decodeFromString<Map<String, ExtractedSection>>(dataStr)
                             )
+                            HistoryManager.addArtist(context, harvestedSong.artist)
                             selectedSong = harvestedSong
                             selectedSongSections = sections
                             selectedSectionId = sections.sectionsInSongOrder().firstOrNull()?.key ?: sections.keys.firstOrNull()
@@ -290,7 +293,10 @@ fun MainScreen(db: AppDatabase) {
                     if (it.isNotEmpty()) isArtistExpanded = false
                 },
                 isExpanded = isExpanded,
-                onExpandedChange = { isExpanded = it },
+                onExpandedChange = { expanded ->
+                    isExpanded = expanded
+                    if (expanded) isArtistExpanded = false
+                },
                 suggestions = suggestions,
                 isShowingRecent = isShowingRecent,
                 onSearchTitle = {
@@ -307,12 +313,17 @@ fun MainScreen(db: AppDatabase) {
                     if (it.isNotEmpty()) isExpanded = false
                 },
                 isArtistExpanded = isArtistExpanded,
-                onArtistExpandedChange = { isArtistExpanded = it },
+                onArtistExpandedChange = { expanded ->
+                    isArtistExpanded = expanded
+                    if (expanded) isExpanded = false
+                },
                 artistSuggestions = artistSuggestions,
+                isShowingRecentArtists = isShowingRecentArtists,
                 onArtistClick = { artistName ->
+                    HistoryManager.addArtist(context, artistName)
                     scope.launch {
                         val results = activeDb.songDao().getSongsByArtist(artistName)
-                        selectedArtistName = artistName
+                        selectedArtistName = canonicalArtistName(artistName)
                         selectedArtistSongs = results
                         isArtistExpanded = false
                     }
@@ -321,7 +332,11 @@ fun MainScreen(db: AppDatabase) {
                     scope.launch {
                         val results = activeDb.songDao().getSongsByArtist(searchArtistQuery)
                         if (results.isNotEmpty()) {
-                            selectedArtistName = searchArtistQuery
+                            val canonicalArtist = results.first().artist
+                                ?.let(::canonicalArtistName)
+                                ?: canonicalArtistName(searchArtistQuery)
+                            HistoryManager.addArtist(context, canonicalArtist)
+                            selectedArtistName = canonicalArtist
                             selectedArtistSongs = results
                         } else {
                             searchResult = "No artists matching '$searchArtistQuery'"
@@ -397,9 +412,10 @@ fun MainScreen(db: AppDatabase) {
                     AudioEngine.globalTranspose = it
                 },
                 onArtistClick = { artistName ->
+                    HistoryManager.addArtist(context, artistName)
                     scope.launch {
                         val results = activeDb.songDao().getSongsByArtist(artistName)
-                        selectedArtistName = artistName
+                        selectedArtistName = canonicalArtistName(artistName)
                         selectedArtistSongs = results
                         selectedSongSections = null
                         selectedSong = null
@@ -432,6 +448,7 @@ fun LibraryView(
     isArtistExpanded: Boolean,
     onArtistExpandedChange: (Boolean) -> Unit,
     artistSuggestions: List<String>,
+    isShowingRecentArtists: Boolean,
     onArtistClick: (String) -> Unit,
     onSearchArtist: () -> Unit,
     onSuggestionClick: (Song) -> Unit,
@@ -526,7 +543,13 @@ fun LibraryView(
                     onDismissRequest = { onArtistExpandedChange(false) },
                     modifier = Modifier.heightIn(max = 400.dp)
                 ) {
-                    if (artistSuggestions.isEmpty() && searchArtistQuery.isNotEmpty()) {
+                    if (isShowingRecentArtists) {
+                        DropdownMenuItem(
+                            text = { Text("Recent Artists", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary) },
+                            onClick = {},
+                            enabled = false
+                        )
+                    } else if (artistSuggestions.isEmpty() && searchArtistQuery.isNotEmpty()) {
                         DropdownMenuItem(
                             text = { Text("No artists matching '$searchArtistQuery'", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.secondary) },
                             onClick = {},
@@ -746,26 +769,56 @@ fun SongDetailView(
     
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp)
-        ) {
-            TextButton(onClick = onBack) { Text("< Back") }
-            if (currentTab != 2) {
+        if (currentTab != 2) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp)
+            ) {
+                TextButton(onClick = onBack) { Text("< Back") }
                 Text(
                     text = selectedSection.safeSongInfo,
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.weight(1f).padding(start = 8.dp)
                 )
-
-                Box(modifier = Modifier.padding(end = 8.dp)) {
-                    transposePickerComposable()
+            }
+        } else {
+            val canonicalArtist = song.artist
+                ?.takeIf { it.isNotBlank() }
+                ?.let(::canonicalArtistName)
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    TextButton(onClick = onBack) { Text("< Back") }
+                    Spacer(modifier = Modifier.weight(1f))
+                    TextButton(onClick = { uriHandler.openUri(song.url) }) { Text("URL") }
+                    TextButton(onClick = { onTabChange(0) }) { Text("Info") }
+                    TextButton(onClick = { onTabChange(1) }) { Text("Chords") }
                 }
-            } else {
-                Spacer(modifier = Modifier.weight(1f))
-                TextButton(onClick = { uriHandler.openUri(song.url) }) { Text("URL") }
-                TextButton(onClick = { onTabChange(0) }) { Text("Info") }
-                TextButton(onClick = { onTabChange(1) }) { Text("Chords") }
+                Row(
+                    modifier = Modifier.fillMaxWidth().height(28.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (!isSimpleMode) {
+                        Text(
+                            text = song.title ?: "Unknown Title",
+                            style = MaterialTheme.typography.bodySmall,
+                            maxLines = 1
+                        )
+                        canonicalArtist?.let { artist ->
+                            Text(" by ", style = MaterialTheme.typography.bodySmall)
+                            TextButton(
+                                onClick = { onArtistClick(artist) },
+                                contentPadding = PaddingValues(0.dp),
+                                modifier = Modifier.height(28.dp)
+                            ) {
+                                Text(text = artist, style = MaterialTheme.typography.bodySmall, maxLines = 1)
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -809,10 +862,7 @@ fun SongDetailView(
                 onWaveformChange = onWaveformChange,
                 sectionPicker = sectionPickerComposable,
                 transposePicker = transposePickerComposable,
-                globalTranspose = globalTranspose,
-                songTitle = song.title ?: "Unknown Title",
-                artistName = song.artist,
-                onArtistClick = onArtistClick
+                globalTranspose = globalTranspose
             )
         }
         }
@@ -856,10 +906,7 @@ fun QuizTab(
     onWaveformChange: (AudioEngine.Waveform) -> Unit,
     sectionPicker: @Composable () -> Unit,
     transposePicker: @Composable () -> Unit,
-    globalTranspose: Int,
-    songTitle: String,
-    artistName: String?,
-    onArtistClick: (String) -> Unit
+    globalTranspose: Int
 ) {
     val baseBpm = section.getBpm().toFloat().coerceIn(40f, 240f)
     var tempoPercent by remember(section) { mutableStateOf(100f) }
@@ -1156,32 +1203,6 @@ fun QuizTab(
             if (audiationState is AudiationState.Dragging) { audiationPuckOffset = audiationState.offset }
 
             Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                if (!isSimpleMode) {
-                    val canonicalArtist = artistName
-                        ?.takeIf { it.isNotBlank() }
-                        ?.let(::canonicalArtistName)
-                    Row(
-                        modifier = Modifier.fillMaxWidth().height(28.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = songTitle,
-                            style = MaterialTheme.typography.bodySmall,
-                            maxLines = 1
-                        )
-                        canonicalArtist?.let { artist ->
-                            Text(" by ", style = MaterialTheme.typography.bodySmall)
-                            TextButton(
-                                onClick = { onArtistClick(artist) },
-                                contentPadding = PaddingValues(0.dp),
-                                modifier = Modifier.height(28.dp)
-                            ) {
-                                Text(text = artist, style = MaterialTheme.typography.bodySmall, maxLines = 1)
-                            }
-                        }
-                    }
-                }
                 val displayScale = activeKey.scale.replace(Regex("([a-z])([A-Z])"), "$1 $2").replaceFirstChar { it.titlecase() }
                 Column(modifier = Modifier.fillMaxWidth().height(152.dp)) {
                     Box(modifier = Modifier.fillMaxWidth().height(56.dp)) {

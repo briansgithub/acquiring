@@ -449,16 +449,9 @@ fun PitchGauge(
                 val normalized = (pitchResult.centsError / 200.0).coerceIn(-1.2, 1.2)
                 val barY = centerY - normalized.toFloat() * usableHalfHeight
                 
-                val absError = Math.abs(pitchResult.centsError)
-                val barColor = when {
-                    absError < 20 -> Color.Green
-                    absError < 50 -> Color(0xFFFFA500) // Amber
-                    else -> Color.Red
-                }
-
                 // Main moving pitch bar
                 drawRect(
-                    color = barColor,
+                    color = Color.White,
                     topLeft = Offset(0f, barY - barThickness / 2f),
                     size = Size(size.width, barThickness)
                 )
