@@ -500,16 +500,25 @@ object ChordInterpreter {
     }
 
     /**
-     * Renders the source chord against its relative Ionian tonic without
-     * changing any pitch or playback input. The sounding chord quality and all
-     * extensions/inversions stay sourced from the original modal context.
+     * Renders the source chord against an Ionian label context without changing
+     * any pitch or playback input. The sounding chord quality and all
+     * extensions/inversions stay sourced from the original modal context. The
+     * overload with an explicit context key lets an entire section keep one
+     * tonic across local key changes.
      */
-    fun getRelativeIonianRomanSymbol(chordJson: JsonObject, key: KeyInfo): String {
+    fun getRelativeIonianRomanSymbol(chordJson: JsonObject, key: KeyInfo): String =
+        getRelativeIonianRomanSymbol(chordJson, key, relativeIonianKey(key))
+
+    fun getRelativeIonianRomanSymbol(
+        chordJson: JsonObject,
+        key: KeyInfo,
+        ionianContextKey: KeyInfo
+    ): String {
         val root = safeInt(chordJson["root"])
         if (root <= 0) return "Rest"
 
         val sourceKey = KeyInfo(key.tonic, canonicalScaleName(key.scale))
-        val displayKey = relativeIonianKey(key)
+        val displayKey = KeyInfo(ionianContextKey.tonic, "major")
         val applied = safeInt(chordJson["applied"])
         val borrowed = safeString(chordJson["borrowed"])
 

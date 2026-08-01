@@ -63,13 +63,50 @@ internal fun relativeIonianDegree(
     sourceKey: KeyInfo
 ): RelativeIonianDegree? = degreeInKey(pitch, relativeIonianKey(sourceKey))
 
-internal fun relativeIonianDegreeLabel(pitch: SpelledPitch, sourceKey: KeyInfo): String =
-    relativeIonianDegree(pitch, sourceKey)?.label.orEmpty()
+internal fun ionianContextDegreeLabel(pitch: SpelledPitch, ionianKey: KeyInfo): String =
+    degreeInKey(pitch, KeyInfo(ionianKey.tonic, "major"))?.label.orEmpty()
 
-internal fun relativeIonianDegreeLabel(midiNote: Int, sourceKey: KeyInfo): String {
-    val displayKey = relativeIonianKey(sourceKey)
+internal fun ionianContextPreviewAudioNote(
+    pitch: SpelledPitch,
+    ionianKey: KeyInfo,
+    referenceOctave: Int = 3
+): Int? {
+    val displayKey = KeyInfo(ionianKey.tonic, "major")
+    val degree = degreeInKey(pitch, displayKey) ?: return null
+    val scaleDegree = degree.accidentalPrefix + degree.degree
+    return MusicTheory.resolveScaleDegreePitch(
+        sd = scaleDegree,
+        relativeOctave = 0,
+        key = displayKey,
+        baseOctave = referenceOctave
+    )?.toAudioNoteNumber()
+}
+
+internal fun relativeIonianDegreeLabel(pitch: SpelledPitch, sourceKey: KeyInfo): String =
+    ionianContextDegreeLabel(pitch, relativeIonianKey(sourceKey))
+
+internal fun ionianContextDegreeLabel(midiNote: Int, ionianKey: KeyInfo): String {
+    val displayKey = KeyInfo(ionianKey.tonic, "major")
     val displayTonicMidi = MusicTheory.getMidiNote("1", octave = 0, key = displayKey)
     return MusicTheory.getRelativeDegreeLabel(midiNote, displayTonicMidi)
+}
+
+internal fun ionianContextPreviewAudioNote(
+    midiNote: Int,
+    ionianKey: KeyInfo,
+    referenceOctave: Int = 3
+): Int? {
+    val displayKey = KeyInfo(ionianKey.tonic, "major")
+    return MusicTheory.resolveScaleDegreePitch(
+        sd = ionianContextDegreeLabel(midiNote, displayKey).replace("\u0302", ""),
+        relativeOctave = 0,
+        key = displayKey,
+        baseOctave = referenceOctave
+    )?.toAudioNoteNumber()
+}
+
+internal fun relativeIonianDegreeLabel(midiNote: Int, sourceKey: KeyInfo): String {
+    return ionianContextDegreeLabel(midiNote, relativeIonianKey(sourceKey))
 }
 
 /**
@@ -80,9 +117,21 @@ internal fun relativeIonianStaffDegree(
     sd: String,
     relativeOctave: Int,
     sourceKey: KeyInfo
+): Int? = ionianContextStaffDegree(
+    sd = sd,
+    relativeOctave = relativeOctave,
+    sourceKey = sourceKey,
+    ionianKey = relativeIonianKey(sourceKey)
+)
+
+internal fun ionianContextStaffDegree(
+    sd: String,
+    relativeOctave: Int,
+    sourceKey: KeyInfo,
+    ionianKey: KeyInfo
 ): Int? {
     val sourceTheoryKey = KeyInfo(sourceKey.tonic, canonicalScaleName(sourceKey.scale))
     val pitch = MusicTheory.resolveScaleDegreePitch(sd, relativeOctave, sourceTheoryKey) ?: return null
-    val displayTonic = SpelledPitch.parse(relativeIonianKey(sourceKey).tonic, octave = 4) ?: return null
+    val displayTonic = SpelledPitch.parse(ionianKey.tonic, octave = 4) ?: return null
     return pitch.staffPosition - displayTonic.staffPosition + 1
 }

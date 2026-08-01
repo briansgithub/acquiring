@@ -83,4 +83,36 @@ class RelativeIonianContextTest {
         assertEquals(1, sourceChord["root"]?.jsonPrimitive?.int)
         assertEquals(KeyInfo("A", "minor"), key)
     }
+
+    @Test
+    fun fixedIonianContextDoesNotRebaseAtKeyChanges() {
+        val contextKey = relativeIonianKey(KeyInfo("D", "major"))
+        val dPhrygianKey = KeyInfo("D", "phrygian")
+        val fPhrygianKey = KeyInfo("F", "phrygian")
+        val tonicChord = chord(root = 1)
+        val dRoot = ChordInterpreter.resolveChordRoot(tonicChord, dPhrygianKey)!!
+        val fRoot = ChordInterpreter.resolveChordRoot(tonicChord, fPhrygianKey)!!
+
+        // Rebasing at each modulation incorrectly calls both of these "3".
+        assertEquals("3\u0302", relativeIonianDegreeLabel(dRoot.pitch, dPhrygianKey))
+        assertEquals("3\u0302", relativeIonianDegreeLabel(fRoot.pitch, fPhrygianKey))
+
+        // A section-wide D-Ionian reference correctly identifies D and F as
+        // different scale degrees, matching the two different preview pitches.
+        assertEquals("1\u0302", ionianContextDegreeLabel(dRoot.pitch, contextKey))
+        assertEquals("♭3\u0302", ionianContextDegreeLabel(fRoot.pitch, contextKey))
+        assertEquals("i", ChordInterpreter.getRelativeIonianRomanSymbol(tonicChord, dPhrygianKey, contextKey))
+        assertEquals("♭iii", ChordInterpreter.getRelativeIonianRomanSymbol(tonicChord, fPhrygianKey, contextKey))
+        assertEquals(1, ionianContextStaffDegree("1", 0, dPhrygianKey, contextKey))
+        assertEquals(3, ionianContextStaffDegree("1", 0, fPhrygianKey, contextKey))
+
+        val lowC = SpelledPitch.parse("C", 3)!!
+        val highC = SpelledPitch.parse("C", 4)!!
+        assertEquals("♭7\u0302", ionianContextDegreeLabel(lowC, contextKey))
+        assertEquals("♭7\u0302", ionianContextDegreeLabel(highC, contextKey))
+        assertEquals(60, ionianContextPreviewAudioNote(lowC, contextKey))
+        assertEquals(60, ionianContextPreviewAudioNote(highC, contextKey))
+        assertEquals(60, ionianContextPreviewAudioNote(48, contextKey))
+        assertEquals(60, ionianContextPreviewAudioNote(72, contextKey))
+    }
 }
