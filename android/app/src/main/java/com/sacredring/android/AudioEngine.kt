@@ -10,6 +10,7 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.concurrent.atomic.AtomicBoolean
 
 import kotlin.math.PI
 import kotlin.math.sin
@@ -41,6 +42,22 @@ object AudioEngine {
 
     class PlaybackSnapshot internal constructor(internal val trackIds: Set<Long>)
 
+    class PlaybackToken internal constructor(
+        internal val channel: PlaybackChannel,
+        internal val generation: Long
+    )
+
+    class PreparedPlayback internal constructor(
+        internal val track: AudioTrack,
+        internal val channel: PlaybackChannel,
+        internal val baseVolume: Float,
+        internal val sampleCount: Int,
+        internal val fadeInMs: Int,
+        internal val generation: Long
+    ) {
+        internal val consumed = AtomicBoolean(false)
+    }
+
     private data class ActiveTrack(
         val id: Long,
         val track: AudioTrack,
@@ -60,6 +77,14 @@ object AudioEngine {
 
     private fun invalidatePendingPlayback(channels: Set<PlaybackChannel>) {
         channels.forEach { channel -> playbackGenerations[channel.ordinal]++ }
+    }
+
+    fun capturePlaybackToken(channel: PlaybackChannel): PlaybackToken = synchronized(activeTracks) {
+        PlaybackToken(channel, playbackGenerations[channel.ordinal])
+    }
+
+    fun isPlaybackTokenCurrent(token: PlaybackToken): Boolean = synchronized(activeTracks) {
+        playbackGenerations[token.channel.ordinal] == token.generation
     }
 
     private fun gainFor(channel: PlaybackChannel): Float = when (channel) {
@@ -211,23 +236,156 @@ object AudioEngine {
         stopAndRelease(tracks)
     }
 
-    suspend fun playChord(
+    fun releasePreparedPlayback(prepared: PreparedPlayback) {
+        if (!prepared.consumed.compareAndSet(false, true)) return
+        try {
+            prepared.track.release()
+        } catch (_: Exception) {}
+    }
+
+    private fun activatePreparedPlaybackLocked(
+        prepared: PreparedPlayback,
+        skipMs: Int = 0
+    ): ActiveTrack? {
+        if (!prepared.consumed.compareAndSet(false, true)) return null
+        return try {
+            if (skipMs > 0 && prepared.sampleCount > 1) {
+                val skipFrames = (SAMPLE_RATE * skipMs / 1000.0)
+                    .toInt()
+                    .coerceIn(0, prepared.sampleCount - 1)
+                prepared.track.setPlaybackHeadPosition(skipFrames)
+            }
+            val active = ActiveTrack(
+                id = nextTrackId++,
+                track = prepared.track,
+                channel = prepared.channel,
+                baseVolume = prepared.baseVolume,
+                sampleCount = prepared.sampleCount,
+                transitionGain = if (prepared.fadeInMs > 0) 0f else 1f
+            )
+            applyTrackGain(active)
+            prepared.track.play()
+            activeTracks.add(active)
+            active
+        } catch (_: Exception) {
+            try {
+                prepared.track.release()
+            } catch (_: Exception) {}
+            null
+        }
+    }
+
+    private fun monitorPlayback(active: ActiveTrack) {
+        CoroutineScope(Dispatchers.Default).launch {
+            while (true) {
+                val stillPlaying = try {
+                    active.track.playState != AudioTrack.PLAYSTATE_STOPPED &&
+                        active.track.playbackHeadPosition < active.sampleCount
+                } catch (_: Exception) {
+                    false
+                }
+                if (!stillPlaying) break
+                delay(20)
+            }
+            try {
+                synchronized(activeTracks) { activeTracks.remove(active) }
+                active.track.stop()
+                active.track.release()
+            } catch (_: Exception) {}
+        }
+    }
+
+    fun startPreparedPlayback(prepared: PreparedPlayback, skipMs: Int = 0): Boolean {
+        val active = synchronized(activeTracks) {
+            if (playbackGenerations[prepared.channel.ordinal] != prepared.generation) {
+                null
+            } else {
+                activatePreparedPlaybackLocked(prepared, skipMs)
+            }
+        }
+        if (active == null) {
+            releasePreparedPlayback(prepared)
+            return false
+        }
+        if (prepared.fadeInMs > 0) fadeInPlayback(active.id, prepared.fadeInMs)
+        monitorPlayback(active)
+        return true
+    }
+
+    /**
+     * Replaces the current timeline with tracks rendered during the current
+     * generation. Synthesis and AudioTrack writes are already complete, so the
+     * old-to-new handoff contains only stop/play operations.
+     */
+    fun replacePlaybackWithPrepared(
+        channels: Set<PlaybackChannel>,
+        preparedPlayback: List<PreparedPlayback>,
+        skipMs: Int = 0
+    ): Boolean {
+        if (preparedPlayback.isEmpty() || preparedPlayback.any { it.channel !in channels }) return false
+
+        val started = mutableListOf<Pair<ActiveTrack, PreparedPlayback>>()
+        val replaced = synchronized(activeTracks) {
+            val isCurrent = preparedPlayback.all { prepared ->
+                !prepared.consumed.get() &&
+                    playbackGenerations[prepared.channel.ordinal] == prepared.generation
+            }
+            if (!isCurrent) return@synchronized false
+
+            val oldTracks = activeTracks.filter { it.channel in channels }
+            activeTracks.removeAll { it.channel in channels }
+            invalidatePendingPlayback(channels)
+            stopAndRelease(oldTracks)
+
+            preparedPlayback.forEach { prepared ->
+                activatePreparedPlaybackLocked(prepared, skipMs)?.let { active ->
+                    started += active to prepared
+                }
+            }
+            started.size == preparedPlayback.size
+        }
+
+        if (!replaced) {
+            val partialTracks = synchronized(activeTracks) {
+                val partialIds = started.mapTo(mutableSetOf()) { (active, _) -> active.id }
+                val removed = activeTracks.filter { it.id in partialIds }
+                activeTracks.removeAll { it.id in partialIds }
+                removed
+            }
+            stopAndRelease(partialTracks)
+            preparedPlayback.forEach(::releasePreparedPlayback)
+            return false
+        }
+        started.forEach { (active, prepared) ->
+            if (prepared.fadeInMs > 0) fadeInPlayback(active.id, prepared.fadeInMs)
+            monitorPlayback(active)
+        }
+        return true
+    }
+
+    private suspend fun prepareChordPlayback(
         midiNotes: List<Int>,
         durationMs: Int = 450,
         arpeggiate: Boolean = false,
         stepMs: Int = 80,
         volume: Float = 1.0f,
         channel: PlaybackChannel = PlaybackChannel.CHORD,
-        fadeInMs: Int = 0
-    ) = withContext(Dispatchers.Default) {
-        val generation = synchronized(activeTracks) { playbackGenerations[channel.ordinal] }
+        fadeInMs: Int = 0,
+        playbackToken: PlaybackToken? = null
+    ): PreparedPlayback? = withContext(Dispatchers.Default) {
+        if (playbackToken != null && playbackToken.channel != channel) return@withContext null
+        val generation = playbackToken?.generation
+            ?: synchronized(activeTracks) { playbackGenerations[channel.ordinal] }
+        if (synchronized(activeTracks) { playbackGenerations[channel.ordinal] != generation }) {
+            return@withContext null
+        }
         val playbackContext = currentCoroutineContext()
         // Keep one preset for the entire rendered buffer. The dropdown may be
         // changed while synthesis is running, and preset-specific state (such
         // as a plucked-string delay line) is allocated below.
         val waveform = currentWaveform
         val validNotes = midiNotes.filter { it > 0 }.map { it + globalTranspose }
-        if (validNotes.isEmpty()) return@withContext
+        if (validNotes.isEmpty()) return@withContext null
 
         val numNotes = validNotes.size
         val stepSamples = (SAMPLE_RATE * stepMs / 1000.0).toInt().coerceAtLeast(200)
@@ -277,7 +435,7 @@ object AudioEngine {
             // its parent playback job is cancelled or the timeline is replaced.
             if ((i and 2047) == 0 &&
                 (!playbackContext.isActive || synchronized(activeTracks) { playbackGenerations[channel.ordinal] != generation })) {
-                return@withContext
+                return@withContext null
             }
             var sum = 0.0
 
@@ -428,9 +586,10 @@ object AudioEngine {
         // A paused/restarted timeline cancels its child playback jobs.  Do not
         // create a late AudioTrack after that cancellation has already happened.
         if (!playbackContext.isActive || synchronized(activeTracks) { playbackGenerations[channel.ordinal] != generation }) {
-            return@withContext
+            return@withContext null
         }
 
+        var trackToRelease: AudioTrack? = null
         try {
             val bufferSizeBytes = numSamples * 2
             val track = AudioTrack.Builder()
@@ -450,58 +609,87 @@ object AudioEngine {
                 .setBufferSizeInBytes(bufferSizeBytes)
                 .setTransferMode(AudioTrack.MODE_STATIC)
                 .build()
+            trackToRelease = track
 
             val written = track.write(samples, 0, numSamples)
             if (written > 0) {
-                val active = synchronized(activeTracks) {
-                    ActiveTrack(
-                        id = nextTrackId++,
-                        track = track,
-                        channel = channel,
-                        baseVolume = volume.coerceIn(0f, 1f),
-                        sampleCount = numSamples,
-                        transitionGain = if (fadeInMs > 0) 0f else 1f
-                    )
-                }
-                synchronized(activeTracks) {
-                    // Cancellation and channel replacement are both respected
-                    // while holding the same lock used for track replacement.
-                    if (!playbackContext.isActive || playbackGenerations[channel.ordinal] != generation) {
-                        try {
-                            track.stop()
-                            track.release()
-                        } catch (_: Exception) {}
-                        return@withContext
-                    }
-                    applyTrackGain(active)
-                    track.play()
-                    activeTracks.add(active)
-                }
-                if (fadeInMs > 0) fadeInPlayback(active.id, fadeInMs)
-                CoroutineScope(Dispatchers.Default).launch {
-                    while (true) {
-                        val stillPlaying = try {
-                            track.playState != AudioTrack.PLAYSTATE_STOPPED &&
-                                track.playbackHeadPosition < numSamples
-                        } catch (_: Exception) {
-                            false
-                        }
-                        if (!stillPlaying) break
-                        delay(20)
-                    }
+                if (!playbackContext.isActive ||
+                    synchronized(activeTracks) { playbackGenerations[channel.ordinal] != generation }
+                ) {
                     try {
-                        synchronized(activeTracks) { activeTracks.remove(active) }
-                        track.stop()
                         track.release()
                     } catch (_: Exception) {}
+                    return@withContext null
                 }
+                PreparedPlayback(
+                    track = track,
+                    channel = channel,
+                    baseVolume = volume.coerceIn(0f, 1f),
+                    sampleCount = numSamples,
+                    fadeInMs = fadeInMs,
+                    generation = generation
+                ).also { trackToRelease = null }
             } else {
                 try {
                     track.release()
                 } catch (_: Exception) {}
+                trackToRelease = null
+                null
             }
         } catch (_: Exception) {
             // Non-critical sound playback error safely caught
+            try {
+                trackToRelease?.release()
+            } catch (_: Exception) {}
+            null
         }
+    }
+
+    suspend fun prepareChord(
+        midiNotes: List<Int>,
+        durationMs: Int = 450,
+        arpeggiate: Boolean = false,
+        stepMs: Int = 80,
+        volume: Float = 1.0f,
+        channel: PlaybackChannel = PlaybackChannel.CHORD,
+        fadeInMs: Int = 0,
+        playbackToken: PlaybackToken? = null
+    ): PreparedPlayback? = prepareChordPlayback(
+        midiNotes = midiNotes,
+        durationMs = durationMs,
+        arpeggiate = arpeggiate,
+        stepMs = stepMs,
+        volume = volume,
+        channel = channel,
+        fadeInMs = fadeInMs,
+        playbackToken = playbackToken
+    )
+
+    suspend fun playChord(
+        midiNotes: List<Int>,
+        durationMs: Int = 450,
+        arpeggiate: Boolean = false,
+        stepMs: Int = 80,
+        volume: Float = 1.0f,
+        channel: PlaybackChannel = PlaybackChannel.CHORD,
+        fadeInMs: Int = 0,
+        playbackToken: PlaybackToken? = null
+    ) {
+        val prepared = prepareChordPlayback(
+            midiNotes = midiNotes,
+            durationMs = durationMs,
+            arpeggiate = arpeggiate,
+            stepMs = stepMs,
+            volume = volume,
+            channel = channel,
+            fadeInMs = fadeInMs,
+            playbackToken = playbackToken
+        ) ?: return
+
+        if (!currentCoroutineContext().isActive) {
+            releasePreparedPlayback(prepared)
+            return
+        }
+        startPreparedPlayback(prepared)
     }
 }

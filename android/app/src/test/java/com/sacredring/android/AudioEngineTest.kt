@@ -4,6 +4,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -13,6 +14,16 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
 class AudioEngineTest {
+
+    @Test
+    fun testPlaybackToken_isInvalidatedBeforeQueuedSynthesisCanStart() {
+        val channel = AudioEngine.PlaybackChannel.CHORD
+        val token = AudioEngine.capturePlaybackToken(channel)
+
+        assertTrue(AudioEngine.isPlaybackTokenCurrent(token))
+        AudioEngine.cancelPendingPlayback(setOf(channel))
+        assertFalse(AudioEngine.isPlaybackTokenCurrent(token))
+    }
 
     @Test
     fun testRapidConcurrentChordClicks_doesNotCrash() = runBlocking {

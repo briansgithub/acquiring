@@ -46,9 +46,12 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.dp
 import androidx.room.Room
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -66,6 +69,12 @@ private const val QUIZ_PLAYBACK_CROSSFADE_MS = 24
 private val QUIZ_TIMELINE_CHANNELS = setOf(
     AudioEngine.PlaybackChannel.MELODY,
     AudioEngine.PlaybackChannel.CHORD
+)
+
+private data class LoopHeadPlaybackRequest(
+    val midiNotes: List<Int>,
+    val durationMs: Int,
+    val channel: AudioEngine.PlaybackChannel
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -928,7 +937,7 @@ fun QuizTab(
                 val rawBeat = (obj["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
                 MelodyNote(
                     sd = (obj["sd"] as? JsonPrimitive)?.contentOrNull ?: "1",
-                    beat = if (rawBeat == 0.0) 1.0 else rawBeat,
+                    beat = normalizePlaybackBeat(rawBeat),
                     duration = (obj["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0,
                     octave = (obj["octave"] as? JsonPrimitive)?.intOrNull ?: 0,
                     isRest = (obj["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
@@ -954,33 +963,81 @@ fun QuizTab(
     val scope = rememberCoroutineScope()
     
     val endBeat = remember(section, melody) {
-        val metadataEndBeat = (section.metadata?.get("endBeat") as? JsonPrimitive)?.doubleOrNull ?: 0.0
-        
-        // Calculate content end beat by looking at the last non-rest note/chord
-        val lastNoteEnd = melody.filter { !it.isRest }.maxOfOrNull { it.beat + it.duration } ?: 0.0
-        val lastChordEnd = section.chords.filter { 
-            val isRest = (it["isRest"] as? JsonPrimitive)?.booleanOrNull == true || 
-                         (it["rest"] as? JsonPrimitive)?.booleanOrNull == true
-            !isRest
-        }.maxOfOrNull { 
-            val b = (it["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
-            val d = (it["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
-            b + d
-        } ?: 0.0
-        
-        val contentEnd = maxOf(lastNoteEnd, lastChordEnd)
-        
-        when {
-            // If we have metadata and it's reasonably close to content (or content is empty), trust it.
-            metadataEndBeat > 0 && (contentEnd == 0.0 || metadataEndBeat <= contentEnd + 8.0) -> metadataEndBeat
-            // If metadata is much larger than content, it might be a default or full-song marker.
-            // Snap to the next 4-beat measure boundary.
-            metadataEndBeat > contentEnd + 8.0 && contentEnd > 0 -> {
-                val nextMeasure = (kotlin.math.ceil((contentEnd - 1.0) / 4.0) * 4.0) + 1.0
-                nextMeasure.coerceAtLeast(4.0)
+        val metadataEndBeat = (section.metadata?.get("endBeat") as? JsonPrimitive)?.doubleOrNull
+        val audibleEventEndBeats = buildList {
+            melody.forEach { note ->
+                playbackEventEndBeat(note.beat, note.duration, note.isRest)?.let(::add)
             }
-            contentEnd > 0 -> kotlin.math.ceil(contentEnd)
-            else -> 32.0
+            section.chords.forEach { chord ->
+                val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
+                    (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
+                val beat = (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                val duration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                playbackEventEndBeat(beat, duration, isRest)?.let(::add)
+            }
+        }
+
+        resolvePlaybackEndBeat(metadataEndBeat, audibleEventEndBeats)
+    }
+    val loopHeadPlaybackRequests = remember(
+        section,
+        melody,
+        bpm,
+        isSimpleMode,
+        playChords,
+        playOnlyRoot
+    ) {
+        buildList {
+            melody.forEach { note ->
+                val noteEnd = note.beat + note.duration
+                if (!note.isRest && note.beat <= 1.0 && noteEnd > 1.0) {
+                    val durationMs = remainingPlaybackDurationMs(noteEnd, 1.0, bpm)
+                    if (durationMs != null) {
+                        val activeKey = section.getKeyAtBeat(note.beat)
+                        add(
+                            LoopHeadPlaybackRequest(
+                                midiNotes = listOf(
+                                    MusicTheory.getMidiNote(note.sd, note.octave, activeKey)
+                                ),
+                                durationMs = durationMs,
+                                channel = AudioEngine.PlaybackChannel.MELODY
+                            )
+                        )
+                    }
+                }
+            }
+
+            if (isSimpleMode || playChords) {
+                section.chords.forEach { chord ->
+                    val beat = normalizePlaybackBeat(
+                        (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                    )
+                    val duration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                    val chordEnd = beat + duration
+                    val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
+                        (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
+                    if (!isRest && beat <= 1.0 && chordEnd > 1.0) {
+                        val activeKey = section.getKeyAtBeat(beat)
+                        val midiNotes = if (isSimpleMode || playOnlyRoot) {
+                            listOfNotNull(
+                                ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull()
+                            )
+                        } else {
+                            ChordInterpreter.getChordNotes(chord, activeKey)
+                        }
+                        val durationMs = remainingPlaybackDurationMs(chordEnd, 1.0, bpm)
+                        if (midiNotes.isNotEmpty() && durationMs != null) {
+                            add(
+                                LoopHeadPlaybackRequest(
+                                    midiNotes = midiNotes,
+                                    durationMs = durationMs,
+                                    channel = AudioEngine.PlaybackChannel.CHORD
+                                )
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
     val pixelsPerBeat = 60f
@@ -1002,6 +1059,16 @@ fun QuizTab(
     ) {
         if (bpm <= 0.0) return
         val beat = playbackBeat()
+        val melodyPlaybackToken = if (replayMelody) {
+            AudioEngine.capturePlaybackToken(AudioEngine.PlaybackChannel.MELODY)
+        } else {
+            null
+        }
+        val chordPlaybackToken = if (replayChords) {
+            AudioEngine.capturePlaybackToken(AudioEngine.PlaybackChannel.CHORD)
+        } else {
+            null
+        }
         activeNoteReplayJob?.cancel()
         activeNoteReplayJob = scope.launch {
             val replayJobs = mutableListOf<Job>()
@@ -1019,7 +1086,8 @@ fun QuizTab(
                                 listOf(midi),
                                 durationMs = remainingMs,
                                 channel = AudioEngine.PlaybackChannel.MELODY,
-                                fadeInMs = fadeInMs
+                                fadeInMs = fadeInMs,
+                                playbackToken = melodyPlaybackToken
                             )
                         }
                     }
@@ -1028,7 +1096,9 @@ fun QuizTab(
 
             if (replayChords && (isSimpleMode || playChords)) {
                 section.chords.forEach { chord ->
-                    val chordBeat = (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                    val chordBeat = normalizePlaybackBeat(
+                        (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                    )
                     val duration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
                     val chordEnd = chordBeat + duration
                     val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
@@ -1046,7 +1116,8 @@ fun QuizTab(
                                     notes,
                                     durationMs = remainingMs,
                                     channel = AudioEngine.PlaybackChannel.CHORD,
-                                    fadeInMs = fadeInMs
+                                    fadeInMs = fadeInMs,
+                                    playbackToken = chordPlaybackToken
                                 )
                             }
                         }
@@ -1205,7 +1276,7 @@ fun QuizTab(
 
     DisposableEffect(Unit) { onDispose { AudioEngine.stopAllPlayback(); AudioEngine.setLayerVolumes(1f, 1f) } }
 
-    LaunchedEffect(isPlaying, isScrubbing, section, playbackTrigger) {
+    LaunchedEffect(isPlaying, isScrubbing, section, playbackTrigger, loopHeadPlaybackRequests) {
         if (isPlaying && !isScrubbing && bpm > 0.0) {
             val runTrigger = playbackTrigger
             var startTimeNanos = System.nanoTime()
@@ -1215,76 +1286,182 @@ fun QuizTab(
             var scheduledThroughBeat = Math.nextUp(startBeat)
             var lastUiUpdateNanos = 0L
             withContext(Dispatchers.Default) {
-                while (isPlaying && !isScrubbing && playbackTrigger == runTrigger) {
-                    val nowNanos = System.nanoTime()
-                    val elapsedSeconds = (nowNanos - startTimeNanos) / 1_000_000_000.0
-                    val elapsedBeats = elapsedSeconds * (bpm / 60.0)
-                    val tickEndBeat = startBeat + elapsedBeats
-                    val previousBeat = scheduledThroughBeat
-
-                    var looped = false
-                    var effectiveTickEnd = tickEndBeat
-                    if (effectiveTickEnd > endBeat) {
-                        effectiveTickEnd = endBeat
-                        looped = true
+                fun startLoopHeadPreparation(): List<Deferred<AudioEngine.PreparedPlayback?>> =
+                    loopHeadPlaybackRequests.map { request ->
+                        val token = AudioEngine.capturePlaybackToken(request.channel)
+                        async {
+                            AudioEngine.prepareChord(
+                                midiNotes = request.midiNotes,
+                                durationMs = request.durationMs,
+                                channel = request.channel,
+                                playbackToken = token
+                            )
+                        }
                     }
-                    preciseCurrentBeat.set(effectiveTickEnd)
-                
-                    melody.forEach { note -> 
-                        if (!note.isRest && note.beat >= previousBeat && note.beat < effectiveTickEnd) {
-                            launch { 
+
+                suspend fun collectLoopHeadPreparation(
+                    preparation: List<Deferred<AudioEngine.PreparedPlayback?>>,
+                    cancelIncomplete: Boolean
+                ): List<AudioEngine.PreparedPlayback> = withContext(NonCancellable) {
+                    if (cancelIncomplete) {
+                        preparation.filterNot { it.isCompleted }.forEach { it.cancel() }
+                    }
+                    preparation.mapNotNull { deferred ->
+                        runCatching { deferred.await() }.getOrNull()
+                    }
+                }
+
+                fun schedulePlaybackOnsets(
+                    fromBeatInclusive: Double,
+                    untilBeatExclusive: Double,
+                    playbackBeatAtSchedule: Double = untilBeatExclusive
+                ) {
+                    if (untilBeatExclusive <= fromBeatInclusive) return
+                    val melodyPlaybackToken = AudioEngine.capturePlaybackToken(
+                        AudioEngine.PlaybackChannel.MELODY
+                    )
+                    val chordPlaybackToken = AudioEngine.capturePlaybackToken(
+                        AudioEngine.PlaybackChannel.CHORD
+                    )
+
+                    melody.forEach { note ->
+                        if (!note.isRest && note.beat >= fromBeatInclusive && note.beat < untilBeatExclusive) {
+                            launch {
                                 val activeKey = section.getKeyAtBeat(note.beat)
                                 val midi = MusicTheory.getMidiNote(note.sd, note.octave, activeKey)
-                                val durationMs = remainingPlaybackDurationMs(note.beat + note.duration, note.beat, bpm)
+                                val durationMs = remainingPlaybackDurationMs(
+                                    note.beat + note.duration,
+                                    maxOf(note.beat, playbackBeatAtSchedule),
+                                    bpm
+                                )
                                 if (durationMs != null) {
-                                    AudioEngine.playChord(listOf(midi), durationMs = durationMs, channel = AudioEngine.PlaybackChannel.MELODY)
+                                    AudioEngine.playChord(
+                                        listOf(midi),
+                                        durationMs = durationMs,
+                                        channel = AudioEngine.PlaybackChannel.MELODY,
+                                        playbackToken = melodyPlaybackToken
+                                    )
                                 }
                             }
-                        } 
+                        }
                     }
+
                     if (isSimpleMode || playChords) {
                         section.chords.forEach { chord ->
-                            val beat = (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                            val beat = normalizePlaybackBeat(
+                                (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                            )
                             val duration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
-                            val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
-                            if (!isRest && beat >= previousBeat && beat < effectiveTickEnd) {
-                                launch { 
+                            val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
+                                (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
+                            if (!isRest && beat >= fromBeatInclusive && beat < untilBeatExclusive) {
+                                launch {
                                     val activeKey = section.getKeyAtBeat(beat)
                                     val notes = ChordInterpreter.getChordNotes(chord, activeKey)
-                                    if (notes.isNotEmpty()) { 
-                                        val notesToPlay = if (isSimpleMode || playOnlyRoot) { 
-                                            val rootNote = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull()
-                                            if (rootNote != null) listOf(rootNote) else emptyList() 
-                                        } else notes
-                                        val durationMs = remainingPlaybackDurationMs(beat + duration, beat, bpm)
-                                        if (durationMs != null) {
-                                            AudioEngine.playChord(notesToPlay, durationMs = durationMs, channel = AudioEngine.PlaybackChannel.CHORD)
+                                    if (notes.isNotEmpty()) {
+                                        val notesToPlay = if (isSimpleMode || playOnlyRoot) {
+                                            val rootNote = ChordInterpreter
+                                                .getRootPositionChordNotes(chord, activeKey)
+                                                .firstOrNull()
+                                            if (rootNote != null) listOf(rootNote) else emptyList()
+                                        } else {
+                                            notes
                                         }
-                                    } 
+                                        val durationMs = remainingPlaybackDurationMs(
+                                            beat + duration,
+                                            maxOf(beat, playbackBeatAtSchedule),
+                                            bpm
+                                        )
+                                        if (durationMs != null) {
+                                            AudioEngine.playChord(
+                                                notesToPlay,
+                                                durationMs = durationMs,
+                                                channel = AudioEngine.PlaybackChannel.CHORD,
+                                                playbackToken = chordPlaybackToken
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
+                }
 
-                    if (looped) {
-                        AudioEngine.stopPlayback(QUIZ_TIMELINE_CHANNELS)
-                        startTimeNanos = System.nanoTime()
-                        startBeat = 1.0
-                        scheduledThroughBeat = 1.0
-                        lastUiUpdateNanos = 0L
-                        withContext(Dispatchers.Main.immediate) {
-                            updatePlaybackBeat(1.0)
+                var loopHeadPreparation = startLoopHeadPreparation()
+                try {
+                    while (isPlaying && !isScrubbing && playbackTrigger == runTrigger) {
+                        val nowNanos = System.nanoTime()
+                        val elapsedSeconds = (nowNanos - startTimeNanos) / 1_000_000_000.0
+                        val elapsedBeats = elapsedSeconds * (bpm / 60.0)
+                        val tickEndBeat = startBeat + elapsedBeats
+                        val previousBeat = scheduledThroughBeat
+
+                        val loopPosition = loopingPlaybackPosition(tickEndBeat, endBeat)
+                        val effectiveTickEnd = if (loopPosition.looped) endBeat else loopPosition.beat
+                        preciseCurrentBeat.set(effectiveTickEnd)
+                        schedulePlaybackOnsets(previousBeat, effectiveTickEnd)
+
+                        if (loopPosition.looped) {
+                            val allLoopHeadTracksPrepared = loopHeadPreparation.all { it.isCompleted }
+                            val preparedLoopHead = if (allLoopHeadTracksPrepared) {
+                                collectLoopHeadPreparation(
+                                    preparation = loopHeadPreparation,
+                                    cancelIncomplete = false
+                                )
+                            } else {
+                                collectLoopHeadPreparation(
+                                    preparation = loopHeadPreparation,
+                                    cancelIncomplete = true
+                                ).forEach(AudioEngine::releasePreparedPlayback)
+                                emptyList()
+                            }
+                            val overshootMs = (
+                                (loopPosition.beat - 1.0) * 60_000.0 / bpm
+                            ).roundToInt().coerceAtLeast(0)
+                            val startedPreparedHead =
+                                preparedLoopHead.size == loopHeadPlaybackRequests.size &&
+                                    preparedLoopHead.isNotEmpty() &&
+                                    AudioEngine.replacePlaybackWithPrepared(
+                                        channels = QUIZ_TIMELINE_CHANNELS,
+                                        preparedPlayback = preparedLoopHead,
+                                        skipMs = overshootMs
+                                    )
+                            if (!startedPreparedHead) {
+                                preparedLoopHead.forEach(AudioEngine::releasePreparedPlayback)
+                                AudioEngine.stopPlayback(QUIZ_TIMELINE_CHANNELS)
+                            }
+
+                            val headScheduleEnd = maxOf(loopPosition.beat, Math.nextUp(1.0))
+                            schedulePlaybackOnsets(
+                                fromBeatInclusive = if (startedPreparedHead) Math.nextUp(1.0) else 1.0,
+                                untilBeatExclusive = headScheduleEnd,
+                                playbackBeatAtSchedule = loopPosition.beat
+                            )
+                            startTimeNanos = nowNanos
+                            startBeat = loopPosition.beat
+                            scheduledThroughBeat = headScheduleEnd
+                            lastUiUpdateNanos = nowNanos
+                            withContext(Dispatchers.Main.immediate) {
+                                updatePlaybackBeat(loopPosition.beat)
+                            }
+                            loopHeadPreparation = startLoopHeadPreparation()
+                            delay(10)
+                            continue
+                        }
+
+                        scheduledThroughBeat = effectiveTickEnd
+                        if (nowNanos - lastUiUpdateNanos >= 33_000_000L) {
+                            withContext(Dispatchers.Main.immediate) { currentBeat = effectiveTickEnd }
+                            lastUiUpdateNanos = nowNanos
                         }
                         delay(10)
-                        continue
                     }
-
-                    scheduledThroughBeat = effectiveTickEnd
-                    if (nowNanos - lastUiUpdateNanos >= 33_000_000L) {
-                        withContext(Dispatchers.Main.immediate) { currentBeat = effectiveTickEnd }
-                        lastUiUpdateNanos = nowNanos
-                    }
-                    delay(10)
+                } finally {
+                    val unusedPreparedHead = collectLoopHeadPreparation(
+                        preparation = loopHeadPreparation,
+                        cancelIncomplete = true
+                    )
+                    unusedPreparedHead.forEach(AudioEngine::releasePreparedPlayback)
                 }
             }
         }
@@ -1305,7 +1482,7 @@ fun QuizTab(
 
     val activeKey = section.getKeyAtBeat(currentBeat)
     val currentChord = remember(section, currentBeat) { section.chords.find { chord ->
-        val beat = (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0; val duration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+        val beat = normalizePlaybackBeat((chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0); val duration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
         currentBeat >= beat && currentBeat < (beat + duration)
     } }
 
@@ -1350,7 +1527,7 @@ fun QuizTab(
             onCalibrated = { hummedMidi ->
                 val songRoots = section.chords.mapNotNull { chord ->
                     val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
-                    if (!isRest) { val chordKey = section.getKeyAtBeat((chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0)
+                    if (!isRest) { val chordKey = section.getKeyAtBeat(normalizePlaybackBeat((chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0))
                         ChordInterpreter.getRootPositionChordNotes(chord, chordKey).firstOrNull() } else null
                 }
                 if (songRoots.isNotEmpty()) {
@@ -1386,11 +1563,11 @@ fun QuizTab(
                 val romanNumeralPainter = remember { RomanNumeralPainter() }; val pixelsPerBeatPx = with(density) { pixelsPerBeat.dp.toPx() }
                 val timelineContentDescription = remember(section, currentBeat) {
                     val activeChord_t = section.chords.find { chord ->
-                        val beat_t = (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0; val duration_t = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                        val beat_t = normalizePlaybackBeat((chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0); val duration_t = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
                         currentBeat >= beat_t && currentBeat < beat_t + duration_t
                     }
                     if (activeChord_t == null) "Chord timeline" else {
-                        val beat_t = (activeChord_t["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0; val isRest_t = (activeChord_t["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (activeChord_t["rest"] as? JsonPrimitive)?.booleanOrNull == true
+                        val beat_t = normalizePlaybackBeat((activeChord_t["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0); val isRest_t = (activeChord_t["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (activeChord_t["rest"] as? JsonPrimitive)?.booleanOrNull == true
                         val label_t = if (isRest_t) "rest" else ChordInterpreter.getRomanSymbol(activeChord_t, section.getKeyAtBeat(beat_t))
                         "Chord timeline, current chord $label_t"
                     }
@@ -1404,7 +1581,7 @@ fun QuizTab(
                             drawContext.canvas.save(); drawContext.canvas.translate(translationX, 0f)
                             melody.forEach { note -> val x = (note.beat - 1).toFloat() * pixelsPerBeatPx; val w = note.duration.toFloat() * pixelsPerBeatPx; val degree = MusicTheory.getRawDegree(note.sd); val y = melodyBaseY - (degree * noteHeight) - (note.octave * noteHeight * 7); val isActive = currentBeat >= note.beat && currentBeat < (note.beat + note.duration)
                                 drawRect(color = if (isActive) primaryColor else secondaryColor.copy(alpha = 0.6f), topLeft = Offset(x, y), size = Size(w, noteHeight)) }
-                            section.chords.forEach { chord -> val beat_c = (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0; val duration_c = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0; val isRest_c = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
+                            section.chords.forEach { chord -> val beat_c = normalizePlaybackBeat((chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0); val duration_c = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0; val isRest_c = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
                                 val x = (beat_c - 1).toFloat() * pixelsPerBeatPx; val w = duration_c.toFloat() * pixelsPerBeatPx; val isActive = currentBeat >= beat_c && currentBeat < (beat_c + duration_c)
                                 drawRect(color = secondaryColor.copy(alpha = 0.2f), topLeft = Offset(x, mLaneHeightPx), size = Size(w, cLaneHeightPx))
                                 if (isActive) drawRect(color = primaryColor.copy(alpha = 0.4f), topLeft = Offset(x, mLaneHeightPx), size = Size(w, cLaneHeightPx))
