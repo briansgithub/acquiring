@@ -56,6 +56,13 @@ import kotlinx.serialization.json.*
 import kotlin.math.min
 import kotlin.math.roundToInt
 
+private enum class SongParentPage {
+    LIBRARY,
+    ARTIST
+}
+
+private fun canonicalArtistName(artistName: String): String = artistName.replace('-', ' ')
+
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
     private lateinit var db: AppDatabase
@@ -125,6 +132,8 @@ fun MainScreen(db: AppDatabase) {
     var selectedSongSections by remember { mutableStateOf<Map<String, ExtractedSection>?>(null) }
     var selectedSectionId by remember { mutableStateOf<String?>(null) }
     var currentTab by remember { mutableStateOf(2) }
+    var songParentPage by remember { mutableStateOf(SongParentPage.LIBRARY) }
+    var quizReturnTab by remember { mutableStateOf<Int?>(null) }
     var showLetterNames by remember { mutableStateOf(false) }
     var isArpeggiated by remember { mutableStateOf(false) }
     var arpeggioStepMs by remember { mutableStateOf(80f) }
@@ -138,17 +147,23 @@ fun MainScreen(db: AppDatabase) {
     val harvestService = remember(activeDb) { HarvestService(activeDb) }
     val json = remember { Json { ignoreUnknownKeys = true } }
     val returnToParent = {
-        if (currentTab == 2) {
-            // Quiz is a child of the selected song's Chords page.
-            currentTab = 1
-        } else if (selectedSongSections != null) {
-            // The selected song's Info and Chords pages are children of search.
-            selectedSongSections = null
-            selectedSong = null
-        } else {
-            // Close artist detail page
+        if (selectedArtistSongs != null && selectedSongSections == null) {
+            // Close the artist detail page.
             selectedArtistName = null
             selectedArtistSongs = null
+        } else if (selectedSongSections != null && currentTab == 2 && quizReturnTab != null) {
+            // Quiz was opened from another tab in this song.
+            currentTab = quizReturnTab!!
+            quizReturnTab = null
+        } else if (selectedSongSections != null) {
+            // Return to the page that opened the song.
+            selectedSongSections = null
+            selectedSong = null
+            quizReturnTab = null
+            if (songParentPage == SongParentPage.LIBRARY) {
+                selectedArtistName = null
+                selectedArtistSongs = null
+            }
         }
     }
 
@@ -194,6 +209,8 @@ fun MainScreen(db: AppDatabase) {
     val openSong: (Song) -> Unit = { song ->
         HistoryManager.addSong(context, song.slug)
         isExpanded = false
+        songParentPage = if (selectedArtistSongs != null) SongParentPage.ARTIST else SongParentPage.LIBRARY
+        quizReturnTab = null
         selectedSong = song
 
         if (song.dataBlob != null) {
@@ -355,7 +372,14 @@ fun MainScreen(db: AppDatabase) {
                 selectedSectionId = selectedSectionId,
                 onSectionChange = { selectedSectionId = it },
                 currentTab = currentTab,
-                onTabChange = { currentTab = it },
+                onTabChange = {
+                    if (it == 2 && currentTab != 2) {
+                        quizReturnTab = currentTab
+                    } else if (it != 2) {
+                        quizReturnTab = null
+                    }
+                    currentTab = it
+                },
                 showLetterNames = showLetterNames,
                 onShowLetterNamesChange = { showLetterNames = it },
                 isArpeggiated = isArpeggiated,
@@ -371,6 +395,16 @@ fun MainScreen(db: AppDatabase) {
                 onTransposeChange = {
                     globalTranspose = it
                     AudioEngine.globalTranspose = it
+                },
+                onArtistClick = { artistName ->
+                    scope.launch {
+                        val results = activeDb.songDao().getSongsByArtist(artistName)
+                        selectedArtistName = artistName
+                        selectedArtistSongs = results
+                        selectedSongSections = null
+                        selectedSong = null
+                        quizReturnTab = null
+                    }
                 },
                 onBack = returnToParent
             )
@@ -625,6 +659,7 @@ fun SongDetailView(
     onWaveformChange: (AudioEngine.Waveform) -> Unit,
     globalTranspose: Int,
     onTransposeChange: (Int) -> Unit,
+    onArtistClick: (String) -> Unit,
     onBack: () -> Unit
 ) {
     val sectionsInSongOrder = remember(sections) { sections.sectionsInSongOrder() }
@@ -774,7 +809,10 @@ fun SongDetailView(
                 onWaveformChange = onWaveformChange,
                 sectionPicker = sectionPickerComposable,
                 transposePicker = transposePickerComposable,
-                globalTranspose = globalTranspose
+                globalTranspose = globalTranspose,
+                songTitle = song.title ?: "Unknown Title",
+                artistName = song.artist,
+                onArtistClick = onArtistClick
             )
         }
         }
@@ -818,7 +856,10 @@ fun QuizTab(
     onWaveformChange: (AudioEngine.Waveform) -> Unit,
     sectionPicker: @Composable () -> Unit,
     transposePicker: @Composable () -> Unit,
-    globalTranspose: Int
+    globalTranspose: Int,
+    songTitle: String,
+    artistName: String?,
+    onArtistClick: (String) -> Unit
 ) {
     val baseBpm = section.getBpm().toFloat().coerceIn(40f, 240f)
     var tempoPercent by remember(section) { mutableStateOf(100f) }
@@ -1115,6 +1156,32 @@ fun QuizTab(
             if (audiationState is AudiationState.Dragging) { audiationPuckOffset = audiationState.offset }
 
             Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                if (!isSimpleMode) {
+                    val canonicalArtist = artistName
+                        ?.takeIf { it.isNotBlank() }
+                        ?.let(::canonicalArtistName)
+                    Row(
+                        modifier = Modifier.fillMaxWidth().height(28.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = songTitle,
+                            style = MaterialTheme.typography.bodySmall,
+                            maxLines = 1
+                        )
+                        canonicalArtist?.let { artist ->
+                            Text(" by ", style = MaterialTheme.typography.bodySmall)
+                            TextButton(
+                                onClick = { onArtistClick(artist) },
+                                contentPadding = PaddingValues(0.dp),
+                                modifier = Modifier.height(28.dp)
+                            ) {
+                                Text(text = artist, style = MaterialTheme.typography.bodySmall, maxLines = 1)
+                            }
+                        }
+                    }
+                }
                 val displayScale = activeKey.scale.replace(Regex("([a-z])([A-Z])"), "$1 $2").replaceFirstChar { it.titlecase() }
                 Column(modifier = Modifier.fillMaxWidth().height(152.dp)) {
                     Box(modifier = Modifier.fillMaxWidth().height(56.dp)) {

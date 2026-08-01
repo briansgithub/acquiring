@@ -76,6 +76,35 @@ class ClosedLoopSongDatabaseTest {
     }
 
     @Test
+    fun artistSuggestionsMergeHyphenAndSpaceVariants() = runBlocking {
+        db.songDao().insertSong(
+            Song(
+                slug = "the-artists__hyphen-song",
+                artist = "The-Artists",
+                title = "Hyphen Song",
+                url = "https://example.com/the-artists/hyphen-song"
+            )
+        )
+        db.songDao().insertSong(
+            Song(
+                slug = "the-artists__space-song",
+                artist = "The Artists",
+                title = "Space Song",
+                url = "https://example.com/the-artists/space-song"
+            )
+        )
+
+        val suggestions = db.songDao().getArtistSuggestions("The Artists")
+        assertEquals(listOf("The Artists"), suggestions)
+
+        val songs = db.songDao().getSongsByArtist(suggestions.single())
+        assertEquals(
+            setOf("the-artists__hyphen-song", "the-artists__space-song"),
+            songs.map { it.slug }.toSet()
+        )
+    }
+
+    @Test
     fun testInvalidUrlSubmissions_noFalsePositivesInDatabase() = runBlocking {
         val invalidUrls = listOf(
             "https://www.hooktheory.com/theorytab/view/nonexistent-artist-9999/nonexistent-song-8888",
