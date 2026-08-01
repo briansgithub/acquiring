@@ -50,6 +50,7 @@ data class ExtractedSection(
     val songId: JsonElement? = null,
     val numericId: JsonElement? = null,
     val sectionName: String? = null,
+    val sectionIndex: Int? = null,
     val songInfo: String? = null,
     val chords: List<JsonObject> = emptyList(),
     val notes: JsonElement? = null,

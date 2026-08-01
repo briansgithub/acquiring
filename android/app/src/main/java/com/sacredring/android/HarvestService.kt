@@ -15,7 +15,7 @@ class HarvestService(private val db: AppDatabase) {
         try {
             onProgress("Scraping page...")
             val extraction = Scraper.extractSectionIds(url)
-            if (extraction.songIds.isEmpty()) {
+            if (extraction.sections.isEmpty()) {
                 return@withContext Result.failure(Exception("No sections found on page"))
             }
 
@@ -23,20 +23,28 @@ class HarvestService(private val db: AppDatabase) {
             val slug = cleanUrl.substringAfter("theorytab/view/").replace("/", "__")
             // Preserve the tab order returned by Hooktheory when serializing the song.
             val sections = linkedMapOf<String, ExtractedSection>()
+            val apiResultsById = mutableMapOf<String, HooktheoryApiResult>()
             
             var songTitle = "Unknown"
             var artist = "Unknown"
 
-            for ((index, id) in extraction.songIds.withIndex()) {
-                onProgress("Fetching section ${index + 1}/${extraction.songIds.size} ($id)...")
-                val apiResult = fetchSection(id)
+            for ((index, sectionRef) in extraction.sections.withIndex()) {
+                val id = sectionRef.songId
+                onProgress("Fetching section ${index + 1}/${extraction.sections.size} ($id)...")
+                val apiResult = apiResultsById.getOrPut(id) { fetchSection(id) }
                 
-                // Prefer section name from API, then scraper, then default
-                val rawName = apiResult.section ?: extraction.sectionMapping[id] ?: "Section ${index + 1}"
+                // The page tab identifies the section type even when multiple tabs
+                // share one API song ID, so it takes precedence over API metadata.
+                val rawName = sectionRef.sectionName ?: apiResult.section ?: "Section ${index + 1}"
                 val sectionName = rawName.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
                 
-                val extracted = DataExtractor.extractSection(apiResult, sectionName)
-                sections[id] = extracted
+                val extracted = DataExtractor.extractSection(apiResult, sectionName, index)
+                var sectionKey = id
+                var duplicate = 1
+                while (sections.containsKey(sectionKey)) {
+                    sectionKey = "$id#$index-${duplicate++}"
+                }
+                sections[sectionKey] = extracted
                 
                 if (index == 0) {
                     songTitle = apiResult.song

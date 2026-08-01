@@ -5,7 +5,11 @@ import kotlinx.serialization.json.*
 object DataExtractor {
     private val json = Json { ignoreUnknownKeys = true; isLenient = true }
 
-    fun extractSection(apiResult: HooktheoryApiResult, sectionName: String): ExtractedSection {
+    fun extractSection(
+        apiResult: HooktheoryApiResult,
+        sectionName: String,
+        sectionIndex: Int? = null
+    ): ExtractedSection {
         val rawJson = apiResult.jsonData ?: throw IllegalArgumentException("No jsonData in API result")
         val data = json.decodeFromString<JsonObject>(rawJson)
         
@@ -37,6 +41,7 @@ object DataExtractor {
             songId = JsonPrimitive(apiResult.idString),
             numericId = JsonPrimitive(apiResult.idString),
             sectionName = sectionName,
+            sectionIndex = sectionIndex,
             songInfo = apiResult.song,
             chords = chords,
             notes = notes,

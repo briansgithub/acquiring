@@ -40,19 +40,14 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.dp
 import androidx.room.Room
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.*
 import kotlin.math.min
 import kotlin.math.roundToInt
-
-private fun Map<String, ExtractedSection>.playableSectionsInSourceOrder(): List<Map.Entry<String, ExtractedSection>> =
-    entries
-        .asSequence()
-        .filter { (_, section) -> section.chords.isNotEmpty() }
-        .distinctBy { (_, section) -> section.safeSectionName.trim().lowercase().replace(Regex("\\s+"), " ") }
-        .toList()
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
@@ -154,7 +149,7 @@ fun MainScreen(db: AppDatabase) {
                     json.decodeFromString<Map<String, ExtractedSection>>(dataStr)
                 )
                 selectedSongSections = sections
-                selectedSectionId = sections.playableSectionsInSourceOrder().firstOrNull()?.key ?: sections.keys.firstOrNull()
+                selectedSectionId = sections.sectionsInSongOrder().firstOrNull()?.key ?: sections.keys.firstOrNull()
                 currentTab = 2 // Switch to Quiz tab
             } catch (e: Exception) {
                 searchResult = "❌ Error loading song: ${e.message}"
@@ -172,7 +167,7 @@ fun MainScreen(db: AppDatabase) {
                                 json.decodeFromString<Map<String, ExtractedSection>>(dataStr)
                             )
                             selectedSongSections = sections
-                            selectedSectionId = sections.playableSectionsInSourceOrder().firstOrNull()?.key ?: sections.keys.firstOrNull()
+                            selectedSectionId = sections.sectionsInSongOrder().firstOrNull()?.key ?: sections.keys.firstOrNull()
                             currentTab = 2 // Switch to Quiz tab
                             harvestStatus = "Loaded chords for ${song.title ?: song.slug}!"
                         } catch (e: Exception) {
@@ -469,12 +464,12 @@ fun SongDetailView(
     onTransposeChange: (Int) -> Unit,
     onBack: () -> Unit
 ) {
-    val playableSections = remember(sections) { sections.playableSectionsInSourceOrder() }
+    val sectionsInSongOrder = remember(sections) { sections.sectionsInSongOrder() }
     val selectedSectionKey = selectedSectionId
-        ?.takeIf { selectedId -> playableSections.any { it.key == selectedId } }
-        ?: playableSections.firstOrNull()?.key
+        ?.takeIf { selectedId -> sectionsInSongOrder.any { it.key == selectedId } }
+        ?: sectionsInSongOrder.firstOrNull()?.key
         ?: sections.keys.firstOrNull()
-    val selectedSection = sections[selectedSectionKey] ?: playableSections.firstOrNull()?.value ?: sections.values.first()
+    val selectedSection = sections[selectedSectionKey] ?: sectionsInSongOrder.firstOrNull()?.value ?: sections.values.first()
     var isSectionExpanded by remember { mutableStateOf(false) }
     var isTransposeExpanded by remember { mutableStateOf(false) }
     var playChords by remember { mutableStateOf(true) }
@@ -516,7 +511,7 @@ fun SongDetailView(
     }
 
     val sectionPickerComposable: @Composable () -> Unit = {
-        if (playableSections.size > 1) {
+        if (sectionsInSongOrder.size > 1) {
             ExposedDropdownMenuBox(
                 expanded = isSectionExpanded,
                 onExpandedChange = { isSectionExpanded = !isSectionExpanded },
@@ -536,7 +531,7 @@ fun SongDetailView(
                     expanded = isSectionExpanded,
                     onDismissRequest = { isSectionExpanded = false }
                 ) {
-                    playableSections.forEach { (id, section) ->
+                    sectionsInSongOrder.forEach { (id, section) ->
                         DropdownMenuItem(
                             text = { Text(section.safeSectionName) },
                             onClick = {
@@ -620,7 +615,7 @@ fun SongDetailView(
         }
 
         // Section selector overlay for non-Quiz tabs
-        if (currentTab != 2 && playableSections.size > 1) {
+        if (currentTab != 2 && sectionsInSongOrder.size > 1) {
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -695,8 +690,6 @@ fun QuizTab(
     val chordVolume = 1f - melodyChordBalance
     var isScrubbing by remember { mutableStateOf(false) }
     var wasPlayingBeforeScrub by remember { mutableStateOf(false) }
-    var scrubPreviewBeat by remember { mutableStateOf<Double?>(null) }
-    var previewJob by remember { mutableStateOf<Job?>(null) }
     var activeNoteReplayJob by remember { mutableStateOf<Job?>(null) }
     var isWaveformExpanded by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -712,30 +705,37 @@ fun QuizTab(
         isScrubbing = true
         isPlaying = false
         activeNoteReplayJob?.cancel()
-        previewJob?.cancel()
-        AudioEngine.stopPreviewPlayback()
-        // Existing notes belong to the old timeline position; preview only the
-        // notes under the scrubber and restart the scheduler on release.
+        // Scrubbing is seek-only: stop any notes already sounding and do not
+        // synthesize preview notes while the thumb is being dragged.
         AudioEngine.stopAllPlayback()
     }
 
     fun scrubTo(beat: Double) {
         beginScrubbing()
         currentBeat = beat.coerceIn(1.0, endBeat)
-        scrubPreviewBeat = currentBeat
     }
 
     fun finishScrubbing() {
         if (!isScrubbing) return
         val shouldResume = wasPlayingBeforeScrub
         isScrubbing = false
-        scrubPreviewBeat = null
         activeNoteReplayJob?.cancel()
-        previewJob?.cancel()
-        previewJob = null
-        AudioEngine.stopPreviewPlayback()
         isPlaying = shouldResume
         if (shouldResume) playbackTrigger++
+    }
+
+    fun skipBack(seconds: Double) {
+        if (isScrubbing) return
+        val shouldResume = isPlaying
+        isPlaying = false
+        activeNoteReplayJob?.cancel()
+        AudioEngine.stopAllPlayback()
+        val beatsToSkip = seconds * (bpm / 60.0)
+        currentBeat = (currentBeat - beatsToSkip).coerceAtLeast(1.0)
+        if (shouldResume) {
+            playbackTrigger++
+            isPlaying = true
+        }
     }
 
     fun replayActiveNotesWithRemainingDuration() {
@@ -815,7 +815,7 @@ fun QuizTab(
         AudioEngine.setLayerVolumes(melodyVolume, chordVolume)
         if (isPlaying && bpm <= 0.0) {
             isPlaying = false
-        } else if (isPlaying) {
+        } else if (isPlaying && !isScrubbing) {
             replayActiveNotesWithRemainingDuration()
             playbackTrigger++
         }
@@ -828,131 +828,92 @@ fun QuizTab(
         }
     }
 
-    // Debounce scrub events so a fast drag produces one short preview at a
-    // time, rather than launching synthesis for every raw pointer event.
-    LaunchedEffect(
-        scrubPreviewBeat,
-        isScrubbing,
-        section,
-        tempoPercent,
-        melodyChordBalance,
-        globalTranspose
-    ) {
-        val beat = scrubPreviewBeat ?: return@LaunchedEffect
-        if (!isScrubbing) return@LaunchedEffect
-        if (bpm <= 0.0) return@LaunchedEffect
-        delay(35)
-
-        val previewMelody = melody
-            .filter { note ->
-                !note.isRest && beat >= note.beat && beat < note.beat + note.duration
-            }
-            .map { note ->
-                MusicTheory.getMidiNote(note.sd, note.octave, section.getKeyAtBeat(note.beat))
-            }
-
-        // Scrubbing previews the full musical material under the playhead,
-        // independent of Simple/Root Only playback filters.
-        val previewChords = section.chords
-            .filter { chord ->
-                val chordBeat = (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
-                val duration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
-                val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
-                    (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
-                !isRest && beat >= chordBeat && beat < chordBeat + duration
-            }
-            .flatMap { chord ->
-                val chordKey = section.getKeyAtBeat(
-                    (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
-                )
-                ChordInterpreter.getChordNotes(chord, chordKey)
-            }
-
-        previewJob?.cancel()
-        previewJob = scope.launch {
-            AudioEngine.stopPreviewPlayback()
-            val previewDurationMs = (60000.0 / bpm).toInt().coerceIn(90, 220)
-            if (previewMelody.isNotEmpty()) {
-                launch {
-                    AudioEngine.playChord(
-                        previewMelody,
-                        durationMs = previewDurationMs,
-                        volume = melodyVolume,
-                        channel = AudioEngine.PlaybackChannel.PREVIEW
-                    )
-                }
-            }
-            if (previewChords.isNotEmpty()) {
-                launch {
-                    AudioEngine.playChord(
-                        previewChords,
-                        durationMs = previewDurationMs,
-                        volume = chordVolume,
-                        channel = AudioEngine.PlaybackChannel.PREVIEW
-                    )
-                }
-            }
-        }
-    }
-
     // Playback loop
-    LaunchedEffect(isPlaying, section, playbackTrigger) {
-        if (isPlaying && bpm > 0.0) {
-            val startTime = System.currentTimeMillis()
-            val startBeat = currentBeat
-            while (isPlaying) {
-                val elapsedMs = System.currentTimeMillis() - startTime
-                val elapsedBeats = (elapsedMs / 1000.0) * (bpm / 60.0)
-                val newBeat = startBeat + elapsedBeats
+    LaunchedEffect(isPlaying, isScrubbing, section, playbackTrigger) {
+        if (isPlaying && !isScrubbing && bpm > 0.0) {
+            var startTime = System.currentTimeMillis()
+            var startBeat = currentBeat
+            // Keep scheduling progress local to this playback session. Using
+            // the Compose UI state as the lower bound can race with seeks and
+            // recomposition, causing a note to be scheduled twice or skipped.
+            var scheduledThroughBeat = startBeat
+            var lastUiUpdateMs = 0L
+            withContext(Dispatchers.Default) {
+                while (isPlaying && !isScrubbing) {
+                    val elapsedMs = System.currentTimeMillis() - startTime
+                    val elapsedBeats = (elapsedMs / 1000.0) * (bpm / 60.0)
+                    val newBeat = startBeat + elapsedBeats
+                    val previousBeat = scheduledThroughBeat
+
+                    if (newBeat > endBeat) {
+                        // End-of-section playback loops back to beat one. Stop
+                        // the final tracks first so the new pass cannot layer
+                        // over the tail of the previous pass.
+                        AudioEngine.stopAllPlayback()
+                        startTime = System.currentTimeMillis()
+                        startBeat = 1.0
+                        scheduledThroughBeat = 1.0
+                        lastUiUpdateMs = 0L
+                        withContext(Dispatchers.Main.immediate) {
+                            currentBeat = 1.0
+                        }
+                        delay(10)
+                        continue
+                    }
                 
-                // Trigger notes that start between currentBeat and newBeat
-                melody.forEach { note ->
-                    if (!note.isRest && note.beat >= currentBeat && note.beat < newBeat) {
-                        // This is a child of the playback effect, rather than the UI scope.
-                        // It is therefore cancelled on pause, restart, or section change.
-                        launch {
-                            val activeKey = section.getKeyAtBeat(note.beat)
-                            val midi = MusicTheory.getMidiNote(note.sd, note.octave, activeKey)
-                            AudioEngine.playChord(
-                                listOf(midi),
-                                durationMs = (note.duration * 60000.0 / bpm).toInt(),
-                                channel = AudioEngine.PlaybackChannel.MELODY
-                            )
+                    // Trigger notes that start between the last scheduled beat
+                    // and this tick. This work stays off the UI thread so
+                    // timeline recomposition cannot make melody attacks late.
+                    melody.forEach { note ->
+                        if (!note.isRest && note.beat >= previousBeat && note.beat < newBeat) {
+                            // This is a child of the playback effect, rather than the UI scope.
+                            // It is therefore cancelled on pause, restart, or section change.
+                            launch {
+                                val activeKey = section.getKeyAtBeat(note.beat)
+                                val midi = MusicTheory.getMidiNote(note.sd, note.octave, activeKey)
+                                AudioEngine.playChord(
+                                    listOf(midi),
+                                    durationMs = (note.duration * 60000.0 / bpm).toInt(),
+                                    channel = AudioEngine.PlaybackChannel.MELODY
+                                )
+                            }
                         }
                     }
-                }
 
-                // Trigger chords if playChords is enabled
-                if (isSimpleMode || playChords) {
-                    section.chords.forEach { chord ->
-                        val beat = (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
-                        val duration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
-                        val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
-                        if (!isRest && beat >= currentBeat && beat < newBeat) {
-                            launch {
-                                val activeKey = section.getKeyAtBeat(beat)
-                                val notes = ChordInterpreter.getChordNotes(chord, activeKey)
-                                if (notes.isNotEmpty()) {
-                                    val notesToPlay = if (isSimpleMode || playOnlyRoot) {
-                                        val rootNote = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull()
-                                        if (rootNote != null) listOf(rootNote) else emptyList()
-                                    } else notes
-                                    AudioEngine.playChord(
-                                        notesToPlay,
-                                        durationMs = (duration * 60000.0 / bpm).toInt(),
-                                        channel = AudioEngine.PlaybackChannel.CHORD
-                                    )
+                    // Trigger chords if playChords is enabled
+                    if (isSimpleMode || playChords) {
+                        section.chords.forEach { chord ->
+                            val beat = (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                            val duration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                            val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
+                            if (!isRest && beat >= previousBeat && beat < newBeat) {
+                                launch {
+                                    val activeKey = section.getKeyAtBeat(beat)
+                                    val notes = ChordInterpreter.getChordNotes(chord, activeKey)
+                                    if (notes.isNotEmpty()) {
+                                        val notesToPlay = if (isSimpleMode || playOnlyRoot) {
+                                            val rootNote = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull()
+                                            if (rootNote != null) listOf(rootNote) else emptyList()
+                                        } else notes
+                                        AudioEngine.playChord(
+                                            notesToPlay,
+                                            durationMs = (duration * 60000.0 / bpm).toInt(),
+                                            channel = AudioEngine.PlaybackChannel.CHORD
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
-                }
                 
-                currentBeat = newBeat
-                delay(16)
-                if (currentBeat > endBeat) {
-                    isPlaying = false
-                    currentBeat = 1.0
+                    scheduledThroughBeat = newBeat
+                    if (elapsedMs - lastUiUpdateMs >= 33L) {
+                        withContext(Dispatchers.Main.immediate) {
+                            currentBeat = newBeat
+                        }
+                        lastUiUpdateMs = elapsedMs
+                    }
+                    delay(10)
                 }
             }
         }
@@ -1246,7 +1207,7 @@ fun QuizTab(
             Spacer(modifier = Modifier.height(if (isSimpleMode) 0.dp else 24.dp))
 
             // Interactive Buttons Section
-            val currentChord = remember(currentBeat) {
+            val currentChord = remember(section, currentBeat) {
                 section.chords.find { chord ->
                     val beat = (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
                     val duration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
@@ -1255,86 +1216,93 @@ fun QuizTab(
             }
 
             if (isSimpleMode) {
-                currentChord?.let { chord ->
-                    val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
-                    if (!isRest) {
-                        val activeKey = section.getKeyAtBeat(currentBeat)
-                        val symbol = ChordInterpreter.getRomanSymbol(chord, activeKey)
-                        val romanDisplay = RomanNumeralDisplay.fromChord(symbol, chord["borrowed"])
-                        val notes = ChordInterpreter.getChordNotes(chord, activeKey)
-                        val rootMidi = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull() ?: 0
-                        val rootDegreeLabel = if (rootMidi > 0) MusicTheory.getDegreeLabelFromMidi(rootMidi, activeKey) else ""
+                val activeSimpleChord = currentChord?.takeUnless { chord ->
+                    (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
+                        (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
+                }
+                val activeKey = section.getKeyAtBeat(currentBeat)
+                val rootMidi = activeSimpleChord?.let { chord ->
+                    ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull()
+                } ?: 0
+                val rootDegreeLabel = if (rootMidi > 0) {
+                    MusicTheory.getDegreeLabelFromMidi(rootMidi, activeKey)
+                } else {
+                    ""
+                }
 
-                        Column(
-                            modifier = Modifier.fillMaxWidth().fillMaxHeight(0.7f),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            // Large Root Button
-                            Button(
-                                onClick = {
-                                    scope.launch {
-                                        if (rootMidi > 0) {
-                                            AudioEngine.playChord(
-                                                listOf(rootMidi),
-                                                channel = AudioEngine.PlaybackChannel.CHORD
-                                            )
-                                        }
-                                    }
-                                },
-                                modifier = Modifier.fillMaxWidth().height(250.dp),
-                                shape = RoundedCornerShape(32.dp)
-                            ) {
-                                if (rootDegreeLabel.isNotEmpty()) {
-                                    ScaleDegreeText(
-                                        label = rootDegreeLabel,
-                                        fontSize = 120.sp,
-                                        modifier = Modifier.fillMaxWidth(),
-                                        minFontSize = 48.sp
-                                    )
-                                } else {
-                                    RomanNumeralText(
-                                        display = romanDisplay,
-                                        fontSize = 80.sp,
-                                        modifier = Modifier.fillMaxWidth()
+                // Keep one stable layout while the playhead crosses chords,
+                // gaps, and rests. In particular, the Slider must not be
+                // replaced mid-gesture or its release callback can be lost.
+                Column(
+                    modifier = Modifier.fillMaxWidth().fillMaxHeight(0.7f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Button(
+                        onClick = {
+                            if (rootMidi > 0) {
+                                scope.launch {
+                                    AudioEngine.playChord(
+                                        listOf(rootMidi),
+                                        channel = AudioEngine.PlaybackChannel.CHORD
                                     )
                                 }
                             }
-
-                            // Simple-mode playback scrubber. Keep it beneath the
-                            // degree button so the practice target stays prominent.
-                            Slider(
-                                value = currentBeat.toFloat().coerceIn(1f, endBeat.toFloat()),
-                                onValueChange = { beat -> scrubTo(beat.toDouble()) },
-                                onValueChangeFinished = { finishScrubbing() },
-                                valueRange = 1f..endBeat.toFloat(),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 24.dp)
-                            )
-                            
-                            Spacer(modifier = Modifier.height(48.dp))
-
-                            // Skip Back 10s Button
-                            OutlinedButton(
-                                onClick = {
-                                    AudioEngine.stopAllPlayback()
-                                    val beatsToSkip = 10.0 * (bpm / 60.0)
-                                    currentBeat = (currentBeat - beatsToSkip).coerceAtLeast(1.0)
-                                    if (isPlaying) playbackTrigger++
-                                },
-                                modifier = Modifier.height(64.dp),
-                                shape = RoundedCornerShape(16.dp)
-                            ) {
-                                Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.scale(-1f, 1f))
-                                Spacer(Modifier.width(12.dp))
-                                Text("Skip back 10s", fontSize = 20.sp)
+                        },
+                        enabled = rootMidi > 0,
+                        colors = ButtonDefaults.buttonColors(
+                            disabledContainerColor = MaterialTheme.colorScheme.primary,
+                            disabledContentColor = MaterialTheme.colorScheme.onPrimary
+                        ),
+                        modifier = Modifier.fillMaxWidth().height(250.dp),
+                        shape = RoundedCornerShape(32.dp)
+                    ) {
+                        if (activeSimpleChord != null) {
+                            if (rootDegreeLabel.isNotEmpty()) {
+                                ScaleDegreeText(
+                                    label = rootDegreeLabel,
+                                    fontSize = 120.sp,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    minFontSize = 48.sp
+                                )
+                            } else {
+                                val symbol = ChordInterpreter.getRomanSymbol(activeSimpleChord, activeKey)
+                                val romanDisplay = RomanNumeralDisplay.fromChord(
+                                    symbol,
+                                    activeSimpleChord["borrowed"]
+                                )
+                                RomanNumeralText(
+                                    display = romanDisplay,
+                                    fontSize = 80.sp,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
                             }
                         }
-                    } else {
-                        Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.7f), contentAlignment = Alignment.Center) {
-                            Text("Rest", fontSize = 60.sp, color = Color.Gray)
-                        }
+                    }
+
+                    // This Slider remains mounted in every simple-mode state.
+                    Slider(
+                        value = currentBeat.toFloat().coerceIn(1f, endBeat.toFloat()),
+                        onValueChange = { beat -> scrubTo(beat.toDouble()) },
+                        onValueChangeFinished = { finishScrubbing() },
+                        valueRange = 1f..endBeat.toFloat(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(48.dp))
+
+                    // Keep this visible even when no chord is active.
+                    OutlinedButton(
+                        onClick = { skipBack(3.0) },
+                        enabled = !isScrubbing,
+                        modifier = Modifier.height(64.dp),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.scale(-1f, 1f))
+                        Spacer(Modifier.width(12.dp))
+                        Text("Skip back 3s", fontSize = 20.sp)
                     }
                 }
             } else {
@@ -1467,33 +1435,32 @@ fun QuizTab(
                 }
             }
 
-            // Reset occupies the former Simple-switch position.
-            FilledTonalButton(
-                onClick = {
-                    activeNoteReplayJob?.cancel()
-                    AudioEngine.stopAllPlayback()
-                    isPlaying = false
-                    currentBeat = 1.0
-                },
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .size(64.dp),
-                contentPadding = PaddingValues(0.dp),
-                shape = RoundedCornerShape(18.dp)
-            ) {
-                Icon(
-                    Icons.Default.Refresh,
-                    contentDescription = "Reset",
-                    modifier = Modifier.size(32.dp)
-                )
-            }
-
             // Lower-Right: Controls Overlay
             Column(
                 modifier = Modifier.align(Alignment.BottomEnd),
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                FilledTonalButton(
+                    onClick = {
+                        activeNoteReplayJob?.cancel()
+                        AudioEngine.stopAllPlayback()
+                        isPlaying = false
+                        isScrubbing = false
+                        wasPlayingBeforeScrub = false
+                        currentBeat = 1.0
+                    },
+                    modifier = Modifier.size(64.dp),
+                    contentPadding = PaddingValues(0.dp),
+                    shape = RoundedCornerShape(18.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Refresh,
+                        contentDescription = "Reset",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+
                 // Play and Restart Controls Row (above section selector)
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -1511,15 +1478,17 @@ fun QuizTab(
                         )
                     }
                     Button(onClick = {
-                        if (isPlaying) {
-                            activeNoteReplayJob?.cancel()
-                            AudioEngine.pauseAllPlayback()
-                            isPlaying = false
-                        } else {
-                            AudioEngine.resumeAllPlayback()
-                            isPlaying = true
+                        if (!isScrubbing) {
+                            if (isPlaying) {
+                                activeNoteReplayJob?.cancel()
+                                AudioEngine.pauseAllPlayback()
+                                isPlaying = false
+                            } else {
+                                AudioEngine.resumeAllPlayback()
+                                isPlaying = true
+                            }
                         }
-                    }, modifier = Modifier
+                    }, enabled = !isScrubbing, modifier = Modifier
                         .width(132.dp)
                         .height(64.dp)) {
                         if (isPlaying) {
