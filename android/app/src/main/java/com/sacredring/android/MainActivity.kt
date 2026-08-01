@@ -787,6 +787,7 @@ fun SongDetailView(
     var playChords by remember { mutableStateOf(true) }
     var playOnlyRoot by remember { mutableStateOf(false) }
     var isSimpleMode by remember { mutableStateOf(true) }
+    var useRelativeIonianContext by remember { mutableStateOf(false) }
     val uriHandler = LocalUriHandler.current
 
     val transposePickerComposable: @Composable () -> Unit = {
@@ -974,6 +975,8 @@ fun SongDetailView(
                 onPlayOnlyRootChange = { playOnlyRoot = it },
                 isSimpleMode = isSimpleMode,
                 onSimpleModeChange = { isSimpleMode = it },
+                useRelativeIonianContext = useRelativeIonianContext,
+                onRelativeIonianContextChange = { useRelativeIonianContext = it },
                 currentWaveform = currentWaveform,
                 onWaveformChange = onWaveformChange,
                 sectionPicker = sectionPickerComposable,
@@ -1018,6 +1021,8 @@ fun QuizTab(
     onPlayOnlyRootChange: (Boolean) -> Unit,
     isSimpleMode: Boolean,
     onSimpleModeChange: (Boolean) -> Unit,
+    useRelativeIonianContext: Boolean,
+    onRelativeIonianContextChange: (Boolean) -> Unit,
     currentWaveform: AudioEngine.Waveform,
     onWaveformChange: (AudioEngine.Waveform) -> Unit,
     sectionPicker: @Composable () -> Unit,
@@ -1609,6 +1614,15 @@ fun QuizTab(
             normalizePlaybackBeat((currentChord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0)
         )
     }
+    val currentRootDegreeLabel = remember(chordRootIntervalState, useRelativeIonianContext) {
+        chordRootIntervalState?.let { state ->
+            if (useRelativeIonianContext) {
+                relativeIonianDegreeLabel(state.current.pitch, state.current.sourceKey)
+            } else {
+                state.currentDegreeLabel
+            }
+        }.orEmpty()
+    }
     val currentMelodyNote = remember(melody, currentBeat, isSimpleMode) {
         if (isSimpleMode) null else activeMelodyNoteAtBeat(melody, currentBeat)
     }
@@ -1617,22 +1631,30 @@ fun QuizTab(
         else resolveMelodyIntervalState(melody, currentMelodyNote.beat, section::getKeyAtBeat)
     }
 
-    val audiationTargets = remember(currentChord, chordRootIntervalState, activeKey, globalTranspose, isSimpleMode) {
+    val audiationTargets = remember(
+        currentChord,
+        chordRootIntervalState,
+        activeKey,
+        globalTranspose,
+        isSimpleMode,
+        useRelativeIonianContext
+    ) {
         if (isSimpleMode) {
             chordRootIntervalState?.let { state ->
                 val rootAudioNote = state.current.pitch.toAudioNoteNumber()
                 listOf(
                     AudiationTarget(
                         id = 0,
-                        label = state.currentDegreeLabel,
+                        label = currentRootDegreeLabel,
                         untransposedMidi = rootAudioNote,
                         transposedMidi = rootAudioNote + globalTranspose
                     )
                 )
             } ?: emptyList()
         } else { currentChord?.let { chord -> val notes = ChordInterpreter.getChordNotes(chord, activeKey); val rootMidi = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull() ?: 0
-            val list = notes.mapIndexed { index, note -> AudiationTarget(id = index, label = MusicTheory.getRelativeDegreeLabel(note, rootMidi), untransposedMidi = note, transposedMidi = note + globalTranspose) }.toMutableList()
-            list.add(AudiationTarget(100, ChordInterpreter.getRomanSymbol(chord, activeKey), rootMidi, rootMidi + globalTranspose))
+            val list = notes.mapIndexed { index, note -> AudiationTarget(id = index, label = if (useRelativeIonianContext) relativeIonianDegreeLabel(note, activeKey) else MusicTheory.getRelativeDegreeLabel(note, rootMidi), untransposedMidi = note, transposedMidi = note + globalTranspose) }.toMutableList()
+            val chordLabel = if (useRelativeIonianContext) ChordInterpreter.getRelativeIonianRomanSymbol(chord, activeKey) else ChordInterpreter.getRomanSymbol(chord, activeKey)
+            list.add(AudiationTarget(100, chordLabel, rootMidi, rootMidi + globalTranspose))
             list } ?: emptyList()
         }
     }
@@ -1699,10 +1721,40 @@ fun QuizTab(
                     .fillMaxSize()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                val displayScale = activeKey.scale.replace(Regex("([a-z])([A-Z])"), "$1 $2").replaceFirstChar { it.titlecase() }
+                val displayScale = if (useRelativeIonianContext) {
+                    "Ionian"
+                } else {
+                    activeKey.scale.replace(Regex("([a-z])([A-Z])"), "$1 $2").replaceFirstChar { it.titlecase() }
+                }
+                val actualModeColor = ringModeColor(activeKey.scale)
                 Column(modifier = Modifier.fillMaxWidth().height(144.dp)) {
                     Box(modifier = Modifier.fillMaxWidth().height(48.dp)) {
-                        Text(text = displayScale, textAlign = TextAlign.Center, fontSize = 28.sp, fontWeight = FontWeight.Bold, color = ringModeColor(activeKey.scale), modifier = Modifier.fillMaxWidth().align(Alignment.Center))
+                        Row(
+                            modifier = Modifier.align(Alignment.Center),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Checkbox(
+                                checked = useRelativeIonianContext,
+                                onCheckedChange = onRelativeIonianContextChange,
+                                modifier = Modifier.semantics {
+                                    contentDescription = "Use relative major labels"
+                                }
+                            )
+                            Text(
+                                text = displayScale,
+                                textAlign = TextAlign.Center,
+                                fontSize = 28.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (useRelativeIonianContext) Color.Red else actualModeColor,
+                                modifier = if (useRelativeIonianContext) {
+                                    Modifier
+                                        .border(2.dp, actualModeColor, RoundedCornerShape(6.dp))
+                                        .padding(horizontal = 10.dp, vertical = 2.dp)
+                                } else {
+                                    Modifier
+                                }
+                            )
+                        }
                         if (!isSimpleMode) { Box(modifier = Modifier.align(Alignment.CenterEnd)) { transposePicker() } }
                     }
                     Row(modifier = Modifier.height(48.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -1721,14 +1773,15 @@ fun QuizTab(
 
                 val primaryColor = MaterialTheme.colorScheme.primary; val secondaryColor = MaterialTheme.colorScheme.secondary
                 val romanNumeralPainter = remember { RomanNumeralPainter() }; val pixelsPerBeatPx = with(density) { pixelsPerBeat.dp.toPx() }
-                val timelineContentDescription = remember(section, currentBeat) {
+                val timelineContentDescription = remember(section, currentBeat, useRelativeIonianContext) {
                     val activeChord_t = section.chords.find { chord ->
                         val beat_t = normalizePlaybackBeat((chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0); val duration_t = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
                         currentBeat >= beat_t && currentBeat < beat_t + duration_t
                     }
                     if (activeChord_t == null) "Chord timeline" else {
                         val beat_t = normalizePlaybackBeat((activeChord_t["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0); val isRest_t = (activeChord_t["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (activeChord_t["rest"] as? JsonPrimitive)?.booleanOrNull == true
-                        val label_t = if (isRest_t) "rest" else ChordInterpreter.getRomanSymbol(activeChord_t, section.getKeyAtBeat(beat_t))
+                        val chordKey_t = section.getKeyAtBeat(beat_t)
+                        val label_t = if (isRest_t) "rest" else if (useRelativeIonianContext) ChordInterpreter.getRelativeIonianRomanSymbol(activeChord_t, chordKey_t) else ChordInterpreter.getRomanSymbol(activeChord_t, chordKey_t)
                         "Chord timeline, current chord $label_t"
                     }
                 }
@@ -1739,7 +1792,7 @@ fun QuizTab(
                         ) {
                             val totalHeight = size.height; val mLaneHeightPx = melodyLaneHeight.toPx(); val cLaneHeightPx = chordLaneHeight.toPx(); val noteHeight = (mLaneHeightPx / 28f).coerceIn(5f, 10f); val melodyBaseY = mLaneHeightPx / 2; val centerX = size.width / 2f; val translationX = centerX - (currentBeat - 1).toFloat() * pixelsPerBeatPx
                             drawContext.canvas.save(); drawContext.canvas.translate(translationX, 0f)
-                            melody.forEach { note -> val x = (note.beat - 1).toFloat() * pixelsPerBeatPx; val w = note.duration.toFloat() * pixelsPerBeatPx; val degree = MusicTheory.getRawDegree(note.sd); val y = melodyBaseY - (degree * noteHeight) - (note.octave * noteHeight * 7); val isActive = currentBeat >= note.beat && currentBeat < (note.beat + note.duration)
+                            melody.forEach { note -> val x = (note.beat - 1).toFloat() * pixelsPerBeatPx; val w = note.duration.toFloat() * pixelsPerBeatPx; val sourceKey = section.getKeyAtBeat(note.beat); val staffDegree = if (useRelativeIonianContext) relativeIonianStaffDegree(note.sd, note.octave, sourceKey) ?: (MusicTheory.getRawDegree(note.sd) + note.octave * 7) else MusicTheory.getRawDegree(note.sd) + note.octave * 7; val y = melodyBaseY - (staffDegree * noteHeight); val isActive = currentBeat >= note.beat && currentBeat < (note.beat + note.duration)
                                 drawRect(color = if (isActive) primaryColor else secondaryColor.copy(alpha = 0.6f), topLeft = Offset(x, y), size = Size(w, noteHeight)) }
                             section.chords.forEach { chord -> val beat_c = normalizePlaybackBeat((chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0); val duration_c = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0; val isRest_c = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
                                 val x = (beat_c - 1).toFloat() * pixelsPerBeatPx; val w = duration_c.toFloat() * pixelsPerBeatPx; val isActive = currentBeat >= beat_c && currentBeat < (beat_c + duration_c)
@@ -1747,7 +1800,7 @@ fun QuizTab(
                                 if (isActive) drawRect(color = primaryColor.copy(alpha = 0.4f), topLeft = Offset(x, mLaneHeightPx), size = Size(w, cLaneHeightPx))
                                 drawRect(color = if (isActive) primaryColor else Color.LightGray, topLeft = Offset(x, mLaneHeightPx), size = Size(w, cLaneHeightPx), style = androidx.compose.ui.graphics.drawscope.Stroke(width = 2.dp.toPx()))
                                 if (!isRest_c) { val screenX = x + translationX; val isVisible = screenX + w >= 0f && screenX <= size.width; val innerWidth = w - 14.dp.toPx(); val innerHeight = cLaneHeightPx - 8.dp.toPx()
-                                    if (isVisible && innerWidth > 12.dp.toPx() && innerHeight > 12.dp.toPx()) { val chordKey = section.getKeyAtBeat(beat_c); val symbol = ChordInterpreter.getRomanSymbol(chord, chordKey); val display = RomanNumeralDisplay.fromChord(symbol, chord["borrowed"]); val minFontSize = 8.sp.toPx(); val maxFontSize = kotlin.math.min(innerHeight * 0.9f, innerWidth * 0.58f)
+                                    if (isVisible && innerWidth > 12.dp.toPx() && innerHeight > 12.dp.toPx()) { val chordKey = section.getKeyAtBeat(beat_c); val symbol = if (useRelativeIonianContext) ChordInterpreter.getRelativeIonianRomanSymbol(chord, chordKey) else ChordInterpreter.getRomanSymbol(chord, chordKey); val display = RomanNumeralDisplay.fromChord(symbol, chord["borrowed"]); val minFontSize = 8.sp.toPx(); val maxFontSize = kotlin.math.min(innerHeight * 0.9f, innerWidth * 0.58f)
                                         val measured = romanNumeralPainter.fitDisplay(display, minFontSize, maxFontSize, innerWidth, innerHeight, 4.dp.toPx())
                                         if (measured != null) romanNumeralPainter.draw(canvas = drawContext.canvas.nativeCanvas, layout = measured, centerX = x + w / 2f, centerY = mLaneHeightPx + cLaneHeightPx / 2f + measured.baseFontSizePx * 0.035f, color = (if (isActive) primaryColor else Color.White).toArgb()) } }
                             }
@@ -1761,7 +1814,7 @@ fun QuizTab(
                     val currentRoot = chordRootIntervalState?.current
                     val previousRoot = chordRootIntervalState?.previous
                     val rootAudioNote = currentRoot?.pitch?.toAudioNoteNumber() ?: 0
-                    val rootDegreeLabel = chordRootIntervalState?.currentDegreeLabel.orEmpty()
+                    val rootDegreeLabel = currentRootDegreeLabel
                     val rootInterval = chordRootIntervalState?.interval
                     val isRootDegreeHovered = audiationState is AudiationState.Dragging && audiationState.hoveredId == 0
                     Column(
@@ -1831,7 +1884,7 @@ fun QuizTab(
                                         if (rootDegreeLabel.isNotEmpty()) {
                                             ScaleDegreeText(label = rootDegreeLabel, fontSize = 100.sp, modifier = Modifier.fillMaxWidth(), minFontSize = 36.sp)
                                         } else {
-                                            val symbol = ChordInterpreter.getRomanSymbol(activeSimpleChord, activeKey)
+                                            val symbol = if (useRelativeIonianContext) ChordInterpreter.getRelativeIonianRomanSymbol(activeSimpleChord, activeKey) else ChordInterpreter.getRomanSymbol(activeSimpleChord, activeKey)
                                             val romanDisplay = RomanNumeralDisplay.fromChord(symbol, activeSimpleChord["borrowed"])
                                             RomanNumeralText(display = romanDisplay, fontSize = 64.sp, modifier = Modifier.fillMaxWidth())
                                         }
@@ -1897,7 +1950,7 @@ fun QuizTab(
                         currentChord?.let { chord ->
                             val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
                             if (!isRest) {
-                                val symbol = ChordInterpreter.getRomanSymbol(chord, activeKey)
+                                val symbol = if (useRelativeIonianContext) ChordInterpreter.getRelativeIonianRomanSymbol(chord, activeKey) else ChordInterpreter.getRomanSymbol(chord, activeKey)
                                 val romanDisplay = RomanNumeralDisplay.fromChord(symbol, chord["borrowed"])
                                 val notes = ChordInterpreter.getChordNotes(chord, activeKey)
                                 val rootMidi = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull() ?: 0
@@ -1914,7 +1967,7 @@ fun QuizTab(
                                     }
                                 }
                                 if (rootMidi > 0) { Spacer(Modifier.height(8.dp)); Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(degreeSpacing)) {
-                                    notes.forEachIndexed { index, note -> val internalLabel = MusicTheory.getRelativeDegreeLabel(note, rootMidi); val isHovered = audiationState is AudiationState.Dragging && audiationState.hoveredId == index
+                                    notes.forEachIndexed { index, note -> val internalLabel = if (useRelativeIonianContext) relativeIonianDegreeLabel(note, activeKey) else MusicTheory.getRelativeDegreeLabel(note, rootMidi); val isHovered = audiationState is AudiationState.Dragging && audiationState.hoveredId == index
                                         OutlinedButton(onClick = { scope.launch { AudioEngine.playChord(listOf(note + audiationOctaveShift * 12), channel = AudioEngine.PlaybackChannel.PREVIEW) } }, modifier = Modifier.weight(1f).height(50.dp).onGloballyPositioned { onTargetPositioned(index, it) }, shape = RoundedCornerShape(14.dp), contentPadding = PaddingValues(0.dp), colors = if (isHovered) ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer) else ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)) {
                                             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { ScaleDegreeText(label = internalLabel, fontSize = degreeFontSize, modifier = Modifier.fillMaxWidth(), minFontSize = 12.sp)
                                                 if (audiationState is AudiationState.Listening && audiationState.target.id == index) PitchGauge(pitchResult = audiationState.pitch, targetLabel = audiationState.target.label, modifier = Modifier.matchParentSize()) }

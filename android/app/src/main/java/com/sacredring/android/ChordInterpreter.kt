@@ -499,6 +499,105 @@ object ChordInterpreter {
         return buildNumeral(root, qualities, chordJson, prefix, opts) + (if (tag.isNotEmpty() && !hasAdds) tag else "")
     }
 
+    /**
+     * Renders the source chord against its relative Ionian tonic without
+     * changing any pitch or playback input. The sounding chord quality and all
+     * extensions/inversions stay sourced from the original modal context.
+     */
+    fun getRelativeIonianRomanSymbol(chordJson: JsonObject, key: KeyInfo): String {
+        val root = safeInt(chordJson["root"])
+        if (root <= 0) return "Rest"
+
+        val sourceKey = KeyInfo(key.tonic, canonicalScaleName(key.scale))
+        val displayKey = relativeIonianKey(key)
+        val applied = safeInt(chordJson["applied"])
+        val borrowed = safeString(chordJson["borrowed"])
+
+        if (applied in 1..7 && borrowed.isEmpty()) {
+            val targetPitch = MusicTheory.resolveScaleDegreePitch(
+                sd = root.toString(),
+                relativeOctave = 0,
+                key = sourceKey
+            ) ?: return getRomanSymbol(chordJson, key)
+            val displayDegree = degreeInKey(targetPitch, displayKey)
+                ?: return getRomanSymbol(chordJson, key)
+            val numeratorKey = KeyInfo(targetPitch.noteName, "major")
+            val triSub = isTriSubApplied(chordJson)
+            val numDegree = if (triSub) 2 else applied
+            val numPrefix = if (triSub) "♭" else ""
+
+            val parentQualities = MusicTheory.CHORD_QUALITIES[sourceKey.scale]
+                ?: MusicTheory.CHORD_QUALITIES["major"]!!
+            val targetQuality = parentQualities.getOrElse(
+                Math.floorMod(root - 1, 7)
+            ) { "major" }
+            val type = safeInt(chordJson["type"], 5)
+            val appliedDenomMaj = applied == 5 && type >= 7 && targetQuality == "minor"
+            val majorSeventh = type >= 7 && applied != 5 &&
+                isMajorSeventh(numDegree, numeratorKey) &&
+                ((chordJson["suspensions"] as? JsonArray)?.isEmpty() ?: true)
+            val numerator = buildNumeral(
+                numDegree,
+                MusicTheory.CHORD_QUALITIES["major"]!!,
+                chordJson,
+                numPrefix,
+                mapOf(
+                    "fullyDiminished" to (applied == 7 && !triSub),
+                    "majorSeventh" to majorSeventh
+                )
+            )
+            var denominator = ROMAN_MAP[displayDegree.degree].orEmpty()
+            if (targetQuality == "minor" || targetQuality == "diminished") {
+                denominator = denominator.lowercase()
+            }
+            denominator = displayDegree.accidentalPrefix + denominator + when (targetQuality) {
+                "diminished" -> "\u00b0"
+                "augmented" -> "+"
+                else -> ""
+            }
+            val denomTag = if (appliedDenomMaj) "(maj)" else ""
+            val subTag = if (triSub) "(∆-sub)" else ""
+            return "$numerator/$denominator$denomTag$subTag"
+        }
+
+        val resolvedRoot = resolveChordRoot(chordJson, sourceKey)
+            ?: return getRomanSymbol(chordJson, key)
+        val displayDegree = degreeInKey(resolvedRoot.pitch, displayKey)
+            ?: return getRomanSymbol(chordJson, key)
+
+        var sourceScale = sourceKey.scale
+        var borrowedTag = ""
+        if (borrowed.isNotEmpty()) {
+            if (BORROWED_TAG.containsKey(borrowed)) {
+                sourceScale = canonicalScaleName(borrowed)
+                borrowedTag = "(${BORROWED_TAG[borrowed]})"
+            } else if (borrowed.startsWith("[")) {
+                borrowedTag = "(bor)"
+            }
+        }
+
+        val type = safeInt(chordJson["type"], 5)
+        val majorSeventh = type >= 7 && resolvedRoot.chordQuality != "diminished" &&
+            isMajorSeventh(root, KeyInfo(sourceKey.tonic, sourceScale))
+        val hasAdds = (chordJson["adds"] as? JsonArray)?.isNotEmpty() ?: false
+        val opts = mutableMapOf<String, Any>(
+            "quality" to resolvedRoot.chordQuality,
+            "majorSeventh" to majorSeventh,
+            "keyScale" to sourceScale,
+            "keyTonic" to sourceKey.tonic,
+            "borrowed" to borrowed
+        )
+        if (borrowedTag.isNotEmpty() && hasAdds) opts["borrowedTag"] = borrowedTag
+
+        return buildNumeral(
+            displayDegree.degree,
+            MusicTheory.CHORD_QUALITIES["major"]!!,
+            chordJson,
+            displayDegree.accidentalPrefix,
+            opts
+        ) + if (borrowedTag.isNotEmpty() && !hasAdds) borrowedTag else ""
+    }
+
     fun getLetterName(chordJson: JsonObject, key: KeyInfo): String {
         val root = safeInt(chordJson["root"])
         if (root <= 0) return ""
