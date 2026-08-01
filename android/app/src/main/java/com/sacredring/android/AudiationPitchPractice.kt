@@ -18,6 +18,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.boundsInRoot
@@ -215,8 +217,9 @@ fun AudiationPitchPracticeContainer(
             }
         }
 
-        // Draggable Puck
-        val puckSize = 40.dp
+        // Draggable Puck (Magnifying Glass)
+        val puckSize = 48.dp
+        val halfPuck = 24.dp
         Box(
             modifier = Modifier
                 .offset {
@@ -224,21 +227,16 @@ fun AudiationPitchPracticeContainer(
                     if (s is AudiationState.Listening) {
                         val target = s.target
                         val center = target.bounds.center
-                        // Centering the puck on the target
+                        // Centering the lens on the target
                         IntOffset(
-                            (center.x - 20.dp.toPx()).roundToInt(),
-                            (center.y - 20.dp.toPx()).roundToInt()
+                            (center.x - halfPuck.toPx()).roundToInt(),
+                            (center.y - halfPuck.toPx()).roundToInt()
                         )
                     } else {
                         IntOffset(puckOffset.x.roundToInt(), puckOffset.y.roundToInt())
                     }
                 }
                 .size(puckSize)
-                .background(
-                    color = if (state is AudiationState.Listening) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
-                    shape = CircleShape
-                )
-                .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)
                 .pointerInput(targets) {
                     detectTapGestures(
                         onDoubleTap = {
@@ -252,7 +250,7 @@ fun AudiationPitchPracticeContainer(
                             if (state is AudiationState.Idle || state is AudiationState.Listening || state is AudiationState.Error) {
                                 val s = state
                                 if (s is AudiationState.Listening) {
-                                    puckOffset = s.target.bounds.center - Offset(20.dp.toPx(), 20.dp.toPx())
+                                    puckOffset = s.target.bounds.center - Offset(halfPuck.toPx(), halfPuck.toPx())
                                 }
                                 pitchSource.stop()
                                 state = AudiationState.Dragging(puckOffset, null)
@@ -261,12 +259,12 @@ fun AudiationPitchPracticeContainer(
                         onDrag = { change, dragAmount ->
                             change.consume()
                             puckOffset += dragAmount
-                            val puckCenter = puckOffset + Offset(20.dp.toPx(), 20.dp.toPx())
+                            val puckCenter = puckOffset + Offset(halfPuck.toPx(), halfPuck.toPx())
                             val hovered = targets.find { it.bounds.contains(puckCenter) }
                             state = AudiationState.Dragging(puckOffset, hovered?.id)
                         },
                         onDragEnd = {
-                            val puckCenter = puckOffset + Offset(20.dp.toPx(), 20.dp.toPx())
+                            val puckCenter = puckOffset + Offset(halfPuck.toPx(), halfPuck.toPx())
                             val target = targets.find { it.bounds.contains(puckCenter) }
                             if (target != null) {
                                 startListening(target)
@@ -286,11 +284,74 @@ fun AudiationPitchPracticeContainer(
                 },
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = if (state is AudiationState.Listening) "●" else "⌖",
-                color = MaterialTheme.colorScheme.onPrimary,
-                fontSize = 20.sp
-            )
+            val bodyColor = (if (state is AudiationState.Listening)
+                MaterialTheme.colorScheme.primary
+            else
+                MaterialTheme.colorScheme.secondary).copy(alpha = 0.6f)
+            val outlineColor = MaterialTheme.colorScheme.outline
+
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val canvasCenter = Offset(size.width / 2, size.height / 2)
+                val rimRadius = 14.dp.toPx()
+
+                // Magnifying glass handle at 45 degrees
+                // cos(45) = sin(45) = 0.7071
+                val cos45 = 0.7071f
+                val handleStart = canvasCenter + Offset(rimRadius * cos45, rimRadius * cos45)
+                val handleEnd = canvasCenter + Offset(halfPuck.toPx() * 0.95f * cos45, halfPuck.toPx() * 0.95f * cos45)
+
+                drawLine(
+                    color = bodyColor,
+                    start = handleStart,
+                    end = handleEnd,
+                    strokeWidth = 6.dp.toPx(),
+                    cap = StrokeCap.Round
+                )
+                drawLine(
+                    color = outlineColor,
+                    start = handleStart,
+                    end = handleEnd,
+                    strokeWidth = 1.dp.toPx(),
+                    cap = StrokeCap.Round
+                )
+
+                // Rim (Translucent body)
+                drawCircle(
+                    color = bodyColor,
+                    radius = rimRadius,
+                    center = canvasCenter,
+                    style = Stroke(width = 4.dp.toPx())
+                )
+
+                // Rim outlines
+                drawCircle(
+                    color = outlineColor,
+                    radius = rimRadius + 2.dp.toPx(),
+                    center = canvasCenter,
+                    style = Stroke(width = 1.dp.toPx())
+                )
+                drawCircle(
+                    color = outlineColor,
+                    radius = rimRadius - 2.dp.toPx(),
+                    center = canvasCenter,
+                    style = Stroke(width = 1.dp.toPx())
+                )
+
+                // Small center crosshair for precision
+                val crossSize = 3.dp.toPx()
+                drawLine(
+                    color = outlineColor.copy(alpha = 0.7f),
+                    start = canvasCenter - Offset(crossSize, 0f),
+                    end = canvasCenter + Offset(crossSize, 0f),
+                    strokeWidth = 1.dp.toPx()
+                )
+                drawLine(
+                    color = outlineColor.copy(alpha = 0.7f),
+                    start = canvasCenter - Offset(0f, crossSize),
+                    end = canvasCenter + Offset(0f, crossSize),
+                    strokeWidth = 1.dp.toPx()
+                )
+            }
         }
         
         // Error Message

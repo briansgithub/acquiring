@@ -990,7 +990,7 @@ fun QuizTab(
     val configuration = androidx.compose.ui.platform.LocalConfiguration.current
     var audiationPuckOffset by remember {
         mutableStateOf(with(density) { 
-            Offset((configuration.screenWidthDp / 2f - 20f).dp.toPx(), (configuration.screenHeightDp * 0.60f).dp.toPx())
+            Offset((configuration.screenWidthDp / 2f - 24f).dp.toPx(), (configuration.screenHeightDp * 0.60f).dp.toPx())
         })
     }
     var audiationOctaveShift by remember { mutableStateOf(0) }
