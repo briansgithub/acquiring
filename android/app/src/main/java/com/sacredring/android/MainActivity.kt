@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
@@ -32,11 +33,14 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.style.TextAlign
 
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.dp
 import androidx.room.Room
@@ -62,17 +66,27 @@ class MainActivity : ComponentActivity() {
             AppDatabase::class.java, "sacred-ring-db"
         ).build()
 
+        val neutralContainer = Color(0xFF3A3A3A)
+        val neutralOnContainer = Color(0xFFE6E6E6)
         val darkColorScheme = darkColorScheme(
             primary = Color(0xFFA8C7FA),
             secondary = Color(0xFFBAC8DB),
             tertiary = Color(0xFFEFB8C8),
+            primaryContainer = neutralContainer,
+            secondaryContainer = neutralContainer,
+            tertiaryContainer = neutralContainer,
             background = Color(0xFF1C1B1F),
             surface = Color(0xFF1C1B1F),
+            surfaceVariant = Color(0xFF343434),
             onPrimary = Color(0xFF00315C),
             onSecondary = Color(0xFF263141),
             onTertiary = Color(0xFF492532),
+            onPrimaryContainer = neutralOnContainer,
+            onSecondaryContainer = neutralOnContainer,
+            onTertiaryContainer = neutralOnContainer,
             onBackground = Color(0xFFE6E1E5),
             onSurface = Color(0xFFE6E1E5),
+            onSurfaceVariant = Color(0xFFD0D0D0),
         )
 
         setContent {
@@ -100,6 +114,7 @@ fun MainScreen(db: AppDatabase) {
     var allSongs by remember { mutableStateOf(listOf<Song>()) }
     var suggestions by remember { mutableStateOf(listOf<Song>()) }
     var isExpanded by remember { mutableStateOf(false) }
+    var selectedSong by remember { mutableStateOf<Song?>(null) }
     var selectedSongSections by remember { mutableStateOf<Map<String, ExtractedSection>?>(null) }
     var selectedSectionId by remember { mutableStateOf<String?>(null) }
     var currentTab by remember { mutableStateOf(2) }
@@ -122,6 +137,7 @@ fun MainScreen(db: AppDatabase) {
         } else {
             // The selected song's Info and Chords pages are children of search.
             selectedSongSections = null
+            selectedSong = null
         }
     }
 
@@ -156,6 +172,7 @@ fun MainScreen(db: AppDatabase) {
     val openSong: (Song) -> Unit = { song ->
         HistoryManager.addSong(context, song.slug)
         isExpanded = false
+        selectedSong = song
 
         if (song.dataBlob != null) {
             try {
@@ -165,7 +182,7 @@ fun MainScreen(db: AppDatabase) {
                 )
                 selectedSongSections = sections
                 selectedSectionId = sections.sectionsInSongOrder().firstOrNull()?.key ?: sections.keys.firstOrNull()
-                currentTab = 2 // Switch to Quiz tab
+                currentTab = 2 // Open Quiz; SongDetailView starts in Simple mode
             } catch (e: Exception) {
                 searchResult = "❌ Error loading song: ${e.message}"
             }
@@ -181,9 +198,10 @@ fun MainScreen(db: AppDatabase) {
                             val sections = HooktheoryDataCompat.migrateSections(
                                 json.decodeFromString<Map<String, ExtractedSection>>(dataStr)
                             )
+                            selectedSong = harvestedSong
                             selectedSongSections = sections
                             selectedSectionId = sections.sectionsInSongOrder().firstOrNull()?.key ?: sections.keys.firstOrNull()
-                            currentTab = 2 // Switch to Quiz tab
+                            currentTab = 2 // Open Quiz; SongDetailView starts in Simple mode
                             harvestStatus = "Loaded chords for ${song.title ?: song.slug}!"
                         } catch (e: Exception) {
                             harvestStatus = "❌ Error loading harvested song: ${e.message}"
@@ -279,6 +297,7 @@ fun MainScreen(db: AppDatabase) {
         } else {
             // Song Detail View with Tabs
             SongDetailView(
+                song = selectedSong!!,
                 sections = selectedSongSections!!,
                 selectedSectionId = selectedSectionId,
                 onSectionChange = { selectedSectionId = it },
@@ -341,7 +360,7 @@ fun LibraryView(
                     onClick = onDownloadCatalog,
                     modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
                 ) {
-                    Text("Download Full Library (2.4 MB)")
+                    Text("Download Full Library")
                 }
                 
                 if (catalogStatus.isNotEmpty()) {
@@ -462,6 +481,7 @@ fun LibraryView(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SongDetailView(
+    song: Song,
     sections: Map<String, ExtractedSection>,
     selectedSectionId: String?,
     onSectionChange: (String) -> Unit,
@@ -490,6 +510,7 @@ fun SongDetailView(
     var playChords by remember { mutableStateOf(true) }
     var playOnlyRoot by remember { mutableStateOf(false) }
     var isSimpleMode by remember { mutableStateOf(true) }
+    val uriHandler = LocalUriHandler.current
 
     val transposePickerComposable: @Composable () -> Unit = {
         ExposedDropdownMenuBox(
@@ -501,7 +522,7 @@ fun SongDetailView(
                 value = if (globalTranspose == 0) "0" else "+$globalTranspose",
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Trp") },
+                label = { Text("Transpose") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isTransposeExpanded) },
                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
                 modifier = Modifier.fillMaxWidth().menuAnchor(),
@@ -579,6 +600,7 @@ fun SongDetailView(
                 }
             } else {
                 Spacer(modifier = Modifier.weight(1f))
+                TextButton(onClick = { uriHandler.openUri(song.url) }) { Text("URL") }
                 TextButton(onClick = { onTabChange(0) }) { Text("Info") }
                 TextButton(onClick = { onTabChange(1) }) { Text("Chords") }
             }
@@ -711,8 +733,8 @@ fun QuizTab(
     
     val endBeat = (section.metadata?.get("endBeat") as? JsonPrimitive)?.doubleOrNull ?: 32.0
     val pixelsPerBeat = 60f
-    val chordLaneHeight = 60.dp
-    val melodyLaneHeight = 180.dp
+    val chordLaneHeight = 40.dp
+    val melodyLaneHeight = 88.dp
 
     fun beginScrubbing() {
         if (isScrubbing) return
@@ -935,21 +957,40 @@ fun QuizTab(
     }
 
     val waveformPickerComposable: @Composable () -> Unit = {
+        val waveformLabel = currentWaveform.name.lowercase().split("_")
+            .joinToString(" ") { it.replaceFirstChar { c -> c.uppercase() } }
         ExposedDropdownMenuBox(
-            expanded = if (isSimpleMode) false else isWaveformExpanded,
-            onExpandedChange = { if (!isSimpleMode) isWaveformExpanded = it },
-            modifier = Modifier.width(170.dp)
+            expanded = isWaveformExpanded,
+            onExpandedChange = { isWaveformExpanded = !isWaveformExpanded },
+            modifier = Modifier.width(128.dp)
         ) {
-            OutlinedTextField(
-                value = currentWaveform.name.lowercase().split("_").joinToString(" ") { it.replaceFirstChar { c -> c.uppercase() } },
-                onValueChange = {},
-                readOnly = true,
-                enabled = !isSimpleMode,
-                label = { Text("Sound") },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isWaveformExpanded) },
-                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                modifier = Modifier.fillMaxWidth().menuAnchor()
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.outline,
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .menuAnchor()
+                    .semantics { contentDescription = "Sound: $waveformLabel" },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = waveformLabel,
+                    maxLines = 1,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        lineHeight = 12.sp,
+                        platformStyle = PlatformTextStyle(includeFontPadding = false)
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Box(modifier = Modifier.align(Alignment.CenterEnd)) {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = isWaveformExpanded)
+                }
+            }
 
             ExposedDropdownMenu(
                 expanded = isWaveformExpanded,
@@ -957,7 +998,13 @@ fun QuizTab(
             ) {
                 AudioEngine.Waveform.entries.forEach { waveform ->
                     DropdownMenuItem(
-                        text = { Text(waveform.name.lowercase().split("_").joinToString(" ") { it.replaceFirstChar { c -> c.uppercase() } }) },
+                        text = {
+                            Text(
+                                waveform.name.lowercase().split("_").joinToString(" ") { it.replaceFirstChar { c -> c.uppercase() } },
+                                style = MaterialTheme.typography.bodySmall,
+                                maxLines = 1
+                            )
+                        },
                         onClick = {
                             onWaveformChange(waveform)
                             isWaveformExpanded = false
@@ -979,30 +1026,29 @@ fun QuizTab(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(116.dp)
+                    .height(152.dp)
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(32.dp)
+                        .height(56.dp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.align(Alignment.CenterEnd)
-                    ) {
-                        if (!isSimpleMode) {
-                            Text(
-                                text = "${String.format("%.2f", currentBeat)} / ${endBeat.toInt()}  •  ",
-                                style = MaterialTheme.typography.titleSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                    Text(
+                        text = displayScale,
+                        textAlign = TextAlign.Center,
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = ringModeColor(activeKey.scale),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                    )
+                    if (!isSimpleMode) {
+                        Box(
+                            modifier = Modifier.align(Alignment.CenterEnd)
+                        ) {
+                            transposePicker()
                         }
-                        Text(
-                            text = displayScale,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = ringModeColor(activeKey.scale)
-                        )
                     }
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1109,7 +1155,7 @@ fun QuizTab(
                     val mLaneHeightPx = melodyLaneHeight.toPx()
                     val cLaneHeightPx = chordLaneHeight.toPx()
                     
-                    val noteHeight = 12f
+                    val noteHeight = (mLaneHeightPx / 28f).coerceIn(5f, 10f)
                     val melodyBaseY = mLaneHeightPx / 2
 
                     val centerX = size.width / 2f
@@ -1219,7 +1265,7 @@ fun QuizTab(
             }
             }
 
-            Spacer(modifier = Modifier.height(if (isSimpleMode) 0.dp else 24.dp))
+            Spacer(modifier = Modifier.height(if (isSimpleMode) 0.dp else 8.dp))
 
             // Interactive Buttons Section
             val currentChord = remember(section, currentBeat) {
@@ -1230,172 +1276,331 @@ fun QuizTab(
                 }
             }
 
-            if (isSimpleMode) {
-                val activeSimpleChord = currentChord?.takeUnless { chord ->
-                    (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
-                        (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
-                }
-                val activeKey = section.getKeyAtBeat(currentBeat)
-                val rootMidi = activeSimpleChord?.let { chord ->
-                    ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull()
-                } ?: 0
-                val rootDegreeLabel = if (rootMidi > 0) {
-                    MusicTheory.getDegreeLabelFromMidi(rootMidi, activeKey)
+            val audiationTargets = remember(currentChord, activeKey, globalTranspose, isSimpleMode) {
+                if (isSimpleMode) {
+                    currentChord?.let { chord ->
+                        val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
+                            (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
+                        if (!isRest) {
+                            val rootMidi = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull() ?: 0
+                            if (rootMidi > 0) {
+                                listOf(
+                                    AudiationTarget(
+                                        id = 100,
+                                        label = MusicTheory.getDegreeLabelFromMidi(rootMidi, activeKey),
+                                        untransposedMidi = rootMidi,
+                                        transposedMidi = rootMidi + globalTranspose
+                                    )
+                                )
+                            } else emptyList()
+                        } else emptyList()
+                    } ?: emptyList()
                 } else {
-                    ""
+                    currentChord?.let { chord ->
+                        val notes = ChordInterpreter.getChordNotes(chord, activeKey)
+                        val rootMidi = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull() ?: 0
+                        val list = notes.mapIndexed { index, note ->
+                            AudiationTarget(
+                                id = index,
+                                label = MusicTheory.getRelativeDegreeLabel(note, rootMidi),
+                                untransposedMidi = note,
+                                transposedMidi = note + globalTranspose
+                            )
+                        }.toMutableList()
+                        // Add large chord button as target 100
+                        list.add(AudiationTarget(100, ChordInterpreter.getRomanSymbol(chord, activeKey), rootMidi, rootMidi + globalTranspose))
+                        list
+                    } ?: emptyList()
+                }
+            }
+
+            // Persist puck position across chord changes/remounts within the QuizTab
+            var audiationPuckOffset by remember {
+                mutableStateOf(with(density) { Offset(8.dp.toPx(), (-60).dp.toPx()) })
+            }
+            var audiationOctaveShift by remember { mutableStateOf(0) }
+
+            val targetsWithShift = remember(audiationTargets, audiationOctaveShift) {
+                audiationTargets.map { 
+                    it.copy(transposedMidi = it.transposedMidi + audiationOctaveShift * 12)
+                }
+            }
+
+            AudiationPitchPracticeContainer(
+                targets = targetsWithShift,
+                initialOffset = audiationPuckOffset,
+                onTargetSelected = {
+                    isPlaying = false
+                    activeNoteReplayJob?.cancel()
+                    AudioEngine.stopAllPlayback()
+                },
+                onSessionCanceled = {},
+                onCalibrated = { hummedMidi ->
+                    // Find shift such that the "average root" of the song is near the hummed pitch.
+                    // Or more strictly as requested: "so that the 1 scale degree of every chord 
+                    // in the currently playing song is within half an octave of the reference".
+                    // This implies shifting the roots so they center around the hummed pitch.
+                    
+                    val songRoots = section.chords.mapNotNull { chord ->
+                        val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
+                                    (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
+                        if (!isRest) {
+                            val chordKey = section.getKeyAtBeat((chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0)
+                            ChordInterpreter.getRootPositionChordNotes(chord, chordKey).firstOrNull()
+                        } else null
+                    }
+                    
+                    if (songRoots.isNotEmpty()) {
+                        val avgRoot = songRoots.average()
+                        // Calculate shift: hummedMidi = (avgRoot + globalTranspose) + shift * 12
+                        // shift = round((hummedMidi - (avgRoot + globalTranspose)) / 12)
+                        val currentBaseAvg = avgRoot + AudioEngine.globalTranspose
+                        audiationOctaveShift = kotlin.math.round((hummedMidi - currentBaseAvg) / 12.0).toInt()
+                    }
+                }
+            ) { audiationState, onTargetPositioned ->
+                // Update the persistent offset when the puck is moved
+                if (audiationState is AudiationState.Dragging) {
+                    audiationPuckOffset = audiationState.offset
                 }
 
-                // Keep one stable layout while the playhead crosses chords,
-                // gaps, and rests. In particular, the Slider must not be
-                // replaced mid-gesture or its release callback can be lost.
-                Column(
-                    modifier = Modifier.fillMaxWidth().fillMaxHeight(0.7f),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Button(
-                        onClick = {
-                            if (rootMidi > 0) {
-                                scope.launch {
-                                    AudioEngine.playChord(
-                                        listOf(rootMidi),
-                                        channel = AudioEngine.PlaybackChannel.CHORD
+                if (isSimpleMode) {
+                    val activeSimpleChord = currentChord?.takeUnless { chord ->
+                        (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
+                            (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
+                    }
+                    val rootMidi = activeSimpleChord?.let { chord ->
+                        ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull()
+                    } ?: 0
+                    val rootDegreeLabel = if (rootMidi > 0) {
+                        MusicTheory.getDegreeLabelFromMidi(rootMidi, activeKey)
+                    } else {
+                        ""
+                    }
+
+                    // Keep one stable layout while the playhead crosses chords,
+                    // gaps, and rests. In particular, the Slider must not be
+                    // replaced mid-gesture or its release callback can be lost.
+                    Column(
+                        modifier = Modifier.fillMaxWidth().fillMaxHeight(0.7f),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Button(
+                            onClick = {
+                                if (rootMidi > 0) {
+                                    scope.launch {
+                                        AudioEngine.playChord(
+                                            listOf(rootMidi),
+                                            channel = AudioEngine.PlaybackChannel.CHORD
+                                        )
+                                    }
+                                }
+                            },
+                            enabled = rootMidi > 0,
+                            colors = ButtonDefaults.buttonColors(
+                                disabledContainerColor = MaterialTheme.colorScheme.primary,
+                                disabledContentColor = MaterialTheme.colorScheme.onPrimary
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(250.dp)
+                                .onGloballyPositioned { onTargetPositioned(100, it) },
+                            shape = RoundedCornerShape(32.dp)
+                        ) {
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                if (activeSimpleChord != null) {
+                                    if (rootDegreeLabel.isNotEmpty()) {
+                                        ScaleDegreeText(
+                                            label = rootDegreeLabel,
+                                            fontSize = 120.sp,
+                                            modifier = Modifier.fillMaxWidth(),
+                                            minFontSize = 48.sp
+                                        )
+                                    } else {
+                                        val symbol = ChordInterpreter.getRomanSymbol(activeSimpleChord, activeKey)
+                                        val romanDisplay = RomanNumeralDisplay.fromChord(
+                                            symbol,
+                                            activeSimpleChord["borrowed"]
+                                        )
+                                        RomanNumeralText(
+                                            display = romanDisplay,
+                                            fontSize = 80.sp,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
+                                }
+
+                                if (audiationState is AudiationState.Listening && audiationState.target.id == 100) {
+                                    PitchGauge(
+                                        pitchResult = audiationState.pitch,
+                                        targetLabel = audiationState.target.label,
+                                        modifier = Modifier.matchParentSize()
                                     )
                                 }
                             }
-                        },
-                        enabled = rootMidi > 0,
-                        colors = ButtonDefaults.buttonColors(
-                            disabledContainerColor = MaterialTheme.colorScheme.primary,
-                            disabledContentColor = MaterialTheme.colorScheme.onPrimary
-                        ),
-                        modifier = Modifier.fillMaxWidth().height(250.dp),
-                        shape = RoundedCornerShape(32.dp)
-                    ) {
-                        if (activeSimpleChord != null) {
-                            if (rootDegreeLabel.isNotEmpty()) {
-                                ScaleDegreeText(
-                                    label = rootDegreeLabel,
-                                    fontSize = 120.sp,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    minFontSize = 48.sp
+                        }
+
+                        // This Slider remains mounted in every simple-mode state.
+                        Slider(
+                            value = currentBeat.toFloat().coerceIn(1f, endBeat.toFloat()),
+                            onValueChange = { beat -> scrubTo(beat.toDouble()) },
+                            onValueChangeFinished = { finishScrubbing() },
+                            valueRange = 1f..endBeat.toFloat(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 24.dp)
+                        )
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // Keep this visible even when no chord is active.
+                        OutlinedButton(
+                            onClick = { skipBack(3.0) },
+                            enabled = !isScrubbing,
+                            modifier = Modifier
+                                .width(132.dp)
+                                .height(88.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            contentPadding = PaddingValues(0.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Default.Refresh,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .align(Alignment.CenterStart)
+                                        .scale(-1f, 1f)
                                 )
-                            } else {
-                                val symbol = ChordInterpreter.getRomanSymbol(activeSimpleChord, activeKey)
-                                val romanDisplay = RomanNumeralDisplay.fromChord(
-                                    symbol,
-                                    activeSimpleChord["borrowed"]
-                                )
-                                RomanNumeralText(
-                                    display = romanDisplay,
-                                    fontSize = 80.sp,
-                                    modifier = Modifier.fillMaxWidth()
+                                Text(
+                                    text = "3 sec.",
+                                    textAlign = TextAlign.Center,
+                                    maxLines = 1,
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontSize = 20.sp,
+                                        lineHeight = 20.sp,
+                                        platformStyle = PlatformTextStyle(includeFontPadding = false)
+                                    ),
+                                    modifier = Modifier.align(Alignment.Center)
                                 )
                             }
                         }
                     }
+                } else {
+                    currentChord?.let { chord ->
+                        val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
+                            (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
+                        if (!isRest) {
+                            val symbol = ChordInterpreter.getRomanSymbol(chord, activeKey)
+                            val romanDisplay = RomanNumeralDisplay.fromChord(symbol, chord["borrowed"])
+                            val notes = ChordInterpreter.getChordNotes(chord, activeKey)
+                            val rootMidi = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull() ?: 0
+                            val chordDuration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                            val chordDurationMs = (chordDuration * 60000.0 / bpm).toInt()
 
-                    // This Slider remains mounted in every simple-mode state.
-                    Slider(
-                        value = currentBeat.toFloat().coerceIn(1f, endBeat.toFloat()),
-                        onValueChange = { beat -> scrubTo(beat.toDouble()) },
-                        onValueChangeFinished = { finishScrubbing() },
-                        valueRange = 1f..endBeat.toFloat(),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(48.dp))
-
-                    // Keep this visible even when no chord is active.
-                    OutlinedButton(
-                        onClick = { skipBack(3.0) },
-                        enabled = !isScrubbing,
-                        modifier = Modifier.height(64.dp),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.scale(-1f, 1f))
-                        Spacer(Modifier.width(12.dp))
-                        Text("Skip back 3s", fontSize = 20.sp)
-                    }
-                }
-            } else {
-                currentChord?.let { chord ->
-                    val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
-                    if (!isRest) {
-                        val activeKey = section.getKeyAtBeat(currentBeat)
-                        val symbol = ChordInterpreter.getRomanSymbol(chord, activeKey)
-                        val romanDisplay = RomanNumeralDisplay.fromChord(symbol, chord["borrowed"])
-                        val notes = ChordInterpreter.getChordNotes(chord, activeKey)
-                        val rootMidi = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull() ?: 0
-                        val chordDuration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
-                        val chordDurationMs = (chordDuration * 60000.0 / bpm).toInt()
-
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                // Main Chord Object
-                                Button(
-                                    onClick = { 
-                                        scope.launch { 
-                                            val notesToPlay = if (playOnlyRoot) listOf(rootMidi) else notes
-                                            AudioEngine.playChord(
-                                                notesToPlay,
-                                                durationMs = chordDurationMs,
-                                                channel = AudioEngine.PlaybackChannel.CHORD
-                                            )
-                                        } 
-                                    },
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(96.dp),
-                                    shape = RoundedCornerShape(20.dp)
-                                ) {
-                                    RomanNumeralText(
-                                        display = romanDisplay,
-                                        fontSize = 36.sp,
-                                        modifier = Modifier.fillMaxWidth()
-                                    )
-                                }
-
+                            val degreeSpacing = when {
+                                notes.size >= 7 -> 2.dp
+                                notes.size >= 5 -> 4.dp
+                                else -> 6.dp
+                            }
+                            val degreeFontSize = when {
+                                notes.size >= 7 -> 24.sp
+                                notes.size >= 5 -> 26.sp
+                                else -> 28.sp
                             }
 
-                            if (rootMidi > 0) {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    notes.forEach { note ->
-                                        val internalLabel = MusicTheory.getRelativeDegreeLabel(note, rootMidi)
-                                        OutlinedButton(
-                                            onClick = {
-                                                scope.launch {
-                                                    AudioEngine.playChord(
-                                                        listOf(note),
-                                                        channel = AudioEngine.PlaybackChannel.CHORD
-                                                    )
-                                                }
-                                            },
-                                            modifier = Modifier
-                                                .weight(1f)
-                                                .height(84.dp),
-                                            shape = RoundedCornerShape(18.dp),
-                                            contentPadding = PaddingValues(0.dp)
-                                        ) {
-                                            ScaleDegreeText(
-                                                label = internalLabel,
+                                    Button(
+                                        onClick = {
+                                            scope.launch {
+                                                val notesToPlay = if (playOnlyRoot) listOf(rootMidi) else notes
+                                                AudioEngine.playChord(
+                                                    notesToPlay,
+                                                    durationMs = chordDurationMs,
+                                                    channel = AudioEngine.PlaybackChannel.CHORD
+                                                )
+                                            }
+                                        },
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(60.dp)
+                                            .onGloballyPositioned { onTargetPositioned(100, it) },
+                                        shape = RoundedCornerShape(16.dp),
+                                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                                    ) {
+                                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                            RomanNumeralText(
+                                                display = romanDisplay,
                                                 fontSize = 32.sp,
                                                 modifier = Modifier.fillMaxWidth(),
-                                                minFontSize = 18.sp
+                                                minFontSize = 12.sp
                                             )
+
+                                            if (audiationState is AudiationState.Listening && audiationState.target.id == 100) {
+                                                PitchGauge(
+                                                    pitchResult = audiationState.pitch,
+                                                    targetLabel = audiationState.target.label,
+                                                    modifier = Modifier.matchParentSize()
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (rootMidi > 0) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(degreeSpacing)
+                                    ) {
+                                        notes.forEachIndexed { index, note ->
+                                            val internalLabel = MusicTheory.getRelativeDegreeLabel(note, rootMidi)
+                                            val isHovered = audiationState is AudiationState.Dragging && audiationState.hoveredId == index
+                                            OutlinedButton(
+                                                onClick = {
+                                                    scope.launch {
+                                                        AudioEngine.playChord(
+                                                            listOf(note),
+                                                            channel = AudioEngine.PlaybackChannel.CHORD
+                                                        )
+                                                    }
+                                                },
+                                                modifier = Modifier
+                                                    .weight(1f)
+                                                    .height(50.dp)
+                                                    .onGloballyPositioned { onTargetPositioned(index, it) },
+                                                shape = RoundedCornerShape(14.dp),
+                                                contentPadding = PaddingValues(0.dp),
+                                                colors = if (isHovered) ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer) else ButtonDefaults.outlinedButtonColors()
+                                            ) {
+                                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                                    ScaleDegreeText(
+                                                        label = internalLabel,
+                                                        fontSize = degreeFontSize,
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        minFontSize = 12.sp
+                                                    )
+
+                                                    if (audiationState is AudiationState.Listening && audiationState.target.id == index) {
+                                                        PitchGauge(
+                                                            pitchResult = audiationState.pitch,
+                                                            targetLabel = audiationState.target.label,
+                                                            modifier = Modifier.matchParentSize()
+                                                        )
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -1412,41 +1617,76 @@ fun QuizTab(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            // Advanced-only settings remain grouped at lower left.
-            if (!isSimpleMode) {
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(bottom = 76.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+            // Compact sound selector above the advanced switches. Its top
+            // aligns with the transport row on the opposite side.
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .offset(x = (-8).dp, y = (-88).dp)
+            ) {
+                waveformPickerComposable()
+            }
+
+            // Keep the audio switches along the bottom edge, to the left of
+            // the section picker. The small offset uses the safe outer margin
+            // while placing the controls closer to the lower-left corner.
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .offset(x = (-8).dp, y = 8.dp),
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                if (!isSimpleMode) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(0.dp)
                     ) {
                         // Chords Toggle
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text("Chords", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(
+                                "Chords",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.width(44.dp)
+                            )
                             Switch(
                                 checked = playChords,
                                 onCheckedChange = onPlayChordsChange
                             )
                         }
                         // Root Only Toggle
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text("Root Only", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(
+                                "Root",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.width(44.dp)
+                            )
                             Switch(
                                 checked = playOnlyRoot,
                                 onCheckedChange = onPlayOnlyRootChange
                             )
                         }
                     }
-                    waveformPickerComposable()
-                    transposePicker()
+                } else {
+                    // Preserve the advanced switch column's width so toggling
+                    // Simple mode does not move the Simple control itself.
+                    Spacer(modifier = Modifier.width(96.dp))
+                }
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "Simple",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Switch(
+                        checked = isSimpleMode,
+                        onCheckedChange = onSimpleModeChange
+                    )
                 }
             }
 
@@ -1456,7 +1696,13 @@ fun QuizTab(
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                FilledTonalButton(
+                // Keep the transport controls on one compact row so they do
+                // not consume the vertical space needed by quiz content.
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    FilledTonalButton(
                     onClick = {
                         activeNoteReplayJob?.cancel()
                         AudioEngine.stopAllPlayback()
@@ -1468,30 +1714,14 @@ fun QuizTab(
                     modifier = Modifier.size(64.dp),
                     contentPadding = PaddingValues(0.dp),
                     shape = RoundedCornerShape(18.dp)
-                ) {
-                    Icon(
-                        Icons.Default.Refresh,
-                        contentDescription = "Reset",
-                        modifier = Modifier.size(32.dp)
-                    )
-                }
-
-                // Play and Restart Controls Row (above section selector)
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = "Simple",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Switch(
-                            checked = isSimpleMode,
-                            onCheckedChange = onSimpleModeChange
+                    ) {
+                        Icon(
+                            Icons.Default.Refresh,
+                            contentDescription = "Reset",
+                            modifier = Modifier.size(32.dp)
                         )
                     }
+
                     Button(onClick = {
                         if (!isScrubbing) {
                             if (isPlaying) {
@@ -1512,7 +1742,7 @@ fun QuizTab(
                             Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(28.dp))
                         }
                         Spacer(Modifier.width(8.dp))
-                        Text(if (isPlaying) "Pause" else "Play")
+                            Text(if (isPlaying) "Pause" else "Play")
                     }
                 }
 
