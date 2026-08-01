@@ -829,7 +829,36 @@ fun QuizTab(
     var isWaveformExpanded by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     
-    val endBeat = (section.metadata?.get("endBeat") as? JsonPrimitive)?.doubleOrNull ?: 32.0
+    val endBeat = remember(section, melody) {
+        val metadataEndBeat = (section.metadata?.get("endBeat") as? JsonPrimitive)?.doubleOrNull ?: 0.0
+        
+        // Calculate content end beat by looking at the last non-rest note/chord
+        val lastNoteEnd = melody.filter { !it.isRest }.maxOfOrNull { it.beat + it.duration } ?: 0.0
+        val lastChordEnd = section.chords.filter { 
+            val isRest = (it["isRest"] as? JsonPrimitive)?.booleanOrNull == true || 
+                         (it["rest"] as? JsonPrimitive)?.booleanOrNull == true
+            !isRest
+        }.maxOfOrNull { 
+            val b = (it["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+            val d = (it["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+            b + d
+        } ?: 0.0
+        
+        val contentEnd = maxOf(lastNoteEnd, lastChordEnd)
+        
+        when {
+            // If we have metadata and it's reasonably close to content (or content is empty), trust it.
+            metadataEndBeat > 0 && (contentEnd == 0.0 || metadataEndBeat <= contentEnd + 8.0) -> metadataEndBeat
+            // If metadata is much larger than content, it might be a default or full-song marker.
+            // Snap to the next 4-beat measure boundary.
+            metadataEndBeat > contentEnd + 8.0 && contentEnd > 0 -> {
+                val nextMeasure = (kotlin.math.ceil((contentEnd - 1.0) / 4.0) * 4.0) + 1.0
+                nextMeasure.coerceAtLeast(4.0)
+            }
+            contentEnd > 0 -> kotlin.math.ceil(contentEnd)
+            else -> 32.0
+        }
+    }
     val pixelsPerBeat = 60f
     val chordLaneHeight = 40.dp
     val melodyLaneHeight = 88.dp
@@ -922,32 +951,72 @@ fun QuizTab(
 
     LaunchedEffect(isPlaying, isScrubbing, section, playbackTrigger) {
         if (isPlaying && !isScrubbing && bpm > 0.0) {
-            var startTime = System.currentTimeMillis(); var startBeat = currentBeat; var scheduledThroughBeat = startBeat; var lastUiUpdateMs = 0L
+            var startTime = System.currentTimeMillis()
+            var startBeat = currentBeat
+            var scheduledThroughBeat = startBeat
+            var lastUiUpdateMs = 0L
             withContext(Dispatchers.Default) {
                 while (isPlaying && !isScrubbing) {
-                    val elapsedMs = System.currentTimeMillis() - startTime; val elapsedBeats = (elapsedMs / 1000.0) * (bpm / 60.0); val newBeat = startBeat + elapsedBeats; val previousBeat = scheduledThroughBeat
-                    if (newBeat > endBeat) {
-                        AudioEngine.stopAllPlayback(); startTime = System.currentTimeMillis(); startBeat = 1.0; scheduledThroughBeat = 1.0; lastUiUpdateMs = 0L
-                        withContext(Dispatchers.Main.immediate) { currentBeat = 1.0 }; delay(10); continue
+                    val elapsedMs = System.currentTimeMillis() - startTime
+                    val elapsedBeats = (elapsedMs / 1000.0) * (bpm / 60.0)
+                    val tickEndBeat = startBeat + elapsedBeats
+                    val previousBeat = scheduledThroughBeat
+
+                    var looped = false
+                    var effectiveTickEnd = tickEndBeat
+                    if (effectiveTickEnd > endBeat) {
+                        effectiveTickEnd = endBeat
+                        looped = true
                     }
-                    melody.forEach { note -> if (!note.isRest && note.beat >= previousBeat && note.beat < newBeat) {
-                        launch { val activeKey = section.getKeyAtBeat(note.beat); val midi = MusicTheory.getMidiNote(note.sd, note.octave, activeKey)
-                            AudioEngine.playChord(listOf(midi), durationMs = (note.duration * 60000.0 / bpm).toInt(), channel = AudioEngine.PlaybackChannel.MELODY) }
-                    } }
+                
+                    melody.forEach { note -> 
+                        if (!note.isRest && note.beat >= previousBeat && note.beat < effectiveTickEnd) {
+                            launch { 
+                                val activeKey = section.getKeyAtBeat(note.beat)
+                                val midi = MusicTheory.getMidiNote(note.sd, note.octave, activeKey)
+                                AudioEngine.playChord(listOf(midi), durationMs = (note.duration * 60000.0 / bpm).toInt(), channel = AudioEngine.PlaybackChannel.MELODY) 
+                            }
+                        } 
+                    }
                     if (isSimpleMode || playChords) {
                         section.chords.forEach { chord ->
-                            val beat = (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0; val duration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                            val beat = (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                            val duration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
                             val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
-                            if (!isRest && beat >= previousBeat && beat < newBeat) {
-                                launch { val activeKey = section.getKeyAtBeat(beat); val notes = ChordInterpreter.getChordNotes(chord, activeKey)
-                                    if (notes.isNotEmpty()) { val notesToPlay = if (isSimpleMode || playOnlyRoot) { val rootNote = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull()
-                                        if (rootNote != null) listOf(rootNote) else emptyList() } else notes
-                                        AudioEngine.playChord(notesToPlay, durationMs = (duration * 60000.0 / bpm).toInt(), channel = AudioEngine.PlaybackChannel.CHORD) } }
+                            if (!isRest && beat >= previousBeat && beat < effectiveTickEnd) {
+                                launch { 
+                                    val activeKey = section.getKeyAtBeat(beat)
+                                    val notes = ChordInterpreter.getChordNotes(chord, activeKey)
+                                    if (notes.isNotEmpty()) { 
+                                        val notesToPlay = if (isSimpleMode || playOnlyRoot) { 
+                                            val rootNote = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull()
+                                            if (rootNote != null) listOf(rootNote) else emptyList() 
+                                        } else notes
+                                        AudioEngine.playChord(notesToPlay, durationMs = (duration * 60000.0 / bpm).toInt(), channel = AudioEngine.PlaybackChannel.CHORD) 
+                                    } 
+                                }
                             }
                         }
                     }
-                    scheduledThroughBeat = newBeat
-                    if (elapsedMs - lastUiUpdateMs >= 33L) { withContext(Dispatchers.Main.immediate) { currentBeat = newBeat }; lastUiUpdateMs = elapsedMs }
+
+                    if (looped) {
+                        AudioEngine.stopAllPlayback()
+                        startTime = System.currentTimeMillis()
+                        startBeat = 1.0
+                        scheduledThroughBeat = 1.0
+                        lastUiUpdateMs = 0L
+                        withContext(Dispatchers.Main.immediate) {
+                            currentBeat = 1.0
+                        }
+                        delay(10)
+                        continue
+                    }
+
+                    scheduledThroughBeat = effectiveTickEnd
+                    if (System.currentTimeMillis() - lastUiUpdateMs >= 33L) { 
+                        withContext(Dispatchers.Main.immediate) { currentBeat = effectiveTickEnd }
+                        lastUiUpdateMs = System.currentTimeMillis() 
+                    }
                     delay(10)
                 }
             }
