@@ -9,6 +9,7 @@ const { getCatalogDir } = require("../lib/dataRoot");
 
 let memoryCache = null;
 let buildPromise = null;
+const CACHE_VERSION = 2;
 
 function cacheFilePath() {
   return path.join(getCatalogDir(), "playback_library_cache.json");
@@ -52,14 +53,14 @@ async function loadLibrary(scanFn, cacheRoot) {
   buildPromise = (async () => {
     const dirCount = await countCacheDirs(cacheRoot);
     const disk = readDiskCache();
-    if (disk?.library?.length && disk.dirCount === dirCount) {
+    if (disk?.version === CACHE_VERSION && disk?.library?.length && disk.dirCount === dirCount) {
       memoryCache = disk.library;
       return memoryCache;
     }
 
     const library = await scanFn();
     memoryCache = library;
-    writeDiskCache({ dirCount, builtAt: Date.now(), library });
+    writeDiskCache({ version: CACHE_VERSION, dirCount, builtAt: Date.now(), library });
     return library;
   })();
 

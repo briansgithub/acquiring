@@ -11,6 +11,7 @@
     "test:pronunciation": "node _Research_testing/romanPronunciationTest.mjs && node _Research_testing/romanPronunciationCorpusTest.mjs && node _Research_testing/romanPronunciationLetterTest.mjs",
     "test:note-order": "node _Research_testing/verifyNoteOrder.mjs",
     "test:hooktheory-compat": "node _Research_testing/hooktheoryDataCompatTest.mjs",
+    "test:section-order": "node _Research_testing/sectionOrderTest.cjs",
     "player:start": "node _Debug_testing/playerServerCtl.mjs start",
     "player:stop": "node _Debug_testing/playerServerCtl.mjs stop",
     "player:status": "node _Debug_testing/playerServerCtl.mjs status",

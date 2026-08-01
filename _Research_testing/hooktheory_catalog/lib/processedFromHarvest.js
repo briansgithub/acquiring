@@ -59,15 +59,19 @@ async function writeProcessedCacheFromHarvest(harvest) {
     const sectionData = {
       songId: stringSongId,
       numericId,
+      sectionIndex: index,
       sectionName: sec.name,
       songInfo: sec.json.songInfo,
       chords: sec.json.chords || [],
       notes: sec.json.notes ?? null,
       metadata: { ...sec.json.metadata, numericId },
     };
-    sectionsData[stringSongId] = sectionData;
+    const sectionKey = Object.prototype.hasOwnProperty.call(sectionsData, stringSongId)
+      ? `${stringSongId}#${index}`
+      : stringSongId;
+    sectionsData[sectionKey] = sectionData;
     songIds.push(stringSongId);
-    sectionMapping[stringSongId] = sec.name;
+    sectionMapping[sectionKey] = sec.name;
     sectionMeta.push({ index, songId: stringSongId, sectionName: sec.name, numericId });
     await writeSectionFile(songDir, sec.name, numericId, stringSongId, sectionData);
   }));
