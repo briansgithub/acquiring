@@ -116,9 +116,11 @@ fun MainScreen(db: AppDatabase) {
     var catalogStatus by remember { mutableStateOf("") }
     var allSongs by remember { mutableStateOf(listOf<Song>()) }
     var suggestions by remember { mutableStateOf(listOf<Song>()) }
-    var artistSuggestions by remember { mutableStateOf(listOf<Song>()) }
+    var artistSuggestions by remember { mutableStateOf(listOf<String>()) }
     var isExpanded by remember { mutableStateOf(false) }
     var isArtistExpanded by remember { mutableStateOf(false) }
+    var selectedArtistName by remember { mutableStateOf<String?>(null) }
+    var selectedArtistSongs by remember { mutableStateOf<List<Song>?>(null) }
     var selectedSong by remember { mutableStateOf<Song?>(null) }
     var selectedSongSections by remember { mutableStateOf<Map<String, ExtractedSection>?>(null) }
     var selectedSectionId by remember { mutableStateOf<String?>(null) }
@@ -139,15 +141,19 @@ fun MainScreen(db: AppDatabase) {
         if (currentTab == 2) {
             // Quiz is a child of the selected song's Chords page.
             currentTab = 1
-        } else {
+        } else if (selectedSongSections != null) {
             // The selected song's Info and Chords pages are children of search.
             selectedSongSections = null
             selectedSong = null
+        } else {
+            // Close artist detail page
+            selectedArtistName = null
+            selectedArtistSongs = null
         }
     }
 
-    // Match the visible Back control while a selected song is open.
-    BackHandler(enabled = selectedSongSections != null) {
+    // Match the visible Back control while a selected song or artist is open.
+    BackHandler(enabled = selectedSongSections != null || selectedArtistSongs != null) {
         returnToParent()
     }
 
@@ -177,7 +183,7 @@ fun MainScreen(db: AppDatabase) {
     LaunchedEffect(searchArtistQuery) {
         if (searchArtistQuery.isNotEmpty()) {
             delay(300) // Debounce
-            artistSuggestions = activeDb.songDao().getSongSuggestionsByArtist(searchArtistQuery)
+            artistSuggestions = activeDb.songDao().getArtistSuggestions(searchArtistQuery)
             isArtistExpanded = true
         } else {
             artistSuggestions = emptyList()
@@ -237,8 +243,19 @@ fun MainScreen(db: AppDatabase) {
             .padding(16.dp)
     ) {
         if (selectedSongSections == null) {
-            // Library/Search View
-            LibraryView(
+            if (selectedArtistSongs != null) {
+                ArtistSongsView(
+                    artistName = selectedArtistName ?: "Unknown Artist",
+                    songs = selectedArtistSongs!!,
+                    onSongClick = openSong,
+                    onBack = {
+                        selectedArtistSongs = null
+                        selectedArtistName = null
+                    }
+                )
+            } else {
+                // Library/Search View
+                LibraryView(
                 activeDb = activeDb,
                 urlToHarvest = urlToHarvest,
                 onUrlChange = { urlToHarvest = it },
@@ -275,11 +292,23 @@ fun MainScreen(db: AppDatabase) {
                 isArtistExpanded = isArtistExpanded,
                 onArtistExpandedChange = { isArtistExpanded = it },
                 artistSuggestions = artistSuggestions,
+                onArtistClick = { artistName ->
+                    scope.launch {
+                        val results = activeDb.songDao().getSongsByArtist(artistName)
+                        selectedArtistName = artistName
+                        selectedArtistSongs = results
+                        isArtistExpanded = false
+                    }
+                },
                 onSearchArtist = {
                     scope.launch {
-                        val results = activeDb.songDao().searchSongsByArtist(searchArtistQuery)
-                        allSongs = results
-                        searchResult = if (results.isNotEmpty()) "Found ${results.size} songs by artist matching '$searchArtistQuery'" else "No artists matching '$searchArtistQuery'"
+                        val results = activeDb.songDao().getSongsByArtist(searchArtistQuery)
+                        if (results.isNotEmpty()) {
+                            selectedArtistName = searchArtistQuery
+                            selectedArtistSongs = results
+                        } else {
+                            searchResult = "No artists matching '$searchArtistQuery'"
+                        }
                         isArtistExpanded = false
                     }
                 },
@@ -317,6 +346,7 @@ fun MainScreen(db: AppDatabase) {
                     }
                 }
             )
+            }
         } else {
             // Song Detail View with Tabs
             SongDetailView(
@@ -367,7 +397,8 @@ fun LibraryView(
     onSearchArtistQueryChange: (String) -> Unit,
     isArtistExpanded: Boolean,
     onArtistExpandedChange: (Boolean) -> Unit,
-    artistSuggestions: List<Song>,
+    artistSuggestions: List<String>,
+    onArtistClick: (String) -> Unit,
     onSearchArtist: () -> Unit,
     onSuggestionClick: (Song) -> Unit,
     onSearchTitle: () -> Unit,
@@ -469,15 +500,10 @@ fun LibraryView(
                         )
                     }
 
-                    artistSuggestions.forEach { song ->
+                    artistSuggestions.forEach { artistName ->
                         DropdownMenuItem(
-                            text = {
-                                Column {
-                                    Text(text = song.title ?: "Unknown Title", style = MaterialTheme.typography.bodyLarge)
-                                    Text(text = song.artist ?: "Unknown Artist", style = MaterialTheme.typography.bodySmall)
-                                }
-                            },
-                            onClick = { onSuggestionClick(song) }
+                            text = { Text(text = artistName, style = MaterialTheme.typography.bodyLarge) },
+                            onClick = { onArtistClick(artistName) }
                         )
                     }
                 }
@@ -1214,6 +1240,43 @@ fun QuizTab(
                     }
                 }
                 sectionPicker()
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ArtistSongsView(
+    artistName: String,
+    songs: List<Song>,
+    onSongClick: (Song) -> Unit,
+    onBack: () -> Unit
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+        ) {
+            TextButton(onClick = onBack) { Text("< Back") }
+            Text(
+                text = "Artist: $artistName",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
+        
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            items(songs) { song ->
+                Card(
+                    onClick = { onSongClick(song) },
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                ) {
+                    Column(modifier = Modifier.padding(8.dp)) {
+                        Text(text = song.title ?: "Unknown Title", style = MaterialTheme.typography.bodyLarge)
+                        Text(text = song.artist ?: "Unknown Artist", style = MaterialTheme.typography.bodyMedium)
+                    }
+                }
             }
         }
     }

@@ -22,14 +22,14 @@ interface SongDao {
     @Query("SELECT * FROM songs WHERE REPLACE(title, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%'")
     suspend fun searchSongsByTitle(query: String): List<Song>
 
-    @Query("SELECT * FROM songs WHERE REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%'")
-    suspend fun searchSongsByArtist(query: String): List<Song>
+    @Query("SELECT * FROM songs WHERE REPLACE(artist, '-', ' ') = REPLACE(:artistName, '-', ' ')")
+    suspend fun getSongsByArtist(artistName: String): List<Song>
 
     @Query("SELECT * FROM songs WHERE REPLACE(title, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%' OR REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%'")
     suspend fun getSearchSuggestions(query: String): List<Song>
 
-    @Query("SELECT * FROM songs WHERE REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%'")
-    suspend fun getSongSuggestionsByArtist(query: String): List<Song>
+    @Query("SELECT DISTINCT artist FROM songs WHERE artist IS NOT NULL AND REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%'")
+    suspend fun getArtistSuggestions(query: String): List<String>
 
     @Query("SELECT * FROM songs WHERE slug IN (:slugs)")
     suspend fun getSongsBySlugs(slugs: List<String>): List<Song>
