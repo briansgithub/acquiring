@@ -109,11 +109,14 @@ fun MainScreen(db: AppDatabase) {
     var urlToHarvest by remember { mutableStateOf("") }
     var harvestStatus by remember { mutableStateOf("") }
     var searchQuery by remember { mutableStateOf("") }
+    var searchArtistQuery by remember { mutableStateOf("") }
     var searchResult by remember { mutableStateOf<String?>(null) }
     var catalogStatus by remember { mutableStateOf("") }
     var allSongs by remember { mutableStateOf(listOf<Song>()) }
     var suggestions by remember { mutableStateOf(listOf<Song>()) }
+    var artistSuggestions by remember { mutableStateOf(listOf<Song>()) }
     var isExpanded by remember { mutableStateOf(false) }
+    var isArtistExpanded by remember { mutableStateOf(false) }
     var selectedSong by remember { mutableStateOf<Song?>(null) }
     var selectedSongSections by remember { mutableStateOf<Map<String, ExtractedSection>?>(null) }
     var selectedSectionId by remember { mutableStateOf<String?>(null) }
@@ -122,7 +125,7 @@ fun MainScreen(db: AppDatabase) {
     var isArpeggiated by remember { mutableStateOf(false) }
     var arpeggioStepMs by remember { mutableStateOf(80f) }
     var isShowingRecent by remember { mutableStateOf(false) }
-    var currentWaveform by remember { mutableStateOf(AudioEngine.Waveform.ELECTRIC_PIANO) }
+    var currentWaveform by remember { mutableStateOf(AudioEngine.Waveform.SAWTOOTH) }
     var globalTranspose by remember { mutableStateOf(AudioEngine.globalTranspose) }
     
     val scope = rememberCoroutineScope()
@@ -166,6 +169,17 @@ fun MainScreen(db: AppDatabase) {
                 isShowingRecent = false
                 isExpanded = false
             }
+        }
+    }
+
+    LaunchedEffect(searchArtistQuery) {
+        if (searchArtistQuery.isNotEmpty()) {
+            delay(300) // Debounce
+            artistSuggestions = activeDb.songDao().getSongSuggestionsByArtist(searchArtistQuery)
+            isArtistExpanded = true
+        } else {
+            artistSuggestions = emptyList()
+            isArtistExpanded = false
         }
     }
 
@@ -235,12 +249,14 @@ fun MainScreen(db: AppDatabase) {
                     }
                 },
                 searchQuery = searchQuery,
-                onSearchQueryChange = { searchQuery = it },
+                onSearchQueryChange = { 
+                    searchQuery = it
+                    if (it.isNotEmpty()) isArtistExpanded = false
+                },
                 isExpanded = isExpanded,
                 onExpandedChange = { isExpanded = it },
                 suggestions = suggestions,
                 isShowingRecent = isShowingRecent,
-                onSuggestionClick = openSong,
                 onSearchTitle = {
                     scope.launch {
                         val results = activeDb.songDao().searchSongsByTitle(searchQuery)
@@ -249,6 +265,23 @@ fun MainScreen(db: AppDatabase) {
                         isExpanded = false
                     }
                 },
+                searchArtistQuery = searchArtistQuery,
+                onSearchArtistQueryChange = { 
+                    searchArtistQuery = it
+                    if (it.isNotEmpty()) isExpanded = false
+                },
+                isArtistExpanded = isArtistExpanded,
+                onArtistExpandedChange = { isArtistExpanded = it },
+                artistSuggestions = artistSuggestions,
+                onSearchArtist = {
+                    scope.launch {
+                        val results = activeDb.songDao().searchSongsByArtist(searchArtistQuery)
+                        allSongs = results
+                        searchResult = if (results.isNotEmpty()) "Found ${results.size} songs by artist matching '$searchArtistQuery'" else "No artists matching '$searchArtistQuery'"
+                        isArtistExpanded = false
+                    }
+                },
+                onSuggestionClick = openSong,
                 onFindSlug = {
                     scope.launch {
                         val targetSlug = searchQuery.trim().trimEnd('/').substringAfter("theorytab/view/").replace("/", "__")
@@ -340,6 +373,12 @@ fun LibraryView(
     onExpandedChange: (Boolean) -> Unit,
     suggestions: List<Song>,
     isShowingRecent: Boolean,
+    searchArtistQuery: String,
+    onSearchArtistQueryChange: (String) -> Unit,
+    isArtistExpanded: Boolean,
+    onArtistExpandedChange: (Boolean) -> Unit,
+    artistSuggestions: List<Song>,
+    onSearchArtist: () -> Unit,
     onSuggestionClick: (Song) -> Unit,
     onSearchTitle: () -> Unit,
     onFindSlug: () -> Unit,
@@ -446,6 +485,58 @@ fun LibraryView(
         ) {
             Button(onClick = onSearchTitle, modifier = Modifier.weight(1f)) { Text("Search Title") }
             Button(onClick = onFindSlug, modifier = Modifier.weight(1f)) { Text("Find Slug") }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Search by Artist Section
+        ExposedDropdownMenuBox(
+            expanded = isArtistExpanded,
+            onExpandedChange = onArtistExpandedChange,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                value = searchArtistQuery,
+                onValueChange = onSearchArtistQueryChange,
+                label = { Text("Search by Artist") },
+                modifier = Modifier.fillMaxWidth().menuAnchor(),
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isArtistExpanded) },
+                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+            )
+
+            if (isArtistExpanded) {
+                ExposedDropdownMenu(
+                    expanded = isArtistExpanded,
+                    onDismissRequest = { onArtistExpandedChange(false) }
+                ) {
+                    if (artistSuggestions.isEmpty() && searchArtistQuery.isNotEmpty()) {
+                        DropdownMenuItem(
+                            text = { Text("No artists matching '$searchArtistQuery'", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.secondary) },
+                            onClick = {},
+                            enabled = false
+                        )
+                    }
+
+                    artistSuggestions.forEach { song ->
+                        DropdownMenuItem(
+                            text = {
+                                Column {
+                                    Text(text = song.title ?: "Unknown Title", style = MaterialTheme.typography.bodyLarge)
+                                    Text(text = song.artist ?: "Unknown Artist", style = MaterialTheme.typography.bodySmall)
+                                }
+                            },
+                            onClick = { onSuggestionClick(song) }
+                        )
+                    }
+                }
+            }
+        }
+
+        Button(
+            onClick = onSearchArtist,
+            modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+        ) {
+            Text("Search Artist")
         }
 
         Button(onClick = onListAll, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
@@ -1315,8 +1406,17 @@ fun QuizTab(
             }
 
             // Persist puck position across chord changes/remounts within the QuizTab
+            val configuration = androidx.compose.ui.platform.LocalConfiguration.current
             var audiationPuckOffset by remember {
-                mutableStateOf(with(density) { Offset(8.dp.toPx(), (-60).dp.toPx()) })
+                mutableStateOf(with(density) { 
+                    // Horizontally center the puck: (screenWidth / 2) - (puckSize / 2)
+                    // Vertically position it in the lower center, above the reset button.
+                    // We use an offset from the bottom of the screen to account for variable heights.
+                    Offset(
+                        (configuration.screenWidthDp / 2f - 20f).dp.toPx(), 
+                        (configuration.screenHeightDp - 450f).dp.toPx()
+                    )
+                })
             }
             var audiationOctaveShift by remember { mutableStateOf(0) }
 
@@ -1459,32 +1559,35 @@ fun QuizTab(
                             onClick = { skipBack(3.0) },
                             enabled = !isScrubbing,
                             modifier = Modifier
+                                .align(Alignment.End)
+                                .padding(end = 24.dp)
                                 .width(132.dp)
-                                .height(88.dp),
+                                .height(64.dp),
                             shape = RoundedCornerShape(16.dp),
                             contentPadding = PaddingValues(0.dp)
                         ) {
-                            Box(
+                            Row(
                                 modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
                                     Icons.Default.Refresh,
                                     contentDescription = null,
                                     modifier = Modifier
-                                        .align(Alignment.CenterStart)
+                                        .size(24.dp)
                                         .scale(-1f, 1f)
                                 )
+                                Spacer(Modifier.width(8.dp))
                                 Text(
                                     text = "3 sec.",
                                     textAlign = TextAlign.Center,
                                     maxLines = 1,
-                                    style = MaterialTheme.typography.bodyLarge.copy(
-                                        fontSize = 20.sp,
-                                        lineHeight = 20.sp,
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        fontSize = 18.sp,
+                                        lineHeight = 18.sp,
                                         platformStyle = PlatformTextStyle(includeFontPadding = false)
-                                    ),
-                                    modifier = Modifier.align(Alignment.Center)
+                                    )
                                 )
                             }
                         }

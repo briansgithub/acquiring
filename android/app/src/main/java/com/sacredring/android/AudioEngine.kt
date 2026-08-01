@@ -25,7 +25,7 @@ object AudioEngine {
         MELODY, CHORD, PREVIEW
     }
 
-    var currentWaveform = Waveform.ELECTRIC_PIANO
+    var currentWaveform = Waveform.SAWTOOTH
     var globalTranspose = 0
 
     private data class ActiveTrack(
