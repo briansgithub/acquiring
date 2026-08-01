@@ -1,6 +1,8 @@
 package com.sacredring.android
 
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.put
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -9,6 +11,55 @@ import org.junit.Test
 class InversionChordPlaybackTest {
 
     private val cMajorKey = KeyInfo("C", "major")
+    private val abMajorKey = KeyInfo("Ab", "major")
+
+    @Test
+    fun testGladiolusCustomBorrowedSecondInversion_matchesWebMidi() {
+        val chord = buildJsonObject {
+            put("root", 2)
+            put("type", 5)
+            put("inversion", 2)
+            put("borrowed", JsonArray(listOf(1, 3, 4, 6, 8, 9, 11).map(::JsonPrimitive)))
+        }
+
+        assertEquals(listOf(65, 71, 74), ChordInterpreter.getChordNotes(chord, abMajorKey))
+    }
+
+    @Test
+    fun testGladiolusAppliedFirstInversion_matchesWebMidi() {
+        val chord = buildJsonObject {
+            put("root", 6)
+            put("applied", 5)
+            put("type", 7)
+            put("inversion", 1)
+        }
+
+        assertEquals(listOf(40, 55, 58, 48), ChordInterpreter.getChordNotes(chord, abMajorKey))
+    }
+
+    @Test
+    fun testGladiolusAppliedThirdInversion_matchesWebMidi() {
+        val chord = buildJsonObject {
+            put("root", 4)
+            put("applied", 5)
+            put("type", 7)
+            put("inversion", 3)
+        }
+
+        assertEquals(listOf(54, 68, 60, 63), ChordInterpreter.getChordNotes(chord, abMajorKey))
+    }
+
+    @Test
+    fun testGladiolusAppliedRootPositionDim7_matchesWebSpreadVoicing() {
+        val chord = buildJsonObject {
+            put("root", 5)
+            put("applied", 7)
+            put("type", 7)
+            put("inversion", 0)
+        }
+
+        assertEquals(listOf(50, 59, 65, 68), ChordInterpreter.getChordNotes(chord, abMajorKey))
+    }
 
     @Test
     fun testRootPositionChordNotes_startsOnRoot() {
@@ -80,7 +131,7 @@ class InversionChordPlaybackTest {
         val inverted = ChordInterpreter.getChordNotes(chord, cMajorKey)
         val rootPosition = ChordInterpreter.getRootPositionChordNotes(chord, cMajorKey)
 
-        assertEquals(61, inverted.first())
+        assertEquals(listOf(49, 64, 67, 69), inverted)
         assertEquals(57, rootPosition.first())
         assertEquals("3\u0302", MusicTheory.getRelativeDegreeLabel(inverted[0], rootPosition.first()))
         assertEquals("5\u0302", MusicTheory.getRelativeDegreeLabel(inverted[1], rootPosition.first()))

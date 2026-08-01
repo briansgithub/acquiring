@@ -19,6 +19,78 @@ object ChordInterpreter {
         return (element as? JsonPrimitive)?.booleanOrNull ?: default
     }
 
+    private fun customBorrowedIntervals(element: JsonElement?): List<Int>? {
+        val borrowed = element as? JsonArray ?: return null
+        if (borrowed.isEmpty()) return MusicTheory.SCALE_INTERVALS["major"]!!
+        val source = borrowed.map { safeInt(it) }
+        val intervals = mutableListOf<Int>()
+
+        for (index in 0 until 7) {
+            val rawInterval = source.getOrNull(index)
+                ?: ((intervals.lastOrNull() ?: 0) + 2)
+            intervals += ((rawInterval % 12) + 12) % 12
+        }
+
+        return intervals
+    }
+
+    private fun customChordQualities(intervals: List<Int>): List<String> {
+        return (0 until 7).map { rootIndex ->
+            val rootInterval = intervals[rootIndex]
+            var thirdInterval = intervals[(rootIndex + 2) % 7]
+            var fifthInterval = intervals[(rootIndex + 4) % 7]
+            if (thirdInterval < rootInterval) thirdInterval += 12
+            if (fifthInterval < rootInterval) fifthInterval += 12
+
+            val thirdSemitones = thirdInterval - rootInterval
+            val fifthSemitones = fifthInterval - rootInterval
+            when {
+                thirdSemitones == 4 && fifthSemitones == 7 -> "major"
+                thirdSemitones == 3 && fifthSemitones == 7 -> "minor"
+                thirdSemitones == 3 && fifthSemitones == 6 -> "diminished"
+                thirdSemitones == 4 && fifthSemitones == 8 -> "augmented"
+                thirdSemitones == 4 -> "major"
+                else -> "minor"
+            }
+        }
+    }
+
+    private fun midiOctave(midi: Int): Int = (midi / 12) - 1
+
+    /** Mirrors buildChordFromNoteName/finalizeVoicing in the web player. */
+    private fun voiceAppliedChord(
+        rootPositionPitches: List<Int>,
+        inversion: Int,
+        chordType: Int,
+        fullyDiminished: Boolean,
+    ): List<Int> {
+        if (rootPositionPitches.isEmpty()) return emptyList()
+
+        if (inversion > 0) {
+            val rotation = inversion % rootPositionPitches.size
+            val rotated = rootPositionPitches.drop(rotation) + rootPositionPitches.take(rotation)
+            val originalBass = rotated.first()
+            val bassOctave = maxOf(1, midiOctave(originalBass) - 1)
+            val bass = ((bassOctave + 1) * 12) + (originalBass % 12)
+            val highestUpperOctave = rotated.drop(1).maxOfOrNull(::midiOctave) ?: 0
+            val targetUpperOctave = maxOf(highestUpperOctave, bassOctave + 1)
+            val upperOctaveBase = (targetUpperOctave + 1) * 12
+
+            return listOf(bass) + rotated.drop(1).map { upperOctaveBase + (it % 12) }
+        }
+
+        if (chordType >= 7 && fullyDiminished && rootPositionPitches.size >= 4) {
+            val spread = rootPositionPitches.toMutableList()
+            val rootOctave = midiOctave(spread.first())
+            for (index in listOf(1, 2)) {
+                if (midiOctave(spread[index]) == rootOctave) spread[index] += 12
+            }
+            return spread.sorted()
+        }
+
+        return rootPositionPitches.sorted()
+    }
+
     private val BORROWED_TAG = mapOf(
         "minor" to "min", "dorian" to "dor", "phrygian" to "phr",
         "lydian" to "lyd", "mixolydian" to "mix", "locrian" to "loc", "major" to "maj",
@@ -425,6 +497,8 @@ object ChordInterpreter {
         val type = (chordJson["type"] as? JsonPrimitive)?.intOrNull ?: 5
         val inversion = safeInt(chordJson["inversion"])
         val borrowed = safeString(chordJson["borrowed"])
+        val customIntervals = customBorrowedIntervals(chordJson["borrowed"])
+        val hasBorrowedScale = borrowed.isNotEmpty() || customIntervals != null
         val suspensions = (chordJson["suspensions"] as? JsonArray)?.mapNotNull { (it as? JsonPrimitive)?.intOrNull } ?: emptyList()
         val alterations = (chordJson["alterations"] as? JsonArray)?.mapNotNull { (it as? JsonPrimitive)?.contentOrNull } ?: emptyList()
         val omits = (chordJson["omits"] as? JsonArray)?.mapNotNull { (it as? JsonPrimitive)?.intOrNull } ?: emptyList()
@@ -432,7 +506,7 @@ object ChordInterpreter {
         
         var effKey = key
         var effRoot = root
-        if (applied in 1..7 && borrowed.isEmpty()) {
+        if (applied in 1..7 && !hasBorrowedScale) {
             val targetTonic = MusicTheory.getNoteLabel(root, key.tonic, key.scale)
             if (isTriSubApplied(chordJson)) {
                 val rootPc = MusicTheory.NOTE_TO_PC[MusicTheory.normalizeTonic(targetTonic)] ?: 0
@@ -445,8 +519,14 @@ object ChordInterpreter {
             }
         }
 
-        val scale = if (borrowed.isNotEmpty()) borrowed else effKey.scale
-        val intervals = MusicTheory.SCALE_INTERVALS[scale] ?: MusicTheory.SCALE_INTERVALS["major"]!!
+        val scale = when {
+            customIntervals != null -> "custom"
+            borrowed.isNotEmpty() -> borrowed
+            else -> effKey.scale
+        }
+        val intervals = customIntervals
+            ?: MusicTheory.SCALE_INTERVALS[scale]
+            ?: MusicTheory.SCALE_INTERVALS["major"]!!
         val tonicPc = MusicTheory.NOTE_TO_PC[MusicTheory.normalizeTonic(effKey.tonic)] ?: 0
         
         val idxRoot = ((effRoot - 1) % 7 + 7) % 7
@@ -458,7 +538,9 @@ object ChordInterpreter {
         degrees[3] = 4
         degrees[5] = 7
         
-        val qualities = MusicTheory.CHORD_QUALITIES[scale] ?: MusicTheory.CHORD_QUALITIES["major"]!!
+        val qualities = customIntervals?.let(::customChordQualities)
+            ?: MusicTheory.CHORD_QUALITIES[scale]
+            ?: MusicTheory.CHORD_QUALITIES["major"]!!
         val triadQuality = qualities.getOrElse(idxRoot) { "major" }
         if (triadQuality == "minor" || triadQuality == "diminished") degrees[3] = 3
         if (triadQuality == "diminished") degrees[5] = 6
@@ -472,9 +554,9 @@ object ChordInterpreter {
         if (type >= 7) {
             val triSub = isTriSubApplied(chordJson)
             val isMaj7 = if (applied in 1..7) {
-                 !triSub && applied != 5 && triadQuality == "major" && isMajorSeventh(effRoot, KeyInfo(effKey.tonic, scale))
+                 !triSub && applied != 5 && triadQuality == "major" && isMajorSeventh(effRoot, KeyInfo(effKey.tonic, scale), customIntervals)
             } else {
-                 isMajorSeventh(effRoot, KeyInfo(effKey.tonic, scale))
+                 isMajorSeventh(effRoot, KeyInfo(effKey.tonic, scale), customIntervals)
             }
             
             // Fix 025/026: Diminished 7th voicing
@@ -545,8 +627,17 @@ object ChordInterpreter {
             degrees.remove(5)
         }
 
-        // Build pitches
-        val pitches = degrees.values.map { rootPc + 48 + it }.toMutableList()
+        // Build pitches. Applied chords use the web player's wider inversion
+        // register and diminished-seventh spread instead of compact rotation.
+        val rootPositionPitches = degrees.values.map { rootPc + 48 + it }
+        if (applied in 1..7 && !hasBorrowedScale) {
+            val fullyDiminished = applied == 7
+                && triadQuality == "diminished"
+                && suspensions.isEmpty()
+            return voiceAppliedChord(rootPositionPitches, inversion, type, fullyDiminished)
+        }
+
+        val pitches = rootPositionPitches.toMutableList()
         
         // Fix 031: Sort pitches ascending for inversion 0
         pitches.sort()
