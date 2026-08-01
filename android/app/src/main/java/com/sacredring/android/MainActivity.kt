@@ -40,6 +40,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.style.TextAlign
 
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.dp
@@ -282,18 +284,6 @@ fun MainScreen(db: AppDatabase) {
                     }
                 },
                 onSuggestionClick = openSong,
-                onFindSlug = {
-                    scope.launch {
-                        val targetSlug = searchQuery.trim().trimEnd('/').substringAfter("theorytab/view/").replace("/", "__")
-                        val song = activeDb.songDao().getSongBySlug(targetSlug)
-                        if (song != null) {
-                            allSongs = listOf(song)
-                            searchResult = "✅ Found by Slug: $targetSlug"
-                        } else {
-                            searchResult = "❌ Not found by Slug: $targetSlug"
-                        }
-                    }
-                },
                 onListAll = {
                     scope.launch {
                         val count = activeDb.songDao().getSongCount()
@@ -381,7 +371,6 @@ fun LibraryView(
     onSearchArtist: () -> Unit,
     onSuggestionClick: (Song) -> Unit,
     onSearchTitle: () -> Unit,
-    onFindSlug: () -> Unit,
     onListAll: () -> Unit,
     searchResult: String?,
     allSongs: List<Song>,
@@ -389,48 +378,13 @@ fun LibraryView(
     catalogStatus: String,
     onDownloadCatalog: () -> Unit
 ) {
-    Column {
-        // Harvest & Download Section
-        Card(modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = "Songs Catalog", style = MaterialTheme.typography.titleMedium)
-                
-                Button(
-                    onClick = onDownloadCatalog,
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
-                ) {
-                    Text("Download Full Library")
-                }
-                
-                if (catalogStatus.isNotEmpty()) {
-                    Text(
-                        text = catalogStatus,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(top = 4.dp),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-                
-                Divider(modifier = Modifier.padding(vertical = 12.dp))
+    var isHarvestExpanded by remember { mutableStateOf(false) }
 
-                Text(text = "Harvest Individual Song", style = MaterialTheme.typography.titleSmall)
-                OutlinedTextField(
-                    value = urlToHarvest,
-                    onValueChange = onUrlChange,
-                    label = { Text("Hooktheory URL") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Button(onClick = onHarvest, modifier = Modifier.padding(top = 8.dp)) {
-                    Text("Harvest & Save")
-                }
-                if (harvestStatus.isNotEmpty()) {
-                    Text(text = harvestStatus, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 4.dp))
-                }
-            }
-        }
-
+    Column(modifier = Modifier.fillMaxSize()) {
         // Search Section
         Text(text = "Database Search", style = MaterialTheme.typography.titleMedium)
+        
+        // Search by Title/Slug
         ExposedDropdownMenuBox(
             expanded = isExpanded,
             onExpandedChange = onExpandedChange,
@@ -448,7 +402,8 @@ fun LibraryView(
             if (isExpanded) {
                 ExposedDropdownMenu(
                     expanded = isExpanded,
-                    onDismissRequest = { onExpandedChange(false) }
+                    onDismissRequest = { onExpandedChange(false) },
+                    modifier = Modifier.heightIn(max = 400.dp)
                 ) {
                     if (isShowingRecent) {
                         DropdownMenuItem(
@@ -479,12 +434,8 @@ fun LibraryView(
             }
         }
 
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Button(onClick = onSearchTitle, modifier = Modifier.weight(1f)) { Text("Search Title") }
-            Button(onClick = onFindSlug, modifier = Modifier.weight(1f)) { Text("Find Slug") }
+        Button(onClick = onSearchTitle, modifier = Modifier.fillMaxWidth().padding(top = 4.dp)) { 
+            Text("Search Title") 
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -507,7 +458,8 @@ fun LibraryView(
             if (isArtistExpanded) {
                 ExposedDropdownMenu(
                     expanded = isArtistExpanded,
-                    onDismissRequest = { onArtistExpandedChange(false) }
+                    onDismissRequest = { onArtistExpandedChange(false) },
+                    modifier = Modifier.heightIn(max = 400.dp)
                 ) {
                     if (artistSuggestions.isEmpty() && searchArtistQuery.isNotEmpty()) {
                         DropdownMenuItem(
@@ -534,7 +486,7 @@ fun LibraryView(
 
         Button(
             onClick = onSearchArtist,
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+            modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
         ) {
             Text("Search Artist")
         }
@@ -551,9 +503,9 @@ fun LibraryView(
             )
         }
 
-        Divider(modifier = Modifier.padding(vertical = 16.dp))
+        Divider(modifier = Modifier.padding(vertical = 12.dp))
 
-        LazyColumn {
+        LazyColumn(modifier = Modifier.weight(1f)) {
             items(allSongs) { song ->
                 Card(
                     onClick = { onSongClick(song) },
@@ -565,6 +517,65 @@ fun LibraryView(
                     }
                 }
             }
+        }
+
+        Divider(modifier = Modifier.padding(vertical = 8.dp))
+
+        // Expandable Harvest Section
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Surface(
+                onClick = { isHarvestExpanded = !isHarvestExpanded },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Harvest Individual Song",
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Icon(
+                        imageVector = if (isHarvestExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        contentDescription = if (isHarvestExpanded) "Collapse" else "Expand"
+                    )
+                }
+            }
+
+            if (isHarvestExpanded) {
+                Column(modifier = Modifier.padding(bottom = 8.dp)) {
+                    OutlinedTextField(
+                        value = urlToHarvest,
+                        onValueChange = onUrlChange,
+                        label = { Text("Hooktheory URL") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Button(onClick = onHarvest, modifier = Modifier.padding(top = 8.dp)) {
+                        Text("Harvest & Save")
+                    }
+                    if (harvestStatus.isNotEmpty()) {
+                        Text(text = harvestStatus, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 4.dp))
+                    }
+                }
+            }
+        }
+
+        // Download Catalog Section
+        Button(
+            onClick = onDownloadCatalog,
+            modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 16.dp)
+        ) {
+            Text("Download Full Library")
+        }
+        
+        if (catalogStatus.isNotEmpty()) {
+            Text(
+                text = catalogStatus,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(bottom = 16.dp),
+                color = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }

@@ -25,10 +25,10 @@ interface SongDao {
     @Query("SELECT * FROM songs WHERE REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%'")
     suspend fun searchSongsByArtist(query: String): List<Song>
 
-    @Query("SELECT * FROM songs WHERE REPLACE(title, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%' OR REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%' LIMIT 10")
+    @Query("SELECT * FROM songs WHERE REPLACE(title, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%' OR REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%'")
     suspend fun getSearchSuggestions(query: String): List<Song>
 
-    @Query("SELECT * FROM songs WHERE REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%' LIMIT 10")
+    @Query("SELECT * FROM songs WHERE REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%'")
     suspend fun getSongSuggestionsByArtist(query: String): List<Song>
 
     @Query("SELECT * FROM songs WHERE slug IN (:slugs)")
