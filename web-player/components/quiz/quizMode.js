@@ -31,7 +31,7 @@ const IDLE_HTML = `
 
 /** Map section object name to a display label showing type (Chorus, Verse, etc.) */
 function sectionDisplayName(section, index) {
-  const raw = section?.name;
+  const raw = section?.sectionName ?? section?.name;
   if (!raw) return `Section ${index + 1}`;
   // Already descriptive enough
   return raw;

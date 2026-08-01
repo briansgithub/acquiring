@@ -606,7 +606,8 @@ function getLoadedSectionName() {
   const song = library[resolveSongIndex(currentSongIdx)];
   if (!song || !currentRawChords?.length) return null;
   const section = song.sections?.[currentSectionIdx];
-  return section?.name || (song.sections?.length > 1 ? `Section ${currentSectionIdx + 1}` : null);
+  return section?.sectionName || section?.name
+    || (song.sections?.length > 1 ? `Section ${currentSectionIdx + 1}` : null);
 }
 
 function getLoadedSongLabel() {

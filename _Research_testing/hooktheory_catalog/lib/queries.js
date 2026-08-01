@@ -3,6 +3,8 @@
  * Kept separate from db.js to avoid bloating that module past the line limit.
  */
 
+const { orderUniqueSections } = require('../../../lib/sectionOrder');
+
 function listAllSongsMinimal(db) {
   return db.prepare(`
     SELECT slug, artist, title, status, is_favorite
@@ -36,13 +38,16 @@ function getSongDetail(db, slug) {
 }
 
 function listSongSections(db, slug) {
-  return db.prepare(`
+  const sections = db.prepare(`
     SELECT section_name, song_id, chord_count, note_count,
       key_tonic, key_scale, bpm, time_sig
     FROM song_sections
     WHERE slug = ?
     ORDER BY rowid
   `).all(slug);
+  return orderUniqueSections(sections, {
+    getName: (section) => section.section_name,
+  });
 }
 
 module.exports = {

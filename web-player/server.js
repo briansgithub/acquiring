@@ -7,6 +7,7 @@ const { handleBatchStatus, handleBatchStart, handleBatchPause, handleBatchResume
 const { handlePipelineRun, handlePipelineClear, handlePipelineJob, matchPipelineRoute } = require("../_Research_testing/hooktheory_catalog/web/pipelineApi");
 const { handleAddSong } = require("../_Research_testing/hooktheory_catalog/web/addSongApi");
 const { getPlaybackCacheDir } = require("../lib/dataRoot");
+const { orderUniqueSections } = require("../lib/sectionOrder");
 const { loadLibrary: loadCachedLibrary } = require("./playbackLibraryCache");
 const { handleCorpusStats } = require("./corpusStatsApi");
 
@@ -67,6 +68,7 @@ async function loadLibraryEntry(artistName) {
       const entry = sectionEntryFromFile(file);
       entry.sectionName = meta.sectionName || entry.sectionName;
       entry.numericId = meta.numericId ?? entry.numericId;
+      entry.sectionIndex = meta.index;
       sections.push(entry);
     }
   } else {
@@ -76,6 +78,8 @@ async function loadLibraryEntry(artistName) {
   if (!metadata?.sections?.length) {
     sections.sort((a, b) => (a.numericId || 0) - (b.numericId || 0));
   }
+
+  sections = orderUniqueSections(sections);
 
   return {
     artist: artistName,
@@ -103,8 +107,12 @@ async function scanPlaybackLibrary() {
   return library;
 }
 
-function loadLibrary() {
-  return loadCachedLibrary(scanPlaybackLibrary, CACHE_ROOT);
+async function loadLibrary() {
+  const library = await loadCachedLibrary(scanPlaybackLibrary, CACHE_ROOT);
+  for (const song of library) {
+    song.sections = orderUniqueSections(song.sections);
+  }
+  return library;
 }
 
 async function handleApiSongEntry(reqUrl, res) {
