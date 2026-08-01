@@ -2,6 +2,7 @@ package com.sacredring.android
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -114,6 +115,20 @@ fun MainScreen(db: AppDatabase) {
 
     val harvestService = remember(activeDb) { HarvestService(activeDb) }
     val json = remember { Json { ignoreUnknownKeys = true } }
+    val returnToParent = {
+        if (currentTab == 2) {
+            // Quiz is a child of the selected song's Chords page.
+            currentTab = 1
+        } else {
+            // The selected song's Info and Chords pages are children of search.
+            selectedSongSections = null
+        }
+    }
+
+    // Match the visible Back control while a selected song is open.
+    BackHandler(enabled = selectedSongSections != null) {
+        returnToParent()
+    }
 
     LaunchedEffect(searchQuery) {
         if (searchQuery.isNotEmpty()) {
@@ -285,7 +300,7 @@ fun MainScreen(db: AppDatabase) {
                     globalTranspose = it
                     AudioEngine.globalTranspose = it
                 },
-                onBack = { selectedSongSections = null }
+                onBack = returnToParent
             )
         }
 
