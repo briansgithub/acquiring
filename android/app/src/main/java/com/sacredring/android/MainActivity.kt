@@ -172,13 +172,13 @@ fun MainScreen(db: AppDatabase) {
         returnToParent()
     }
 
-    LaunchedEffect(searchQuery) {
+    LaunchedEffect(searchQuery, selectedSong, selectedArtistSongs) {
         if (searchQuery.isNotEmpty()) {
             delay(300) // Debounce
             suggestions = activeDb.songDao().getSearchSuggestions(searchQuery)
             isExpanded = true // Always expand when typing to show suggestions or "No results"
             isShowingRecent = false
-        } else {
+        } else if (selectedSong == null && selectedArtistSongs == null) {
             // Show recent songs when empty from SharedPreferences
             val slugs = HistoryManager.getRecentSlugs(context)
             if (slugs.isNotEmpty()) {
