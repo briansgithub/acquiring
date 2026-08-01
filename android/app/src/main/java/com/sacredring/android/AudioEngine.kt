@@ -18,29 +18,49 @@ object AudioEngine {
     private const val SAMPLE_RATE = 44100
 
     enum class Waveform {
-        SINE, SQUARE, SAWTOOTH, TRIANGLE, STRINGS, ELECTRIC_PIANO
+        SINE,
+        SQUARE,
+        SAWTOOTH,
+        TRIANGLE,
+        STRINGS,
+        ELECTRIC_PIANO,
+        WARM_ORGAN,
+        MARIMBA,
+        VIBRAPHONE,
+        NYLON_GUITAR
     }
 
     enum class PlaybackChannel {
         MELODY, CHORD, PREVIEW
     }
 
+    private val allPlaybackChannels = PlaybackChannel.entries.toSet()
+
     var currentWaveform = Waveform.SAWTOOTH
     var globalTranspose = 0
 
+    class PlaybackSnapshot internal constructor(internal val trackIds: Set<Long>)
+
     private data class ActiveTrack(
+        val id: Long,
         val track: AudioTrack,
         val channel: PlaybackChannel,
         val baseVolume: Float,
-        val sampleCount: Int
+        val sampleCount: Int,
+        var transitionGain: Float = 1f
     )
 
     private val activeTracks = mutableListOf<ActiveTrack>()
+    private var nextTrackId = 1L
     private var melodyGain = 1f
     private var chordGain = 1f
-    // Incremented whenever the timeline is replaced. A synthesis job that
-    // started before the replacement must not register a late AudioTrack.
-    private var playbackGeneration = 0L
+    // Incremented per layer whenever playback is replaced. A synthesis job
+    // that started before its layer changed must not register a late track.
+    private val playbackGenerations = LongArray(PlaybackChannel.entries.size)
+
+    private fun invalidatePendingPlayback(channels: Set<PlaybackChannel>) {
+        channels.forEach { channel -> playbackGenerations[channel.ordinal]++ }
+    }
 
     private fun gainFor(channel: PlaybackChannel): Float = when (channel) {
         PlaybackChannel.MELODY -> melodyGain
@@ -50,7 +70,9 @@ object AudioEngine {
 
     private fun applyTrackGain(active: ActiveTrack) {
         try {
-            active.track.setVolume((active.baseVolume * gainFor(active.channel)).coerceIn(0f, 1f))
+            active.track.setVolume(
+                (active.baseVolume * gainFor(active.channel) * active.transitionGain).coerceIn(0f, 1f)
+            )
         } catch (_: Exception) {}
     }
 
@@ -62,9 +84,22 @@ object AudioEngine {
         }
     }
 
-    fun pauseAllPlayback() {
+    fun hasPlayback(channels: Set<PlaybackChannel>): Boolean = synchronized(activeTracks) {
+        activeTracks.any { it.channel in channels }
+    }
+
+    fun snapshotPlayback(channels: Set<PlaybackChannel>): PlaybackSnapshot = synchronized(activeTracks) {
+        PlaybackSnapshot(activeTracks.filter { it.channel in channels }.mapTo(mutableSetOf()) { it.id })
+    }
+
+    /** Prevent an in-flight synthesis job from registering a stale track. */
+    fun cancelPendingPlayback(channels: Set<PlaybackChannel> = allPlaybackChannels) {
+        synchronized(activeTracks) { invalidatePendingPlayback(channels) }
+    }
+
+    fun pausePlayback(channels: Set<PlaybackChannel>) {
         synchronized(activeTracks) {
-            activeTracks.forEach { active ->
+            activeTracks.filter { it.channel in channels }.forEach { active ->
                 try {
                     if (active.track.playState == AudioTrack.PLAYSTATE_PLAYING) active.track.pause()
                 } catch (_: Exception) {}
@@ -72,9 +107,9 @@ object AudioEngine {
         }
     }
 
-    fun resumeAllPlayback() {
+    fun resumePlayback(channels: Set<PlaybackChannel>) {
         synchronized(activeTracks) {
-            activeTracks.forEach { active ->
+            activeTracks.filter { it.channel in channels }.forEach { active ->
                 try {
                     if (active.track.playState == AudioTrack.PLAYSTATE_PAUSED) active.track.play()
                 } catch (_: Exception) {}
@@ -82,30 +117,98 @@ object AudioEngine {
         }
     }
 
-    fun stopPreviewPlayback() {
-        synchronized(activeTracks) {
-            val previews = activeTracks.filter { it.channel == PlaybackChannel.PREVIEW }
-            previews.forEach { active ->
-                try {
-                    active.track.stop()
-                    active.track.release()
-                } catch (_: Exception) {}
-                activeTracks.remove(active)
+    fun pauseAllPlayback() = pausePlayback(allPlaybackChannels)
+
+    fun resumeAllPlayback() = resumePlayback(allPlaybackChannels)
+
+    private fun removeTracks(trackIds: Set<Long>): List<ActiveTrack> = synchronized(activeTracks) {
+        val removed = activeTracks.filter { it.id in trackIds }
+        activeTracks.removeAll { it.id in trackIds }
+        removed
+    }
+
+    private fun stopAndRelease(tracks: List<ActiveTrack>) {
+        tracks.forEach { active ->
+            try {
+                active.track.stop()
+                active.track.release()
+            } catch (_: Exception) {}
+        }
+    }
+
+    fun stopPlayback(channels: Set<PlaybackChannel>) {
+        val tracks = synchronized(activeTracks) {
+            invalidatePendingPlayback(channels)
+            val removed = activeTracks.filter { it.channel in channels }
+            activeTracks.removeAll { it.channel in channels }
+            removed
+        }
+        stopAndRelease(tracks)
+    }
+
+    fun stopPlayback(snapshot: PlaybackSnapshot) {
+        stopAndRelease(removeTracks(snapshot.trackIds))
+    }
+
+    fun fadeOutAndStopPlayback(snapshot: PlaybackSnapshot, durationMs: Int = 24) {
+        if (snapshot.trackIds.isEmpty()) return
+        if (durationMs <= 0) {
+            stopPlayback(snapshot)
+            return
+        }
+
+        CoroutineScope(Dispatchers.Default).launch {
+            val startingGains = synchronized(activeTracks) {
+                activeTracks
+                    .filter { it.id in snapshot.trackIds }
+                    .associate { it.id to it.transitionGain }
+            }
+            val steps = (durationMs / 4).coerceIn(2, 12)
+            val stepDelayMs = (durationMs / steps).toLong().coerceAtLeast(1L)
+            for (step in 1..steps) {
+                val fractionRemaining = 1f - step.toFloat() / steps
+                synchronized(activeTracks) {
+                    activeTracks.filter { it.id in snapshot.trackIds }.forEach { active ->
+                        active.transitionGain = (startingGains[active.id] ?: 1f) * fractionRemaining
+                        applyTrackGain(active)
+                    }
+                }
+                delay(stepDelayMs)
+            }
+            stopPlayback(snapshot)
+        }
+    }
+
+    private fun fadeInPlayback(trackId: Long, durationMs: Int) {
+        if (durationMs <= 0) return
+        CoroutineScope(Dispatchers.Default).launch {
+            val steps = (durationMs / 4).coerceIn(2, 12)
+            val stepDelayMs = (durationMs / steps).toLong().coerceAtLeast(1L)
+            for (step in 1..steps) {
+                val found = synchronized(activeTracks) {
+                    val active = activeTracks.firstOrNull { it.id == trackId } ?: return@synchronized false
+                    active.transitionGain = step.toFloat() / steps
+                    applyTrackGain(active)
+                    true
+                }
+                if (!found) return@launch
+                delay(stepDelayMs)
             }
         }
     }
 
+    fun stopPreviewPlayback() {
+        stopPlayback(setOf(PlaybackChannel.PREVIEW))
+    }
+
     fun stopAllPlayback() {
-        synchronized(activeTracks) {
-            playbackGeneration++
-            activeTracks.forEach { active ->
-                try {
-                    active.track.stop()
-                    active.track.release()
-                } catch (_: Exception) {}
-            }
+        val tracks = synchronized(activeTracks) {
+            invalidatePendingPlayback(allPlaybackChannels)
+            val removed = activeTracks.toList()
             activeTracks.clear()
+            removed
         }
+        stopAndRelease(tracks)
     }
 
     suspend fun playChord(
@@ -114,10 +217,15 @@ object AudioEngine {
         arpeggiate: Boolean = false,
         stepMs: Int = 80,
         volume: Float = 1.0f,
-        channel: PlaybackChannel = PlaybackChannel.CHORD
+        channel: PlaybackChannel = PlaybackChannel.CHORD,
+        fadeInMs: Int = 0
     ) = withContext(Dispatchers.Default) {
-        val generation = synchronized(activeTracks) { playbackGeneration }
+        val generation = synchronized(activeTracks) { playbackGenerations[channel.ordinal] }
         val playbackContext = currentCoroutineContext()
+        // Keep one preset for the entire rendered buffer. The dropdown may be
+        // changed while synthesis is running, and preset-specific state (such
+        // as a plucked-string delay line) is allocated below.
+        val waveform = currentWaveform
         val validNotes = midiNotes.filter { it > 0 }.map { it + globalTranspose }
         if (validNotes.isEmpty()) return@withContext
 
@@ -147,10 +255,20 @@ object AudioEngine {
         val noteStates = validNotes.map { midi ->
             val freq = 440.0 * Math.pow(2.0, (midi - 69) / 12.0)
             val period = SAMPLE_RATE / freq
-            val dl = if (currentWaveform == Waveform.STRINGS) {
-                val size = period.toInt().coerceAtLeast(2)
-                DoubleArray(size) { Math.random() * 2.0 - 1.0 }
-            } else DoubleArray(0)
+            val dl = when (waveform) {
+                Waveform.STRINGS, Waveform.NYLON_GUITAR -> {
+                    val size = period.toInt().coerceAtLeast(2)
+                    val noise = DoubleArray(size) { Math.random() * 2.0 - 1.0 }
+                    if (waveform == Waveform.NYLON_GUITAR) {
+                        // Low-pass the excitation for a rounder nylon-string attack.
+                        for (sampleIndex in 1 until noise.size) {
+                            noise[sampleIndex] = noise[sampleIndex] * 0.35 + noise[sampleIndex - 1] * 0.65
+                        }
+                    }
+                    noise
+                }
+                else -> DoubleArray(0)
+            }
             NoteState(midi, freq, period, delayLine = dl)
         }
 
@@ -158,7 +276,7 @@ object AudioEngine {
             // Synthesis can take longer than a short note. Stop promptly when
             // its parent playback job is cancelled or the timeline is replaced.
             if ((i and 2047) == 0 &&
-                (!playbackContext.isActive || synchronized(activeTracks) { playbackGeneration != generation })) {
+                (!playbackContext.isActive || synchronized(activeTracks) { playbackGenerations[channel.ordinal] != generation })) {
                 return@withContext
             }
             var sum = 0.0
@@ -172,7 +290,8 @@ object AudioEngine {
                 }
                 
                 for (state in noteStates) {
-                    val wave = when (currentWaveform) {
+                    val elapsedSeconds = i / SAMPLE_RATE.toDouble()
+                    val wave = when (waveform) {
                         Waveform.SINE -> sin(2.0 * PI * state.phase)
                         Waveform.SQUARE -> if (state.phase < 0.5) 1.0 else -1.0
                         Waveform.SAWTOOTH -> state.phase * 2.0 - 1.0
@@ -196,6 +315,33 @@ object AudioEngine {
                             state.modPhase = (state.modPhase + modFreq / SAMPLE_RATE) % 1.0
                             carrier
                         }
+                        Waveform.WARM_ORGAN -> {
+                            val phase = 2.0 * PI * state.phase
+                            0.68 * sin(phase) + 0.22 * sin(phase * 2.0) + 0.10 * sin(phase * 3.0)
+                        }
+                        Waveform.MARIMBA -> {
+                            val phase = 2.0 * PI * state.phase
+                            val bodyDecay = kotlin.math.exp(-3.0 * elapsedSeconds)
+                            val overtoneDecay = kotlin.math.exp(-9.0 * elapsedSeconds)
+                            0.82 * sin(phase) * bodyDecay + 0.18 * sin(phase * 3.0) * overtoneDecay
+                        }
+                        Waveform.VIBRAPHONE -> {
+                            val ring = kotlin.math.exp(-0.75 * elapsedSeconds)
+                            val tremolo = 0.88 + 0.12 * sin(2.0 * PI * 5.5 * elapsedSeconds)
+                            val modIndex = 1.35 * kotlin.math.exp(-1.6 * elapsedSeconds)
+                            val modulator = sin(2.0 * PI * state.modPhase) * modIndex
+                            val carrier = sin(2.0 * PI * state.phase + modulator)
+                            state.modPhase = (state.modPhase + state.freq * 4.0 / SAMPLE_RATE) % 1.0
+                            carrier * ring * tremolo
+                        }
+                        Waveform.NYLON_GUITAR -> {
+                            val dl = state.delayLine
+                            val out = dl[state.delayPtr]
+                            val nextIdx = (state.delayPtr + 1) % dl.size
+                            dl[state.delayPtr] = (out + dl[nextIdx]) * 0.497
+                            state.delayPtr = nextIdx
+                            out
+                        }
                     }
                     
                     state.phase = (state.phase + state.freq / SAMPLE_RATE) % 1.0
@@ -209,6 +355,7 @@ object AudioEngine {
                 val noteIdx = (i / stepSamples).coerceIn(0, numNotes - 1)
                 val noteSampleIdx = i % stepSamples
                 val state = noteStates[noteIdx]
+                val noteElapsedSeconds = noteSampleIdx / SAMPLE_RATE.toDouble()
 
                 val attackSamples = (stepSamples * 0.08).toInt().coerceIn(10, 80)
                 val releaseSamples = (stepSamples * 0.12).toInt().coerceIn(15, 120)
@@ -219,7 +366,7 @@ object AudioEngine {
                     else -> 1.0
                 }
 
-                val wave = when (currentWaveform) {
+                val wave = when (waveform) {
                     Waveform.SINE -> sin(2.0 * PI * state.phase)
                     Waveform.SQUARE -> if (state.phase < 0.5) 1.0 else -1.0
                     Waveform.SAWTOOTH -> state.phase * 2.0 - 1.0
@@ -241,6 +388,33 @@ object AudioEngine {
                         state.modPhase = (state.modPhase + modFreq / SAMPLE_RATE) % 1.0
                         carrier
                     }
+                    Waveform.WARM_ORGAN -> {
+                        val phase = 2.0 * PI * state.phase
+                        0.68 * sin(phase) + 0.22 * sin(phase * 2.0) + 0.10 * sin(phase * 3.0)
+                    }
+                    Waveform.MARIMBA -> {
+                        val phase = 2.0 * PI * state.phase
+                        val bodyDecay = kotlin.math.exp(-3.0 * noteElapsedSeconds)
+                        val overtoneDecay = kotlin.math.exp(-9.0 * noteElapsedSeconds)
+                        0.82 * sin(phase) * bodyDecay + 0.18 * sin(phase * 3.0) * overtoneDecay
+                    }
+                    Waveform.VIBRAPHONE -> {
+                        val ring = kotlin.math.exp(-0.75 * noteElapsedSeconds)
+                        val tremolo = 0.88 + 0.12 * sin(2.0 * PI * 5.5 * noteElapsedSeconds)
+                        val modIndex = 1.35 * kotlin.math.exp(-1.6 * noteElapsedSeconds)
+                        val modulator = sin(2.0 * PI * state.modPhase) * modIndex
+                        val carrier = sin(2.0 * PI * state.phase + modulator)
+                        state.modPhase = (state.modPhase + state.freq * 4.0 / SAMPLE_RATE) % 1.0
+                        carrier * ring * tremolo
+                    }
+                    Waveform.NYLON_GUITAR -> {
+                        val dl = state.delayLine
+                        val out = dl[state.delayPtr]
+                        val nextIdx = (state.delayPtr + 1) % dl.size
+                        dl[state.delayPtr] = (out + dl[nextIdx]) * 0.497
+                        state.delayPtr = nextIdx
+                        out
+                    }
                 }
                 
                 state.phase = (state.phase + state.freq / SAMPLE_RATE) % 1.0
@@ -253,7 +427,7 @@ object AudioEngine {
 
         // A paused/restarted timeline cancels its child playback jobs.  Do not
         // create a late AudioTrack after that cancellation has already happened.
-        if (!playbackContext.isActive || synchronized(activeTracks) { playbackGeneration != generation }) {
+        if (!playbackContext.isActive || synchronized(activeTracks) { playbackGenerations[channel.ordinal] != generation }) {
             return@withContext
         }
 
@@ -279,11 +453,20 @@ object AudioEngine {
 
             val written = track.write(samples, 0, numSamples)
             if (written > 0) {
-                val active = ActiveTrack(track, channel, volume.coerceIn(0f, 1f), numSamples)
+                val active = synchronized(activeTracks) {
+                    ActiveTrack(
+                        id = nextTrackId++,
+                        track = track,
+                        channel = channel,
+                        baseVolume = volume.coerceIn(0f, 1f),
+                        sampleCount = numSamples,
+                        transitionGain = if (fadeInMs > 0) 0f else 1f
+                    )
+                }
                 synchronized(activeTracks) {
-                    // Cancellation and stopAllPlayback are both respected
+                    // Cancellation and channel replacement are both respected
                     // while holding the same lock used for track replacement.
-                    if (!playbackContext.isActive || playbackGeneration != generation) {
+                    if (!playbackContext.isActive || playbackGenerations[channel.ordinal] != generation) {
                         try {
                             track.stop()
                             track.release()
@@ -294,6 +477,7 @@ object AudioEngine {
                     track.play()
                     activeTracks.add(active)
                 }
+                if (fadeInMs > 0) fadeInPlayback(active.id, fadeInMs)
                 CoroutineScope(Dispatchers.Default).launch {
                     while (true) {
                         val stillPlaying = try {

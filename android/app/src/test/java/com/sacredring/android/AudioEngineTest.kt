@@ -2,6 +2,7 @@ package com.sacredring.android
 
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -50,5 +51,65 @@ class AudioEngineTest {
 
         println("✅ Successfully synthesized and played fast (30ms) & medium (50ms) arpeggiated chord buffers without error!")
         assertTrue(true)
+    }
+
+    @Test
+    fun testAllWaveforms_synthesizeBlockAndArpeggiatedPlayback() = runBlocking {
+        val originalWaveform = AudioEngine.currentWaveform
+        val triad = listOf(60, 64, 67)
+
+        try {
+            AudioEngine.Waveform.entries.forEach { waveform ->
+                AudioEngine.currentWaveform = waveform
+                AudioEngine.playChord(triad, durationMs = 120)
+                AudioEngine.playChord(triad, durationMs = 120, arpeggiate = true, stepMs = 30)
+                AudioEngine.stopAllPlayback()
+            }
+        } finally {
+            AudioEngine.currentWaveform = originalWaveform
+            AudioEngine.stopAllPlayback()
+        }
+
+        assertTrue(AudioEngine.Waveform.entries.size >= 10)
+    }
+
+    @Test
+    fun testLiveReplacement_crossfadePathDoesNotCrash() = runBlocking {
+        val originalWaveform = AudioEngine.currentWaveform
+        val timelineChannels = setOf(
+            AudioEngine.PlaybackChannel.MELODY,
+            AudioEngine.PlaybackChannel.CHORD
+        )
+
+        try {
+            AudioEngine.playChord(
+                listOf(60),
+                durationMs = 800,
+                channel = AudioEngine.PlaybackChannel.MELODY
+            )
+            AudioEngine.playChord(
+                listOf(48, 52, 55),
+                durationMs = 800,
+                channel = AudioEngine.PlaybackChannel.CHORD
+            )
+            val previous = AudioEngine.snapshotPlayback(timelineChannels)
+
+            AudioEngine.currentWaveform = AudioEngine.Waveform.WARM_ORGAN
+            AudioEngine.playChord(
+                listOf(62),
+                durationMs = 400,
+                channel = AudioEngine.PlaybackChannel.MELODY,
+                fadeInMs = 24
+            )
+            AudioEngine.fadeOutAndStopPlayback(previous, durationMs = 24)
+            delay(40)
+
+            // Robolectric completes MODE_STATIC AudioTracks immediately, so
+            // successful traversal of the replacement/fade path is the stable assertion.
+            assertTrue(true)
+        } finally {
+            AudioEngine.currentWaveform = originalWaveform
+            AudioEngine.stopPlayback(timelineChannels)
+        }
     }
 }
