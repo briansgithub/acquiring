@@ -39,3 +39,9 @@ sacred_ring_data.zip
 # Nested repositories
 android/
 
+# IDE and build artifacts
+.idea/
+.artifacts/
+
+# Python cache
+__pycache__/
