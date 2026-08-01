@@ -1477,29 +1477,7 @@ export function renderChordRing(container, options = {}) {
     }
 
     // 4. Frequency overlay rings
-    if (!quizDegreeAnswerMode && quizFreqOverlay) {
-      const counts = quizFreqOverlay;
-      let maxCount = 0;
-      for (const [, count] of counts) {
-        if (count > maxCount) maxCount = count;
-      }
-      if (maxCount > 0) {
-        for (const pos of positions) {
-          const count = counts.get(pos.symbol);
-          if (count && count > 0) {
-            const ratio = count / maxCount;
-            const strokeW = 1 + ratio * 4;
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(pos.x, pos.y, pos.r + 4 * zoom, 0, Math.PI * 2);
-            ctx.strokeStyle = `rgba(250, 204, 21, ${0.3 + ratio * 0.5})`;
-            ctx.lineWidth = strokeW * zoom;
-            ctx.stroke();
-            ctx.restore();
-          }
-        }
-      }
-    }
+    // This feature has been removed.
   }
 
   function registerCenterChordHit(chord, x, y, width, fontSize) {
