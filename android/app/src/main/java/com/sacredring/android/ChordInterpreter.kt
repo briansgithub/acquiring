@@ -2,6 +2,28 @@ package com.sacredring.android
 
 import kotlinx.serialization.json.*
 
+internal enum class ChordRootContext {
+    STANDARD,
+    BORROWED,
+    CUSTOM_BORROWED,
+    APPLIED,
+    BORROWED_APPLIED,
+    TRITONE_SUBSTITUTION
+}
+
+internal data class ResolvedChordRoot(
+    val pitch: SpelledPitch,
+    val sourceDegree: Int,
+    val effectiveDegree: Int,
+    val sourceKey: KeyInfo,
+    val effectiveKey: KeyInfo,
+    val customIntervals: List<Int>?,
+    val chordQuality: String,
+    val context: ChordRootContext,
+    val genericStepsFromTonic: Int,
+    val specificSemitonesFromTonic: Int
+)
+
 object ChordInterpreter {
     
     private val ROMAN_MAP = mapOf(1 to "I", 2 to "II", 3 to "III", 4 to "IV", 5 to "V", 6 to "VI", 7 to "VII")
@@ -135,6 +157,107 @@ object ChordInterpreter {
         } catch (_: Exception) {
             return ""
         }
+    }
+
+    /**
+     * Resolves the written chord root from the same degree/applied/borrowed
+     * inputs that precede Roman-numeral rendering. No MIDI or pitch-class
+     * respelling is used, so C# and Db remain distinct.
+     */
+    internal fun resolveChordRoot(
+        chordJson: JsonObject,
+        key: KeyInfo,
+        referenceOctave: Int = 3
+    ): ResolvedChordRoot? {
+        val root = safeInt(chordJson["root"])
+        val isRest = safeBoolean(chordJson["isRest"]) || safeBoolean(chordJson["rest"])
+        if (root !in 1..7 || isRest) return null
+
+        val applied = safeInt(chordJson["applied"])
+        val borrowedName = safeString(chordJson["borrowed"])
+        val customIntervals = customBorrowedIntervals(chordJson["borrowed"])
+        val hasNamedBorrowing = borrowedName.isNotEmpty() && BORROWED_TAG.containsKey(borrowedName)
+        val hasBorrowedScale = borrowedName.isNotEmpty() || customIntervals != null
+        val modifiedKey = when {
+            customIntervals != null -> KeyInfo(key.tonic, "custom")
+            hasNamedBorrowing -> KeyInfo(key.tonic, borrowedName)
+            else -> key
+        }
+        val targetPitch = MusicTheory.resolveScaleDegreePitch(
+            sd = root.toString(),
+            relativeOctave = 0,
+            key = modifiedKey,
+            baseOctave = referenceOctave,
+            customIntervals = customIntervals
+        ) ?: return null
+
+        val triSubstitution = applied == 5 && isTriSubApplied(chordJson)
+        val effectiveDegree: Int
+        val effectiveKey: KeyInfo
+        val pitch: SpelledPitch
+        val context: ChordRootContext
+
+        if (applied in 1..7 && !hasBorrowedScale) {
+            val targetKey = KeyInfo(targetPitch.noteName, "major")
+            effectiveDegree = if (triSubstitution) 2 else applied
+            effectiveKey = targetKey
+            pitch = MusicTheory.resolveScaleDegreePitch(
+                sd = if (triSubstitution) "b2" else applied.toString(),
+                relativeOctave = 0,
+                key = targetKey,
+                baseOctave = targetPitch.octave
+            ) ?: return null
+            context = when {
+                triSubstitution -> ChordRootContext.TRITONE_SUBSTITUTION
+                else -> ChordRootContext.APPLIED
+            }
+        } else {
+            effectiveDegree = root
+            effectiveKey = modifiedKey
+            pitch = targetPitch
+            context = when {
+                customIntervals != null -> ChordRootContext.CUSTOM_BORROWED
+                hasNamedBorrowing -> ChordRootContext.BORROWED
+                else -> ChordRootContext.STANDARD
+            }
+        }
+
+        val qualities = when {
+            applied in 1..7 && !hasBorrowedScale -> MusicTheory.CHORD_QUALITIES["major"]!!
+            customIntervals != null -> customChordQualities(customIntervals)
+            else -> MusicTheory.CHORD_QUALITIES[effectiveKey.scale]
+                ?: MusicTheory.CHORD_QUALITIES["major"]!!
+        }
+        val baseQuality = qualities.getOrElse(Math.floorMod(effectiveDegree - 1, 7)) { "major" }
+        val alterations = (chordJson["alterations"] as? JsonArray)
+            ?.mapNotNull { (it as? JsonPrimitive)?.contentOrNull }
+            ?: emptyList()
+        val quality = triadQualityWithAlts(baseQuality, chordJson)
+            .let { if (alterations.contains("#5") && it == "major") "augmented" else it }
+        val sourceTonic = SpelledPitch.parse(key.tonic, referenceOctave) ?: return null
+        // Chord JSON carries a root scale degree, but no octave. Keep every
+        // resolved root in the source key's written scale-degree register so
+        // applied chords do not acquire an invented compound-octave shift.
+        val sourceGenericSteps = Math.floorMod(
+            pitch.letter.index - sourceTonic.letter.index,
+            7
+        )
+        val registeredPitch = pitch.copy(
+            octave = Math.floorDiv(sourceTonic.staffPosition + sourceGenericSteps, 7)
+        )
+
+        return ResolvedChordRoot(
+            pitch = registeredPitch,
+            sourceDegree = root,
+            effectiveDegree = effectiveDegree,
+            sourceKey = key,
+            effectiveKey = effectiveKey,
+            customIntervals = customIntervals,
+            chordQuality = quality,
+            context = context,
+            genericStepsFromTonic = registeredPitch.staffPosition - sourceTonic.staffPosition,
+            specificSemitonesFromTonic = registeredPitch.chromaticPosition - sourceTonic.chromaticPosition
+        )
     }
 
     private fun buildSuffix(chordJson: JsonObject, quality: String, opts: Map<String, Any> = emptyMap()): String {

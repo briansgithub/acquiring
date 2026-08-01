@@ -166,6 +166,64 @@ object MusicTheory {
         return sd.replace(Regex("[^0-9]"), "").toIntOrNull() ?: 1
     }
 
+    /**
+     * Resolves a scale degree to its written letter, accidental, and octave.
+     * Unlike [getMidiNote], this keeps enharmonic spelling intact and is safe
+     * to use for generic/specific interval analysis.
+     */
+    internal fun resolveScaleDegreePitch(
+        sd: String,
+        relativeOctave: Int,
+        key: KeyInfo,
+        baseOctave: Int = 4,
+        customIntervals: List<Int>? = null
+    ): SpelledPitch? {
+        val normalizedScaleDegree = sd.trim()
+            .replace("𝄪", "x")
+            .replace("𝄫", "bb")
+            .replace("♯", "#")
+            .replace("♭", "b")
+            .replace("♮", "")
+        if (!Regex("^[#bx]*[1-9][0-9]*$").matches(normalizedScaleDegree)) return null
+        val rawDegree = normalizedScaleDegree.dropWhile { !it.isDigit() }.toIntOrNull() ?: return null
+        val degreeBase0 = rawDegree - 1
+        val degreeIndex = Math.floorMod(degreeBase0, 7)
+        val normalizedDegree = degreeIndex + 1
+        val baseLabel = getNoteLabel(
+            degree = normalizedDegree,
+            tonic = key.tonic,
+            scale = key.scale,
+            customIntervals = customIntervals
+        )
+        val basePitch = SpelledPitch.parse(baseLabel, octave = 0) ?: return null
+        val tonicPitch = SpelledPitch.parse(key.tonic, octave = baseOctave) ?: return null
+        val staffPosition = tonicPitch.staffPosition + degreeBase0 + relativeOctave * 7
+        val writtenOctave = Math.floorDiv(staffPosition, 7)
+
+        return basePitch.copy(
+            accidental = basePitch.accidental + getModifierValue(normalizedScaleDegree),
+            octave = writtenOctave
+        )
+    }
+
+    internal fun getDegreeLabelFromSpelling(pitch: SpelledPitch, key: KeyInfo): String {
+        val tonic = SpelledPitch.parse(key.tonic, octave = pitch.octave) ?: return ""
+        val degree = Math.floorMod(pitch.letter.index - tonic.letter.index, 7) + 1
+        val expected = resolveScaleDegreePitch(
+            sd = degree.toString(),
+            relativeOctave = 0,
+            key = key,
+            baseOctave = pitch.octave
+        ) ?: return ""
+        val alteration = pitch.accidental - expected.accidental
+        val prefix = when {
+            alteration > 0 -> "♯".repeat(alteration)
+            alteration < 0 -> "♭".repeat(-alteration)
+            else -> ""
+        }
+        return "$prefix$degree\u0302"
+    }
+
     fun getMidiNote(sd: String, octave: Int, key: KeyInfo): Int {
         val rawDegree = getRawDegree(sd)
         val modifier = getModifierValue(sd)
