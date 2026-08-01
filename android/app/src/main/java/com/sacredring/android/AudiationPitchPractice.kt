@@ -490,7 +490,7 @@ fun PitchGauge(
             val cents = pitchResult.centsError.roundToInt()
             
             Text(
-                text = "${if (cents > 0) "+" else ""}$cents",
+                text = "${if (cents > 0) "+" else ""}$cents¢",
                 color = Color.White,
                 fontSize = 12.sp,
                 modifier = Modifier
