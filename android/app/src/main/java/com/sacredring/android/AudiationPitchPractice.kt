@@ -421,6 +421,15 @@ fun PitchGauge(
     pitchResult: MicrophonePitchTracker.PitchResult,
     targetLabel: String
 ) {
+    fun getPitchColor(cents: Double): Color {
+        val absCents = Math.abs(cents)
+        return when {
+            absCents < 15 -> Color(0xFF4CAF50) // Green
+            absCents < 50 -> Color(0xFFFFEB3B) // Yellow
+            else -> Color(0xFFF44336) // Red
+        }
+    }
+
     Box(modifier = modifier.background(Color.Black.copy(alpha = 0.1f))) {
         Canvas(modifier = Modifier.fillMaxSize().semantics {
             contentDescription = when (pitchResult) {
@@ -445,13 +454,14 @@ fun PitchGauge(
             )
 
             if (pitchResult is MicrophonePitchTracker.PitchResult.Estimate) {
+                val gaugeColor = getPitchColor(pitchResult.centsError)
                 // Allow error beyond 200 cents for pinning behavior
                 val normalized = (pitchResult.centsError / 200.0).coerceIn(-1.2, 1.2)
                 val barY = centerY - normalized.toFloat() * usableHalfHeight
                 
                 // Main moving pitch bar
                 drawRect(
-                    color = Color.White,
+                    color = gaugeColor,
                     topLeft = Offset(0f, barY - barThickness / 2f),
                     size = Size(size.width, barThickness)
                 )
@@ -465,7 +475,7 @@ fun PitchGauge(
                         lineTo(size.width / 2f + arrowSize, arrowSize)
                         close()
                     }
-                    drawPath(path, Color.Red)
+                    drawPath(path, gaugeColor)
                 } else if (pitchResult.centsError <= -200) {
                     val arrowSize = 10.dp.toPx()
                     val path = androidx.compose.ui.graphics.Path().apply {
@@ -474,17 +484,18 @@ fun PitchGauge(
                         lineTo(size.width / 2f + arrowSize, size.height - arrowSize)
                         close()
                     }
-                    drawPath(path, Color.Red)
+                    drawPath(path, gaugeColor)
                 }
             }
         }
         
         if (pitchResult is MicrophonePitchTracker.PitchResult.Estimate) {
             val cents = pitchResult.centsError.roundToInt()
+            val gaugeColor = getPitchColor(pitchResult.centsError)
             
             Text(
                 text = "${if (cents > 0) "+" else ""}$cents¢",
-                color = Color.White,
+                color = gaugeColor,
                 fontSize = 12.sp,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)

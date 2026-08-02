@@ -1,5 +1,6 @@
 package com.sacredring.android
 
+import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.junit.Assert.assertEquals
@@ -31,6 +32,36 @@ class QuizIntervalStateTest {
         assertEquals("G", state?.current?.pitch?.noteName)
         assertEquals("P5 ↑", state?.interval?.shorthand)
         assertEquals("5\u0302", state?.currentDegreeLabel)
+    }
+
+    @Test
+    fun rootIntervalsFollowTheSimplePlaybackRegisterWhenTheRootFalls() {
+        val section = ExtractedSection(
+            metadata = buildJsonObject {
+                put("keys", buildJsonArray {
+                    add(buildJsonObject {
+                        put("tonic", "Ab")
+                        put("scale", "major")
+                        put("beat", 1.0)
+                    })
+                })
+            },
+            chords = listOf(
+                chord(root = 2, beat = 1.0),
+                chord(root = 4, beat = 2.0)
+            )
+        )
+
+        val state = resolveChordRootIntervalState(section, currentBeat = 2.25)
+
+        // Both simple-mode roots use the same written register: Bb3 -> Db3.
+        // Treating Db as the next scale octave would incorrectly label this
+        // as an ascending m3 instead of the sounding descending M6.
+        assertEquals("Bb", state?.previousIntervalPitch?.noteName)
+        assertEquals("Db", state?.currentIntervalPitch?.noteName)
+        assertEquals(3, state?.previousIntervalPitch?.octave)
+        assertEquals(3, state?.currentIntervalPitch?.octave)
+        assertEquals("M6 â†“", state?.interval?.shorthand)
     }
 
     @Test

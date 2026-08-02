@@ -13,6 +13,13 @@ internal enum class ChordRootContext {
 
 internal data class ResolvedChordRoot(
     val pitch: SpelledPitch,
+    /**
+     * The root placed in the fixed written register used by simple-mode root
+     * playback. Chord JSON contains no root octave, so this is the only
+     * register that can faithfully determine whether the rendered root moves
+     * up or down without reducing its spelling to a MIDI pitch class.
+     */
+    val simpleModePitch: SpelledPitch,
     val sourceDegree: Int,
     val effectiveDegree: Int,
     val sourceKey: KeyInfo,
@@ -248,6 +255,7 @@ object ChordInterpreter {
 
         return ResolvedChordRoot(
             pitch = registeredPitch,
+            simpleModePitch = pitch.copy(octave = referenceOctave),
             sourceDegree = root,
             effectiveDegree = effectiveDegree,
             sourceKey = key,

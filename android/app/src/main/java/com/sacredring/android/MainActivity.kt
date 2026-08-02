@@ -1071,6 +1071,11 @@ fun QuizTab(
     var resumeAfterTempoZero by remember { mutableStateOf(false) }
     var isWaveformExpanded by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+
+    fun simpleModeRootAudioNote(chord: JsonObject, key: KeyInfo): Int? =
+        ChordInterpreter.resolveChordRoot(chord, key)
+            ?.simpleModePitch
+            ?.toAudioNoteNumber()
     
     val endBeat = remember(section, melody) {
         val metadataEndBeat = (section.metadata?.get("endBeat") as? JsonPrimitive)?.doubleOrNull
@@ -1128,7 +1133,9 @@ fun QuizTab(
                         (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
                     if (!isRest && beat <= 1.0 && chordEnd > 1.0) {
                         val activeKey = section.getKeyAtBeat(beat)
-                        val midiNotes = if (isSimpleMode || playOnlyRoot) {
+                        val midiNotes = if (isSimpleMode) {
+                            listOfNotNull(simpleModeRootAudioNote(chord, activeKey))
+                        } else if (playOnlyRoot) {
                             listOfNotNull(
                                 ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull()
                             )
@@ -1214,7 +1221,9 @@ fun QuizTab(
                     val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
                     if (!isRest && beat >= chordBeat && beat < chordEnd) {
                         val activeKey = section.getKeyAtBeat(chordBeat)
-                        val notes = if (isSimpleMode || playOnlyRoot) {
+                        val notes = if (isSimpleMode) {
+                            listOfNotNull(simpleModeRootAudioNote(chord, activeKey))
+                        } else if (playOnlyRoot) {
                             listOfNotNull(ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull())
                         } else {
                             ChordInterpreter.getChordNotes(chord, activeKey)
@@ -1483,9 +1492,13 @@ fun QuizTab(
                                     val notes = ChordInterpreter.getChordNotes(chord, activeKey)
                                     if (notes.isNotEmpty()) {
                                         val notesToPlay = if (isSimpleMode || playOnlyRoot) {
-                                            val rootNote = ChordInterpreter
-                                                .getRootPositionChordNotes(chord, activeKey)
-                                                .firstOrNull()
+                                            val rootNote = if (isSimpleMode) {
+                                                simpleModeRootAudioNote(chord, activeKey)
+                                            } else {
+                                                ChordInterpreter
+                                                    .getRootPositionChordNotes(chord, activeKey)
+                                                    .firstOrNull()
+                                            }
                                             if (rootNote != null) listOf(rootNote) else emptyList()
                                         } else {
                                             notes
@@ -1634,7 +1647,7 @@ fun QuizTab(
         useRelativeIonianContext,
         ionianContextKey
     ) {
-        chordRootIntervalState?.current?.pitch?.let { pitch ->
+        chordRootIntervalState?.currentIntervalPitch?.let { pitch ->
             if (useRelativeIonianContext) {
                 ionianContextPreviewAudioNote(pitch, ionianContextKey)
                     ?: pitch.toAudioNoteNumber()
@@ -1836,8 +1849,8 @@ fun QuizTab(
 
                 if (isSimpleMode) {
                     val activeSimpleChord = currentChord?.takeUnless { chord -> (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true }
-                    val currentRoot = chordRootIntervalState?.current
-                    val previousRoot = chordRootIntervalState?.previous
+                    val currentIntervalPitch = chordRootIntervalState?.currentIntervalPitch
+                    val previousIntervalPitch = chordRootIntervalState?.previousIntervalPitch
                     val rootAudioNote = currentRootPreviewAudioNote
                     val rootDegreeLabel = currentRootDegreeLabel
                     val rootInterval = chordRootIntervalState?.interval
@@ -1853,11 +1866,11 @@ fun QuizTab(
                         ) {
                             Button(
                                 onClick = {
-                                    if (previousRoot != null && currentRoot != null) {
-                                        playIntervalPreview(previousRoot.pitch, currentRoot.pitch)
+                                    if (previousIntervalPitch != null && currentIntervalPitch != null) {
+                                        playIntervalPreview(previousIntervalPitch, currentIntervalPitch)
                                     }
                                 },
-                                enabled = previousRoot != null && currentRoot != null && rootInterval != null,
+                                enabled = previousIntervalPitch != null && currentIntervalPitch != null && rootInterval != null,
                                 colors = ButtonDefaults.buttonColors(
                                     disabledContainerColor = MaterialTheme.colorScheme.primary,
                                     disabledContentColor = MaterialTheme.colorScheme.onPrimary

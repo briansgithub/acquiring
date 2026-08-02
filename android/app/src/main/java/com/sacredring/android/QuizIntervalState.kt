@@ -8,6 +8,8 @@ import kotlinx.serialization.json.doubleOrNull
 internal data class ChordRootIntervalState(
     val previous: ResolvedChordRoot?,
     val current: ResolvedChordRoot,
+    val previousIntervalPitch: SpelledPitch?,
+    val currentIntervalPitch: SpelledPitch,
     val interval: NamedInterval?,
     val currentDegreeLabel: String
 )
@@ -87,7 +89,11 @@ internal fun resolveChordRootIntervalState(
     return ChordRootIntervalState(
         previous = previousRoot,
         current = currentRoot,
-        interval = previousRoot?.let { calculateNamedInterval(it.pitch, currentRoot.pitch) },
+        previousIntervalPitch = previousRoot?.simpleModePitch,
+        currentIntervalPitch = currentRoot.simpleModePitch,
+        interval = previousRoot?.let {
+            calculateNamedInterval(it.simpleModePitch, currentRoot.simpleModePitch)
+        },
         currentDegreeLabel = MusicTheory.getDegreeLabelFromSpelling(currentRoot.pitch, currentRoot.sourceKey)
     )
 }
