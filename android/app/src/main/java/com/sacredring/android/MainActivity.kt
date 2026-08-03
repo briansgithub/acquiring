@@ -130,9 +130,19 @@ private fun ExposedDropdownMenuBoxScope.ExposedDropdownMenuWithScrollbar(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
+    onLoadMore: (() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val scrollState = rememberScrollState()
+    
+    if (onLoadMore != null) {
+        LaunchedEffect(scrollState.value, scrollState.maxValue) {
+            if (scrollState.maxValue > 0 && scrollState.value >= scrollState.maxValue - 100) {
+                onLoadMore()
+            }
+        }
+    }
+
     val maximumMenuHeight = (
         androidx.compose.ui.platform.LocalConfiguration.current.screenHeightDp * 0.45f
     ).dp.coerceIn(200.dp, 400.dp)
@@ -236,6 +246,11 @@ fun MainScreen(db: AppDatabase) {
     var currentWaveform by remember { mutableStateOf(AudioEngine.Waveform.SAWTOOTH) }
     var globalTranspose by remember { mutableStateOf(AudioEngine.globalTranspose) }
     
+    var titleOffset by remember { mutableStateOf(0) }
+    var artistOffset by remember { mutableStateOf(0) }
+    var isTitlePaging by remember { mutableStateOf(false) }
+    var isArtistPaging by remember { mutableStateOf(false) }
+    
     val scope = rememberCoroutineScope()
     val context = androidx.compose.ui.platform.LocalContext.current
 
@@ -270,7 +285,8 @@ fun MainScreen(db: AppDatabase) {
     LaunchedEffect(searchQuery, selectedSong, selectedArtistSongs) {
         if (searchQuery.isNotEmpty()) {
             delay(300) // Debounce
-            suggestions = activeDb.songDao().getSearchSuggestions(searchQuery)
+            titleOffset = 0
+            suggestions = activeDb.songDao().getSearchSuggestions(searchQuery, limit = 20, offset = 0)
             isExpanded = true // Always expand when typing to show suggestions or "No results"
             isShowingRecent = false
         } else if (selectedSong == null && selectedArtistSongs == null) {
@@ -294,7 +310,8 @@ fun MainScreen(db: AppDatabase) {
         if (searchArtistQuery.isNotEmpty()) {
             isShowingRecentArtists = false
             delay(300) // Debounce
-            artistSuggestions = activeDb.songDao().getArtistSuggestions(searchArtistQuery)
+            artistOffset = 0
+            artistSuggestions = activeDb.songDao().getArtistSuggestions(searchArtistQuery, limit = 20, offset = 0)
             isArtistExpanded = true
         } else if (selectedSong == null && selectedArtistSongs == null) {
             artistSuggestions = HistoryManager.getRecentArtists(context)
@@ -403,6 +420,34 @@ fun MainScreen(db: AppDatabase) {
                             allSongs = results
                             searchResult = if (results.isNotEmpty()) "Found ${results.size} matches" else "No titles matching '$searchQuery'"
                             isExpanded = false
+                        }
+                    },
+                    onLoadMoreTitle = {
+                        if (!isTitlePaging && searchQuery.isNotEmpty() && suggestions.size >= 20) {
+                            isTitlePaging = true
+                            scope.launch {
+                                val nextOffset = titleOffset + 20
+                                val nextSuggestions = activeDb.songDao().getSearchSuggestions(searchQuery, limit = 20, offset = nextOffset)
+                                if (nextSuggestions.isNotEmpty()) {
+                                    suggestions = suggestions + nextSuggestions
+                                    titleOffset = nextOffset
+                                }
+                                isTitlePaging = false
+                            }
+                        }
+                    },
+                    onLoadMoreArtist = {
+                        if (!isArtistPaging && searchArtistQuery.isNotEmpty() && artistSuggestions.size >= 20) {
+                            isArtistPaging = true
+                            scope.launch {
+                                val nextOffset = artistOffset + 20
+                                val nextSuggestions = activeDb.songDao().getArtistSuggestions(searchArtistQuery, limit = 20, offset = nextOffset)
+                                if (nextSuggestions.isNotEmpty()) {
+                                    artistSuggestions = artistSuggestions + nextSuggestions
+                                    artistOffset = nextOffset
+                                }
+                                isArtistPaging = false
+                            }
                         }
                     },
                     searchArtistQuery = searchArtistQuery,
@@ -556,6 +601,8 @@ fun LibraryView(
     onSearchArtist: () -> Unit,
     onSuggestionClick: (Song) -> Unit,
     onSearchTitle: () -> Unit,
+    onLoadMoreTitle: () -> Unit,
+    onLoadMoreArtist: () -> Unit,
     onListAll: () -> Unit,
     searchResult: String?,
     allSongs: List<Song>,
@@ -564,8 +611,11 @@ fun LibraryView(
     onDownloadCatalog: () -> Unit
 ) {
     var isHarvestExpanded by remember { mutableStateOf(false) }
+    var isListAllExpanded by remember { mutableStateOf(false) }
+    var isDownloadCatalogExpanded by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
+        Spacer(modifier = Modifier.weight(0.3f))
         // Search Section
         Text(text = "Database Search", style = MaterialTheme.typography.titleMedium)
         
@@ -578,7 +628,7 @@ fun LibraryView(
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
-                label = { Text("Search by Title or Slug") },
+                label = { Text("Search by Title") },
                 modifier = Modifier.fillMaxWidth().menuAnchor(),
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
@@ -588,6 +638,7 @@ fun LibraryView(
                 ExposedDropdownMenuWithScrollbar(
                     expanded = isExpanded,
                     onDismissRequest = { onExpandedChange(false) },
+                    onLoadMore = onLoadMoreTitle,
                     modifier = Modifier.heightIn(max = 400.dp)
                 ) {
                     if (isShowingRecent) {
@@ -644,6 +695,7 @@ fun LibraryView(
                 ExposedDropdownMenuWithScrollbar(
                     expanded = isArtistExpanded,
                     onDismissRequest = { onArtistExpandedChange(false) },
+                    onLoadMore = onLoadMoreArtist,
                     modifier = Modifier.heightIn(max = 400.dp)
                 ) {
                     if (isShowingRecentArtists) {
@@ -677,10 +729,6 @@ fun LibraryView(
             Text("Search Artist")
         }
 
-        Button(onClick = onListAll, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
-            Text("List All Library")
-        }
-
         searchResult?.let {
             Text(
                 text = it,
@@ -706,6 +754,35 @@ fun LibraryView(
         }
 
         Divider(modifier = Modifier.padding(vertical = 8.dp))
+
+        // Expandable List All Section
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Surface(
+                onClick = { isListAllExpanded = !isListAllExpanded },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "List All Library",
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Icon(
+                        imageVector = if (isListAllExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        contentDescription = if (isListAllExpanded) "Collapse" else "Expand"
+                    )
+                }
+            }
+
+            if (isListAllExpanded) {
+                Button(onClick = onListAll, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                    Text("List All Library")
+                }
+            }
+        }
 
         // Expandable Harvest Section
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -748,20 +825,46 @@ fun LibraryView(
         }
 
         // Download Catalog Section
-        Button(
-            onClick = onDownloadCatalog,
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 16.dp)
-        ) {
-            Text("Download Full Library")
-        }
-        
-        if (catalogStatus.isNotEmpty()) {
-            Text(
-                text = catalogStatus,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(bottom = 16.dp),
-                color = MaterialTheme.colorScheme.primary
-            )
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Surface(
+                onClick = { isDownloadCatalogExpanded = !isDownloadCatalogExpanded },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Download Full Library",
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Icon(
+                        imageVector = if (isDownloadCatalogExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        contentDescription = if (isDownloadCatalogExpanded) "Collapse" else "Expand"
+                    )
+                }
+            }
+
+            if (isDownloadCatalogExpanded) {
+                Column(modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
+                    Button(
+                        onClick = onDownloadCatalog,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Download Full Library")
+                    }
+                    
+                    if (catalogStatus.isNotEmpty()) {
+                        Text(
+                            text = catalogStatus,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(top = 8.dp),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            }
         }
     }
 }

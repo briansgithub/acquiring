@@ -205,14 +205,19 @@ fun AudiationPitchPracticeContainer(
     }
 
     // Disarm if the target is no longer valid (e.g. chord changed)
+    // OR update the target if its transposition changed
     LaunchedEffect(targets) {
         val s = state
         if (s is AudiationState.Listening) {
-            val stillExists = targets.any { 
+            val updatedTarget = targets.find { 
                 it.untransposedMidi == s.target.untransposedMidi && it.label == s.target.label 
             }
-            if (!stillExists) {
+            if (updatedTarget == null) {
                 stopListening()
+            } else if (updatedTarget.transposedMidi != s.target.transposedMidi) {
+                // Transposition changed, update target in state and restart tracker with new pitch
+                state = AudiationState.Listening(updatedTarget, s.pitch)
+                pitchSource.start(updatedTarget.transposedMidi)
             }
         }
     }
