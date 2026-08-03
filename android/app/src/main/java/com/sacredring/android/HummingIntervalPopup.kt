@@ -69,7 +69,9 @@ internal fun HummingIntervalPopup(
             // Permission granted, start recording for the pending slot
             val slotId = recordingSlot!!
             recordingSlot = null // Reset so startRecording can trigger properly
-            startRecording(slotId, pitchTracker, scope, onUpdate = { recordingSlot = it }, onTimeUpdate = { recordingTimeRemaining = it }, onFinished = { id, estimate ->
+            startRecording(slotId, pitchTracker, scope, onStart = {
+                if (slotId == 1) slot1 = null else slot2 = null
+            }, onUpdate = { recordingSlot = it }, onTimeUpdate = { recordingTimeRemaining = it }, onFinished = { id, estimate ->
                 if (estimate != null) {
                     val nearestMidi = estimate.midi.roundToInt()
                     val centsFromNearest = (estimate.midi - nearestMidi) * 100
@@ -163,14 +165,9 @@ internal fun HummingIntervalPopup(
                         }
                     },
                     onDoubleClick = {
-                        if (slot1 != null) {
-                            slot1 = null
-                            slot2 = null
-                            return@HummingSlotView
-                        }
                         val hasPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
                         if (hasPermission) {
-                            startRecording(1, pitchTracker, scope, onUpdate = { recordingSlot = it }, onTimeUpdate = { recordingTimeRemaining = it }, onFinished = { id, estimate ->
+                            startRecording(1, pitchTracker, scope, onStart = { slot1 = null }, onUpdate = { recordingSlot = it }, onTimeUpdate = { recordingTimeRemaining = it }, onFinished = { id, estimate ->
                                 if (estimate != null) {
                                     val nearestMidi = estimate.midi.roundToInt()
                                     val centsFromNearest = (estimate.midi - nearestMidi) * 100
@@ -204,13 +201,9 @@ internal fun HummingIntervalPopup(
                         }
                     },
                     onDoubleClick = {
-                        if (slot2 != null) {
-                            slot2 = null
-                            return@HummingSlotView
-                        }
                         val hasPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
                         if (hasPermission) {
-                            startRecording(2, pitchTracker, scope, onUpdate = { recordingSlot = it }, onTimeUpdate = { recordingTimeRemaining = it }, onFinished = { id, estimate ->
+                            startRecording(2, pitchTracker, scope, onStart = { slot2 = null }, onUpdate = { recordingSlot = it }, onTimeUpdate = { recordingTimeRemaining = it }, onFinished = { id, estimate ->
                                 if (estimate != null) {
                                     val nearestMidi = estimate.midi.roundToInt()
                                     val centsFromNearest = (estimate.midi - nearestMidi) * 100
@@ -445,10 +438,12 @@ private fun startRecording(
     slotId: Int,
     pitchTracker: MicrophonePitchTracker,
     scope: kotlinx.coroutines.CoroutineScope,
+    onStart: (() -> Unit)?,
     onUpdate: (Int?) -> Unit,
     onTimeUpdate: (Int) -> Unit,
     onFinished: (Int, MicrophonePitchTracker.PitchResult.Estimate?) -> Unit
 ) {
+    onStart?.invoke()
     onUpdate(slotId)
     pitchTracker.start(60) // Target doesn't strictly matter for raw midi, but tracker requires it
     
