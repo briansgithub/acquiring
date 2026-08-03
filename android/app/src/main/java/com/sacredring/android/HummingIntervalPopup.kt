@@ -11,6 +11,8 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -149,20 +151,32 @@ internal fun HummingIntervalPopup(
                     data = slot1,
                     isRecording = recordingSlot == 1,
                     recordingTimeRemaining = if (recordingSlot == 1) recordingTimeRemaining else 0,
-                    onClick = {
+                    onSingleClick = {
+                        slot1?.let {
+                            scope.launch {
+                                AudioEngine.playChord(
+                                    listOf(it.rawMidi.roundToInt()),
+                                    durationMs = 1000,
+                                    channel = AudioEngine.PlaybackChannel.PREVIEW
+                                )
+                            }
+                        }
+                    },
+                    onDoubleClick = {
+                        if (slot1 != null) {
+                            slot1 = null
+                            slot2 = null
+                            return@HummingSlotView
+                        }
                         val hasPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
                         if (hasPermission) {
                             startRecording(1, pitchTracker, scope, onUpdate = { recordingSlot = it }, onTimeUpdate = { recordingTimeRemaining = it }, onFinished = { id, estimate ->
                                 if (estimate != null) {
                                     val nearestMidi = estimate.midi.roundToInt()
                                     val centsFromNearest = (estimate.midi - nearestMidi) * 100
-                                    val spelled = if (id == 2 && slot1 != null) {
-                                        SpelledPitch.spellRelative(slot1!!.pitch, nearestMidi)
-                                    } else {
-                                        SpelledPitch.fromMidi(nearestMidi)
-                                    }
+                                    val spelled = SpelledPitch.fromMidi(nearestMidi)
                                     val data = PitchData(spelled, centsFromNearest, estimate.midi)
-                                    if (id == 1) slot1 = data else slot2 = data
+                                    if (id == 1) slot1 = data
                                 }
                             })
                         } else {
@@ -178,20 +192,35 @@ internal fun HummingIntervalPopup(
                     data = slot2,
                     isRecording = recordingSlot == 2,
                     recordingTimeRemaining = if (recordingSlot == 2) recordingTimeRemaining else 0,
-                    onClick = {
+                    onSingleClick = {
+                        slot2?.let {
+                            scope.launch {
+                                AudioEngine.playChord(
+                                    listOf(it.rawMidi.roundToInt()),
+                                    durationMs = 1000,
+                                    channel = AudioEngine.PlaybackChannel.PREVIEW
+                                )
+                            }
+                        }
+                    },
+                    onDoubleClick = {
+                        if (slot2 != null) {
+                            slot2 = null
+                            return@HummingSlotView
+                        }
                         val hasPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
                         if (hasPermission) {
                             startRecording(2, pitchTracker, scope, onUpdate = { recordingSlot = it }, onTimeUpdate = { recordingTimeRemaining = it }, onFinished = { id, estimate ->
                                 if (estimate != null) {
                                     val nearestMidi = estimate.midi.roundToInt()
                                     val centsFromNearest = (estimate.midi - nearestMidi) * 100
-                                    val spelled = if (id == 2 && slot1 != null) {
+                                    val spelled = if (slot1 != null) {
                                         SpelledPitch.spellRelative(slot1!!.pitch, nearestMidi)
                                     } else {
                                         SpelledPitch.fromMidi(nearestMidi)
                                     }
                                     val data = PitchData(spelled, centsFromNearest, estimate.midi)
-                                    if (id == 1) slot1 = data else slot2 = data
+                                    if (id == 2) slot2 = data
                                 }
                             })
                         } else {
@@ -214,6 +243,21 @@ internal fun HummingIntervalPopup(
                         .height(120.dp)
                         .padding(4.dp)
                         .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp))
+                        .clickable(enabled = slot1 != null && slot2 != null) {
+                            val s1 = slot1
+                            val s2 = slot2
+                            if (s1 != null && s2 != null) {
+                                scope.launch {
+                                    val note1 = s1.pitch.chromaticPosition + 12
+                                    val note2 = s2.pitch.chromaticPosition + 12
+                                    AudioEngine.playChord(listOf(note1), durationMs = 450, channel = AudioEngine.PlaybackChannel.PREVIEW)
+                                    delay(450)
+                                    AudioEngine.playChord(listOf(note2), durationMs = 450, channel = AudioEngine.PlaybackChannel.PREVIEW)
+                                    delay(450)
+                                    AudioEngine.playChord(listOf(note1, note2), durationMs = 1000, channel = AudioEngine.PlaybackChannel.PREVIEW)
+                                }
+                            }
+                        }
                         .padding(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
@@ -257,7 +301,8 @@ internal fun RowScope.HummingSlotView(
     data: PitchData?,
     isRecording: Boolean,
     recordingTimeRemaining: Int,
-    onClick: () -> Unit
+    onSingleClick: () -> Unit,
+    onDoubleClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -266,7 +311,14 @@ internal fun RowScope.HummingSlotView(
             .padding(4.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(if (isRecording) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface)
-            .clickable(enabled = !isRecording) { onClick() }
+            .pointerInput(isRecording) {
+                if (!isRecording) {
+                    detectTapGestures(
+                        onTap = { onSingleClick() },
+                        onDoubleTap = { onDoubleClick() }
+                    )
+                }
+            }
             .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -298,7 +350,7 @@ internal fun RowScope.HummingSlotView(
                     )
                 }
             } else {
-                Text("Tap to record", fontSize = 10.sp, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                Text("Double tap\nto record", fontSize = 10.sp, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
             }
             
             if (isRecording) {
