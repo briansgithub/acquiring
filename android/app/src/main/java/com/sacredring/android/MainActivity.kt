@@ -796,9 +796,7 @@ fun SongDetailView(
     val selectedSection = sections[selectedSectionKey] ?: sectionsInSongOrder.firstOrNull()?.value ?: sections.values.first()
     var isSectionExpanded by remember { mutableStateOf(false) }
     var isTransposeExpanded by remember { mutableStateOf(false) }
-    var playChords by remember { mutableStateOf(true) }
-    var playOnlyRoot by remember { mutableStateOf(false) }
-    var isSimpleMode by remember { mutableStateOf(true) }
+    var isSimpleMode by remember { mutableStateOf(false) }
     var useRelativeIonianContext by remember { mutableStateOf(false) }
     val uriHandler = LocalUriHandler.current
 
@@ -823,20 +821,23 @@ fun SongDetailView(
             ) {
                 Column(
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .padding(start = 10.dp, top = 4.dp, bottom = 4.dp),
+                        .fillMaxSize()
+                        .padding(top = 4.dp, bottom = 4.dp),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Trans.",
+                        text = "Transpose",
                         maxLines = 1,
                         style = MaterialTheme.typography.labelSmall.copy(lineHeight = 12.sp),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.End,
+                        modifier = Modifier.fillMaxWidth().padding(end = 28.dp)
                     )
                     Text(
                         text = transposeText,
                         maxLines = 1,
-                        style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 18.sp)
+                        style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 18.sp),
+                        modifier = Modifier.padding(start = 10.dp)
                     )
                 }
                 Box(modifier = Modifier.align(Alignment.CenterEnd)) {
@@ -850,7 +851,13 @@ fun SongDetailView(
             ) {
                 (0..12).forEach { transpose ->
                     DropdownMenuItem(
-                        text = { Text(if (transpose == 0) "0" else "+$transpose") },
+                        text = {
+                            Text(
+                                text = if (transpose == 0) "0" else "+$transpose",
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
+                        },
                         onClick = {
                             onTransposeChange(transpose)
                             isTransposeExpanded = false
@@ -875,7 +882,7 @@ fun SongDetailView(
                     label = { Text("Section") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isSectionExpanded) },
                     colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                    modifier = Modifier.fillMaxWidth().menuAnchor()
+                    modifier = Modifier.fillMaxWidth().height(64.dp).menuAnchor()
                 )
 
                 ExposedDropdownMenuWithScrollbar(
@@ -981,10 +988,6 @@ fun SongDetailView(
             )
             2 -> QuizTab(
                 section = selectedSection,
-                playChords = playChords,
-                onPlayChordsChange = { playChords = it },
-                playOnlyRoot = playOnlyRoot,
-                onPlayOnlyRootChange = { playOnlyRoot = it },
                 isSimpleMode = isSimpleMode,
                 onSimpleModeChange = { isSimpleMode = it },
                 useRelativeIonianContext = useRelativeIonianContext,
@@ -1027,10 +1030,6 @@ private fun ringModeColor(scale: String): Color = when (scale) {
 @Composable
 fun QuizTab(
     section: ExtractedSection,
-    playChords: Boolean,
-    onPlayChordsChange: (Boolean) -> Unit,
-    playOnlyRoot: Boolean,
-    onPlayOnlyRootChange: (Boolean) -> Unit,
     isSimpleMode: Boolean,
     onSimpleModeChange: (Boolean) -> Unit,
     useRelativeIonianContext: Boolean,
@@ -1111,9 +1110,7 @@ fun QuizTab(
         section,
         melody,
         bpm,
-        isSimpleMode,
-        playChords,
-        playOnlyRoot
+        isSimpleMode
     ) {
         buildList {
             melody.forEach { note ->
@@ -1135,36 +1132,30 @@ fun QuizTab(
                 }
             }
 
-            if (isSimpleMode || playChords) {
-                section.chords.forEach { chord ->
-                    val beat = normalizePlaybackBeat(
-                        (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
-                    )
-                    val duration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
-                    val chordEnd = beat + duration
-                    val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
-                        (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
-                    if (!isRest && beat <= 1.0 && chordEnd > 1.0) {
-                        val activeKey = section.getKeyAtBeat(beat)
-                        val midiNotes = if (isSimpleMode) {
-                            listOfNotNull(simpleModeRootAudioNote(chord, activeKey))
-                        } else if (playOnlyRoot) {
-                            listOfNotNull(
-                                ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull()
+            section.chords.forEach { chord ->
+                val beat = normalizePlaybackBeat(
+                    (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                )
+                val duration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                val chordEnd = beat + duration
+                val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
+                    (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
+                if (!isRest && beat <= 1.0 && chordEnd > 1.0) {
+                    val activeKey = section.getKeyAtBeat(beat)
+                    val midiNotes = if (isSimpleMode) {
+                        listOfNotNull(simpleModeRootAudioNote(chord, activeKey))
+                    } else {
+                        ChordInterpreter.getChordNotes(chord, activeKey)
+                    }
+                    val durationMs = remainingPlaybackDurationMs(chordEnd, 1.0, bpm)
+                    if (midiNotes.isNotEmpty() && durationMs != null) {
+                        add(
+                            LoopHeadPlaybackRequest(
+                                midiNotes = midiNotes,
+                                durationMs = durationMs,
+                                channel = AudioEngine.PlaybackChannel.CHORD
                             )
-                        } else {
-                            ChordInterpreter.getChordNotes(chord, activeKey)
-                        }
-                        val durationMs = remainingPlaybackDurationMs(chordEnd, 1.0, bpm)
-                        if (midiNotes.isNotEmpty() && durationMs != null) {
-                            add(
-                                LoopHeadPlaybackRequest(
-                                    midiNotes = midiNotes,
-                                    durationMs = durationMs,
-                                    channel = AudioEngine.PlaybackChannel.CHORD
-                                )
-                            )
-                        }
+                        )
                     }
                 }
             }
@@ -1224,7 +1215,7 @@ fun QuizTab(
                 }
             }
 
-            if (replayChords && (isSimpleMode || playChords)) {
+            if (replayChords) {
                 section.chords.forEach { chord ->
                     val chordBeat = normalizePlaybackBeat(
                         (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
@@ -1236,8 +1227,6 @@ fun QuizTab(
                         val activeKey = section.getKeyAtBeat(chordBeat)
                         val notes = if (isSimpleMode) {
                             listOfNotNull(simpleModeRootAudioNote(chord, activeKey))
-                        } else if (playOnlyRoot) {
-                            listOfNotNull(ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull())
                         } else {
                             ChordInterpreter.getChordNotes(chord, activeKey)
                         }
@@ -1343,7 +1332,7 @@ fun QuizTab(
 
     val continuousSettings = Triple(currentWaveform, globalTranspose, tempoPercent)
     var previousContinuousSettings by remember(section) { mutableStateOf(continuousSettings) }
-    val chordLayerSettings = Triple(playChords, playOnlyRoot, isSimpleMode)
+    val chordLayerSettings = isSimpleMode
     var previousChordLayerSettings by remember(section) { mutableStateOf(chordLayerSettings) }
 
     LaunchedEffect(section) {
@@ -1407,7 +1396,7 @@ fun QuizTab(
     }
 
     // These controls only change the chord layer, so melody continues untouched.
-    LaunchedEffect(playChords, playOnlyRoot, isSimpleMode) {
+    LaunchedEffect(isSimpleMode) {
         if (chordLayerSettings == previousChordLayerSettings) return@LaunchedEffect
         previousChordLayerSettings = chordLayerSettings
         intervalPreviewJob?.cancel()
@@ -1493,44 +1482,36 @@ fun QuizTab(
                         }
                     }
 
-                    if (isSimpleMode || playChords) {
-                        section.chords.forEach { chord ->
-                            val beat = normalizePlaybackBeat(
-                                (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
-                            )
-                            val duration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
-                            val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
-                                (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
-                            if (!isRest && beat >= fromBeatInclusive && beat < untilBeatExclusive) {
-                                launch {
-                                    val activeKey = section.getKeyAtBeat(beat)
-                                    val notes = ChordInterpreter.getChordNotes(chord, activeKey)
-                                    if (notes.isNotEmpty()) {
-                                        val notesToPlay = if (isSimpleMode || playOnlyRoot) {
-                                            val rootNote = if (isSimpleMode) {
-                                                simpleModeRootAudioNote(chord, activeKey)
-                                            } else {
-                                                ChordInterpreter
-                                                    .getRootPositionChordNotes(chord, activeKey)
-                                                    .firstOrNull()
-                                            }
-                                            if (rootNote != null) listOf(rootNote) else emptyList()
-                                        } else {
-                                            notes
-                                        }
-                                        val durationMs = remainingPlaybackDurationMs(
-                                            beat + duration,
-                                            maxOf(beat, playbackBeatAtSchedule),
-                                            bpm
+                    section.chords.forEach { chord ->
+                        val beat = normalizePlaybackBeat(
+                            (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                        )
+                        val duration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                        val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
+                            (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
+                        if (!isRest && beat >= fromBeatInclusive && beat < untilBeatExclusive) {
+                            launch {
+                                val activeKey = section.getKeyAtBeat(beat)
+                                val notes = ChordInterpreter.getChordNotes(chord, activeKey)
+                                if (notes.isNotEmpty()) {
+                                    val notesToPlay = if (isSimpleMode) {
+                                        val rootNote = simpleModeRootAudioNote(chord, activeKey)
+                                        if (rootNote != null) listOf(rootNote) else emptyList()
+                                    } else {
+                                        notes
+                                    }
+                                    val durationMs = remainingPlaybackDurationMs(
+                                        beat + duration,
+                                        maxOf(beat, playbackBeatAtSchedule),
+                                        bpm
+                                    )
+                                    if (durationMs != null) {
+                                        AudioEngine.playChord(
+                                            notesToPlay,
+                                            durationMs = durationMs,
+                                            channel = AudioEngine.PlaybackChannel.CHORD,
+                                            playbackToken = chordPlaybackToken
                                         )
-                                        if (durationMs != null) {
-                                            AudioEngine.playChord(
-                                                notesToPlay,
-                                                durationMs = durationMs,
-                                                channel = AudioEngine.PlaybackChannel.CHORD,
-                                                playbackToken = chordPlaybackToken
-                                            )
-                                        }
                                     }
                                 }
                             }
@@ -1774,49 +1755,74 @@ fun QuizTab(
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 val displayScale = if (useRelativeIonianContext) {
-                    "Ionian"
+                    "Major"
                 } else {
                     activeKey.scale.replace(Regex("([a-z])([A-Z])"), "$1 $2").replaceFirstChar { it.titlecase() }
                 }
                 val activeModeColor = ringModeColor(activeKey.scale)
-                val ionianBorderColor = ringModeColor(ionianSourceKey.scale)
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Box(modifier = Modifier.fillMaxWidth().height(40.dp)) {
                         Row(
-                            modifier = Modifier.align(Alignment.Center),
+                            modifier = Modifier.align(Alignment.CenterStart),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                            Text(
+                                text = "Lock in Major",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Start
+                            )
                             Checkbox(
                                 checked = useRelativeIonianContext,
                                 onCheckedChange = onRelativeIonianContextChange,
-                                modifier = Modifier.scale(0.85f).semantics {
-                                    contentDescription = "Use relative major labels"
-                                }
-                            )
-                            Text(
-                                text = if (!isSimpleMode && !useRelativeIonianContext) "${activeKey.tonic} $displayScale" else displayScale,
-                                textAlign = TextAlign.Center,
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (useRelativeIonianContext) Color.Red else activeModeColor,
-                                modifier = if (useRelativeIonianContext) {
-                                    Modifier
-                                        .border(1.dp, ionianBorderColor, RoundedCornerShape(4.dp))
-                                        .padding(horizontal = 8.dp, vertical = 2.dp)
-                                } else {
-                                    Modifier
-                                }
+                                modifier = Modifier
+                                    .scale(0.85f)
+                                    .semantics { contentDescription = "Lock in Major" }
                             )
                         }
-                        if (!isSimpleMode) { Box(modifier = Modifier.align(Alignment.CenterEnd)) { transposePicker() } }
+                        
+                        Text(
+                            text = if (!isSimpleMode && !useRelativeIonianContext) "${activeKey.tonic} $displayScale" else displayScale,
+                            textAlign = TextAlign.Center,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = activeModeColor,
+                            modifier = if (useRelativeIonianContext) {
+                                Modifier
+                                    .align(Alignment.Center)
+                                    .border(1.dp, Color.Red, RoundedCornerShape(4.dp))
+                                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                            } else {
+                                Modifier.align(Alignment.Center)
+                            }
+                        )
+
+                        if (!isSimpleMode) {
+                            Box(modifier = Modifier.align(Alignment.CenterEnd)) {
+                                transposePicker()
+                            }
+                        }
                     }
                     Row(modifier = Modifier.height(34.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text("Chord / Melody\nVol.", style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center, maxLines = 2, modifier = Modifier.width(88.dp))
-                        Slider(value = melodyChordBalance, onValueChange = { melodyChordBalance = it }, modifier = Modifier.weight(1f).padding(horizontal = 8.dp).scale(0.85f))
+                        Box(modifier = Modifier.width(104.dp), contentAlignment = Alignment.CenterStart) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    "Chord / Melody", 
+                                    style = MaterialTheme.typography.labelSmall,
+                                    maxLines = 1
+                                )
+                                Text(
+                                    "Vol.", 
+                                    style = MaterialTheme.typography.labelSmall,
+                                    maxLines = 1
+                                )
+                            }
+                        }
+                        Slider(value = melodyChordBalance, onValueChange = { melodyChordBalance = it }, modifier = Modifier.weight(1f))
                     }
                     Row(modifier = Modifier.height(34.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text("Tempo", style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center, maxLines = 1, modifier = Modifier.width(40.dp))
-                        Text(text = "${tempoPercent.roundToInt()}%", style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center, maxLines = 1, modifier = Modifier.width(28.dp))
+                        Text("Tempo", style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Start, maxLines = 1, modifier = Modifier.width(40.dp))
+                        Text(text = "${tempoPercent.roundToInt()}%", style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center, maxLines = 1, modifier = Modifier.width(44.dp))
                         Box(
                             modifier = Modifier
                                 .size(20.dp)
@@ -1826,7 +1832,7 @@ fun QuizTab(
                         ) {
                             Icon(imageVector = Icons.Filled.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
                         }
-                        Slider(value = tempoPercent, onValueChange = { tempoPercent = it }, valueRange = 0f..200f, modifier = Modifier.weight(1f).padding(horizontal = 8.dp).scale(0.85f))
+                        Slider(value = tempoPercent, onValueChange = { tempoPercent = it }, valueRange = 0f..200f, modifier = Modifier.weight(1f))
                     }
                 }
 
@@ -1847,6 +1853,7 @@ fun QuizTab(
                     }
                 }
 
+                // Timeline
                 if (!isSimpleMode) {
                     Box(modifier = Modifier.fillMaxWidth().height(chordLaneHeight + melodyLaneHeight)) {
                         Canvas(
@@ -2072,11 +2079,10 @@ fun QuizTab(
                                         val chordDurationBeats = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
                                         val chordDurationMs = remainingPlaybackDurationMs(chordDurationBeats, 0.0, bpm)
                                         val previewNotes = notes.map { it + audiationOctaveShift * 12 }
-                                        val previewRoot = rootMidi + audiationOctaveShift * 12
                                         val degreeSpacing = when { notes.size >= 7 -> 2.dp; notes.size >= 5 -> 4.dp; else -> 6.dp }
                                         val degreeFontSize = when { notes.size >= 7 -> 24.sp; notes.size >= 5 -> 26.sp; else -> 28.sp }
                                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                                            Button(onClick = { scope.launch { chordDurationMs?.let { AudioEngine.playChord(if (playOnlyRoot) listOf(previewRoot) else previewNotes, durationMs = it, channel = AudioEngine.PlaybackChannel.PREVIEW) } } }, enabled = chordDurationMs != null, modifier = Modifier.weight(1f).height(60.dp).onGloballyPositioned { onTargetPositioned(100, it) }, shape = RoundedCornerShape(16.dp), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)) {
+                                            Button(onClick = { scope.launch { chordDurationMs?.let { AudioEngine.playChord(previewNotes, durationMs = it, channel = AudioEngine.PlaybackChannel.PREVIEW) } } }, enabled = chordDurationMs != null, modifier = Modifier.weight(1f).height(60.dp).onGloballyPositioned { onTargetPositioned(100, it) }, shape = RoundedCornerShape(16.dp), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)) {
                                                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { RomanNumeralText(display = romanDisplay, fontSize = 32.sp, modifier = Modifier.fillMaxWidth(), minFontSize = 12.sp)
                                                     if (audiationState is AudiationState.Listening && audiationState.target.id == 100) PitchGauge(pitchResult = audiationState.pitch, targetLabel = audiationState.target.label, modifier = Modifier.matchParentSize()) }
                                             }
@@ -2094,13 +2100,8 @@ fun QuizTab(
                         }
                     }
 
-                    // Offset the shorter simple layout to align its scrub bar with the
-                    // non-simple timeline and chord-tool layout.
-                    if (isSimpleMode) {
-                        Spacer(modifier = Modifier.height(80.dp))
-                    }
 
-                    Spacer(modifier = Modifier.height(28.dp))
+                    Spacer(modifier = Modifier.weight(1f))
 
                     // Unified playback scrub bar
                     Slider(
@@ -2110,38 +2111,31 @@ fun QuizTab(
                         valueRange = 1f..endBeat.toFloat(),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 24.dp)
                             .height(32.dp)
-                            .scale(0.9f)
                             .onGloballyPositioned(onScrubBarPositioned)
                     )
+
+                    Spacer(modifier = Modifier.height(72.dp))
                 }
             }
         }
 
         Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             Box(modifier = Modifier.align(Alignment.BottomStart).offset(x = (-8).dp, y = (-88).dp)) { waveformPickerComposable() }
-            Row(modifier = Modifier.align(Alignment.BottomStart).offset(x = (-8).dp, y = 8.dp), verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                if (!isSimpleMode) {
-                    Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) { Text("Chords", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.width(44.dp))
-                            Switch(checked = playChords, onCheckedChange = onPlayChordsChange) }
-                        Row(verticalAlignment = Alignment.CenterVertically) { Text("Root only", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.width(44.dp))
-                            Switch(checked = playOnlyRoot, onCheckedChange = onPlayOnlyRootChange) }
-                    }
-                } else { Spacer(modifier = Modifier.width(96.dp)) }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) { Text(text = "Simple", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Switch(checked = isSimpleMode, onCheckedChange = onSimpleModeChange) }
-            }
+            
             Column(modifier = Modifier.align(Alignment.BottomEnd), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilledTonalButton(onClick = { activeNoteReplayJob?.cancel(); intervalPreviewJob?.cancel(); AudioEngine.stopAllPlayback(); isPlaying = false; isScrubbing = false; wasPlayingBeforeScrub = false; hasPausedTimelinePlayback = false; resumeAfterTempoZero = false; updatePlaybackBeat(1.0) }, modifier = Modifier.size(64.dp), contentPadding = PaddingValues(0.dp), shape = RoundedCornerShape(18.dp)) { Icon(Icons.Default.Refresh, contentDescription = "Reset", modifier = Modifier.size(32.dp)) }
-                    Button(onClick = { if (!isScrubbing && bpm > 0.0) { intervalPreviewJob?.cancel(); AudioEngine.stopPreviewPlayback(); if (isPlaying) { activeNoteReplayJob?.cancel(); AudioEngine.cancelPendingPlayback(QUIZ_TIMELINE_CHANNELS); AudioEngine.pausePlayback(QUIZ_TIMELINE_CHANNELS); currentBeat = playbackBeat(); hasPausedTimelinePlayback = AudioEngine.hasPlayback(QUIZ_TIMELINE_CHANNELS); isPlaying = false } else { if (hasPausedTimelinePlayback && AudioEngine.hasPlayback(QUIZ_TIMELINE_CHANNELS)) { AudioEngine.resumePlayback(QUIZ_TIMELINE_CHANNELS) } else { replayActiveNotesWithRemainingDuration() }; hasPausedTimelinePlayback = false; resumeAfterTempoZero = false; isPlaying = true; playbackTrigger++ } } }, enabled = !isScrubbing && bpm > 0.0, modifier = Modifier.width(132.dp).height(64.dp)) {
-                        if (isPlaying) Text("Ⅱ", fontSize = 28.sp) else Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(28.dp))
-                        Spacer(Modifier.width(8.dp)); Text(if (isPlaying) "Pause" else "Play")
-                    }
+                Button(onClick = { if (!isScrubbing && bpm > 0.0) { intervalPreviewJob?.cancel(); AudioEngine.stopPreviewPlayback(); if (isPlaying) { activeNoteReplayJob?.cancel(); AudioEngine.cancelPendingPlayback(QUIZ_TIMELINE_CHANNELS); AudioEngine.pausePlayback(QUIZ_TIMELINE_CHANNELS); currentBeat = playbackBeat(); hasPausedTimelinePlayback = AudioEngine.hasPlayback(QUIZ_TIMELINE_CHANNELS); isPlaying = false } else { if (hasPausedTimelinePlayback && AudioEngine.hasPlayback(QUIZ_TIMELINE_CHANNELS)) { AudioEngine.resumePlayback(QUIZ_TIMELINE_CHANNELS) } else { replayActiveNotesWithRemainingDuration() }; hasPausedTimelinePlayback = false; resumeAfterTempoZero = false; isPlaying = true; playbackTrigger++ } } }, enabled = !isScrubbing && bpm > 0.0, modifier = Modifier.width(180.dp).height(64.dp)) {
+                    if (isPlaying) Text("Ⅱ", fontSize = 28.sp) else Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(28.dp))
+                    Spacer(Modifier.width(8.dp)); Text(if (isPlaying) "Pause" else "Play")
                 }
-                sectionPicker()
+                Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(text = "Root Only", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Switch(checked = isSimpleMode, onCheckedChange = onSimpleModeChange)
+                    }
+                    FilledTonalButton(onClick = { activeNoteReplayJob?.cancel(); intervalPreviewJob?.cancel(); AudioEngine.stopAllPlayback(); isPlaying = false; isScrubbing = false; wasPlayingBeforeScrub = false; hasPausedTimelinePlayback = false; resumeAfterTempoZero = false; updatePlaybackBeat(1.0) }, modifier = Modifier.size(56.dp), contentPadding = PaddingValues(0.dp), shape = RoundedCornerShape(14.dp)) { Icon(Icons.Default.Refresh, contentDescription = "Reset", modifier = Modifier.size(28.dp)) }
+                    sectionPicker()
+                }
             }
         }
     }
