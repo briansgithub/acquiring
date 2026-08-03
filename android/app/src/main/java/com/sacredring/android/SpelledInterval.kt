@@ -72,6 +72,65 @@ internal data class SpelledPitch(
             value < 0 -> "b".repeat(-value)
             else -> ""
         }
+
+        fun fromMidi(midi: Int): SpelledPitch {
+            val octave = (midi / 12) - 1
+            val pc = ((midi % 12) + 12) % 12
+            val (letter, accidental) = when (pc) {
+                0 -> DiatonicLetter.C to 0
+                1 -> DiatonicLetter.D to -1 // Db
+                2 -> DiatonicLetter.D to 0
+                3 -> DiatonicLetter.E to -1 // Eb
+                4 -> DiatonicLetter.E to 0
+                5 -> DiatonicLetter.F to 0
+                6 -> DiatonicLetter.G to -1 // Gb
+                7 -> DiatonicLetter.G to 0
+                8 -> DiatonicLetter.A to -1 // Ab
+                9 -> DiatonicLetter.A to 0
+                10 -> DiatonicLetter.B to -1 // Bb
+                11 -> DiatonicLetter.B to 0
+                else -> DiatonicLetter.C to 0
+            }
+            return SpelledPitch(letter, accidental, octave)
+        }
+
+        /**
+         * Spells a MIDI note relative to a reference pitch to produce the most
+         * "common" musical interval (favoring M, m, P over A, d).
+         */
+        fun spellRelative(from: SpelledPitch, toMidi: Int): SpelledPitch {
+            val diff = toMidi - from.chromaticPosition
+            val octaves = if (diff >= 0) diff / 12 else (diff - 11) / 12
+            val semitones = ((diff % 12) + 12) % 12
+
+            // Preferred diatonic distance for each semitone class (0-11)
+            val preferredDiatonicDelta = when (semitones) {
+                0 -> 0  // P1
+                1 -> 1  // m2
+                2 -> 1  // M2
+                3 -> 2  // m3
+                4 -> 2  // M3
+                5 -> 3  // P4
+                6 -> 4  // d5 (Tritone)
+                7 -> 4  // P5
+                8 -> 5  // m6
+                9 -> 5  // M6
+                10 -> 6 // m7
+                11 -> 6 // M7
+                else -> 0
+            }
+
+            val targetStaffPos = from.staffPosition + octaves * 7 + preferredDiatonicDelta
+            val letters = DiatonicLetter.entries
+            val targetLetter = letters[((targetStaffPos % 7) + 7) % 7]
+            val targetOctave = kotlin.math.floor(targetStaffPos / 7.0).toInt()
+
+            // Calculate accidental needed to reach toMidi
+            val baseChromatic = targetOctave * 12 + targetLetter.naturalSemitone
+            val accidental = toMidi - baseChromatic
+
+            return SpelledPitch(targetLetter, accidental, targetOctave)
+        }
     }
 }
 

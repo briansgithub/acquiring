@@ -348,175 +348,182 @@ fun MainScreen(db: AppDatabase) {
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        if (selectedSongSections == null) {
-            if (selectedArtistSongs != null) {
-                ArtistSongsView(
-                    artistName = selectedArtistName ?: "Unknown Artist",
-                    songs = selectedArtistSongs!!,
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .padding(bottom = 32.dp) // Room for collapsed popup handle
+        ) {
+            if (selectedSongSections == null) {
+                if (selectedArtistSongs != null) {
+                    ArtistSongsView(
+                        artistName = selectedArtistName ?: "Unknown Artist",
+                        songs = selectedArtistSongs!!,
+                        onSongClick = openSong,
+                        onBack = {
+                            selectedArtistSongs = null
+                            selectedArtistName = null
+                        }
+                    )
+                } else {
+                    // Library/Search View
+                    LibraryView(
+                    activeDb = activeDb,
+                    urlToHarvest = urlToHarvest,
+                    onUrlChange = { urlToHarvest = it },
+                    harvestStatus = harvestStatus,
+                    onHarvest = {
+                        scope.launch {
+                            harvestStatus = "Starting..."
+                            val result = harvestService.harvest(urlToHarvest) { harvestStatus = it }
+                            result.onFailure { harvestStatus = "Error: ${it.message}" }
+                        }
+                    },
+                    searchQuery = searchQuery,
+                    onSearchQueryChange = { 
+                        searchQuery = it
+                        if (it.isNotEmpty()) isArtistExpanded = false
+                    },
+                    isExpanded = isExpanded,
+                    onExpandedChange = { expanded ->
+                        isExpanded = expanded
+                        if (expanded) isArtistExpanded = false
+                    },
+                    suggestions = suggestions,
+                    isShowingRecent = isShowingRecent,
+                    onSearchTitle = {
+                        scope.launch {
+                            val results = activeDb.songDao().searchSongsByTitle(searchQuery)
+                            allSongs = results
+                            searchResult = if (results.isNotEmpty()) "Found ${results.size} matches" else "No titles matching '$searchQuery'"
+                            isExpanded = false
+                        }
+                    },
+                    searchArtistQuery = searchArtistQuery,
+                    onSearchArtistQueryChange = { 
+                        searchArtistQuery = it
+                        if (it.isNotEmpty()) isExpanded = false
+                    },
+                    isArtistExpanded = isArtistExpanded,
+                    onArtistExpandedChange = { expanded ->
+                        isArtistExpanded = expanded
+                        if (expanded) isExpanded = false
+                    },
+                    artistSuggestions = artistSuggestions,
+                    isShowingRecentArtists = isShowingRecentArtists,
+                    onArtistClick = { artistName ->
+                        HistoryManager.addArtist(context, artistName)
+                        scope.launch {
+                            val results = activeDb.songDao().getSongsByArtist(artistName)
+                            selectedArtistName = canonicalArtistName(artistName)
+                            selectedArtistSongs = results
+                            isArtistExpanded = false
+                        }
+                    },
+                    onSearchArtist = {
+                        scope.launch {
+                            val results = activeDb.songDao().getSongsByArtist(searchArtistQuery)
+                            if (results.isNotEmpty()) {
+                                val canonicalArtist = results.first().artist
+                                    ?.let(::canonicalArtistName)
+                                    ?: canonicalArtistName(searchArtistQuery)
+                                HistoryManager.addArtist(context, canonicalArtist)
+                                selectedArtistName = canonicalArtist
+                                selectedArtistSongs = results
+                            } else {
+                                searchResult = "No artists matching '$searchArtistQuery'"
+                            }
+                            isArtistExpanded = false
+                        }
+                    },
+                    onSuggestionClick = openSong,
+                    onListAll = {
+                        scope.launch {
+                            val count = activeDb.songDao().getSongCount()
+                            allSongs = activeDb.songDao().getSongs(limit = 100, offset = 0)
+                            searchResult = "Database contains $count songs"
+                        }
+                    },
+                    searchResult = searchResult,
+                    allSongs = allSongs,
                     onSongClick = openSong,
-                    onBack = {
-                        selectedArtistSongs = null
-                        selectedArtistName = null
+
+                    catalogStatus = catalogStatus,
+                    onDownloadCatalog = {
+                        scope.launch {
+                            catalogStatus = "Starting download..."
+                            val result = DatabaseDownloader.downloadAndInstallCatalog(
+                                context = context,
+                                currentDb = activeDb
+                            ) { catalogStatus = it }
+                            
+                            if (result.isSuccess) {
+                                // Re-open DB
+                                activeDb = Room.databaseBuilder(
+                                    context.applicationContext,
+                                    AppDatabase::class.java, "sacred-ring-db"
+                                ).build()
+                                catalogStatus = "Database Refreshed!"
+                            } else {
+                                catalogStatus = "Error: ${result.exceptionOrNull()?.message}"
+                            }
+                        }
                     }
                 )
-            } else {
-                // Library/Search View
-                LibraryView(
-                activeDb = activeDb,
-                urlToHarvest = urlToHarvest,
-                onUrlChange = { urlToHarvest = it },
-                harvestStatus = harvestStatus,
-                onHarvest = {
-                    scope.launch {
-                        harvestStatus = "Starting..."
-                        val result = harvestService.harvest(urlToHarvest) { harvestStatus = it }
-                        result.onFailure { harvestStatus = "Error: ${it.message}" }
-                    }
-                },
-                searchQuery = searchQuery,
-                onSearchQueryChange = { 
-                    searchQuery = it
-                    if (it.isNotEmpty()) isArtistExpanded = false
-                },
-                isExpanded = isExpanded,
-                onExpandedChange = { expanded ->
-                    isExpanded = expanded
-                    if (expanded) isArtistExpanded = false
-                },
-                suggestions = suggestions,
-                isShowingRecent = isShowingRecent,
-                onSearchTitle = {
-                    scope.launch {
-                        val results = activeDb.songDao().searchSongsByTitle(searchQuery)
-                        allSongs = results
-                        searchResult = if (results.isNotEmpty()) "Found ${results.size} matches" else "No titles matching '$searchQuery'"
-                        isExpanded = false
-                    }
-                },
-                searchArtistQuery = searchArtistQuery,
-                onSearchArtistQueryChange = { 
-                    searchArtistQuery = it
-                    if (it.isNotEmpty()) isExpanded = false
-                },
-                isArtistExpanded = isArtistExpanded,
-                onArtistExpandedChange = { expanded ->
-                    isArtistExpanded = expanded
-                    if (expanded) isExpanded = false
-                },
-                artistSuggestions = artistSuggestions,
-                isShowingRecentArtists = isShowingRecentArtists,
-                onArtistClick = { artistName ->
-                    HistoryManager.addArtist(context, artistName)
-                    scope.launch {
-                        val results = activeDb.songDao().getSongsByArtist(artistName)
-                        selectedArtistName = canonicalArtistName(artistName)
-                        selectedArtistSongs = results
-                        isArtistExpanded = false
-                    }
-                },
-                onSearchArtist = {
-                    scope.launch {
-                        val results = activeDb.songDao().getSongsByArtist(searchArtistQuery)
-                        if (results.isNotEmpty()) {
-                            val canonicalArtist = results.first().artist
-                                ?.let(::canonicalArtistName)
-                                ?: canonicalArtistName(searchArtistQuery)
-                            HistoryManager.addArtist(context, canonicalArtist)
-                            selectedArtistName = canonicalArtist
-                            selectedArtistSongs = results
-                        } else {
-                            searchResult = "No artists matching '$searchArtistQuery'"
-                        }
-                        isArtistExpanded = false
-                    }
-                },
-                onSuggestionClick = openSong,
-                onListAll = {
-                    scope.launch {
-                        val count = activeDb.songDao().getSongCount()
-                        allSongs = activeDb.songDao().getSongs(limit = 100, offset = 0)
-                        searchResult = "Database contains $count songs"
-                    }
-                },
-                searchResult = searchResult,
-                allSongs = allSongs,
-                onSongClick = openSong,
-
-                catalogStatus = catalogStatus,
-                onDownloadCatalog = {
-                    scope.launch {
-                        catalogStatus = "Starting download..."
-                        val result = DatabaseDownloader.downloadAndInstallCatalog(
-                            context = context,
-                            currentDb = activeDb
-                        ) { catalogStatus = it }
-                        
-                        if (result.isSuccess) {
-                            // Re-open DB
-                            activeDb = Room.databaseBuilder(
-                                context.applicationContext,
-                                AppDatabase::class.java, "sacred-ring-db"
-                            ).build()
-                            catalogStatus = "Database Refreshed!"
-                        } else {
-                            catalogStatus = "Error: ${result.exceptionOrNull()?.message}"
-                        }
-                    }
                 }
-            )
+            } else {
+                // Song Detail View with Tabs
+                SongDetailView(
+                    song = selectedSong!!,
+                    sections = selectedSongSections!!,
+                    selectedSectionId = selectedSectionId,
+                    onSectionChange = { selectedSectionId = it },
+                    currentTab = currentTab,
+                    onTabChange = {
+                        if (it == 2 && currentTab != 2) {
+                            quizReturnTab = currentTab
+                        } else if (it != 2) {
+                            quizReturnTab = null
+                        }
+                        currentTab = it
+                    },
+                    showLetterNames = showLetterNames,
+                    onShowLetterNamesChange = { showLetterNames = it },
+                    isArpeggiated = isArpeggiated,
+                    onArpeggiatedChange = { isArpeggiated = it },
+                    arpeggioStepMs = arpeggioStepMs,
+                    onArpeggioStepMsChange = { arpeggioStepMs = it },
+                    currentWaveform = currentWaveform,
+                    onWaveformChange = { 
+                        currentWaveform = it
+                        AudioEngine.currentWaveform = it
+                    },
+                    globalTranspose = globalTranspose,
+                    onTransposeChange = {
+                        globalTranspose = it
+                        AudioEngine.globalTranspose = it
+                    },
+                    onArtistClick = { artistName ->
+                        HistoryManager.addArtist(context, artistName)
+                        scope.launch {
+                            val results = activeDb.songDao().getSongsByArtist(artistName)
+                            selectedArtistName = canonicalArtistName(artistName)
+                            selectedArtistSongs = results
+                            selectedSongSections = null
+                            selectedSong = null
+                            quizReturnTab = null
+                        }
+                    },
+                    onBack = returnToParent
+                )
             }
-        } else {
-            // Song Detail View with Tabs
-            SongDetailView(
-                song = selectedSong!!,
-                sections = selectedSongSections!!,
-                selectedSectionId = selectedSectionId,
-                onSectionChange = { selectedSectionId = it },
-                currentTab = currentTab,
-                onTabChange = {
-                    if (it == 2 && currentTab != 2) {
-                        quizReturnTab = currentTab
-                    } else if (it != 2) {
-                        quizReturnTab = null
-                    }
-                    currentTab = it
-                },
-                showLetterNames = showLetterNames,
-                onShowLetterNamesChange = { showLetterNames = it },
-                isArpeggiated = isArpeggiated,
-                onArpeggiatedChange = { isArpeggiated = it },
-                arpeggioStepMs = arpeggioStepMs,
-                onArpeggioStepMsChange = { arpeggioStepMs = it },
-                currentWaveform = currentWaveform,
-                onWaveformChange = { 
-                    currentWaveform = it
-                    AudioEngine.currentWaveform = it
-                },
-                globalTranspose = globalTranspose,
-                onTransposeChange = {
-                    globalTranspose = it
-                    AudioEngine.globalTranspose = it
-                },
-                onArtistClick = { artistName ->
-                    HistoryManager.addArtist(context, artistName)
-                    scope.launch {
-                        val results = activeDb.songDao().getSongsByArtist(artistName)
-                        selectedArtistName = canonicalArtistName(artistName)
-                        selectedArtistSongs = results
-                        selectedSongSections = null
-                        selectedSong = null
-                        quizReturnTab = null
-                    }
-                },
-                onBack = returnToParent
-            )
+
         }
 
+        HummingIntervalPopup(
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 
