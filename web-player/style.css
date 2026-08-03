@@ -2872,8 +2872,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  margin: 4px 0 8px;
+  gap: 3px;
+  margin: 2px 0 4px;
 }
 
 .quiz-chord-tools-row {
@@ -3056,7 +3056,7 @@ body {
 .quiz-speed-label {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 3px;
   font-size: 10px;
   color: #94a3b8;
   white-space: nowrap;
@@ -3067,11 +3067,11 @@ body {
 }
 
 .quiz-speed-slider {
-  width: 72px;
+  width: 56px;
 }
 
 .quiz-speed-val {
-  min-width: 44px;
+  min-width: 36px;
   font-variant-numeric: tabular-nums;
   font-size: 10px;
 }
@@ -3717,8 +3717,8 @@ body {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-  padding: 6px 0;
+  gap: 5px;
+  padding: 3px 0;
   flex-shrink: 0;
   border-top: 1px solid rgba(31, 41, 55, 0.5);
   margin-top: 4px;
@@ -3727,7 +3727,7 @@ body {
 .quiz-tempo-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .quiz-tempo-label {
@@ -3737,7 +3737,7 @@ body {
 }
 
 .quiz-tempo-slider {
-  width: 80px;
+  width: 64px;
 }
 
 .quiz-tempo-val {
@@ -3765,7 +3765,7 @@ body {
 .quiz-arp-speed-row {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
 }
 
 .quiz-arp-speed-label {
@@ -3774,7 +3774,7 @@ body {
 }
 
 .quiz-arp-speed-slider {
-  width: 60px;
+  width: 48px;
 }
 
 .quiz-arp-speed-val {
