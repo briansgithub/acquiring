@@ -1786,7 +1786,7 @@ fun QuizTab(
                                 }
                             )
                             Text(
-                                text = displayScale,
+                                text = if (!isSimpleMode && !useRelativeIonianContext) "${activeKey.tonic} $displayScale" else displayScale,
                                 textAlign = TextAlign.Center,
                                 fontSize = 28.sp,
                                 fontWeight = FontWeight.Bold,
@@ -1854,173 +1854,186 @@ fun QuizTab(
                     }
                 }
 
-                if (isSimpleMode) {
-                    val activeSimpleChord = currentChord?.takeUnless { chord -> (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true }
-                    val currentIntervalPitch = chordRootIntervalState?.currentIntervalPitch
-                    val previousIntervalPitch = chordRootIntervalState?.previousIntervalPitch
-                    val rootAudioNote = currentRootPreviewAudioNote
-                    val rootDegreeLabel = currentRootDegreeLabel
-                    val rootInterval = chordRootIntervalState?.interval
-                    val isRootDegreeHovered = audiationState is AudiationState.Dragging && audiationState.hoveredId == 0
-                    Column(
-                        modifier = Modifier.fillMaxWidth().weight(1f).padding(bottom = 144.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().weight(1f).heightIn(max = 250.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Button(
-                                onClick = {
-                                    if (previousIntervalPitch != null && currentIntervalPitch != null) {
-                                        playIntervalPreview(previousIntervalPitch, currentIntervalPitch)
-                                    }
-                                },
-                                enabled = previousIntervalPitch != null && currentIntervalPitch != null && rootInterval != null,
-                                colors = ButtonDefaults.buttonColors(
-                                    disabledContainerColor = MaterialTheme.colorScheme.primary,
-                                    disabledContentColor = MaterialTheme.colorScheme.onPrimary
-                                ),
-                                modifier = Modifier.weight(1f).fillMaxHeight().semantics {
-                                    contentDescription = rootInterval?.let {
-                                        "Play root interval ${it.spokenName}"
-                                    } ?: "Root interval unavailable"
-                                },
-                                shape = RoundedCornerShape(32.dp),
-                                contentPadding = PaddingValues(8.dp)
-                            ) {
-                                Text(
-                                    text = rootInterval?.shorthand ?: "—",
-                                    textAlign = TextAlign.Center,
-                                    fontSize = 54.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    maxLines = 1
-                                )
-                            }
-                            Button(
-                                onClick = {
-                                    if (rootAudioNote > 0) {
-                                        intervalPreviewJob?.cancel()
-                                        AudioEngine.stopPreviewPlayback()
-                                        intervalPreviewJob = scope.launch {
-                                            AudioEngine.playChord(
-                                                listOf(rootAudioNote + audiationOctaveShift * 12),
-                                                channel = AudioEngine.PlaybackChannel.PREVIEW
-                                            )
-                                        }
-                                    }
-                                },
-                                enabled = rootAudioNote > 0,
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (isRootDegreeHovered) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.primary,
-                                    contentColor = if (isRootDegreeHovered) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onPrimary,
-                                    disabledContainerColor = MaterialTheme.colorScheme.primary,
-                                    disabledContentColor = MaterialTheme.colorScheme.onPrimary
-                                ),
-                                modifier = Modifier.weight(1f).fillMaxHeight()
-                                    .semantics { contentDescription = "Play current root scale degree" }
-                                    .onGloballyPositioned { onTargetPositioned(0, it) },
-                                shape = RoundedCornerShape(32.dp),
-                                contentPadding = PaddingValues(8.dp)
-                            ) {
-                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    if (activeSimpleChord != null) {
-                                        if (rootDegreeLabel.isNotEmpty()) {
-                                            ScaleDegreeText(label = rootDegreeLabel, fontSize = 100.sp, modifier = Modifier.fillMaxWidth(), minFontSize = 36.sp)
-                                        } else {
-                                            val symbol = if (useRelativeIonianContext) ChordInterpreter.getRelativeIonianRomanSymbol(activeSimpleChord, activeKey, ionianContextKey) else ChordInterpreter.getRomanSymbol(activeSimpleChord, activeKey)
-                                            val romanDisplay = RomanNumeralDisplay.fromChord(symbol, activeSimpleChord["borrowed"])
-                                            RomanNumeralText(display = romanDisplay, fontSize = 64.sp, modifier = Modifier.fillMaxWidth())
-                                        }
-                                    }
-                                    if (audiationState is AudiationState.Listening && audiationState.target.id == 0) PitchGauge(pitchResult = audiationState.pitch, targetLabel = audiationState.target.label, modifier = Modifier.matchParentSize())
-                                }
-                            }
-                        }
-                        Slider(value = currentBeat.toFloat().coerceIn(1f, endBeat.toFloat()), onValueChange = { beat -> scrubTo(beat.toDouble()) }, onValueChangeFinished = { finishScrubbing() }, valueRange = 1f..endBeat.toFloat(), modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp))
-                        Spacer(modifier = Modifier.height(24.dp))
-                        OutlinedButton(onClick = { skipBack(3.0) }, enabled = !isScrubbing, modifier = Modifier.align(Alignment.End).padding(end = 12.dp).width(132.dp).height(64.dp), shape = RoundedCornerShape(16.dp), contentPadding = PaddingValues(0.dp)) {
-                            Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) { Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(24.dp).scale(-1f, 1f)); Spacer(Modifier.width(8.dp)); Text(text = "3 sec.", textAlign = TextAlign.Center, maxLines = 1, style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp, lineHeight = 18.sp, platformStyle = PlatformTextStyle(includeFontPadding = false))) }
-                        }
-                    }
-                } else {
-                    Column(
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(bottom = 120.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(0.7f)
-                            .padding(top = 8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Top
+                            .weight(1f),
+                        contentAlignment = if (isSimpleMode) Alignment.Center else Alignment.TopCenter
                     ) {
-                        OutlinedCard(
-                            onClick = {
-                                melodyIntervalState?.let { state ->
-                                    playIntervalPreview(state.previous, state.current)
-                                }
-                            },
-                            enabled = melodyIntervalState != null,
-                            modifier = Modifier.fillMaxWidth().height(64.dp).semantics {
-                                contentDescription = melodyIntervalState?.contentDescription
-                                    ?: "Melody interval unavailable"
-                            },
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.outlinedCardColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary,
-                                disabledContainerColor = MaterialTheme.colorScheme.primary,
-                                disabledContentColor = MaterialTheme.colorScheme.onPrimary
-                            )
-                        ) {
+                        if (isSimpleMode) {
+                            val activeSimpleChord = currentChord?.takeUnless { chord -> (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true }
+                            val currentIntervalPitch = chordRootIntervalState?.currentIntervalPitch
+                            val previousIntervalPitch = chordRootIntervalState?.previousIntervalPitch
+                            val rootAudioNote = currentRootPreviewAudioNote
+                            val rootDegreeLabel = currentRootDegreeLabel
+                            val rootInterval = chordRootIntervalState?.interval
+                            val isRootDegreeHovered = audiationState is AudiationState.Dragging && audiationState.hoveredId == 0
+                            
                             Row(
-                                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
+                                modifier = Modifier.fillMaxWidth().heightIn(max = 250.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Text(
-                                    text = "Melody interval",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = MaterialTheme.colorScheme.onPrimary
-                                )
-                                Text(
-                                    text = melodyIntervalState?.interval?.shorthand ?: "—",
-                                    fontSize = 32.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    textAlign = TextAlign.End,
-                                    maxLines = 1
-                                )
-                            }
-                        }
-                        Spacer(Modifier.height(8.dp))
-                        currentChord?.let { chord ->
-                            val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
-                            if (!isRest) {
-                                val symbol = if (useRelativeIonianContext) ChordInterpreter.getRelativeIonianRomanSymbol(chord, activeKey, ionianContextKey) else ChordInterpreter.getRomanSymbol(chord, activeKey)
-                                val romanDisplay = RomanNumeralDisplay.fromChord(symbol, chord["borrowed"])
-                                val notes = ChordInterpreter.getChordNotes(chord, activeKey)
-                                val rootMidi = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull() ?: 0
-                                val chordDurationBeats = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
-                                val chordDurationMs = remainingPlaybackDurationMs(chordDurationBeats, 0.0, bpm)
-                                val previewNotes = notes.map { it + audiationOctaveShift * 12 }
-                                val previewRoot = rootMidi + audiationOctaveShift * 12
-                                val degreeSpacing = when { notes.size >= 7 -> 2.dp; notes.size >= 5 -> 4.dp; else -> 6.dp }
-                                val degreeFontSize = when { notes.size >= 7 -> 24.sp; notes.size >= 5 -> 26.sp; else -> 28.sp }
-                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                                    Button(onClick = { scope.launch { chordDurationMs?.let { AudioEngine.playChord(if (playOnlyRoot) listOf(previewRoot) else previewNotes, durationMs = it, channel = AudioEngine.PlaybackChannel.PREVIEW) } } }, enabled = chordDurationMs != null, modifier = Modifier.weight(1f).height(60.dp).onGloballyPositioned { onTargetPositioned(100, it) }, shape = RoundedCornerShape(16.dp), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)) {
-                                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { RomanNumeralText(display = romanDisplay, fontSize = 32.sp, modifier = Modifier.fillMaxWidth(), minFontSize = 12.sp)
-                                            if (audiationState is AudiationState.Listening && audiationState.target.id == 100) PitchGauge(pitchResult = audiationState.pitch, targetLabel = audiationState.target.label, modifier = Modifier.matchParentSize()) }
+                                Button(
+                                    onClick = {
+                                        if (previousIntervalPitch != null && currentIntervalPitch != null) {
+                                            playIntervalPreview(previousIntervalPitch, currentIntervalPitch)
+                                        }
+                                    },
+                                    enabled = previousIntervalPitch != null && currentIntervalPitch != null && rootInterval != null,
+                                    colors = ButtonDefaults.buttonColors(
+                                        disabledContainerColor = MaterialTheme.colorScheme.primary,
+                                        disabledContentColor = MaterialTheme.colorScheme.onPrimary
+                                    ),
+                                    modifier = Modifier.weight(1f).fillMaxHeight().semantics {
+                                        contentDescription = rootInterval?.let {
+                                            "Play root interval ${it.spokenName}"
+                                        } ?: "Root interval unavailable"
+                                    },
+                                    shape = RoundedCornerShape(32.dp),
+                                    contentPadding = PaddingValues(8.dp)
+                                ) {
+                                    Text(
+                                        text = rootInterval?.shorthand ?: "—",
+                                        textAlign = TextAlign.Center,
+                                        fontSize = 54.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        maxLines = 1
+                                    )
+                                }
+                                Button(
+                                    onClick = {
+                                        if (rootAudioNote > 0) {
+                                            intervalPreviewJob?.cancel()
+                                            AudioEngine.stopPreviewPlayback()
+                                            intervalPreviewJob = scope.launch {
+                                                AudioEngine.playChord(
+                                                    listOf(rootAudioNote + audiationOctaveShift * 12),
+                                                    channel = AudioEngine.PlaybackChannel.PREVIEW
+                                                )
+                                            }
+                                        }
+                                    },
+                                    enabled = rootAudioNote > 0,
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = if (isRootDegreeHovered) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.primary,
+                                        contentColor = if (isRootDegreeHovered) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onPrimary,
+                                        disabledContainerColor = MaterialTheme.colorScheme.primary,
+                                        disabledContentColor = MaterialTheme.colorScheme.onPrimary
+                                    ),
+                                    modifier = Modifier.weight(1f).fillMaxHeight()
+                                        .semantics { contentDescription = "Play current root scale degree" }
+                                        .onGloballyPositioned { onTargetPositioned(0, it) },
+                                    shape = RoundedCornerShape(32.dp),
+                                    contentPadding = PaddingValues(8.dp)
+                                ) {
+                                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                        if (activeSimpleChord != null) {
+                                            if (rootDegreeLabel.isNotEmpty()) {
+                                                ScaleDegreeText(label = rootDegreeLabel, fontSize = 100.sp, modifier = Modifier.fillMaxWidth(), minFontSize = 36.sp)
+                                            } else {
+                                                val symbol = if (useRelativeIonianContext) ChordInterpreter.getRelativeIonianRomanSymbol(activeSimpleChord, activeKey, ionianContextKey) else ChordInterpreter.getRomanSymbol(activeSimpleChord, activeKey)
+                                                val romanDisplay = RomanNumeralDisplay.fromChord(symbol, activeSimpleChord["borrowed"])
+                                                RomanNumeralText(display = romanDisplay, fontSize = 64.sp, modifier = Modifier.fillMaxWidth())
+                                            }
+                                        }
+                                        if (audiationState is AudiationState.Listening && audiationState.target.id == 0) PitchGauge(pitchResult = audiationState.pitch, targetLabel = audiationState.target.label, modifier = Modifier.matchParentSize())
                                     }
                                 }
-                                if (rootMidi > 0) { Spacer(Modifier.height(8.dp)); Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(degreeSpacing)) {
-                                    notes.forEachIndexed { index, note -> val internalLabel = if (useRelativeIonianContext) ionianContextDegreeLabel(note, ionianContextKey) else MusicTheory.getRelativeDegreeLabel(note, rootMidi); val previewNote = if (useRelativeIonianContext) ionianContextPreviewAudioNote(note, ionianContextKey) ?: note else note; val isHovered = audiationState is AudiationState.Dragging && audiationState.hoveredId == index
-                                        OutlinedButton(onClick = { scope.launch { AudioEngine.playChord(listOf(previewNote + audiationOctaveShift * 12), channel = AudioEngine.PlaybackChannel.PREVIEW) } }, modifier = Modifier.weight(1f).height(50.dp).onGloballyPositioned { onTargetPositioned(index, it) }, shape = RoundedCornerShape(14.dp), contentPadding = PaddingValues(0.dp), colors = if (isHovered) ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer) else ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)) {
-                                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { ScaleDegreeText(label = internalLabel, fontSize = degreeFontSize, modifier = Modifier.fillMaxWidth(), minFontSize = 12.sp)
-                                                if (audiationState is AudiationState.Listening && audiationState.target.id == index) PitchGauge(pitchResult = audiationState.pitch, targetLabel = audiationState.target.label, modifier = Modifier.matchParentSize()) }
+                            }
+                        } else {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 8.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Top
+                            ) {
+                                OutlinedCard(
+                                    onClick = {
+                                        melodyIntervalState?.let { state ->
+                                            playIntervalPreview(state.previous, state.current)
+                                        }
+                                    },
+                                    enabled = melodyIntervalState != null,
+                                    modifier = Modifier.fillMaxWidth().height(64.dp).semantics {
+                                        contentDescription = melodyIntervalState?.contentDescription
+                                            ?: "Melody interval unavailable"
+                                    },
+                                    shape = RoundedCornerShape(16.dp),
+                                    colors = CardDefaults.outlinedCardColors(
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                                        disabledContainerColor = MaterialTheme.colorScheme.primary,
+                                        disabledContentColor = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "Melody interval",
+                                            style = MaterialTheme.typography.labelLarge,
+                                            color = MaterialTheme.colorScheme.onPrimary
+                                        )
+                                        Text(
+                                            text = melodyIntervalState?.interval?.shorthand ?: "—",
+                                            fontSize = 32.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            textAlign = TextAlign.End,
+                                            maxLines = 1
+                                        )
+                                    }
+                                }
+                                Spacer(Modifier.height(8.dp))
+                                currentChord?.let { chord ->
+                                    val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
+                                    if (!isRest) {
+                                        val symbol = if (useRelativeIonianContext) ChordInterpreter.getRelativeIonianRomanSymbol(chord, activeKey, ionianContextKey) else ChordInterpreter.getRomanSymbol(chord, activeKey)
+                                        val romanDisplay = RomanNumeralDisplay.fromChord(symbol, chord["borrowed"])
+                                        val notes = ChordInterpreter.getChordNotes(chord, activeKey)
+                                        val rootMidi = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull() ?: 0
+                                        val chordDurationBeats = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                                        val chordDurationMs = remainingPlaybackDurationMs(chordDurationBeats, 0.0, bpm)
+                                        val previewNotes = notes.map { it + audiationOctaveShift * 12 }
+                                        val previewRoot = rootMidi + audiationOctaveShift * 12
+                                        val degreeSpacing = when { notes.size >= 7 -> 2.dp; notes.size >= 5 -> 4.dp; else -> 6.dp }
+                                        val degreeFontSize = when { notes.size >= 7 -> 24.sp; notes.size >= 5 -> 26.sp; else -> 28.sp }
+                                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                                            Button(onClick = { scope.launch { chordDurationMs?.let { AudioEngine.playChord(if (playOnlyRoot) listOf(previewRoot) else previewNotes, durationMs = it, channel = AudioEngine.PlaybackChannel.PREVIEW) } } }, enabled = chordDurationMs != null, modifier = Modifier.weight(1f).height(60.dp).onGloballyPositioned { onTargetPositioned(100, it) }, shape = RoundedCornerShape(16.dp), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)) {
+                                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { RomanNumeralText(display = romanDisplay, fontSize = 32.sp, modifier = Modifier.fillMaxWidth(), minFontSize = 12.sp)
+                                                    if (audiationState is AudiationState.Listening && audiationState.target.id == 100) PitchGauge(pitchResult = audiationState.pitch, targetLabel = audiationState.target.label, modifier = Modifier.matchParentSize()) }
+                                            }
+                                        }
+                                        if (rootMidi > 0) { Spacer(Modifier.height(8.dp)); Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(degreeSpacing)) {
+                                            notes.forEachIndexed { index, note -> val internalLabel = if (useRelativeIonianContext) ionianContextDegreeLabel(note, ionianContextKey) else MusicTheory.getRelativeDegreeLabel(note, rootMidi); val previewNote = if (useRelativeIonianContext) ionianContextPreviewAudioNote(note, ionianContextKey) ?: note else note; val isHovered = audiationState is AudiationState.Dragging && audiationState.hoveredId == index
+                                                OutlinedButton(onClick = { scope.launch { AudioEngine.playChord(listOf(previewNote + audiationOctaveShift * 12), channel = AudioEngine.PlaybackChannel.PREVIEW) } }, modifier = Modifier.weight(1f).height(50.dp).onGloballyPositioned { onTargetPositioned(index, it) }, shape = RoundedCornerShape(14.dp), contentPadding = PaddingValues(0.dp), colors = if (isHovered) ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer) else ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)) {
+                                                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { ScaleDegreeText(label = internalLabel, fontSize = degreeFontSize, modifier = Modifier.fillMaxWidth(), minFontSize = 12.sp)
+                                                        if (audiationState is AudiationState.Listening && audiationState.target.id == index) PitchGauge(pitchResult = audiationState.pitch, targetLabel = audiationState.target.label, modifier = Modifier.matchParentSize()) }
+                                                } }
                                         } }
-                                } }
+                                    }
+                                }
                             }
                         }
                     }
+
+                    // Unified playback scrub bar
+                    Slider(
+                        value = currentBeat.toFloat().coerceIn(1f, endBeat.toFloat()),
+                        onValueChange = { beat -> scrubTo(beat.toDouble()) },
+                        onValueChangeFinished = { finishScrubbing() },
+                        valueRange = 1f..endBeat.toFloat(),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
+                    )
                 }
             }
         }
