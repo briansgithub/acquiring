@@ -1068,7 +1068,7 @@ fun QuizTab(
     var currentBeat by remember { mutableStateOf(1.0) }
     val preciseCurrentBeat = remember(section) { AtomicReference(1.0) }
     var playbackTrigger by remember { mutableStateOf(0) }
-    var melodyChordBalance by remember { mutableStateOf(0.55f) }
+    var melodyChordBalance by remember { mutableStateOf(0.5f) }
     val melodyVolume = melodyChordBalance
     val chordVolume = 1f - melodyChordBalance
     var isScrubbing by remember { mutableStateOf(false) }
