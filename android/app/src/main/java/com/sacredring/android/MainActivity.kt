@@ -1772,8 +1772,8 @@ fun QuizTab(
                 }
                 val activeModeColor = ringModeColor(activeKey.scale)
                 val ionianBorderColor = ringModeColor(ionianSourceKey.scale)
-                Column(modifier = Modifier.fillMaxWidth().height(144.dp)) {
-                    Box(modifier = Modifier.fillMaxWidth().height(48.dp)) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Box(modifier = Modifier.fillMaxWidth().height(40.dp)) {
                         Row(
                             modifier = Modifier.align(Alignment.Center),
                             verticalAlignment = Alignment.CenterVertically
@@ -1781,20 +1781,20 @@ fun QuizTab(
                             Checkbox(
                                 checked = useRelativeIonianContext,
                                 onCheckedChange = onRelativeIonianContextChange,
-                                modifier = Modifier.semantics {
+                                modifier = Modifier.scale(0.85f).semantics {
                                     contentDescription = "Use relative major labels"
                                 }
                             )
                             Text(
                                 text = if (!isSimpleMode && !useRelativeIonianContext) "${activeKey.tonic} $displayScale" else displayScale,
                                 textAlign = TextAlign.Center,
-                                fontSize = 28.sp,
+                                fontSize = 24.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = if (useRelativeIonianContext) Color.Red else activeModeColor,
                                 modifier = if (useRelativeIonianContext) {
                                     Modifier
-                                        .border(2.dp, ionianBorderColor, RoundedCornerShape(6.dp))
-                                        .padding(horizontal = 10.dp, vertical = 2.dp)
+                                        .border(1.dp, ionianBorderColor, RoundedCornerShape(4.dp))
+                                        .padding(horizontal = 8.dp, vertical = 2.dp)
                                 } else {
                                     Modifier
                                 }
@@ -1802,15 +1802,15 @@ fun QuizTab(
                         }
                         if (!isSimpleMode) { Box(modifier = Modifier.align(Alignment.CenterEnd)) { transposePicker() } }
                     }
-                    Row(modifier = Modifier.height(48.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text("Chord / Melody", style = MaterialTheme.typography.labelSmall, maxLines = 1, modifier = Modifier.width(88.dp))
-                        Slider(value = melodyChordBalance, onValueChange = { melodyChordBalance = it }, modifier = Modifier.weight(1f).padding(horizontal = 8.dp))
+                    Row(modifier = Modifier.height(34.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text("Chord / Melody\nVol.", style = MaterialTheme.typography.labelSmall, maxLines = 2, modifier = Modifier.width(88.dp))
+                        Slider(value = melodyChordBalance, onValueChange = { melodyChordBalance = it }, modifier = Modifier.weight(1f).padding(horizontal = 8.dp).scale(0.85f))
                     }
-                    Row(modifier = Modifier.height(48.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Row(modifier = Modifier.height(34.dp), verticalAlignment = Alignment.CenterVertically) {
                         Text("Tempo", style = MaterialTheme.typography.labelSmall, modifier = Modifier.width(48.dp))
-                        Slider(value = tempoPercent, onValueChange = { tempoPercent = it }, valueRange = 0f..200f, modifier = Modifier.weight(1f).padding(horizontal = 8.dp))
+                        Slider(value = tempoPercent, onValueChange = { tempoPercent = it }, valueRange = 0f..200f, modifier = Modifier.weight(1f).padding(horizontal = 8.dp).scale(0.85f))
                         Text(text = "${tempoPercent.roundToInt()}%", style = MaterialTheme.typography.labelSmall, modifier = Modifier.width(38.dp))
-                        IconButton(onClick = { tempoPercent = 100f }, modifier = Modifier.size(32.dp)) { Icon(imageVector = Icons.Filled.Refresh, contentDescription = "Reset tempo to 100%") }
+                        IconButton(onClick = { tempoPercent = 100f }, modifier = Modifier.size(28.dp)) { Icon(imageVector = Icons.Filled.Refresh, contentDescription = "Reset tempo to 100%", modifier = Modifier.size(18.dp)) }
                     }
                 }
 
@@ -1858,13 +1858,13 @@ fun QuizTab(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .padding(bottom = 120.dp),
+                        .padding(bottom = 96.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .weight(1f),
+                            .wrapContentHeight(),
                         contentAlignment = if (isSimpleMode) Alignment.Center else Alignment.TopCenter
                     ) {
                         if (isSimpleMode) {
@@ -2032,7 +2032,7 @@ fun QuizTab(
                         onValueChange = { beat -> scrubTo(beat.toDouble()) },
                         onValueChangeFinished = { finishScrubbing() },
                         valueRange = 1f..endBeat.toFloat(),
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp).height(32.dp).scale(0.9f)
                     )
                 }
             }
@@ -2045,7 +2045,7 @@ fun QuizTab(
                     Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) { Text("Chords", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.width(44.dp))
                             Switch(checked = playChords, onCheckedChange = onPlayChordsChange) }
-                        Row(verticalAlignment = Alignment.CenterVertically) { Text("Root", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.width(44.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) { Text("Root only", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.width(44.dp))
                             Switch(checked = playOnlyRoot, onCheckedChange = onPlayOnlyRootChange) }
                     }
                 } else { Spacer(modifier = Modifier.width(96.dp)) }
