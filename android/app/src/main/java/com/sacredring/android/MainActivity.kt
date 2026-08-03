@@ -45,6 +45,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.style.TextAlign
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.exponentialDecay
+import androidx.compose.ui.input.pointer.util.VelocityTracker
+import androidx.compose.ui.input.pointer.util.addPointerInputChange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -1071,6 +1075,7 @@ fun QuizTab(
     var melodyChordBalance by remember { mutableStateOf(0.5f) }
     val melodyVolume = melodyChordBalance
     val chordVolume = 1f - melodyChordBalance
+    var inertiaJob by remember { mutableStateOf<Job?>(null) }
     var isScrubbing by remember { mutableStateOf(false) }
     var wasPlayingBeforeScrub by remember { mutableStateOf(false) }
     var activeNoteReplayJob by remember { mutableStateOf<Job?>(null) }
@@ -1284,6 +1289,7 @@ fun QuizTab(
     }
 
     fun beginScrubbing() {
+        inertiaJob?.cancel()
         if (isScrubbing) return
         wasPlayingBeforeScrub = isPlaying
         isScrubbing = true
@@ -1317,6 +1323,7 @@ fun QuizTab(
     }
 
     fun skipBack(seconds: Double) {
+        inertiaJob?.cancel()
         if (isScrubbing || bpm <= 0.0) return
         val shouldResume = isPlaying
         isPlaying = false
@@ -1842,7 +1849,59 @@ fun QuizTab(
 
                 if (!isSimpleMode) {
                     Box(modifier = Modifier.fillMaxWidth().height(chordLaneHeight + melodyLaneHeight)) {
-                        Canvas(modifier = Modifier.fillMaxSize().semantics { contentDescription = timelineContentDescription }.pointerInput(endBeat) { detectTapGestures { offset -> val centerX = size.width / 2f; val deltaX = offset.x - centerX; scrubTo(currentBeat + deltaX / pixelsPerBeatPx); finishScrubbing() } }.pointerInput(endBeat) { var dragBeat = currentBeat; detectDragGestures(onDragStart = { beginScrubbing(); dragBeat = currentBeat }, onDrag = { change, dragAmount -> change.consume(); val deltaBeat = dragAmount.x / pixelsPerBeatPx; dragBeat = (dragBeat - deltaBeat).coerceIn(1.0, endBeat); scrubTo(dragBeat) }, onDragEnd = { finishScrubbing() }, onDragCancel = { finishScrubbing() }) }
+                        Canvas(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .semantics { contentDescription = timelineContentDescription }
+                                .pointerInput(endBeat) {
+                                    detectTapGestures { offset ->
+                                        inertiaJob?.cancel()
+                                        val centerX = size.width / 2f
+                                        val deltaX = offset.x - centerX
+                                        scrubTo(currentBeat + deltaX / pixelsPerBeatPx)
+                                        finishScrubbing()
+                                    }
+                                }
+                                .pointerInput(endBeat) {
+                                    var dragBeat = currentBeat
+                                    val velocityTracker = VelocityTracker()
+                                    detectDragGestures(
+                                        onDragStart = {
+                                            inertiaJob?.cancel()
+                                            velocityTracker.resetTracking()
+                                            beginScrubbing()
+                                            dragBeat = currentBeat
+                                        },
+                                        onDrag = { change, dragAmount ->
+                                            velocityTracker.addPointerInputChange(change)
+                                            change.consume()
+                                            val deltaBeat = dragAmount.x / pixelsPerBeatPx
+                                            dragBeat = (dragBeat - deltaBeat).coerceIn(1.0, endBeat)
+                                            scrubTo(dragBeat)
+                                        },
+                                        onDragEnd = {
+                                            val velocityPx = velocityTracker.calculateVelocity().x
+                                            // Convert px/s to beats/s. 
+                                            // Negative because dragging right (positive px) decreases the beat (moves timeline left).
+                                            val velocityBeats = -velocityPx / pixelsPerBeatPx
+                                            
+                                            if (kotlin.math.abs(velocityBeats) > 0.5) {
+                                                inertiaJob = scope.launch {
+                                                    val animatable = Animatable(currentBeat.toFloat())
+                                                    // Lower friction for more noticeable inertia
+                                                    val decay = exponentialDecay<Float>(frictionMultiplier = 0.7f)
+                                                    animatable.animateDecay(velocityBeats, decay) {
+                                                        updatePlaybackBeat(value.toDouble().coerceIn(1.0, endBeat))
+                                                    }
+                                                    finishScrubbing()
+                                                }
+                                            } else {
+                                                finishScrubbing()
+                                            }
+                                        },
+                                        onDragCancel = { finishScrubbing() }
+                                    )
+                                }
                         ) {
                             val totalHeight = size.height; val mLaneHeightPx = melodyLaneHeight.toPx(); val cLaneHeightPx = chordLaneHeight.toPx(); val noteHeight = (mLaneHeightPx / 28f).coerceIn(5f, 10f); val melodyBaseY = mLaneHeightPx / 2; val centerX = size.width / 2f; val translationX = centerX - (currentBeat - 1).toFloat() * pixelsPerBeatPx
                             drawContext.canvas.save(); drawContext.canvas.translate(translationX, 0f)
