@@ -203,14 +203,10 @@ internal fun HummingIntervalPopup(
 
                 // Result Slot
                 val interval = if (slot1 != null && slot2 != null) {
-                    calculateNamedInterval(slot1!!.pitch, slot2!!.pitch)
+                    calculateMeasuredInterval(slot1!!.rawMidi, slot2!!.rawMidi)
                 } else null
 
-                val intervalCentsDeviation = if (slot1 != null && slot2 != null && interval != null) {
-                    val actualDiff = (slot2!!.rawMidi - slot1!!.rawMidi) * 100
-                    val idealDiff = (slot2!!.pitch.chromaticPosition - slot1!!.pitch.chromaticPosition) * 100
-                    actualDiff - idealDiff
-                } else null
+                val intervalCentsDeviation = interval?.centsDeviation
 
                 Column(
                     modifier = Modifier

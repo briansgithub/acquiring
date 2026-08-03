@@ -1,6 +1,7 @@
 package com.sacredring.android
 
 import kotlin.math.abs
+import kotlin.math.roundToInt
 
 internal enum class DiatonicLetter(
     val index: Int,
@@ -99,7 +100,10 @@ internal data class SpelledPitch(
          * "common" musical interval (favoring M, m, P over A, d).
          */
         fun spellRelative(from: SpelledPitch, toMidi: Int): SpelledPitch {
-            val diff = toMidi - from.chromaticPosition
+            // chromaticPosition uses C0 = 0, while MIDI uses C-1 = 0.
+            // Convert MIDI into the same coordinate system before comparing.
+            val toChromaticPosition = toMidi - 12
+            val diff = toChromaticPosition - from.chromaticPosition
             val octaves = if (diff >= 0) diff / 12 else (diff - 11) / 12
             val semitones = ((diff % 12) + 12) % 12
 
@@ -127,11 +131,49 @@ internal data class SpelledPitch(
 
             // Calculate accidental needed to reach toMidi
             val baseChromatic = targetOctave * 12 + targetLetter.naturalSemitone
-            val accidental = toMidi - baseChromatic
+            val accidental = toChromaticPosition - baseChromatic
 
             return SpelledPitch(targetLetter, accidental, targetOctave)
         }
     }
+}
+
+/** A sung interval whose direction comes from the measured pitch order. */
+internal data class MeasuredInterval(
+    val namedInterval: NamedInterval,
+    val direction: IntervalDirection?,
+    val centsDeviation: Double
+) {
+    val shorthand: String
+        get() = "${namedInterval.quality}${namedInterval.number} ${direction?.arrow ?: "\u00B7"}"
+}
+
+/**
+ * Calculates an interval from two measured MIDI pitches.
+ *
+ * Naming uses the nearest semitones, while direction deliberately uses the
+ * unrounded measurements: pitch 2 above pitch 1 is ascending and pitch 2 below
+ * pitch 1 is descending, including two measurements within the same semitone.
+ */
+internal fun calculateMeasuredInterval(fromMidi: Double, toMidi: Double): MeasuredInterval {
+    val roundedFrom = fromMidi.roundToInt()
+    val roundedTo = toMidi.roundToInt()
+    val fromPitch = SpelledPitch.fromMidi(roundedFrom)
+    val toPitch = SpelledPitch.spellRelative(fromPitch, roundedTo)
+    val namedInterval = calculateNamedInterval(fromPitch, toPitch)
+    val direction = when {
+        toMidi > fromMidi -> IntervalDirection.ASCENDING
+        toMidi < fromMidi -> IntervalDirection.DESCENDING
+        else -> null
+    }
+    val measuredSemitones = toMidi - fromMidi
+    val idealSemitones = roundedTo - roundedFrom
+
+    return MeasuredInterval(
+        namedInterval = namedInterval,
+        direction = direction,
+        centsDeviation = (measuredSemitones - idealSemitones) * 100.0
+    )
 }
 
 internal enum class IntervalDirection(val arrow: String) {
