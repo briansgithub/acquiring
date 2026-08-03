@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
@@ -1757,7 +1758,7 @@ fun QuizTab(
                     audiationOctaveShift = kotlin.math.round((hummedMidi - currentBaseAvg) / 12.0).toInt()
                 }
             }
-        ) { audiationState, onTargetPositioned ->
+        ) { audiationState, onTargetPositioned, onScrubBarPositioned ->
             if (audiationState is AudiationState.Dragging) { audiationPuckOffset = audiationState.offset }
 
             Column(
@@ -1803,14 +1804,22 @@ fun QuizTab(
                         if (!isSimpleMode) { Box(modifier = Modifier.align(Alignment.CenterEnd)) { transposePicker() } }
                     }
                     Row(modifier = Modifier.height(34.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text("Chord / Melody\nVol.", style = MaterialTheme.typography.labelSmall, maxLines = 2, modifier = Modifier.width(88.dp))
+                        Text("Chord / Melody\nVol.", style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center, maxLines = 2, modifier = Modifier.width(88.dp))
                         Slider(value = melodyChordBalance, onValueChange = { melodyChordBalance = it }, modifier = Modifier.weight(1f).padding(horizontal = 8.dp).scale(0.85f))
                     }
                     Row(modifier = Modifier.height(34.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text("Tempo", style = MaterialTheme.typography.labelSmall, modifier = Modifier.width(48.dp))
+                        Text("Tempo", style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center, maxLines = 1, modifier = Modifier.width(40.dp))
+                        Text(text = "${tempoPercent.roundToInt()}%", style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center, maxLines = 1, modifier = Modifier.width(28.dp))
+                        Box(
+                            modifier = Modifier
+                                .size(20.dp)
+                                .clickable { tempoPercent = 100f }
+                                .semantics { contentDescription = "Reset tempo to 100%" },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(imageVector = Icons.Filled.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
+                        }
                         Slider(value = tempoPercent, onValueChange = { tempoPercent = it }, valueRange = 0f..200f, modifier = Modifier.weight(1f).padding(horizontal = 8.dp).scale(0.85f))
-                        Text(text = "${tempoPercent.roundToInt()}%", style = MaterialTheme.typography.labelSmall, modifier = Modifier.width(38.dp))
-                        IconButton(onClick = { tempoPercent = 100f }, modifier = Modifier.size(28.dp)) { Icon(imageVector = Icons.Filled.Refresh, contentDescription = "Reset tempo to 100%", modifier = Modifier.size(18.dp)) }
                     }
                 }
 
@@ -2015,7 +2024,7 @@ fun QuizTab(
                                         }
                                         if (rootMidi > 0) { Spacer(Modifier.height(8.dp)); Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(degreeSpacing)) {
                                             notes.forEachIndexed { index, note -> val internalLabel = if (useRelativeIonianContext) ionianContextDegreeLabel(note, ionianContextKey) else MusicTheory.getRelativeDegreeLabel(note, rootMidi); val previewNote = if (useRelativeIonianContext) ionianContextPreviewAudioNote(note, ionianContextKey) ?: note else note; val isHovered = audiationState is AudiationState.Dragging && audiationState.hoveredId == index
-                                                OutlinedButton(onClick = { scope.launch { AudioEngine.playChord(listOf(previewNote + audiationOctaveShift * 12), channel = AudioEngine.PlaybackChannel.PREVIEW) } }, modifier = Modifier.weight(1f).height(50.dp).onGloballyPositioned { onTargetPositioned(index, it) }, shape = RoundedCornerShape(14.dp), contentPadding = PaddingValues(0.dp), colors = if (isHovered) ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer) else ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)) {
+                                                OutlinedButton(onClick = { scope.launch { AudioEngine.playChord(listOf(previewNote + audiationOctaveShift * 12), channel = AudioEngine.PlaybackChannel.PREVIEW) } }, modifier = Modifier.weight(1f).height(54.dp).onGloballyPositioned { onTargetPositioned(index, it) }, shape = RoundedCornerShape(14.dp), contentPadding = PaddingValues(0.dp), colors = if (isHovered) ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer) else ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)) {
                                                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { ScaleDegreeText(label = internalLabel, fontSize = degreeFontSize, modifier = Modifier.fillMaxWidth(), minFontSize = 12.sp)
                                                         if (audiationState is AudiationState.Listening && audiationState.target.id == index) PitchGauge(pitchResult = audiationState.pitch, targetLabel = audiationState.target.label, modifier = Modifier.matchParentSize()) }
                                                 } }
@@ -2026,13 +2035,26 @@ fun QuizTab(
                         }
                     }
 
+                    // Offset the shorter simple layout to align its scrub bar with the
+                    // non-simple timeline and chord-tool layout.
+                    if (isSimpleMode) {
+                        Spacer(modifier = Modifier.height(80.dp))
+                    }
+
+                    Spacer(modifier = Modifier.height(28.dp))
+
                     // Unified playback scrub bar
                     Slider(
                         value = currentBeat.toFloat().coerceIn(1f, endBeat.toFloat()),
                         onValueChange = { beat -> scrubTo(beat.toDouble()) },
                         onValueChangeFinished = { finishScrubbing() },
                         valueRange = 1f..endBeat.toFloat(),
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp).height(32.dp).scale(0.9f)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp)
+                            .height(32.dp)
+                            .scale(0.9f)
+                            .onGloballyPositioned(onScrubBarPositioned)
                     )
                 }
             }

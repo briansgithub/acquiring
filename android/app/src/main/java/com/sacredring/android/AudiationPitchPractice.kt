@@ -26,9 +26,11 @@ import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.math.roundToInt
@@ -59,12 +61,22 @@ fun AudiationPitchPracticeContainer(
     onCalibrated: (Double) -> Unit = {},
     initialOffset: Offset = Offset.Zero,
     pitchSource: PitchSource = remember { MicrophonePitchTracker() },
-    content: @Composable (AudiationState, (Int, LayoutCoordinates) -> Unit) -> Unit
+    content: @Composable (
+        AudiationState,
+        (Int, LayoutCoordinates) -> Unit,
+        (LayoutCoordinates) -> Unit
+    ) -> Unit
 ) {
     var state by remember { mutableStateOf<AudiationState>(AudiationState.Idle) }
     var puckOffset by remember { mutableStateOf(initialOffset) }
     var containerOffsetInRoot by remember { mutableStateOf(Offset.Zero) }
+    var containerSize by remember { mutableStateOf(IntSize.Zero) }
+    var scrubBarBoundsInRoot by remember { mutableStateOf<Rect?>(null) }
+    var hasUserPositionedPuck by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val density = LocalDensity.current
+    val puckSizePx = with(density) { 48.dp.toPx() }
+    val puckMarginPx = with(density) { 8.dp.toPx() }
     
     val pitchResult by pitchSource.pitchFlow.collectAsState()
 
@@ -205,17 +217,39 @@ fun AudiationPitchPracticeContainer(
         }
     }
 
+    // Place the puck beside the scrub bar on first layout.  The position is
+    // measured from the real slider, so it stays correct across both quiz layouts.
+    LaunchedEffect(scrubBarBoundsInRoot, containerOffsetInRoot, containerSize, hasUserPositionedPuck) {
+        val scrubBounds = scrubBarBoundsInRoot ?: return@LaunchedEffect
+        if (hasUserPositionedPuck || containerSize == IntSize.Zero) return@LaunchedEffect
+
+        val relativeBounds = scrubBounds.translate(-containerOffsetInRoot)
+        val maxX = (containerSize.width - puckSizePx - puckMarginPx).coerceAtLeast(puckMarginPx)
+        val maxY = (containerSize.height - puckSizePx - puckMarginPx).coerceAtLeast(puckMarginPx)
+        puckOffset = Offset(
+            x = (relativeBounds.right + puckMarginPx).coerceIn(puckMarginPx, maxX),
+            y = (relativeBounds.center.y - puckSizePx / 2f).coerceIn(puckMarginPx, maxY)
+        )
+    }
+
     Box(modifier = modifier
         .fillMaxSize()
-        .onGloballyPositioned { containerOffsetInRoot = it.positionInRoot() }
-    ) {
-        content(state) { id, coords ->
-            targets.find { it.id == id }?.let { target ->
-                // Store bounds relative to the container
-                val rootBounds = coords.boundsInRoot()
-                target.bounds = rootBounds.translate(-containerOffsetInRoot)
-            }
+        .onGloballyPositioned {
+            containerOffsetInRoot = it.positionInRoot()
+            containerSize = it.size
         }
+    ) {
+        content(
+            state,
+            { id, coords ->
+                targets.find { it.id == id }?.let { target ->
+                    // Store bounds relative to the container
+                    val rootBounds = coords.boundsInRoot()
+                    target.bounds = rootBounds.translate(-containerOffsetInRoot)
+                }
+            },
+            { coords -> scrubBarBoundsInRoot = coords.boundsInRoot() }
+        )
 
         // Draggable Puck (Magnifying Glass)
         val puckSize = 48.dp
@@ -248,6 +282,7 @@ fun AudiationPitchPracticeContainer(
                     detectDragGestures(
                         onDragStart = {
                             if (state is AudiationState.Idle || state is AudiationState.Listening || state is AudiationState.Error) {
+                                hasUserPositionedPuck = true
                                 val s = state
                                 if (s is AudiationState.Listening) {
                                     puckOffset = s.target.bounds.center - Offset(halfPuck.toPx(), halfPuck.toPx())
