@@ -105,7 +105,60 @@ function buildOrderedAndroidSectionMap(metadata, records) {
   return sectionMap;
 }
 
+const DIATONIC_MODE_KEYS = new Map([
+  ['major', 'ionian'],
+  ['ionian', 'ionian'],
+  ['dorian', 'dorian'],
+  ['phrygian', 'phrygian'],
+  ['lydian', 'lydian'],
+  ['mixolydian', 'mixolydian'],
+  ['minor', 'aeolian'],
+  ['aeolian', 'aeolian'],
+  ['naturalminor', 'aeolian'],
+  ['locrian', 'locrian'],
+]);
+
+function alphabeticalGroup(title) {
+  const first = String(title ?? '').trim().charAt(0).toUpperCase();
+  if (/^[A-Z]$/.test(first)) return first;
+  if (/^[0-9]$/.test(first)) return first;
+  return '#';
+}
+
+function complexityBucket(rating) {
+  if (rating == null) return null;
+  const value = Number(rating);
+  if (!Number.isFinite(value) || value < 0 || value > 100) return null;
+  return value === 100 ? 9 : Math.floor(value / 10);
+}
+
+function canonicalDiatonicMode(scale) {
+  const normalized = String(scale ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/[-_\s]/g, '');
+  return DIATONIC_MODE_KEYS.get(normalized) ?? null;
+}
+
+/** Collect every key event from every section, de-duped within one song/mode. */
+function collectAndroidBrowseModes(sectionMap) {
+  const modes = new Set();
+  for (const section of Object.values(sectionMap ?? {})) {
+    const keys = section?.metadata?.keys ?? section?.keys;
+    if (!Array.isArray(keys)) continue;
+    for (const key of keys) {
+      const mode = canonicalDiatonicMode(key?.scale);
+      if (mode) modes.add(mode);
+    }
+  }
+  return [...modes];
+}
+
 module.exports = {
   orderSectionRecords,
   buildOrderedAndroidSectionMap,
+  alphabeticalGroup,
+  complexityBucket,
+  canonicalDiatonicMode,
+  collectAndroidBrowseModes,
 };

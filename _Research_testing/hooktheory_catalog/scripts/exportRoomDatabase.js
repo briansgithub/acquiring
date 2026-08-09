@@ -2,6 +2,12 @@ const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
 const Database = require('better-sqlite3');
+const {
+    alphabeticalGroup,
+    complexityBucket,
+    canonicalDiatonicMode,
+    collectAndroidBrowseModes,
+} = require('../lib/androidCatalogSections');
 
 const sourceDbPath = path.join(__dirname, '../../../sacred_ring_data/catalog/hooktheory_catalog.db');
 const outputDbPath = path.join(__dirname, '../../../android/catalog.db');
@@ -25,17 +31,73 @@ CREATE TABLE IF NOT EXISTS songs (
     status TEXT NOT NULL,
     dataBlob BLOB
 );
+CREATE TABLE IF NOT EXISTS song_browse_entries (
+    slug TEXT NOT NULL PRIMARY KEY,
+    artist TEXT,
+    title TEXT,
+    alphaGroup TEXT NOT NULL,
+    complexityRating REAL,
+    complexityBucket INTEGER
+);
+CREATE TABLE IF NOT EXISTS song_browse_modes (
+    slug TEXT NOT NULL,
+    mode TEXT NOT NULL,
+    PRIMARY KEY (slug, mode)
+);
+CREATE INDEX IF NOT EXISTS index_song_browse_entries_alphaGroup
+    ON song_browse_entries (alphaGroup);
+CREATE INDEX IF NOT EXISTS index_song_browse_entries_complexityBucket
+    ON song_browse_entries (complexityBucket);
+CREATE INDEX IF NOT EXISTS index_song_browse_modes_mode
+    ON song_browse_modes (mode);
 `);
+outDb.pragma('user_version = 3');
 
 const rows = srcDb.prepare(`
-    SELECT slug, artist, title, url, status FROM songs
+    SELECT s.slug, s.artist, s.title, s.url, s.status, m.complexity_rating
+    FROM songs s
+    LEFT JOIN song_metrics m ON m.slug = s.slug
 `).all();
+
+const modesBySlug = new Map();
+for (const section of srcDb.prepare(`
+    SELECT slug, key_scale, section_data_json
+    FROM song_sections
+`).iterate()) {
+    let modes = modesBySlug.get(section.slug);
+    if (!modes) {
+        modes = new Set();
+        modesBySlug.set(section.slug, modes);
+    }
+
+    if (section.section_data_json) {
+        try {
+            const sectionData = JSON.parse(section.section_data_json);
+            for (const mode of collectAndroidBrowseModes({ section: sectionData })) {
+                modes.add(mode);
+            }
+        } catch (_) {
+            // Fall back to the section's primary scale below.
+        }
+    }
+    const primaryMode = canonicalDiatonicMode(section.key_scale);
+    if (primaryMode) modes.add(primaryMode);
+}
 
 console.log(`Inserting ${rows.length} catalog songs into Room database...`);
 
 const insertStmt = outDb.prepare(`
     INSERT INTO songs (slug, artist, title, url, status, dataBlob)
     VALUES (?, ?, ?, ?, ?, NULL)
+`);
+const insertBrowseStmt = outDb.prepare(`
+    INSERT INTO song_browse_entries
+        (slug, artist, title, alphaGroup, complexityRating, complexityBucket)
+    VALUES (?, ?, ?, ?, ?, ?)
+`);
+const insertModeStmt = outDb.prepare(`
+    INSERT OR IGNORE INTO song_browse_modes (slug, mode)
+    VALUES (?, ?)
 `);
 
 const insertMany = outDb.transaction((songs) => {
@@ -47,6 +109,17 @@ const insertMany = outDb.transaction((songs) => {
             song.url,
             song.status || 'pending'
         );
+        insertBrowseStmt.run(
+            song.slug,
+            song.artist || null,
+            song.title || null,
+            alphabeticalGroup(song.title),
+            song.complexity_rating ?? null,
+            complexityBucket(song.complexity_rating)
+        );
+        for (const mode of modesBySlug.get(song.slug) ?? []) {
+            insertModeStmt.run(song.slug, mode);
+        }
     }
 });
 

@@ -12,6 +12,7 @@
     "test:note-order": "node _Research_testing/verifyNoteOrder.mjs",
     "test:hooktheory-compat": "node _Research_testing/hooktheoryDataCompatTest.mjs",
     "test:section-order": "node _Research_testing/sectionOrderTest.cjs",
+    "test:android-catalog-browse": "node _Research_testing/hooktheory_catalog/scripts/androidCatalogBrowseTest.cjs",
     "player:start": "node _Debug_testing/playerServerCtl.mjs start",
     "player:stop": "node _Debug_testing/playerServerCtl.mjs stop",
     "player:status": "node _Debug_testing/playerServerCtl.mjs status",
