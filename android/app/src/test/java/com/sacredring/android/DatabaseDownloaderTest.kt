@@ -34,7 +34,6 @@ class DatabaseDownloaderTest {
             .build()
 
         val songCount = db.songDao().getSongCount()
-        val sampleSongs = db.songDao().getSongs(limit = 100)
         println("✅ Successfully imported database! Total songs in Room DB: $songCount")
         assertTrue("Room DB should contain thousands of songs", songCount > 30000)
 

@@ -27,6 +27,8 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.input.pointer.pointerInput
@@ -56,10 +58,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.dp
 import androidx.room.Room
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -71,11 +74,13 @@ import kotlin.math.roundToInt
 
 private enum class SongParentPage {
     LIBRARY,
-    ARTIST
+    ARTIST,
+    ALL_SONGS
 }
 
 private const val QUIZ_PLAYBACK_CROSSFADE_MS = 24
 private const val ROOT_INTERVAL_PREVIEW_DURATION_MS = 450
+private const val ALL_SONGS_STATE_KEY = "all-songs"
 private val QUIZ_TIMELINE_CHANNELS = setOf(
     AudioEngine.PlaybackChannel.MELODY,
     AudioEngine.PlaybackChannel.CHORD
@@ -177,7 +182,7 @@ class MainActivity : ComponentActivity() {
         db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java, "sacred-ring-db"
-        ).build()
+        ).addMigrations(AppDatabase.MIGRATION_1_2, AppDatabase.MIGRATION_2_3).build()
 
         val neutralContainer = Color(0xFF3A3A3A)
         val neutralOnContainer = Color(0xFFE6E6E6)
@@ -225,16 +230,17 @@ fun MainScreen(db: AppDatabase) {
     var searchArtistQuery by remember { mutableStateOf("") }
     var searchResult by remember { mutableStateOf<String?>(null) }
     var catalogStatus by remember { mutableStateOf("") }
-    var allSongs by remember { mutableStateOf(listOf<Song>()) }
-    var suggestions by remember { mutableStateOf(listOf<Song>()) }
+    var allSongs by remember { mutableStateOf(listOf<SongBrowseRow>()) }
+    var suggestions by remember { mutableStateOf(listOf<SongBrowseRow>()) }
     var artistSuggestions by remember { mutableStateOf(listOf<String>()) }
     var isExpanded by remember { mutableStateOf(false) }
     var isArtistExpanded by remember { mutableStateOf(false) }
     var selectedArtistName by remember { mutableStateOf<String?>(null) }
-    var selectedArtistSongs by remember { mutableStateOf<List<Song>?>(null) }
+    var selectedArtistSongs by remember { mutableStateOf<List<SongBrowseRow>?>(null) }
     var selectedSong by remember { mutableStateOf<Song?>(null) }
     var selectedSongSections by remember { mutableStateOf<Map<String, ExtractedSection>?>(null) }
     var selectedSectionId by remember { mutableStateOf<String?>(null) }
+    var isShowingAllSongs by rememberSaveable { mutableStateOf(false) }
     var currentTab by remember { mutableStateOf(2) }
     var songParentPage by remember { mutableStateOf(SongParentPage.LIBRARY) }
     var quizReturnTab by remember { mutableStateOf<Int?>(null) }
@@ -250,13 +256,18 @@ fun MainScreen(db: AppDatabase) {
     var artistOffset by remember { mutableStateOf(0) }
     var isTitlePaging by remember { mutableStateOf(false) }
     var isArtistPaging by remember { mutableStateOf(false) }
+    var browseOpenJob by remember { mutableStateOf<Job?>(null) }
     
     val scope = rememberCoroutineScope()
     val context = androidx.compose.ui.platform.LocalContext.current
+    val allSongsStateHolder = rememberSaveableStateHolder()
+    val allSongsRuntimeState = rememberAllSongsRuntimeState()
 
     val harvestService = remember(activeDb) { HarvestService(activeDb) }
     val json = remember { Json { ignoreUnknownKeys = true } }
     val returnToParent = {
+        browseOpenJob?.cancel()
+        browseOpenJob = null
         if (selectedArtistSongs != null && selectedSongSections == null) {
             // Close the artist detail page.
             selectedArtistName = null
@@ -274,11 +285,18 @@ fun MainScreen(db: AppDatabase) {
                 selectedArtistName = null
                 selectedArtistSongs = null
             }
+        } else if (isShowingAllSongs) {
+            selectedSong = null
+            allSongsStateHolder.removeState(ALL_SONGS_STATE_KEY)
+            allSongsRuntimeState.reset()
+            isShowingAllSongs = false
         }
     }
 
     // Match the visible Back control while a selected song or artist is open.
-    BackHandler(enabled = selectedSongSections != null || selectedArtistSongs != null) {
+    BackHandler(
+        enabled = selectedSongSections != null || selectedArtistSongs != null || isShowingAllSongs
+    ) {
         returnToParent()
     }
 
@@ -293,7 +311,7 @@ fun MainScreen(db: AppDatabase) {
             // Show recent songs when empty from SharedPreferences
             val slugs = HistoryManager.getRecentSlugs(context)
             if (slugs.isNotEmpty()) {
-                val recentSongs = activeDb.songDao().getSongsBySlugs(slugs)
+                val recentSongs = activeDb.songDao().getBrowseSongsBySlugs(slugs)
                 // Sort by the order in the slugs list (most recent first)
                 suggestions = slugs.mapNotNull { slug -> recentSongs.find { it.slug == slug } }
                 isShowingRecent = suggestions.isNotEmpty()
@@ -320,52 +338,97 @@ fun MainScreen(db: AppDatabase) {
         }
     }
 
+    val decodeSongSections: suspend (ByteArray) -> Map<String, ExtractedSection> = { blob ->
+        withContext(Dispatchers.Default) {
+            val dataStr = DataUtils.decompress(blob)
+            HooktheoryDataCompat.migrateSections(
+                json.decodeFromString<Map<String, ExtractedSection>>(dataStr)
+            )
+        }
+    }
+
     val openSong: (Song) -> Unit = { song ->
         HistoryManager.addSong(context, song.slug)
         HistoryManager.addArtist(context, song.artist)
         isExpanded = false
-        songParentPage = if (selectedArtistSongs != null) SongParentPage.ARTIST else SongParentPage.LIBRARY
+        songParentPage = when {
+            selectedArtistSongs != null -> SongParentPage.ARTIST
+            isShowingAllSongs -> SongParentPage.ALL_SONGS
+            else -> SongParentPage.LIBRARY
+        }
         quizReturnTab = null
         selectedSong = song
 
-        if (song.dataBlob != null) {
-            try {
-                val dataStr = DataUtils.decompress(song.dataBlob)
-                val sections = HooktheoryDataCompat.migrateSections(
-                    json.decodeFromString<Map<String, ExtractedSection>>(dataStr)
-                )
-                selectedSongSections = sections
-                selectedSectionId = sections.sectionsInSongOrder().firstOrNull()?.key ?: sections.keys.firstOrNull()
-                currentTab = 2 // Open Quiz; SongDetailView starts in Simple mode
-            } catch (e: Exception) {
-                searchResult = "❌ Error loading song: ${e.message}"
+        val storedBlob = song.dataBlob
+        if (storedBlob != null) {
+            scope.launch {
+                try {
+                    val sections = decodeSongSections(storedBlob)
+                    if (selectedSong?.slug != song.slug) return@launch
+                    selectedSongSections = sections
+                    selectedSectionId = sections.sectionsInSongOrder().firstOrNull()?.key ?: sections.keys.firstOrNull()
+                    currentTab = 2 // Open Quiz; SongDetailView starts in Simple mode
+                } catch (cancellation: CancellationException) {
+                    throw cancellation
+                } catch (e: Exception) {
+                    if (selectedSong?.slug == song.slug) {
+                        selectedSong = null
+                        searchResult = "❌ Error loading song: ${e.message}"
+                    }
+                }
             }
         } else {
             // Auto-harvest on demand if dataBlob is missing
             scope.launch {
                 harvestStatus = "Fetching chords for ${song.title ?: song.slug}..."
                 val result = harvestService.harvest(song.url) { harvestStatus = it }
-                result.onSuccess { harvestedSong ->
-                    harvestedSong.dataBlob?.let { blob ->
+                val harvestedSong = result.getOrNull()
+                if (harvestedSong != null) {
+                    val blob = harvestedSong.dataBlob
+                    if (blob != null) {
                         try {
-                            val dataStr = DataUtils.decompress(blob)
-                            val sections = HooktheoryDataCompat.migrateSections(
-                                json.decodeFromString<Map<String, ExtractedSection>>(dataStr)
-                            )
+                            val sections = decodeSongSections(blob)
+                            if (selectedSong?.slug != song.slug) return@launch
                             HistoryManager.addArtist(context, harvestedSong.artist)
                             selectedSong = harvestedSong
                             selectedSongSections = sections
                             selectedSectionId = sections.sectionsInSongOrder().firstOrNull()?.key ?: sections.keys.firstOrNull()
                             currentTab = 2 // Open Quiz; SongDetailView starts in Simple mode
                             harvestStatus = "Loaded chords for ${song.title ?: song.slug}!"
+                        } catch (cancellation: CancellationException) {
+                            throw cancellation
                         } catch (e: Exception) {
-                            harvestStatus = "❌ Error loading harvested song: ${e.message}"
+                            if (selectedSong?.slug == song.slug) {
+                                selectedSong = null
+                                harvestStatus = "❌ Error loading harvested song: ${e.message}"
+                            }
                         }
+                    } else if (selectedSong?.slug == song.slug) {
+                        selectedSong = null
+                        harvestStatus = "❌ Harvest completed without song data"
                     }
+                } else if (selectedSong?.slug == song.slug) {
+                    selectedSong = null
+                    harvestStatus = "❌ Error fetching song: ${result.exceptionOrNull()?.message}"
                 }
-                result.onFailure { error ->
-                    harvestStatus = "❌ Error fetching song: ${error.message}"
+            }
+        }
+    }
+
+    val openBrowseSong: (SongBrowseRow) -> Unit = { browseRow ->
+        browseOpenJob?.cancel()
+        browseOpenJob = scope.launch {
+            try {
+                val song = activeDb.songDao().getSongBySlug(browseRow.slug)
+                if (song != null) {
+                    openSong(song)
+                } else {
+                    searchResult = "Unable to find '${browseRow.title ?: browseRow.slug}'"
                 }
+            } catch (cancellation: CancellationException) {
+                throw cancellation
+            } catch (error: Exception) {
+                searchResult = "Unable to open '${browseRow.title ?: browseRow.slug}': ${error.message}"
             }
         }
     }
@@ -382,12 +445,30 @@ fun MainScreen(db: AppDatabase) {
                     ArtistSongsView(
                         artistName = selectedArtistName ?: "Unknown Artist",
                         songs = selectedArtistSongs!!,
-                        onSongClick = openSong,
+                        onSongClick = openBrowseSong,
                         onBack = {
+                            browseOpenJob?.cancel()
+                            browseOpenJob = null
                             selectedArtistSongs = null
                             selectedArtistName = null
                         }
                     )
+                } else if (isShowingAllSongs) {
+                    allSongsStateHolder.SaveableStateProvider(ALL_SONGS_STATE_KEY) {
+                        AllSongsView(
+                            songDao = activeDb.songDao(),
+                            runtimeState = allSongsRuntimeState,
+                            onSongClick = openBrowseSong,
+                            onBack = {
+                                browseOpenJob?.cancel()
+                                browseOpenJob = null
+                                selectedSong = null
+                                allSongsStateHolder.removeState(ALL_SONGS_STATE_KEY)
+                                allSongsRuntimeState.reset()
+                                isShowingAllSongs = false
+                            }
+                        )
+                    }
                 } else {
                     // Library/Search View
                     LibraryView(
@@ -415,38 +496,60 @@ fun MainScreen(db: AppDatabase) {
                     suggestions = suggestions,
                     isShowingRecent = isShowingRecent,
                     onSearchTitle = {
-                        scope.launch {
-                            val results = activeDb.songDao().searchSongsByTitle(searchQuery)
-                            allSongs = results
-                            searchResult = if (results.isNotEmpty()) "Found ${results.size} matches" else "No titles matching '$searchQuery'"
+                        if (searchQuery.isBlank()) {
+                            allSongs = emptyList()
+                            searchResult = "Enter a title to search"
                             isExpanded = false
+                        } else {
+                            scope.launch {
+                                val results = activeDb.songDao().searchBrowseSongsByTitle(searchQuery)
+                                allSongs = results
+                                searchResult = if (results.isNotEmpty()) "Found ${results.size} matches" else "No titles matching '$searchQuery'"
+                                isExpanded = false
+                            }
                         }
                     },
                     onLoadMoreTitle = {
                         if (!isTitlePaging && searchQuery.isNotEmpty() && suggestions.size >= 20) {
                             isTitlePaging = true
+                            val requestedQuery = searchQuery
                             scope.launch {
-                                val nextOffset = titleOffset + 20
-                                val nextSuggestions = activeDb.songDao().getSearchSuggestions(searchQuery, limit = 20, offset = nextOffset)
-                                if (nextSuggestions.isNotEmpty()) {
-                                    suggestions = suggestions + nextSuggestions
-                                    titleOffset = nextOffset
+                                try {
+                                    val nextOffset = titleOffset + 20
+                                    val nextSuggestions = activeDb.songDao().getSearchSuggestions(
+                                        requestedQuery,
+                                        limit = 20,
+                                        offset = nextOffset
+                                    )
+                                    if (searchQuery == requestedQuery && nextSuggestions.isNotEmpty()) {
+                                        suggestions = suggestions + nextSuggestions
+                                        titleOffset = nextOffset
+                                    }
+                                } finally {
+                                    isTitlePaging = false
                                 }
-                                isTitlePaging = false
                             }
                         }
                     },
                     onLoadMoreArtist = {
                         if (!isArtistPaging && searchArtistQuery.isNotEmpty() && artistSuggestions.size >= 20) {
                             isArtistPaging = true
+                            val requestedQuery = searchArtistQuery
                             scope.launch {
-                                val nextOffset = artistOffset + 20
-                                val nextSuggestions = activeDb.songDao().getArtistSuggestions(searchArtistQuery, limit = 20, offset = nextOffset)
-                                if (nextSuggestions.isNotEmpty()) {
-                                    artistSuggestions = artistSuggestions + nextSuggestions
-                                    artistOffset = nextOffset
+                                try {
+                                    val nextOffset = artistOffset + 20
+                                    val nextSuggestions = activeDb.songDao().getArtistSuggestions(
+                                        requestedQuery,
+                                        limit = 20,
+                                        offset = nextOffset
+                                    )
+                                    if (searchArtistQuery == requestedQuery && nextSuggestions.isNotEmpty()) {
+                                        artistSuggestions = artistSuggestions + nextSuggestions
+                                        artistOffset = nextOffset
+                                    }
+                                } finally {
+                                    isArtistPaging = false
                                 }
-                                isArtistPaging = false
                             }
                         }
                     },
@@ -465,7 +568,7 @@ fun MainScreen(db: AppDatabase) {
                     onArtistClick = { artistName ->
                         HistoryManager.addArtist(context, artistName)
                         scope.launch {
-                            val results = activeDb.songDao().getSongsByArtist(artistName)
+                            val results = activeDb.songDao().getBrowseSongsByArtist(artistName)
                             selectedArtistName = canonicalArtistName(artistName)
                             selectedArtistSongs = results
                             isArtistExpanded = false
@@ -473,7 +576,7 @@ fun MainScreen(db: AppDatabase) {
                     },
                     onSearchArtist = {
                         scope.launch {
-                            val results = activeDb.songDao().getSongsByArtist(searchArtistQuery)
+                            val results = activeDb.songDao().getBrowseSongsByArtist(searchArtistQuery)
                             if (results.isNotEmpty()) {
                                 val canonicalArtist = results.first().artist
                                     ?.let(::canonicalArtistName)
@@ -487,17 +590,18 @@ fun MainScreen(db: AppDatabase) {
                             isArtistExpanded = false
                         }
                     },
-                    onSuggestionClick = openSong,
-                    onListAll = {
-                        scope.launch {
-                            val count = activeDb.songDao().getSongCount()
-                            allSongs = activeDb.songDao().getSongs(limit = 100, offset = 0)
-                            searchResult = "Database contains $count songs"
-                        }
+                    onSuggestionClick = openBrowseSong,
+                    onAllSongs = {
+                        browseOpenJob?.cancel()
+                        browseOpenJob = null
+                        allSongsStateHolder.removeState(ALL_SONGS_STATE_KEY)
+                        allSongsRuntimeState.reset()
+                        scope.launch { allSongsRuntimeState.listState.scrollToItem(0) }
+                        isShowingAllSongs = true
                     },
                     searchResult = searchResult,
                     allSongs = allSongs,
-                    onSongClick = openSong,
+                    onSongClick = openBrowseSong,
 
                     catalogStatus = catalogStatus,
                     onDownloadCatalog = {
@@ -513,9 +617,24 @@ fun MainScreen(db: AppDatabase) {
                                 activeDb = Room.databaseBuilder(
                                     context.applicationContext,
                                     AppDatabase::class.java, "sacred-ring-db"
+                                ).addMigrations(
+                                    AppDatabase.MIGRATION_1_2,
+                                    AppDatabase.MIGRATION_2_3
                                 ).build()
                                 catalogStatus = "Database Refreshed!"
                             } else {
+                                // A validated install closes Room only immediately
+                                // before the atomic swap. If that final swap fails,
+                                // reopen the preserved catalog before reporting it.
+                                if (!activeDb.isOpen) {
+                                    activeDb = Room.databaseBuilder(
+                                        context.applicationContext,
+                                        AppDatabase::class.java, "sacred-ring-db"
+                                    ).addMigrations(
+                                        AppDatabase.MIGRATION_1_2,
+                                        AppDatabase.MIGRATION_2_3
+                                    ).build()
+                                }
                                 catalogStatus = "Error: ${result.exceptionOrNull()?.message}"
                             }
                         }
@@ -557,7 +676,7 @@ fun MainScreen(db: AppDatabase) {
                     onArtistClick = { artistName ->
                         HistoryManager.addArtist(context, artistName)
                         scope.launch {
-                            val results = activeDb.songDao().getSongsByArtist(artistName)
+                            val results = activeDb.songDao().getBrowseSongsByArtist(artistName)
                             selectedArtistName = canonicalArtistName(artistName)
                             selectedArtistSongs = results
                             selectedSongSections = null
@@ -589,7 +708,7 @@ fun LibraryView(
     onSearchQueryChange: (String) -> Unit,
     isExpanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
-    suggestions: List<Song>,
+    suggestions: List<SongBrowseRow>,
     isShowingRecent: Boolean,
     searchArtistQuery: String,
     onSearchArtistQueryChange: (String) -> Unit,
@@ -599,19 +718,18 @@ fun LibraryView(
     isShowingRecentArtists: Boolean,
     onArtistClick: (String) -> Unit,
     onSearchArtist: () -> Unit,
-    onSuggestionClick: (Song) -> Unit,
+    onSuggestionClick: (SongBrowseRow) -> Unit,
     onSearchTitle: () -> Unit,
     onLoadMoreTitle: () -> Unit,
     onLoadMoreArtist: () -> Unit,
-    onListAll: () -> Unit,
+    onAllSongs: () -> Unit,
     searchResult: String?,
-    allSongs: List<Song>,
-    onSongClick: (Song) -> Unit,
+    allSongs: List<SongBrowseRow>,
+    onSongClick: (SongBrowseRow) -> Unit,
     catalogStatus: String,
     onDownloadCatalog: () -> Unit
 ) {
     var isHarvestExpanded by remember { mutableStateOf(false) }
-    var isListAllExpanded by remember { mutableStateOf(false) }
     var isDownloadCatalogExpanded by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -755,33 +873,11 @@ fun LibraryView(
 
         Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-        // Expandable List All Section
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Surface(
-                onClick = { isListAllExpanded = !isListAllExpanded },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier.padding(vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "List All Library",
-                        style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Icon(
-                        imageVector = if (isListAllExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                        contentDescription = if (isListAllExpanded) "Collapse" else "Expand"
-                    )
-                }
-            }
-
-            if (isListAllExpanded) {
-                Button(onClick = onListAll, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                    Text("List All Library")
-                }
-            }
+        Button(
+            onClick = onAllSongs,
+            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+        ) {
+            Text("All Songs")
         }
 
         // Expandable Harvest Section
@@ -2248,8 +2344,8 @@ fun QuizTab(
 @Composable
 fun ArtistSongsView(
     artistName: String,
-    songs: List<Song>,
-    onSongClick: (Song) -> Unit,
+    songs: List<SongBrowseRow>,
+    onSongClick: (SongBrowseRow) -> Unit,
     onBack: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {

@@ -47,7 +47,7 @@ class AudiationUiTest {
                 onTargetSelected = {},
                 onSessionCanceled = {},
                 pitchSource = fakeSource
-            ) { state, onPositioned ->
+            ) { state, onPositioned, _ ->
                 Box(modifier = Modifier
                     .size(100.dp)
                     .onGloballyPositioned { onPositioned(0, it) }

@@ -20,6 +20,8 @@ local.properties
 *.apk
 *.aab
 *.aar
+catalog.db
+catalog.db.gz
 
 # Log files
 *.log

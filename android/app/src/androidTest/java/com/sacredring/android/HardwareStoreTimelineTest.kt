@@ -33,7 +33,9 @@ class HardwareStoreTimelineTest {
     @Test
     fun everyPlayableSectionAndMelodyEventResolvesAtItsOwnBeat() = runBlocking {
         val context = ApplicationProvider.getApplicationContext<android.content.Context>()
-        val db = Room.databaseBuilder(context, AppDatabase::class.java, "sacred-ring-db").build()
+        val db = Room.databaseBuilder(context, AppDatabase::class.java, "sacred-ring-db")
+            .addMigrations(AppDatabase.MIGRATION_1_2, AppDatabase.MIGRATION_2_3)
+            .build()
         try {
             val song = db.songDao().getSongBySlug("weird-al-yankovic__hardware-store")
             assertNotNull("Hardware Store must remain available in the on-device song database", song)

@@ -1,5 +1,6 @@
 package com.sacredring.android
 
+import androidx.room.withTransaction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
@@ -64,7 +65,21 @@ class HarvestService(private val db: AppDatabase) {
                 dataBlob = fullDataJson.toByteArray(Charsets.UTF_8)
             )
 
-            db.songDao().insertSong(song)
+            val existingBrowseEntry = db.songDao().getBrowseEntryBySlug(song.slug)
+            val browseEntry = AllSongsGrouping.browseEntry(
+                song = song,
+                complexityRating = existingBrowseEntry?.complexityRating
+            )
+            val browseModes = AllSongsGrouping.modesInSections(sections.values)
+                .map { mode -> SongBrowseMode(song.slug, mode.key) }
+            db.withTransaction {
+                db.songDao().insertSong(song)
+                db.songDao().upsertBrowseEntry(browseEntry)
+                db.songDao().deleteBrowseModes(song.slug)
+                if (browseModes.isNotEmpty()) {
+                    db.songDao().insertBrowseModes(browseModes)
+                }
+            }
             onProgress("Harvest complete!")
             Result.success(song)
         } catch (e: Exception) {

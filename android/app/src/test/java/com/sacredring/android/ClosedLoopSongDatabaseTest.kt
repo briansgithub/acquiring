@@ -97,7 +97,7 @@ class ClosedLoopSongDatabaseTest {
         val suggestions = db.songDao().getArtistSuggestions("The Artists")
         assertEquals(listOf("The Artists"), suggestions)
 
-        val songs = db.songDao().getSongsByArtist(suggestions.single())
+        val songs = db.songDao().getBrowseSongsByArtist(suggestions.single())
         assertEquals(
             setOf("the-artists__hyphen-song", "the-artists__space-song"),
             songs.map { it.slug }.toSet()
