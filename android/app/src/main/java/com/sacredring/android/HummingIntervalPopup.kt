@@ -250,8 +250,8 @@ internal fun HummingIntervalPopup(
                     onSingleClick = {
                         slot1?.let {
                             scope.launch {
-                                AudioEngine.playChord(
-                                    listOf(it.rawMidi.roundToInt()),
+                                AudioEngine.playExactFrequencies(
+                                    listOf(midiToFrequency(it.rawMidi)),
                                     durationMs = 1000,
                                     channel = AudioEngine.PlaybackChannel.PREVIEW
                                 )
@@ -287,8 +287,8 @@ internal fun HummingIntervalPopup(
                     onSingleClick = {
                         slot2?.let {
                             scope.launch {
-                                AudioEngine.playChord(
-                                    listOf(it.rawMidi.roundToInt()),
+                                AudioEngine.playExactFrequencies(
+                                    listOf(midiToFrequency(it.rawMidi)),
                                     durationMs = 1000,
                                     channel = AudioEngine.PlaybackChannel.PREVIEW
                                 )
@@ -338,10 +338,10 @@ internal fun HummingIntervalPopup(
                                 scope.launch {
                                     val note1 = s1.pitch.chromaticPosition + 12
                                     val note2 = s2.pitch.chromaticPosition + 12
-                                    AudioEngine.playChord(listOf(note1), durationMs = 450, channel = AudioEngine.PlaybackChannel.PREVIEW)
-                                    delay(450)
-                                    AudioEngine.playChord(listOf(note2), durationMs = 450, channel = AudioEngine.PlaybackChannel.PREVIEW)
-                                    delay(450)
+                                    AudioEngine.playChord(listOf(note1), durationMs = 1000, channel = AudioEngine.PlaybackChannel.PREVIEW)
+                                    delay(1000)
+                                    AudioEngine.playChord(listOf(note2), durationMs = 1000, channel = AudioEngine.PlaybackChannel.PREVIEW)
+                                    delay(1000)
                                     AudioEngine.playChord(listOf(note1, note2), durationMs = 1000, channel = AudioEngine.PlaybackChannel.PREVIEW)
                                 }
                             }
@@ -383,6 +383,8 @@ internal data class PitchData(
     val cents: Double,
     val rawMidi: Double
 )
+
+private fun midiToFrequency(midi: Double): Double = 440.0 * Math.pow(2.0, (midi - 69) / 12.0)
 
 @Composable
 internal fun RowScope.HummingSlotView(

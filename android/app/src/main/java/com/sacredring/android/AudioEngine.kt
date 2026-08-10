@@ -372,6 +372,46 @@ object AudioEngine {
         channel: PlaybackChannel = PlaybackChannel.CHORD,
         fadeInMs: Int = 0,
         playbackToken: PlaybackToken? = null
+    ): PreparedPlayback? {
+        val validNotes = midiNotes.filter { it > 0 }.map { it + globalTranspose }
+        if (validNotes.isEmpty()) return null
+        val freqs = validNotes.map { midi -> 440.0 * Math.pow(2.0, (midi - 69) / 12.0) }
+        return synthesizeNotes(freqs, durationMs, arpeggiate, stepMs, volume, channel, fadeInMs, playbackToken)
+    }
+
+    /**
+     * Synthesizes and plays exact frequencies (Hz), bypassing MIDI/note quantization.
+     * Applies the same global transpose and waveform selection as note-based playback.
+     */
+    suspend fun playExactFrequencies(
+        frequenciesHz: List<Double>,
+        durationMs: Int = 1000,
+        volume: Float = 1.0f,
+        channel: PlaybackChannel = PlaybackChannel.PREVIEW,
+        fadeInMs: Int = 0,
+        playbackToken: PlaybackToken? = null
+    ) {
+        val transposed = frequenciesHz.filter { it > 0 }
+            .map { it * Math.pow(2.0, globalTranspose / 12.0) }
+        if (transposed.isEmpty()) return
+        val prepared = synthesizeNotes(transposed, durationMs, arpeggiate = false, stepMs = 80, volume, channel, fadeInMs, playbackToken)
+            ?: return
+        if (!currentCoroutineContext().isActive) {
+            releasePreparedPlayback(prepared)
+            return
+        }
+        startPreparedPlayback(prepared)
+    }
+
+    private suspend fun synthesizeNotes(
+        freqs: List<Double>,
+        durationMs: Int,
+        arpeggiate: Boolean,
+        stepMs: Int,
+        volume: Float,
+        channel: PlaybackChannel,
+        fadeInMs: Int,
+        playbackToken: PlaybackToken?
     ): PreparedPlayback? = withContext(Dispatchers.Default) {
         if (playbackToken != null && playbackToken.channel != channel) return@withContext null
         val generation = playbackToken?.generation
@@ -384,7 +424,7 @@ object AudioEngine {
         // changed while synthesis is running, and preset-specific state (such
         // as a plucked-string delay line) is allocated below.
         val waveform = currentWaveform
-        val validNotes = midiNotes.filter { it > 0 }.map { it + globalTranspose }
+        val validNotes = freqs
         if (validNotes.isEmpty()) return@withContext null
 
         val numNotes = validNotes.size
@@ -400,7 +440,6 @@ object AudioEngine {
 
         // Pre-calculate per-note synthesis data
         class NoteState(
-            val midi: Int,
             val freq: Double,
             val period: Double,
             var phase: Double = 0.0,
@@ -410,8 +449,7 @@ object AudioEngine {
             var delayPtr: Int = 0
         )
 
-        val noteStates = validNotes.map { midi ->
-            val freq = 440.0 * Math.pow(2.0, (midi - 69) / 12.0)
+        val noteStates = validNotes.map { freq ->
             val period = SAMPLE_RATE / freq
             val dl = when (waveform) {
                 Waveform.STRINGS, Waveform.NYLON_GUITAR -> {
@@ -427,7 +465,7 @@ object AudioEngine {
                 }
                 else -> DoubleArray(0)
             }
-            NoteState(midi, freq, period, delayLine = dl)
+            NoteState(freq, period, delayLine = dl)
         }
 
         for (i in 0 until numSamples) {
