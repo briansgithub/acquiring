@@ -96,7 +96,9 @@ class SpelledPitchResolutionTest {
     }
 
     @Test
-    fun borrowingTakesPrecedenceOverAnInapplicableAppliedField() {
+    fun appliedAndBorrowedComposeIntoATonicizedBorrowedTarget() {
+        // V/bVI borrowed from the parallel minor: bVI is Ab (degree 6 of C minor), and its
+        // secondary dominant is built on Eb (degree 5 of Ab major), not on Ab itself.
         val borrowed = buildJsonObject {
             put("root", 6)
             put("borrowed", "minor")
@@ -105,7 +107,8 @@ class SpelledPitchResolutionTest {
 
         val root = ChordInterpreter.resolveChordRoot(borrowed, KeyInfo("C", "major"))
 
-        assertEquals("Ab", root?.pitch?.noteName)
-        assertEquals(ChordRootContext.BORROWED, root?.context)
+        assertEquals("Eb", root?.pitch?.noteName)
+        assertEquals(ChordRootContext.BORROWED_APPLIED, root?.context)
+        assertEquals("major", root?.chordQuality)
     }
 }

@@ -35,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -61,11 +63,16 @@ internal fun HummingIntervalPopup(
     
     var recordingSlot by remember { mutableStateOf<Int?>(null) }
     var recordingTimeRemaining by remember { mutableStateOf(0) }
+    var flipFlopEnabled by remember { mutableStateOf(false) }
+    var pendingFlipFlopStart by remember { mutableStateOf(false) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        if (isGranted && recordingSlot != null) {
+        if (isGranted && pendingFlipFlopStart) {
+            pendingFlipFlopStart = false
+            flipFlopEnabled = true
+        } else if (isGranted && recordingSlot != null) {
             // Permission granted, start recording for the pending slot
             val slotId = recordingSlot!!
             recordingSlot = null // Reset so startRecording can trigger properly
@@ -85,7 +92,55 @@ internal fun HummingIntervalPopup(
                 }
             })
         } else {
+            pendingFlipFlopStart = false
             recordingSlot = null
+        }
+    }
+
+    // Flip-Flop owns the mic while the tool is expanded. Each completed capture
+    // updates its slot, which in turn recalculates the interval display.
+    LaunchedEffect(flipFlopEnabled, isExpanded) {
+        if (!flipFlopEnabled || !isExpanded) return@LaunchedEffect
+
+        var nextSlot = 1
+        try {
+            while (currentCoroutineContext().isActive) {
+                val slotId = nextSlot
+                recordingSlot = slotId
+                pitchTracker.start(60)
+
+                var remaining = 3000
+                while (remaining > 0 && currentCoroutineContext().isActive) {
+                    recordingTimeRemaining = remaining
+                    delay(100)
+                    remaining -= 100
+                }
+
+                val estimate = pitchTracker.pitchFlow.value as? MicrophonePitchTracker.PitchResult.Estimate
+                pitchTracker.stop()
+                recordingSlot = null
+                recordingTimeRemaining = 0
+
+                if (estimate != null) {
+                    val nearestMidi = estimate.midi.roundToInt()
+                    val centsFromNearest = (estimate.midi - nearestMidi) * 100
+                    val spelled = if (slotId == 2 && slot1 != null) {
+                        SpelledPitch.spellRelative(slot1!!.pitch, nearestMidi)
+                    } else {
+                        SpelledPitch.fromMidi(nearestMidi)
+                    }
+                    val data = PitchData(spelled, centsFromNearest, estimate.midi)
+                    if (slotId == 1) slot1 = data else slot2 = data
+                }
+                if (slotId == 2) {
+                    delay(2000)
+                }
+                nextSlot = if (slotId == 1) 2 else 1
+            }
+        } finally {
+            pitchTracker.stop()
+            recordingSlot = null
+            recordingTimeRemaining = 0
         }
     }
 
@@ -126,12 +181,18 @@ internal fun HummingIntervalPopup(
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (isExpanded) {
-                IconButton(onClick = { isExpanded = false }) {
+                IconButton(onClick = {
+                    pendingFlipFlopStart = false
+                    flipFlopEnabled = false
+                    slot1 = null
+                    slot2 = null
+                    isExpanded = false
+                }) {
                     Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Collapse")
                 }
             } else {
                 Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Expand Humming Tool")
-                Text("Humming Interval Tool", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(start = 8.dp))
+                Text("Interval Singing Tool", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(start = 8.dp))
             }
         }
 
@@ -140,18 +201,51 @@ internal fun HummingIntervalPopup(
             enter = expandVertically(),
             exit = shrinkVertically()
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "Double tap to record. Single tap to play back.",
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text("Flip-Flop", style = MaterialTheme.typography.labelMedium)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Switch(
+                        checked = flipFlopEnabled,
+                        onCheckedChange = { enabled ->
+                            if (!enabled) {
+                                pendingFlipFlopStart = false
+                                flipFlopEnabled = false
+                            } else if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                                flipFlopEnabled = true
+                            } else {
+                                pendingFlipFlopStart = true
+                                permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                            }
+                        }
+                    )
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                 // Slot 1
                 HummingSlotView(
                     label = "Pitch 1",
                     data = slot1,
                     isRecording = recordingSlot == 1,
+                    isInteractionEnabled = !flipFlopEnabled,
                     recordingTimeRemaining = if (recordingSlot == 1) recordingTimeRemaining else 0,
                     onSingleClick = {
                         slot1?.let {
@@ -188,6 +282,7 @@ internal fun HummingIntervalPopup(
                     label = "Pitch 2",
                     data = slot2,
                     isRecording = recordingSlot == 2,
+                    isInteractionEnabled = !flipFlopEnabled,
                     recordingTimeRemaining = if (recordingSlot == 2) recordingTimeRemaining else 0,
                     onSingleClick = {
                         slot2?.let {
@@ -278,6 +373,7 @@ internal fun HummingIntervalPopup(
                     }
                 }
             }
+            }
         }
     }
 }
@@ -293,6 +389,7 @@ internal fun RowScope.HummingSlotView(
     label: String,
     data: PitchData?,
     isRecording: Boolean,
+    isInteractionEnabled: Boolean,
     recordingTimeRemaining: Int,
     onSingleClick: () -> Unit,
     onDoubleClick: () -> Unit
@@ -304,8 +401,8 @@ internal fun RowScope.HummingSlotView(
             .padding(4.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(if (isRecording) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface)
-            .pointerInput(isRecording) {
-                if (!isRecording) {
+            .pointerInput(isRecording, isInteractionEnabled) {
+                if (!isRecording && isInteractionEnabled) {
                     detectTapGestures(
                         onTap = { onSingleClick() },
                         onDoubleTap = { onDoubleClick() }
@@ -382,54 +479,62 @@ internal fun PitchRollingIndicator(
     val centerNoteStyle = TextStyle(fontSize = 14.sp, color = Color.White, textAlign = TextAlign.Center)
     val barColor = getPitchColor(cents)
 
-    Canvas(modifier = modifier.fillMaxSize().padding(horizontal = 12.dp)) {
-        val centerY = size.height / 2f
-        clipRect {
-            val noteHeight = 24.dp.toPx()
-            
-            // Draw the "tape"
-            val startMidi = (animatedMidi - 5).toInt()
-            val endMidi = (animatedMidi + 5).toInt()
-            
-            for (m in startMidi..endMidi) {
-                val offsetFromCenter = (m - animatedMidi) * noteHeight
-                val y = centerY - offsetFromCenter
+    Box(modifier = modifier.fillMaxSize().padding(horizontal = 12.dp)) {
+        Canvas(modifier = Modifier.matchParentSize()) {
+            val centerY = size.height / 2f
+            clipRect {
+                val noteHeight = 24.dp.toPx()
                 
-                if (y > -noteHeight && y < size.height + noteHeight) {
-                    val spelled = SpelledPitch.fromMidi(m)
-                    val label = spelled.displayName.replace(Regex("\\d+"), "")
+                // Draw the "tape"
+                val startMidi = (animatedMidi - 5).toInt()
+                val endMidi = (animatedMidi + 5).toInt()
+                
+                for (m in startMidi..endMidi) {
+                    val offsetFromCenter = (m - animatedMidi) * noteHeight
+                    val y = centerY - offsetFromCenter
                     
-                    val style = if (Math.abs(m - animatedMidi) < 0.5) centerNoteStyle else noteStyle
-                    val measured = textMeasurer.measure(label, style)
-                    
-                    drawText(
-                        textLayoutResult = measured,
-                        topLeft = Offset((size.width - measured.size.width) / 2f, y - measured.size.height / 2f)
-                    )
-                    
-                    // Tick marks
-                    drawLine(
-                        color = if (style == centerNoteStyle) Color.White else Color.White.copy(alpha = 0.3f),
-                        start = Offset(0f, y),
-                        end = Offset(10.dp.toPx(), y),
-                        strokeWidth = 1.dp.toPx()
-                    )
-                    drawLine(
-                        color = if (style == centerNoteStyle) Color.White else Color.White.copy(alpha = 0.3f),
-                        start = Offset(size.width - 10.dp.toPx(), y),
-                        end = Offset(size.width, y),
-                        strokeWidth = 1.dp.toPx()
-                    )
+                    if (y > -noteHeight && y < size.height + noteHeight) {
+                        val spelled = SpelledPitch.fromMidi(m)
+                        val label = spelled.displayName.replace(Regex("\\d+"), "")
+                        
+                        val style = if (Math.abs(m - animatedMidi) < 0.5) centerNoteStyle else noteStyle
+                        val measured = textMeasurer.measure(label, style)
+                        
+                        drawText(
+                            textLayoutResult = measured,
+                            topLeft = Offset((size.width - measured.size.width) / 2f, y - measured.size.height / 2f)
+                        )
+                        
+                        // Tick marks
+                        drawLine(
+                            color = if (style == centerNoteStyle) Color.White else Color.White.copy(alpha = 0.3f),
+                            start = Offset(0f, y),
+                            end = Offset(10.dp.toPx(), y),
+                            strokeWidth = 1.dp.toPx()
+                        )
+                        drawLine(
+                            color = if (style == centerNoteStyle) Color.White else Color.White.copy(alpha = 0.3f),
+                            start = Offset(size.width - 10.dp.toPx(), y),
+                            end = Offset(size.width, y),
+                            strokeWidth = 1.dp.toPx()
+                        )
+                    }
                 }
             }
+            
+            // Center pointer lines
+            drawLine(
+                color = barColor.copy(alpha = 0.9f),
+                start = Offset(0f, centerY),
+                end = Offset(size.width, centerY),
+                strokeWidth = 2.dp.toPx()
+            )
         }
-        
-        // Center pointer lines
-        drawLine(
-            color = barColor.copy(alpha = 0.9f),
-            start = Offset(0f, centerY),
-            end = Offset(size.width, centerY),
-            strokeWidth = 2.dp.toPx()
+        Text(
+            text = "Oct ${kotlin.math.floor(midi / 12.0).toInt() - 1}",
+            modifier = Modifier.align(Alignment.BottomStart).padding(2.dp),
+            style = MaterialTheme.typography.labelSmall,
+            color = Color.White.copy(alpha = 0.55f)
         )
     }
 }

@@ -203,6 +203,10 @@ object ChordInterpreter {
         val effectiveKey: KeyInfo
         val pitch: SpelledPitch
         val context: ChordRootContext
+        // Forced triad quality for the applied+borrowed special cases below (ported from
+        // web-player/lib/chordBuild.js resolveAppliedBorrowedChord). Null means "use the
+        // normal scale-degree quality table lookup" further down.
+        var borrowedAppliedQuality: String? = null
 
         if (applied in 1..7 && !hasBorrowedScale) {
             val targetKey = KeyInfo(targetPitch.noteName, "major")
@@ -218,6 +222,85 @@ object ChordInterpreter {
                 triSubstitution -> ChordRootContext.TRITONE_SUBSTITUTION
                 else -> ChordRootContext.APPLIED
             }
+        } else if (applied in 1..7 && hasBorrowedScale) {
+            // Applied + borrowed (modal mixture on a secondary dominant/function). Ported from
+            // resolveAppliedBorrowedChord in web-player/lib/chordBuild.js: the chord SOUNDS
+            // tonicized against the borrowed-resolved target (this branch and getChordNotes
+            // below), while its Roman-numeral / letter-name LABEL intentionally does NOT
+            // reflect the borrow - see the comment above the applied branch of getRomanSymbol
+            // for why (this matches web-player/lib/jsonToSymbol.js's getChordSymbol, which
+            // never reads chord.borrowed in its applied branch either).
+            val chordType = safeInt(chordJson["type"], 5)
+            val chordInversion = safeInt(chordJson["inversion"])
+            val alterations0 = (chordJson["alterations"] as? JsonArray)
+                ?.mapNotNull { (it as? JsonPrimitive)?.contentOrNull } ?: emptyList()
+            val targetNoteName = targetPitch.noteName
+
+            when {
+                // Special case 1: borrowed-locrian tonic triad is voiced MINOR, not the
+                // locrian mode's natural (diminished) tonic quality. Triads only - sevenths
+                // fall through to the default case.
+                borrowedName == "locrian" && root == 1 && applied == 1 && chordType < 7 -> {
+                    effectiveDegree = 1
+                    effectiveKey = modifiedKey
+                    pitch = targetPitch
+                    borrowedAppliedQuality = "minor"
+                    context = ChordRootContext.BORROWED_APPLIED
+                }
+                // Special case 2: tritone-substitution dominant of the borrowed target (root a
+                // tritone away from V/target), MAJOR quality.
+                triSubstitution -> {
+                    val targetKey = KeyInfo(targetNoteName, "major")
+                    effectiveDegree = 2
+                    effectiveKey = targetKey
+                    pitch = MusicTheory.resolveScaleDegreePitch(
+                        sd = "b2",
+                        relativeOctave = 0,
+                        key = targetKey,
+                        baseOctave = targetPitch.octave
+                    ) ?: return null
+                    borrowedAppliedQuality = "major"
+                    context = ChordRootContext.TRITONE_SUBSTITUTION
+                }
+                // Special case 3: applied vii°(#5) is voiced as a MINOR triad instead of
+                // diminished, at the same (leading-tone) numerator position.
+                applied == 7 && alterations0.contains("#5") -> {
+                    val targetKey = KeyInfo(targetNoteName, "major")
+                    effectiveDegree = 7
+                    effectiveKey = targetKey
+                    pitch = MusicTheory.resolveScaleDegreePitch(
+                        sd = "7",
+                        relativeOctave = 0,
+                        key = targetKey,
+                        baseOctave = targetPitch.octave
+                    ) ?: return null
+                    borrowedAppliedQuality = "minor"
+                    context = ChordRootContext.BORROWED_APPLIED
+                }
+                // Special case 4: custom-array borrowed scale in first/second inversion
+                // ignores the tonicization entirely and voices a MAJOR triad directly on the
+                // borrowed target note.
+                customIntervals != null && (chordInversion == 1 || chordInversion == 2) -> {
+                    effectiveDegree = root
+                    effectiveKey = modifiedKey
+                    pitch = targetPitch
+                    borrowedAppliedQuality = "major"
+                    context = ChordRootContext.BORROWED_APPLIED
+                }
+                // Default: numerator built from the MAJOR scale of the borrowed-resolved target.
+                else -> {
+                    val targetKey = KeyInfo(targetNoteName, "major")
+                    effectiveDegree = applied
+                    effectiveKey = targetKey
+                    pitch = MusicTheory.resolveScaleDegreePitch(
+                        sd = applied.toString(),
+                        relativeOctave = 0,
+                        key = targetKey,
+                        baseOctave = targetPitch.octave
+                    ) ?: return null
+                    context = ChordRootContext.BORROWED_APPLIED
+                }
+            }
         } else {
             effectiveDegree = root
             effectiveKey = modifiedKey
@@ -231,11 +314,13 @@ object ChordInterpreter {
 
         val qualities = when {
             applied in 1..7 && !hasBorrowedScale -> MusicTheory.CHORD_QUALITIES["major"]!!
+            applied in 1..7 && hasBorrowedScale -> MusicTheory.CHORD_QUALITIES["major"]!!
             customIntervals != null -> customChordQualities(customIntervals)
             else -> MusicTheory.CHORD_QUALITIES[effectiveKey.scale]
                 ?: MusicTheory.CHORD_QUALITIES["major"]!!
         }
-        val baseQuality = qualities.getOrElse(Math.floorMod(effectiveDegree - 1, 7)) { "major" }
+        val baseQuality = borrowedAppliedQuality
+            ?: qualities.getOrElse(Math.floorMod(effectiveDegree - 1, 7)) { "major" }
         val alterations = (chordJson["alterations"] as? JsonArray)
             ?.mapNotNull { (it as? JsonPrimitive)?.contentOrNull }
             ?: emptyList()
@@ -455,7 +540,13 @@ object ChordInterpreter {
         val borrowed = safeString(chordJson["borrowed"])
         
         // --- Applied chords (Fix 001/041) ---
-        if (applied in 1..7 && borrowed.isEmpty()) {
+        // Applied+borrowed chords (both fields set) are intentionally rendered the SAME way as
+        // plain applied chords here: the label ignores `borrowed` entirely, even though the
+        // chord's actual pitches (getChordNotes/resolveChordRoot) ARE tonicized against the
+        // borrowed-resolved target. This mirrors web-player/lib/jsonToSymbol.js's
+        // getChordSymbol, whose applied branch never reads chord.borrowed either - see the
+        // longer note in resolveChordRoot's applied+borrowed branch.
+        if (applied in 1..7) {
             val targetTonic = MusicTheory.getNoteLabel(root, key.tonic, key.scale)
             val numeratorKey = KeyInfo(targetTonic, "major")
             val triSub = isTriSubApplied(chordJson)
@@ -530,7 +621,9 @@ object ChordInterpreter {
         val applied = safeInt(chordJson["applied"])
         val borrowed = safeString(chordJson["borrowed"])
 
-        if (applied in 1..7 && borrowed.isEmpty()) {
+        // Applied+borrowed chords render their label the same way as plain applied chords -
+        // see the note in getRomanSymbol's applied branch.
+        if (applied in 1..7) {
             val targetPitch = MusicTheory.resolveScaleDegreePitch(
                 sd = root.toString(),
                 relativeOctave = 0,
@@ -630,8 +723,10 @@ object ChordInterpreter {
         var effKey = key
         var degree = root
         
-        // Fix 027: Handle borrowed applied targets
-        if (applied in 1..7 && borrowed.isEmpty()) {
+        // Fix 027: Handle borrowed applied targets. Applied+borrowed chords render their
+        // letter name the same way as plain applied chords - see the note in getRomanSymbol's
+        // applied branch.
+        if (applied in 1..7) {
             val targetTonic = MusicTheory.getNoteLabel(root, key.tonic, key.scale)
             if (isTriSubApplied(chordJson)) {
                 val rootPc = MusicTheory.NOTE_TO_PC[MusicTheory.normalizeTonic(targetTonic)] ?: 0
@@ -745,6 +840,16 @@ object ChordInterpreter {
         
         var effKey = key
         var effRoot = root
+        // Forced triad quality / seventh-degree-offset (9=dim7, 10=b7, 11=maj7) for the
+        // applied+borrowed special cases below. Null means "use the normal table lookup".
+        var forcedTriadQuality: String? = null
+        var forcedSeventh: Int? = null
+        // True when this chord must use the wider "buildChordFromNoteName" applied-chord
+        // inversion register (voiceAppliedChord) instead of the compact rotation used for
+        // plain diatonic/borrowed chords. Mirrors which web-player builder function
+        // resolveAppliedBorrowedChord/chordInterpreter delegates to for each case.
+        var useAppliedVoicing = false
+
         if (applied in 1..7 && !hasBorrowedScale) {
             val targetTonic = MusicTheory.getNoteLabel(root, key.tonic, key.scale)
             if (isTriSubApplied(chordJson)) {
@@ -756,31 +861,90 @@ object ChordInterpreter {
                 effKey = KeyInfo(targetTonic, "major")
                 effRoot = applied
             }
+            useAppliedVoicing = true
+        } else if (applied in 1..7 && hasBorrowedScale) {
+            // Applied + borrowed (modal mixture on a secondary dominant/function). Ported from
+            // resolveAppliedBorrowedChord in web-player/lib/chordBuild.js. See resolveChordRoot
+            // for the parity note about labels intentionally NOT reflecting the borrow.
+            val borrowedScaleForTarget = if (customIntervals != null) "custom" else borrowed
+            val targetTonic = MusicTheory.getNoteLabel(root, key.tonic, borrowedScaleForTarget, customIntervals)
+            val triSub = isTriSubApplied(chordJson)
+
+            when {
+                // Special case 1: borrowed-locrian tonic triad -> MINOR (triads only).
+                borrowed == "locrian" && root == 1 && applied == 1 && type < 7 -> {
+                    effKey = KeyInfo(targetTonic, "major")
+                    effRoot = 1
+                    forcedTriadQuality = "minor"
+                    useAppliedVoicing = true
+                }
+                // Special case 2: tritone-substitution dominant of the borrowed target.
+                applied == 5 && triSub -> {
+                    val rootPc = MusicTheory.NOTE_TO_PC[MusicTheory.normalizeTonic(targetTonic)] ?: 0
+                    val subRootPc = (rootPc + 1) % 12
+                    effKey = KeyInfo(PC_SPELL[subRootPc], "major")
+                    effRoot = 1
+                    forcedTriadQuality = "major"
+                    forcedSeventh = 10
+                    useAppliedVoicing = true
+                }
+                // Special case 3: applied vii°(#5) -> MINOR triad (not diminished).
+                applied == 7 && alterations.contains("#5") -> {
+                    effKey = KeyInfo(targetTonic, "major")
+                    effRoot = 7
+                    forcedTriadQuality = "minor"
+                    forcedSeventh = 10
+                    useAppliedVoicing = true
+                }
+                // Special case 4: custom-array borrowed scale, inversion 1/2 -> ignores the
+                // tonicization entirely and voices a MAJOR triad on the borrowed target.
+                customIntervals != null && (inversion == 1 || inversion == 2) -> {
+                    effKey = KeyInfo(targetTonic, "major")
+                    effRoot = 1
+                    forcedTriadQuality = "major"
+                    forcedSeventh = 10
+                    useAppliedVoicing = true
+                }
+                // Default: numerator built from the MAJOR scale of the borrowed-resolved
+                // target - this reuses the normal diatonic (compact-rotation) voicing below,
+                // not buildChordFromNoteName's wider applied-chord register.
+                else -> {
+                    effKey = KeyInfo(targetTonic, "major")
+                    effRoot = applied
+                    useAppliedVoicing = false
+                }
+            }
         }
 
+        val isBorrowedAppliedDefault = applied in 1..7 && hasBorrowedScale && forcedTriadQuality == null
         val scale = when {
+            applied in 1..7 && hasBorrowedScale -> effKey.scale
             customIntervals != null -> "custom"
             borrowed.isNotEmpty() -> borrowed
             else -> effKey.scale
         }
-        val intervals = customIntervals
-            ?: MusicTheory.SCALE_INTERVALS[scale]
-            ?: MusicTheory.SCALE_INTERVALS["major"]!!
+        val intervals = when {
+            applied in 1..7 && hasBorrowedScale -> MusicTheory.SCALE_INTERVALS["major"]!!
+            customIntervals != null -> customIntervals
+            else -> MusicTheory.SCALE_INTERVALS[scale] ?: MusicTheory.SCALE_INTERVALS["major"]!!
+        }
         val tonicPc = MusicTheory.NOTE_TO_PC[MusicTheory.normalizeTonic(effKey.tonic)] ?: 0
-        
+
         val idxRoot = ((effRoot - 1) % 7 + 7) % 7
         val rootPc = (tonicPc + intervals[idxRoot]) % 12
-        
+
         // Base major-frame offsets relative to root
         val degrees = mutableMapOf<Int, Int>()
         degrees[1] = 0
         degrees[3] = 4
         degrees[5] = 7
-        
-        val qualities = customIntervals?.let(::customChordQualities)
-            ?: MusicTheory.CHORD_QUALITIES[scale]
-            ?: MusicTheory.CHORD_QUALITIES["major"]!!
-        val triadQuality = qualities.getOrElse(idxRoot) { "major" }
+
+        val qualities = when {
+            applied in 1..7 && hasBorrowedScale -> MusicTheory.CHORD_QUALITIES["major"]!!
+            customIntervals != null -> customChordQualities(customIntervals)
+            else -> MusicTheory.CHORD_QUALITIES[scale] ?: MusicTheory.CHORD_QUALITIES["major"]!!
+        }
+        val triadQuality = forcedTriadQuality ?: qualities.getOrElse(idxRoot) { "major" }
         if (triadQuality == "minor" || triadQuality == "diminished") degrees[3] = 3
         if (triadQuality == "diminished") degrees[5] = 6
         if (triadQuality == "augmented") degrees[5] = 8
@@ -791,18 +955,28 @@ object ChordInterpreter {
 
         // Extensions
         if (type >= 7) {
+            if (forcedSeventh != null) {
+                degrees[7] = forcedSeventh
+            } else {
             val triSub = isTriSubApplied(chordJson)
             val isMaj7 = if (applied in 1..7) {
                  !triSub && applied != 5 && triadQuality == "major" && isMajorSeventh(effRoot, KeyInfo(effKey.tonic, scale), customIntervals)
             } else {
                  isMajorSeventh(effRoot, KeyInfo(effKey.tonic, scale), customIntervals)
             }
-            
-            // Fix 025/026: Diminished 7th voicing
-            val isDim7 = (triadQuality == "diminished" && !suspensions.isNotEmpty()) || (applied == 7) ||
-                        (borrowed == "dorian" && effRoot == 6) || (borrowed == "lydian" && effRoot == 4) ||
-                        (borrowed == "minor" && effRoot == 2) || (borrowed == "phrygian" && effRoot == 5)
-            
+
+            // Fix 025/026: Diminished 7th voicing. The applied+borrowed DEFAULT case (routed
+            // through the same diatonic frame as a plain, non-applied major-scale chord in the
+            // web player) never produces a fully-diminished 7th, so it is excluded here - an
+            // applied==7 leading-tone chord in that context resolves to a half-diminished 7th
+            // via the diatonic fallback below instead, matching resolveAppliedBorrowedChord's
+            // delegation to rootToDiatonicTriad(..., applied=0, ...) for that case.
+            val isDim7 = !isBorrowedAppliedDefault && (
+                (triadQuality == "diminished" && !suspensions.isNotEmpty()) || (applied == 7) ||
+                (borrowed == "dorian" && effRoot == 6) || (borrowed == "lydian" && effRoot == 4) ||
+                (borrowed == "minor" && effRoot == 2) || (borrowed == "phrygian" && effRoot == 5)
+            )
+
             // Fix 043: Harmonic-minor III+△7 voicing
             val isHmAugMaj7 = scale == "harmonicMinor" && effRoot == 3 && !suspensions.isNotEmpty()
 
@@ -817,6 +991,7 @@ object ChordInterpreter {
                  degrees[11] = 11 // add maj7 (D)
                  degrees.remove(5) // omit #5
                  degrees[3] = 4 // ensure maj 3rd
+            }
             }
         }
         if (type >= 9) degrees[9] = 14
@@ -866,10 +1041,13 @@ object ChordInterpreter {
             degrees.remove(5)
         }
 
-        // Build pitches. Applied chords use the web player's wider inversion
-        // register and diminished-seventh spread instead of compact rotation.
+        // Build pitches. Applied chords (and the applied+borrowed special cases 1-4, which
+        // route through buildChordFromNoteName in the web player) use the web player's wider
+        // inversion register and diminished-seventh spread instead of compact rotation. The
+        // applied+borrowed DEFAULT case reuses the compact-rotation voicing below instead,
+        // since it is delegated to rootToDiatonicTriad (not buildChordFromNoteName) upstream.
         val rootPositionPitches = degrees.values.map { rootPc + 48 + it }
-        if (applied in 1..7 && !hasBorrowedScale) {
+        if (useAppliedVoicing) {
             val fullyDiminished = applied == 7
                 && triadQuality == "diminished"
                 && suspensions.isEmpty()

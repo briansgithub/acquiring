@@ -91,6 +91,17 @@ internal fun ionianContextDegreeLabel(midiNote: Int, ionianKey: KeyInfo): String
     return MusicTheory.getRelativeDegreeLabel(midiNote, displayTonicMidi)
 }
 
+/**
+ * Chord-tone variant that spells [midiNote] relative to the chord's actual
+ * written root instead of guessing a spelling from raw pitch class. A
+ * secondary dominant's raised tones (e.g. the D# in a V/v chord) are only
+ * ever labeled correctly when the letter comes from the chord itself —
+ * [ionianContextDegreeLabel] alone would nearest-neighbor D# to the
+ * enharmonically equal but musically wrong "b3".
+ */
+internal fun ionianContextDegreeLabel(midiNote: Int, rootPitch: SpelledPitch, ionianKey: KeyInfo): String =
+    ionianContextDegreeLabel(SpelledPitch.spellRelative(rootPitch, midiNote), ionianKey)
+
 internal fun ionianContextPreviewAudioNote(
     midiNote: Int,
     ionianKey: KeyInfo,
@@ -108,6 +119,14 @@ internal fun ionianContextPreviewAudioNote(
 internal fun relativeIonianDegreeLabel(midiNote: Int, sourceKey: KeyInfo): String {
     return ionianContextDegreeLabel(midiNote, relativeIonianKey(sourceKey))
 }
+
+/** Chord-tone variant of [ionianContextPreviewAudioNote] — see [ionianContextDegreeLabel] (rootPitch overload). */
+internal fun ionianContextPreviewAudioNote(
+    midiNote: Int,
+    rootPitch: SpelledPitch,
+    ionianKey: KeyInfo,
+    referenceOctave: Int = 3
+): Int? = ionianContextPreviewAudioNote(SpelledPitch.spellRelative(rootPitch, midiNote), ionianKey, referenceOctave)
 
 /**
  * Returns the one-based staff step used by the quiz melody lane after rotating

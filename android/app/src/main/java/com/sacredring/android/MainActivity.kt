@@ -1175,7 +1175,7 @@ fun SongDetailView(
         }
 
         when (currentTab) {
-            0 -> InfoTab(selectedSection, sections, selectedSectionKey, onSectionChange)
+            0 -> InfoTab(song, selectedSection, sections, selectedSectionKey, onSectionChange)
             1 -> ChordsTab(
                 section = selectedSection,
                 showLetterNames = showLetterNames,
@@ -1880,9 +1880,10 @@ fun QuizTab(
                 )
             } ?: emptyList()
         } else { currentChord?.let { chord -> val notes = ChordInterpreter.getChordNotes(chord, activeKey); val rootMidi = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull() ?: 0
+            val spelledRoot = ChordInterpreter.resolveChordRoot(chord, activeKey)?.pitch
             val list = notes.mapIndexed { index, note ->
-                val label = if (useRelativeIonianContext) ionianContextDegreeLabel(note, ionianContextKey) else MusicTheory.getRelativeDegreeLabel(note, rootMidi)
-                val previewNote = if (useRelativeIonianContext) ionianContextPreviewAudioNote(note, ionianContextKey) ?: note else note
+                val label = if (useRelativeIonianContext) (spelledRoot?.let { ionianContextDegreeLabel(note, it, ionianContextKey) } ?: ionianContextDegreeLabel(note, ionianContextKey)) else MusicTheory.getRelativeDegreeLabel(note, rootMidi)
+                val previewNote = if (useRelativeIonianContext) (spelledRoot?.let { ionianContextPreviewAudioNote(note, it, ionianContextKey) } ?: ionianContextPreviewAudioNote(note, ionianContextKey)) ?: note else note
                 AudiationTarget(id = index, label = label, untransposedMidi = previewNote, transposedMidi = previewNote + globalTranspose)
             }.toMutableList()
             val chordLabel = if (useRelativeIonianContext) ChordInterpreter.getRelativeIonianRomanSymbol(chord, activeKey, ionianContextKey) else ChordInterpreter.getRomanSymbol(chord, activeKey)
@@ -2275,6 +2276,7 @@ fun QuizTab(
                                         val romanDisplay = RomanNumeralDisplay.fromChord(symbol, chord["borrowed"])
                                         val notes = ChordInterpreter.getChordNotes(chord, activeKey)
                                         val rootMidi = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull() ?: 0
+                                        val spelledRoot = ChordInterpreter.resolveChordRoot(chord, activeKey)?.pitch
                                         val chordDurationBeats = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
                                         val chordDurationMs = remainingPlaybackDurationMs(chordDurationBeats, 0.0, bpm)
                                         val previewNotes = notes.map { it + audiationOctaveShift * 12 }
@@ -2287,7 +2289,7 @@ fun QuizTab(
                                             }
                                         }
                                         if (rootMidi > 0) { Spacer(Modifier.height(8.dp)); Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(degreeSpacing)) {
-                                            notes.forEachIndexed { index, note -> val internalLabel = if (useRelativeIonianContext) ionianContextDegreeLabel(note, ionianContextKey) else MusicTheory.getRelativeDegreeLabel(note, rootMidi); val previewNote = if (useRelativeIonianContext) ionianContextPreviewAudioNote(note, ionianContextKey) ?: note else note; val isHovered = audiationState is AudiationState.Dragging && audiationState.hoveredId == index
+                                            notes.forEachIndexed { index, note -> val internalLabel = if (useRelativeIonianContext) (spelledRoot?.let { ionianContextDegreeLabel(note, it, ionianContextKey) } ?: ionianContextDegreeLabel(note, ionianContextKey)) else MusicTheory.getRelativeDegreeLabel(note, rootMidi); val previewNote = if (useRelativeIonianContext) (spelledRoot?.let { ionianContextPreviewAudioNote(note, it, ionianContextKey) } ?: ionianContextPreviewAudioNote(note, ionianContextKey)) ?: note else note; val isHovered = audiationState is AudiationState.Dragging && audiationState.hoveredId == index
                                                 OutlinedButton(onClick = { scope.launch { AudioEngine.playChord(listOf(previewNote + audiationOctaveShift * 12), channel = AudioEngine.PlaybackChannel.PREVIEW) } }, modifier = Modifier.weight(1f).height(54.dp).onGloballyPositioned { onTargetPositioned(index, it) }, shape = RoundedCornerShape(14.dp), contentPadding = PaddingValues(0.dp), colors = if (isHovered) ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer) else ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)) {
                                                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { ScaleDegreeText(label = internalLabel, fontSize = degreeFontSize, modifier = Modifier.fillMaxWidth(), minFontSize = 12.sp)
                                                         if (audiationState is AudiationState.Listening && audiationState.target.id == index) PitchGauge(pitchResult = audiationState.pitch, targetLabel = audiationState.target.label, modifier = Modifier.matchParentSize()) }
@@ -2380,16 +2382,177 @@ fun ArtistSongsView(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InfoTab(
+    song: Song,
     section: ExtractedSection,
     sections: Map<String, ExtractedSection>,
     selectedId: String?,
     onSectionChange: (String) -> Unit
 ) {
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text("Section: ${section.safeSectionName}", style = MaterialTheme.typography.titleMedium)
-        Spacer(modifier = Modifier.height(16.dp))
-        Text("Metadata:", style = MaterialTheme.typography.titleSmall)
-        Text(section.metadata.toString(), style = MaterialTheme.typography.bodySmall)
+    val uriHandler = LocalUriHandler.current
+    val key = section.getParsedKey()
+    val bpm = section.getBpm()
+    val numBeats = remember(section) {
+        val meters = section.metadata?.get("meters") as? JsonArray
+        (meters?.firstOrNull() as? JsonObject)?.get("numBeats")?.let { (it as? JsonPrimitive)?.intOrNull }
+    }
+    val orderedSections = remember(sections) { sections.sectionsInSongOrder() }
+    val artist = song.artist?.takeIf { it.isNotBlank() }
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        item {
+            Card(
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Text(
+                        text = song.title ?: "Unknown Title",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                    if (artist != null) {
+                        Text(
+                            text = artist,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f),
+                            modifier = Modifier.padding(top = 2.dp)
+                        )
+                    }
+                    TextButton(
+                        onClick = { uriHandler.openUri(song.url) },
+                        contentPadding = PaddingValues(0.dp),
+                        modifier = Modifier.padding(top = 10.dp).height(28.dp)
+                    ) {
+                        Text(
+                            "View on Hooktheory  ↗",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                }
+            }
+        }
+
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                InfoStatCard(
+                    label = "Key",
+                    value = "${key.tonic} ${key.scale.replaceFirstChar { it.uppercase() }}",
+                    modifier = Modifier.weight(1f)
+                )
+                InfoStatCard(
+                    label = "Tempo",
+                    value = "${bpm.roundToInt()} BPM",
+                    modifier = Modifier.weight(1f)
+                )
+                InfoStatCard(
+                    label = "Meter",
+                    value = numBeats?.let { "$it/4" } ?: "—",
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+
+        if (orderedSections.size > 1) {
+            item {
+                Text(
+                    text = "Sections",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            item {
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(orderedSections, key = { it.key }) { (id, entry) ->
+                        FilterChip(
+                            selected = id == selectedId,
+                            onClick = { onSectionChange(id) },
+                            label = { Text(entry.safeSectionName) }
+                        )
+                    }
+                }
+            }
+        }
+
+        item {
+            Card(
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Text(
+                        text = "This Section",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    )
+                    Text(
+                        text = section.safeSectionName,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 2.dp, bottom = 12.dp)
+                    )
+                    InfoDetailRow(label = "Chords", value = "${section.chords.size}")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun InfoStatCard(label: String, value: String, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 14.dp, horizontal = 6.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                maxLines = 1
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.65f)
+            )
+        }
+    }
+}
+
+@Composable
+private fun InfoDetailRow(label: String, value: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 

@@ -115,4 +115,23 @@ class RelativeIonianContextTest {
         assertEquals(60, ionianContextPreviewAudioNote(48, contextKey))
         assertEquals(60, ionianContextPreviewAudioNote(72, contextKey))
     }
+
+    @Test
+    fun secondaryDominantChordTonesSpellFromTheirOwnRootNotByNearestPitchClass() {
+        // A minor's V/v (chord(5) applied 5) sounds B D# F#: the third is
+        // written D#, not its enharmonic twin Eb. Naively nearest-neighboring
+        // pitch class against the locked C-major tonic mislabels it "b3"
+        // instead of the musically correct "#2" (D is degree 2 of C major).
+        val key = KeyInfo("A", "minor")
+        val contextKey = relativeIonianKey(key)
+        val chord = chord(root = 5, applied = 5)
+        val root = ChordInterpreter.resolveChordRoot(chord, key)!!
+        val notes = ChordInterpreter.getChordNotes(chord, key)
+        val thirdMidi = notes.first { ((it - root.pitch.toAudioNoteNumber()) % 12 + 12) % 12 == 4 }
+
+        assertEquals("♯2̂", ionianContextDegreeLabel(thirdMidi, root.pitch, contextKey))
+        // The flawed pitch-class-nearest-neighbor path this replaces would
+        // instead have produced "b3" here.
+        assertEquals("♭3̂", ionianContextDegreeLabel(thirdMidi, contextKey))
+    }
 }
