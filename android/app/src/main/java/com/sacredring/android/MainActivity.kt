@@ -2399,7 +2399,19 @@ fun ArtistSongsView(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+private fun ExtractedSection.metadataObjects(field: String): List<JsonObject> =
+    (metadata?.get(field) as? JsonArray)?.mapNotNull { it as? JsonObject } ?: emptyList()
+
+private fun JsonObject.num(field: String): Double? = (this[field] as? JsonPrimitive)?.doubleOrNull
+
+private fun prettyScaleName(scale: String): String = scale
+    .replace(Regex("([a-z])([A-Z])"), "$1 $2")
+    .replaceFirstChar { it.uppercase() }
+
+private fun formatBeat(beat: Double): String =
+    if (beat % 1.0 == 0.0) beat.toInt().toString() else "%.2f".format(beat).trimEnd('0').trimEnd('.')
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun InfoTab(
     song: Song,
@@ -2409,89 +2421,153 @@ fun InfoTab(
     onSectionChange: (String) -> Unit
 ) {
     val uriHandler = LocalUriHandler.current
-    val key = section.getParsedKey()
-    val bpm = section.getBpm()
-    val numBeats = remember(section) {
-        val meters = section.metadata?.get("meters") as? JsonArray
-        (meters?.firstOrNull() as? JsonObject)?.get("numBeats")?.let { (it as? JsonPrimitive)?.intOrNull }
-    }
+
+    val keys = remember(section) { section.getKeys() }
+    val tempos = remember(section) { section.metadataObjects("tempos") }
+    val meters = remember(section) { section.metadataObjects("meters") }
     val orderedSections = remember(sections) { sections.sectionsInSongOrder() }
-    val artist = song.artist?.takeIf { it.isNotBlank() }
+
+    val bpm = section.getBpm()
+    val beatsPerMeasure = meters.firstOrNull()?.num("numBeats")?.toInt()
+    val endBeat = section.metadata?.num("endBeat")
+    val totalBeats = endBeat?.let { (it - 1).coerceAtLeast(0.0) }?.takeIf { it > 0.0 }
+    val durationLabel = totalBeats?.let {
+        val secs = (it / bpm * 60.0).roundToInt()
+        "%d:%02d".format(secs / 60, secs % 60)
+    }
+    val measures = totalBeats?.let { beats ->
+        beatsPerMeasure?.takeIf { it > 0 }?.let { kotlin.math.ceil(beats / it).toInt() }
+    }
+
+    val melodyNotes = remember(section) {
+        val raw = when (val n = section.notes) {
+            is JsonArray -> n.toList()
+            is JsonObject -> (n["melody1"] as? JsonArray)?.toList() ?: emptyList()
+            else -> emptyList()
+        }
+        raw.mapNotNull { it as? JsonObject }
+    }
+    val soundedNotes = melodyNotes.count { note ->
+        (note["isRest"] as? JsonPrimitive)?.booleanOrNull != true &&
+            (note["rest"] as? JsonPrimitive)?.booleanOrNull != true
+    }
+
+    val progression = remember(section) {
+        section.chords.sortedBy { it.num("beat") ?: 0.0 }
+    }
+    val uniqueChordCount = remember(section) {
+        ChordInterpreter.getUniqueDisplayChords(section.chords, section.getParsedKey()).size
+    }
+
+    val youtubeId = (section.metadata?.get("youtube") as? JsonObject)
+        ?.let { (it["id"] as? JsonPrimitive)?.contentOrNull }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 96.dp)
     ) {
         item {
-            Card(
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
-            ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Text(
-                        text = song.title ?: "Unknown Title",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                    if (artist != null) {
-                        Text(
-                            text = artist,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f),
-                            modifier = Modifier.padding(top = 2.dp)
-                        )
-                    }
-                    TextButton(
-                        onClick = { uriHandler.openUri(song.url) },
-                        contentPadding = PaddingValues(0.dp),
-                        modifier = Modifier.padding(top = 10.dp).height(28.dp)
-                    ) {
-                        Text(
-                            "View on Hooktheory  ↗",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+            Text(
+                text = song.title ?: "Unknown Title",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+            song.artist?.takeIf { it.isNotBlank() }?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 2.dp)
+                )
+            }
+            Text(
+                text = section.safeSectionName.uppercase(),
+                style = MaterialTheme.typography.labelMedium.copy(letterSpacing = 1.2.sp),
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(top = 10.dp)
+            )
+        }
+
+        item { InfoGroup("Overview") }
+        item {
+            val firstKey = keys.first().key
+            InfoRow("Key", "${firstKey.tonic} ${prettyScaleName(firstKey.scale)}")
+            InfoRow("Tempo", "${bpm.roundToInt()} BPM")
+            beatsPerMeasure?.let { InfoRow("Beats / measure", it.toString()) }
+            durationLabel?.let { InfoRow("Length", it) }
+            totalBeats?.let { beats ->
+                InfoRow("Beats", formatBeat(beats) + (measures?.let { " · $it bars" } ?: ""))
+            }
+            InfoRow("Chords", "${progression.size} (${uniqueChordCount} unique)")
+            if (melodyNotes.isNotEmpty()) {
+                InfoRow("Melody notes", "$soundedNotes sounded / ${melodyNotes.size} total")
+            }
+        }
+
+        if (progression.isNotEmpty()) {
+            item { InfoGroup("Progression") }
+            item {
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    progression.forEach { chord ->
+                        val beat = chord.num("beat") ?: 1.0
+                        val chordKey = section.getKeyAtBeat(beat)
+                        val symbol = ChordInterpreter.getRomanSymbol(chord, chordKey)
+                        ChordPill(
+                            display = RomanNumeralDisplay.fromChord(symbol, chord["borrowed"]),
+                            letterName = ChordInterpreter.getLetterName(chord, chordKey)
                         )
                     }
                 }
             }
         }
 
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                InfoStatCard(
-                    label = "Key",
-                    value = "${key.tonic} ${key.scale.replaceFirstChar { it.uppercase() }}",
-                    modifier = Modifier.weight(1f)
-                )
-                InfoStatCard(
-                    label = "Tempo",
-                    value = "${bpm.roundToInt()} BPM",
-                    modifier = Modifier.weight(1f)
-                )
-                InfoStatCard(
-                    label = "Meter",
-                    value = numBeats?.let { "$it/4" } ?: "—",
-                    modifier = Modifier.weight(1f)
-                )
+        if (keys.size > 1) {
+            item { InfoGroup("Key changes") }
+            item {
+                keys.forEach { k ->
+                    InfoRow(
+                        "Beat ${formatBeat(k.beat)}",
+                        "${k.key.tonic} ${prettyScaleName(k.key.scale)}"
+                    )
+                }
+            }
+        }
+
+        if (tempos.size > 1) {
+            item { InfoGroup("Tempo changes") }
+            item {
+                tempos.forEach { t ->
+                    InfoRow(
+                        "Beat ${formatBeat(t.num("beat") ?: 1.0)}",
+                        "${(t.num("bpm") ?: 120.0).roundToInt()} BPM"
+                    )
+                }
+            }
+        }
+
+        if (meters.size > 1) {
+            item { InfoGroup("Meter changes") }
+            item {
+                meters.forEach { m ->
+                    InfoRow(
+                        "Beat ${formatBeat(m.num("beat") ?: 1.0)}",
+                        "${(m.num("numBeats") ?: 4.0).toInt()} beats / measure"
+                    )
+                }
             }
         }
 
         if (orderedSections.size > 1) {
+            item { InfoGroup("Sections") }
             item {
-                Text(
-                    text = "Sections",
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            item {
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(orderedSections, key = { it.key }) { (id, entry) ->
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    orderedSections.forEach { (id, entry) ->
                         FilterChip(
                             selected = id == selectedId,
                             onClick = { onSectionChange(id) },
@@ -2502,25 +2578,20 @@ fun InfoTab(
             }
         }
 
+        item { InfoGroup("Source") }
         item {
-            Card(
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-            ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Text(
-                        text = "This Section",
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                    )
-                    Text(
-                        text = section.safeSectionName,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 2.dp, bottom = 12.dp)
-                    )
-                    InfoDetailRow(label = "Chords", value = "${section.chords.size}")
+            section.safeNumericId.takeIf { it.isNotBlank() }?.let { InfoRow("Hooktheory ID", it) }
+            InfoRow("Slug", song.slug)
+            Row(modifier = Modifier.padding(top = 4.dp)) {
+                TextButton(
+                    onClick = { uriHandler.openUri(song.url) },
+                    contentPadding = PaddingValues(horizontal = 4.dp)
+                ) { Text("Open on Hooktheory ↗") }
+                youtubeId?.let { id ->
+                    TextButton(
+                        onClick = { uriHandler.openUri("https://www.youtube.com/watch?v=$id") },
+                        contentPadding = PaddingValues(horizontal = 4.dp)
+                    ) { Text("YouTube ↗") }
                 }
             }
         }
@@ -2528,51 +2599,64 @@ fun InfoTab(
 }
 
 @Composable
-private fun InfoStatCard(label: String, value: String, modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 14.dp, horizontal = 6.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = value,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                maxLines = 1
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.65f)
-            )
-        }
+private fun InfoGroup(title: String) {
+    Column(modifier = Modifier.fillMaxWidth().padding(top = 22.dp)) {
+        Text(
+            text = title.uppercase(),
+            style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.4.sp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+        )
+        Divider(
+            modifier = Modifier.padding(top = 6.dp),
+            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+        )
     }
 }
 
 @Composable
-private fun InfoDetailRow(label: String, value: String) {
+private fun InfoRow(label: String, value: String) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier.fillMaxWidth().padding(vertical = 7.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top
     ) {
         Text(
             text = label,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f)
         )
         Text(
             text = value,
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            textAlign = TextAlign.End,
+            modifier = Modifier.padding(start = 16.dp)
         )
+    }
+}
+
+@Composable
+private fun ChordPill(display: RomanNumeralDisplay, letterName: String) {
+    Surface(
+        shape = RoundedCornerShape(10.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f),
+        modifier = Modifier.padding(bottom = 6.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .widthIn(min = 54.dp)
+                .padding(horizontal = 10.dp, vertical = 7.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            RomanNumeralText(display = display, fontSize = 16.sp)
+            Text(
+                text = letterName,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                textAlign = TextAlign.Center,
+                maxLines = 1
+            )
+        }
     }
 }
 
