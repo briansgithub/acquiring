@@ -8,6 +8,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
@@ -31,6 +32,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusTarget
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.scale
@@ -237,6 +241,10 @@ fun MainScreen(db: AppDatabase) {
     var artistSuggestions by remember { mutableStateOf(listOf<String>()) }
     var isExpanded by remember { mutableStateOf(false) }
     var isArtistExpanded by remember { mutableStateOf(false) }
+    // Recent-selections suggestions should only appear once the user actually
+    // focuses the field — not automatically on launch.
+    var hasSearchTitleFocus by remember { mutableStateOf(false) }
+    var hasSearchArtistFocus by remember { mutableStateOf(false) }
     var selectedArtistName by remember { mutableStateOf<String?>(null) }
     var selectedArtistSongs by remember { mutableStateOf<List<SongBrowseRow>?>(null) }
     var selectedSong by remember { mutableStateOf<Song?>(null) }
@@ -262,6 +270,11 @@ fun MainScreen(db: AppDatabase) {
     
     val scope = rememberCoroutineScope()
     val context = androidx.compose.ui.platform.LocalContext.current
+    // Steals Android's default initial focus away from the search field so the
+    // keyboard doesn't auto-show on launch; the field only focuses (and shows
+    // the keyboard) once the user actually taps it.
+    val initialFocusRequester = remember { androidx.compose.ui.focus.FocusRequester() }
+    LaunchedEffect(Unit) { initialFocusRequester.requestFocus() }
     val allSongsStateHolder = rememberSaveableStateHolder()
     val allSongsRuntimeState = rememberAllSongsRuntimeState()
 
@@ -302,13 +315,18 @@ fun MainScreen(db: AppDatabase) {
         returnToParent()
     }
 
-    LaunchedEffect(searchQuery, selectedSong, selectedArtistSongs) {
+    LaunchedEffect(searchQuery, selectedSong, selectedArtistSongs, hasSearchTitleFocus) {
         if (searchQuery.isNotEmpty()) {
             delay(300) // Debounce
             titleOffset = 0
             suggestions = activeDb.songDao().getSearchSuggestions(searchQuery, limit = 20, offset = 0)
             isExpanded = true // Always expand when typing to show suggestions or "No results"
             isShowingRecent = false
+        } else if (!hasSearchTitleFocus) {
+            // Field hasn't been touched yet — stay collapsed, no auto-shown recents.
+            suggestions = emptyList()
+            isShowingRecent = false
+            isExpanded = false
         } else if (selectedSong == null && selectedArtistSongs == null) {
             // Show recent songs when empty from SharedPreferences
             val slugs = HistoryManager.getRecentSlugs(context)
@@ -326,13 +344,17 @@ fun MainScreen(db: AppDatabase) {
         }
     }
 
-    LaunchedEffect(searchArtistQuery, selectedSong, selectedArtistSongs) {
+    LaunchedEffect(searchArtistQuery, selectedSong, selectedArtistSongs, hasSearchArtistFocus) {
         if (searchArtistQuery.isNotEmpty()) {
             isShowingRecentArtists = false
             delay(300) // Debounce
             artistOffset = 0
             artistSuggestions = activeDb.songDao().getArtistSuggestions(searchArtistQuery, limit = 20, offset = 0)
             isArtistExpanded = true
+        } else if (!hasSearchArtistFocus) {
+            artistSuggestions = emptyList()
+            isShowingRecentArtists = false
+            isArtistExpanded = false
         } else if (selectedSong == null && selectedArtistSongs == null) {
             artistSuggestions = HistoryManager.getRecentArtists(context)
             isShowingRecentArtists = artistSuggestions.isNotEmpty()
@@ -436,6 +458,14 @@ fun MainScreen(db: AppDatabase) {
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
+        // Invisible target that owns the default initial focus on launch, so the
+        // search field starts genuinely unselected instead of grabbing focus itself.
+        Box(
+            modifier = Modifier
+                .size(1.dp)
+                .focusRequester(initialFocusRequester)
+                .focusTarget()
+        )
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -486,10 +516,11 @@ fun MainScreen(db: AppDatabase) {
                         }
                     },
                     searchQuery = searchQuery,
-                    onSearchQueryChange = { 
+                    onSearchQueryChange = {
                         searchQuery = it
                         if (it.isNotEmpty()) isArtistExpanded = false
                     },
+                    onSearchTitleFocusChanged = { focused -> hasSearchTitleFocus = focused },
                     isExpanded = isExpanded,
                     onExpandedChange = { expanded ->
                         isExpanded = expanded
@@ -556,10 +587,11 @@ fun MainScreen(db: AppDatabase) {
                         }
                     },
                     searchArtistQuery = searchArtistQuery,
-                    onSearchArtistQueryChange = { 
+                    onSearchArtistQueryChange = {
                         searchArtistQuery = it
                         if (it.isNotEmpty()) isExpanded = false
                     },
+                    onSearchArtistFocusChanged = { focused -> hasSearchArtistFocus = focused },
                     isArtistExpanded = isArtistExpanded,
                     onArtistExpandedChange = { expanded ->
                         isArtistExpanded = expanded
@@ -708,12 +740,14 @@ fun LibraryView(
     onHarvest: () -> Unit,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
+    onSearchTitleFocusChanged: (Boolean) -> Unit,
     isExpanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     suggestions: List<SongBrowseRow>,
     isShowingRecent: Boolean,
     searchArtistQuery: String,
     onSearchArtistQueryChange: (String) -> Unit,
+    onSearchArtistFocusChanged: (Boolean) -> Unit,
     isArtistExpanded: Boolean,
     onArtistExpandedChange: (Boolean) -> Unit,
     artistSuggestions: List<String>,
@@ -737,7 +771,7 @@ fun LibraryView(
     Column(modifier = Modifier.fillMaxSize()) {
         Spacer(modifier = Modifier.weight(0.3f))
         // Search Section
-        Text(text = "Database Search", style = MaterialTheme.typography.titleMedium)
+        Text(text = "Song Database Search", style = MaterialTheme.typography.titleMedium)
         
         // Search by Title/Slug
         ExposedDropdownMenuBox(
@@ -749,7 +783,10 @@ fun LibraryView(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
                 label = { Text("Search by Title") },
-                modifier = Modifier.fillMaxWidth().menuAnchor(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor()
+                    .onFocusChanged { onSearchTitleFocusChanged(it.isFocused) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
             )
@@ -806,7 +843,10 @@ fun LibraryView(
                 value = searchArtistQuery,
                 onValueChange = onSearchArtistQueryChange,
                 label = { Text("Search by Artist") },
-                modifier = Modifier.fillMaxWidth().menuAnchor(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor()
+                    .onFocusChanged { onSearchArtistFocusChanged(it.isFocused) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isArtistExpanded) },
                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
             )
