@@ -86,6 +86,8 @@ private val QUIZ_TIMELINE_CHANNELS = setOf(
     AudioEngine.PlaybackChannel.CHORD
 )
 
+private class InertiaBoundaryReachedException : Exception()
+
 private data class LoopHeadPlaybackRequest(
     val midiNotes: List<Int>,
     val durationMs: Int,
@@ -2062,11 +2064,18 @@ fun QuizTab(
                                 .semantics { contentDescription = timelineContentDescription }
                                 .pointerInput(endBeat) {
                                     detectTapGestures { offset ->
-                                        inertiaJob?.cancel()
-                                        val centerX = size.width / 2f
-                                        val deltaX = offset.x - centerX
-                                        scrubTo(currentBeat + deltaX / pixelsPerBeatPx)
-                                        finishScrubbing()
+                                        if (inertiaJob?.isActive == true) {
+                                            // Timeline is still coasting from a prior swipe; a tap should
+                                            // just halt it in place rather than also jump to the tap position.
+                                            inertiaJob?.cancel()
+                                            finishScrubbing()
+                                        } else {
+                                            inertiaJob?.cancel()
+                                            val centerX = size.width / 2f
+                                            val deltaX = offset.x - centerX
+                                            scrubTo(currentBeat + deltaX / pixelsPerBeatPx)
+                                            finishScrubbing()
+                                        }
                                     }
                                 }
                                 .pointerInput(endBeat) {
@@ -2095,10 +2104,21 @@ fun QuizTab(
                                             if (kotlin.math.abs(velocityBeats) > 0.5) {
                                                 inertiaJob = scope.launch {
                                                     val animatable = Animatable(currentBeat.toFloat())
-                                                    // Lower friction for more noticeable inertia
-                                                    val decay = exponentialDecay<Float>(frictionMultiplier = 0.7f)
-                                                    animatable.animateDecay(velocityBeats, decay) {
-                                                        updatePlaybackBeat(value.toDouble().coerceIn(1.0, endBeat))
+                                                    // Noticeable inertia that settles down reasonably quickly
+                                                    val decay = exponentialDecay<Float>(frictionMultiplier = 1.4f)
+                                                    try {
+                                                        animatable.animateDecay(velocityBeats, decay) {
+                                                            updatePlaybackBeat(value.toDouble().coerceIn(1.0, endBeat))
+                                                            // Stop the animation as soon as it reaches either end of
+                                                            // the timeline instead of letting it run its full decay
+                                                            // curve past the clamped bounds.
+                                                            if (value <= 1.0 || value >= endBeat) {
+                                                                throw InertiaBoundaryReachedException()
+                                                            }
+                                                        }
+                                                    } catch (_: InertiaBoundaryReachedException) {
+                                                        // Reached the start/end of the timeline early; fall through
+                                                        // to finishScrubbing() below same as a natural decay finish.
                                                     }
                                                     finishScrubbing()
                                                 }
