@@ -31,6 +31,7 @@ class QuizIntervalStateTest {
         assertEquals("C", state?.previous?.pitch?.noteName)
         assertEquals("G", state?.current?.pitch?.noteName)
         assertEquals("P5 ↑", state?.interval?.shorthand)
+        assertEquals("1\u0302", state?.previousDegreeLabel)
         assertEquals("5\u0302", state?.currentDegreeLabel)
     }
 
@@ -61,7 +62,7 @@ class QuizIntervalStateTest {
         assertEquals("Db", state?.currentIntervalPitch?.noteName)
         assertEquals(3, state?.previousIntervalPitch?.octave)
         assertEquals(3, state?.currentIntervalPitch?.octave)
-        assertEquals("M6 â†“", state?.interval?.shorthand)
+        assertEquals("M6 ↓", state?.interval?.shorthand)
     }
 
     @Test
@@ -87,6 +88,8 @@ class QuizIntervalStateTest {
         assertEquals("C#", state?.previous?.noteName)
         assertEquals("G", state?.current?.noteName)
         assertEquals("d5 ↑", state?.interval?.shorthand)
+        assertEquals("♯1\u0302", state?.previousDegreeLabel)
+        assertEquals("5\u0302", state?.currentDegreeLabel)
     }
 
     @Test
@@ -98,11 +101,7 @@ class QuizIntervalStateTest {
         )
 
         assertNull(resolveMelodyIntervalState(melody, currentBeat = 2.25) { KeyInfo("C", "major") })
-        assertEquals(
-            "M3 ↑",
-            resolveMelodyIntervalState(melody, currentBeat = 3.25) { KeyInfo("C", "major") }
-                ?.interval?.shorthand
-        )
+        assertNull(resolveMelodyIntervalState(melody, currentBeat = 3.25) { KeyInfo("C", "major") })
     }
 
     @Test
@@ -164,6 +163,22 @@ class QuizIntervalStateTest {
             resolveMelodyIntervalState(melody, currentBeat = 3.0, keyAtBeat = keyAtBeat)
                 ?.interval?.shorthand
         )
+        val state = resolveMelodyIntervalState(melody, currentBeat = 3.0, keyAtBeat = keyAtBeat)
+        assertEquals("1\u0302", state?.previousDegreeLabel)
+        assertEquals("1\u0302", state?.currentDegreeLabel)
+    }
+
+    @Test
+    fun melodyDegreeMetadataKeepsFlatAccidentals() {
+        val melody = listOf(
+            MelodyNote(sd = "b2", beat = 1.0, duration = 1.0),
+            MelodyNote(sd = "3", beat = 2.0, duration = 1.0)
+        )
+
+        val state = resolveMelodyIntervalState(melody, currentBeat = 2.25) { KeyInfo("C", "major") }
+
+        assertEquals("♭2\u0302", state?.previousDegreeLabel)
+        assertEquals("3\u0302", state?.currentDegreeLabel)
     }
 
     @Test

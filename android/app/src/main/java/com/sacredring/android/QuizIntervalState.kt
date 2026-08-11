@@ -11,13 +11,16 @@ internal data class ChordRootIntervalState(
     val previousIntervalPitch: SpelledPitch?,
     val currentIntervalPitch: SpelledPitch,
     val interval: NamedInterval?,
+    val previousDegreeLabel: String?,
     val currentDegreeLabel: String
 )
 
 internal data class MelodyIntervalState(
     val previous: SpelledPitch,
     val current: SpelledPitch,
-    val interval: NamedInterval
+    val interval: NamedInterval,
+    val previousDegreeLabel: String,
+    val currentDegreeLabel: String
 ) {
     val contentDescription: String
         get() = "Play melody interval ${previous.displayName} to ${current.displayName}, ${interval.spokenName}"
@@ -94,6 +97,9 @@ internal fun resolveChordRootIntervalState(
         interval = previousRoot?.let {
             calculateNamedInterval(it.simpleModePitch, currentRoot.simpleModePitch)
         },
+        previousDegreeLabel = previousRoot?.let {
+            MusicTheory.getDegreeLabelFromSpelling(it.pitch, it.sourceKey)
+        },
         currentDegreeLabel = MusicTheory.getDegreeLabelFromSpelling(currentRoot.pitch, currentRoot.sourceKey)
     )
 }
@@ -133,7 +139,15 @@ internal fun resolveMelodyIntervalState(
     return MelodyIntervalState(
         previous = previousPitch,
         current = currentPitch,
-        interval = calculateNamedInterval(previousPitch, currentPitch)
+        interval = calculateNamedInterval(previousPitch, currentPitch),
+        previousDegreeLabel = MusicTheory.getDegreeLabelFromSpelling(
+            previousPitch,
+            keyAtBeat(immediatePrevious!!.onset)
+        ),
+        currentDegreeLabel = MusicTheory.getDegreeLabelFromSpelling(
+            currentPitch,
+            keyAtBeat(active.onset)
+        )
     )
 }
 
