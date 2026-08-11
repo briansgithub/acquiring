@@ -78,7 +78,7 @@ internal fun HummingIntervalPopup(
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val pitchTracker = remember { MicrophonePitchTracker() }
+    val pitchTracker = remember { MicrophonePitchTracker(context.applicationContext) }
 
     DisposableEffect(pitchTracker) {
         onDispose {

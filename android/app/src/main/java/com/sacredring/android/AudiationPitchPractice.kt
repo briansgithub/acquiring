@@ -53,7 +53,9 @@ fun AudiationPitchPracticeContainer(
     onTargetSelected: (AudiationTarget) -> Unit,
     onSessionCanceled: () -> Unit,
     onCalibrated: (Double) -> Unit = {},
-    pitchSource: PitchSource = remember { MicrophonePitchTracker() },
+    pitchSource: PitchSource = LocalContext.current.applicationContext.let { appContext ->
+        remember(appContext) { MicrophonePitchTracker(appContext) }
+    },
     content: @Composable (
         AudiationState,
         (AudiationTarget) -> Unit,
@@ -182,8 +184,15 @@ fun AudiationPitchPracticeContainer(
     val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner, pitchSource) {
         val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
-            if (event == androidx.lifecycle.Lifecycle.Event.ON_PAUSE) {
-                pitchSource.stop()
+            when (event) {
+                androidx.lifecycle.Lifecycle.Event.ON_PAUSE -> pitchSource.stop()
+                // Coming back to a target that is still selected should start listening
+                // again — otherwise the gauge stays visible but permanently dead.
+                androidx.lifecycle.Lifecycle.Event.ON_RESUME -> {
+                    val s = state
+                    if (s is AudiationState.Listening) pitchSource.start(s.target.transposedMidi)
+                }
+                else -> Unit
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
