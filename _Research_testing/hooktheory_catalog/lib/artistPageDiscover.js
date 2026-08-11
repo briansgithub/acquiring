@@ -120,9 +120,15 @@ async function sweepArtists(artistSlugs, buildUrl, {
   let failed = 0;
 
   let skipped = 0;
+  // Where the loop actually got to, and whether it ran out of artists or bailed.
+  // Reporting artistSlugs.length unconditionally at the end would record a
+  // halted sweep as a finished one and strand every remaining artist.
+  let lastIndex = startIndex;
+  let interrupted = false;
 
   for (let i = startIndex; i < artistSlugs.length; i++) {
-    if (shouldStop()) { log('  stop requested — halting artist sweep'); break; }
+    lastIndex = i;
+    if (shouldStop()) { log('  stop requested — halting artist sweep'); interrupted = true; break; }
     const artist = artistSlugs[i];
 
     // Throwaway numeric/scratch artist handles return HTTP 500 from the artist
@@ -173,6 +179,7 @@ async function sweepArtists(artistSlugs, buildUrl, {
       } else if (action === 'give-up') {
         log('  too many circuit trips — aborting artist sweep to avoid hammering the host');
         onProgress?.({ index: i, checked, failed, found: found.length, abort: true });
+        interrupted = true;
         break;
       }
     }
@@ -181,8 +188,13 @@ async function sweepArtists(artistSlugs, buildUrl, {
     await sleep(Math.max(600, intervalMs + (Math.random() * jitterMs * 2 - jitterMs)));
   }
 
-  onProgress?.({ index: artistSlugs.length, checked, failed, skipped, found: found.length, done: true });
-  return { found, checked, failed, skipped };
+  // On a clean finish the next resume should start past the end; on an
+  // interrupted one it must start at the artist we stopped on, not past it.
+  const finalIndex = interrupted ? lastIndex : artistSlugs.length;
+  onProgress?.({
+    index: finalIndex, checked, failed, skipped, found: found.length, done: !interrupted, interrupted,
+  });
+  return { found, checked, failed, skipped, interrupted, lastIndex: finalIndex };
 }
 
 module.exports = {

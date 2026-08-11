@@ -14,36 +14,41 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot '_RecoveryCommon.ps1')
 
 $CatalogDir = Join-Path $PSScriptRoot '_Research_testing\hooktheory_catalog'
-$DataDir    = 'H:\Desktop\3_sacred_ring\sacred_ring_data\catalog'
-$StopFile   = Join-Path $DataDir '.overnight_stop'
 
 if (-not (Test-Path $CatalogDir)) {
     throw "Catalog directory not found: $CatalogDir"
 }
 
+Write-Host ""
+Write-Host "=== Catalog recovery: current state ===" -ForegroundColor Cyan
+Write-RecoveryProgress -IncludeRemaining
+
 # Refuse to start a second copy: two sweeps sharing one SQLite catalog and one
 # phase ledger would corrupt each other's progress counters.
-$running = @(Get-CimInstance Win32_Process -Filter "Name='node.exe'" |
-    Where-Object { $_.CommandLine -match 'overnight-run|run-full-recovery' })
+$running = Get-RecoveryProcess
 if ($running.Count -gt 0) {
-    Write-Host "Already running (PID $($running[0].ProcessId)). Nothing to do." -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "Already running (PID $(($running | ForEach-Object { $_.ProcessId }) -join ', ')). Nothing to do." -ForegroundColor Yellow
     Write-Host "To stop it:  .\Stop-Recovery.ps1"
     return
 }
 
 # A stop file left over from a previous clean halt would make overnight-run
 # refuse to start, which looks like a silent no-op.
-if (Test-Path $StopFile) {
+if (Test-Path $script:RecoveryStopFile) {
+    Write-Host ""
     Write-Host "Clearing previous stop file." -ForegroundColor Yellow
-    Remove-Item $StopFile -Force
+    Remove-Item $script:RecoveryStopFile -Force
 }
 
-Set-Location $CatalogDir
-
 if ($Foreground) {
+    Write-Host ""
     Write-Host "Running in this window. Ctrl+C stops it." -ForegroundColor Cyan
+    Write-Host ""
+    Set-Location $CatalogDir
     & node scripts/run-full-recovery.js --resume
     return
 }
@@ -56,8 +61,25 @@ $proc = Start-Process -FilePath 'node' `
     -WindowStyle Hidden `
     -PassThru
 
+Write-Host ""
 Write-Host "Started detached (PID $($proc.Id))." -ForegroundColor Green
+
+# Give the run a moment to load its ledger, then confirm it actually picked up
+# where it left off -- a silent no-op here is the failure mode worth catching.
+Start-Sleep -Seconds 6
+$confirm = Get-RecoveryProcess
+if ($confirm.Count -eq 0) {
+    Write-Host "WARNING: process exited immediately. Check the log:" -ForegroundColor Red
+    Write-Host "  $script:RecoveryLogFile"
+    Write-RecoveryLogTail -Lines 10
+    return
+}
+
+Write-Host "Confirmed alive. Resumed from:" -ForegroundColor Green
+Write-RecoveryProgress
+Write-RecoveryLogTail -Lines 4
+
 Write-Host ""
 Write-Host "Check progress:  .\Status-Recovery.ps1"
 Write-Host "Stop cleanly:    .\Stop-Recovery.ps1"
-Write-Host "Log file:        $DataDir\overnight_run.log"
+Write-Host "Log file:        $script:RecoveryLogFile"
