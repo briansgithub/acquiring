@@ -1,5 +1,6 @@
 package com.sacredring.android
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -261,6 +262,10 @@ fun MainScreen(db: AppDatabase) {
     var isShowingRecentArtists by remember { mutableStateOf(false) }
     var currentWaveform by remember { mutableStateOf(AudioEngine.Waveform.SAWTOOTH) }
     var globalTranspose by remember { mutableStateOf(AudioEngine.globalTranspose) }
+    var intervalSingTarget by remember { mutableStateOf<IntervalSingTarget?>(null) }
+    var intervalSingRequestId by remember { mutableStateOf(0) }
+    var calibrateAction by remember { mutableStateOf<() -> Unit>({}) }
+    var calibrateResetAction by remember { mutableStateOf<() -> Unit>({}) }
     
     var titleOffset by remember { mutableStateOf(0) }
     var artistOffset by remember { mutableStateOf(0) }
@@ -718,6 +723,32 @@ fun MainScreen(db: AppDatabase) {
                             quizReturnTab = null
                         }
                     },
+                    onSingIntervalRequested = { note1Midi, note2Midi ->
+                        intervalSingRequestId++
+                        intervalSingTarget = IntervalSingTarget(note1Midi, note2Midi, intervalSingRequestId)
+                    },
+                    onCalibrateActionChanged = { calibrateAction = it },
+                    onCalibrationHummed = { hummedMidi ->
+                        // Shift both interval notes by the same number of octaves so
+                        // the interval lands in the singer's comfortable range while
+                        // its ascending/descending direction and size are unchanged.
+                        // This only re-aims the mic target — it never touches playback.
+                        intervalSingTarget?.let { current ->
+                            val referenceMidi = (current.note1Midi + current.note2Midi) / 2.0
+                            val shiftOctaves = kotlin.math.round((hummedMidi - referenceMidi) / 12.0).toInt()
+                            if (shiftOctaves != 0) {
+                                intervalSingRequestId++
+                                intervalSingTarget = IntervalSingTarget(
+                                    note1Midi = current.note1Midi + shiftOctaves * 12,
+                                    note2Midi = current.note2Midi + shiftOctaves * 12,
+                                    requestId = intervalSingRequestId,
+                                    originalNote1Midi = current.originalNote1Midi,
+                                    originalNote2Midi = current.originalNote2Midi
+                                )
+                            }
+                        }
+                    },
+                    onCalibrateResetActionChanged = { calibrateResetAction = it },
                     onBack = returnToParent
                 )
             }
@@ -725,7 +756,24 @@ fun MainScreen(db: AppDatabase) {
         }
 
         HummingIntervalPopup(
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier.align(Alignment.BottomCenter),
+            targetInterval = intervalSingTarget,
+            onCalibrateRequested = { calibrateAction() },
+            onCalibrateResetRequested = {
+                calibrateResetAction()
+                intervalSingTarget?.let { current ->
+                    if (current.note1Midi != current.originalNote1Midi || current.note2Midi != current.originalNote2Midi) {
+                        intervalSingRequestId++
+                        intervalSingTarget = IntervalSingTarget(
+                            note1Midi = current.originalNote1Midi,
+                            note2Midi = current.originalNote2Midi,
+                            requestId = intervalSingRequestId,
+                            originalNote1Midi = current.originalNote1Midi,
+                            originalNote2Midi = current.originalNote2Midi
+                        )
+                    }
+                }
+            }
         )
     }
 }
@@ -767,6 +815,7 @@ fun LibraryView(
 ) {
     var isHarvestExpanded by remember { mutableStateOf(false) }
     var isDownloadCatalogExpanded by remember { mutableStateOf(false) }
+    val uriHandler = LocalUriHandler.current
 
     Column(modifier = Modifier.fillMaxSize()) {
         Spacer(modifier = Modifier.weight(0.3f))
@@ -827,8 +876,16 @@ fun LibraryView(
             }
         }
 
-        Button(onClick = onSearchTitle, modifier = Modifier.fillMaxWidth().padding(top = 4.dp)) { 
-            Text("Search Title") 
+        Button(onClick = onSearchTitle, modifier = Modifier.fillMaxWidth().padding(top = 4.dp)) {
+            Text("Search Title")
+        }
+
+        OutlinedButton(
+            onClick = { uriHandler.openUri("https://www.hooktheory.com/theorytab/search?q=${Uri.encode(searchQuery)}") },
+            enabled = searchQuery.isNotBlank(),
+            modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+        ) {
+            Text("Search Hooktheory.com ↗")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -1027,6 +1084,10 @@ fun SongDetailView(
     globalTranspose: Int,
     onTransposeChange: (Int) -> Unit,
     onArtistClick: (String) -> Unit,
+    onSingIntervalRequested: (Int, Int) -> Unit,
+    onCalibrateActionChanged: (() -> Unit) -> Unit,
+    onCalibrationHummed: (Double) -> Unit,
+    onCalibrateResetActionChanged: (() -> Unit) -> Unit,
     onBack: () -> Unit
 ) {
     val sectionsInSongOrder = remember(sections) { sections.sectionsInSongOrder() }
@@ -1237,7 +1298,11 @@ fun SongDetailView(
                 onWaveformChange = onWaveformChange,
                 sectionPicker = sectionPickerComposable,
                 transposePicker = transposePickerComposable,
-                globalTranspose = globalTranspose
+                globalTranspose = globalTranspose,
+                onSingIntervalRequested = onSingIntervalRequested,
+                onCalibrateActionChanged = onCalibrateActionChanged,
+                onCalibrationHummed = onCalibrationHummed,
+                onCalibrateResetActionChanged = onCalibrateResetActionChanged
             )
         }
         }
@@ -1267,7 +1332,7 @@ private fun ringModeColor(scale: String): Color = when (scale) {
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun QuizTab(
     section: ExtractedSection,
@@ -1279,7 +1344,11 @@ fun QuizTab(
     onWaveformChange: (AudioEngine.Waveform) -> Unit,
     sectionPicker: @Composable () -> Unit,
     transposePicker: @Composable () -> Unit,
-    globalTranspose: Int
+    globalTranspose: Int,
+    onSingIntervalRequested: (Int, Int) -> Unit,
+    onCalibrateActionChanged: (() -> Unit) -> Unit,
+    onCalibrationHummed: (Double) -> Unit,
+    onCalibrateResetActionChanged: (() -> Unit) -> Unit
 ) {
     val baseBpm = section.getBpm().toFloat().coerceIn(40f, 240f)
     var tempoPercent by remember(section) { mutableStateOf(100f) }
@@ -1923,25 +1992,28 @@ fun QuizTab(
             } ?: emptyList()
         } else { currentChord?.let { chord -> val notes = ChordInterpreter.getChordNotes(chord, activeKey); val rootMidi = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull() ?: 0
             val spelledRoot = ChordInterpreter.resolveChordRoot(chord, activeKey)?.pitch
-            val list = notes.mapIndexed { index, note ->
+            notes.mapIndexed { index, note ->
                 val label = if (useRelativeIonianContext) (spelledRoot?.let { ionianContextDegreeLabel(note, it, ionianContextKey) } ?: ionianContextDegreeLabel(note, ionianContextKey)) else MusicTheory.getRelativeDegreeLabel(note, rootMidi)
                 val previewNote = if (useRelativeIonianContext) (spelledRoot?.let { ionianContextPreviewAudioNote(note, it, ionianContextKey) } ?: ionianContextPreviewAudioNote(note, ionianContextKey)) ?: note else note
                 AudiationTarget(id = index, label = label, untransposedMidi = previewNote, transposedMidi = previewNote + globalTranspose)
-            }.toMutableList()
-            val chordLabel = if (useRelativeIonianContext) ChordInterpreter.getRelativeIonianRomanSymbol(chord, activeKey, ionianContextKey) else ChordInterpreter.getRomanSymbol(chord, activeKey)
-            list.add(AudiationTarget(100, chordLabel, rootMidi, rootMidi + globalTranspose))
-            list } ?: emptyList()
+            } } ?: emptyList()
         }
     }
 
     val density = androidx.compose.ui.platform.LocalDensity.current
-    var audiationPuckOffset by remember {
-        mutableStateOf(with(density) { Offset(8.dp.toPx(), 8.dp.toPx()) })
-    }
     var audiationOctaveShift by remember { mutableStateOf(0) }
+    onCalibrateResetActionChanged { audiationOctaveShift = 0 }
 
     val targetsWithShift = remember(audiationTargets, audiationOctaveShift) {
         audiationTargets.map { it.copy(transposedMidi = it.transposedMidi + audiationOctaveShift * 12) }
+    }
+
+    fun intervalPreviewNote(pitch: SpelledPitch): Int {
+        return if (useRelativeIonianContext) {
+            ionianContextPreviewAudioNote(pitch, ionianContextKey) ?: pitch.toAudioNoteNumber()
+        } else {
+            pitch.toAudioNoteNumber()
+        }
     }
 
     fun playIntervalPreview(previous: SpelledPitch, current: SpelledPitch) {
@@ -1951,7 +2023,7 @@ fun QuizTab(
             rootIntervalPreviewSteps(
                 previousAudioNote = previous.toAudioNoteNumber(),
                 currentAudioNote = current.toAudioNoteNumber(),
-                octaveShiftSemitones = audiationOctaveShift * 12,
+                octaveShiftSemitones = 0,
                 durationMs = ROOT_INTERVAL_PREVIEW_DURATION_MS
             ).forEach { step ->
                 AudioEngine.playChord(
@@ -1967,7 +2039,6 @@ fun QuizTab(
     Box(modifier = Modifier.fillMaxSize()) {
         AudiationPitchPracticeContainer(
             targets = targetsWithShift,
-            initialOffset = audiationPuckOffset,
             onTargetSelected = {
                 isPlaying = false
                 hasPausedTimelinePlayback = false
@@ -1987,10 +2058,10 @@ fun QuizTab(
                     val avgRoot = songRoots.average(); val currentBaseAvg = avgRoot + AudioEngine.globalTranspose
                     audiationOctaveShift = kotlin.math.round((hummedMidi - currentBaseAvg) / 12.0).toInt()
                 }
+                onCalibrationHummed(hummedMidi)
             }
-        ) { audiationState, onTargetPositioned, onScrubBarPositioned ->
-            if (audiationState is AudiationState.Dragging) { audiationPuckOffset = audiationState.offset }
-
+        ) { audiationState, onTargetDoubleTap, onCalibrateRequested, onTargetPositioned ->
+            onCalibrateActionChanged(onCalibrateRequested)
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -2172,8 +2243,8 @@ fun QuizTab(
                         ) {
                             val totalHeight = size.height; val mLaneHeightPx = melodyLaneHeight.toPx(); val cLaneHeightPx = chordLaneHeight.toPx(); val noteHeight = (mLaneHeightPx / 28f).coerceIn(5f, 10f); val melodyBaseY = mLaneHeightPx / 2; val centerX = size.width / 2f; val translationX = centerX - (currentBeat - 1).toFloat() * pixelsPerBeatPx
                             drawContext.canvas.save(); drawContext.canvas.translate(translationX, 0f)
-                            melody.forEach { note -> val x = (note.beat - 1).toFloat() * pixelsPerBeatPx; val w = note.duration.toFloat() * pixelsPerBeatPx; val sourceKey = section.getKeyAtBeat(note.beat); val staffDegree = if (useRelativeIonianContext) ionianContextStaffDegree(note.sd, note.octave, sourceKey, ionianContextKey) ?: (MusicTheory.getRawDegree(note.sd) + note.octave * 7) else MusicTheory.getRawDegree(note.sd) + note.octave * 7; val y = melodyBaseY - (staffDegree * noteHeight); val isActive = currentBeat >= note.beat && currentBeat < (note.beat + note.duration)
-                                drawRect(color = if (isActive) primaryColor else secondaryColor.copy(alpha = 0.6f), topLeft = Offset(x, y), size = Size(w, noteHeight)) }
+                            melody.forEach { note -> if (!note.isRest) { val x = (note.beat - 1).toFloat() * pixelsPerBeatPx; val w = note.duration.toFloat() * pixelsPerBeatPx; val sourceKey = section.getKeyAtBeat(note.beat); val staffDegree = if (useRelativeIonianContext) ionianContextStaffDegree(note.sd, note.octave, sourceKey, ionianContextKey) ?: (MusicTheory.getRawDegree(note.sd) + note.octave * 7) else MusicTheory.getRawDegree(note.sd) + note.octave * 7; val y = melodyBaseY - (staffDegree * noteHeight); val isActive = currentBeat >= note.beat && currentBeat < (note.beat + note.duration)
+                                drawRect(color = if (isActive) primaryColor else secondaryColor.copy(alpha = 0.6f), topLeft = Offset(x, y), size = Size(w, noteHeight)) } }
                             section.chords.forEach { chord -> val beat_c = normalizePlaybackBeat((chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0); val duration_c = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0; val isRest_c = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
                                 val x = (beat_c - 1).toFloat() * pixelsPerBeatPx; val w = duration_c.toFloat() * pixelsPerBeatPx; val isActive = currentBeat >= beat_c && currentBeat < (beat_c + duration_c)
                                 drawRect(color = secondaryColor.copy(alpha = 0.2f), topLeft = Offset(x, mLaneHeightPx), size = Size(w, cLaneHeightPx))
@@ -2209,66 +2280,73 @@ fun QuizTab(
                             val rootAudioNote = currentRootPreviewAudioNote
                             val rootDegreeLabel = currentRootDegreeLabel
                             val rootInterval = chordRootIntervalState?.interval
-                            val isRootDegreeHovered = audiationState is AudiationState.Dragging && audiationState.hoveredId == 0
-                            
+                            val rootAudiationTarget = targetsWithShift.find { it.id == 0 }
+
                             Row(
                                 modifier = Modifier.fillMaxWidth().heightIn(max = 250.dp),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Button(
-                                    onClick = {
-                                        if (previousIntervalPitch != null && currentIntervalPitch != null) {
-                                            playIntervalPreview(previousIntervalPitch, currentIntervalPitch)
-                                        }
-                                    },
-                                    enabled = previousIntervalPitch != null && currentIntervalPitch != null && rootInterval != null,
-                                    colors = ButtonDefaults.buttonColors(
-                                        disabledContainerColor = MaterialTheme.colorScheme.primary,
-                                        disabledContentColor = MaterialTheme.colorScheme.onPrimary
-                                    ),
-                                    modifier = Modifier.weight(1f).fillMaxHeight().semantics {
-                                        contentDescription = rootInterval?.let {
-                                            "Play root interval ${it.spokenName}"
-                                        } ?: "Root interval unavailable"
-                                    },
-                                    shape = RoundedCornerShape(32.dp),
-                                    contentPadding = PaddingValues(8.dp)
-                                ) {
-                                    Text(
-                                        text = rootInterval?.shorthand ?: "—",
-                                        textAlign = TextAlign.Center,
-                                        fontSize = 54.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        maxLines = 1
-                                    )
-                                }
-                                Button(
-                                    onClick = {
-                                        if (rootAudioNote > 0) {
-                                            intervalPreviewJob?.cancel()
-                                            AudioEngine.stopPreviewPlayback()
-                                            intervalPreviewJob = scope.launch {
-                                                AudioEngine.playChord(
-                                                    listOf(rootAudioNote + audiationOctaveShift * 12),
-                                                    channel = AudioEngine.PlaybackChannel.PREVIEW
-                                                )
-                                            }
-                                        }
-                                    },
-                                    enabled = rootAudioNote > 0,
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (isRootDegreeHovered) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.primary,
-                                        contentColor = if (isRootDegreeHovered) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onPrimary,
-                                        disabledContainerColor = MaterialTheme.colorScheme.primary,
-                                        disabledContentColor = MaterialTheme.colorScheme.onPrimary
-                                    ),
+                                val rootIntervalEnabled = previousIntervalPitch != null && currentIntervalPitch != null && rootInterval != null
+                                Surface(
                                     modifier = Modifier.weight(1f).fillMaxHeight()
-                                        .semantics { contentDescription = "Play current root scale degree" }
-                                        .onGloballyPositioned { onTargetPositioned(0, it) },
+                                        .semantics {
+                                            contentDescription = rootInterval?.let {
+                                                "Play root interval ${it.spokenName}. Double tap to sing it back."
+                                            } ?: "Root interval unavailable"
+                                        }
+                                        .combinedClickable(
+                                            enabled = rootIntervalEnabled,
+                                            onClick = {
+                                                if (previousIntervalPitch != null && currentIntervalPitch != null) {
+                                                    playIntervalPreview(previousIntervalPitch, currentIntervalPitch)
+                                                }
+                                            },
+                                            onDoubleClick = {
+                                                if (previousIntervalPitch != null && currentIntervalPitch != null) {
+                                                    val note1 = intervalPreviewNote(previousIntervalPitch) + globalTranspose + audiationOctaveShift * 12
+                                                    val note2 = intervalPreviewNote(currentIntervalPitch) + globalTranspose + audiationOctaveShift * 12
+                                                    onSingIntervalRequested(note1, note2)
+                                                }
+                                            }
+                                        ),
                                     shape = RoundedCornerShape(32.dp),
-                                    contentPadding = PaddingValues(8.dp)
+                                    color = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
                                 ) {
-                                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Box(modifier = Modifier.fillMaxSize().padding(8.dp), contentAlignment = Alignment.Center) {
+                                        Text(
+                                            text = rootInterval?.shorthand ?: "—",
+                                            textAlign = TextAlign.Center,
+                                            fontSize = 54.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            maxLines = 1
+                                        )
+                                        if (rootIntervalEnabled) DoubleTapHint(modifier = Modifier.padding(4.dp))
+                                    }
+                                }
+                                Surface(
+                                    modifier = Modifier.weight(1f).fillMaxHeight()
+                                        .semantics { contentDescription = "Play current root scale degree. Double tap to sing it back." }
+                                        .onGloballyPositioned { onTargetPositioned(0, it) }
+                                        .combinedClickable(
+                                            enabled = rootAudioNote > 0,
+                                            onClick = {
+                                                intervalPreviewJob?.cancel()
+                                                AudioEngine.stopPreviewPlayback()
+                                                intervalPreviewJob = scope.launch {
+                                                    AudioEngine.playChord(
+                                                        listOf(rootAudioNote),
+                                                        channel = AudioEngine.PlaybackChannel.PREVIEW
+                                                    )
+                                                }
+                                            },
+                                            onDoubleClick = { rootAudiationTarget?.let { onTargetDoubleTap(it) } }
+                                        ),
+                                    shape = RoundedCornerShape(32.dp),
+                                    color = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
+                                ) {
+                                    Box(modifier = Modifier.fillMaxSize().padding(8.dp), contentAlignment = Alignment.Center) {
                                         if (activeSimpleChord != null) {
                                             if (rootDegreeLabel.isNotEmpty()) {
                                                 ScaleDegreeText(label = rootDegreeLabel, fontSize = 100.sp, modifier = Modifier.fillMaxWidth(), minFontSize = 36.sp)
@@ -2279,6 +2357,7 @@ fun QuizTab(
                                             }
                                         }
                                         if (audiationState is AudiationState.Listening && audiationState.target.id == 0) PitchGauge(pitchResult = audiationState.pitch, targetLabel = audiationState.target.label, modifier = Modifier.matchParentSize())
+                                        if (rootAudioNote > 0) DoubleTapHint(modifier = Modifier.padding(4.dp))
                                     }
                                 }
                             }
@@ -2290,42 +2369,51 @@ fun QuizTab(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Top
                             ) {
-                                OutlinedCard(
-                                    onClick = {
-                                        melodyIntervalState?.let { state ->
-                                            playIntervalPreview(state.previous, state.current)
+                                Surface(
+                                    modifier = Modifier.fillMaxWidth().height(64.dp)
+                                        .semantics {
+                                            contentDescription = melodyIntervalState?.contentDescription?.let { "$it Double tap to sing it back." }
+                                                ?: "Melody interval unavailable"
                                         }
-                                    },
-                                    enabled = melodyIntervalState != null,
-                                    modifier = Modifier.fillMaxWidth().height(64.dp).semantics {
-                                        contentDescription = melodyIntervalState?.contentDescription
-                                            ?: "Melody interval unavailable"
-                                    },
+                                        .combinedClickable(
+                                            enabled = melodyIntervalState != null,
+                                            onClick = {
+                                                melodyIntervalState?.let { state ->
+                                                    playIntervalPreview(state.previous, state.current)
+                                                }
+                                            },
+                                            onDoubleClick = {
+                                                melodyIntervalState?.let { state ->
+                                                    val note1 = intervalPreviewNote(state.previous) + globalTranspose + audiationOctaveShift * 12
+                                                    val note2 = intervalPreviewNote(state.current) + globalTranspose + audiationOctaveShift * 12
+                                                    onSingIntervalRequested(note1, note2)
+                                                }
+                                            }
+                                        ),
                                     shape = RoundedCornerShape(16.dp),
-                                    colors = CardDefaults.outlinedCardColors(
-                                        containerColor = MaterialTheme.colorScheme.primary,
-                                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                                        disabledContainerColor = MaterialTheme.colorScheme.primary,
-                                        disabledContentColor = MaterialTheme.colorScheme.onPrimary
-                                    )
+                                    color = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
                                 ) {
-                                    Row(
-                                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Text(
-                                            text = "Melody interval",
-                                            style = MaterialTheme.typography.labelLarge,
-                                            color = MaterialTheme.colorScheme.onPrimary
-                                        )
-                                        Text(
-                                            text = melodyIntervalState?.interval?.shorthand ?: "—",
-                                            fontSize = 32.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            textAlign = TextAlign.End,
-                                            maxLines = 1
-                                        )
+                                    Box(modifier = Modifier.fillMaxSize()) {
+                                        Row(
+                                            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Text(
+                                                text = "Melody interval",
+                                                style = MaterialTheme.typography.labelLarge,
+                                                color = MaterialTheme.colorScheme.onPrimary
+                                            )
+                                            Text(
+                                                text = melodyIntervalState?.interval?.shorthand ?: "—",
+                                                fontSize = 32.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                textAlign = TextAlign.End,
+                                                maxLines = 1
+                                            )
+                                        }
+                                        if (melodyIntervalState != null) DoubleTapHint(modifier = Modifier.padding(4.dp))
                                     }
                                 }
                                 Spacer(Modifier.height(8.dp))
@@ -2339,20 +2427,31 @@ fun QuizTab(
                                         val spelledRoot = ChordInterpreter.resolveChordRoot(chord, activeKey)?.pitch
                                         val chordDurationBeats = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
                                         val chordDurationMs = remainingPlaybackDurationMs(chordDurationBeats, 0.0, bpm)
-                                        val previewNotes = notes.map { it + audiationOctaveShift * 12 }
+                                        val previewNotes = notes
                                         val degreeSpacing = when { notes.size >= 7 -> 2.dp; notes.size >= 5 -> 4.dp; else -> 6.dp }
                                         val degreeFontSize = when { notes.size >= 7 -> 24.sp; notes.size >= 5 -> 26.sp; else -> 28.sp }
                                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                                            Button(onClick = { scope.launch { chordDurationMs?.let { AudioEngine.playChord(previewNotes, durationMs = it, channel = AudioEngine.PlaybackChannel.PREVIEW) } } }, enabled = chordDurationMs != null, modifier = Modifier.weight(1f).height(60.dp).onGloballyPositioned { onTargetPositioned(100, it) }, shape = RoundedCornerShape(16.dp), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)) {
-                                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { RomanNumeralText(display = romanDisplay, fontSize = 32.sp, modifier = Modifier.fillMaxWidth(), minFontSize = 12.sp)
-                                                    if (audiationState is AudiationState.Listening && audiationState.target.id == 100) PitchGauge(pitchResult = audiationState.pitch, targetLabel = audiationState.target.label, modifier = Modifier.matchParentSize()) }
+                                            Button(onClick = { scope.launch { chordDurationMs?.let { AudioEngine.playChord(previewNotes, durationMs = it, channel = AudioEngine.PlaybackChannel.PREVIEW) } } }, enabled = chordDurationMs != null, modifier = Modifier.weight(1f).height(60.dp), shape = RoundedCornerShape(16.dp), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)) {
+                                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { RomanNumeralText(display = romanDisplay, fontSize = 32.sp, modifier = Modifier.fillMaxWidth(), minFontSize = 12.sp) }
                                             }
                                         }
                                         if (rootMidi > 0) { Spacer(Modifier.height(8.dp)); Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(degreeSpacing)) {
-                                            notes.forEachIndexed { index, note -> val internalLabel = if (useRelativeIonianContext) (spelledRoot?.let { ionianContextDegreeLabel(note, it, ionianContextKey) } ?: ionianContextDegreeLabel(note, ionianContextKey)) else MusicTheory.getRelativeDegreeLabel(note, rootMidi); val previewNote = if (useRelativeIonianContext) (spelledRoot?.let { ionianContextPreviewAudioNote(note, it, ionianContextKey) } ?: ionianContextPreviewAudioNote(note, ionianContextKey)) ?: note else note; val isHovered = audiationState is AudiationState.Dragging && audiationState.hoveredId == index
-                                                OutlinedButton(onClick = { scope.launch { AudioEngine.playChord(listOf(previewNote + audiationOctaveShift * 12), channel = AudioEngine.PlaybackChannel.PREVIEW) } }, modifier = Modifier.weight(1f).height(54.dp).onGloballyPositioned { onTargetPositioned(index, it) }, shape = RoundedCornerShape(14.dp), contentPadding = PaddingValues(0.dp), colors = if (isHovered) ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer) else ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)) {
+                                            notes.forEachIndexed { index, note -> val internalLabel = if (useRelativeIonianContext) (spelledRoot?.let { ionianContextDegreeLabel(note, it, ionianContextKey) } ?: ionianContextDegreeLabel(note, ionianContextKey)) else MusicTheory.getRelativeDegreeLabel(note, rootMidi); val previewNote = if (useRelativeIonianContext) (spelledRoot?.let { ionianContextPreviewAudioNote(note, it, ionianContextKey) } ?: ionianContextPreviewAudioNote(note, ionianContextKey)) ?: note else note; val noteAudiationTarget = targetsWithShift.find { it.id == index }
+                                                Surface(
+                                                    modifier = Modifier.weight(1f).height(54.dp)
+                                                        .semantics { contentDescription = "Play scale degree $internalLabel. Double tap to sing it back." }
+                                                        .onGloballyPositioned { onTargetPositioned(index, it) }
+                                                        .combinedClickable(
+                                                            onClick = { scope.launch { AudioEngine.playChord(listOf(previewNote), channel = AudioEngine.PlaybackChannel.PREVIEW) } },
+                                                            onDoubleClick = { noteAudiationTarget?.let { onTargetDoubleTap(it) } }
+                                                        ),
+                                                    shape = RoundedCornerShape(14.dp),
+                                                    color = MaterialTheme.colorScheme.primary,
+                                                    contentColor = MaterialTheme.colorScheme.onPrimary
+                                                ) {
                                                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { ScaleDegreeText(label = internalLabel, fontSize = degreeFontSize, modifier = Modifier.fillMaxWidth(), minFontSize = 12.sp)
-                                                        if (audiationState is AudiationState.Listening && audiationState.target.id == index) PitchGauge(pitchResult = audiationState.pitch, targetLabel = audiationState.target.label, modifier = Modifier.matchParentSize()) }
+                                                        if (audiationState is AudiationState.Listening && audiationState.target.id == index) PitchGauge(pitchResult = audiationState.pitch, targetLabel = audiationState.target.label, modifier = Modifier.matchParentSize())
+                                                        if (noteAudiationTarget != null) DoubleTapHint(modifier = Modifier.padding(2.dp)) }
                                                 } }
                                         } }
                                     }
@@ -2373,7 +2472,6 @@ fun QuizTab(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(32.dp)
-                            .onGloballyPositioned(onScrubBarPositioned)
                     )
 
                     Spacer(modifier = Modifier.height(72.dp))
@@ -2541,6 +2639,12 @@ fun InfoTab(
             InfoRow("Chords", "${progression.size} (${uniqueChordCount} unique)")
             if (melodyNotes.isNotEmpty()) {
                 InfoRow("Melody notes", "$soundedNotes sounded / ${melodyNotes.size} total")
+            } else {
+                // State it rather than omitting the row: a silently missing
+                // melody reads as a bug in the app instead of what it is —
+                // a chord-only TheoryTab. ~1.3k songs in the catalog are
+                // chord-only upstream.
+                InfoRow("Melody notes", "None — chords only")
             }
         }
 

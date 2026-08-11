@@ -6,8 +6,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
@@ -18,19 +18,15 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.math.roundToInt
@@ -39,13 +35,11 @@ data class AudiationTarget(
     val id: Int,
     val label: String,
     val untransposedMidi: Int,
-    val transposedMidi: Int,
-    var bounds: Rect = Rect.Zero
+    val transposedMidi: Int
 )
 
 sealed class AudiationState {
     object Idle : AudiationState()
-    data class Dragging(val offset: Offset, val hoveredId: Int?) : AudiationState()
     data class AwaitingPermission(val target: AudiationTarget) : AudiationState()
     data class Listening(val target: AudiationTarget, val pitch: MicrophonePitchTracker.PitchResult) : AudiationState()
     data class Calibrating(val remainingMs: Int, val pitch: MicrophonePitchTracker.PitchResult) : AudiationState()
@@ -59,25 +53,19 @@ fun AudiationPitchPracticeContainer(
     onTargetSelected: (AudiationTarget) -> Unit,
     onSessionCanceled: () -> Unit,
     onCalibrated: (Double) -> Unit = {},
-    initialOffset: Offset = Offset.Zero,
     pitchSource: PitchSource = remember { MicrophonePitchTracker() },
     content: @Composable (
         AudiationState,
-        (Int, LayoutCoordinates) -> Unit,
-        (LayoutCoordinates) -> Unit
+        (AudiationTarget) -> Unit,
+        () -> Unit,
+        (Int, LayoutCoordinates) -> Unit
     ) -> Unit
 ) {
     var state by remember { mutableStateOf<AudiationState>(AudiationState.Idle) }
-    var puckOffset by remember { mutableStateOf(initialOffset) }
     var containerOffsetInRoot by remember { mutableStateOf(Offset.Zero) }
-    var containerSize by remember { mutableStateOf(IntSize.Zero) }
-    var scrubBarBoundsInRoot by remember { mutableStateOf<Rect?>(null) }
-    var hasUserPositionedPuck by remember { mutableStateOf(false) }
+    val targetBounds = remember { mutableStateMapOf<Int, Rect>() }
     val context = LocalContext.current
-    val density = LocalDensity.current
-    val puckSizePx = with(density) { 48.dp.toPx() }
-    val puckMarginPx = with(density) { 8.dp.toPx() }
-    
+
     val pitchResult by pitchSource.pitchFlow.collectAsState()
 
     // Calibration logic
@@ -222,178 +210,40 @@ fun AudiationPitchPracticeContainer(
         }
     }
 
-    // Place the puck beside the scrub bar on first layout.  The position is
-    // measured from the real slider, so it stays correct across both quiz layouts.
-    LaunchedEffect(scrubBarBoundsInRoot, containerOffsetInRoot, containerSize, hasUserPositionedPuck) {
-        val scrubBounds = scrubBarBoundsInRoot ?: return@LaunchedEffect
-        if (hasUserPositionedPuck || containerSize == IntSize.Zero) return@LaunchedEffect
-
-        val relativeBounds = scrubBounds.translate(-containerOffsetInRoot)
-        val maxX = (containerSize.width - puckSizePx - puckMarginPx).coerceAtLeast(puckMarginPx)
-        val maxY = (containerSize.height - puckSizePx - puckMarginPx).coerceAtLeast(puckMarginPx)
-        puckOffset = Offset(
-            x = (relativeBounds.right + puckMarginPx).coerceIn(puckMarginPx, maxX),
-            y = (relativeBounds.center.y - puckSizePx / 2f).coerceIn(puckMarginPx, maxY)
-        )
-    }
-
     Box(modifier = modifier
         .fillMaxSize()
-        .onGloballyPositioned {
-            containerOffsetInRoot = it.positionInRoot()
-            containerSize = it.size
+        .onGloballyPositioned { containerOffsetInRoot = it.positionInRoot() }
+        .pointerInput(Unit) {
+            // Observe every touch-down without consuming it, so a tap that lands
+            // outside the currently-listened-to target's bounds stops the mic
+            // session while still letting the tapped element handle its own click.
+            awaitEachGesture {
+                val down = awaitFirstDown(pass = PointerEventPass.Initial, requireUnconsumed = false)
+                val s = state
+                if (s is AudiationState.Listening) {
+                    val activeBounds = targetBounds[s.target.id]
+                    if (activeBounds == null || !activeBounds.contains(down.position)) {
+                        stopListening()
+                    }
+                }
+            }
         }
     ) {
         content(
             state,
-            { id, coords ->
-                targets.find { it.id == id }?.let { target ->
-                    // Store bounds relative to the container
-                    val rootBounds = coords.boundsInRoot()
-                    target.bounds = rootBounds.translate(-containerOffsetInRoot)
+            { target ->
+                val s = state
+                if (s is AudiationState.Listening && s.target.id == target.id) {
+                    // Double-tapping the object that's already singing back toggles it off.
+                    stopListening()
+                } else {
+                    startListening(target)
                 }
             },
-            { coords -> scrubBarBoundsInRoot = coords.boundsInRoot() }
+            { state = AudiationState.Calibrating(3000, MicrophonePitchTracker.PitchResult.NoSignal) },
+            { id, coords -> targetBounds[id] = coords.boundsInRoot().translate(-containerOffsetInRoot) }
         )
 
-        // Draggable Puck (Magnifying Glass)
-        val puckSize = 48.dp
-        val halfPuck = 24.dp
-        Box(
-            modifier = Modifier
-                .offset {
-                    val s = state
-                    if (s is AudiationState.Listening) {
-                        val target = s.target
-                        val center = target.bounds.center
-                        // Centering the lens on the target
-                        IntOffset(
-                            (center.x - halfPuck.toPx()).roundToInt(),
-                            (center.y - halfPuck.toPx()).roundToInt()
-                        )
-                    } else {
-                        IntOffset(puckOffset.x.roundToInt(), puckOffset.y.roundToInt())
-                    }
-                }
-                .size(puckSize)
-                .pointerInput(targets) {
-                    detectTapGestures(
-                        onDoubleTap = {
-                            state = AudiationState.Calibrating(3000, MicrophonePitchTracker.PitchResult.NoSignal)
-                        }
-                    )
-                }
-                .pointerInput(targets) {
-                    detectDragGestures(
-                        onDragStart = {
-                            if (state is AudiationState.Idle || state is AudiationState.Listening || state is AudiationState.Error) {
-                                hasUserPositionedPuck = true
-                                val s = state
-                                if (s is AudiationState.Listening) {
-                                    puckOffset = s.target.bounds.center - Offset(halfPuck.toPx(), halfPuck.toPx())
-                                }
-                                pitchSource.stop()
-                                state = AudiationState.Dragging(puckOffset, null)
-                            }
-                        },
-                        onDrag = { change, dragAmount ->
-                            change.consume()
-                            puckOffset += dragAmount
-                            val puckCenter = puckOffset + Offset(halfPuck.toPx(), halfPuck.toPx())
-                            val hovered = targets.find { it.bounds.contains(puckCenter) }
-                            state = AudiationState.Dragging(puckOffset, hovered?.id)
-                        },
-                        onDragEnd = {
-                            val puckCenter = puckOffset + Offset(halfPuck.toPx(), halfPuck.toPx())
-                            val target = targets.find { it.bounds.contains(puckCenter) }
-                            if (target != null) {
-                                startListening(target)
-                            } else {
-                                stopListening()
-                            }
-                        },
-                        onDragCancel = { stopListening() }
-                    )
-                }
-                .semantics {
-                    contentDescription = when (val s = state) {
-                        is AudiationState.Listening -> "Listening to ${s.target.label}"
-                        is AudiationState.Dragging -> "Dragging practice puck"
-                        else -> "Practice puck"
-                    }
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            val bodyColor = (if (state is AudiationState.Listening)
-                MaterialTheme.colorScheme.primary
-            else
-                MaterialTheme.colorScheme.secondary).copy(alpha = 0.6f)
-            val outlineColor = MaterialTheme.colorScheme.outline
-
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                val canvasCenter = Offset(size.width / 2, size.height / 2)
-                val rimRadius = 14.dp.toPx()
-
-                // Magnifying glass handle at 45 degrees
-                // cos(45) = sin(45) = 0.7071
-                val cos45 = 0.7071f
-                val handleStart = canvasCenter + Offset(rimRadius * cos45, rimRadius * cos45)
-                val handleEnd = canvasCenter + Offset(halfPuck.toPx() * 0.95f * cos45, halfPuck.toPx() * 0.95f * cos45)
-
-                drawLine(
-                    color = bodyColor,
-                    start = handleStart,
-                    end = handleEnd,
-                    strokeWidth = 6.dp.toPx(),
-                    cap = StrokeCap.Round
-                )
-                drawLine(
-                    color = outlineColor,
-                    start = handleStart,
-                    end = handleEnd,
-                    strokeWidth = 1.dp.toPx(),
-                    cap = StrokeCap.Round
-                )
-
-                // Rim (Translucent body)
-                drawCircle(
-                    color = bodyColor,
-                    radius = rimRadius,
-                    center = canvasCenter,
-                    style = Stroke(width = 4.dp.toPx())
-                )
-
-                // Rim outlines
-                drawCircle(
-                    color = outlineColor,
-                    radius = rimRadius + 2.dp.toPx(),
-                    center = canvasCenter,
-                    style = Stroke(width = 1.dp.toPx())
-                )
-                drawCircle(
-                    color = outlineColor,
-                    radius = rimRadius - 2.dp.toPx(),
-                    center = canvasCenter,
-                    style = Stroke(width = 1.dp.toPx())
-                )
-
-                // Small center crosshair for precision
-                val crossSize = 3.dp.toPx()
-                drawLine(
-                    color = outlineColor.copy(alpha = 0.7f),
-                    start = canvasCenter - Offset(crossSize, 0f),
-                    end = canvasCenter + Offset(crossSize, 0f),
-                    strokeWidth = 1.dp.toPx()
-                )
-                drawLine(
-                    color = outlineColor.copy(alpha = 0.7f),
-                    start = canvasCenter - Offset(0f, crossSize),
-                    end = canvasCenter + Offset(0f, crossSize),
-                    strokeWidth = 1.dp.toPx()
-                )
-            }
-        }
-        
         // Error Message
         if (state is AudiationState.Error) {
             val s = state as AudiationState.Error

@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
@@ -14,6 +15,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -27,8 +29,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -40,38 +45,92 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+internal data class IntervalSingTarget(
+    val note1Midi: Int,
+    val note2Midi: Int,
+    val requestId: Int,
+    // The interval's notes as originally requested, before any "Match My
+    // Tessitura" octave shift was applied — lets calibration be cleared back
+    // to this baseline without losing track of the true interval.
+    val originalNote1Midi: Int = note1Midi,
+    val originalNote2Midi: Int = note2Midi
+)
+
+private const val EXPAND_ANIMATION_MS = 300
+private const val AUTO_LISTEN_DELAY_MS = 500L
+private const val LISTEN_TIMEOUT_MS = 3000
+
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.ui.text.ExperimentalTextApi::class)
 @Composable
 internal fun HummingIntervalPopup(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    targetInterval: IntervalSingTarget? = null,
+    onCalibrateRequested: () -> Unit = {},
+    onCalibrateResetRequested: () -> Unit = {}
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     var slot1 by remember { mutableStateOf<PitchData?>(null) }
     var slot2 by remember { mutableStateOf<PitchData?>(null) }
-    
+    var activeTarget by remember { mutableStateOf<IntervalSingTarget?>(null) }
+    var activeListenSlot by remember { mutableStateOf<Int?>(null) }
+    var listenTimeRemaining by remember { mutableStateOf(0) }
+
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val pitchTracker = remember { MicrophonePitchTracker() }
-    
+
     DisposableEffect(pitchTracker) {
         onDispose {
             pitchTracker.release()
         }
     }
-    
+
     val pitchResult by pitchTracker.pitchFlow.collectAsState()
-    
+
     var recordingSlot by remember { mutableStateOf<Int?>(null) }
     var recordingTimeRemaining by remember { mutableStateOf(0) }
     var flipFlopEnabled by remember { mutableStateOf(false) }
     var pendingFlipFlopStart by remember { mutableStateOf(false) }
+    var pendingListenSlot by remember { mutableStateOf<Int?>(null) }
+
+    // Begins continuous singing-back for the given slot, scored against that
+    // slot's own target note, and automatically stops it again after
+    // LISTEN_TIMEOUT_MS — the same duration a normal timed recording uses —
+    // unless the user (or a fresh double-tap) has already moved it on.
+    fun startListenTimer(slotId: Int, target: IntervalSingTarget) {
+        activeListenSlot = slotId
+        pitchTracker.start(if (slotId == 1) target.note1Midi else target.note2Midi)
+        scope.launch {
+            var remaining = LISTEN_TIMEOUT_MS
+            while (remaining > 0 && activeListenSlot == slotId) {
+                listenTimeRemaining = remaining
+                delay(100)
+                remaining -= 100
+            }
+            if (activeListenSlot == slotId) {
+                activeListenSlot = null
+                pitchTracker.stop()
+            }
+            listenTimeRemaining = 0
+        }
+    }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted && pendingFlipFlopStart) {
             pendingFlipFlopStart = false
+            activeTarget = null
+            activeListenSlot = null
+            listenTimeRemaining = 0
             flipFlopEnabled = true
+        } else if (isGranted && pendingListenSlot != null) {
+            val slotId = pendingListenSlot!!
+            pendingListenSlot = null
+            val target = activeTarget
+            if (target != null) {
+                startListenTimer(slotId, target)
+            }
         } else if (isGranted && recordingSlot != null) {
             // Permission granted, start recording for the pending slot
             val slotId = recordingSlot!!
@@ -93,8 +152,64 @@ internal fun HummingIntervalPopup(
             })
         } else {
             pendingFlipFlopStart = false
+            pendingListenSlot = null
             recordingSlot = null
         }
+    }
+
+    // Shared by the manual Pitch 1/Pitch 2 double-tap handlers and the
+    // auto-start below: begin continuous singing-back for the given slot,
+    // scored against that slot's own target note.
+    fun beginListeningSlot(slotId: Int, target: IntervalSingTarget) {
+        val hasPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+        if (hasPermission) {
+            startListenTimer(slotId, target)
+        } else {
+            pendingListenSlot = slotId
+            permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+        }
+    }
+
+    // Double-tapping a melody/root relative-interval object elsewhere in the quiz
+    // hands us its two target notes here: expand the tool and assign the first
+    // note to the left slot and the second to the middle slot as reference
+    // labels. The user can double-tap Pitch 1 or Pitch 2 to begin singing back
+    // and checking against that slot's target, just like double-tapping a
+    // scale-degree object — and Pitch 1 also starts automatically shortly
+    // after the tool finishes expanding, so singing can begin right away.
+    LaunchedEffect(targetInterval?.requestId) {
+        val request = targetInterval ?: return@LaunchedEffect
+        flipFlopEnabled = false
+        pendingFlipFlopStart = false
+        pendingListenSlot = null
+        recordingSlot = null
+        activeListenSlot = null
+        listenTimeRemaining = 0
+        pitchTracker.stop()
+        activeTarget = request
+        isExpanded = true
+        slot1 = PitchData(SpelledPitch.fromMidi(request.note1Midi), cents = 0.0, rawMidi = request.note1Midi.toDouble())
+        slot2 = PitchData(SpelledPitch.fromMidi(request.note2Midi), cents = 0.0, rawMidi = request.note2Midi.toDouble())
+
+        delay(EXPAND_ANIMATION_MS + AUTO_LISTEN_DELAY_MS)
+        // Only auto-start if nothing has changed in the meantime (still the
+        // same request, nobody already started listening or switched modes).
+        if (activeTarget?.requestId == request.requestId && activeListenSlot == null && !flipFlopEnabled) {
+            beginListeningSlot(1, request)
+        }
+    }
+
+    // While a slot is actively being listened to, live pitch estimates are
+    // scored against that slot's own target note so its bar/cents reflect how
+    // close the user's current pitch is to the target.
+    LaunchedEffect(pitchResult, activeListenSlot, activeTarget) {
+        val target = activeTarget ?: return@LaunchedEffect
+        val slotId = activeListenSlot ?: return@LaunchedEffect
+        val estimate = pitchResult as? MicrophonePitchTracker.PitchResult.Estimate ?: return@LaunchedEffect
+        val targetMidi = if (slotId == 1) target.note1Midi else target.note2Midi
+        val cents = (estimate.midi - targetMidi) * 100.0
+        val data = PitchData(SpelledPitch.fromMidi(targetMidi), cents, estimate.midi)
+        if (slotId == 1) slot1 = data else slot2 = data
     }
 
     // Flip-Flop owns the mic while the tool is expanded. Each completed capture
@@ -184,6 +299,11 @@ internal fun HummingIntervalPopup(
                 IconButton(onClick = {
                     pendingFlipFlopStart = false
                     flipFlopEnabled = false
+                    pendingListenSlot = null
+                    activeTarget = null
+                    activeListenSlot = null
+                    listenTimeRemaining = 0
+                    pitchTracker.stop()
                     slot1 = null
                     slot2 = null
                     isExpanded = false
@@ -198,39 +318,75 @@ internal fun HummingIntervalPopup(
 
         AnimatedVisibility(
             visible = isExpanded,
-            enter = expandVertically(),
-            exit = shrinkVertically()
+            enter = expandVertically(animationSpec = tween(EXPAND_ANIMATION_MS)),
+            exit = shrinkVertically(animationSpec = tween(EXPAND_ANIMATION_MS))
         ) {
             Column {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 12.dp),
-                    horizontalArrangement = Arrangement.End,
+                        .padding(horizontal = 12.dp, vertical = 2.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        "Double tap to record. Single tap to play back.",
-                        modifier = Modifier.weight(1f),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text("Flip-Flop", style = MaterialTheme.typography.labelMedium)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Switch(
-                        checked = flipFlopEnabled,
-                        onCheckedChange = { enabled ->
-                            if (!enabled) {
-                                pendingFlipFlopStart = false
-                                flipFlopEnabled = false
-                            } else if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
-                                flipFlopEnabled = true
-                            } else {
-                                pendingFlipFlopStart = true
-                                permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                    // Hum a note to shift every target pitch up/down by octaves so
+                    // they land in the singer's own tessitura (comfortable vocal
+                    // range) — this only re-aims what the mic listens for; it never
+                    // changes the pitch/octave the song itself plays back.
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Surface(
+                            onClick = onCalibrateRequested,
+                            shape = RoundedCornerShape(50),
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.semantics {
+                                contentDescription = "Match target pitch to your comfortable singing tessitura. Hum a note to calibrate. Playback pitch is unaffected."
+                            }
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text("🎤", fontSize = 14.sp)
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("Match My Tessitura", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold)
                             }
                         }
-                    )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Box(
+                            modifier = Modifier
+                                .size(26.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .clickable { onCalibrateResetRequested() }
+                                .semantics { contentDescription = "Clear tessitura calibration and reset to the default octave" },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("✕", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    }
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("Flip-Flop", style = MaterialTheme.typography.labelMedium)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Switch(
+                            checked = flipFlopEnabled,
+                            onCheckedChange = { enabled ->
+                                if (!enabled) {
+                                    pendingFlipFlopStart = false
+                                    flipFlopEnabled = false
+                                } else if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                                    activeTarget = null
+                                    activeListenSlot = null
+                                    listenTimeRemaining = 0
+                                    flipFlopEnabled = true
+                                } else {
+                                    pendingFlipFlopStart = true
+                                    permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                                }
+                            }
+                        )
+                    }
                 }
 
                 Row(
@@ -245,8 +401,9 @@ internal fun HummingIntervalPopup(
                     label = "Pitch 1",
                     data = slot1,
                     isRecording = recordingSlot == 1,
+                    isListening = activeListenSlot == 1,
                     isInteractionEnabled = !flipFlopEnabled,
-                    recordingTimeRemaining = if (recordingSlot == 1) recordingTimeRemaining else 0,
+                    recordingTimeRemaining = if (recordingSlot == 1) recordingTimeRemaining else if (activeListenSlot == 1) listenTimeRemaining else 0,
                     onSingleClick = {
                         slot1?.let {
                             scope.launch {
@@ -259,20 +416,33 @@ internal fun HummingIntervalPopup(
                         }
                     },
                     onDoubleClick = {
-                        val hasPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
-                        if (hasPermission) {
-                            startRecording(1, pitchTracker, scope, onStart = { slot1 = null }, onUpdate = { recordingSlot = it }, onTimeUpdate = { recordingTimeRemaining = it }, onFinished = { id, estimate ->
-                                if (estimate != null) {
-                                    val nearestMidi = estimate.midi.roundToInt()
-                                    val centsFromNearest = (estimate.midi - nearestMidi) * 100
-                                    val spelled = SpelledPitch.fromMidi(nearestMidi)
-                                    val data = PitchData(spelled, centsFromNearest, estimate.midi)
-                                    if (id == 1) slot1 = data
-                                }
-                            })
+                        val target = activeTarget
+                        if (target != null) {
+                            // Target mode: double-tap toggles continuous singing-back
+                            // for this slot's assigned target note.
+                            if (activeListenSlot == 1) {
+                                activeListenSlot = null
+                                listenTimeRemaining = 0
+                                pitchTracker.stop()
+                            } else {
+                                beginListeningSlot(1, target)
+                            }
                         } else {
-                            recordingSlot = 1
-                            permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                            val hasPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+                            if (hasPermission) {
+                                startRecording(1, pitchTracker, scope, onStart = { slot1 = null }, onUpdate = { recordingSlot = it }, onTimeUpdate = { recordingTimeRemaining = it }, onFinished = { id, estimate ->
+                                    if (estimate != null) {
+                                        val nearestMidi = estimate.midi.roundToInt()
+                                        val centsFromNearest = (estimate.midi - nearestMidi) * 100
+                                        val spelled = SpelledPitch.fromMidi(nearestMidi)
+                                        val data = PitchData(spelled, centsFromNearest, estimate.midi)
+                                        if (id == 1) slot1 = data
+                                    }
+                                })
+                            } else {
+                                recordingSlot = 1
+                                permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                            }
                         }
                     }
                 )
@@ -282,8 +452,9 @@ internal fun HummingIntervalPopup(
                     label = "Pitch 2",
                     data = slot2,
                     isRecording = recordingSlot == 2,
+                    isListening = activeListenSlot == 2,
                     isInteractionEnabled = !flipFlopEnabled,
-                    recordingTimeRemaining = if (recordingSlot == 2) recordingTimeRemaining else 0,
+                    recordingTimeRemaining = if (recordingSlot == 2) recordingTimeRemaining else if (activeListenSlot == 2) listenTimeRemaining else 0,
                     onSingleClick = {
                         slot2?.let {
                             scope.launch {
@@ -296,24 +467,37 @@ internal fun HummingIntervalPopup(
                         }
                     },
                     onDoubleClick = {
-                        val hasPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
-                        if (hasPermission) {
-                            startRecording(2, pitchTracker, scope, onStart = { slot2 = null }, onUpdate = { recordingSlot = it }, onTimeUpdate = { recordingTimeRemaining = it }, onFinished = { id, estimate ->
-                                if (estimate != null) {
-                                    val nearestMidi = estimate.midi.roundToInt()
-                                    val centsFromNearest = (estimate.midi - nearestMidi) * 100
-                                    val spelled = if (slot1 != null) {
-                                        SpelledPitch.spellRelative(slot1!!.pitch, nearestMidi)
-                                    } else {
-                                        SpelledPitch.fromMidi(nearestMidi)
-                                    }
-                                    val data = PitchData(spelled, centsFromNearest, estimate.midi)
-                                    if (id == 2) slot2 = data
-                                }
-                            })
+                        val target = activeTarget
+                        if (target != null) {
+                            // Target mode: double-tap toggles continuous singing-back
+                            // for this slot's assigned target note.
+                            if (activeListenSlot == 2) {
+                                activeListenSlot = null
+                                listenTimeRemaining = 0
+                                pitchTracker.stop()
+                            } else {
+                                beginListeningSlot(2, target)
+                            }
                         } else {
-                            recordingSlot = 2
-                            permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                            val hasPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+                            if (hasPermission) {
+                                startRecording(2, pitchTracker, scope, onStart = { slot2 = null }, onUpdate = { recordingSlot = it }, onTimeUpdate = { recordingTimeRemaining = it }, onFinished = { id, estimate ->
+                                    if (estimate != null) {
+                                        val nearestMidi = estimate.midi.roundToInt()
+                                        val centsFromNearest = (estimate.midi - nearestMidi) * 100
+                                        val spelled = if (slot1 != null) {
+                                            SpelledPitch.spellRelative(slot1!!.pitch, nearestMidi)
+                                        } else {
+                                            SpelledPitch.fromMidi(nearestMidi)
+                                        }
+                                        val data = PitchData(spelled, centsFromNearest, estimate.midi)
+                                        if (id == 2) slot2 = data
+                                    }
+                                })
+                            } else {
+                                recordingSlot = 2
+                                permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                            }
                         }
                     }
                 )
@@ -391,70 +575,71 @@ internal fun RowScope.HummingSlotView(
     label: String,
     data: PitchData?,
     isRecording: Boolean,
+    isListening: Boolean = false,
     isInteractionEnabled: Boolean,
     recordingTimeRemaining: Int,
     onSingleClick: () -> Unit,
     onDoubleClick: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .weight(1f)
-            .height(120.dp)
-            .padding(4.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(if (isRecording) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface)
-            .pointerInput(isRecording, isInteractionEnabled) {
-                if (!isRecording && isInteractionEnabled) {
-                    detectTapGestures(
-                        onTap = { onSingleClick() },
-                        onDoubleTap = { onDoubleClick() }
-                    )
+    Box(modifier = Modifier.weight(1f).height(120.dp).padding(4.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(8.dp))
+                .background(if (isRecording || isListening) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface)
+                .pointerInput(isRecording, isInteractionEnabled) {
+                    if (!isRecording && isInteractionEnabled) {
+                        detectTapGestures(
+                            onTap = { onSingleClick() },
+                            onDoubleTap = { onDoubleClick() }
+                        )
+                    }
                 }
-            }
-            .padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        
-        val centsValue = data?.cents ?: 0.0
-        val gaugeColor = getPitchColor(centsValue)
+                .padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-        Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
-            if (isRecording || data != null) {
-                PitchRollingIndicator(
-                    midi = data?.rawMidi ?: 60.0,
-                    isRecording = isRecording,
-                    cents = centsValue
-                )
-                
-                if (data != null) {
-                    val cents = centsValue.roundToInt()
-                    val sign = if (cents >= 0) "+" else ""
+            val centsValue = data?.cents ?: 0.0
+            val gaugeColor = getPitchColor(centsValue)
+
+            Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                if (isRecording || data != null) {
+                    PitchRollingIndicator(
+                        midi = data?.rawMidi ?: 60.0,
+                        isRecording = isRecording,
+                        cents = centsValue
+                    )
+
+                    if (data != null) {
+                        val cents = centsValue.roundToInt()
+                        val sign = if (cents >= 0) "+" else ""
+                        Text(
+                            text = "$sign${cents}¢",
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(4.dp)
+                                .background(Color.Black.copy(alpha = 0.5f), RoundedCornerShape(4.dp))
+                                .padding(horizontal = 4.dp, vertical = 2.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = if (isRecording) Color.White else gaugeColor
+                        )
+                    }
+                } else {
+                    Text("Double tap\nto record", fontSize = 10.sp, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                }
+
+                if (isRecording || isListening) {
                     Text(
-                        text = "$sign${cents}¢",
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(4.dp)
-                            .background(Color.Black.copy(alpha = 0.5f), RoundedCornerShape(4.dp))
-                            .padding(horizontal = 4.dp, vertical = 2.dp),
+                        text = "${(recordingTimeRemaining / 1000f).roundToInt()}s",
+                        modifier = Modifier.align(Alignment.TopEnd),
                         style = MaterialTheme.typography.labelSmall,
-                        color = if (isRecording) Color.White else gaugeColor
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
-            } else {
-                Text("Double tap\nto record", fontSize = 10.sp, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
-            }
-            
-            if (isRecording) {
-                Text(
-                    text = "${(recordingTimeRemaining / 1000f).roundToInt()}s",
-                    modifier = Modifier.align(Alignment.TopEnd),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary
-                )
             }
         }
-
+        if (isInteractionEnabled && !isRecording) DoubleTapHint(modifier = Modifier.padding(6.dp))
     }
 }
 

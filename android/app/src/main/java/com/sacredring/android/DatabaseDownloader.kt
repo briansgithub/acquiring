@@ -163,9 +163,12 @@ object DatabaseDownloader {
                 WHERE songs.dataBlob IS NOT NULL
                 """.trimIndent()
             )
+            // Floors, not exact-equality: the catalog is expected to grow (new
+            // discovery/harvest passes add songs), and an exact match would
+            // make every future, larger download fail this check.
             if (
                 songs < EXPECTED_BROWSE_SONGS ||
-                browseEntries != EXPECTED_BROWSE_SONGS ||
+                browseEntries < EXPECTED_BROWSE_SONGS ||
                 browseEntriesWithChords != browseEntries
             ) {
                 throw IOException(

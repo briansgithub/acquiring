@@ -2,6 +2,18 @@ package com.sacredring.android
 
 import androidx.room.*
 
+/**
+ * A song is only offerable if we actually hold its chord payload. The shipped
+ * catalog also carries rows for entries whose TheoryTab was deleted upstream
+ * (404); those have no dataBlob, so tapping one used to fall through to the
+ * on-demand harvest path and hang on a dead URL. Browse already gates on
+ * song_browse_entries, which excludes them — search did not.
+ *
+ * This is self-correcting: harvest a replacement and the row gains a blob,
+ * so it reappears in search with no further change here.
+ */
+private const val LOADABLE_SQL = "dataBlob IS NOT NULL"
+
 private const val BROWSE_FILTER_SQL = """
     (
         TRIM(:filterText) = '' OR
@@ -34,7 +46,8 @@ interface SongDao {
         """
         SELECT slug, artist, title
         FROM songs
-        WHERE REPLACE(title, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%'
+        WHERE """ + LOADABLE_SQL + """
+          AND REPLACE(title, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%'
         ORDER BY
             CASE WHEN title IS NULL OR TRIM(title) = '' THEN 1 ELSE 0 END,
             title COLLATE NOCASE,
@@ -48,7 +61,8 @@ interface SongDao {
         """
         SELECT slug, artist, title
         FROM songs
-        WHERE REPLACE(artist, '-', ' ') = REPLACE(:artistName, '-', ' ')
+        WHERE """ + LOADABLE_SQL + """
+          AND REPLACE(artist, '-', ' ') = REPLACE(:artistName, '-', ' ')
         ORDER BY
             CASE WHEN title IS NULL OR TRIM(title) = '' THEN 1 ELSE 0 END,
             title COLLATE NOCASE,
@@ -61,8 +75,11 @@ interface SongDao {
         """
         SELECT slug, artist, title
         FROM songs
-        WHERE REPLACE(title, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%'
-           OR REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%'
+        WHERE """ + LOADABLE_SQL + """
+          AND (
+                REPLACE(title, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%'
+             OR REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%'
+              )
         ORDER BY
             CASE WHEN title IS NULL OR TRIM(title) = '' THEN 1 ELSE 0 END,
             title COLLATE NOCASE,
@@ -77,7 +94,16 @@ interface SongDao {
         offset: Int = 0
     ): List<SongBrowseRow>
 
-    @Query("SELECT DISTINCT REPLACE(artist, '-', ' ') FROM songs WHERE artist IS NOT NULL AND REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%' LIMIT :limit OFFSET :offset")
+    @Query(
+        """
+        SELECT DISTINCT REPLACE(artist, '-', ' ')
+        FROM songs
+        WHERE """ + LOADABLE_SQL + """
+          AND artist IS NOT NULL
+          AND REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%'
+        LIMIT :limit OFFSET :offset
+        """
+    )
     suspend fun getArtistSuggestions(query: String, limit: Int = 20, offset: Int = 0): List<String>
 
     @Query("SELECT slug, artist, title FROM songs WHERE slug IN (:slugs)")

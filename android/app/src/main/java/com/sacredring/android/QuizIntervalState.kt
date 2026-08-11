@@ -117,14 +117,18 @@ internal fun resolveMelodyIntervalState(
         key = keyAtBeat(active.onset)
     ) ?: return null
 
-    val previousPitch = events.subList(0, activeIndex).asReversed().firstNotNullOfOrNull { event ->
-        if (event.onset >= active.onset || event.note.isRest || event.note.duration <= 0.0) null
-        else MusicTheory.resolveScaleDegreePitch(
-            sd = event.note.sd,
-            relativeOctave = event.note.octave,
-            key = keyAtBeat(event.onset)
+    // Only the immediately preceding note counts as "previous" — if it's a rest,
+    // this note is treated as if it had no previous note at all (no reaching
+    // further back to the last sung note before the rest).
+    val immediatePrevious = events.getOrNull(activeIndex - 1)
+    val previousPitch = if (immediatePrevious != null && !immediatePrevious.note.isRest && immediatePrevious.note.duration > 0.0) {
+        MusicTheory.resolveScaleDegreePitch(
+            sd = immediatePrevious.note.sd,
+            relativeOctave = immediatePrevious.note.octave,
+            key = keyAtBeat(immediatePrevious.onset)
         )
-    } ?: return null
+    } else null
+    previousPitch ?: return null
 
     return MelodyIntervalState(
         previous = previousPitch,
