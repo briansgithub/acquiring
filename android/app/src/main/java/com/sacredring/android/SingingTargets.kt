@@ -1,5 +1,7 @@
 package com.sacredring.android
 
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.doubleOrNull
 import kotlin.math.roundToInt
 
 /** A pitch that can be assigned to one slot in the Interval Singing Tool. */
@@ -16,6 +18,17 @@ data class SingingTargetRequest(
     val second: SingingTargetNote?,
     val requestId: Int
 )
+
+/** Written chord roots in the stable source register used for calibration. */
+internal fun ExtractedSection.tessituraReferenceRootMidis(): List<Int> =
+    chords.mapNotNull { chord ->
+        val beat = normalizePlaybackBeat(
+            (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+        )
+        ChordInterpreter.resolveChordRoot(chord, getKeyAtBeat(beat))
+            ?.simpleModePitch
+            ?.toAudioNoteNumber()
+    }
 
 /**
  * Chooses the section-wide whole-octave shift that places the section's root

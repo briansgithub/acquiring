@@ -47,4 +47,16 @@ class ComfortablePitchCaptureTest {
         assertFalse(restarted.hasSignal)
         assertNull(capture.averageMidiOrNull())
     }
+
+    @Test
+    fun oneLongDropoutObservationRestartsImmediately() {
+        val capture = ComfortablePitchCapture()
+
+        capture.observe(elapsedMs = 500, midi = 60.0)
+        val restarted = capture.observe(elapsedMs = 1001, midi = null)
+
+        assertEquals(3000, restarted.remainingMs)
+        assertFalse(restarted.hasSignal)
+        assertNull(capture.averageMidiOrNull())
+    }
 }

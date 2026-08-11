@@ -28,7 +28,7 @@ internal class ComfortablePitchCapture(
             remainingMs = (remainingMs - elapsed).coerceAtLeast(0)
             if (remainingMs <= sampleWindowMs) samples.add(midi)
         } else if (hasStarted) {
-            if (remainingDropoutGraceMs > 0) {
+            if (elapsed < remainingDropoutGraceMs) {
                 remainingDropoutGraceMs = (remainingDropoutGraceMs - elapsed).coerceAtLeast(0)
             } else {
                 restart()

@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 
 /**
@@ -47,7 +48,14 @@ internal fun BoxScope.DoubleTapHint(
         modifier = modifier
             .align(Alignment.TopEnd)
             .size(16.dp)
-            .semantics { contentDescription = "Double tap to sing back" }
+            .semantics {
+                contentDescription = "Double tap to sing back"
+                stateDescription = if (isTessituraAdjusted) {
+                    "Tessitura adjusted"
+                } else {
+                    "Original target octave"
+                }
+            }
             .background(glowBrush)
     )
 }

@@ -1,10 +1,14 @@
 package com.sacredring.android
 
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 
 class SingingTargetsTest {
+    private val json = Json
+
     @Test
     fun sectionShiftUsesAverageRootRegisterAndCurrentManualTranspose() {
         assertEquals(
@@ -47,4 +51,20 @@ class SingingTargetsTest {
         )
         assertEquals(second, SingingTargetRequest(first, second, requestId = 2).second)
     }
+
+    @Test
+    fun calibrationUsesWrittenRootsDespiteOmitsInversionsAndAppliedHarmony() {
+        val section = ExtractedSection(
+            chords = listOf(
+                chord("""{"root":1,"beat":1,"omits":[1]}"""),
+                chord("""{"root":5,"beat":2,"inversion":2}"""),
+                chord("""{"root":2,"beat":3,"applied":5}"""),
+                chord("""{"root":1,"beat":4,"isRest":true}""")
+            )
+        )
+
+        assertEquals(listOf(48, 55, 57), section.tessituraReferenceRootMidis())
+    }
+
+    private fun chord(source: String) = json.parseToJsonElement(source).jsonObject
 }

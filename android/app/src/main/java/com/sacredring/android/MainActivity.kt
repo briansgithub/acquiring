@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -185,6 +186,7 @@ private fun ExposedDropdownMenuBoxScope.ExposedDropdownMenuWithScrollbar(
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
     private lateinit var db: AppDatabase
+    private val tessituraSessionViewModel by viewModels<TessituraSessionViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -223,7 +225,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen(db)
+                    MainScreen(db, tessituraSessionViewModel)
                 }
             }
         }
@@ -232,7 +234,10 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(db: AppDatabase) {
+internal fun MainScreen(
+    db: AppDatabase,
+    tessituraSessionViewModel: TessituraSessionViewModel
+) {
     var activeDb by remember { mutableStateOf(db) }
     var urlToHarvest by remember { mutableStateOf("") }
     var harvestStatus by remember { mutableStateOf("") }
@@ -267,7 +272,7 @@ fun MainScreen(db: AppDatabase) {
     var globalTranspose by remember { mutableStateOf(AudioEngine.globalTranspose) }
     var singingTargetRequest by remember { mutableStateOf<SingingTargetRequest?>(null) }
     var singingTargetRequestId by remember { mutableStateOf(0) }
-    var tessituraShiftOctaves by remember { mutableStateOf(0) }
+    val tessituraShiftOctaves = tessituraSessionViewModel.shiftOctaves
     
     var titleOffset by remember { mutableStateOf(0) }
     var artistOffset by remember { mutableStateOf(0) }
@@ -294,17 +299,11 @@ fun MainScreen(db: AppDatabase) {
             ?: sections.sectionsInSongOrder().firstOrNull()?.value
             ?: sections.values.firstOrNull()
             ?: return@remember emptyList()
-        section.chords.mapNotNull { chord ->
-            val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
-                (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
-            if (isRest) return@mapNotNull null
-            val beat = normalizePlaybackBeat((chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0)
-            ChordInterpreter.getRootPositionChordNotes(chord, section.getKeyAtBeat(beat)).firstOrNull()
-        }
+        section.tessituraReferenceRootMidis()
     }
 
     LaunchedEffect(singingSessionKey) {
-        tessituraShiftOctaves = 0
+        singingSessionKey?.let(tessituraSessionViewModel::enterSession)
         singingTargetRequest = null
     }
     val returnToParent = {
@@ -320,6 +319,7 @@ fun MainScreen(db: AppDatabase) {
             quizReturnTab = null
         } else if (selectedSongSections != null) {
             // Return to the page that opened the song.
+            tessituraSessionViewModel.clearSession()
             selectedSongSections = null
             selectedSong = null
             quizReturnTab = null
@@ -399,6 +399,9 @@ fun MainScreen(db: AppDatabase) {
     }
 
     val openSong: (Song) -> Unit = { song ->
+        // Opening a song is a new load even if it happens to be the song that
+        // was open previously, so its tessitura session starts unadjusted.
+        tessituraSessionViewModel.clearSession()
         HistoryManager.addSong(context, song.slug)
         HistoryManager.addArtist(context, song.artist)
         isExpanded = false
@@ -627,6 +630,7 @@ fun MainScreen(db: AppDatabase) {
                     artistSuggestions = artistSuggestions,
                     isShowingRecentArtists = isShowingRecentArtists,
                     onArtistClick = { artistName ->
+                        tessituraSessionViewModel.clearSession()
                         HistoryManager.addArtist(context, artistName)
                         scope.launch {
                             val results = activeDb.songDao().getBrowseSongsByArtist(artistName)
@@ -735,6 +739,7 @@ fun MainScreen(db: AppDatabase) {
                         AudioEngine.globalTranspose = it
                     },
                     onArtistClick = { artistName ->
+                        tessituraSessionViewModel.clearSession()
                         HistoryManager.addArtist(context, artistName)
                         scope.launch {
                             val results = activeDb.songDao().getBrowseSongsByArtist(artistName)
@@ -768,10 +773,10 @@ fun MainScreen(db: AppDatabase) {
                     comfortableMidi = hummedMidi,
                     sectionRootMidis = selectedSectionRootMidis,
                     globalTranspose = globalTranspose
-                )?.let { tessituraShiftOctaves = it }
+                )?.let(tessituraSessionViewModel::updateShift)
             },
             onCalibrateResetRequested = {
-                tessituraShiftOctaves = 0
+                tessituraSessionViewModel.clearAdjustment()
             }
         )
     }
