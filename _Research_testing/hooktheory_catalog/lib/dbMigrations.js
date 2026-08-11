@@ -76,10 +76,26 @@ const SONGS_PIPELINE_COLUMNS = [
   ['oracle_summary_json', 'TEXT'],
   ['harvest_mode', 'TEXT'],
   ['is_favorite', 'INTEGER NOT NULL DEFAULT 0'],
+  ['alt_checked_at', 'TEXT'],
 ];
+
+const ALT_CANDIDATES_DDL = `
+CREATE TABLE IF NOT EXISTS alt_candidates (
+  slug TEXT NOT NULL REFERENCES songs(slug) ON DELETE CASCADE,
+  candidate_rank INTEGER NOT NULL,
+  candidate_artist TEXT,
+  candidate_title TEXT,
+  candidate_url TEXT,
+  candidate_slug TEXT,
+  score REAL,
+  checked_at TEXT,
+  PRIMARY KEY (slug, candidate_rank)
+);
+`;
 
 function migrateSchema(db) {
   db.exec(SONG_DETAILS_DDL);
+  db.exec(ALT_CANDIDATES_DDL);
   for (const [name, type] of SONG_STATS_COLUMNS) {
     addColumnIfMissing(db, 'song_stats', name, type);
   }
