@@ -9,13 +9,16 @@
  *     nothing would ever ship.
  *   - retries deliberately omit --fresh so they RESUME the phase ledger. A
  *     --fresh retry loop would reset progress forever and never finish.
+ *   - --resume suppresses that first --fresh, for picking a run back up after
+ *     it was killed mid-phase. Without it the restart would discard the artist
+ *     sweep's progressIndex and re-walk thousands of already-visited artists.
  *   - a non-zero exit is retried with backoff; overnight-run already isolates
  *     per-phase failures, so reaching here means a top-level fault worth
  *     re-entering rather than abandoning the run.
  *   - `.overnight_stop` in the catalog data dir halts cleanly, and is treated
  *     as an intentional stop rather than a crash to retry.
  *
- *   node scripts/run-full-recovery.js
+ *   node scripts/run-full-recovery.js [--resume]
  */
 
 const fs = require('fs');
@@ -31,6 +34,7 @@ const MAX_ATTEMPTS = Number(process.env.RECOVERY_MAX_ATTEMPTS || 20);
 const BACKOFF_MS = Number(process.env.RECOVERY_BACKOFF_MS || 60_000);
 
 const BASE_ARGS = ['--with-artist-sweep', '--publish', '--drop-dead-rows'];
+const RESUME = process.argv.slice(2).includes('--resume');
 
 function log(msg) {
   const line = `[${new Date().toISOString()}] [supervisor] ${msg}`;
@@ -57,11 +61,12 @@ async function main() {
     process.exit(1);
   }
 
-  log(`starting full recovery run (max ${MAX_ATTEMPTS} attempts)`);
+  log(`starting full recovery run (max ${MAX_ATTEMPTS} attempts, ${RESUME ? 'RESUMING existing ledger' : 'fresh ledger'})`);
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    // Only the first attempt resets the ledger; every retry resumes it.
-    const args = attempt === 1 ? ['--fresh', ...BASE_ARGS] : [...BASE_ARGS];
+    // Only the first attempt resets the ledger, and only when not resuming;
+    // every retry resumes it.
+    const args = (attempt === 1 && !RESUME) ? ['--fresh', ...BASE_ARGS] : [...BASE_ARGS];
     log(`attempt ${attempt}/${MAX_ATTEMPTS}: overnight-run.js ${args.join(' ')}`);
 
     const code = await runOnce(args);
