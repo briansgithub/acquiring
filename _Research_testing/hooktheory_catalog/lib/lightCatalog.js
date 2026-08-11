@@ -11,6 +11,7 @@ const {
   listSongsNeedingLightHarvest,
 } = require('./lightHarvest');
 const { launchBrowser } = require('./theoryTabSections');
+const { AdaptivePacer } = require('./adaptivePacer');
 const {
   readState,
   writeState,
@@ -30,9 +31,14 @@ function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-function jitteredDelay() {
-  const j = Math.floor(Math.random() * JITTER_MS * 2) - JITTER_MS;
-  return Math.max(1000, INTERVAL_MS + j);
+function makePacer() {
+  return new AdaptivePacer({
+    baseMs: INTERVAL_MS,
+    onChange: ({ direction, multiplier, intervalMs }) => {
+      appendLog(`[light-catalog] pacing ${direction === 'slower' ? 'SLOWED DOWN' : 'sped back up'}: `
+        + `${multiplier}x base (~${intervalMs}ms between songs) after recent rate-limit-shaped errors`);
+    },
+  });
 }
 
 async function waitWhilePaused() {
@@ -108,6 +114,7 @@ async function runHarvestPhase(db, opts) {
   let failed = 0;
   const skipSlugs = new Set();
   let browser = null;
+  const pacer = makePacer();
 
   try {
     browser = await launchBrowser();
@@ -140,6 +147,7 @@ async function runHarvestPhase(db, opts) {
 
       try {
         const result = await harvestLightSong(db, song.slug, song.url, { browser });
+        pacer.recordResult(null);
         if (result?.skipped) {
           skipSlugs.add(song.slug);
           appendLog(`[light-catalog] skip ${song.slug}: ${result.reason}`);
@@ -152,6 +160,7 @@ async function runHarvestPhase(db, opts) {
         });
         appendLog(`[light-catalog] harvested ${song.slug} (${harvested} ok)`);
       } catch (e) {
+        pacer.recordResult(e);
         failed++;
         skipSlugs.add(song.slug);
         writeState({
@@ -162,7 +171,7 @@ async function runHarvestPhase(db, opts) {
       }
 
       if (shouldStop()) break;
-      await sleep(jitteredDelay());
+      await sleep(pacer.jittered(JITTER_MS));
     }
   } finally {
     if (browser) {
