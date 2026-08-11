@@ -65,6 +65,7 @@ private const val LISTEN_TIMEOUT_MS = 3000
 internal fun HummingIntervalPopup(
     modifier: Modifier = Modifier,
     targetInterval: IntervalSingTarget? = null,
+    octaveShift: Int = 0,
     onCalibrateRequested: () -> Unit = {},
     onCalibrateResetRequested: () -> Unit = {}
 ) {
@@ -352,6 +353,17 @@ internal fun HummingIntervalPopup(
                                 Text("Match My Tessitura", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold)
                             }
                         }
+                        Spacer(modifier = Modifier.width(6.dp))
+                        val octaveShiftText = if (octaveShift > 0) "+$octaveShift" else "$octaveShift"
+                        Text(
+                            text = octaveShiftText,
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.semantics {
+                                contentDescription = "Tessitura shifted $octaveShift octaves from the song's actual pitch"
+                            }
+                        )
                         Spacer(modifier = Modifier.width(6.dp))
                         Box(
                             modifier = Modifier

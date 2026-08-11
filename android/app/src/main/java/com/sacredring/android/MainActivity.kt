@@ -7,6 +7,7 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -16,6 +17,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -37,6 +39,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.CornerRadius
@@ -266,6 +269,7 @@ fun MainScreen(db: AppDatabase) {
     var intervalSingRequestId by remember { mutableStateOf(0) }
     var calibrateAction by remember { mutableStateOf<() -> Unit>({}) }
     var calibrateResetAction by remember { mutableStateOf<() -> Unit>({}) }
+    var audiationOctaveShift by remember { mutableStateOf(0) }
     
     var titleOffset by remember { mutableStateOf(0) }
     var artistOffset by remember { mutableStateOf(0) }
@@ -321,7 +325,7 @@ fun MainScreen(db: AppDatabase) {
     }
 
     LaunchedEffect(searchQuery, selectedSong, selectedArtistSongs, hasSearchTitleFocus) {
-        if (searchQuery.isNotEmpty()) {
+        if (searchQuery.isNotEmpty() && hasSearchTitleFocus) {
             delay(300) // Debounce
             titleOffset = 0
             suggestions = activeDb.songDao().getSearchSuggestions(searchQuery, limit = 20, offset = 0)
@@ -350,7 +354,7 @@ fun MainScreen(db: AppDatabase) {
     }
 
     LaunchedEffect(searchArtistQuery, selectedSong, selectedArtistSongs, hasSearchArtistFocus) {
-        if (searchArtistQuery.isNotEmpty()) {
+        if (searchArtistQuery.isNotEmpty() && hasSearchArtistFocus) {
             isShowingRecentArtists = false
             delay(300) // Debounce
             artistOffset = 0
@@ -749,6 +753,7 @@ fun MainScreen(db: AppDatabase) {
                         }
                     },
                     onCalibrateResetActionChanged = { calibrateResetAction = it },
+                    onAudiationOctaveShiftChanged = { audiationOctaveShift = it },
                     onBack = returnToParent
                 )
             }
@@ -758,6 +763,7 @@ fun MainScreen(db: AppDatabase) {
         HummingIntervalPopup(
             modifier = Modifier.align(Alignment.BottomCenter),
             targetInterval = intervalSingTarget,
+            octaveShift = audiationOctaveShift,
             onCalibrateRequested = { calibrateAction() },
             onCalibrateResetRequested = {
                 calibrateResetAction()
@@ -1088,6 +1094,7 @@ fun SongDetailView(
     onCalibrateActionChanged: (() -> Unit) -> Unit,
     onCalibrationHummed: (Double) -> Unit,
     onCalibrateResetActionChanged: (() -> Unit) -> Unit,
+    onAudiationOctaveShiftChanged: (Int) -> Unit = {},
     onBack: () -> Unit
 ) {
     val sectionsInSongOrder = remember(sections) { sections.sectionsInSongOrder() }
@@ -1103,7 +1110,7 @@ fun SongDetailView(
     val uriHandler = LocalUriHandler.current
 
     val transposePickerComposable: @Composable () -> Unit = {
-        val transposeText = if (globalTranspose == 0) "0" else "+$globalTranspose"
+        val transposeText = if (globalTranspose > 0) "+$globalTranspose" else "$globalTranspose"
         ExposedDropdownMenuBox(
             expanded = isTransposeExpanded,
             onExpandedChange = { isTransposeExpanded = !isTransposeExpanded },
@@ -1151,11 +1158,11 @@ fun SongDetailView(
                 expanded = isTransposeExpanded,
                 onDismissRequest = { isTransposeExpanded = false }
             ) {
-                (0..12).forEach { transpose ->
+                (-12..12).forEach { transpose ->
                     DropdownMenuItem(
                         text = {
                             Text(
-                                text = if (transpose == 0) "0" else "+$transpose",
+                                text = if (transpose > 0) "+$transpose" else "$transpose",
                                 modifier = Modifier.fillMaxWidth(),
                                 textAlign = TextAlign.Center
                             )
@@ -1302,7 +1309,8 @@ fun SongDetailView(
                 onSingIntervalRequested = onSingIntervalRequested,
                 onCalibrateActionChanged = onCalibrateActionChanged,
                 onCalibrationHummed = onCalibrationHummed,
-                onCalibrateResetActionChanged = onCalibrateResetActionChanged
+                onCalibrateResetActionChanged = onCalibrateResetActionChanged,
+                onAudiationOctaveShiftChanged = onAudiationOctaveShiftChanged
             )
         }
         }
@@ -1348,7 +1356,8 @@ fun QuizTab(
     onSingIntervalRequested: (Int, Int) -> Unit,
     onCalibrateActionChanged: (() -> Unit) -> Unit,
     onCalibrationHummed: (Double) -> Unit,
-    onCalibrateResetActionChanged: (() -> Unit) -> Unit
+    onCalibrateResetActionChanged: (() -> Unit) -> Unit,
+    onAudiationOctaveShiftChanged: (Int) -> Unit = {}
 ) {
     val baseBpm = section.getBpm().toFloat().coerceIn(40f, 240f)
     var tempoPercent by remember(section) { mutableStateOf(100f) }
@@ -2003,6 +2012,8 @@ fun QuizTab(
     val density = androidx.compose.ui.platform.LocalDensity.current
     var audiationOctaveShift by remember { mutableStateOf(0) }
     onCalibrateResetActionChanged { audiationOctaveShift = 0 }
+    onAudiationOctaveShiftChanged(audiationOctaveShift)
+    DisposableEffect(Unit) { onDispose { onAudiationOctaveShiftChanged(0) } }
 
     val targetsWithShift = remember(audiationTargets, audiationOctaveShift) {
         audiationTargets.map { it.copy(transposedMidi = it.transposedMidi + audiationOctaveShift * 12) }
@@ -2033,6 +2044,18 @@ fun QuizTab(
                 )
                 if (step.delayAfterMs > 0L) delay(step.delayAfterMs)
             }
+        }
+    }
+
+    fun playSingleNotePreview(pitch: SpelledPitch) {
+        intervalPreviewJob?.cancel()
+        AudioEngine.stopPreviewPlayback()
+        intervalPreviewJob = scope.launch {
+            AudioEngine.playChord(
+                listOf(pitch.toAudioNoteNumber()),
+                durationMs = ROOT_INTERVAL_PREVIEW_DURATION_MS,
+                channel = AudioEngine.PlaybackChannel.PREVIEW
+            )
         }
     }
 
@@ -2407,13 +2430,43 @@ fun QuizTab(
                                                 style = MaterialTheme.typography.labelLarge,
                                                 color = MaterialTheme.colorScheme.onPrimary
                                             )
-                                            Text(
-                                                text = melodyIntervalState?.interval?.shorthand ?: "—",
-                                                fontSize = 32.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                textAlign = TextAlign.End,
-                                                maxLines = 1
-                                            )
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(22.dp)
+                                                        .clip(CircleShape)
+                                                        .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.15f))
+                                                        .clickable(enabled = melodyIntervalState != null) {
+                                                            melodyIntervalState?.let { state -> playSingleNotePreview(state.previous) }
+                                                        }
+                                                        .semantics { contentDescription = "Play prior melody note" },
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text("◀", fontSize = 12.sp, color = MaterialTheme.colorScheme.onPrimary)
+                                                }
+                                                Spacer(modifier = Modifier.width(4.dp))
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(22.dp)
+                                                        .clip(CircleShape)
+                                                        .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.15f))
+                                                        .clickable(enabled = melodyIntervalState != null) {
+                                                            melodyIntervalState?.let { state -> playSingleNotePreview(state.current) }
+                                                        }
+                                                        .semantics { contentDescription = "Play current melody note" },
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text("▶", fontSize = 12.sp, color = MaterialTheme.colorScheme.onPrimary)
+                                                }
+                                                Spacer(modifier = Modifier.width(10.dp))
+                                                Text(
+                                                    text = melodyIntervalState?.interval?.shorthand ?: "—",
+                                                    fontSize = 32.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    textAlign = TextAlign.End,
+                                                    maxLines = 1
+                                                )
+                                            }
                                         }
                                         if (melodyIntervalState != null) DoubleTapHint(modifier = Modifier.padding(4.dp))
                                     }
