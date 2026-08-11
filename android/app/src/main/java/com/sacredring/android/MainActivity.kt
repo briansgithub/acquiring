@@ -265,11 +265,10 @@ fun MainScreen(db: AppDatabase) {
     var isShowingRecentArtists by remember { mutableStateOf(false) }
     var currentWaveform by remember { mutableStateOf(AudioEngine.Waveform.SAWTOOTH) }
     var globalTranspose by remember { mutableStateOf(AudioEngine.globalTranspose) }
-    var intervalSingTarget by remember { mutableStateOf<IntervalSingTarget?>(null) }
-    var intervalSingRequestId by remember { mutableStateOf(0) }
+    var singingTargetRequest by remember { mutableStateOf<SingingTargetRequest?>(null) }
+    var singingTargetRequestId by remember { mutableStateOf(0) }
     var calibrateAction by remember { mutableStateOf<() -> Unit>({}) }
-    var calibrateResetAction by remember { mutableStateOf<() -> Unit>({}) }
-    var audiationOctaveShift by remember { mutableStateOf(0) }
+    var tessituraShiftOctaves by remember { mutableStateOf(0) }
     
     var titleOffset by remember { mutableStateOf(0) }
     var artistOffset by remember { mutableStateOf(0) }
@@ -289,6 +288,26 @@ fun MainScreen(db: AppDatabase) {
 
     val harvestService = remember(activeDb) { HarvestService(activeDb) }
     val json = remember { Json { ignoreUnknownKeys = true } }
+    val singingSessionKey = selectedSong?.slug?.let { slug -> "$slug:${selectedSectionId.orEmpty()}" }
+    val selectedSectionRootMidis = remember(selectedSongSections, selectedSectionId) {
+        val sections = selectedSongSections ?: return@remember emptyList()
+        val section = selectedSectionId?.let(sections::get)
+            ?: sections.sectionsInSongOrder().firstOrNull()?.value
+            ?: sections.values.firstOrNull()
+            ?: return@remember emptyList()
+        section.chords.mapNotNull { chord ->
+            val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
+                (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
+            if (isRest) return@mapNotNull null
+            val beat = normalizePlaybackBeat((chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0)
+            ChordInterpreter.getRootPositionChordNotes(chord, section.getKeyAtBeat(beat)).firstOrNull()
+        }
+    }
+
+    LaunchedEffect(singingSessionKey) {
+        tessituraShiftOctaves = 0
+        singingTargetRequest = null
+    }
     val returnToParent = {
         browseOpenJob?.cancel()
         browseOpenJob = null
@@ -727,33 +746,18 @@ fun MainScreen(db: AppDatabase) {
                             quizReturnTab = null
                         }
                     },
-                    onSingIntervalRequested = { note1Midi, note2Midi ->
-                        intervalSingRequestId++
-                        intervalSingTarget = IntervalSingTarget(note1Midi, note2Midi, intervalSingRequestId)
+                    onSingingTargetsRequested = { request ->
+                        singingTargetRequestId++
+                        singingTargetRequest = request.copy(requestId = singingTargetRequestId)
                     },
                     onCalibrateActionChanged = { calibrateAction = it },
                     onCalibrationHummed = { hummedMidi ->
-                        // Shift both interval notes by the same number of octaves so
-                        // the interval lands in the singer's comfortable range while
-                        // its ascending/descending direction and size are unchanged.
-                        // This only re-aims the mic target — it never touches playback.
-                        intervalSingTarget?.let { current ->
-                            val referenceMidi = (current.note1Midi + current.note2Midi) / 2.0
-                            val shiftOctaves = kotlin.math.round((hummedMidi - referenceMidi) / 12.0).toInt()
-                            if (shiftOctaves != 0) {
-                                intervalSingRequestId++
-                                intervalSingTarget = IntervalSingTarget(
-                                    note1Midi = current.note1Midi + shiftOctaves * 12,
-                                    note2Midi = current.note2Midi + shiftOctaves * 12,
-                                    requestId = intervalSingRequestId,
-                                    originalNote1Midi = current.originalNote1Midi,
-                                    originalNote2Midi = current.originalNote2Midi
-                                )
-                            }
-                        }
+                        calculateSectionTessituraShift(
+                            comfortableMidi = hummedMidi,
+                            sectionRootMidis = selectedSectionRootMidis,
+                            globalTranspose = globalTranspose
+                        )?.let { tessituraShiftOctaves = it }
                     },
-                    onCalibrateResetActionChanged = { calibrateResetAction = it },
-                    onAudiationOctaveShiftChanged = { audiationOctaveShift = it },
                     onBack = returnToParent
                 )
             }
@@ -762,23 +766,12 @@ fun MainScreen(db: AppDatabase) {
 
         HummingIntervalPopup(
             modifier = Modifier.align(Alignment.BottomCenter),
-            targetInterval = intervalSingTarget,
-            octaveShift = audiationOctaveShift,
+            targetRequest = singingTargetRequest,
+            globalTranspose = globalTranspose,
+            octaveShift = tessituraShiftOctaves,
             onCalibrateRequested = { calibrateAction() },
             onCalibrateResetRequested = {
-                calibrateResetAction()
-                intervalSingTarget?.let { current ->
-                    if (current.note1Midi != current.originalNote1Midi || current.note2Midi != current.originalNote2Midi) {
-                        intervalSingRequestId++
-                        intervalSingTarget = IntervalSingTarget(
-                            note1Midi = current.originalNote1Midi,
-                            note2Midi = current.originalNote2Midi,
-                            requestId = intervalSingRequestId,
-                            originalNote1Midi = current.originalNote1Midi,
-                            originalNote2Midi = current.originalNote2Midi
-                        )
-                    }
-                }
+                tessituraShiftOctaves = 0
             }
         )
     }
@@ -1090,11 +1083,9 @@ fun SongDetailView(
     globalTranspose: Int,
     onTransposeChange: (Int) -> Unit,
     onArtistClick: (String) -> Unit,
-    onSingIntervalRequested: (Int, Int) -> Unit,
+    onSingingTargetsRequested: (SingingTargetRequest) -> Unit,
     onCalibrateActionChanged: (() -> Unit) -> Unit,
     onCalibrationHummed: (Double) -> Unit,
-    onCalibrateResetActionChanged: (() -> Unit) -> Unit,
-    onAudiationOctaveShiftChanged: (Int) -> Unit = {},
     onBack: () -> Unit
 ) {
     val sectionsInSongOrder = remember(sections) { sections.sectionsInSongOrder() }
@@ -1306,11 +1297,9 @@ fun SongDetailView(
                 sectionPicker = sectionPickerComposable,
                 transposePicker = transposePickerComposable,
                 globalTranspose = globalTranspose,
-                onSingIntervalRequested = onSingIntervalRequested,
+                onSingingTargetsRequested = onSingingTargetsRequested,
                 onCalibrateActionChanged = onCalibrateActionChanged,
-                onCalibrationHummed = onCalibrationHummed,
-                onCalibrateResetActionChanged = onCalibrateResetActionChanged,
-                onAudiationOctaveShiftChanged = onAudiationOctaveShiftChanged
+                onCalibrationHummed = onCalibrationHummed
             )
         }
         }
@@ -1353,11 +1342,9 @@ fun QuizTab(
     sectionPicker: @Composable () -> Unit,
     transposePicker: @Composable () -> Unit,
     globalTranspose: Int,
-    onSingIntervalRequested: (Int, Int) -> Unit,
+    onSingingTargetsRequested: (SingingTargetRequest) -> Unit,
     onCalibrateActionChanged: (() -> Unit) -> Unit,
-    onCalibrationHummed: (Double) -> Unit,
-    onCalibrateResetActionChanged: (() -> Unit) -> Unit,
-    onAudiationOctaveShiftChanged: (Int) -> Unit = {}
+    onCalibrationHummed: (Double) -> Unit
 ) {
     val baseBpm = section.getBpm().toFloat().coerceIn(40f, 240f)
     var tempoPercent by remember(section) { mutableStateOf(100f) }
@@ -2010,14 +1997,6 @@ fun QuizTab(
     }
 
     val density = androidx.compose.ui.platform.LocalDensity.current
-    var audiationOctaveShift by remember { mutableStateOf(0) }
-    onCalibrateResetActionChanged { audiationOctaveShift = 0 }
-    onAudiationOctaveShiftChanged(audiationOctaveShift)
-    DisposableEffect(Unit) { onDispose { onAudiationOctaveShiftChanged(0) } }
-
-    val targetsWithShift = remember(audiationTargets, audiationOctaveShift) {
-        audiationTargets.map { it.copy(transposedMidi = it.transposedMidi + audiationOctaveShift * 12) }
-    }
 
     fun intervalPreviewNote(pitch: SpelledPitch): Int {
         return if (useRelativeIonianContext) {
@@ -2061,7 +2040,7 @@ fun QuizTab(
 
     Box(modifier = Modifier.fillMaxSize()) {
         AudiationPitchPracticeContainer(
-            targets = targetsWithShift,
+            targets = audiationTargets,
             onTargetSelected = {
                 isPlaying = false
                 hasPausedTimelinePlayback = false
@@ -2071,19 +2050,8 @@ fun QuizTab(
                 AudioEngine.stopAllPlayback()
             },
             onSessionCanceled = {},
-            onCalibrated = { hummedMidi ->
-                val songRoots = section.chords.mapNotNull { chord ->
-                    val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
-                    if (!isRest) { val chordKey = section.getKeyAtBeat(normalizePlaybackBeat((chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0))
-                        ChordInterpreter.getRootPositionChordNotes(chord, chordKey).firstOrNull() } else null
-                }
-                if (songRoots.isNotEmpty()) {
-                    val avgRoot = songRoots.average(); val currentBaseAvg = avgRoot + AudioEngine.globalTranspose
-                    audiationOctaveShift = kotlin.math.round((hummedMidi - currentBaseAvg) / 12.0).toInt()
-                }
-                onCalibrationHummed(hummedMidi)
-            }
-        ) { audiationState, onTargetDoubleTap, onCalibrateRequested, onTargetPositioned ->
+            onCalibrated = onCalibrationHummed
+        ) { _, _, onCalibrateRequested, _ ->
             onCalibrateActionChanged(onCalibrateRequested)
             Column(
                 modifier = Modifier
@@ -2305,7 +2273,6 @@ fun QuizTab(
                             val rootAudioNote = currentRootPreviewAudioNote
                             val rootDegreeLabel = currentRootDegreeLabel
                             val rootInterval = chordRootIntervalState?.interval
-                            val rootAudiationTarget = targetsWithShift.find { it.id == 0 }
 
                             Row(
                                 modifier = Modifier.fillMaxWidth().heightIn(max = 250.dp),
@@ -2327,10 +2294,25 @@ fun QuizTab(
                                                 }
                                             },
                                             onDoubleClick = {
-                                                if (previousIntervalPitch != null && currentIntervalPitch != null) {
-                                                    val note1 = intervalPreviewNote(previousIntervalPitch) + globalTranspose + audiationOctaveShift * 12
-                                                    val note2 = intervalPreviewNote(currentIntervalPitch) + globalTranspose + audiationOctaveShift * 12
-                                                    onSingIntervalRequested(note1, note2)
+                                                val state = chordRootIntervalState
+                                                if (state != null && previousIntervalPitch != null && currentIntervalPitch != null) {
+                                                    val previousLabel = if (useRelativeIonianContext) {
+                                                        ionianContextDegreeLabel(previousIntervalPitch, ionianContextKey)
+                                                    } else {
+                                                        state.previousDegreeLabel.orEmpty()
+                                                    }
+                                                    val currentLabel = if (useRelativeIonianContext) {
+                                                        ionianContextDegreeLabel(currentIntervalPitch, ionianContextKey)
+                                                    } else {
+                                                        state.currentDegreeLabel
+                                                    }
+                                                    onSingingTargetsRequested(
+                                                        SingingTargetRequest(
+                                                            first = SingingTargetNote(intervalPreviewNote(previousIntervalPitch), previousLabel),
+                                                            second = SingingTargetNote(intervalPreviewNote(currentIntervalPitch), currentLabel),
+                                                            requestId = 0
+                                                        )
+                                                    )
                                                 }
                                             }
                                         ),
@@ -2352,7 +2334,6 @@ fun QuizTab(
                                 Surface(
                                     modifier = Modifier.weight(1f).fillMaxHeight()
                                         .semantics { contentDescription = "Play current root scale degree. Double tap to sing it back." }
-                                        .onGloballyPositioned { onTargetPositioned(0, it) }
                                         .combinedClickable(
                                             enabled = rootAudioNote > 0,
                                             onClick = {
@@ -2365,7 +2346,17 @@ fun QuizTab(
                                                     )
                                                 }
                                             },
-                                            onDoubleClick = { rootAudiationTarget?.let { onTargetDoubleTap(it) } }
+                                            onDoubleClick = {
+                                                if (rootAudioNote > 0) {
+                                                    onSingingTargetsRequested(
+                                                        SingingTargetRequest(
+                                                            first = SingingTargetNote(rootAudioNote, rootDegreeLabel),
+                                                            second = null,
+                                                            requestId = 0
+                                                        )
+                                                    )
+                                                }
+                                            }
                                         ),
                                     shape = RoundedCornerShape(32.dp),
                                     color = MaterialTheme.colorScheme.primary,
@@ -2381,7 +2372,6 @@ fun QuizTab(
                                                 RomanNumeralText(display = romanDisplay, fontSize = 64.sp, modifier = Modifier.fillMaxWidth())
                                             }
                                         }
-                                        if (audiationState is AudiationState.Listening && audiationState.target.id == 0) PitchGauge(pitchResult = audiationState.pitch, targetLabel = audiationState.target.label, modifier = Modifier.matchParentSize())
                                         if (rootAudioNote > 0) DoubleTapHint(modifier = Modifier.padding(4.dp))
                                     }
                                 }
@@ -2409,9 +2399,23 @@ fun QuizTab(
                                             },
                                             onDoubleClick = {
                                                 melodyIntervalState?.let { state ->
-                                                    val note1 = intervalPreviewNote(state.previous) + globalTranspose + audiationOctaveShift * 12
-                                                    val note2 = intervalPreviewNote(state.current) + globalTranspose + audiationOctaveShift * 12
-                                                    onSingIntervalRequested(note1, note2)
+                                                    val previousLabel = if (useRelativeIonianContext) {
+                                                        ionianContextDegreeLabel(state.previous, ionianContextKey)
+                                                    } else {
+                                                        state.previousDegreeLabel
+                                                    }
+                                                    val currentLabel = if (useRelativeIonianContext) {
+                                                        ionianContextDegreeLabel(state.current, ionianContextKey)
+                                                    } else {
+                                                        state.currentDegreeLabel
+                                                    }
+                                                    onSingingTargetsRequested(
+                                                        SingingTargetRequest(
+                                                            first = SingingTargetNote(intervalPreviewNote(state.previous), previousLabel),
+                                                            second = SingingTargetNote(intervalPreviewNote(state.current), currentLabel),
+                                                            requestId = 0
+                                                        )
+                                                    )
                                                 }
                                             }
                                         ),
@@ -2491,22 +2495,28 @@ fun QuizTab(
                                             }
                                         }
                                         if (rootMidi > 0) { Spacer(Modifier.height(8.dp)); Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(degreeSpacing)) {
-                                            notes.forEachIndexed { index, note -> val internalLabel = if (useRelativeIonianContext) (spelledRoot?.let { ionianContextDegreeLabel(note, it, ionianContextKey) } ?: ionianContextDegreeLabel(note, ionianContextKey)) else MusicTheory.getRelativeDegreeLabel(note, rootMidi); val previewNote = if (useRelativeIonianContext) (spelledRoot?.let { ionianContextPreviewAudioNote(note, it, ionianContextKey) } ?: ionianContextPreviewAudioNote(note, ionianContextKey)) ?: note else note; val noteAudiationTarget = targetsWithShift.find { it.id == index }
+                                            notes.forEachIndexed { index, note -> val internalLabel = if (useRelativeIonianContext) (spelledRoot?.let { ionianContextDegreeLabel(note, it, ionianContextKey) } ?: ionianContextDegreeLabel(note, ionianContextKey)) else MusicTheory.getRelativeDegreeLabel(note, rootMidi); val previewNote = if (useRelativeIonianContext) (spelledRoot?.let { ionianContextPreviewAudioNote(note, it, ionianContextKey) } ?: ionianContextPreviewAudioNote(note, ionianContextKey)) ?: note else note
                                                 Surface(
                                                     modifier = Modifier.weight(1f).height(54.dp)
                                                         .semantics { contentDescription = "Play scale degree $internalLabel. Double tap to sing it back." }
-                                                        .onGloballyPositioned { onTargetPositioned(index, it) }
                                                         .combinedClickable(
                                                             onClick = { scope.launch { AudioEngine.playChord(listOf(previewNote), channel = AudioEngine.PlaybackChannel.PREVIEW) } },
-                                                            onDoubleClick = { noteAudiationTarget?.let { onTargetDoubleTap(it) } }
+                                                            onDoubleClick = {
+                                                                onSingingTargetsRequested(
+                                                                    SingingTargetRequest(
+                                                                        first = SingingTargetNote(previewNote, internalLabel),
+                                                                        second = null,
+                                                                        requestId = 0
+                                                                    )
+                                                                )
+                                                            }
                                                         ),
                                                     shape = RoundedCornerShape(14.dp),
                                                     color = MaterialTheme.colorScheme.primary,
                                                     contentColor = MaterialTheme.colorScheme.onPrimary
                                                 ) {
                                                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { ScaleDegreeText(label = internalLabel, fontSize = degreeFontSize, modifier = Modifier.fillMaxWidth(), minFontSize = 12.sp)
-                                                        if (audiationState is AudiationState.Listening && audiationState.target.id == index) PitchGauge(pitchResult = audiationState.pitch, targetLabel = audiationState.target.label, modifier = Modifier.matchParentSize())
-                                                        if (noteAudiationTarget != null) DoubleTapHint(modifier = Modifier.padding(2.dp)) }
+                                                        DoubleTapHint(modifier = Modifier.padding(2.dp)) }
                                                 } }
                                         } }
                                     }

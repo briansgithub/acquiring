@@ -3,7 +3,7 @@ package com.sacredring.android
 import kotlin.math.roundToInt
 
 /** A pitch that can be assigned to one slot in the Interval Singing Tool. */
-internal data class SingingTargetNote(
+data class SingingTargetNote(
     /** Source register only; manual transpose and tessitura are applied later. */
     val sourceMidi: Int,
     /** Display-ready degree label, including any accidental and combining hat. */
@@ -11,7 +11,7 @@ internal data class SingingTargetNote(
 )
 
 /** One- or two-note request emitted by a target-capable quiz object. */
-internal data class SingingTargetRequest(
+data class SingingTargetRequest(
     val first: SingingTargetNote?,
     val second: SingingTargetNote?,
     val requestId: Int

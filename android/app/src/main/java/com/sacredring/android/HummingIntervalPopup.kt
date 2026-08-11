@@ -45,17 +45,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-internal data class IntervalSingTarget(
-    val note1Midi: Int,
-    val note2Midi: Int,
-    val requestId: Int,
-    // The interval's notes as originally requested, before any "Match My
-    // Tessitura" octave shift was applied — lets calibration be cleared back
-    // to this baseline without losing track of the true interval.
-    val originalNote1Midi: Int = note1Midi,
-    val originalNote2Midi: Int = note2Midi
-)
-
 private const val EXPAND_ANIMATION_MS = 300
 private const val AUTO_LISTEN_DELAY_MS = 500L
 private const val LISTEN_TIMEOUT_MS = 3000
@@ -64,7 +53,8 @@ private const val LISTEN_TIMEOUT_MS = 3000
 @Composable
 internal fun HummingIntervalPopup(
     modifier: Modifier = Modifier,
-    targetInterval: IntervalSingTarget? = null,
+    targetRequest: SingingTargetRequest? = null,
+    globalTranspose: Int = 0,
     octaveShift: Int = 0,
     onCalibrateRequested: () -> Unit = {},
     onCalibrateResetRequested: () -> Unit = {}
@@ -72,7 +62,7 @@ internal fun HummingIntervalPopup(
     var isExpanded by remember { mutableStateOf(false) }
     var slot1 by remember { mutableStateOf<PitchData?>(null) }
     var slot2 by remember { mutableStateOf<PitchData?>(null) }
-    var activeTarget by remember { mutableStateOf<IntervalSingTarget?>(null) }
+    var activeTarget by remember { mutableStateOf<SingingTargetRequest?>(null) }
     var activeListenSlot by remember { mutableStateOf<Int?>(null) }
     var listenTimeRemaining by remember { mutableStateOf(0) }
 
@@ -98,9 +88,13 @@ internal fun HummingIntervalPopup(
     // slot's own target note, and automatically stops it again after
     // LISTEN_TIMEOUT_MS — the same duration a normal timed recording uses —
     // unless the user (or a fresh double-tap) has already moved it on.
-    fun startListenTimer(slotId: Int, target: IntervalSingTarget) {
+    fun targetForSlot(target: SingingTargetRequest, slotId: Int): SingingTargetNote? =
+        if (slotId == 1) target.first else target.second
+
+    fun startListenTimer(slotId: Int, target: SingingTargetRequest) {
+        val assignedTarget = targetForSlot(target, slotId) ?: return
         activeListenSlot = slotId
-        pitchTracker.start(if (slotId == 1) target.note1Midi else target.note2Midi)
+        pitchTracker.start(assignedTarget.effectiveTargetMidi(globalTranspose, octaveShift))
         scope.launch {
             var remaining = LISTEN_TIMEOUT_MS
             while (remaining > 0 && activeListenSlot == slotId) {
@@ -161,7 +155,8 @@ internal fun HummingIntervalPopup(
     // Shared by the manual Pitch 1/Pitch 2 double-tap handlers and the
     // auto-start below: begin continuous singing-back for the given slot,
     // scored against that slot's own target note.
-    fun beginListeningSlot(slotId: Int, target: IntervalSingTarget) {
+    fun beginListeningSlot(slotId: Int, target: SingingTargetRequest) {
+        if (targetForSlot(target, slotId) == null) return
         val hasPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
         if (hasPermission) {
             startListenTimer(slotId, target)
@@ -178,8 +173,19 @@ internal fun HummingIntervalPopup(
     // and checking against that slot's target, just like double-tapping a
     // scale-degree object — and Pitch 1 also starts automatically shortly
     // after the tool finishes expanding, so singing can begin right away.
-    LaunchedEffect(targetInterval?.requestId) {
-        val request = targetInterval ?: return@LaunchedEffect
+    LaunchedEffect(targetRequest?.requestId) {
+        val request = targetRequest
+        if (request == null) {
+            pendingListenSlot = null
+            recordingSlot = null
+            activeListenSlot = null
+            listenTimeRemaining = 0
+            pitchTracker.stop()
+            activeTarget = null
+            slot1 = null
+            slot2 = null
+            return@LaunchedEffect
+        }
         flipFlopEnabled = false
         pendingFlipFlopStart = false
         pendingListenSlot = null
@@ -189,13 +195,13 @@ internal fun HummingIntervalPopup(
         pitchTracker.stop()
         activeTarget = request
         isExpanded = true
-        slot1 = PitchData(SpelledPitch.fromMidi(request.note1Midi), cents = 0.0, rawMidi = request.note1Midi.toDouble())
-        slot2 = PitchData(SpelledPitch.fromMidi(request.note2Midi), cents = 0.0, rawMidi = request.note2Midi.toDouble())
+        slot1 = null
+        slot2 = null
 
         delay(EXPAND_ANIMATION_MS + AUTO_LISTEN_DELAY_MS)
         // Only auto-start if nothing has changed in the meantime (still the
         // same request, nobody already started listening or switched modes).
-        if (activeTarget?.requestId == request.requestId && activeListenSlot == null && !flipFlopEnabled) {
+        if (request.first != null && activeTarget?.requestId == request.requestId && activeListenSlot == null && !flipFlopEnabled) {
             beginListeningSlot(1, request)
         }
     }
@@ -207,10 +213,23 @@ internal fun HummingIntervalPopup(
         val target = activeTarget ?: return@LaunchedEffect
         val slotId = activeListenSlot ?: return@LaunchedEffect
         val estimate = pitchResult as? MicrophonePitchTracker.PitchResult.Estimate ?: return@LaunchedEffect
-        val targetMidi = if (slotId == 1) target.note1Midi else target.note2Midi
+        val targetMidi = targetForSlot(target, slotId)
+            ?.effectiveTargetMidi(globalTranspose, octaveShift)
+            ?: return@LaunchedEffect
         val cents = (estimate.midi - targetMidi) * 100.0
-        val data = PitchData(SpelledPitch.fromMidi(targetMidi), cents, estimate.midi)
+        val nearestMidi = estimate.midi.roundToInt()
+        val data = PitchData(SpelledPitch.fromMidi(nearestMidi), cents, estimate.midi)
         if (slotId == 1) slot1 = data else slot2 = data
+    }
+
+    // Manual transpose and tessitura are independent layers. If either changes
+    // during a target session, retarget the microphone without replacing the
+    // request or mutating a captured user pitch.
+    LaunchedEffect(globalTranspose, octaveShift, activeTarget?.requestId, activeListenSlot) {
+        val target = activeTarget ?: return@LaunchedEffect
+        val slotId = activeListenSlot ?: return@LaunchedEffect
+        val assignedTarget = targetForSlot(target, slotId) ?: return@LaunchedEffect
+        pitchTracker.start(assignedTarget.effectiveTargetMidi(globalTranspose, octaveShift))
     }
 
     // Flip-Flop owns the mic while the tool is expanded. Each completed capture
@@ -279,6 +298,23 @@ internal fun HummingIntervalPopup(
             if (recordingSlot == 1) slot1 = data else slot2 = data
         }
     }
+
+    fun displayedSlotData(slotId: Int, captured: PitchData?): PitchData? {
+        val assignedTarget = activeTarget?.let { targetForSlot(it, slotId) } ?: return captured
+        val effectiveTargetMidi = assignedTarget.effectiveTargetMidi(globalTranspose, octaveShift)
+        return if (captured == null) {
+            PitchData(
+                pitch = SpelledPitch.fromMidi(effectiveTargetMidi),
+                cents = 0.0,
+                rawMidi = effectiveTargetMidi.toDouble()
+            )
+        } else {
+            captured.copy(cents = (captured.rawMidi - effectiveTargetMidi) * 100.0)
+        }
+    }
+
+    val displayedSlot1 = displayedSlotData(1, slot1)
+    val displayedSlot2 = displayedSlotData(2, slot2)
 
     Column(
         modifier = modifier
@@ -411,25 +447,36 @@ internal fun HummingIntervalPopup(
                 // Slot 1
                 HummingSlotView(
                     label = "Pitch 1",
-                    data = slot1,
+                    data = displayedSlot1,
                     isRecording = recordingSlot == 1,
                     isListening = activeListenSlot == 1,
                     isInteractionEnabled = !flipFlopEnabled,
                     recordingTimeRemaining = if (recordingSlot == 1) recordingTimeRemaining else if (activeListenSlot == 1) listenTimeRemaining else 0,
                     onSingleClick = {
-                        slot1?.let {
+                        val assignedTarget = activeTarget?.first
+                        if (assignedTarget != null) {
                             scope.launch {
-                                AudioEngine.playExactFrequencies(
-                                    listOf(midiToFrequency(it.rawMidi)),
+                                AudioEngine.playChord(
+                                    listOf(assignedTarget.targetPlaybackMidiInput(octaveShift)),
                                     durationMs = 1000,
                                     channel = AudioEngine.PlaybackChannel.PREVIEW
                                 )
+                            }
+                        } else {
+                            slot1?.let {
+                                scope.launch {
+                                    AudioEngine.playExactFrequencies(
+                                        listOf(midiToFrequency(it.rawMidi)),
+                                        durationMs = 1000,
+                                        channel = AudioEngine.PlaybackChannel.PREVIEW
+                                    )
+                                }
                             }
                         }
                     },
                     onDoubleClick = {
                         val target = activeTarget
-                        if (target != null) {
+                        if (target?.first != null) {
                             // Target mode: double-tap toggles continuous singing-back
                             // for this slot's assigned target note.
                             if (activeListenSlot == 1) {
@@ -462,25 +509,36 @@ internal fun HummingIntervalPopup(
                 // Slot 2
                 HummingSlotView(
                     label = "Pitch 2",
-                    data = slot2,
+                    data = displayedSlot2,
                     isRecording = recordingSlot == 2,
                     isListening = activeListenSlot == 2,
                     isInteractionEnabled = !flipFlopEnabled,
                     recordingTimeRemaining = if (recordingSlot == 2) recordingTimeRemaining else if (activeListenSlot == 2) listenTimeRemaining else 0,
                     onSingleClick = {
-                        slot2?.let {
+                        val assignedTarget = activeTarget?.second
+                        if (assignedTarget != null) {
                             scope.launch {
-                                AudioEngine.playExactFrequencies(
-                                    listOf(midiToFrequency(it.rawMidi)),
+                                AudioEngine.playChord(
+                                    listOf(assignedTarget.targetPlaybackMidiInput(octaveShift)),
                                     durationMs = 1000,
                                     channel = AudioEngine.PlaybackChannel.PREVIEW
                                 )
+                            }
+                        } else {
+                            slot2?.let {
+                                scope.launch {
+                                    AudioEngine.playExactFrequencies(
+                                        listOf(midiToFrequency(it.rawMidi)),
+                                        durationMs = 1000,
+                                        channel = AudioEngine.PlaybackChannel.PREVIEW
+                                    )
+                                }
                             }
                         }
                     },
                     onDoubleClick = {
                         val target = activeTarget
-                        if (target != null) {
+                        if (target?.second != null) {
                             // Target mode: double-tap toggles continuous singing-back
                             // for this slot's assigned target note.
                             if (activeListenSlot == 2) {
@@ -515,8 +573,8 @@ internal fun HummingIntervalPopup(
                 )
 
                 // Result Slot
-                val interval = if (slot1 != null && slot2 != null) {
-                    calculateMeasuredInterval(slot1!!.rawMidi, slot2!!.rawMidi)
+                val interval = if (displayedSlot1 != null && displayedSlot2 != null) {
+                    calculateMeasuredInterval(displayedSlot1.rawMidi, displayedSlot2.rawMidi)
                 } else null
 
                 val intervalCentsDeviation = interval?.centsDeviation
@@ -527,18 +585,38 @@ internal fun HummingIntervalPopup(
                         .height(120.dp)
                         .padding(4.dp)
                         .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp))
-                        .clickable(enabled = slot1 != null && slot2 != null) {
-                            val s1 = slot1
-                            val s2 = slot2
+                        .clickable(enabled = displayedSlot1 != null && displayedSlot2 != null) {
+                            val s1 = displayedSlot1
+                            val s2 = displayedSlot2
                             if (s1 != null && s2 != null) {
                                 scope.launch {
-                                    val note1 = s1.pitch.chromaticPosition + 12
-                                    val note2 = s2.pitch.chromaticPosition + 12
-                                    AudioEngine.playChord(listOf(note1), durationMs = 1000, channel = AudioEngine.PlaybackChannel.PREVIEW)
+                                    val firstTarget = activeTarget?.first
+                                    val secondTarget = activeTarget?.second
+                                    val firstPlaybackMidi = firstTarget
+                                        ?.targetPlaybackMidiInput(octaveShift)
+                                        ?.toDouble()
+                                        ?: s1.rawMidi
+                                    val secondPlaybackMidi = secondTarget
+                                        ?.targetPlaybackMidiInput(octaveShift)
+                                        ?.toDouble()
+                                        ?: s2.rawMidi
+                                    AudioEngine.playExactFrequencies(
+                                        listOf(midiToFrequency(firstPlaybackMidi)),
+                                        durationMs = 1000,
+                                        channel = AudioEngine.PlaybackChannel.PREVIEW
+                                    )
                                     delay(1000)
-                                    AudioEngine.playChord(listOf(note2), durationMs = 1000, channel = AudioEngine.PlaybackChannel.PREVIEW)
+                                    AudioEngine.playExactFrequencies(
+                                        listOf(midiToFrequency(secondPlaybackMidi)),
+                                        durationMs = 1000,
+                                        channel = AudioEngine.PlaybackChannel.PREVIEW
+                                    )
                                     delay(1000)
-                                    AudioEngine.playChord(listOf(note1, note2), durationMs = 1000, channel = AudioEngine.PlaybackChannel.PREVIEW)
+                                    AudioEngine.playExactFrequencies(
+                                        listOf(midiToFrequency(firstPlaybackMidi), midiToFrequency(secondPlaybackMidi)),
+                                        durationMs = 1000,
+                                        channel = AudioEngine.PlaybackChannel.PREVIEW
+                                    )
                                 }
                             }
                         }
