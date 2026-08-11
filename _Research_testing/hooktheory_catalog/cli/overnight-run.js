@@ -85,6 +85,14 @@ async function phase(state, name, args, fn) {
   const t0 = Date.now();
   try {
     const result = await fn();
+    // A phase that halted early (stop requested, circuit-breaker abort) returns
+    // normally, so without this it would be banked as `done` and every
+    // remaining item silently abandoned on the next run.
+    if (result && result.incomplete) {
+      state.setPhase(name, { status: 'interrupted', durationMs: Date.now() - t0, result });
+      log(`=== ${name} INTERRUPTED after ${Math.round((Date.now() - t0) / 1000)}s — will resume ===`);
+      return;
+    }
     state.setPhase(name, { status: 'done', durationMs: Date.now() - t0, result: result ?? null });
     log(`=== ${name} done in ${Math.round((Date.now() - t0) / 1000)}s ===`);
   } catch (err) {
@@ -309,7 +317,7 @@ async function phaseArtistSweep(args, state) {
   if (deadArtists.size) log(`  skipping ${deadArtists.size} artists already known to have no page`);
   let deadDirty = false;
 
-  const { found, checked, failed } = await sweepArtists(artists, buildUrl, {
+  const { found, checked, failed, interrupted } = await sweepArtists(artists, buildUrl, {
     knownSlugs,
     startIndex: resumeAt,
     intervalMs: Number(process.env.ARTIST_INTERVAL_MS || 1200),
@@ -338,7 +346,7 @@ async function phaseArtistSweep(args, state) {
   fs.writeFileSync(DEAD_ARTISTS_FILE, JSON.stringify([...deadArtists], null, 2));
 
   fs.writeFileSync(ARTIST_FOUND_FILE, JSON.stringify(foundAll, null, 2));
-  log(`  sweep finished: checked=${checked} failed=${failed} newSongs=${found.length}`);
+  log(`  sweep ${interrupted ? 'INTERRUPTED' : 'finished'}: checked=${checked} failed=${failed} newSongs=${found.length}`);
 
   // Ingest the accumulated file, not just this session's finds: after a
   // restart `found` holds only what was discovered since resuming, so
@@ -356,9 +364,9 @@ async function phaseArtistSweep(args, state) {
     tx(foundAll);
     db2.close();
     log(`  ingested ${inserted} new artist-page songs (${foundAll.length} total found across all attempts)`);
-    return { checked, failed, found: foundAll.length, inserted };
+    return { checked, failed, found: foundAll.length, inserted, incomplete: interrupted };
   }
-  return { checked, failed, found: 0, inserted: 0 };
+  return { checked, failed, found: 0, inserted: 0, incomplete: interrupted };
 }
 
 async function phaseMeiliRefresh(args) {
