@@ -2095,7 +2095,9 @@ fun QuizTab(
                         }
                         
                         Text(
-                            text = if (!isSimpleMode && !useRelativeIonianContext) "${activeKey.tonic} $displayScale" else displayScale,
+                            text = if (isSimpleMode) displayScale
+                                else if (useRelativeIonianContext) "${ionianContextKey.tonic} $displayScale"
+                                else "${activeKey.tonic} $displayScale",
                             textAlign = TextAlign.Center,
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
