@@ -48,22 +48,52 @@ import kotlin.math.roundToInt
 private const val EXPAND_ANIMATION_MS = 300
 private const val AUTO_LISTEN_DELAY_MS = 500L
 private const val LISTEN_TIMEOUT_MS = 3000
+private const val CALIBRATION_CAPTURE_MS = 3000
+private const val CALIBRATION_SAMPLE_WINDOW_MS = 2000
+private const val CALIBRATION_DROPOUT_GRACE_MS = 1000
+
+private sealed interface RequestedMicrophoneAction {
+    data class Listen(val slotId: Int) : RequestedMicrophoneAction
+    data class Record(val slotId: Int) : RequestedMicrophoneAction
+    object FlipFlop : RequestedMicrophoneAction
+    object Calibrate : RequestedMicrophoneAction
+}
+
+private sealed interface ActiveMicrophoneAction {
+    object Idle : ActiveMicrophoneAction
+    data class AwaitingPermission(val requested: RequestedMicrophoneAction) : ActiveMicrophoneAction
+    data class Listening(val slotId: Int) : ActiveMicrophoneAction
+    data class Recording(val slotId: Int) : ActiveMicrophoneAction
+    object FlipFlop : ActiveMicrophoneAction
+    data class Calibrating(val sessionId: Int) : ActiveMicrophoneAction
+}
+
+private sealed interface TessituraCalibrationStatus {
+    object Idle : TessituraCalibrationStatus
+    object AwaitingPermission : TessituraCalibrationStatus
+    data class Capturing(
+        val remainingMs: Int,
+        val hasSignal: Boolean
+    ) : TessituraCalibrationStatus
+    data class Error(val reason: String) : TessituraCalibrationStatus
+}
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.ui.text.ExperimentalTextApi::class)
 @Composable
 internal fun HummingIntervalPopup(
     modifier: Modifier = Modifier,
+    sectionSessionKey: String? = null,
     targetRequest: SingingTargetRequest? = null,
     globalTranspose: Int = 0,
     octaveShift: Int = 0,
-    onCalibrateRequested: () -> Unit = {},
+    canCalibrate: Boolean = true,
+    onCalibrationCaptured: (Double) -> Unit = {},
     onCalibrateResetRequested: () -> Unit = {}
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     var slot1 by remember { mutableStateOf<PitchData?>(null) }
     var slot2 by remember { mutableStateOf<PitchData?>(null) }
     var activeTarget by remember { mutableStateOf<SingingTargetRequest?>(null) }
-    var activeListenSlot by remember { mutableStateOf<Int?>(null) }
     var listenTimeRemaining by remember { mutableStateOf(0) }
 
     val context = LocalContext.current
@@ -78,11 +108,48 @@ internal fun HummingIntervalPopup(
 
     val pitchResult by pitchTracker.pitchFlow.collectAsState()
 
+    var microphoneAction by remember { mutableStateOf<ActiveMicrophoneAction>(ActiveMicrophoneAction.Idle) }
     var recordingSlot by remember { mutableStateOf<Int?>(null) }
     var recordingTimeRemaining by remember { mutableStateOf(0) }
-    var flipFlopEnabled by remember { mutableStateOf(false) }
-    var pendingFlipFlopStart by remember { mutableStateOf(false) }
-    var pendingListenSlot by remember { mutableStateOf<Int?>(null) }
+    var calibrationSessionId by remember { mutableStateOf(0) }
+    var calibrationStatus by remember { mutableStateOf<TessituraCalibrationStatus>(TessituraCalibrationStatus.Idle) }
+
+    val activeListenSlot = (microphoneAction as? ActiveMicrophoneAction.Listening)?.slotId
+    val flipFlopEnabled = microphoneAction is ActiveMicrophoneAction.FlipFlop
+    val latestMicrophoneAction by rememberUpdatedState(microphoneAction)
+
+    val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner, pitchTracker) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            if (
+                event == androidx.lifecycle.Lifecycle.Event.ON_PAUSE &&
+                latestMicrophoneAction !is ActiveMicrophoneAction.Idle
+            ) {
+                microphoneAction = ActiveMicrophoneAction.Idle
+                calibrationStatus = TessituraCalibrationStatus.Idle
+                recordingSlot = null
+                recordingTimeRemaining = 0
+                listenTimeRemaining = 0
+                pitchTracker.stop()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    LaunchedEffect(canCalibrate) {
+        if (!canCalibrate) {
+            val action = microphoneAction
+            val isCalibrationAction = action is ActiveMicrophoneAction.Calibrating ||
+                (action is ActiveMicrophoneAction.AwaitingPermission &&
+                    action.requested is RequestedMicrophoneAction.Calibrate)
+            if (isCalibrationAction) {
+                microphoneAction = ActiveMicrophoneAction.Idle
+                calibrationStatus = TessituraCalibrationStatus.Idle
+                pitchTracker.stop()
+            }
+        }
+    }
 
     // Begins continuous singing-back for the given slot, scored against that
     // slot's own target note, and automatically stops it again after
@@ -91,64 +158,75 @@ internal fun HummingIntervalPopup(
     fun targetForSlot(target: SingingTargetRequest, slotId: Int): SingingTargetNote? =
         if (slotId == 1) target.first else target.second
 
-    fun startListenTimer(slotId: Int, target: SingingTargetRequest) {
-        val assignedTarget = targetForSlot(target, slotId) ?: return
-        activeListenSlot = slotId
-        pitchTracker.start(assignedTarget.effectiveTargetMidi(globalTranspose, octaveShift))
-        scope.launch {
-            var remaining = LISTEN_TIMEOUT_MS
-            while (remaining > 0 && activeListenSlot == slotId) {
-                listenTimeRemaining = remaining
-                delay(100)
-                remaining -= 100
+    fun stopMicrophoneAction() {
+        microphoneAction = ActiveMicrophoneAction.Idle
+        recordingSlot = null
+        recordingTimeRemaining = 0
+        listenTimeRemaining = 0
+        calibrationStatus = TessituraCalibrationStatus.Idle
+        pitchTracker.stop()
+    }
+
+    fun activateMicrophoneAction(requested: RequestedMicrophoneAction) {
+        recordingSlot = null
+        recordingTimeRemaining = 0
+        listenTimeRemaining = 0
+        pitchTracker.stop()
+        if (requested !is RequestedMicrophoneAction.Calibrate) {
+            calibrationStatus = TessituraCalibrationStatus.Idle
+        }
+        microphoneAction = when (requested) {
+            is RequestedMicrophoneAction.Listen -> {
+                val target = activeTarget
+                if (target != null && targetForSlot(target, requested.slotId) != null) {
+                    ActiveMicrophoneAction.Listening(requested.slotId)
+                } else {
+                    ActiveMicrophoneAction.Idle
+                }
             }
-            if (activeListenSlot == slotId) {
-                activeListenSlot = null
-                pitchTracker.stop()
+            is RequestedMicrophoneAction.Record -> ActiveMicrophoneAction.Recording(requested.slotId)
+            RequestedMicrophoneAction.FlipFlop -> ActiveMicrophoneAction.FlipFlop
+            RequestedMicrophoneAction.Calibrate -> {
+                calibrationSessionId++
+                calibrationStatus = TessituraCalibrationStatus.Capturing(
+                    remainingMs = CALIBRATION_CAPTURE_MS,
+                    hasSignal = false
+                )
+                ActiveMicrophoneAction.Calibrating(calibrationSessionId)
             }
-            listenTimeRemaining = 0
         }
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        if (isGranted && pendingFlipFlopStart) {
-            pendingFlipFlopStart = false
-            activeTarget = null
-            activeListenSlot = null
-            listenTimeRemaining = 0
-            flipFlopEnabled = true
-        } else if (isGranted && pendingListenSlot != null) {
-            val slotId = pendingListenSlot!!
-            pendingListenSlot = null
-            val target = activeTarget
-            if (target != null) {
-                startListenTimer(slotId, target)
-            }
-        } else if (isGranted && recordingSlot != null) {
-            // Permission granted, start recording for the pending slot
-            val slotId = recordingSlot!!
-            recordingSlot = null // Reset so startRecording can trigger properly
-            startRecording(slotId, pitchTracker, scope, onStart = {
-                if (slotId == 1) slot1 = null else slot2 = null
-            }, onUpdate = { recordingSlot = it }, onTimeUpdate = { recordingTimeRemaining = it }, onFinished = { id, estimate ->
-                if (estimate != null) {
-                    val nearestMidi = estimate.midi.roundToInt()
-                    val centsFromNearest = (estimate.midi - nearestMidi) * 100
-                    val spelled = if (id == 2 && slot1 != null) {
-                        SpelledPitch.spellRelative(slot1!!.pitch, nearestMidi)
-                    } else {
-                        SpelledPitch.fromMidi(nearestMidi)
-                    }
-                    val data = PitchData(spelled, centsFromNearest, estimate.midi)
-                    if (id == 1) slot1 = data else slot2 = data
+        val waiting = microphoneAction as? ActiveMicrophoneAction.AwaitingPermission
+        if (waiting != null) {
+            if (isGranted) {
+                activateMicrophoneAction(waiting.requested)
+            } else {
+                microphoneAction = ActiveMicrophoneAction.Idle
+                if (waiting.requested is RequestedMicrophoneAction.Calibrate) {
+                    calibrationStatus = TessituraCalibrationStatus.Error("Microphone permission denied")
                 }
-            })
+            }
+        }
+    }
+
+    fun requestMicrophoneAction(requested: RequestedMicrophoneAction) {
+        if (requested is RequestedMicrophoneAction.Calibrate && !canCalibrate) return
+        if (requested !is RequestedMicrophoneAction.Calibrate) {
+            calibrationStatus = TessituraCalibrationStatus.Idle
+        }
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+            activateMicrophoneAction(requested)
         } else {
-            pendingFlipFlopStart = false
-            pendingListenSlot = null
-            recordingSlot = null
+            pitchTracker.stop()
+            microphoneAction = ActiveMicrophoneAction.AwaitingPermission(requested)
+            if (requested is RequestedMicrophoneAction.Calibrate) {
+                calibrationStatus = TessituraCalibrationStatus.AwaitingPermission
+            }
+            permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
         }
     }
 
@@ -157,13 +235,7 @@ internal fun HummingIntervalPopup(
     // scored against that slot's own target note.
     fun beginListeningSlot(slotId: Int, target: SingingTargetRequest) {
         if (targetForSlot(target, slotId) == null) return
-        val hasPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
-        if (hasPermission) {
-            startListenTimer(slotId, target)
-        } else {
-            pendingListenSlot = slotId
-            permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-        }
+        requestMicrophoneAction(RequestedMicrophoneAction.Listen(slotId))
     }
 
     // Double-tapping a melody/root relative-interval object elsewhere in the quiz
@@ -173,26 +245,15 @@ internal fun HummingIntervalPopup(
     // and checking against that slot's target, just like double-tapping a
     // scale-degree object — and Pitch 1 also starts automatically shortly
     // after the tool finishes expanding, so singing can begin right away.
-    LaunchedEffect(targetRequest?.requestId) {
+    LaunchedEffect(sectionSessionKey, targetRequest?.requestId) {
         val request = targetRequest
+        stopMicrophoneAction()
         if (request == null) {
-            pendingListenSlot = null
-            recordingSlot = null
-            activeListenSlot = null
-            listenTimeRemaining = 0
-            pitchTracker.stop()
             activeTarget = null
             slot1 = null
             slot2 = null
             return@LaunchedEffect
         }
-        flipFlopEnabled = false
-        pendingFlipFlopStart = false
-        pendingListenSlot = null
-        recordingSlot = null
-        activeListenSlot = null
-        listenTimeRemaining = 0
-        pitchTracker.stop()
         activeTarget = request
         isExpanded = true
         slot1 = null
@@ -201,7 +262,11 @@ internal fun HummingIntervalPopup(
         delay(EXPAND_ANIMATION_MS + AUTO_LISTEN_DELAY_MS)
         // Only auto-start if nothing has changed in the meantime (still the
         // same request, nobody already started listening or switched modes).
-        if (request.first != null && activeTarget?.requestId == request.requestId && activeListenSlot == null && !flipFlopEnabled) {
+        if (
+            request.first != null &&
+            activeTarget?.requestId == request.requestId &&
+            microphoneAction is ActiveMicrophoneAction.Idle
+        ) {
             beginListeningSlot(1, request)
         }
     }
@@ -232,50 +297,167 @@ internal fun HummingIntervalPopup(
         pitchTracker.start(assignedTarget.effectiveTargetMidi(globalTranspose, octaveShift))
     }
 
-    // Flip-Flop owns the mic while the tool is expanded. Each completed capture
-    // updates its slot, which in turn recalculates the interval display.
-    LaunchedEffect(flipFlopEnabled, isExpanded) {
-        if (!flipFlopEnabled || !isExpanded) return@LaunchedEffect
-
-        var nextSlot = 1
+    // Every microphone feature is represented by exactly one action. Switching
+    // actions cancels the previous effect before the next one starts, so a late
+    // permission result or capture cannot revive an older session.
+    LaunchedEffect(microphoneAction, isExpanded) {
+        val action = microphoneAction
         try {
-            while (currentCoroutineContext().isActive) {
-                val slotId = nextSlot
-                recordingSlot = slotId
-                pitchTracker.start(60)
+            when (action) {
+                ActiveMicrophoneAction.Idle,
+                is ActiveMicrophoneAction.AwaitingPermission -> Unit
 
-                var remaining = 3000
-                while (remaining > 0 && currentCoroutineContext().isActive) {
-                    recordingTimeRemaining = remaining
-                    delay(100)
-                    remaining -= 100
-                }
-
-                val estimate = pitchTracker.pitchFlow.value as? MicrophonePitchTracker.PitchResult.Estimate
-                pitchTracker.stop()
-                recordingSlot = null
-                recordingTimeRemaining = 0
-
-                if (estimate != null) {
-                    val nearestMidi = estimate.midi.roundToInt()
-                    val centsFromNearest = (estimate.midi - nearestMidi) * 100
-                    val spelled = if (slotId == 2 && slot1 != null) {
-                        SpelledPitch.spellRelative(slot1!!.pitch, nearestMidi)
-                    } else {
-                        SpelledPitch.fromMidi(nearestMidi)
+                is ActiveMicrophoneAction.Listening -> {
+                    val target = activeTarget?.let { targetForSlot(it, action.slotId) }
+                    if (target == null) {
+                        microphoneAction = ActiveMicrophoneAction.Idle
+                        return@LaunchedEffect
                     }
-                    val data = PitchData(spelled, centsFromNearest, estimate.midi)
-                    if (slotId == 1) slot1 = data else slot2 = data
+                    pitchTracker.start(target.effectiveTargetMidi(globalTranspose, octaveShift))
+                    var remaining = LISTEN_TIMEOUT_MS
+                    while (
+                        remaining > 0 &&
+                        microphoneAction == action &&
+                        currentCoroutineContext().isActive
+                    ) {
+                        listenTimeRemaining = remaining
+                        delay(100)
+                        remaining -= 100
+                    }
+                    if (microphoneAction == action) microphoneAction = ActiveMicrophoneAction.Idle
                 }
-                if (slotId == 2) {
-                    delay(2000)
+
+                is ActiveMicrophoneAction.Recording -> {
+                    val slotId = action.slotId
+                    recordingSlot = slotId
+                    if (slotId == 1) slot1 = null else slot2 = null
+                    pitchTracker.start(60)
+                    var remaining = 3000
+                    while (
+                        remaining > 0 &&
+                        microphoneAction == action &&
+                        currentCoroutineContext().isActive
+                    ) {
+                        recordingTimeRemaining = remaining
+                        delay(100)
+                        remaining -= 100
+                    }
+                    if (microphoneAction == action) {
+                        val estimate = pitchTracker.pitchFlow.value as? MicrophonePitchTracker.PitchResult.Estimate
+                        if (estimate != null) {
+                            val nearestMidi = estimate.midi.roundToInt()
+                            val centsFromNearest = (estimate.midi - nearestMidi) * 100
+                            val spelled = if (slotId == 2 && slot1 != null) {
+                                SpelledPitch.spellRelative(slot1!!.pitch, nearestMidi)
+                            } else {
+                                SpelledPitch.fromMidi(nearestMidi)
+                            }
+                            val data = PitchData(spelled, centsFromNearest, estimate.midi)
+                            if (slotId == 1) slot1 = data else slot2 = data
+                        }
+                        microphoneAction = ActiveMicrophoneAction.Idle
+                    }
                 }
-                nextSlot = if (slotId == 1) 2 else 1
+
+                ActiveMicrophoneAction.FlipFlop -> {
+                    if (!isExpanded) {
+                        microphoneAction = ActiveMicrophoneAction.Idle
+                        return@LaunchedEffect
+                    }
+                    var nextSlot = 1
+                    while (
+                        microphoneAction is ActiveMicrophoneAction.FlipFlop &&
+                        currentCoroutineContext().isActive
+                    ) {
+                        val slotId = nextSlot
+                        recordingSlot = slotId
+                        pitchTracker.start(60)
+
+                        var remaining = 3000
+                        while (
+                            remaining > 0 &&
+                            microphoneAction is ActiveMicrophoneAction.FlipFlop &&
+                            currentCoroutineContext().isActive
+                        ) {
+                            recordingTimeRemaining = remaining
+                            delay(100)
+                            remaining -= 100
+                        }
+
+                        val estimate = pitchTracker.pitchFlow.value as? MicrophonePitchTracker.PitchResult.Estimate
+                        pitchTracker.stop()
+                        recordingSlot = null
+                        recordingTimeRemaining = 0
+
+                        if (estimate != null && microphoneAction is ActiveMicrophoneAction.FlipFlop) {
+                            val nearestMidi = estimate.midi.roundToInt()
+                            val centsFromNearest = (estimate.midi - nearestMidi) * 100
+                            val spelled = if (slotId == 2 && slot1 != null) {
+                                SpelledPitch.spellRelative(slot1!!.pitch, nearestMidi)
+                            } else {
+                                SpelledPitch.fromMidi(nearestMidi)
+                            }
+                            val data = PitchData(spelled, centsFromNearest, estimate.midi)
+                            if (slotId == 1) slot1 = data else slot2 = data
+                        }
+                        if (slotId == 2) delay(2000)
+                        nextSlot = if (slotId == 1) 2 else 1
+                    }
+                }
+
+                is ActiveMicrophoneAction.Calibrating -> {
+                    val capture = ComfortablePitchCapture(
+                        captureMs = CALIBRATION_CAPTURE_MS,
+                        sampleWindowMs = CALIBRATION_SAMPLE_WINDOW_MS,
+                        dropoutGraceMs = CALIBRATION_DROPOUT_GRACE_MS
+                    )
+                    var lastTick = System.currentTimeMillis()
+                    pitchTracker.start(60)
+
+                    while (
+                        !capture.progress().isComplete &&
+                        microphoneAction == action &&
+                        currentCoroutineContext().isActive
+                    ) {
+                        val now = System.currentTimeMillis()
+                        val delta = (now - lastTick).toInt().coerceAtLeast(0)
+                        lastTick = now
+                        when (val currentPitch = pitchTracker.pitchFlow.value) {
+                            is MicrophonePitchTracker.PitchResult.Estimate -> {
+                                capture.observe(delta, currentPitch.midi)
+                            }
+                            is MicrophonePitchTracker.PitchResult.Error -> {
+                                calibrationStatus = TessituraCalibrationStatus.Error(currentPitch.message)
+                                microphoneAction = ActiveMicrophoneAction.Idle
+                            }
+                            MicrophonePitchTracker.PitchResult.NoSignal -> {
+                                capture.observe(delta, null)
+                            }
+                        }
+
+                        if (microphoneAction == action) {
+                            val progress = capture.progress()
+                            calibrationStatus = TessituraCalibrationStatus.Capturing(
+                                remainingMs = progress.remainingMs,
+                                hasSignal = progress.hasSignal
+                            )
+                            if (!progress.isComplete) delay(30)
+                        }
+                    }
+
+                    val comfortableMidi = capture.averageMidiOrNull()
+                    if (microphoneAction == action && comfortableMidi != null) {
+                        onCalibrationCaptured(comfortableMidi)
+                        calibrationStatus = TessituraCalibrationStatus.Idle
+                        microphoneAction = ActiveMicrophoneAction.Idle
+                    }
+                }
             }
         } finally {
             pitchTracker.stop()
             recordingSlot = null
             recordingTimeRemaining = 0
+            listenTimeRemaining = 0
         }
     }
 
@@ -334,13 +516,8 @@ internal fun HummingIntervalPopup(
         ) {
             if (isExpanded) {
                 IconButton(onClick = {
-                    pendingFlipFlopStart = false
-                    flipFlopEnabled = false
-                    pendingListenSlot = null
+                    stopMicrophoneAction()
                     activeTarget = null
-                    activeListenSlot = null
-                    listenTimeRemaining = 0
-                    pitchTracker.stop()
                     slot1 = null
                     slot2 = null
                     isExpanded = false
@@ -372,7 +549,8 @@ internal fun HummingIntervalPopup(
                     // changes the pitch/octave the song itself plays back.
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Surface(
-                            onClick = onCalibrateRequested,
+                            onClick = { requestMicrophoneAction(RequestedMicrophoneAction.Calibrate) },
+                            enabled = canCalibrate,
                             shape = RoundedCornerShape(50),
                             color = MaterialTheme.colorScheme.primaryContainer,
                             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -406,7 +584,12 @@ internal fun HummingIntervalPopup(
                                 .size(26.dp)
                                 .clip(CircleShape)
                                 .background(MaterialTheme.colorScheme.surfaceVariant)
-                                .clickable { onCalibrateResetRequested() }
+                                .clickable {
+                                    if (calibrationStatus !is TessituraCalibrationStatus.Idle) {
+                                        stopMicrophoneAction()
+                                    }
+                                    onCalibrateResetRequested()
+                                }
                                 .semantics { contentDescription = "Clear tessitura calibration and reset to the default octave" },
                             contentAlignment = Alignment.Center
                         ) {
@@ -421,18 +604,42 @@ internal fun HummingIntervalPopup(
                             checked = flipFlopEnabled,
                             onCheckedChange = { enabled ->
                                 if (!enabled) {
-                                    pendingFlipFlopStart = false
-                                    flipFlopEnabled = false
-                                } else if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
-                                    activeTarget = null
-                                    activeListenSlot = null
-                                    listenTimeRemaining = 0
-                                    flipFlopEnabled = true
+                                    stopMicrophoneAction()
                                 } else {
-                                    pendingFlipFlopStart = true
-                                    permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                                    activeTarget = null
+                                    requestMicrophoneAction(RequestedMicrophoneAction.FlipFlop)
                                 }
                             }
+                        )
+                    }
+                }
+
+                when (val status = calibrationStatus) {
+                    TessituraCalibrationStatus.Idle -> Unit
+                    TessituraCalibrationStatus.AwaitingPermission -> {
+                        TessituraCalibrationCard(
+                            message = "Microphone permission is needed to capture a comfortable pitch.",
+                            detail = "Waiting for permission…",
+                            onCancel = { stopMicrophoneAction() }
+                        )
+                    }
+                    is TessituraCalibrationStatus.Capturing -> {
+                        TessituraCalibrationCard(
+                            message = "Hum one comfortable pitch",
+                            detail = if (status.hasSignal) {
+                                "Capturing… ${"%.1f".format(status.remainingMs / 1000f)}s"
+                            } else {
+                                "Waiting for signal…"
+                            },
+                            onCancel = { stopMicrophoneAction() }
+                        )
+                    }
+                    is TessituraCalibrationStatus.Error -> {
+                        TessituraCalibrationCard(
+                            message = status.reason,
+                            detail = "Your previous tessitura setting is unchanged.",
+                            onRetry = { requestMicrophoneAction(RequestedMicrophoneAction.Calibrate) },
+                            onCancel = { stopMicrophoneAction() }
                         )
                     }
                 }
@@ -480,28 +687,12 @@ internal fun HummingIntervalPopup(
                             // Target mode: double-tap toggles continuous singing-back
                             // for this slot's assigned target note.
                             if (activeListenSlot == 1) {
-                                activeListenSlot = null
-                                listenTimeRemaining = 0
-                                pitchTracker.stop()
+                                stopMicrophoneAction()
                             } else {
                                 beginListeningSlot(1, target)
                             }
                         } else {
-                            val hasPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
-                            if (hasPermission) {
-                                startRecording(1, pitchTracker, scope, onStart = { slot1 = null }, onUpdate = { recordingSlot = it }, onTimeUpdate = { recordingTimeRemaining = it }, onFinished = { id, estimate ->
-                                    if (estimate != null) {
-                                        val nearestMidi = estimate.midi.roundToInt()
-                                        val centsFromNearest = (estimate.midi - nearestMidi) * 100
-                                        val spelled = SpelledPitch.fromMidi(nearestMidi)
-                                        val data = PitchData(spelled, centsFromNearest, estimate.midi)
-                                        if (id == 1) slot1 = data
-                                    }
-                                })
-                            } else {
-                                recordingSlot = 1
-                                permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-                            }
+                            requestMicrophoneAction(RequestedMicrophoneAction.Record(1))
                         }
                     }
                 )
@@ -542,32 +733,12 @@ internal fun HummingIntervalPopup(
                             // Target mode: double-tap toggles continuous singing-back
                             // for this slot's assigned target note.
                             if (activeListenSlot == 2) {
-                                activeListenSlot = null
-                                listenTimeRemaining = 0
-                                pitchTracker.stop()
+                                stopMicrophoneAction()
                             } else {
                                 beginListeningSlot(2, target)
                             }
                         } else {
-                            val hasPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
-                            if (hasPermission) {
-                                startRecording(2, pitchTracker, scope, onStart = { slot2 = null }, onUpdate = { recordingSlot = it }, onTimeUpdate = { recordingTimeRemaining = it }, onFinished = { id, estimate ->
-                                    if (estimate != null) {
-                                        val nearestMidi = estimate.midi.roundToInt()
-                                        val centsFromNearest = (estimate.midi - nearestMidi) * 100
-                                        val spelled = if (slot1 != null) {
-                                            SpelledPitch.spellRelative(slot1!!.pitch, nearestMidi)
-                                        } else {
-                                            SpelledPitch.fromMidi(nearestMidi)
-                                        }
-                                        val data = PitchData(spelled, centsFromNearest, estimate.midi)
-                                        if (id == 2) slot2 = data
-                                    }
-                                })
-                            } else {
-                                recordingSlot = 2
-                                permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-                            }
+                            requestMicrophoneAction(RequestedMicrophoneAction.Record(2))
                         }
                     }
                 )
@@ -647,6 +818,48 @@ internal fun HummingIntervalPopup(
                     }
                 }
             }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TessituraCalibrationCard(
+    message: String,
+    detail: String,
+    onRetry: (() -> Unit)? = null,
+    onCancel: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = message,
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = detail,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                textAlign = TextAlign.Center
+            )
+            Row(horizontalArrangement = Arrangement.Center) {
+                if (onRetry != null) {
+                    TextButton(onClick = onRetry) { Text("Retry") }
+                }
+                TextButton(onClick = onCancel) { Text("Cancel") }
             }
         }
     }
@@ -813,34 +1026,5 @@ internal fun PitchRollingIndicator(
             style = MaterialTheme.typography.labelSmall,
             color = Color.White.copy(alpha = 0.55f)
         )
-    }
-}
-
-private fun startRecording(
-    slotId: Int,
-    pitchTracker: MicrophonePitchTracker,
-    scope: kotlinx.coroutines.CoroutineScope,
-    onStart: (() -> Unit)?,
-    onUpdate: (Int?) -> Unit,
-    onTimeUpdate: (Int) -> Unit,
-    onFinished: (Int, MicrophonePitchTracker.PitchResult.Estimate?) -> Unit
-) {
-    onStart?.invoke()
-    onUpdate(slotId)
-    pitchTracker.start(60) // Target doesn't strictly matter for raw midi, but tracker requires it
-    
-    scope.launch {
-        var remaining = 3000
-        while (remaining > 0) {
-            onTimeUpdate(remaining)
-            delay(100)
-            remaining -= 100
-        }
-        
-        val finalResult = pitchTracker.pitchFlow.value
-        pitchTracker.stop()
-        onUpdate(null)
-        
-        onFinished(slotId, finalResult as? MicrophonePitchTracker.PitchResult.Estimate)
     }
 }

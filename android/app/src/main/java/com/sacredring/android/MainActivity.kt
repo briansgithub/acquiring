@@ -267,7 +267,6 @@ fun MainScreen(db: AppDatabase) {
     var globalTranspose by remember { mutableStateOf(AudioEngine.globalTranspose) }
     var singingTargetRequest by remember { mutableStateOf<SingingTargetRequest?>(null) }
     var singingTargetRequestId by remember { mutableStateOf(0) }
-    var calibrateAction by remember { mutableStateOf<() -> Unit>({}) }
     var tessituraShiftOctaves by remember { mutableStateOf(0) }
     
     var titleOffset by remember { mutableStateOf(0) }
@@ -750,14 +749,6 @@ fun MainScreen(db: AppDatabase) {
                         singingTargetRequestId++
                         singingTargetRequest = request.copy(requestId = singingTargetRequestId)
                     },
-                    onCalibrateActionChanged = { calibrateAction = it },
-                    onCalibrationHummed = { hummedMidi ->
-                        calculateSectionTessituraShift(
-                            comfortableMidi = hummedMidi,
-                            sectionRootMidis = selectedSectionRootMidis,
-                            globalTranspose = globalTranspose
-                        )?.let { tessituraShiftOctaves = it }
-                    },
                     onBack = returnToParent
                 )
             }
@@ -766,10 +757,18 @@ fun MainScreen(db: AppDatabase) {
 
         HummingIntervalPopup(
             modifier = Modifier.align(Alignment.BottomCenter),
+            sectionSessionKey = singingSessionKey,
             targetRequest = singingTargetRequest,
             globalTranspose = globalTranspose,
             octaveShift = tessituraShiftOctaves,
-            onCalibrateRequested = { calibrateAction() },
+            canCalibrate = selectedSectionRootMidis.isNotEmpty(),
+            onCalibrationCaptured = { hummedMidi ->
+                calculateSectionTessituraShift(
+                    comfortableMidi = hummedMidi,
+                    sectionRootMidis = selectedSectionRootMidis,
+                    globalTranspose = globalTranspose
+                )?.let { tessituraShiftOctaves = it }
+            },
             onCalibrateResetRequested = {
                 tessituraShiftOctaves = 0
             }
@@ -1084,8 +1083,6 @@ fun SongDetailView(
     onTransposeChange: (Int) -> Unit,
     onArtistClick: (String) -> Unit,
     onSingingTargetsRequested: (SingingTargetRequest) -> Unit,
-    onCalibrateActionChanged: (() -> Unit) -> Unit,
-    onCalibrationHummed: (Double) -> Unit,
     onBack: () -> Unit
 ) {
     val sectionsInSongOrder = remember(sections) { sections.sectionsInSongOrder() }
@@ -1297,9 +1294,7 @@ fun SongDetailView(
                 sectionPicker = sectionPickerComposable,
                 transposePicker = transposePickerComposable,
                 globalTranspose = globalTranspose,
-                onSingingTargetsRequested = onSingingTargetsRequested,
-                onCalibrateActionChanged = onCalibrateActionChanged,
-                onCalibrationHummed = onCalibrationHummed
+                onSingingTargetsRequested = onSingingTargetsRequested
             )
         }
         }
@@ -1342,9 +1337,7 @@ fun QuizTab(
     sectionPicker: @Composable () -> Unit,
     transposePicker: @Composable () -> Unit,
     globalTranspose: Int,
-    onSingingTargetsRequested: (SingingTargetRequest) -> Unit,
-    onCalibrateActionChanged: (() -> Unit) -> Unit,
-    onCalibrationHummed: (Double) -> Unit
+    onSingingTargetsRequested: (SingingTargetRequest) -> Unit
 ) {
     val baseBpm = section.getBpm().toFloat().coerceIn(40f, 240f)
     var tempoPercent by remember(section) { mutableStateOf(100f) }
@@ -1966,36 +1959,6 @@ fun QuizTab(
         else resolveMelodyIntervalState(melody, currentMelodyNote.beat, section::getKeyAtBeat)
     }
 
-    val audiationTargets = remember(
-        currentChord,
-        chordRootIntervalState,
-        activeKey,
-        ionianContextKey,
-        globalTranspose,
-        isSimpleMode,
-        useRelativeIonianContext
-    ) {
-        if (isSimpleMode) {
-            chordRootIntervalState?.let {
-                listOf(
-                    AudiationTarget(
-                        id = 0,
-                        label = currentRootDegreeLabel,
-                        untransposedMidi = currentRootPreviewAudioNote,
-                        transposedMidi = currentRootPreviewAudioNote + globalTranspose
-                    )
-                )
-            } ?: emptyList()
-        } else { currentChord?.let { chord -> val notes = ChordInterpreter.getChordNotes(chord, activeKey); val rootMidi = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull() ?: 0
-            val spelledRoot = ChordInterpreter.resolveChordRoot(chord, activeKey)?.pitch
-            notes.mapIndexed { index, note ->
-                val label = if (useRelativeIonianContext) (spelledRoot?.let { ionianContextDegreeLabel(note, it, ionianContextKey) } ?: ionianContextDegreeLabel(note, ionianContextKey)) else MusicTheory.getRelativeDegreeLabel(note, rootMidi)
-                val previewNote = if (useRelativeIonianContext) (spelledRoot?.let { ionianContextPreviewAudioNote(note, it, ionianContextKey) } ?: ionianContextPreviewAudioNote(note, ionianContextKey)) ?: note else note
-                AudiationTarget(id = index, label = label, untransposedMidi = previewNote, transposedMidi = previewNote + globalTranspose)
-            } } ?: emptyList()
-        }
-    }
-
     val density = androidx.compose.ui.platform.LocalDensity.current
 
     fun intervalPreviewNote(pitch: SpelledPitch): Int {
@@ -2039,20 +2002,6 @@ fun QuizTab(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        AudiationPitchPracticeContainer(
-            targets = audiationTargets,
-            onTargetSelected = {
-                isPlaying = false
-                hasPausedTimelinePlayback = false
-                resumeAfterTempoZero = false
-                activeNoteReplayJob?.cancel()
-                intervalPreviewJob?.cancel()
-                AudioEngine.stopAllPlayback()
-            },
-            onSessionCanceled = {},
-            onCalibrated = onCalibrationHummed
-        ) { _, _, onCalibrateRequested, _ ->
-            onCalibrateActionChanged(onCalibrateRequested)
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -2542,7 +2491,6 @@ fun QuizTab(
                     Spacer(modifier = Modifier.height(72.dp))
                 }
             }
-        }
 
         Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             Box(modifier = Modifier.align(Alignment.BottomStart).offset(x = (-8).dp, y = (-88).dp)) { waveformPickerComposable() }
