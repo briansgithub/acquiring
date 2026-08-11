@@ -75,12 +75,17 @@ class CircuitBreaker {
 }
 
 /** Retry a single operation. Permanent errors are not retried. */
-async function withRetry(fn, { retries = 3, baseMs = 2000, maxMs = 120000, onRetry = null } = {}) {
+async function withRetry(fn, {
+  retries = 3, baseMs = 2000, maxMs = 120000, onRetry = null, isPermanent = null,
+} = {}) {
   let delay = baseMs;
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
       return await fn();
     } catch (err) {
+      // Callers can mark an otherwise-transient status permanent for their
+      // endpoint (e.g. artist pages answer "no such artist" with a 500).
+      if (isPermanent?.(err)) throw err;
       const kind = classifyError(err);
       if (kind === 'permanent' || attempt === retries) throw err;
       const wait = kind === 'rate-limit' || kind === 'blocked'
