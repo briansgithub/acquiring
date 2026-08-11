@@ -749,6 +749,7 @@ fun MainScreen(db: AppDatabase) {
                         singingTargetRequestId++
                         singingTargetRequest = request.copy(requestId = singingTargetRequestId)
                     },
+                    tessituraShiftOctaves = tessituraShiftOctaves,
                     onBack = returnToParent
                 )
             }
@@ -1083,6 +1084,7 @@ fun SongDetailView(
     onTransposeChange: (Int) -> Unit,
     onArtistClick: (String) -> Unit,
     onSingingTargetsRequested: (SingingTargetRequest) -> Unit,
+    tessituraShiftOctaves: Int,
     onBack: () -> Unit
 ) {
     val sectionsInSongOrder = remember(sections) { sections.sectionsInSongOrder() }
@@ -1294,7 +1296,8 @@ fun SongDetailView(
                 sectionPicker = sectionPickerComposable,
                 transposePicker = transposePickerComposable,
                 globalTranspose = globalTranspose,
-                onSingingTargetsRequested = onSingingTargetsRequested
+                onSingingTargetsRequested = onSingingTargetsRequested,
+                tessituraShiftOctaves = tessituraShiftOctaves
             )
         }
         }
@@ -1337,9 +1340,11 @@ fun QuizTab(
     sectionPicker: @Composable () -> Unit,
     transposePicker: @Composable () -> Unit,
     globalTranspose: Int,
-    onSingingTargetsRequested: (SingingTargetRequest) -> Unit
+    onSingingTargetsRequested: (SingingTargetRequest) -> Unit,
+    tessituraShiftOctaves: Int
 ) {
     val baseBpm = section.getBpm().toFloat().coerceIn(40f, 240f)
+    val isTessituraAdjusted = tessituraShiftOctaves != 0
     var tempoPercent by remember(section) { mutableStateOf(100f) }
     val bpm = (baseBpm * tempoPercent / 100f).toDouble()
 
@@ -2277,7 +2282,12 @@ fun QuizTab(
                                             fontWeight = FontWeight.Bold,
                                             maxLines = 1
                                         )
-                                        if (rootIntervalEnabled) DoubleTapHint(modifier = Modifier.padding(4.dp))
+                                        if (rootIntervalEnabled) {
+                                            DoubleTapHint(
+                                                modifier = Modifier.padding(4.dp),
+                                                isTessituraAdjusted = isTessituraAdjusted
+                                            )
+                                        }
                                     }
                                 }
                                 Surface(
@@ -2321,7 +2331,12 @@ fun QuizTab(
                                                 RomanNumeralText(display = romanDisplay, fontSize = 64.sp, modifier = Modifier.fillMaxWidth())
                                             }
                                         }
-                                        if (rootAudioNote > 0) DoubleTapHint(modifier = Modifier.padding(4.dp))
+                                        if (rootAudioNote > 0) {
+                                            DoubleTapHint(
+                                                modifier = Modifier.padding(4.dp),
+                                                isTessituraAdjusted = isTessituraAdjusted
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -2421,7 +2436,12 @@ fun QuizTab(
                                                 )
                                             }
                                         }
-                                        if (melodyIntervalState != null) DoubleTapHint(modifier = Modifier.padding(4.dp))
+                                        if (melodyIntervalState != null) {
+                                            DoubleTapHint(
+                                                modifier = Modifier.padding(4.dp),
+                                                isTessituraAdjusted = isTessituraAdjusted
+                                            )
+                                        }
                                     }
                                 }
                                 Spacer(Modifier.height(8.dp))
@@ -2465,7 +2485,10 @@ fun QuizTab(
                                                     contentColor = MaterialTheme.colorScheme.onPrimary
                                                 ) {
                                                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { ScaleDegreeText(label = internalLabel, fontSize = degreeFontSize, modifier = Modifier.fillMaxWidth(), minFontSize = 12.sp)
-                                                        DoubleTapHint(modifier = Modifier.padding(2.dp)) }
+                                                        DoubleTapHint(
+                                                            modifier = Modifier.padding(2.dp),
+                                                            isTessituraAdjusted = isTessituraAdjusted
+                                                        ) }
                                                 } }
                                         } }
                                     }

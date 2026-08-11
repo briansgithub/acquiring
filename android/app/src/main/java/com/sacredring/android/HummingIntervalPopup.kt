@@ -38,6 +38,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.currentCoroutineContext
@@ -91,6 +92,7 @@ internal fun HummingIntervalPopup(
     onCalibrateResetRequested: () -> Unit = {}
 ) {
     var isExpanded by remember { mutableStateOf(false) }
+    var clearAfterCollapse by remember { mutableStateOf(false) }
     var slot1 by remember { mutableStateOf<PitchData?>(null) }
     var slot2 by remember { mutableStateOf<PitchData?>(null) }
     var activeTarget by remember { mutableStateOf<SingingTargetRequest?>(null) }
@@ -167,6 +169,14 @@ internal fun HummingIntervalPopup(
         pitchTracker.stop()
     }
 
+    fun clearCollapsedToolState() {
+        stopMicrophoneAction()
+        activeTarget = null
+        slot1 = null
+        slot2 = null
+        clearAfterCollapse = false
+    }
+
     fun activateMicrophoneAction(requested: RequestedMicrophoneAction) {
         recordingSlot = null
         recordingTimeRemaining = 0
@@ -230,7 +240,7 @@ internal fun HummingIntervalPopup(
         }
     }
 
-    // Shared by the manual Pitch 1/Pitch 2 double-tap handlers and the
+    // Shared by the manual target-slot double-tap handlers and the
     // auto-start below: begin continuous singing-back for the given slot,
     // scored against that slot's own target note.
     fun beginListeningSlot(slotId: Int, target: SingingTargetRequest) {
@@ -241,12 +251,13 @@ internal fun HummingIntervalPopup(
     // Double-tapping a melody/root relative-interval object elsewhere in the quiz
     // hands us its two target notes here: expand the tool and assign the first
     // note to the left slot and the second to the middle slot as reference
-    // labels. The user can double-tap Pitch 1 or Pitch 2 to begin singing back
+    // labels. The user can double-tap either target slot to begin singing back
     // and checking against that slot's target, just like double-tapping a
-    // scale-degree object — and Pitch 1 also starts automatically shortly
+    // scale-degree object — and the first target also starts automatically shortly
     // after the tool finishes expanding, so singing can begin right away.
     LaunchedEffect(sectionSessionKey, targetRequest?.requestId) {
         val request = targetRequest
+        clearAfterCollapse = false
         stopMicrophoneAction()
         if (request == null) {
             activeTarget = null
@@ -268,6 +279,15 @@ internal fun HummingIntervalPopup(
             microphoneAction is ActiveMicrophoneAction.Idle
         ) {
             beginListeningSlot(1, request)
+        }
+    }
+
+    // Keep the visible targets and status in place while the exit transition
+    // runs; clearing them earlier made the collapsing tool flash blank.
+    LaunchedEffect(isExpanded, clearAfterCollapse) {
+        if (!isExpanded && clearAfterCollapse) {
+            delay(EXPAND_ANIMATION_MS.toLong())
+            if (!isExpanded && clearAfterCollapse) clearCollapsedToolState()
         }
     }
 
@@ -300,7 +320,7 @@ internal fun HummingIntervalPopup(
     // Every microphone feature is represented by exactly one action. Switching
     // actions cancels the previous effect before the next one starts, so a late
     // permission result or capture cannot revive an older session.
-    LaunchedEffect(microphoneAction, isExpanded) {
+    LaunchedEffect(microphoneAction) {
         val action = microphoneAction
         try {
             when (action) {
@@ -360,10 +380,6 @@ internal fun HummingIntervalPopup(
                 }
 
                 ActiveMicrophoneAction.FlipFlop -> {
-                    if (!isExpanded) {
-                        microphoneAction = ActiveMicrophoneAction.Idle
-                        return@LaunchedEffect
-                    }
                     var nextSlot = 1
                     while (
                         microphoneAction is ActiveMicrophoneAction.FlipFlop &&
@@ -503,7 +519,12 @@ internal fun HummingIntervalPopup(
             .fillMaxWidth()
             .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.95f))
-            .clickable { if (!isExpanded) isExpanded = true }
+            .clickable {
+                if (!isExpanded) {
+                    clearAfterCollapse = false
+                    isExpanded = true
+                }
+            }
             .padding(8.dp)
     ) {
         // Handle/Header
@@ -516,10 +537,7 @@ internal fun HummingIntervalPopup(
         ) {
             if (isExpanded) {
                 IconButton(onClick = {
-                    stopMicrophoneAction()
-                    activeTarget = null
-                    slot1 = null
-                    slot2 = null
+                    clearAfterCollapse = true
                     isExpanded = false
                 }) {
                     Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Collapse")
@@ -614,33 +632,49 @@ internal fun HummingIntervalPopup(
                     }
                 }
 
-                when (val status = calibrationStatus) {
-                    TessituraCalibrationStatus.Idle -> Unit
-                    TessituraCalibrationStatus.AwaitingPermission -> {
-                        TessituraCalibrationCard(
-                            message = "Microphone permission is needed to capture a comfortable pitch.",
-                            detail = "Waiting for permission…",
-                            onCancel = { stopMicrophoneAction() }
-                        )
-                    }
-                    is TessituraCalibrationStatus.Capturing -> {
-                        TessituraCalibrationCard(
-                            message = "Hum one comfortable pitch",
-                            detail = if (status.hasSignal) {
-                                "Capturing… ${"%.1f".format(status.remainingMs / 1000f)}s"
-                            } else {
-                                "Waiting for signal…"
-                            },
-                            onCancel = { stopMicrophoneAction() }
-                        )
-                    }
-                    is TessituraCalibrationStatus.Error -> {
-                        TessituraCalibrationCard(
-                            message = status.reason,
-                            detail = "Your previous tessitura setting is unchanged.",
-                            onRetry = { requestMicrophoneAction(RequestedMicrophoneAction.Calibrate) },
-                            onCancel = { stopMicrophoneAction() }
-                        )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(0.dp)
+                        .zIndex(1f)
+                ) {
+                    when (val status = calibrationStatus) {
+                        TessituraCalibrationStatus.Idle -> Unit
+                        TessituraCalibrationStatus.AwaitingPermission -> {
+                            TessituraCalibrationCard(
+                                modifier = Modifier
+                                    .align(Alignment.TopCenter)
+                                    .offset(y = 28.dp),
+                                message = "Microphone permission is needed to capture a comfortable pitch.",
+                                detail = "Waiting for permission…",
+                                onCancel = { stopMicrophoneAction() }
+                            )
+                        }
+                        is TessituraCalibrationStatus.Capturing -> {
+                            TessituraCalibrationCard(
+                                modifier = Modifier
+                                    .align(Alignment.TopCenter)
+                                    .offset(y = 28.dp),
+                                message = "Hum one comfortable pitch",
+                                detail = if (status.hasSignal) {
+                                    "Capturing… ${"%.1f".format(status.remainingMs / 1000f)}s"
+                                } else {
+                                    "Waiting for signal…"
+                                },
+                                onCancel = { stopMicrophoneAction() }
+                            )
+                        }
+                        is TessituraCalibrationStatus.Error -> {
+                            TessituraCalibrationCard(
+                                modifier = Modifier
+                                    .align(Alignment.TopCenter)
+                                    .offset(y = 28.dp),
+                                message = status.reason,
+                                detail = "Your previous tessitura setting is unchanged.",
+                                onRetry = { requestMicrophoneAction(RequestedMicrophoneAction.Calibrate) },
+                                onCancel = { stopMicrophoneAction() }
+                            )
+                        }
                     }
                 }
 
@@ -653,11 +687,12 @@ internal fun HummingIntervalPopup(
                 ) {
                 // Slot 1
                 HummingSlotView(
-                    label = "Pitch 1",
+                    label = activeTarget?.first?.scaleDegreeLabel.orEmpty(),
                     data = displayedSlot1,
                     isRecording = recordingSlot == 1,
                     isListening = activeListenSlot == 1,
                     isInteractionEnabled = !flipFlopEnabled,
+                    isTessituraAdjusted = activeTarget?.first != null && octaveShift != 0,
                     recordingTimeRemaining = if (recordingSlot == 1) recordingTimeRemaining else if (activeListenSlot == 1) listenTimeRemaining else 0,
                     onSingleClick = {
                         val assignedTarget = activeTarget?.first
@@ -699,11 +734,12 @@ internal fun HummingIntervalPopup(
 
                 // Slot 2
                 HummingSlotView(
-                    label = "Pitch 2",
+                    label = activeTarget?.second?.scaleDegreeLabel.orEmpty(),
                     data = displayedSlot2,
                     isRecording = recordingSlot == 2,
                     isListening = activeListenSlot == 2,
                     isInteractionEnabled = !flipFlopEnabled,
+                    isTessituraAdjusted = activeTarget?.second != null && octaveShift != 0,
                     recordingTimeRemaining = if (recordingSlot == 2) recordingTimeRemaining else if (activeListenSlot == 2) listenTimeRemaining else 0,
                     onSingleClick = {
                         val assignedTarget = activeTarget?.second
@@ -825,13 +861,14 @@ internal fun HummingIntervalPopup(
 
 @Composable
 private fun TessituraCalibrationCard(
+    modifier: Modifier = Modifier,
     message: String,
     detail: String,
     onRetry: (() -> Unit)? = null,
     onCancel: () -> Unit
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 6.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
@@ -880,6 +917,7 @@ internal fun RowScope.HummingSlotView(
     isRecording: Boolean,
     isListening: Boolean = false,
     isInteractionEnabled: Boolean,
+    isTessituraAdjusted: Boolean = false,
     recordingTimeRemaining: Int,
     onSingleClick: () -> Unit,
     onDoubleClick: () -> Unit
@@ -942,7 +980,12 @@ internal fun RowScope.HummingSlotView(
                 }
             }
         }
-        if (isInteractionEnabled && !isRecording) DoubleTapHint(modifier = Modifier.padding(6.dp))
+        if (isInteractionEnabled && !isRecording) {
+            DoubleTapHint(
+                modifier = Modifier.padding(6.dp),
+                isTessituraAdjusted = isTessituraAdjusted
+            )
+        }
     }
 }
 
