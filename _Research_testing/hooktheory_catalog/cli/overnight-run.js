@@ -235,8 +235,10 @@ async function phaseArtistSweep(args, state) {
     log,
     shouldStop,
     onFound: (f) => {
+      // Flush every find, not every 25th: finds are rare (~66 in 3k artists)
+      // and the file is tiny, so batching only risks losing them to a crash.
       foundAll.push(f);
-      if (foundAll.length % 25 === 0) fs.writeFileSync(ARTIST_FOUND_FILE, JSON.stringify(foundAll, null, 2));
+      fs.writeFileSync(ARTIST_FOUND_FILE, JSON.stringify(foundAll, null, 2));
     },
     onProgress: (p) => {
       state.setPhase('artist-sweep', { status: 'running', progressIndex: p.index, checked: p.checked, found: p.found });
@@ -247,7 +249,11 @@ async function phaseArtistSweep(args, state) {
   fs.writeFileSync(ARTIST_FOUND_FILE, JSON.stringify(foundAll, null, 2));
   log(`  sweep finished: checked=${checked} failed=${failed} newSongs=${found.length}`);
 
-  if (found.length) {
+  // Ingest the accumulated file, not just this session's finds: after a
+  // restart `found` holds only what was discovered since resuming, so
+  // ingesting it would silently drop everything found before the crash.
+  // upsertSong is idempotent, so re-ingesting earlier finds is free.
+  if (foundAll.length) {
     const db2 = openDb();
     let inserted = 0;
     const tx = db2.transaction((rows) => {
@@ -256,10 +262,10 @@ async function phaseArtistSweep(args, state) {
         if (parsed && upsertSong(db2, { ...parsed, discovery_source: 'artist-page' })) inserted += 1;
       }
     });
-    tx(found);
+    tx(foundAll);
     db2.close();
-    log(`  ingested ${inserted} artist-page songs`);
-    return { checked, failed, found: found.length, inserted };
+    log(`  ingested ${inserted} new artist-page songs (${foundAll.length} total found across all attempts)`);
+    return { checked, failed, found: foundAll.length, inserted };
   }
   return { checked, failed, found: 0, inserted: 0 };
 }
