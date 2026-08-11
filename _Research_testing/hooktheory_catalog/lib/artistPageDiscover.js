@@ -71,6 +71,28 @@ async function detectArtistUrlPattern(probeArtistSlug, { minLinks = 3, log = () 
 }
 
 /**
+ * hooktheory.com answers a nonexistent ARTIST page with HTTP 500, not 404.
+ * Confirmed by probe: `beatles` -> 500 while `the-beatles` -> 200, and
+ * `one-republic` -> 500 while `onerepublic` -> 200. Our artist_slug values are
+ * derived from display names, so any name carrying an accent, a leading "The",
+ * or bracket/symbol characters ("f(x)", "Rosalía", "R.E.M.") yields a slug the
+ * site has no page for.
+ *
+ * Left classified as transient this costs 4 requests and ~24s of backoff per
+ * bad slug, and the failures count toward the circuit breaker — roughly 460 of
+ * 12k artists, i.e. ~1.8k pointless requests and hours of sleeping. Treating it
+ * as a soft 404 is both faster and materially kinder to the host.
+ *
+ * Deliberately scoped to artist-page fetches: a 500 from the harvest/fetch
+ * endpoints really can be transient and must keep its retries.
+ */
+function isSoftNotFound(err) {
+  const status = err?.status;
+  if (status === 500) return true;
+  return /\b500\b/.test(String(err?.message || ''));
+}
+
+/**
  * Walk every artist, collecting song URLs we don't already hold.
  * Checkpoints through onProgress so a restart can resume mid-sweep.
  */
@@ -81,6 +103,8 @@ async function sweepArtists(artistSlugs, buildUrl, {
   startIndex = 0,
   onProgress = null,
   onFound = null,
+  deadArtists = new Set(),
+  onDeadArtist = null,
   log = () => {},
   shouldStop = () => false,
 } = {}) {
@@ -106,10 +130,15 @@ async function sweepArtists(artistSlugs, buildUrl, {
     // and avoids tripping the circuit breaker on failures that aren't our fault.
     if (isScratchUpload(artist, '')) { skipped += 1; continue; }
 
+    // Already proven to have no page — costs zero requests on a resumed sweep.
+    if (deadArtists.has(artist)) { skipped += 1; continue; }
+
     try {
       const html = await withRetry(() => fetchHtml(buildUrl(artist)), {
         retries: 3,
         onRetry: (r) => log(`  retry ${artist} (${r.kind}) wait=${Math.round(r.waitMs / 1000)}s`),
+        // A 500 here means "no such artist"; retrying it is pure waste.
+        isPermanent: isSoftNotFound,
       });
       breaker.recordSuccess();
       checked += 1;
@@ -121,6 +150,18 @@ async function sweepArtists(artistSlugs, buildUrl, {
         onFound?.({ slug, url, viaArtist: artist });
       }
     } catch (err) {
+      // Soft 404: record it so a resume never re-probes, and keep it away from
+      // the breaker — a run of nonexistent artists is expected, not a signal
+      // that the host is unhappy with us.
+      if (isSoftNotFound(err)) {
+        failed += 1;
+        deadArtists.add(artist);
+        onDeadArtist?.(artist);
+        breaker.recordFailure('permanent');
+        if (i % 25 === 0) onProgress?.({ index: i, checked, failed, found: found.length });
+        await sleep(Math.max(600, intervalMs + (Math.random() * jitterMs * 2 - jitterMs)));
+        continue;
+      }
       const kind = classifyError(err);
       failed += 1;
       if (kind !== 'permanent') log(`  fail ${artist}: ${kind} ${err.message}`);

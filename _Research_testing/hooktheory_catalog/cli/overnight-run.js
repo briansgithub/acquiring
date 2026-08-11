@@ -36,6 +36,8 @@ const STOP_FILE = dataPath('.overnight_stop');
 const LOG_FILE = dataPath('overnight_run.log');
 const WAYBACK_CACHE = path.join(dataPath('.'), 'wayback', 'cdx_urls.txt');
 const ARTIST_FOUND_FILE = path.join(dataPath('.'), 'wayback', 'artist-sweep-found.json');
+const UNKNOWN_ARTISTS_FILE = path.join(dataPath('.'), 'wayback', 'unknown-artists.json');
+const DEAD_ARTISTS_FILE = path.join(dataPath('.'), 'wayback', 'artist-no-page.json');
 
 const GH_REPO = 'briansgithub/diatonic_ring';
 const GH_TAG = 'v1.0.0-data';
@@ -184,6 +186,65 @@ function phasePublish(args) {
   return { sizeMb };
 }
 
+/**
+ * Meili lookup for every dead row we have never alt-checked, then promote the
+ * harvestable hits into `songs` so the harvest phases pick them up. Without the
+ * promotion step find-alternatives only fills `alt_candidates` and nothing is
+ * ever fetched.
+ */
+function phaseAltLookup(args) {
+  if (args.dryRun) { log('  (dry-run) would alt-lookup unchecked dead rows'); return { dryRun: true }; }
+
+  const pending = openDb();
+  const before = pending.prepare(
+    "SELECT COUNT(*) c FROM songs WHERE status = 'dead' AND alt_checked_at IS NULL",
+  ).get().c;
+  pending.close();
+  log(`  ${before} dead rows never alt-checked`);
+
+  const out = execFileSync('node', ['cli/find-alternatives.js'], {
+    cwd: CATALOG_ROOT, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024,
+  });
+  log(`  ${out.trim().split('\n').slice(-1)[0]}`);
+
+  // Promote top-ranked candidates that we do not already hold a playable copy of.
+  const db = openDb();
+  const rows = db.prepare(`
+    SELECT candidate_url FROM alt_candidates c
+    WHERE c.candidate_rank = 1
+      AND c.candidate_url IS NOT NULL
+      AND c.candidate_slug NOT IN (SELECT slug FROM songs WHERE harvest_mode IS NOT NULL)
+  `).all();
+  let inserted = 0;
+  const tx = db.transaction((list) => {
+    for (const r of list) {
+      const parsed = parseTheoryTabUrl(r.candidate_url);
+      if (parsed && upsertSong(db, { ...parsed, discovery_source: 'alt-lookup' })) inserted += 1;
+    }
+  });
+  tx(rows);
+  db.close();
+  log(`  promoted ${inserted} new songs from ${rows.length} alternative candidates`);
+  return { deadUnchecked: before, candidates: rows.length, inserted };
+}
+
+/**
+ * Artists that exist on hooktheory.com but that we have never held a single
+ * song for. The artist sweep only walks artists already in `songs`, so without
+ * this an undiscovered artist stays invisible forever. Costs hooktheory.com
+ * zero requests (archive.org CDX only).
+ */
+function phaseUnknownArtists(args) {
+  if (args.dryRun) { log('  (dry-run) would probe archive.org for unknown artists'); return { dryRun: true }; }
+  const out = execFileSync('node', ['scripts/discover-unknown-artists.js'], {
+    cwd: CATALOG_ROOT, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024,
+  });
+  log(`  ${out.trim().split('\n').slice(-4).join(' | ')}`);
+  const count = fs.existsSync(UNKNOWN_ARTISTS_FILE)
+    ? JSON.parse(fs.readFileSync(UNKNOWN_ARTISTS_FILE, 'utf8')).length : 0;
+  return { unknownArtists: count };
+}
+
 async function phaseArtistDetect(args, state) {
   if (args.dryRun) { log('  (dry-run) would probe artist URL patterns'); return { dryRun: true }; }
   const build = await detectArtistUrlPattern(PROBE_ARTIST, { log });
@@ -222,16 +283,38 @@ async function phaseArtistSweep(args, state) {
   const knownSlugs = new Set(db.prepare('SELECT slug FROM songs').all().map((r) => r.slug));
   db.close();
 
+  // Append artists we hold no song for at all (from the unknown-artists probe).
+  // These go last: the ordering above front-loads yield, and an artist we have
+  // never seen is by definition not represented in that density ranking.
+  if (fs.existsSync(UNKNOWN_ARTISTS_FILE)) {
+    const seen = new Set(artists);
+    const extra = JSON.parse(fs.readFileSync(UNKNOWN_ARTISTS_FILE, 'utf8'))
+      .filter((a) => a && !seen.has(a));
+    artists.push(...extra);
+    log(`  + ${extra.length} never-seen artists from unknown-artists probe`);
+  }
+
   const resumeAt = state.phase('artist-sweep').progressIndex || 0;
   log(`  sweeping ${artists.length} artists (resume at ${resumeAt}), pattern ${prefix}<artist>`);
 
   const foundAll = fs.existsSync(ARTIST_FOUND_FILE)
     ? JSON.parse(fs.readFileSync(ARTIST_FOUND_FILE, 'utf8')) : [];
 
+  // Artists the site has no page for (HTTP 500 soft-404). Persisted so a
+  // restart skips them without spending a request each.
+  const deadArtists = new Set(
+    fs.existsSync(DEAD_ARTISTS_FILE)
+      ? JSON.parse(fs.readFileSync(DEAD_ARTISTS_FILE, 'utf8')) : [],
+  );
+  if (deadArtists.size) log(`  skipping ${deadArtists.size} artists already known to have no page`);
+  let deadDirty = false;
+
   const { found, checked, failed } = await sweepArtists(artists, buildUrl, {
     knownSlugs,
     startIndex: resumeAt,
     intervalMs: Number(process.env.ARTIST_INTERVAL_MS || 1200),
+    deadArtists,
+    onDeadArtist: () => { deadDirty = true; },
     log,
     shouldStop,
     onFound: (f) => {
@@ -242,9 +325,17 @@ async function phaseArtistSweep(args, state) {
     },
     onProgress: (p) => {
       state.setPhase('artist-sweep', { status: 'running', progressIndex: p.index, checked: p.checked, found: p.found });
+      // Flush the dead list on the same checkpoint cadence as progress, so a
+      // kill mid-sweep never replays those requests.
+      if (deadDirty) {
+        fs.writeFileSync(DEAD_ARTISTS_FILE, JSON.stringify([...deadArtists], null, 2));
+        deadDirty = false;
+      }
       if (p.index % 250 === 0) log(`  artist ${p.index}/${artists.length} checked=${p.checked} failed=${p.failed} found=${p.found}`);
     },
   });
+
+  fs.writeFileSync(DEAD_ARTISTS_FILE, JSON.stringify([...deadArtists], null, 2));
 
   fs.writeFileSync(ARTIST_FOUND_FILE, JSON.stringify(foundAll, null, 2));
   log(`  sweep finished: checked=${checked} failed=${failed} newSongs=${found.length}`);
@@ -326,6 +417,8 @@ async function main() {
 
   log(`########## overnight-run start (restart #${state.data.restarts}) args=${JSON.stringify(args)} ##########`);
 
+  await phase(state, 'alt-lookup', args, () => phaseAltLookup(args));
+  await phase(state, 'alt-harvest', args, () => phaseHarvest(args, 'alt-lookup'));
   await phase(state, 'wayback-ingest', args, () => phaseWaybackIngest(args));
   await phase(state, 'wayback-harvest', args, () => phaseHarvest(args, 'wayback'));
   await phase(state, 'verify-1', args, () => phaseVerify(args));
@@ -333,6 +426,7 @@ async function main() {
   await phase(state, 'publish-1', args, () => phasePublish(args));
 
   if (args.artistSweep) {
+    await phase(state, 'unknown-artists', args, () => phaseUnknownArtists(args));
     await phase(state, 'artist-detect', args, () => phaseArtistDetect(args, state));
     await phase(state, 'artist-sweep', args, () => phaseArtistSweep(args, state));
     await phase(state, 'artist-harvest', args, () => phaseHarvest(args, 'artist-page'));
