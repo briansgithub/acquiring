@@ -9,9 +9,13 @@ const {
     collectAndroidBrowseModes,
 } = require('../lib/androidCatalogSections');
 
-const sourceDbPath = path.join(__dirname, '../../../sacred_ring_data/catalog/hooktheory_catalog.db');
-const outputDbPath = path.join(__dirname, '../../../android/catalog.db');
-const outputGzPath = path.join(__dirname, '../../../android/catalog.db.gz');
+// See exportFullHarvestedRoomDatabase.js: __dirname-relative paths break when
+// run from a git worktree, which has no android/ and no populated data dir.
+const { getCatalogDir, getAndroidDir } = require('../../../lib/dataRoot');
+
+const sourceDbPath = path.join(getCatalogDir(), 'hooktheory_catalog.db');
+const outputDbPath = path.join(getAndroidDir(), 'catalog.db');
+const outputGzPath = path.join(getAndroidDir(), 'catalog.db.gz');
 
 if (fs.existsSync(outputDbPath)) fs.unlinkSync(outputDbPath);
 if (fs.existsSync(outputGzPath)) fs.unlinkSync(outputGzPath);

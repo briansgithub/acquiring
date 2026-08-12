@@ -30,7 +30,9 @@ const { discoverFromMeili } = require('../lib/discover');
 const { detectArtistUrlPattern, sweepArtists } = require('../lib/artistPageDiscover');
 
 const CATALOG_ROOT = path.join(__dirname, '..');
-const REPO_ROOT = path.join(__dirname, '../../..');
+// android/ is a nested independent repo, absent from any git worktree of this
+// repo — resolve it from the configured data root instead of __dirname.
+const { getAndroidDir } = require('../../../lib/dataRoot');
 const STATE_FILE = dataPath('overnight_run_state.json');
 const STOP_FILE = dataPath('.overnight_stop');
 const LOG_FILE = dataPath('overnight_run.log');
@@ -158,7 +160,7 @@ function phaseExport(args) {
   log(`  ${out.trim().split('\n').slice(-2).join(' | ')}`);
 
   if (args.dropDeadRows) {
-    const dbPath = path.join(REPO_ROOT, 'android', 'catalog.db');
+    const dbPath = path.join(getAndroidDir(), 'catalog.db');
     const gzPath = `${dbPath}.gz`;
     const d = new Database(dbPath);
     const before = d.prepare('SELECT COUNT(*) c FROM songs').get().c;
@@ -185,7 +187,7 @@ function phaseExport(args) {
 function phasePublish(args) {
   if (!args.publish) { log('  publish not authorized for this run — skipping'); return { skipped: true }; }
   if (args.dryRun) { log('  (dry-run) would upload catalog.db.gz'); return { dryRun: true }; }
-  const assetPath = path.join(REPO_ROOT, 'android', 'catalog.db.gz');
+  const assetPath = path.join(getAndroidDir(), 'catalog.db.gz');
   if (!fs.existsSync(assetPath)) throw new Error(`missing asset ${assetPath}`);
   const sizeMb = (fs.statSync(assetPath).size / (1024 * 1024)).toFixed(1);
   log(`  uploading ${sizeMb} MB to ${GH_REPO}@${GH_TAG}`);
