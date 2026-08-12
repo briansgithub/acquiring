@@ -96,6 +96,7 @@ internal fun HummingIntervalPopup(
     canCalibrate: Boolean = true,
     onCalibrationCaptured: (Double) -> Unit = {},
     onCalibrateResetRequested: () -> Unit = {},
+    onOctaveShiftChange: (Int) -> Unit = {},
     pitchSource: PitchSource = LocalContext.current.applicationContext.let { appContext ->
         remember(appContext) { MicrophonePitchTracker(appContext) }
     },
@@ -621,36 +622,56 @@ internal fun HummingIntervalPopup(
                             ) {
                                 Text("🎤", fontSize = 14.sp)
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text("Match My Tessitura", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold)
+                                Text("Set Tessitura", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold)
                             }
                         }
                         Spacer(modifier = Modifier.width(6.dp))
                         val octaveShiftText = if (octaveShift > 0) "+$octaveShift" else "$octaveShift"
-                        Text(
-                            text = octaveShiftText,
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.semantics {
-                                contentDescription = "Tessitura shifted $octaveShift octaves from the song's actual pitch"
-                            }
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Box(
-                            modifier = Modifier
-                                .size(26.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
-                                .clickable {
-                                    if (calibrationStatus !is TessituraCalibrationStatus.Idle) {
-                                        stopMicrophoneAction()
-                                    }
-                                    onCalibrateResetRequested()
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(
+                                Icons.Default.KeyboardArrowUp,
+                                contentDescription = "Raise tessitura shift by one octave",
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .clickable { onOctaveShiftChange(octaveShift + 1) }
+                            )
+                            Text(
+                                text = octaveShiftText,
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.semantics {
+                                    contentDescription = "Tessitura shifted $octaveShift octaves from the song's actual pitch"
                                 }
-                                .semantics { contentDescription = "Clear tessitura calibration and reset to the default octave" },
-                            contentAlignment = Alignment.Center
+                            )
+                            Icon(
+                                Icons.Default.KeyboardArrowDown,
+                                contentDescription = "Lower tessitura shift by one octave",
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .clickable { onOctaveShiftChange(octaveShift - 1) }
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Surface(
+                            onClick = {
+                                if (calibrationStatus !is TessituraCalibrationStatus.Idle) {
+                                    stopMicrophoneAction()
+                                }
+                                onCalibrateResetRequested()
+                            },
+                            shape = RoundedCornerShape(50),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.semantics {
+                                contentDescription = "Clear tessitura calibration and reset to the default octave"
+                            }
                         ) {
-                            Text("✕", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(
+                                "Clear",
+                                style = MaterialTheme.typography.labelMedium,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                            )
                         }
                     }
 

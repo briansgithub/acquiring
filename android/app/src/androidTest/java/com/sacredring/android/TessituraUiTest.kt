@@ -110,7 +110,7 @@ class TessituraUiTest {
         setHummingContent()
         composeTestRule.mainClock.autoAdvance = false
 
-        composeTestRule.onNodeWithText("Match My Tessitura").performClick()
+        composeTestRule.onNodeWithText("Set Tessitura").performClick()
         composeTestRule.onNodeWithTag(TESSITURA_CALIBRATION_MODAL_TEST_TAG).assertExists()
         composeTestRule.onNodeWithTag(TESSITURA_CALIBRATION_CARD_TEST_TAG).assertExists()
 

@@ -762,7 +762,8 @@ internal fun MainScreen(
             },
             onCalibrateResetRequested = {
                 tessituraSessionViewModel.clearAdjustment()
-            }
+            },
+            onOctaveShiftChange = { tessituraSessionViewModel.updateShift(it) }
         )
     }
 }
