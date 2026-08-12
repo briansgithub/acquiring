@@ -1680,6 +1680,16 @@ fun QuizTab(
         }
     }
 
+    fun openSingleMelodySingingTarget(pitch: SpelledPitch, label: String) {
+        onSingingTargetsRequested(
+            SingingTargetRequest(
+                first = SingingTargetNote(intervalPreviewNote(pitch), label),
+                second = null,
+                requestId = 0
+            )
+        )
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
@@ -2044,11 +2054,19 @@ fun QuizTab(
                                                     .weight(1f)
                                                     .fillMaxHeight()
                                                     .semantics {
-                                                        contentDescription = "Play current melody note ${singleMelodyPitchCard.scaleDegreeLabel}"
+                                                        contentDescription = "Play current melody note ${singleMelodyPitchCard.scaleDegreeLabel}. Double tap to sing it back."
                                                     }
-                                                    .clickable {
-                                                        playSingleNotePreview(singleMelodyPitchCard.pitch)
-                                                    },
+                                                    .combinedClickable(
+                                                        onClick = {
+                                                            playSingleNotePreview(singleMelodyPitchCard.pitch)
+                                                        },
+                                                        onDoubleClick = {
+                                                            openSingleMelodySingingTarget(
+                                                                singleMelodyPitchCard.pitch,
+                                                                singleMelodyPitchCard.scaleDegreeLabel
+                                                            )
+                                                        }
+                                                    ),
                                                 shape = RoundedCornerShape(16.dp),
                                                 color = MaterialTheme.colorScheme.primary,
                                                 contentColor = MaterialTheme.colorScheme.onPrimary
@@ -2063,6 +2081,10 @@ fun QuizTab(
                                                         minFontSize = 12.sp,
                                                         modifier = Modifier.fillMaxSize(),
                                                         color = MaterialTheme.colorScheme.onPrimary
+                                                    )
+                                                    DoubleTapHint(
+                                                        modifier = Modifier.padding(4.dp),
+                                                        isTessituraAdjusted = isTessituraAdjusted
                                                     )
                                                 }
                                             }
@@ -2096,14 +2118,25 @@ fun QuizTab(
                                                     .height(30.dp)
                                                     .semantics {
                                                         contentDescription = when (pitchCard?.role) {
-                                                            MelodyPitchCardRole.PREVIOUS -> "Play prior melody note ${pitchCard.scaleDegreeLabel}"
-                                                            MelodyPitchCardRole.CURRENT -> "Play current melody note ${pitchCard.scaleDegreeLabel}"
+                                                            MelodyPitchCardRole.PREVIOUS -> "Play prior melody note ${pitchCard.scaleDegreeLabel}. Double tap to sing it back."
+                                                            MelodyPitchCardRole.CURRENT -> "Play current melody note ${pitchCard.scaleDegreeLabel}. Double tap to sing it back."
                                                             null -> "Melody note unavailable"
                                                         }
                                                     }
-                                                    .clickable(enabled = pitchCard != null) {
-                                                        pitchCard?.let { playSingleNotePreview(it.pitch) }
-                                                    },
+                                                    .combinedClickable(
+                                                        enabled = pitchCard != null,
+                                                        onClick = {
+                                                            pitchCard?.let { playSingleNotePreview(it.pitch) }
+                                                        },
+                                                        onDoubleClick = {
+                                                            pitchCard?.let {
+                                                                openSingleMelodySingingTarget(
+                                                                    it.pitch,
+                                                                    it.scaleDegreeLabel
+                                                                )
+                                                            }
+                                                        }
+                                                    ),
                                                 shape = RoundedCornerShape(16.dp),
                                                 color = MaterialTheme.colorScheme.primary,
                                                 contentColor = MaterialTheme.colorScheme.onPrimary
@@ -2122,6 +2155,12 @@ fun QuizTab(
                                                         )
                                                     } else {
                                                         Text("—", fontSize = 18.sp)
+                                                    }
+                                                    if (pitchCard != null) {
+                                                        DoubleTapHint(
+                                                            modifier = Modifier.padding(2.dp),
+                                                            isTessituraAdjusted = isTessituraAdjusted
+                                                        )
                                                     }
                                                 }
                                             }
