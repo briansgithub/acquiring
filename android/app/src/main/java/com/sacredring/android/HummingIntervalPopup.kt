@@ -710,24 +710,13 @@ internal fun HummingIntervalPopup(
                     isTessituraAdjusted = activeTarget?.first != null && octaveShift != 0,
                     recordingTimeRemaining = if (recordingSlot == 1) recordingTimeRemaining else if (activeListenSlot == 1) listenTimeRemaining else 0,
                     onSingleClick = {
-                        val assignedTarget = activeTarget?.first
-                        if (assignedTarget != null) {
+                        slot1?.let {
                             scope.launch {
-                                AudioEngine.playChord(
-                                    listOf(assignedTarget.targetPlaybackMidiInput(octaveShift)),
+                                AudioEngine.playExactFrequencies(
+                                    listOf(midiToFrequency(it.rawMidi)),
                                     durationMs = 1000,
                                     channel = AudioEngine.PlaybackChannel.PREVIEW
                                 )
-                            }
-                        } else {
-                            slot1?.let {
-                                scope.launch {
-                                    AudioEngine.playExactFrequencies(
-                                        listOf(midiToFrequency(it.rawMidi)),
-                                        durationMs = 1000,
-                                        channel = AudioEngine.PlaybackChannel.PREVIEW
-                                    )
-                                }
                             }
                         }
                     },
@@ -757,24 +746,13 @@ internal fun HummingIntervalPopup(
                     isTessituraAdjusted = activeTarget?.second != null && octaveShift != 0,
                     recordingTimeRemaining = if (recordingSlot == 2) recordingTimeRemaining else if (activeListenSlot == 2) listenTimeRemaining else 0,
                     onSingleClick = {
-                        val assignedTarget = activeTarget?.second
-                        if (assignedTarget != null) {
+                        slot2?.let {
                             scope.launch {
-                                AudioEngine.playChord(
-                                    listOf(assignedTarget.targetPlaybackMidiInput(octaveShift)),
+                                AudioEngine.playExactFrequencies(
+                                    listOf(midiToFrequency(it.rawMidi)),
                                     durationMs = 1000,
                                     channel = AudioEngine.PlaybackChannel.PREVIEW
                                 )
-                            }
-                        } else {
-                            slot2?.let {
-                                scope.launch {
-                                    AudioEngine.playExactFrequencies(
-                                        listOf(midiToFrequency(it.rawMidi)),
-                                        durationMs = 1000,
-                                        channel = AudioEngine.PlaybackChannel.PREVIEW
-                                    )
-                                }
                             }
                         }
                     },
@@ -811,27 +789,53 @@ internal fun HummingIntervalPopup(
                         .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp))
                         .testTag(SINGING_INTERVAL_RESULT_TEST_TAG)
                         .clickable(enabled = capturedSlot1 != null && capturedSlot2 != null) {
-                            val s1 = capturedSlot1
-                            val s2 = capturedSlot2
-                            if (s1 != null && s2 != null) {
+                            val firstTarget = activeTarget?.first
+                            val secondTarget = activeTarget?.second
+                            if (firstTarget != null && secondTarget != null) {
+                                val firstMidi = firstTarget.targetPlaybackMidiInput(octaveShift)
+                                val secondMidi = secondTarget.targetPlaybackMidiInput(octaveShift)
                                 scope.launch {
-                                    AudioEngine.playExactFrequencies(
-                                        listOf(midiToFrequency(s1.rawMidi)),
+                                    AudioEngine.playChord(
+                                        listOf(firstMidi),
                                         durationMs = 1000,
                                         channel = AudioEngine.PlaybackChannel.PREVIEW
                                     )
                                     delay(1000)
-                                    AudioEngine.playExactFrequencies(
-                                        listOf(midiToFrequency(s2.rawMidi)),
+                                    AudioEngine.playChord(
+                                        listOf(secondMidi),
                                         durationMs = 1000,
                                         channel = AudioEngine.PlaybackChannel.PREVIEW
                                     )
                                     delay(1000)
-                                    AudioEngine.playExactFrequencies(
-                                        listOf(midiToFrequency(s1.rawMidi), midiToFrequency(s2.rawMidi)),
+                                    AudioEngine.playChord(
+                                        listOf(firstMidi, secondMidi),
                                         durationMs = 1000,
                                         channel = AudioEngine.PlaybackChannel.PREVIEW
                                     )
+                                }
+                            } else {
+                                val s1 = capturedSlot1
+                                val s2 = capturedSlot2
+                                if (s1 != null && s2 != null) {
+                                    scope.launch {
+                                        AudioEngine.playExactFrequencies(
+                                            listOf(midiToFrequency(s1.rawMidi)),
+                                            durationMs = 1000,
+                                            channel = AudioEngine.PlaybackChannel.PREVIEW
+                                        )
+                                        delay(1000)
+                                        AudioEngine.playExactFrequencies(
+                                            listOf(midiToFrequency(s2.rawMidi)),
+                                            durationMs = 1000,
+                                            channel = AudioEngine.PlaybackChannel.PREVIEW
+                                        )
+                                        delay(1000)
+                                        AudioEngine.playExactFrequencies(
+                                            listOf(midiToFrequency(s1.rawMidi), midiToFrequency(s2.rawMidi)),
+                                            durationMs = 1000,
+                                            channel = AudioEngine.PlaybackChannel.PREVIEW
+                                        )
+                                    }
                                 }
                             }
                         }

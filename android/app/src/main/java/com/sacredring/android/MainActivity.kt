@@ -754,8 +754,9 @@ internal fun MainScreen(
             octaveShift = tessituraShiftOctaves,
             canCalibrate = selectedSectionRootMidis.isNotEmpty(),
             onCalibrationCaptured = { hummedMidi ->
-                calculateSectionTessituraShift(
+                calculateSingingTessituraShift(
                     comfortableMidi = hummedMidi,
+                    targetRequest = singingTargetRequest,
                     sectionRootMidis = selectedSectionRootMidis,
                     globalTranspose = globalTranspose
                 )?.let(tessituraSessionViewModel::updateShift)

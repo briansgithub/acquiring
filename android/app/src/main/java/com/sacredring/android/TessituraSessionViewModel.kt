@@ -26,7 +26,10 @@ internal class TessituraSessionViewModel : ViewModel() {
     }
 
     fun updateShift(octaves: Int) {
-        if (sessionKey != null) shiftOctaves = octaves
+        // Applied unconditionally: song and section navigation already reset the
+        // adjustment via enterSession/clearSession, so gating on a session key
+        // here only risks silently discarding a calibration the user just made.
+        shiftOctaves = octaves
     }
 
     fun clearAdjustment() {
