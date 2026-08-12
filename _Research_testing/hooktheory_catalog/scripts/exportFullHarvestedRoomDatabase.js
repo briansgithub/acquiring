@@ -9,10 +9,20 @@ const {
     collectAndroidBrowseModes,
 } = require('../lib/androidCatalogSections');
 
-const cacheDir = path.join(__dirname, '../../../sacred_ring_data/playback/.hooktheory_cache');
-const catalogDbPath = path.join(__dirname, '../../../sacred_ring_data/catalog/hooktheory_catalog.db');
-const outputDbPath = path.join(__dirname, '../../../android/catalog.db');
-const outputGzPath = path.join(__dirname, '../../../android/catalog.db.gz');
+// Resolve through dataRoot rather than __dirname: run from a git worktree,
+// __dirname-relative paths point inside the worktree, where sacred_ring_data
+// has no catalog DB and android/ does not exist at all. That is exactly how
+// the overnight run's export/publish phases failed.
+const {
+  getPlaybackCacheDir,
+  getCatalogDir,
+  getAndroidDir,
+} = require('../../../lib/dataRoot');
+
+const cacheDir = getPlaybackCacheDir();
+const catalogDbPath = path.join(getCatalogDir(), 'hooktheory_catalog.db');
+const outputDbPath = path.join(getAndroidDir(), 'catalog.db');
+const outputGzPath = path.join(getAndroidDir(), 'catalog.db.gz');
 
 if (!fs.existsSync(catalogDbPath)) {
     throw new Error(`Complexity source database is required: ${catalogDbPath}`);

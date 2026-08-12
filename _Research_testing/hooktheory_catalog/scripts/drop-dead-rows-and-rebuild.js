@@ -18,7 +18,9 @@ const { verifyAll } = require('../lib/verifyPlayable');
 const { dataPath } = require('../lib/paths');
 
 const CATALOG_ROOT = path.join(__dirname, '..');
-const REPO_ROOT = path.join(__dirname, '../../..');
+// Resolved from the data root, not __dirname: android/ is absent from git
+// worktrees of this repo, which is how the overnight export/publish failed.
+const { getAndroidDir } = require('../../../lib/dataRoot');
 const MANIFEST_FILE = path.join(dataPath('.'), 'song_buckets_manifest.json');
 
 const BUCKET_MEANINGS = {
@@ -62,7 +64,7 @@ function rebuildAsset() {
   });
   log(out.trim().split('\n').slice(-2).join(' | '));
 
-  const dbPath = path.join(REPO_ROOT, 'android', 'catalog.db');
+  const dbPath = path.join(getAndroidDir(), 'catalog.db');
   const gzPath = `${dbPath}.gz`;
   const d = new Database(dbPath);
 
