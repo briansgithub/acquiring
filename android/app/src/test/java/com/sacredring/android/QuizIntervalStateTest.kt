@@ -93,6 +93,79 @@ class QuizIntervalStateTest {
     }
 
     @Test
+    fun melodyPitchCardsUseTheSingingTargetLabelsAndFollowTheContour() {
+        val c4 = SpelledPitch.parse("C", 4)!!
+        val e4 = SpelledPitch.parse("E", 4)!!
+        val ascending = MelodyIntervalState(
+            previous = c4,
+            current = e4,
+            interval = calculateNamedInterval(c4, e4),
+            previousDegreeLabel = "1\u0302",
+            currentDegreeLabel = "3\u0302"
+        )
+        val descending = MelodyIntervalState(
+            previous = e4,
+            current = c4,
+            interval = calculateNamedInterval(e4, c4),
+            previousDegreeLabel = "3\u0302",
+            currentDegreeLabel = "1\u0302"
+        )
+
+        val ascendingCards = buildMelodyPitchCards(ascending, "6\u0302", "1\u0302")
+        val descendingCards = buildMelodyPitchCards(descending)
+
+        assertEquals(listOf(MelodyPitchCardRole.PREVIOUS, MelodyPitchCardRole.CURRENT), ascendingCards.map { it.role })
+        assertEquals(listOf("6\u0302", "1\u0302"), ascendingCards.map { it.scaleDegreeLabel })
+        assertEquals(
+            listOf(MelodyPitchCardVerticalPosition.BOTTOM, MelodyPitchCardVerticalPosition.TOP),
+            ascendingCards.map { it.verticalPosition }
+        )
+        assertEquals(listOf(MelodyPitchCardRole.PREVIOUS, MelodyPitchCardRole.CURRENT), descendingCards.map { it.role })
+        assertEquals(listOf("3\u0302", "1\u0302"), descendingCards.map { it.scaleDegreeLabel })
+        assertEquals(
+            listOf(MelodyPitchCardVerticalPosition.TOP, MelodyPitchCardVerticalPosition.BOTTOM),
+            descendingCards.map { it.verticalPosition }
+        )
+    }
+
+    @Test
+    fun melodyPitchCardDisplayCollapsesRepeatedOrUnpairedPlayableNotes() {
+        val c4 = SpelledPitch.parse("C", 4)!!
+        val d4 = SpelledPitch.parse("D", 4)!!
+        val repeated = MelodyIntervalState(
+            previous = c4,
+            current = c4,
+            interval = calculateNamedInterval(c4, c4),
+            previousDegreeLabel = "1\u0302",
+            currentDegreeLabel = "1\u0302"
+        )
+        val changing = MelodyIntervalState(
+            previous = c4,
+            current = d4,
+            interval = calculateNamedInterval(c4, d4),
+            previousDegreeLabel = "1\u0302",
+            currentDegreeLabel = "2\u0302"
+        )
+
+        assertEquals(
+            MelodyPitchCardDisplayMode.SINGLE,
+            melodyPitchCardDisplayMode(c4, intervalState = null)
+        )
+        assertEquals(
+            MelodyPitchCardDisplayMode.SINGLE,
+            melodyPitchCardDisplayMode(c4, repeated)
+        )
+        assertEquals(
+            MelodyPitchCardDisplayMode.INTERVAL,
+            melodyPitchCardDisplayMode(d4, changing)
+        )
+        assertEquals(
+            MelodyPitchCardDisplayMode.HIDDEN,
+            melodyPitchCardDisplayMode(currentPitch = null, intervalState = null)
+        )
+    }
+
+    @Test
     fun melodyRestIsSkippedButCurrentGapHasNoInterval() {
         val melody = listOf(
             MelodyNote(sd = "1", beat = 1.0, duration = 1.0),

@@ -26,6 +26,61 @@ internal data class MelodyIntervalState(
         get() = "Play melody interval ${previous.displayName} to ${current.displayName}, ${interval.spokenName}"
 }
 
+internal enum class MelodyPitchCardRole {
+    PREVIOUS,
+    CURRENT
+}
+
+internal enum class MelodyPitchCardVerticalPosition {
+    TOP,
+    BOTTOM
+}
+
+internal enum class MelodyPitchCardDisplayMode {
+    HIDDEN,
+    SINGLE,
+    INTERVAL
+}
+
+/** A melody-pitch control and its fixed left-to-right plus vertical placement. */
+internal data class MelodyPitchCard(
+    val role: MelodyPitchCardRole,
+    val pitch: SpelledPitch,
+    val scaleDegreeLabel: String,
+    val verticalPosition: MelodyPitchCardVerticalPosition
+)
+
+internal fun buildMelodyPitchCards(
+    state: MelodyIntervalState,
+    previousLabel: String = state.previousDegreeLabel,
+    currentLabel: String = state.currentDegreeLabel
+): List<MelodyPitchCard> {
+    val ascending = state.interval.direction == IntervalDirection.ASCENDING
+    return listOf(
+        MelodyPitchCard(
+            role = MelodyPitchCardRole.PREVIOUS,
+            pitch = state.previous,
+            scaleDegreeLabel = previousLabel,
+            verticalPosition = if (ascending) MelodyPitchCardVerticalPosition.BOTTOM else MelodyPitchCardVerticalPosition.TOP
+        ),
+        MelodyPitchCard(
+            role = MelodyPitchCardRole.CURRENT,
+            pitch = state.current,
+            scaleDegreeLabel = currentLabel,
+            verticalPosition = if (ascending) MelodyPitchCardVerticalPosition.TOP else MelodyPitchCardVerticalPosition.BOTTOM
+        )
+    )
+}
+
+internal fun melodyPitchCardDisplayMode(
+    currentPitch: SpelledPitch?,
+    intervalState: MelodyIntervalState?
+): MelodyPitchCardDisplayMode = when {
+    currentPitch == null -> MelodyPitchCardDisplayMode.HIDDEN
+    intervalState == null || intervalState.previous == intervalState.current -> MelodyPitchCardDisplayMode.SINGLE
+    else -> MelodyPitchCardDisplayMode.INTERVAL
+}
+
 private data class TimedChord(
     val sourceIndex: Int,
     val onset: Double,

@@ -3,6 +3,7 @@ package com.sacredring.android
 import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioTrack
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -12,11 +13,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
-import kotlin.math.PI
-import kotlin.math.sin
-
 object AudioEngine {
     private const val SAMPLE_RATE = 44100
+    private const val MAX_STATIC_PLAYBACK_MS = 30_000
+    private const val TAG = "AudioEngine"
 
     enum class Waveform {
         SINE,
@@ -78,6 +78,25 @@ object AudioEngine {
     private fun invalidatePendingPlayback(channels: Set<PlaybackChannel>) {
         channels.forEach { channel -> playbackGenerations[channel.ordinal]++ }
     }
+
+    internal fun staticPlaybackSampleCount(
+        durationMs: Int,
+        arpeggiate: Boolean,
+        noteCount: Int,
+        stepMs: Int
+    ): Int {
+        val maxStaticSamples = SAMPLE_RATE.toLong() * MAX_STATIC_PLAYBACK_MS / 1_000L
+        val requestedSamples = if (arpeggiate && noteCount > 1) {
+            val stepSamples = SAMPLE_RATE.toLong() * stepMs.coerceAtLeast(1) / 1_000L
+            noteCount.toLong() * stepSamples.coerceAtLeast(200L)
+        } else {
+            SAMPLE_RATE.toLong() * durationMs.coerceAtLeast(1) / 1_000L
+        }
+        return requestedSamples.coerceIn(200L, maxStaticSamples).toInt()
+    }
+
+    internal fun staticTrackCanAcceptData(state: Int): Boolean =
+        state == AudioTrack.STATE_INITIALIZED || state == AudioTrack.STATE_NO_STATIC_DATA
 
     fun capturePlaybackToken(channel: PlaybackChannel): PlaybackToken = synchronized(activeTracks) {
         PlaybackToken(channel, playbackGenerations[channel.ordinal])
@@ -250,7 +269,8 @@ object AudioEngine {
         if (!prepared.consumed.compareAndSet(false, true)) return null
         return try {
             if (skipMs > 0 && prepared.sampleCount > 1) {
-                val skipFrames = (SAMPLE_RATE * skipMs / 1000.0)
+                val skipFrames = (SAMPLE_RATE.toLong() * skipMs.coerceAtLeast(0) / 1_000L)
+                    .coerceAtMost(Int.MAX_VALUE.toLong())
                     .toInt()
                     .coerceIn(0, prepared.sampleCount - 1)
                 prepared.track.setPlaybackHeadPosition(skipFrames)
@@ -267,7 +287,8 @@ object AudioEngine {
             prepared.track.play()
             activeTracks.add(active)
             active
-        } catch (_: Exception) {
+        } catch (error: Exception) {
+            Log.w(TAG, "Unable to start prepared playback", error)
             try {
                 prepared.track.release()
             } catch (_: Exception) {}
@@ -428,45 +449,19 @@ object AudioEngine {
         if (validNotes.isEmpty()) return@withContext null
 
         val numNotes = validNotes.size
-        val stepSamples = (SAMPLE_RATE * stepMs / 1000.0).toInt().coerceAtLeast(200)
-
-        val numSamples = if (arpeggiate && numNotes > 1) {
-            numNotes * stepSamples
-        } else {
-            (SAMPLE_RATE * durationMs / 1000.0).toInt()
-        }.coerceAtLeast(200)
+        val stepSamples = (SAMPLE_RATE.toLong() * stepMs.coerceAtLeast(1) / 1_000L)
+            .coerceIn(200L, Int.MAX_VALUE.toLong())
+            .toInt()
+        val numSamples = staticPlaybackSampleCount(
+            durationMs = durationMs,
+            arpeggiate = arpeggiate,
+            noteCount = numNotes,
+            stepMs = stepMs
+        )
 
         val samples = ShortArray(numSamples)
 
-        // Pre-calculate per-note synthesis data
-        class NoteState(
-            val freq: Double,
-            val period: Double,
-            var phase: Double = 0.0,
-            var modPhase: Double = 0.0,
-            // Karplus-Strong delay line
-            val delayLine: DoubleArray = DoubleArray(0),
-            var delayPtr: Int = 0
-        )
-
-        val noteStates = validNotes.map { freq ->
-            val period = SAMPLE_RATE / freq
-            val dl = when (waveform) {
-                Waveform.STRINGS, Waveform.NYLON_GUITAR -> {
-                    val size = period.toInt().coerceAtLeast(2)
-                    val noise = DoubleArray(size) { Math.random() * 2.0 - 1.0 }
-                    if (waveform == Waveform.NYLON_GUITAR) {
-                        // Low-pass the excitation for a rounder nylon-string attack.
-                        for (sampleIndex in 1 until noise.size) {
-                            noise[sampleIndex] = noise[sampleIndex] * 0.35 + noise[sampleIndex - 1] * 0.65
-                        }
-                    }
-                    noise
-                }
-                else -> DoubleArray(0)
-            }
-            NoteState(freq, period, delayLine = dl)
-        }
+        val voices = validNotes.map { frequency -> SynthVoice(frequency, waveform, SAMPLE_RATE) }
 
         for (i in 0 until numSamples) {
             // Synthesis can take longer than a short note. Stop promptly when
@@ -485,62 +480,9 @@ object AudioEngine {
                     else -> 1.0
                 }
                 
-                for (state in noteStates) {
+                for (voice in voices) {
                     val elapsedSeconds = i / SAMPLE_RATE.toDouble()
-                    val wave = when (waveform) {
-                        Waveform.SINE -> sin(2.0 * PI * state.phase)
-                        Waveform.SQUARE -> if (state.phase < 0.5) 1.0 else -1.0
-                        Waveform.SAWTOOTH -> state.phase * 2.0 - 1.0
-                        Waveform.TRIANGLE -> if (state.phase < 0.5) 4.0 * state.phase - 1.0 else 3.0 - 4.0 * state.phase
-                        Waveform.STRINGS -> {
-                            val dl = state.delayLine
-                            val out = dl[state.delayPtr]
-                            val nextIdx = (state.delayPtr + 1) % dl.size
-                            val avg = (out + dl[nextIdx]) * 0.496 // Attenuation for decay
-                            dl[state.delayPtr] = avg
-                            state.delayPtr = nextIdx
-                            out
-                        }
-                        Waveform.ELECTRIC_PIANO -> {
-                            // Simple 2-operator FM
-                            val modFreq = state.freq * 2.0
-                            val modIndex = 2.0 * env
-                            val modulator = sin(2.0 * PI * state.modPhase) * modIndex
-                            val carrier = sin(2.0 * PI * state.phase + modulator)
-                            
-                            state.modPhase = (state.modPhase + modFreq / SAMPLE_RATE) % 1.0
-                            carrier
-                        }
-                        Waveform.WARM_ORGAN -> {
-                            val phase = 2.0 * PI * state.phase
-                            0.68 * sin(phase) + 0.22 * sin(phase * 2.0) + 0.10 * sin(phase * 3.0)
-                        }
-                        Waveform.MARIMBA -> {
-                            val phase = 2.0 * PI * state.phase
-                            val bodyDecay = kotlin.math.exp(-3.0 * elapsedSeconds)
-                            val overtoneDecay = kotlin.math.exp(-9.0 * elapsedSeconds)
-                            0.82 * sin(phase) * bodyDecay + 0.18 * sin(phase * 3.0) * overtoneDecay
-                        }
-                        Waveform.VIBRAPHONE -> {
-                            val ring = kotlin.math.exp(-0.75 * elapsedSeconds)
-                            val tremolo = 0.88 + 0.12 * sin(2.0 * PI * 5.5 * elapsedSeconds)
-                            val modIndex = 1.35 * kotlin.math.exp(-1.6 * elapsedSeconds)
-                            val modulator = sin(2.0 * PI * state.modPhase) * modIndex
-                            val carrier = sin(2.0 * PI * state.phase + modulator)
-                            state.modPhase = (state.modPhase + state.freq * 4.0 / SAMPLE_RATE) % 1.0
-                            carrier * ring * tremolo
-                        }
-                        Waveform.NYLON_GUITAR -> {
-                            val dl = state.delayLine
-                            val out = dl[state.delayPtr]
-                            val nextIdx = (state.delayPtr + 1) % dl.size
-                            dl[state.delayPtr] = (out + dl[nextIdx]) * 0.497
-                            state.delayPtr = nextIdx
-                            out
-                        }
-                    }
-                    
-                    state.phase = (state.phase + state.freq / SAMPLE_RATE) % 1.0
+                    val wave = voice.nextSample(env, elapsedSeconds)
                     // Use a fixed scaling factor instead of 1/numNotes so that the 
                     // root note volume remains consistent relative to the melody 
                     // regardless of the chord's complexity.
@@ -550,7 +492,7 @@ object AudioEngine {
                 // Non-overlapping monophonic arpeggiated chord
                 val noteIdx = (i / stepSamples).coerceIn(0, numNotes - 1)
                 val noteSampleIdx = i % stepSamples
-                val state = noteStates[noteIdx]
+                val voice = voices[noteIdx]
                 val noteElapsedSeconds = noteSampleIdx / SAMPLE_RATE.toDouble()
 
                 val attackSamples = (stepSamples * 0.08).toInt().coerceIn(10, 80)
@@ -562,58 +504,7 @@ object AudioEngine {
                     else -> 1.0
                 }
 
-                val wave = when (waveform) {
-                    Waveform.SINE -> sin(2.0 * PI * state.phase)
-                    Waveform.SQUARE -> if (state.phase < 0.5) 1.0 else -1.0
-                    Waveform.SAWTOOTH -> state.phase * 2.0 - 1.0
-                    Waveform.TRIANGLE -> if (state.phase < 0.5) 4.0 * state.phase - 1.0 else 3.0 - 4.0 * state.phase
-                    Waveform.STRINGS -> {
-                        val dl = state.delayLine
-                        val out = dl[state.delayPtr]
-                        val nextIdx = (state.delayPtr + 1) % dl.size
-                        val avg = (out + dl[nextIdx]) * 0.498
-                        dl[state.delayPtr] = avg
-                        state.delayPtr = nextIdx
-                        out
-                    }
-                    Waveform.ELECTRIC_PIANO -> {
-                        val modFreq = state.freq * 1.5 // Slightly different ratio for monophonic
-                        val modIndex = 3.0 * env
-                        val modulator = sin(2.0 * PI * state.modPhase) * modIndex
-                        val carrier = sin(2.0 * PI * state.phase + modulator)
-                        state.modPhase = (state.modPhase + modFreq / SAMPLE_RATE) % 1.0
-                        carrier
-                    }
-                    Waveform.WARM_ORGAN -> {
-                        val phase = 2.0 * PI * state.phase
-                        0.68 * sin(phase) + 0.22 * sin(phase * 2.0) + 0.10 * sin(phase * 3.0)
-                    }
-                    Waveform.MARIMBA -> {
-                        val phase = 2.0 * PI * state.phase
-                        val bodyDecay = kotlin.math.exp(-3.0 * noteElapsedSeconds)
-                        val overtoneDecay = kotlin.math.exp(-9.0 * noteElapsedSeconds)
-                        0.82 * sin(phase) * bodyDecay + 0.18 * sin(phase * 3.0) * overtoneDecay
-                    }
-                    Waveform.VIBRAPHONE -> {
-                        val ring = kotlin.math.exp(-0.75 * noteElapsedSeconds)
-                        val tremolo = 0.88 + 0.12 * sin(2.0 * PI * 5.5 * noteElapsedSeconds)
-                        val modIndex = 1.35 * kotlin.math.exp(-1.6 * noteElapsedSeconds)
-                        val modulator = sin(2.0 * PI * state.modPhase) * modIndex
-                        val carrier = sin(2.0 * PI * state.phase + modulator)
-                        state.modPhase = (state.modPhase + state.freq * 4.0 / SAMPLE_RATE) % 1.0
-                        carrier * ring * tremolo
-                    }
-                    Waveform.NYLON_GUITAR -> {
-                        val dl = state.delayLine
-                        val out = dl[state.delayPtr]
-                        val nextIdx = (state.delayPtr + 1) % dl.size
-                        dl[state.delayPtr] = (out + dl[nextIdx]) * 0.497
-                        state.delayPtr = nextIdx
-                        out
-                    }
-                }
-                
-                state.phase = (state.phase + state.freq / SAMPLE_RATE) % 1.0
+                val wave = voice.nextSample(env, noteElapsedSeconds, arpeggiated = true)
                 // Match the perceived loudness of the block chord scaling.
                 sum = wave * 0.25 * env
             }
@@ -648,9 +539,19 @@ object AudioEngine {
                 .setTransferMode(AudioTrack.MODE_STATIC)
                 .build()
             trackToRelease = track
+            check(staticTrackCanAcceptData(track.state)) {
+                "Static AudioTrack failed to initialize (state=${track.state})"
+            }
 
-            val written = track.write(samples, 0, numSamples)
-            if (written > 0) {
+            var written = 0
+            while (written < numSamples) {
+                // The three-argument overload is the established blocking API for
+                // MODE_STATIC tracks. Loop so a valid partial write is completed.
+                val count = track.write(samples, written, numSamples - written)
+                if (count <= 0) break
+                written += count
+            }
+            if (written == numSamples) {
                 if (!playbackContext.isActive ||
                     synchronized(activeTracks) { playbackGenerations[channel.ordinal] != generation }
                 ) {
@@ -674,8 +575,8 @@ object AudioEngine {
                 trackToRelease = null
                 null
             }
-        } catch (_: Exception) {
-            // Non-critical sound playback error safely caught
+        } catch (error: Exception) {
+            Log.w(TAG, "Unable to prepare static preview playback", error)
             try {
                 trackToRelease?.release()
             } catch (_: Exception) {}
@@ -712,7 +613,7 @@ object AudioEngine {
         channel: PlaybackChannel = PlaybackChannel.CHORD,
         fadeInMs: Int = 0,
         playbackToken: PlaybackToken? = null
-    ) {
+    ): Boolean {
         val prepared = prepareChordPlayback(
             midiNotes = midiNotes,
             durationMs = durationMs,
@@ -722,12 +623,12 @@ object AudioEngine {
             channel = channel,
             fadeInMs = fadeInMs,
             playbackToken = playbackToken
-        ) ?: return
+        ) ?: return false
 
         if (!currentCoroutineContext().isActive) {
             releasePreparedPlayback(prepared)
-            return
+            return false
         }
-        startPreparedPlayback(prepared)
+        return startPreparedPlayback(prepared)
     }
 }
