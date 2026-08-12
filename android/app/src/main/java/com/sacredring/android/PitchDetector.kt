@@ -44,8 +44,17 @@ object PitchDetector {
         }
         val rms = sqrt(sumSquares / audioBuffer.size)
 
+        val maxTau = (sampleRate / minFreq).toInt().coerceAtMost(windowSize - 2)
+        val minTau = (sampleRate / maxFreq).toInt().coerceAtLeast(1)
+
+        // Only lags up to maxTau are ever searched, plus one more so the parabolic
+        // interpolation below can read bestTau + 1. Computing the difference function
+        // over the whole window would be several times the work for no benefit; the
+        // cumulative mean below still accumulates from tau = 1, so values are identical.
+        val searchLimit = maxTau + 1
+
         // Step 1: Difference function (Optimized loop)
-        for (tau in 0 until windowSize) {
+        for (tau in 0..searchLimit) {
             var diff = 0.0
             for (i in 0 until windowSize) {
                 val delta = floatBuffer[i] - floatBuffer[i + tau]
@@ -57,19 +66,23 @@ object PitchDetector {
         // Step 2: Cumulative mean normalized difference function
         yinBuffer[0] = 1.0
         var runningSum = 0.0
-        for (tau in 1 until windowSize) {
+        for (tau in 1..searchLimit) {
             runningSum += yinBuffer[tau]
             yinBuffer[tau] *= (tau.toDouble() / runningSum)
         }
 
-        // Step 3: Absolute threshold
-        val maxTau = (sampleRate / minFreq).toInt().coerceAtMost(windowSize - 1)
-        val minTau = (sampleRate / maxFreq).toInt().coerceAtLeast(1)
-        
+        // Step 3: Absolute threshold.
+        // The first lag to dip below the threshold sits on the descending slope, a few
+        // samples short of the true period, so YIN requires descending from there into
+        // the actual local minimum. Skipping that descent biases every estimate flat
+        // (e.g. 440 Hz reads as 435 Hz, -19 cents), because the parabolic interpolation
+        // in step 4 then extrapolates from a slope rather than refining a minimum.
         var bestTau = -1
         for (tau in minTau..maxTau) {
             if (yinBuffer[tau] < threshold) {
-                bestTau = tau
+                var t = tau
+                while (t + 1 <= maxTau && yinBuffer[t + 1] < yinBuffer[t]) t++
+                bestTau = t
                 break
             }
         }
@@ -85,14 +98,17 @@ object PitchDetector {
             }
         }
 
-        // Step 4: Parabolic interpolation
+        // Step 4: Parabolic interpolation.
+        // A negative denominator describes a concave-down parabola, i.e. a maximum, and
+        // the vertex formula would then push tau away from the period. Only refine when
+        // the three points genuinely bracket a minimum; otherwise keep the integer lag.
         var finalTau = bestTau.toDouble()
-        if (bestTau > 0 && bestTau < windowSize - 1) {
+        if (bestTau > 0 && bestTau < searchLimit) {
             val s0 = yinBuffer[bestTau - 1]
             val s1 = yinBuffer[bestTau]
             val s2 = yinBuffer[bestTau + 1]
             val denom = s2 - 2 * s1 + s0
-            if (Math.abs(denom) > 1e-6) {
+            if (denom > 1e-6) {
                 finalTau = bestTau + (s0 - s2) / (2 * denom)
             }
         }

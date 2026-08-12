@@ -11,16 +11,74 @@ internal data class ChordRootIntervalState(
     val previousIntervalPitch: SpelledPitch?,
     val currentIntervalPitch: SpelledPitch,
     val interval: NamedInterval?,
+    val previousDegreeLabel: String?,
     val currentDegreeLabel: String
 )
 
 internal data class MelodyIntervalState(
     val previous: SpelledPitch,
     val current: SpelledPitch,
-    val interval: NamedInterval
+    val interval: NamedInterval,
+    val previousDegreeLabel: String,
+    val currentDegreeLabel: String
 ) {
     val contentDescription: String
         get() = "Play melody interval ${previous.displayName} to ${current.displayName}, ${interval.spokenName}"
+}
+
+internal enum class MelodyPitchCardRole {
+    PREVIOUS,
+    CURRENT
+}
+
+internal enum class MelodyPitchCardVerticalPosition {
+    TOP,
+    BOTTOM
+}
+
+internal enum class MelodyPitchCardDisplayMode {
+    HIDDEN,
+    SINGLE,
+    INTERVAL
+}
+
+/** A melody-pitch control and its fixed left-to-right plus vertical placement. */
+internal data class MelodyPitchCard(
+    val role: MelodyPitchCardRole,
+    val pitch: SpelledPitch,
+    val scaleDegreeLabel: String,
+    val verticalPosition: MelodyPitchCardVerticalPosition
+)
+
+internal fun buildMelodyPitchCards(
+    state: MelodyIntervalState,
+    previousLabel: String = state.previousDegreeLabel,
+    currentLabel: String = state.currentDegreeLabel
+): List<MelodyPitchCard> {
+    val ascending = state.interval.direction == IntervalDirection.ASCENDING
+    return listOf(
+        MelodyPitchCard(
+            role = MelodyPitchCardRole.PREVIOUS,
+            pitch = state.previous,
+            scaleDegreeLabel = previousLabel,
+            verticalPosition = if (ascending) MelodyPitchCardVerticalPosition.BOTTOM else MelodyPitchCardVerticalPosition.TOP
+        ),
+        MelodyPitchCard(
+            role = MelodyPitchCardRole.CURRENT,
+            pitch = state.current,
+            scaleDegreeLabel = currentLabel,
+            verticalPosition = if (ascending) MelodyPitchCardVerticalPosition.TOP else MelodyPitchCardVerticalPosition.BOTTOM
+        )
+    )
+}
+
+internal fun melodyPitchCardDisplayMode(
+    currentPitch: SpelledPitch?,
+    intervalState: MelodyIntervalState?
+): MelodyPitchCardDisplayMode = when {
+    currentPitch == null -> MelodyPitchCardDisplayMode.HIDDEN
+    intervalState == null || intervalState.previous == intervalState.current -> MelodyPitchCardDisplayMode.SINGLE
+    else -> MelodyPitchCardDisplayMode.INTERVAL
 }
 
 private data class TimedChord(
@@ -94,6 +152,9 @@ internal fun resolveChordRootIntervalState(
         interval = previousRoot?.let {
             calculateNamedInterval(it.simpleModePitch, currentRoot.simpleModePitch)
         },
+        previousDegreeLabel = previousRoot?.let {
+            MusicTheory.getDegreeLabelFromSpelling(it.pitch, it.sourceKey)
+        },
         currentDegreeLabel = MusicTheory.getDegreeLabelFromSpelling(currentRoot.pitch, currentRoot.sourceKey)
     )
 }
@@ -133,7 +194,15 @@ internal fun resolveMelodyIntervalState(
     return MelodyIntervalState(
         previous = previousPitch,
         current = currentPitch,
-        interval = calculateNamedInterval(previousPitch, currentPitch)
+        interval = calculateNamedInterval(previousPitch, currentPitch),
+        previousDegreeLabel = MusicTheory.getDegreeLabelFromSpelling(
+            previousPitch,
+            keyAtBeat(immediatePrevious!!.onset)
+        ),
+        currentDegreeLabel = MusicTheory.getDegreeLabelFromSpelling(
+            currentPitch,
+            keyAtBeat(active.onset)
+        )
     )
 }
 

@@ -1,5 +1,6 @@
 package com.sacredring.android
 
+import android.media.AudioTrack
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
@@ -16,6 +17,27 @@ import org.robolectric.annotation.Config
 class AudioEngineTest {
 
     @Test
+    fun staticPlaybackSampleCount_longDurationsAreCheckedAndCapped() {
+        val fortyEightSecondBoundary = AudioEngine.staticPlaybackSampleCount(
+            durationMs = 48_700,
+            arpeggiate = false,
+            noteCount = 1,
+            stepMs = 80
+        )
+        val multiMinuteDuration = AudioEngine.staticPlaybackSampleCount(
+            durationMs = Int.MAX_VALUE,
+            arpeggiate = false,
+            noteCount = 1,
+            stepMs = 80
+        )
+
+        assertTrue(fortyEightSecondBoundary > 200)
+        assertTrue(multiMinuteDuration > 200)
+        assertTrue(multiMinuteDuration >= fortyEightSecondBoundary)
+        assertTrue(multiMinuteDuration <= 44_100 * 30)
+    }
+
+    @Test
     fun testPlaybackToken_isInvalidatedBeforeQueuedSynthesisCanStart() {
         val channel = AudioEngine.PlaybackChannel.CHORD
         val token = AudioEngine.capturePlaybackToken(channel)
@@ -23,6 +45,13 @@ class AudioEngineTest {
         assertTrue(AudioEngine.isPlaybackTokenCurrent(token))
         AudioEngine.cancelPendingPlayback(setOf(channel))
         assertFalse(AudioEngine.isPlaybackTokenCurrent(token))
+    }
+
+    @Test
+    fun staticPreview_acceptsNoStaticDataStateBeforeItsFirstWrite() {
+        assertTrue(AudioEngine.staticTrackCanAcceptData(AudioTrack.STATE_NO_STATIC_DATA))
+        assertTrue(AudioEngine.staticTrackCanAcceptData(AudioTrack.STATE_INITIALIZED))
+        assertFalse(AudioEngine.staticTrackCanAcceptData(AudioTrack.STATE_UNINITIALIZED))
     }
 
     @Test

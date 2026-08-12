@@ -31,6 +31,7 @@ class QuizIntervalStateTest {
         assertEquals("C", state?.previous?.pitch?.noteName)
         assertEquals("G", state?.current?.pitch?.noteName)
         assertEquals("P5 ↑", state?.interval?.shorthand)
+        assertEquals("1\u0302", state?.previousDegreeLabel)
         assertEquals("5\u0302", state?.currentDegreeLabel)
     }
 
@@ -61,7 +62,7 @@ class QuizIntervalStateTest {
         assertEquals("Db", state?.currentIntervalPitch?.noteName)
         assertEquals(3, state?.previousIntervalPitch?.octave)
         assertEquals(3, state?.currentIntervalPitch?.octave)
-        assertEquals("M6 â†“", state?.interval?.shorthand)
+        assertEquals("M6 ↓", state?.interval?.shorthand)
     }
 
     @Test
@@ -87,6 +88,81 @@ class QuizIntervalStateTest {
         assertEquals("C#", state?.previous?.noteName)
         assertEquals("G", state?.current?.noteName)
         assertEquals("d5 ↑", state?.interval?.shorthand)
+        assertEquals("♯1\u0302", state?.previousDegreeLabel)
+        assertEquals("5\u0302", state?.currentDegreeLabel)
+    }
+
+    @Test
+    fun melodyPitchCardsUseTheSingingTargetLabelsAndFollowTheContour() {
+        val c4 = SpelledPitch.parse("C", 4)!!
+        val e4 = SpelledPitch.parse("E", 4)!!
+        val ascending = MelodyIntervalState(
+            previous = c4,
+            current = e4,
+            interval = calculateNamedInterval(c4, e4),
+            previousDegreeLabel = "1\u0302",
+            currentDegreeLabel = "3\u0302"
+        )
+        val descending = MelodyIntervalState(
+            previous = e4,
+            current = c4,
+            interval = calculateNamedInterval(e4, c4),
+            previousDegreeLabel = "3\u0302",
+            currentDegreeLabel = "1\u0302"
+        )
+
+        val ascendingCards = buildMelodyPitchCards(ascending, "6\u0302", "1\u0302")
+        val descendingCards = buildMelodyPitchCards(descending)
+
+        assertEquals(listOf(MelodyPitchCardRole.PREVIOUS, MelodyPitchCardRole.CURRENT), ascendingCards.map { it.role })
+        assertEquals(listOf("6\u0302", "1\u0302"), ascendingCards.map { it.scaleDegreeLabel })
+        assertEquals(
+            listOf(MelodyPitchCardVerticalPosition.BOTTOM, MelodyPitchCardVerticalPosition.TOP),
+            ascendingCards.map { it.verticalPosition }
+        )
+        assertEquals(listOf(MelodyPitchCardRole.PREVIOUS, MelodyPitchCardRole.CURRENT), descendingCards.map { it.role })
+        assertEquals(listOf("3\u0302", "1\u0302"), descendingCards.map { it.scaleDegreeLabel })
+        assertEquals(
+            listOf(MelodyPitchCardVerticalPosition.TOP, MelodyPitchCardVerticalPosition.BOTTOM),
+            descendingCards.map { it.verticalPosition }
+        )
+    }
+
+    @Test
+    fun melodyPitchCardDisplayCollapsesRepeatedOrUnpairedPlayableNotes() {
+        val c4 = SpelledPitch.parse("C", 4)!!
+        val d4 = SpelledPitch.parse("D", 4)!!
+        val repeated = MelodyIntervalState(
+            previous = c4,
+            current = c4,
+            interval = calculateNamedInterval(c4, c4),
+            previousDegreeLabel = "1\u0302",
+            currentDegreeLabel = "1\u0302"
+        )
+        val changing = MelodyIntervalState(
+            previous = c4,
+            current = d4,
+            interval = calculateNamedInterval(c4, d4),
+            previousDegreeLabel = "1\u0302",
+            currentDegreeLabel = "2\u0302"
+        )
+
+        assertEquals(
+            MelodyPitchCardDisplayMode.SINGLE,
+            melodyPitchCardDisplayMode(c4, intervalState = null)
+        )
+        assertEquals(
+            MelodyPitchCardDisplayMode.SINGLE,
+            melodyPitchCardDisplayMode(c4, repeated)
+        )
+        assertEquals(
+            MelodyPitchCardDisplayMode.INTERVAL,
+            melodyPitchCardDisplayMode(d4, changing)
+        )
+        assertEquals(
+            MelodyPitchCardDisplayMode.HIDDEN,
+            melodyPitchCardDisplayMode(currentPitch = null, intervalState = null)
+        )
     }
 
     @Test
@@ -98,11 +174,7 @@ class QuizIntervalStateTest {
         )
 
         assertNull(resolveMelodyIntervalState(melody, currentBeat = 2.25) { KeyInfo("C", "major") })
-        assertEquals(
-            "M3 ↑",
-            resolveMelodyIntervalState(melody, currentBeat = 3.25) { KeyInfo("C", "major") }
-                ?.interval?.shorthand
-        )
+        assertNull(resolveMelodyIntervalState(melody, currentBeat = 3.25) { KeyInfo("C", "major") })
     }
 
     @Test
@@ -164,6 +236,22 @@ class QuizIntervalStateTest {
             resolveMelodyIntervalState(melody, currentBeat = 3.0, keyAtBeat = keyAtBeat)
                 ?.interval?.shorthand
         )
+        val state = resolveMelodyIntervalState(melody, currentBeat = 3.0, keyAtBeat = keyAtBeat)
+        assertEquals("1\u0302", state?.previousDegreeLabel)
+        assertEquals("1\u0302", state?.currentDegreeLabel)
+    }
+
+    @Test
+    fun melodyDegreeMetadataKeepsFlatAccidentals() {
+        val melody = listOf(
+            MelodyNote(sd = "b2", beat = 1.0, duration = 1.0),
+            MelodyNote(sd = "3", beat = 2.0, duration = 1.0)
+        )
+
+        val state = resolveMelodyIntervalState(melody, currentBeat = 2.25) { KeyInfo("C", "major") }
+
+        assertEquals("♭2\u0302", state?.previousDegreeLabel)
+        assertEquals("3\u0302", state?.currentDegreeLabel)
     }
 
     @Test
