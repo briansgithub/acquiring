@@ -273,4 +273,30 @@ class QuizIntervalStateTest {
                 ?.content?.toInt()
         )
     }
+
+    @Test
+    fun cachedActiveEventIndexPreservesOverlapAndBoundaryBehavior() {
+        val section = ExtractedSection(
+            chords = listOf(
+                chord(root = 5, beat = 2.0, duration = 1.0),
+                chord(root = 1, beat = 1.0, duration = 3.0)
+            )
+        )
+        val melody = listOf(
+            MelodyNote(sd = "3", beat = 2.0, duration = 1.0),
+            MelodyNote(sd = "1", beat = 1.0, duration = 3.0)
+        )
+        val index = QuizActiveEventIndex(section, melody)
+
+        assertEquals(
+            5,
+            (index.chordAtBeat(2.25)?.get("root") as? kotlinx.serialization.json.JsonPrimitive)
+                ?.content?.toInt()
+        )
+        assertEquals("3", index.melodyNoteAtBeat(2.25)?.sd)
+        assertEquals(1, (index.chordAtBeat(3.0)?.get("root") as? kotlinx.serialization.json.JsonPrimitive)?.content?.toInt())
+        assertEquals("1", index.melodyNoteAtBeat(3.0)?.sd)
+        assertNull(index.chordAtBeat(4.0))
+        assertNull(index.melodyNoteAtBeat(4.0))
+    }
 }

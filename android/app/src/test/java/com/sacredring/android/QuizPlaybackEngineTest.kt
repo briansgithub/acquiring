@@ -1,6 +1,7 @@
 package com.sacredring.android
 
 import android.media.AudioTrack
+import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -133,6 +134,27 @@ class QuizPlaybackEngineTest {
 
         assertEquals(11.24, renderer.currentBeat, 1e-8)
         assertTrue(block.any { it.toInt() != 0 })
+    }
+
+    @Test
+    fun renderer_realtimePathMatchesTheDiagnosticRenderPath() {
+        val timeline = QuizTimeline(
+            endBeat = 3.0,
+            events = listOf(
+                event(1, 1.0, 2.0, QuizAudioLayer.MELODY, 60),
+                event(2, 1.0, 2.5, QuizAudioLayer.CHORD, 48, 52, 55)
+            )
+        )
+        val diagnosticRenderer = QuizPcmRenderer(timeline, config(), sampleRate = 1_000)
+        val realtimeRenderer = QuizPcmRenderer(timeline, config(), sampleRate = 1_000)
+        val diagnosticBuffer = ShortArray(512)
+        val realtimeBuffer = ShortArray(512)
+
+        diagnosticRenderer.renderInto(diagnosticBuffer)
+        realtimeRenderer.renderAudioInto(realtimeBuffer)
+
+        assertArrayEquals(diagnosticBuffer, realtimeBuffer)
+        assertEquals(diagnosticRenderer.currentBeat, realtimeRenderer.currentBeat, 0.0)
     }
 
     @Test

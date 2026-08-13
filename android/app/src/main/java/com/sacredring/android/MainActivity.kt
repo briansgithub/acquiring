@@ -63,6 +63,7 @@ import androidx.compose.ui.input.pointer.util.addPointerInputChange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.dp
 import androidx.room.Room
@@ -255,6 +256,8 @@ internal fun MainScreen(
     var isShowingRecentArtists by remember { mutableStateOf(false) }
     var currentWaveform by remember { mutableStateOf(AudioEngine.Waveform.SAWTOOTH) }
     var globalTranspose by remember { mutableStateOf(AudioEngine.globalTranspose) }
+    var quizPlayButtonXFraction by rememberSaveable { mutableStateOf(Float.NaN) }
+    var quizPlayButtonYFraction by rememberSaveable { mutableStateOf(Float.NaN) }
     var singingTargetRequest by remember { mutableStateOf<SingingTargetRequest?>(null) }
     var singingTargetRequestId by remember { mutableStateOf(0) }
     val tessituraShiftOctaves = tessituraSessionViewModel.shiftOctaves
@@ -723,6 +726,12 @@ internal fun MainScreen(
                         globalTranspose = it
                         AudioEngine.globalTranspose = it
                     },
+                    quizPlayButtonXFraction = quizPlayButtonXFraction,
+                    quizPlayButtonYFraction = quizPlayButtonYFraction,
+                    onQuizPlayButtonPositionChange = { xFraction, yFraction ->
+                        quizPlayButtonXFraction = xFraction
+                        quizPlayButtonYFraction = yFraction
+                    },
                     onArtistClick = { artistName ->
                         tessituraSessionViewModel.clearSession()
                         HistoryManager.addArtist(context, artistName)
@@ -1074,6 +1083,9 @@ fun SongDetailView(
     onWaveformChange: (AudioEngine.Waveform) -> Unit,
     globalTranspose: Int,
     onTransposeChange: (Int) -> Unit,
+    quizPlayButtonXFraction: Float,
+    quizPlayButtonYFraction: Float,
+    onQuizPlayButtonPositionChange: (Float, Float) -> Unit,
     onArtistClick: (String) -> Unit,
     onSingingTargetsRequested: (SingingTargetRequest) -> Unit,
     tessituraShiftOctaves: Int,
@@ -1288,6 +1300,9 @@ fun SongDetailView(
                 sectionPicker = sectionPickerComposable,
                 transposePicker = transposePickerComposable,
                 globalTranspose = globalTranspose,
+                quizPlayButtonXFraction = quizPlayButtonXFraction,
+                quizPlayButtonYFraction = quizPlayButtonYFraction,
+                onQuizPlayButtonPositionChange = onQuizPlayButtonPositionChange,
                 onSingingTargetsRequested = onSingingTargetsRequested,
                 tessituraShiftOctaves = tessituraShiftOctaves
             )
@@ -1318,6 +1333,91 @@ private fun ringModeColor(scale: String): Color = when (scale) {
     else -> Color(0xFFE6E1E5)
 }
 
+@Composable
+internal fun DraggableQuizPlayPauseButton(
+    isPlaying: Boolean,
+    enabled: Boolean,
+    xFraction: Float,
+    yFraction: Float,
+    onPositionChange: (Float, Float) -> Unit,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val buttonWidth = 180.dp
+    val buttonHeight = 64.dp
+    val defaultBottomClearance = 72.dp
+
+    BoxWithConstraints(modifier = modifier) {
+        val density = androidx.compose.ui.platform.LocalDensity.current
+        val maxX = with(density) { (maxWidth - buttonWidth).toPx().coerceAtLeast(0f) }
+        val maxY = with(density) { (maxHeight - buttonHeight).toPx().coerceAtLeast(0f) }
+        val defaultY = (maxY - with(density) { defaultBottomClearance.toPx() }).coerceAtLeast(0f)
+        val resolvedX = if (xFraction.isFinite()) xFraction.coerceIn(0f, 1f) * maxX else maxX
+        val resolvedY = if (yFraction.isFinite()) yFraction.coerceIn(0f, 1f) * maxY else defaultY
+        val latestXFraction by rememberUpdatedState(xFraction)
+        val latestYFraction by rememberUpdatedState(yFraction)
+        val latestOnPositionChange by rememberUpdatedState(onPositionChange)
+        val actionLabel = if (isPlaying) "Pause" else "Play"
+
+        Button(
+            onClick = onClick,
+            enabled = enabled,
+            modifier = Modifier
+                .offset { IntOffset(resolvedX.roundToInt(), resolvedY.roundToInt()) }
+                .width(buttonWidth)
+                .height(buttonHeight)
+                .semantics { contentDescription = "$actionLabel. Drag to move." }
+                .pointerInput(maxX, maxY, defaultY) {
+                    var dragX = 0f
+                    var dragY = 0f
+                    detectDragGestures(
+                        onDragStart = {
+                            dragX = if (latestXFraction.isFinite()) {
+                                latestXFraction.coerceIn(0f, 1f) * maxX
+                            } else {
+                                maxX
+                            }
+                            dragY = if (latestYFraction.isFinite()) {
+                                latestYFraction.coerceIn(0f, 1f) * maxY
+                            } else {
+                                defaultY
+                            }
+                        },
+                        onDrag = { change, dragAmount ->
+                            change.consume()
+                            dragX = (dragX + dragAmount.x).coerceIn(0f, maxX)
+                            dragY = (dragY + dragAmount.y).coerceIn(0f, maxY)
+                            latestOnPositionChange(
+                                if (maxX > 0f) dragX / maxX else 0f,
+                                if (maxY > 0f) dragY / maxY else 0f
+                            )
+                        }
+                    )
+                }
+        ) {
+            if (isPlaying) {
+                Text("Ⅱ", fontSize = 28.sp)
+            } else {
+                Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(28.dp))
+            }
+            Spacer(Modifier.width(8.dp))
+            Text(actionLabel)
+        }
+    }
+}
+
+
+private data class QuizTimelineMelodyVisual(
+    val beat: Double,
+    val duration: Double,
+    val staffDegree: Int
+)
+
+private data class QuizTimelineChordVisual(
+    val beat: Double,
+    val duration: Double,
+    val display: RomanNumeralDisplay?
+)
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
@@ -1332,6 +1432,9 @@ fun QuizTab(
     sectionPicker: @Composable () -> Unit,
     transposePicker: @Composable () -> Unit,
     globalTranspose: Int,
+    quizPlayButtonXFraction: Float,
+    quizPlayButtonYFraction: Float,
+    onQuizPlayButtonPositionChange: (Float, Float) -> Unit,
     onSingingTargetsRequested: (SingingTargetRequest) -> Unit,
     tessituraShiftOctaves: Int
 ) {
@@ -1361,6 +1464,10 @@ fun QuizTab(
                 )
             } catch (_: Exception) { null }
         }
+    }
+    val sectionKeys = remember(section) { section.getKeys() }
+    val activeEventIndex = remember(section, melody) {
+        QuizActiveEventIndex(section, melody)
     }
 
     var melodyChordBalance by remember { mutableStateOf(0.5f) }
@@ -1510,11 +1617,73 @@ fun QuizTab(
         }
     }
 
-    val ionianSourceKey = remember(section) { section.getParsedKey() }
+    val ionianSourceKey = remember(sectionKeys) { sectionKeys.keyAtBeat(1.0) }
     val ionianContextKey = remember(ionianSourceKey) { relativeIonianKey(ionianSourceKey) }
-    val activeKey = section.getKeyAtBeat(currentBeat)
-    val currentChord = remember(section, currentBeat) {
-        activeChordAtBeat(section, currentBeat)
+    val timelineMelodyVisuals = remember(
+        melody,
+        sectionKeys,
+        useRelativeIonianContext,
+        ionianContextKey
+    ) {
+        melody.mapNotNull { note ->
+            if (note.isRest) {
+                null
+            } else {
+                val rawStaffDegree = MusicTheory.getRawDegree(note.sd) + note.octave * 7
+                val sourceKey = sectionKeys.keyAtBeat(note.beat)
+                QuizTimelineMelodyVisual(
+                    beat = note.beat,
+                    duration = note.duration,
+                    staffDegree = if (useRelativeIonianContext) {
+                        ionianContextStaffDegree(
+                            note.sd,
+                            note.octave,
+                            sourceKey,
+                            ionianContextKey
+                        ) ?: rawStaffDegree
+                    } else {
+                        rawStaffDegree
+                    }
+                )
+            }
+        }
+    }
+    val timelineChordVisuals = remember(
+        section.chords,
+        sectionKeys,
+        useRelativeIonianContext,
+        ionianContextKey
+    ) {
+        section.chords.map { chord ->
+            val beat = normalizePlaybackBeat(
+                (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+            )
+            val duration = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+            val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
+                (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
+            val display = if (isRest) {
+                null
+            } else {
+                val chordKey = sectionKeys.keyAtBeat(beat)
+                val symbol = if (useRelativeIonianContext) {
+                    ChordInterpreter.getRelativeIonianRomanSymbol(
+                        chord,
+                        chordKey,
+                        ionianContextKey
+                    )
+                } else {
+                    ChordInterpreter.getRomanSymbol(chord, chordKey)
+                }
+                RomanNumeralDisplay.fromChord(symbol, chord["borrowed"])
+            }
+            QuizTimelineChordVisual(beat, duration, display)
+        }
+    }
+    val activeKey = remember(sectionKeys, currentBeat) {
+        sectionKeys.keyAtBeat(currentBeat)
+    }
+    val currentChord = remember(activeEventIndex, currentBeat) {
+        activeEventIndex.chordAtBeat(currentBeat)
     }
     val chordRootIntervalState = remember(section, currentChord, isSimpleMode) {
         if (!isSimpleMode || currentChord == null) null
@@ -1550,8 +1719,8 @@ fun QuizTab(
             }
         } ?: 0
     }
-    val currentMelodyNote = remember(melody, currentBeat, isSimpleMode) {
-        if (isSimpleMode) null else activeMelodyNoteAtBeat(melody, currentBeat)
+    val currentMelodyNote = remember(activeEventIndex, currentBeat, isSimpleMode) {
+        if (isSimpleMode) null else activeEventIndex.melodyNoteAtBeat(currentBeat)
     }
     val melodyIntervalState = remember(section, melody, currentMelodyNote, isSimpleMode) {
         if (isSimpleMode || currentMelodyNote == null) null
@@ -1784,16 +1953,31 @@ fun QuizTab(
 
                 val primaryColor = MaterialTheme.colorScheme.primary; val secondaryColor = MaterialTheme.colorScheme.secondary
                 val romanNumeralPainter = remember { RomanNumeralPainter() }; val pixelsPerBeatPx = with(density) { pixelsPerBeat.dp.toPx() }
-                val timelineContentDescription = remember(section, currentBeat, useRelativeIonianContext) {
-                    val activeChord_t = section.chords.find { chord ->
-                        val beat_t = normalizePlaybackBeat((chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0); val duration_t = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
-                        currentBeat >= beat_t && currentBeat < beat_t + duration_t
-                    }
-                    if (activeChord_t == null) "Chord timeline" else {
-                        val beat_t = normalizePlaybackBeat((activeChord_t["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0); val isRest_t = (activeChord_t["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (activeChord_t["rest"] as? JsonPrimitive)?.booleanOrNull == true
-                        val chordKey_t = section.getKeyAtBeat(beat_t)
-                        val label_t = if (isRest_t) "rest" else if (useRelativeIonianContext) ChordInterpreter.getRelativeIonianRomanSymbol(activeChord_t, chordKey_t, ionianContextKey) else ChordInterpreter.getRomanSymbol(activeChord_t, chordKey_t)
-                        "Chord timeline, current chord $label_t"
+                val timelineContentDescription = remember(
+                    currentChord,
+                    sectionKeys,
+                    useRelativeIonianContext,
+                    ionianContextKey
+                ) {
+                    if (currentChord == null) "Chord timeline" else {
+                        val beat = normalizePlaybackBeat(
+                            (currentChord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                        )
+                        val isRest = (currentChord["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
+                            (currentChord["rest"] as? JsonPrimitive)?.booleanOrNull == true
+                        val chordKey = sectionKeys.keyAtBeat(beat)
+                        val label = if (isRest) {
+                            "rest"
+                        } else if (useRelativeIonianContext) {
+                            ChordInterpreter.getRelativeIonianRomanSymbol(
+                                currentChord,
+                                chordKey,
+                                ionianContextKey
+                            )
+                        } else {
+                            ChordInterpreter.getRomanSymbol(currentChord, chordKey)
+                        }
+                        "Chord timeline, current chord $label"
                     }
                 }
 
@@ -1882,17 +2066,40 @@ fun QuizTab(
                         ) {
                             val totalHeight = size.height; val mLaneHeightPx = melodyLaneHeight.toPx(); val cLaneHeightPx = chordLaneHeight.toPx(); val noteHeight = (mLaneHeightPx / 28f).coerceIn(5f, 10f); val melodyBaseY = mLaneHeightPx / 2; val centerX = size.width / 2f; val translationX = centerX - (currentBeat - 1).toFloat() * pixelsPerBeatPx
                             drawContext.canvas.save(); drawContext.canvas.translate(translationX, 0f)
-                            melody.forEach { note -> if (!note.isRest) { val x = (note.beat - 1).toFloat() * pixelsPerBeatPx; val w = note.duration.toFloat() * pixelsPerBeatPx; val sourceKey = section.getKeyAtBeat(note.beat); val staffDegree = if (useRelativeIonianContext) ionianContextStaffDegree(note.sd, note.octave, sourceKey, ionianContextKey) ?: (MusicTheory.getRawDegree(note.sd) + note.octave * 7) else MusicTheory.getRawDegree(note.sd) + note.octave * 7; val y = melodyBaseY - (staffDegree * noteHeight); val isActive = currentBeat >= note.beat && currentBeat < (note.beat + note.duration)
-                                drawRect(color = if (isActive) primaryColor else secondaryColor.copy(alpha = 0.6f), topLeft = Offset(x, y), size = Size(w, noteHeight)) } }
-                            section.chords.forEach { chord -> val beat_c = normalizePlaybackBeat((chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0); val duration_c = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0; val isRest_c = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
-                                val x = (beat_c - 1).toFloat() * pixelsPerBeatPx; val w = duration_c.toFloat() * pixelsPerBeatPx; val isActive = currentBeat >= beat_c && currentBeat < (beat_c + duration_c)
+                            timelineMelodyVisuals.forEach { note ->
+                                val x = (note.beat - 1).toFloat() * pixelsPerBeatPx
+                                val w = note.duration.toFloat() * pixelsPerBeatPx
+                                val screenX = x + translationX
+                                if (screenX + w < 0f || screenX > size.width) return@forEach
+                                val y = melodyBaseY - (note.staffDegree * noteHeight)
+                                val isActive = currentBeat >= note.beat &&
+                                    currentBeat < note.beat + note.duration
+                                drawRect(
+                                    color = if (isActive) primaryColor else secondaryColor.copy(alpha = 0.6f),
+                                    topLeft = Offset(x, y),
+                                    size = Size(w, noteHeight)
+                                )
+                            }
+                            timelineChordVisuals.forEach { chord ->
+                                val x = (chord.beat - 1).toFloat() * pixelsPerBeatPx
+                                val w = chord.duration.toFloat() * pixelsPerBeatPx
+                                val screenX = x + translationX
+                                if (screenX + w < 0f || screenX > size.width) return@forEach
+                                val isActive = currentBeat >= chord.beat &&
+                                    currentBeat < chord.beat + chord.duration
                                 drawRect(color = secondaryColor.copy(alpha = 0.2f), topLeft = Offset(x, mLaneHeightPx), size = Size(w, cLaneHeightPx))
                                 if (isActive) drawRect(color = primaryColor.copy(alpha = 0.4f), topLeft = Offset(x, mLaneHeightPx), size = Size(w, cLaneHeightPx))
                                 drawRect(color = if (isActive) primaryColor else Color.LightGray, topLeft = Offset(x, mLaneHeightPx), size = Size(w, cLaneHeightPx), style = androidx.compose.ui.graphics.drawscope.Stroke(width = 2.dp.toPx()))
-                                if (!isRest_c) { val screenX = x + translationX; val isVisible = screenX + w >= 0f && screenX <= size.width; val innerWidth = w - 14.dp.toPx(); val innerHeight = cLaneHeightPx - 8.dp.toPx()
-                                    if (isVisible && innerWidth > 12.dp.toPx() && innerHeight > 12.dp.toPx()) { val chordKey = section.getKeyAtBeat(beat_c); val symbol = if (useRelativeIonianContext) ChordInterpreter.getRelativeIonianRomanSymbol(chord, chordKey, ionianContextKey) else ChordInterpreter.getRomanSymbol(chord, chordKey); val display = RomanNumeralDisplay.fromChord(symbol, chord["borrowed"]); val minFontSize = 8.sp.toPx(); val maxFontSize = kotlin.math.min(innerHeight * 0.9f, innerWidth * 0.58f)
+                                chord.display?.let { display ->
+                                    val innerWidth = w - 14.dp.toPx()
+                                    val innerHeight = cLaneHeightPx - 8.dp.toPx()
+                                    if (innerWidth > 12.dp.toPx() && innerHeight > 12.dp.toPx()) {
+                                        val minFontSize = 8.sp.toPx()
+                                        val maxFontSize = kotlin.math.min(innerHeight * 0.9f, innerWidth * 0.58f)
                                         val measured = romanNumeralPainter.fitDisplay(display, minFontSize, maxFontSize, innerWidth, innerHeight, 4.dp.toPx())
-                                        if (measured != null) romanNumeralPainter.draw(canvas = drawContext.canvas.nativeCanvas, layout = measured, centerX = x + w / 2f, centerY = mLaneHeightPx + cLaneHeightPx / 2f + measured.baseFontSizePx * 0.035f, color = (if (isActive) primaryColor else Color.White).toArgb()) } }
+                                        if (measured != null) romanNumeralPainter.draw(canvas = drawContext.canvas.nativeCanvas, layout = measured, centerX = x + w / 2f, centerY = mLaneHeightPx + cLaneHeightPx / 2f + measured.baseFontSizePx * 0.035f, color = (if (isActive) primaryColor else Color.White).toArgb())
+                                    }
+                                }
                             }
                             drawContext.canvas.restore(); drawLine(color = Color.White, start = Offset(centerX, 0f), end = Offset(centerX, totalHeight), strokeWidth = 3f)
                         }
@@ -2302,20 +2509,6 @@ fun QuizTab(
                         style = MaterialTheme.typography.labelSmall
                     )
                 }
-                Button(
-                    onClick = {
-                        if (!isScrubbing && bpm > 0.0) {
-                            intervalPreviewJob?.cancel()
-                            AudioEngine.stopPreviewPlayback()
-                            if (isPlaying) quizPlaybackEngine.pause() else quizPlaybackEngine.play()
-                        }
-                    },
-                    enabled = !isScrubbing && bpm > 0.0,
-                    modifier = Modifier.width(180.dp).height(64.dp)
-                ) {
-                    if (isPlaying) Text("Ⅱ", fontSize = 28.sp) else Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(28.dp))
-                    Spacer(Modifier.width(8.dp)); Text(if (isPlaying) "Pause" else "Play")
-                }
                 Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(text = "Root Only", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -2340,6 +2533,22 @@ fun QuizTab(
                     sectionPicker()
                 }
             }
+
+            DraggableQuizPlayPauseButton(
+                isPlaying = isPlaying,
+                enabled = !isScrubbing && bpm > 0.0,
+                xFraction = quizPlayButtonXFraction,
+                yFraction = quizPlayButtonYFraction,
+                onPositionChange = onQuizPlayButtonPositionChange,
+                onClick = {
+                    if (!isScrubbing && bpm > 0.0) {
+                        intervalPreviewJob?.cancel()
+                        AudioEngine.stopPreviewPlayback()
+                        if (isPlaying) quizPlaybackEngine.pause() else quizPlaybackEngine.play()
+                    }
+                },
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }

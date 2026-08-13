@@ -36,6 +36,23 @@ data class KeyInfoWithBeat(
     val beat: Double
 )
 
+internal fun List<KeyInfoWithBeat>.keyAtBeat(beat: Double): KeyInfo {
+    if (isEmpty()) return KeyInfo("C", "major")
+    var low = 0
+    var high = lastIndex
+    var activeIndex = 0
+    while (low <= high) {
+        val middle = (low + high).ushr(1)
+        if (this[middle].beat <= beat) {
+            activeIndex = middle
+            low = middle + 1
+        } else {
+            high = middle - 1
+        }
+    }
+    return this[activeIndex].key
+}
+
 @Serializable
 data class MelodyNote(
     val sd: String,
@@ -95,16 +112,7 @@ data class ExtractedSection(
     }
 
     fun getKeyAtBeat(beat: Double): KeyInfo {
-        val allKeys = getKeys()
-        var activeKey = allKeys.first().key
-        for (k in allKeys) {
-            if (k.beat <= beat) {
-                activeKey = k.key
-            } else {
-                break
-            }
-        }
-        return activeKey
+        return getKeys().keyAtBeat(beat)
     }
 
     fun getParsedKey(): KeyInfo = getKeyAtBeat(1.0)

@@ -94,6 +94,7 @@ internal class QuizPcmRenderer(
     private val crossfadeFrames = (sampleRate * 24 / 1_000.0).roundToInt().coerceAtLeast(1)
 
     val currentBeat: Double get() = beat
+    val currentBeatsPerFrame: Double get() = config.bpm / (60.0 * sampleRate)
 
     fun replaceTimeline(newTimeline: QuizTimeline, startBeat: Double = newTimeline.startBeat) {
         timeline = newTimeline
@@ -141,10 +142,24 @@ internal class QuizPcmRenderer(
     }
 
     fun renderInto(buffer: ShortArray, frameCount: Int = buffer.size): RenderedQuizBlock {
-        require(frameCount in 0..buffer.size)
         val blockStartBeat = beat
-        val beatsPerFrame = config.bpm / (60.0 * sampleRate)
         val startedEvents = mutableListOf<RenderedQuizEvent>()
+        val beatsPerFrame = renderSamples(buffer, frameCount, startedEvents)
+        return RenderedQuizBlock(blockStartBeat, beatsPerFrame, startedEvents)
+    }
+
+    /** Allocation-free render path used by the real-time audio worker. */
+    fun renderAudioInto(buffer: ShortArray, frameCount: Int = buffer.size) {
+        renderSamples(buffer, frameCount, startedEvents = null)
+    }
+
+    private fun renderSamples(
+        buffer: ShortArray,
+        frameCount: Int,
+        startedEvents: MutableList<RenderedQuizEvent>?
+    ): Double {
+        require(frameCount in 0..buffer.size)
+        val beatsPerFrame = currentBeatsPerFrame
         val targetMelodyGain = config.melodyGain.toDouble()
         val targetChordGain = config.chordGain.toDouble()
         val melodyStep = (targetMelodyGain - currentMelodyGain) / frameCount.coerceAtLeast(1)
@@ -152,12 +167,15 @@ internal class QuizPcmRenderer(
 
         repeat(frameCount) { frame ->
             activateDueEvents(frame, startedEvents)
-            activeEvents.removeAll { active -> beat >= active.event.endBeat }
 
             var mixed = 0.0
-            val iterator = activeEvents.iterator()
-            while (iterator.hasNext()) {
-                val active = iterator.next()
+            var activeIndex = 0
+            while (activeIndex < activeEvents.size) {
+                val active = activeEvents[activeIndex]
+                if (beat >= active.event.endBeat) {
+                    activeEvents.removeAt(activeIndex)
+                    continue
+                }
                 val remainingBeats = (active.event.endBeat - beat).coerceAtLeast(0.0)
                 val remainingFrames = if (config.bpm > 0.0) {
                     remainingBeats * 60.0 * sampleRate / config.bpm
@@ -173,8 +191,12 @@ internal class QuizPcmRenderer(
                 } else {
                     currentChordGain
                 }
-                val oscillatorSum = active.oscillators.sumOf { oscillator ->
-                    oscillator.nextSample(envelope, elapsedSeconds) * NOTE_GAIN
+                var oscillatorSum = 0.0
+                var oscillatorIndex = 0
+                while (oscillatorIndex < active.oscillators.size) {
+                    oscillatorSum += active.oscillators[oscillatorIndex]
+                        .nextSample(envelope, elapsedSeconds) * NOTE_GAIN
+                    oscillatorIndex++
                 }
                 mixed += oscillatorSum * envelope * active.transitionGain * layerGain
                 active.ageFrames++
@@ -183,9 +205,11 @@ internal class QuizPcmRenderer(
                     active.transitionFramesRemaining--
                     active.transitionGain = (active.transitionGain + active.transitionStep).coerceIn(0.0, 1.0)
                     if (active.fadingOut && active.transitionFramesRemaining == 0) {
-                        iterator.remove()
+                        activeEvents.removeAt(activeIndex)
+                        continue
                     }
                 }
+                activeIndex++
             }
 
             buffer[frame] = (mixed * Short.MAX_VALUE)
@@ -199,7 +223,7 @@ internal class QuizPcmRenderer(
 
         currentMelodyGain = targetMelodyGain
         currentChordGain = targetChordGain
-        return RenderedQuizBlock(blockStartBeat, beatsPerFrame, startedEvents)
+        return beatsPerFrame
     }
 
     private fun advanceBeat(beatsPerFrame: Double) {
@@ -217,7 +241,7 @@ internal class QuizPcmRenderer(
 
     private fun activateDueEvents(
         frameOffset: Int,
-        startedEvents: MutableList<RenderedQuizEvent>
+        startedEvents: MutableList<RenderedQuizEvent>?
     ) {
         while (nextEventIndex < timeline.events.size) {
             val event = timeline.events[nextEventIndex]
@@ -226,7 +250,7 @@ internal class QuizPcmRenderer(
             if (beat < event.endBeat) {
                 createActiveEvent(event, fadeIn = false)?.let { active ->
                     activeEvents.add(active)
-                    startedEvents.add(RenderedQuizEvent(event.id, frameOffset))
+                    startedEvents?.add(RenderedQuizEvent(event.id, frameOffset))
                 }
             }
         }
@@ -546,16 +570,21 @@ internal class QuizPlaybackEngine(
         }
 
         fun renderAndWrite(activeRenderer: QuizPcmRenderer, count: Int) {
-            val rendered = activeRenderer.renderInto(block, count)
-            clockSegments.addLast(
-                ClockSegment(
-                    startFrame = totalFramesWritten,
-                    startBeat = rendered.startBeat,
-                    beatsPerFrame = rendered.beatsPerFrame,
-                    loopStart = timeline!!.startBeat,
-                    loopEnd = timeline!!.endBeat
+            val blockStartBeat = activeRenderer.currentBeat
+            val beatsPerFrame = activeRenderer.currentBeatsPerFrame
+            val previousSegment = clockSegments.peekLast()
+            if (previousSegment == null || previousSegment.beatsPerFrame != beatsPerFrame) {
+                clockSegments.addLast(
+                    ClockSegment(
+                        startFrame = totalFramesWritten,
+                        startBeat = blockStartBeat,
+                        beatsPerFrame = beatsPerFrame,
+                        loopStart = timeline!!.startBeat,
+                        loopEnd = timeline!!.endBeat
+                    )
                 )
-            )
+            }
+            activeRenderer.renderAudioInto(block, count)
             writeFully(block, count)
             totalFramesWritten += count
             while (clockSegments.size > MAX_CLOCK_SEGMENTS) clockSegments.removeFirst()
@@ -683,7 +712,6 @@ internal class QuizPlaybackEngine(
 
                 try {
                     ensureSink()
-                    activeRenderer.updateConfig(latestConfig.get())
                     if (!sinkStarted && !prime(activeRenderer)) continue
                     renderAndWrite(activeRenderer, BLOCK_FRAMES)
                     deadObjectRecoveries = 0
@@ -738,7 +766,7 @@ internal class QuizPlaybackEngine(
         private const val BUFFER_GROWTH_MS = 40
         private const val MAX_BUFFER_MS = 200
         private const val MAX_CLOCK_SEGMENTS = 512
-        private const val STATE_UPDATE_NANOS = 33_000_000L
+        private const val STATE_UPDATE_NANOS = 16_666_667L
         private const val RELEASE_JOIN_MS = 1_000L
 
         private fun createAndroidSink(capacityFrames: Int): QuizAudioSink {

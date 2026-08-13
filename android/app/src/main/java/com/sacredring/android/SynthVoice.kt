@@ -62,7 +62,7 @@ internal class SynthVoice(
                 val modulationIndex = if (arpeggiated) 3.0 * envelope else 2.0 * envelope
                 val modulator = sin(2.0 * PI * modPhase) * modulationIndex
                 val output = sin(2.0 * PI * phase + modulator)
-                modPhase = (modPhase + frequencyHz * modulationRatio / sampleRate) % 1.0
+                modPhase = wrapUnitPhase(modPhase + frequencyHz * modulationRatio / sampleRate)
                 output
             }
 
@@ -85,7 +85,7 @@ internal class SynthVoice(
                 val modulationIndex = 1.35 * exp(-1.6 * elapsedSeconds)
                 val modulator = sin(2.0 * PI * modPhase) * modulationIndex
                 val output = sin(2.0 * PI * phase + modulator)
-                modPhase = (modPhase + frequencyHz * 4.0 / sampleRate) % 1.0
+                modPhase = wrapUnitPhase(modPhase + frequencyHz * 4.0 / sampleRate)
                 output * ring * tremolo
             }
 
@@ -98,7 +98,13 @@ internal class SynthVoice(
             }
         }
 
-        phase = (phase + frequencyHz / sampleRate) % 1.0
+        phase = wrapUnitPhase(phase + frequencyHz / sampleRate)
         return wave
+    }
+
+    private fun wrapUnitPhase(value: Double): Double = when {
+        value >= 1.0 -> value - value.toInt()
+        value < 0.0 -> value - kotlin.math.floor(value)
+        else -> value
     }
 }

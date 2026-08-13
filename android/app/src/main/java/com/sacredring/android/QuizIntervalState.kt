@@ -113,15 +113,72 @@ private fun List<MelodyNote>.timedNotes(): List<TimedMelodyNote> =
         )
     }.sortedWith(compareBy<TimedMelodyNote> { it.onset }.thenBy { it.sourceIndex })
 
+/**
+ * Section-local index reused by the Quiz UI while the playback beat advances.
+ * Building and sorting these lists on every rendered frame is needlessly costly
+ * for melody-heavy songs and can contend with the audio renderer.
+ */
+internal class QuizActiveEventIndex(
+    section: ExtractedSection,
+    melody: List<MelodyNote>
+) {
+    private val chords = section.timedChords()
+    private val notes = melody.timedNotes()
+
+    fun chordAtBeat(beat: Double): JsonObject? {
+        for (index in lastChordOnsetAtOrBefore(beat) downTo 0) {
+            val event = chords[index]
+            if (beat < event.onset + event.duration) return event.chord
+        }
+        return null
+    }
+
+    fun melodyNoteAtBeat(beat: Double): MelodyNote? {
+        for (index in lastNoteOnsetAtOrBefore(beat) downTo 0) {
+            val event = notes[index]
+            if (beat < event.onset + event.note.duration) return event.note
+        }
+        return null
+    }
+
+    private fun lastChordOnsetAtOrBefore(beat: Double): Int {
+        var low = 0
+        var high = chords.lastIndex
+        var result = -1
+        while (low <= high) {
+            val middle = (low + high).ushr(1)
+            if (chords[middle].onset <= beat) {
+                result = middle
+                low = middle + 1
+            } else {
+                high = middle - 1
+            }
+        }
+        return result
+    }
+
+    private fun lastNoteOnsetAtOrBefore(beat: Double): Int {
+        var low = 0
+        var high = notes.lastIndex
+        var result = -1
+        while (low <= high) {
+            val middle = (low + high).ushr(1)
+            if (notes[middle].onset <= beat) {
+                result = middle
+                low = middle + 1
+            } else {
+                high = middle - 1
+            }
+        }
+        return result
+    }
+}
+
 internal fun activeChordAtBeat(section: ExtractedSection, currentBeat: Double): JsonObject? =
-    section.timedChords().lastOrNull { event ->
-        currentBeat >= event.onset && currentBeat < event.onset + event.duration
-    }?.chord
+    QuizActiveEventIndex(section, emptyList()).chordAtBeat(currentBeat)
 
 internal fun activeMelodyNoteAtBeat(melody: List<MelodyNote>, currentBeat: Double): MelodyNote? =
-    melody.timedNotes().lastOrNull { event ->
-        currentBeat >= event.onset && currentBeat < event.onset + event.note.duration
-    }?.note
+    QuizActiveEventIndex(ExtractedSection(), melody).melodyNoteAtBeat(currentBeat)
 
 internal fun resolveChordRootIntervalState(
     section: ExtractedSection,
