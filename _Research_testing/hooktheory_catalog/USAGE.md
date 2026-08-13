@@ -29,15 +29,119 @@ Repo-level `lib/api/hooktheoryApi.js` and `lib/api/rateLimitPool.js` re-export t
 # From repo root
 cd _Research_testing/hooktheory_catalog
 
-# Check catalog state
+# Check catalog state, incl. when each discovery channel last ran
 node cli/status.js
 
-# Quick discover + enrich a few songs (foreground, ~minutes)
-node cli/update.js --mode quick --enrich-limit 5
+# Find and add any songs Hooktheory has that we don't  <-- the usual command
+node cli/sync-catalog.js
 
 # Export enriched rows
 node cli/export.js --format json
 ```
+
+---
+
+## Keeping the catalog current (`cli/sync-catalog.js`)
+
+The one command to run periodically. Safe to run on demand, as often as you
+like — from the repo root, `.\Sync-Catalog.ps1` does the same thing.
+
+```bash
+node cli/sync-catalog.js                    # update the database only
+node cli/sync-catalog.js --publish          # ...and ship the Android asset
+node cli/sync-catalog.js --dry-run          # report only, zero requests
+node cli/sync-catalog.js --with-artist-sweep   # add the slow, low-yield channel
+node cli/sync-catalog.js --cdx-max-age-days 7  # re-pull the archive index sooner
+node cli/sync-catalog.js --resume           # continue an interrupted sync
+```
+
+**Why it is cheap to re-run.** Every request-costing step is gated on work not
+already done, so a second run immediately after a first does almost nothing:
+
+| Already known | Skipped because |
+|---|---|
+| Songs we hold playable | `listSongsNeedingLightHarvest` filters `harvest_mode NOT IN ('light','blocked','full')` |
+| Links confirmed dead (404) | Same filter excludes `status='dead'`; candidate diffing compares against *every* known slug, dead included |
+| Archive index still fresh | `wayback-refresh` re-pulls only past `--cdx-max-age-days` (default 30), and costs hooktheory.com nothing regardless |
+
+Dead links are **never** re-checked — once a URL 404s it stays skipped
+permanently. (Measured: 0 of 5,098 dead songs recovered when re-tested.)
+
+**Channels it runs**, in order:
+
+1. `wayback-refresh` — re-pull the Internet Archive CDX index if stale
+   (archive.org only, zero hooktheory.com requests)
+2. `wayback-ingest` — diff archived TheoryTab URLs against the catalog
+3. `meili-refresh` — re-walk Hooktheory's search index; this is what catches
+   *newly uploaded* songs
+4. `meili-harvest` — drain the light-harvest queue (all channels at once)
+5. `verify-final` — reclassify every song into playable / stale / dead buckets
+
+The artist-page sweep is **excluded by default**: measured ~12k requests for
+~47 songs, roughly 20× worse per request than Wayback.
+
+Publishing is opt-in so a routine check never pushes a ~62 MB release asset on
+its own. With `--publish` it rebuilds via `scripts/drop-dead-rows-and-rebuild.js`
+(which drops unloadable rows and validates against the app's own download
+check) and uploads to the GitHub release.
+
+Each channel run is recorded in `discovery_runs`; `node cli/status.js` prints
+the latest per channel so a channel that has silently stopped finding anything
+is distinguishable from one that is simply up to date.
+
+Only one sync runs at a time. A second invocation while one is in flight exits
+immediately with code 0 and a message — a skipped overlapping run is correct,
+not a failure. A lock left by a crashed run is reclaimed automatically, so one
+bad run can never disable the schedule permanently.
+
+### Running it automatically (daily)
+
+```powershell
+.\Register-SyncTask.ps1                 # daily at 04:00, database only
+.\Register-SyncTask.ps1 -At 02:30       # different time
+.\Register-SyncTask.ps1 -Unregister     # remove
+Start-ScheduledTask SacredRingCatalogSync   # run it now
+```
+
+Registers a Windows Scheduled Task (`SacredRingCatalogSync`) — OS-native, so
+there is no resident process to die silently. `-StartWhenAvailable` is set, so a
+run missed because the machine was off happens at next boot instead of being
+skipped. Output appends to `sacred_ring_data/catalog/sync-task.log`.
+
+**Why daily.** A sync costs ~210 requests (~4 min) — about **0.16%** of
+Hooktheory's documented daily budget — so frequency is essentially free, and the
+only thing being traded is how long a newly-published song sits unharvested
+before it could be deleted upstream. Daily caps that at 24h; at the measured
+~15–25 new songs/day it catches each day's batch while it is fresh. Once a song
+is harvested the risk is gone permanently, because the chord data is local.
+
+The task does **not** publish. The catalog stays current automatically; shipping
+the ~62 MB Android asset stays a deliberate `.\Sync-Catalog.ps1 -Publish`.
+
+### Have we got everything? (`cli/coverage.js`)
+
+```bash
+node cli/coverage.js     # exit 0 = caught up, exit 1 = action needed
+```
+
+Prints a verdict rather than raw numbers, and is explicit about what it can and
+cannot claim:
+
+- **untried backlog** — must be `0`; anything else is a song discovered but
+  never attempted
+- **row accounting** — `total == harvested + dead + untried`, flagged if it drifts
+- **index exhaustion** — whether the last full index walk added nothing
+- **archive freshness** — age of the CDX cache vs the staleness threshold
+- **staleness alarm** — shouts if no sync has run in >3 days, which is what
+  catches a scheduled task that has been quietly failing for weeks
+
+Because it exits non-zero when action is needed, it works directly as a
+monitoring check.
+
+**What it cannot tell you:** absolute completeness. Hooktheory publishes no song
+total, and their search index has a measured ceiling (~40.3k) that the Internet
+Archive channel beat by 1,415 songs. "Caught up" therefore means *complete with
+respect to the channels we have*, never *we have every song on the site*.
 
 Web UI: start the player with `python launch_player.py` (or `node web-player/server.js`). The **Song Selector** panel (left column of `index.html`) uses `/api/library`. Catalog admin page: `/catalog.html` via `/api/catalog/*`.
 

@@ -2,11 +2,39 @@
 
 Run from `_Research_testing/hooktheory_catalog/` unless noted. Root shims (`node status.js`) work the same as `cli/*`.
 
+## Keep the catalog current
+
+| Command | What it does |
+|---------|----------------|
+| `node cli/sync-catalog.js` | **Usual command.** Find + add any songs Hooktheory has that we don't; DB only |
+| `node cli/sync-catalog.js --publish` | ...and rebuild + upload the Android release asset |
+| `node cli/sync-catalog.js --dry-run` | Report what it would do; zero requests |
+| `node cli/sync-catalog.js --cdx-max-age-days 7` | Re-pull the archive index if older than 7d (default 30) |
+| `node cli/sync-catalog.js --with-artist-sweep` | Add the artist-page channel (~12k requests, ~47 songs — rarely worth it) |
+| `.\Sync-Catalog.ps1` (repo root) | Same, from PowerShell (`-Publish`, `-DryRun`, `-CdxMaxAgeDays`) |
+
+Re-running is cheap: already-playable songs and links confirmed dead are
+skipped before any request. Dead links are never re-checked. Only one sync runs
+at a time; an overlapping invocation exits 0 without doing anything.
+
+## Run it daily / check coverage
+
+| Command | What it does |
+|---------|----------------|
+| `.\Register-SyncTask.ps1` (repo root) | Register a Windows task running the sync daily at 04:00, DB only |
+| `.\Register-SyncTask.ps1 -At 02:30` | Same, different time |
+| `.\Register-SyncTask.ps1 -Unregister` | Remove the scheduled task |
+| `Start-ScheduledTask SacredRingCatalogSync` | Run the scheduled task immediately |
+| `node cli/coverage.js` | **"Have we got everything?"** verdict; exit 0 = caught up, 1 = action needed |
+
+Daily costs ~0.16% of Hooktheory's documented budget and caps the window a new
+song sits unharvested at 24h. Task log: `sacred_ring_data/catalog/sync-task.log`.
+
 ## Status & export
 
 | Command | What it does |
 |---------|----------------|
-| `node cli/status.js` | Print DB totals, last run, top 10 by complexity |
+| `node cli/status.js` | DB totals, **last run per discovery channel**, top 10 by complexity |
 | `node cli/export.js --format json` | Write all rows → `data/catalog_export.json` |
 | `node cli/export.js --format csv` | Write all rows → `data/catalog_export.csv` |
 | `node cli/discoverDiff.js` | Quick discover; JSON diff (new vs existing counts) |
