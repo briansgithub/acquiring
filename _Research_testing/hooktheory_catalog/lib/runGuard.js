@@ -7,6 +7,7 @@
  */
 
 const fs = require('fs');
+const path = require('path');
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
@@ -130,4 +131,57 @@ class RunState {
   }
 }
 
-module.exports = { sleep, classifyError, CircuitBreaker, withRetry, RunState };
+/**
+ * Single-instance lock, so a scheduled run can never collide with a manual one.
+ *
+ * Two orchestrators mutating the same catalog and phase ledger at once is
+ * silently corrupting rather than loudly broken, and once this is on a daily
+ * timer an overlap is a matter of when, not if.
+ *
+ * A stale lock (holder no longer alive) is reclaimed rather than blocking
+ * forever — otherwise one crashed run would disable the schedule permanently.
+ * PID liveness uses the same `kill(pid, 0)` probe already proven in
+ * lib/lightCatalogState.js.
+ *
+ * @returns {{acquired: boolean, holder?: {pid: number, startedAt: string}}}
+ */
+function acquireLock(file, { label = 'run' } = {}) {
+  if (fs.existsSync(file)) {
+    let holder = null;
+    try { holder = JSON.parse(fs.readFileSync(file, 'utf8')); } catch (_) { holder = null; }
+
+    const pid = holder && Number(holder.pid);
+    let alive = false;
+    if (pid && pid !== process.pid) {
+      try { process.kill(pid, 0); alive = true; } catch (_) { alive = false; }
+    }
+    if (alive) return { acquired: false, holder };
+    // Corrupt or stale: the previous holder is gone, so take it over.
+  }
+
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, JSON.stringify({
+    pid: process.pid, label, startedAt: new Date().toISOString(),
+  }, null, 2));
+
+  // Best-effort release if the process exits without unwinding its finally.
+  const release = () => releaseLock(file);
+  process.once('exit', release);
+  process.once('SIGINT', () => { release(); process.exit(130); });
+  process.once('SIGTERM', () => { release(); process.exit(143); });
+
+  return { acquired: true };
+}
+
+/** Release a lock, but only if this process is the one holding it. */
+function releaseLock(file) {
+  try {
+    if (!fs.existsSync(file)) return;
+    const holder = JSON.parse(fs.readFileSync(file, 'utf8'));
+    if (Number(holder.pid) === process.pid) fs.unlinkSync(file);
+  } catch (_) { /* never let cleanup failure mask a real error */ }
+}
+
+module.exports = {
+  sleep, classifyError, CircuitBreaker, withRetry, RunState, acquireLock, releaseLock,
+};

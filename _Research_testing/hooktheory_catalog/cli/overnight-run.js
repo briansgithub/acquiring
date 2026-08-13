@@ -23,7 +23,8 @@ const { openDb, upsertSong } = require('../lib/db');
 const { dataPath } = require('../lib/paths');
 const { RunState, sleep } = require('../lib/runGuard');
 const { verifyAll } = require('../lib/verifyPlayable');
-const { buildCandidates } = require('../lib/waybackDiscover');
+const { buildCandidates, pullAllCdx } = require('../lib/waybackDiscover');
+const { startDiscoveryRun, finishDiscoveryRun } = require('../lib/db');
 const { parseTheoryTabUrl } = require('../lib/catalogUtils');
 const { runLightCatalog } = require('../lib/lightCatalog');
 const { discoverFromMeili } = require('../lib/discover');
@@ -59,6 +60,7 @@ function parseArgs(argv) {
   const a = {
     dryRun: false, artistSweep: false, publish: false, dropDeadRows: false,
     limit: 0, only: null, clearStop: false, freshState: false,
+    sync: false, cdxMaxAgeDays: 30, resume: false,
   };
   for (let i = 0; i < argv.length; i++) {
     const f = argv[i];
@@ -70,10 +72,53 @@ function parseArgs(argv) {
     else if (f === '--drop-dead-rows') a.dropDeadRows = true;
     else if (f === '--limit') a.limit = Number(argv[++i]) || 0;
     else if (f === '--only') a.only = (argv[++i] || '').split(',').map((s) => s.trim()).filter(Boolean);
+    else if (f === '--cdx-max-age-days') a.cdxMaxAgeDays = Number(argv[++i]);
     else if (f === '--safe') { a.publish = true; }
     else if (f === '--all') { a.artistSweep = true; a.publish = true; }
+    // Routine "is there anything new?" pass: live discovery + harvest only.
+    // Excludes the artist sweep (~12k requests for a measured ~47 songs).
+    else if (f === '--sync') a.sync = true;
+    else if (f === '--resume') a.resume = true;
+  }
+  if (!Number.isFinite(a.cdxMaxAgeDays) || a.cdxMaxAgeDays < 0) a.cdxMaxAgeDays = 30;
+
+  // Built after the loop, not inside it: the phase list depends on --publish,
+  // which may appear either side of --sync on the command line.
+  if (a.sync && !a.only) {
+    a.only = ['wayback-refresh', 'wayback-ingest'];
+    // Opt-in only: ~12k requests for a measured ~47 songs. Without adding the
+    // phases here the flag would set artistSweep but never run anything.
+    if (a.artistSweep) {
+      a.only.push('unknown-artists', 'artist-detect', 'artist-sweep');
+    }
+    a.only.push('meili-refresh', 'meili-harvest', 'verify-final');
+    // Default is database-only. Publishing is opt-in so a routine check never
+    // pushes a ~62MB release asset on its own; when asked for, ship the
+    // dead-row-trimmed asset to match what is already live.
+    if (a.publish) {
+      a.only.push('export-final', 'publish-final');
+      a.dropDeadRows = true;
+    }
   }
   return a;
+}
+
+/**
+ * Discovery phases whose runs get recorded in discovery_runs, so `cli/status.js`
+ * can answer "when did we last actually look, and what did we find" — otherwise
+ * a channel that has silently stopped finding anything is indistinguishable
+ * from one that is simply up to date.
+ */
+const RECORDED_CHANNELS = new Set(['wayback-refresh', 'wayback-ingest', 'meili-refresh', 'artist-sweep', 'alt-lookup']);
+
+/**
+ * Pull a "how much was new" number out of a phase result.
+ * `newUrls` covers wayback-refresh, whose unit is archived URLs rather than
+ * songs — without it a refresh that genuinely found new URLs reports 0.
+ */
+function newCountOf(result) {
+  if (!result || typeof result !== 'object') return 0;
+  return result.inserted ?? result.added ?? result.found ?? result.newUrls ?? 0;
 }
 
 /** Run a phase with isolation: a thrown error is recorded, never fatal. */
@@ -85,8 +130,25 @@ async function phase(state, name, args, fn) {
   log(`=== ${name} ===`);
   state.setPhase(name, { status: 'running' });
   const t0 = Date.now();
+
+  let runDb = null;
+  let runId = null;
+  if (RECORDED_CHANNELS.has(name) && !args.dryRun) {
+    try {
+      runDb = openDb();
+      runId = startDiscoveryRun(runDb, name);
+    } catch (_) { runDb = null; runId = null; } // bookkeeping must never break a run
+  }
+  const closeRun = (patch) => {
+    if (!runDb) return;
+    try { finishDiscoveryRun(runDb, runId, patch); } catch (_) {}
+    try { runDb.close(); } catch (_) {}
+    runDb = null;
+  };
+
   try {
     const result = await fn();
+    closeRun({ new_count: newCountOf(result), notes: result ?? null });
     // A phase that halted early (stop requested, circuit-breaker abort) returns
     // normally, so without this it would be banked as `done` and every
     // remaining item silently abandoned on the next run.
@@ -98,12 +160,74 @@ async function phase(state, name, args, fn) {
     state.setPhase(name, { status: 'done', durationMs: Date.now() - t0, result: result ?? null });
     log(`=== ${name} done in ${Math.round((Date.now() - t0) / 1000)}s ===`);
   } catch (err) {
+    closeRun({ error_count: 1, notes: String(err.message || err) });
     state.setPhase(name, { status: 'error', durationMs: Date.now() - t0, error: String(err.message || err) });
     log(`!!! ${name} FAILED (continuing to next phase): ${err.stack || err.message}`);
   }
 }
 
 // ---------------------------------------------------------------- phases
+
+/**
+ * Re-pull the Internet Archive CDX index when it has gone stale.
+ *
+ * Without this the Wayback channel is frozen: wayback-ingest reads a cache file
+ * that nothing ever refreshes, so every future run re-diffs the same URL list,
+ * reports `candidates=0`, and looks healthy while discovering nothing. Wayback
+ * was the highest-yield channel by a wide margin, so a silent freeze here is
+ * the difference between a working sync and a no-op.
+ *
+ * Costs zero hooktheory.com requests (archive.org only), and pullAllCdx caches
+ * completed pages, so an interrupted pull resumes rather than restarting.
+ */
+async function phaseWaybackRefresh(args) {
+  const maxAgeDays = args.cdxMaxAgeDays;
+  const exists = fs.existsSync(WAYBACK_CACHE);
+  const ageDays = exists
+    ? (Date.now() - fs.statSync(WAYBACK_CACHE).mtimeMs) / 86400000
+    : Infinity;
+
+  if (exists && ageDays < maxAgeDays) {
+    log(`  CDX cache is ${ageDays.toFixed(1)}d old (< ${maxAgeDays}d) — skipping re-pull`);
+    return { skipped: true, ageDays: Number(ageDays.toFixed(2)) };
+  }
+  log(`  CDX cache ${exists ? `is ${ageDays.toFixed(1)}d old` : 'is missing'} — re-pulling from archive.org`);
+  if (args.dryRun) { log('  (dry-run) would re-pull the CDX index'); return { dryRun: true, wouldPull: true }; }
+
+  fs.mkdirSync(path.dirname(WAYBACK_CACHE), { recursive: true });
+
+  // Clear the completed-pages marker before a refresh. That file exists so an
+  // *interrupted* pull can resume, but it also makes every page look already
+  // fetched — leaving it in place turns a periodic refresh into a permanent
+  // 3-second no-op that reports success while fetching nothing.
+  //
+  // Dropping just the marker (rather than passing force:true) keeps the
+  // previously-collected URLs as a base, so the refresh unions into them and
+  // an interrupted refresh can still resume.
+  const donePagesFile = `${WAYBACK_CACHE}.pages`;
+  if (fs.existsSync(donePagesFile)) {
+    fs.unlinkSync(donePagesFile);
+    log('  cleared completed-pages marker so every page is re-fetched');
+  }
+
+  const before = fs.existsSync(WAYBACK_CACHE)
+    ? fs.readFileSync(WAYBACK_CACHE, 'utf8').split('\n').filter(Boolean).length
+    : 0;
+
+  const urls = await pullAllCdx(WAYBACK_CACHE, {
+    onProgress: (p) => {
+      if (p.stage === 'pagecount') log(`  ${p.pageCount} CDX pages (cache has ${p.cachedUrls} urls)`);
+      else if (p.page % 10 === 0) log(`  page ${p.page}/${p.pageCount} — ${p.totalUrls} urls`);
+    },
+  });
+  log(`  CDX refreshed: ${urls.length} archived urls (+${urls.length - before} new since last pull)`);
+  return {
+    pulled: true,
+    urls: urls.length,
+    newUrls: urls.length - before,
+    previousAgeDays: Number.isFinite(ageDays) ? Number(ageDays.toFixed(2)) : null,
+  };
+}
 
 function phaseWaybackIngest(args) {
   if (!fs.existsSync(WAYBACK_CACHE)) throw new Error(`missing CDX cache at ${WAYBACK_CACHE}`);
@@ -411,7 +535,7 @@ async function main() {
   // phase, which would make the subsequent real run skip all of them.
   const stateFile = args.dryRun
     ? STATE_FILE.replace(/\.json$/, '.dryrun.json')
-    : STATE_FILE;
+    : (args.sync ? STATE_FILE.replace(/\.json$/, '.sync.json') : STATE_FILE);
 
   if (args.freshState && fs.existsSync(stateFile)) {
     fs.unlinkSync(stateFile);
@@ -419,6 +543,12 @@ async function main() {
   }
   if (args.dryRun && fs.existsSync(stateFile)) {
     fs.unlinkSync(stateFile); // dry runs always start clean
+  }
+  // A sync is meant to be re-runnable on demand. Sharing the recovery ledger
+  // would mark its phases `done` and make every subsequent sync a silent no-op,
+  // so it gets its own ledger and starts clean unless explicitly resumed.
+  if (args.sync && !args.resume && fs.existsSync(stateFile)) {
+    fs.unlinkSync(stateFile);
   }
 
   const state = new RunState(stateFile);
@@ -429,6 +559,7 @@ async function main() {
 
   await phase(state, 'alt-lookup', args, () => phaseAltLookup(args));
   await phase(state, 'alt-harvest', args, () => phaseHarvest(args, 'alt-lookup'));
+  await phase(state, 'wayback-refresh', args, () => phaseWaybackRefresh(args));
   await phase(state, 'wayback-ingest', args, () => phaseWaybackIngest(args));
   await phase(state, 'wayback-harvest', args, () => phaseHarvest(args, 'wayback'));
   await phase(state, 'verify-1', args, () => phaseVerify(args));
