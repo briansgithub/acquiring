@@ -2236,7 +2236,11 @@ fun QuizTab(
                                             }
                                         }
                                         if (rootMidi > 0) { Spacer(Modifier.height(8.dp)); Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(degreeSpacing)) {
-                                            notes.forEachIndexed { index, note -> val internalLabel = if (useRelativeIonianContext) (spelledRoot?.let { ionianContextDegreeLabel(note, it, ionianContextKey) } ?: ionianContextDegreeLabel(note, ionianContextKey)) else MusicTheory.getRelativeDegreeLabel(note, rootMidi); val previewNote = if (useRelativeIonianContext) (spelledRoot?.let { ionianContextPreviewAudioNote(note, it, ionianContextKey) } ?: ionianContextPreviewAudioNote(note, ionianContextKey)) ?: note else note
+                                            notes.forEach { note ->
+                                                // Chord-tone cards describe the chord's internal structure, so
+                                                // their degrees always stay relative to the effective chord root.
+                                                val internalLabel = MusicTheory.getRelativeDegreeLabel(note, rootMidi)
+                                                val previewNote = if (useRelativeIonianContext) (spelledRoot?.let { ionianContextPreviewAudioNote(note, it, ionianContextKey) } ?: ionianContextPreviewAudioNote(note, ionianContextKey)) ?: note else note
                                                 Surface(
                                                     modifier = Modifier.weight(1f).height(54.dp)
                                                         .semantics { contentDescription = "Play scale degree $internalLabel. Double tap to sing it back." }
