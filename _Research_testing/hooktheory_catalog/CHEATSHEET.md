@@ -35,6 +35,27 @@ itself grant permission.
 Daily costs ~0.16% of Hooktheory's documented budget and caps the window a new
 song sits unharvested at 24h. Task log: `sacred_ring_data/catalog/sync-task.log`.
 
+## One-off recovery run (hours, not minutes)
+
+Answers "is there anything we ever missed?" — walks every artist page. For
+opening a new channel or after changing discovery logic, not on a schedule.
+Run from the repo root (or a worktree; see USAGE.md).
+
+| Command | What it does |
+|---------|----------------|
+| `.\Start-Recovery.ps1` | Resume the full recovery run, detached |
+| `.\Start-Recovery.ps1 -Foreground` | Same, in this window (Ctrl+C stops) |
+| `.\Status-Recovery.ps1` | Progress bar, phase counts, log tail |
+| `.\Stop-Recovery.ps1` | Halt between items (`-Force` to kill) |
+
+Always resumes; never pass `--fresh` to a restart or it re-walks thousands of
+already-visited artists. Re-running Start is safe — it refuses to launch a
+second copy, because two orchestrators sharing one catalog corrupt each other
+silently. Adds two phases the sync lacks: `alt-lookup` (recheck dead rows) and
+`unknown-artists` (find artists we hold no song for).
+
+Budget: 12,144 artists at ~2.4s each; last full sweep yielded 74 songs.
+
 ## Status & export
 
 | Command | What it does |

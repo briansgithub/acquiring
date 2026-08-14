@@ -165,6 +165,94 @@ Web UI: start the player with `python launch_player.py` (or `node web-player/ser
 
 ---
 
+## One-off recovery runs (`scripts/run-full-recovery.js`)
+
+Distinct from the routine sync. The sync answers *"what is new since yesterday?"*
+in ~4 minutes; a recovery run answers *"is there anything we ever missed?"* and
+takes 8–12 hours because it walks every artist page. Run it when opening a new
+coverage channel or after changing discovery logic — not on a schedule.
+
+```powershell
+.\Start-Recovery.ps1              # resume (detached; survives closing the window)
+.\Start-Recovery.ps1 -Foreground  # run in this window, Ctrl+C stops
+.\Status-Recovery.ps1             # progress bar, phase counts, log tail
+.\Stop-Recovery.ps1               # halt between items; -Force to kill
+```
+
+`Start-Recovery.ps1` is safe to re-run: it refuses to launch a second copy, since
+two orchestrators sharing one SQLite catalog and one phase ledger corrupt each
+other's progress silently rather than failing loudly.
+
+**Always resume, never `--fresh`.** The supervisor passes `--resume` so the phase
+ledger is continued. `--fresh` deletes the ledger — correct exactly once, when a
+*previous completed* run has left every phase `done` and would otherwise skip
+straight past export/publish. Using it on a restart discards the artist sweep's
+`progressIndex` and re-walks thousands of already-visited artists.
+
+**Extra phases** the recovery path runs that the sync does not:
+
+| Phase | What it does |
+|---|---|
+| `alt-lookup` | One Meili lookup per never-checked dead row, then promotes rank-1 candidates into `songs` so the harvest phases can reach them |
+| `unknown-artists` | Diffs archive.org's `/theorytab/artist/*` slugs against ours to surface artists we hold no song for; feeds the sweep, which otherwise only walks artists already in `songs` |
+
+### Running it in an isolated worktree
+
+A long run in the main checkout is vulnerable to anything that rewrites the
+working tree (`git checkout`, another agent editing files). Run it from a git
+worktree instead, with the data root pinned back at the original — otherwise
+`lib/dataRoot.js` resolves to an empty `sacred_ring_data/` inside the worktree
+and the run starts from a blank catalog:
+
+```powershell
+git worktree add H:/Desktop/3_sacred_ring_harvest -b catalog-recovery-run
+'{ "dataRoot": "H:/Desktop/3_sacred_ring/sacred_ring_data" }' |
+    Set-Content H:/Desktop/3_sacred_ring_harvest/sacred_ring_data.config.json -Encoding utf8
+```
+
+`sacred_ring_data.config.json` is gitignored, so this pins the worktree without
+polluting the branch. Note a fresh worktree carries only *tracked* dependencies —
+`better-sqlite3` and its native build are not among them, so copy `node_modules`
+across or `npm install` before starting.
+
+### Findings that shape this code
+
+Three measured results are load-bearing; changing the code without knowing them
+will reintroduce real bugs.
+
+**A 500 from an artist page means "no such artist", not "try again."**
+hooktheory.com answers a nonexistent artist page with HTTP 500 rather than 404.
+Verified: `beatles` → 500 while `the-beatles` → 200; `one-republic` → 500 while
+`onerepublic` → 200. Our `artist_slug` values are derived from display names, so
+any name with an accent, a leading "The", or bracket characters (`f(x)`,
+`Rosalía`, `R.E.M.`) yields a slug the site has no page for — 516 of 12,158
+artists. Classified as transient this cost 4 requests and ~61s of backoff each
+and counted toward the circuit breaker. `isSoftNotFound()` in
+`lib/artistPageDiscover.js` now treats it as permanent and caches the slug to
+`wayback/artist-no-page.json` so resumes skip it for free. **Scoped to artist
+pages only** — a 500 from the harvest endpoints can be genuinely transient and
+keeps its retries.
+
+**An interrupted phase must never be banked as `done`.** A stop-requested or
+breaker-aborted sweep returns normally, so `phase()` recorded it complete and the
+next run skipped it — observed live stranding ~9.4k unswept artists after a
+single stop. `sweepArtists` now returns an `interrupted` flag with the true
+index, and `phase()` records status `interrupted` so the phase is re-entered.
+
+**Dead rows are genuinely deleted, not renamed.** The obvious hypothesis — that
+the 404 cluster on video-game artists is Hooktheory re-filing songs under
+composer slugs — is wrong. `alt-lookup` checked 1,177 dead rows and found
+candidates for 262, but 160 pointed at songs we already hold playable and 205
+pointed at rows already marked dead; a live probe of those candidate URLs
+returned 404 on 6 of 6. Meilisearch's index simply lists songs that no longer
+exist. Net new playable songs from the whole avenue: **0**. Do not re-attempt it
+without a new signal — the 6,304 dead rows are dead.
+
+For scale when budgeting a run: the full artist sweep is 12,144 artists at
+~2.4s each, and yielded 74 songs.
+
+---
+
 ## CLI reference
 
 All commands also work via root shims (`node status.js`, etc.).
