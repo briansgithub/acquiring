@@ -113,6 +113,10 @@ internal fun HummingIntervalPopup(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val pitchTracker = pitchSource
+    val exclusivePitchTracker = pitchTracker as? ExclusivePitchSource
+    val alwaysOwnsMicrophone = remember { mutableStateOf(true) }
+    val ownsMicrophone by exclusivePitchTracker?.ownsMicrophone?.collectAsState()
+        ?: alwaysOwnsMicrophone
 
     DisposableEffect(pitchTracker) {
         onDispose {
@@ -201,6 +205,22 @@ internal fun HummingIntervalPopup(
         pitchTracker.stop()
     }
 
+    fun clearMicrophoneActionAfterOwnershipLoss() {
+        microphoneAction = ActiveMicrophoneAction.Idle
+        recordingSlot = null
+        recordingTimeRemaining = 0
+        listenTimeRemaining = 0
+        calibrationStatus = TessituraCalibrationStatus.Idle
+    }
+
+    LaunchedEffect(ownsMicrophone) {
+        if (!ownsMicrophone && microphoneAction !is ActiveMicrophoneAction.Idle) {
+            // Another quiz interaction now owns the shared tracker. Clear only our
+            // logical action; this lease is intentionally unable to stop the new owner.
+            clearMicrophoneActionAfterOwnershipLoss()
+        }
+    }
+
     fun clearCollapsedToolState() {
         stopMicrophoneAction()
         activeTarget = null
@@ -213,7 +233,6 @@ internal fun HummingIntervalPopup(
         recordingSlot = null
         recordingTimeRemaining = 0
         listenTimeRemaining = 0
-        pitchTracker.stop()
         if (requested !is RequestedMicrophoneAction.Calibrate) {
             calibrationStatus = TessituraCalibrationStatus.Idle
         }
@@ -248,6 +267,7 @@ internal fun HummingIntervalPopup(
                 activateMicrophoneAction(waiting.requested)
             } else {
                 microphoneAction = ActiveMicrophoneAction.Idle
+                pitchTracker.stop()
                 if (waiting.requested is RequestedMicrophoneAction.Calibrate) {
                     calibrationStatus = TessituraCalibrationStatus.Error("Microphone permission denied")
                 }
@@ -260,6 +280,11 @@ internal fun HummingIntervalPopup(
         if (requested !is RequestedMicrophoneAction.Calibrate) {
             calibrationStatus = TessituraCalibrationStatus.Idle
         }
+        // Stop any earlier action from this feature, then reserve exclusive access.
+        // Reserving before the permission sheet also supersedes persistent quiz mode
+        // immediately while allowing the pending permission request to survive ON_PAUSE.
+        pitchTracker.stop()
+        exclusivePitchTracker?.claim()
         val hasPermission = recordAudioPermissionOverride
             ?: (ContextCompat.checkSelfPermission(
                 context,
@@ -268,7 +293,6 @@ internal fun HummingIntervalPopup(
         if (hasPermission) {
             activateMicrophoneAction(requested)
         } else {
-            pitchTracker.stop()
             microphoneAction = ActiveMicrophoneAction.AwaitingPermission(requested)
             if (requested is RequestedMicrophoneAction.Calibrate) {
                 calibrationStatus = TessituraCalibrationStatus.AwaitingPermission

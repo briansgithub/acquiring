@@ -44,6 +44,7 @@ class MicrophonePitchTracker(
         val previous = job
         running = false
         previous?.cancel()
+        _pitchFlow.value = PitchResult.NoSignal
 
         job = scope.launch {
             previous?.join()

@@ -1,5 +1,7 @@
 package com.sacredring.android
 
+import android.graphics.Paint
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -270,6 +272,18 @@ internal fun MainScreen(
     
     val scope = rememberCoroutineScope()
     val context = androidx.compose.ui.platform.LocalContext.current
+    val microphonePitchCoordinator = remember(context.applicationContext) {
+        MicrophonePitchCoordinator(MicrophonePitchTracker(context.applicationContext))
+    }
+    val persistentQuizPitchSource = remember(microphonePitchCoordinator) {
+        microphonePitchCoordinator.sourceFor(MicrophonePitchOwner.QUIZ_PERSISTENT)
+    }
+    val singingToolPitchSource = remember(microphonePitchCoordinator) {
+        microphonePitchCoordinator.sourceFor(MicrophonePitchOwner.SINGING_TOOL)
+    }
+    DisposableEffect(microphonePitchCoordinator) {
+        onDispose { microphonePitchCoordinator.release() }
+    }
     // Steals Android's default initial focus away from the search field so the
     // keyboard doesn't auto-show on launch; the field only focuses (and shows
     // the keyboard) once the user actually taps it.
@@ -749,6 +763,7 @@ internal fun MainScreen(
                         singingTargetRequest = request.copy(requestId = singingTargetRequestId)
                     },
                     tessituraShiftOctaves = tessituraShiftOctaves,
+                    persistentPitchSource = persistentQuizPitchSource,
                     onBack = returnToParent
                 )
             }
@@ -773,7 +788,8 @@ internal fun MainScreen(
             onCalibrateResetRequested = {
                 tessituraSessionViewModel.clearAdjustment()
             },
-            onOctaveShiftChange = { tessituraSessionViewModel.updateShift(it) }
+            onOctaveShiftChange = { tessituraSessionViewModel.updateShift(it) },
+            pitchSource = singingToolPitchSource
         )
     }
 }
@@ -1089,6 +1105,7 @@ fun SongDetailView(
     onArtistClick: (String) -> Unit,
     onSingingTargetsRequested: (SingingTargetRequest) -> Unit,
     tessituraShiftOctaves: Int,
+    persistentPitchSource: PitchSource,
     onBack: () -> Unit
 ) {
     val sectionsInSongOrder = remember(sections) { sections.sectionsInSongOrder() }
@@ -1304,7 +1321,9 @@ fun SongDetailView(
                 quizPlayButtonYFraction = quizPlayButtonYFraction,
                 onQuizPlayButtonPositionChange = onQuizPlayButtonPositionChange,
                 onSingingTargetsRequested = onSingingTargetsRequested,
-                tessituraShiftOctaves = tessituraShiftOctaves
+                tessituraShiftOctaves = tessituraShiftOctaves,
+                sessionKey = "${song.slug}:${selectedSectionKey.orEmpty()}",
+                persistentPitchSource = persistentPitchSource
             )
         }
         }
@@ -1436,8 +1455,12 @@ fun QuizTab(
     quizPlayButtonYFraction: Float,
     onQuizPlayButtonPositionChange: (Float, Float) -> Unit,
     onSingingTargetsRequested: (SingingTargetRequest) -> Unit,
-    tessituraShiftOctaves: Int
+    tessituraShiftOctaves: Int,
+    sessionKey: String,
+    persistentPitchSource: PitchSource
 ) {
+    val exclusivePersistentPitchSource = persistentPitchSource as? ExclusivePitchSource
+        ?: error("QuizTab requires an exclusive persistent pitch source")
     val baseBpm = section.getBpm().toFloat().coerceIn(40f, 240f)
     val isTessituraAdjusted = tessituraShiftOctaves != 0
     var tempoPercent by remember(section) { mutableStateOf(100f) }
@@ -1719,6 +1742,34 @@ fun QuizTab(
             }
         } ?: 0
     }
+    val currentChordToneTargets = remember(
+        currentChord,
+        activeKey,
+        useRelativeIonianContext,
+        ionianContextKey
+    ) {
+        val chord = currentChord ?: return@remember emptyList()
+        val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
+            (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
+        if (isRest) return@remember emptyList()
+
+        val notes = ChordInterpreter.getChordNotes(chord, activeKey)
+        val rootMidi = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull()
+            ?: return@remember emptyList()
+        val spelledRoot = ChordInterpreter.resolveChordRoot(chord, activeKey)?.pitch
+        notes.map { note ->
+            val previewNote = if (useRelativeIonianContext) {
+                (spelledRoot?.let { ionianContextPreviewAudioNote(note, it, ionianContextKey) }
+                    ?: ionianContextPreviewAudioNote(note, ionianContextKey)) ?: note
+            } else {
+                note
+            }
+            QuizPitchCardTarget(
+                sourceMidi = previewNote,
+                label = MusicTheory.getRelativeDegreeLabel(note, rootMidi)
+            )
+        }
+    }
     val currentMelodyNote = remember(activeEventIndex, currentBeat, isSimpleMode) {
         if (isSimpleMode) null else activeEventIndex.melodyNoteAtBeat(currentBeat)
     }
@@ -1849,8 +1900,141 @@ fun QuizTab(
         }
     }
 
+    val simpleRootPitchTarget = remember(currentRootPreviewAudioNote, currentRootDegreeLabel) {
+        currentRootPreviewAudioNote.takeIf { it > 0 }?.let {
+            QuizPitchCardTarget(it, currentRootDegreeLabel)
+        }
+    }
+    val melodyPersistentPitchTarget = remember(
+        currentMelodyPitch,
+        melodyCurrentTargetLabel,
+        useRelativeIonianContext,
+        ionianContextKey
+    ) {
+        currentMelodyPitch?.let { pitch ->
+            QuizPitchCardTarget(
+                sourceMidi = if (useRelativeIonianContext) {
+                    ionianContextPreviewAudioNote(pitch, ionianContextKey)
+                        ?: pitch.toAudioNoteNumber()
+                } else {
+                    pitch.toAudioNoteNumber()
+                },
+                label = melodyCurrentTargetLabel
+            )
+        }
+    }
+
+    val persistentPitchController = remember(sessionKey, exclusivePersistentPitchSource) {
+        PersistentQuizPitchController(exclusivePersistentPitchSource)
+    }
+    val persistentPitchResult by exclusivePersistentPitchSource.pitchFlow.collectAsState()
+    val ownsPersistentMicrophone by exclusivePersistentPitchSource.ownsMicrophone.collectAsState()
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val persistentPermissionLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        persistentPitchController.onPermissionResult(granted)
+    }
+    val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
+    val latestPersistentPhase by rememberUpdatedState(persistentPitchController.phase)
+
+    DisposableEffect(lifecycleOwner, persistentPitchController) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            when (event) {
+                androidx.lifecycle.Lifecycle.Event.ON_PAUSE -> {
+                    if (latestPersistentPhase == PersistentPitchPhase.LISTENING) {
+                        persistentPitchController.cancel()
+                    }
+                }
+
+                androidx.lifecycle.Lifecycle.Event.ON_STOP -> {
+                    if (latestPersistentPhase != PersistentPitchPhase.IDLE) {
+                        persistentPitchController.cancel()
+                    }
+                }
+
+                else -> Unit
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+            persistentPitchController.cancel()
+        }
+    }
+
+    LaunchedEffect(ownsPersistentMicrophone) {
+        persistentPitchController.onOwnershipChanged(ownsPersistentMicrophone)
+    }
+
+    LaunchedEffect(persistentPitchResult) {
+        val error = persistentPitchResult as? MicrophonePitchTracker.PitchResult.Error
+        if (
+            error != null &&
+            persistentPitchController.phase == PersistentPitchPhase.LISTENING
+        ) {
+            persistentPitchController.fail(error.message)
+        }
+    }
+
+    LaunchedEffect(persistentPitchController.errorMessage) {
+        if (persistentPitchController.errorMessage != null) {
+            delay(4000)
+            persistentPitchController.clearError()
+        }
+    }
+
+    val resolvedPersistentPitchTarget = resolvePersistentPitchTarget(
+        selection = persistentPitchController.selection,
+        simpleRoot = simpleRootPitchTarget,
+        chordTones = currentChordToneTargets,
+        melody = melodyPersistentPitchTarget
+    )
+    val persistentPitchGaugeResult = resolvedPersistentPitchTarget
+        ?.takeIf {
+            persistentPitchController.phase == PersistentPitchPhase.LISTENING &&
+                ownsPersistentMicrophone
+        }
+        ?.let { target ->
+            retargetPitchResult(
+                persistentPitchResult,
+                target.effectiveTargetMidi(globalTranspose, tessituraShiftOctaves)
+            )
+        }
+
+    fun togglePersistentPitch(
+        selection: PersistentPitchSelection,
+        isDisplayedTargetActive: Boolean,
+        target: QuizPitchCardTarget?
+    ) {
+        if (isDisplayedTargetActive) {
+            persistentPitchController.cancel()
+            return
+        }
+        val initialTarget = target ?: return
+        val effectiveTargetMidi = initialTarget.sourceMidi +
+            globalTranspose + tessituraShiftOctaves * 12
+        val hasPermission = androidx.core.content.ContextCompat.checkSelfPermission(
+            context,
+            android.Manifest.permission.RECORD_AUDIO
+        ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        val needsPermission = persistentPitchController.activate(
+            newSelection = selection,
+            targetMidi = effectiveTargetMidi,
+            hasRecordPermission = hasPermission
+        )
+        if (needsPermission) {
+            persistentPermissionLauncher.launch(android.Manifest.permission.RECORD_AUDIO)
+        }
+    }
+
+    fun requestSingingTargets(request: SingingTargetRequest) {
+        persistentPitchController.cancel()
+        onSingingTargetsRequested(request)
+    }
+
     fun openSingleMelodySingingTarget(pitch: SpelledPitch, label: String) {
-        onSingingTargetsRequested(
+        requestSingingTargets(
             SingingTargetRequest(
                 first = SingingTargetNote(intervalPreviewNote(pitch), label),
                 second = null,
@@ -1980,6 +2164,25 @@ fun QuizTab(
                         "Chord timeline, current chord $label"
                     }
                 }
+                val melodyTimelinePitchEstimate = melodyTimelinePitchEstimate(
+                    selection = persistentPitchController.selection,
+                    resolvedTarget = resolvedPersistentPitchTarget,
+                    pitchResult = persistentPitchGaugeResult
+                )
+                val melodyTimelinePitchVisual = currentMelodyNote?.let { activeNote ->
+                    timelineMelodyVisuals.firstOrNull { visual ->
+                        visual.beat == activeNote.beat && visual.duration == activeNote.duration
+                    }
+                }
+                val pitchAwareTimelineContentDescription = melodyTimelinePitchEstimate?.let { estimate ->
+                    "$timelineContentDescription. Melody pitch error ${formatPitchCentsError(estimate.centsError)}"
+                } ?: timelineContentDescription
+                val melodyPitchLabelPaint = remember {
+                    Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                        textAlign = Paint.Align.RIGHT
+                        typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                    }
+                }
 
                 // Timeline
                 if (!isSimpleMode) {
@@ -1987,7 +2190,7 @@ fun QuizTab(
                         Canvas(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .semantics { contentDescription = timelineContentDescription }
+                                .semantics { contentDescription = pitchAwareTimelineContentDescription }
                                 .pointerInput(endBeat) {
                                     detectTapGestures { offset ->
                                         if (inertiaJob?.isActive == true) {
@@ -2101,7 +2304,84 @@ fun QuizTab(
                                     }
                                 }
                             }
-                            drawContext.canvas.restore(); drawLine(color = Color.White, start = Offset(centerX, 0f), end = Offset(centerX, totalHeight), strokeWidth = 3f)
+                            drawContext.canvas.restore()
+                            drawLine(
+                                color = Color.White,
+                                start = Offset(centerX, 0f),
+                                end = Offset(centerX, totalHeight),
+                                strokeWidth = 3f
+                            )
+
+                            val pitchEstimate = melodyTimelinePitchEstimate
+                            val activeMelodyVisual = melodyTimelinePitchVisual
+                            if (pitchEstimate != null && activeMelodyVisual != null) {
+                                val feedbackColor = pitchFeedbackColor(pitchEstimate.centsError)
+                                val haloRadius = 13.dp.toPx()
+                                val markerRadius = 6.dp.toPx()
+                                val rawMarkerY = melodyBaseY -
+                                    (activeMelodyVisual.staffDegree * noteHeight) + noteHeight / 2f
+                                val markerY = rawMarkerY.coerceIn(
+                                    haloRadius,
+                                    (mLaneHeightPx - haloRadius).coerceAtLeast(haloRadius)
+                                )
+
+                                drawLine(
+                                    color = feedbackColor,
+                                    start = Offset(centerX, markerY - haloRadius),
+                                    end = Offset(centerX, markerY + haloRadius),
+                                    strokeWidth = 4.dp.toPx(),
+                                    cap = androidx.compose.ui.graphics.StrokeCap.Round
+                                )
+                                drawCircle(
+                                    color = feedbackColor.copy(alpha = 0.22f),
+                                    radius = haloRadius,
+                                    center = Offset(centerX, markerY)
+                                )
+                                drawCircle(
+                                    color = Color.Black.copy(alpha = 0.82f),
+                                    radius = markerRadius + 2.dp.toPx(),
+                                    center = Offset(centerX, markerY)
+                                )
+                                drawCircle(
+                                    color = feedbackColor,
+                                    radius = markerRadius,
+                                    center = Offset(centerX, markerY)
+                                )
+                                drawCircle(
+                                    color = Color.White.copy(alpha = 0.9f),
+                                    radius = 1.5.dp.toPx(),
+                                    center = Offset(centerX, markerY)
+                                )
+
+                                val centsLabel = formatPitchCentsError(pitchEstimate.centsError)
+                                melodyPitchLabelPaint.apply {
+                                    color = feedbackColor.toArgb()
+                                    textSize = 12.sp.toPx()
+                                }
+                                val fontMetrics = melodyPitchLabelPaint.fontMetrics
+                                val horizontalPadding = 6.dp.toPx()
+                                val verticalPadding = 3.dp.toPx()
+                                val labelWidth = melodyPitchLabelPaint.measureText(centsLabel) +
+                                    horizontalPadding * 2f
+                                val labelHeight = fontMetrics.descent - fontMetrics.ascent +
+                                    verticalPadding * 2f
+                                val labelRight = centerX - 11.dp.toPx()
+                                val labelLeft = labelRight - labelWidth
+                                val labelTop = markerY - labelHeight / 2f
+
+                                drawRoundRect(
+                                    color = Color.Black.copy(alpha = 0.76f),
+                                    topLeft = Offset(labelLeft, labelTop),
+                                    size = Size(labelWidth, labelHeight),
+                                    cornerRadius = CornerRadius(labelHeight / 2f, labelHeight / 2f)
+                                )
+                                drawContext.canvas.nativeCanvas.drawText(
+                                    centsLabel,
+                                    labelRight - horizontalPadding,
+                                    markerY - (fontMetrics.ascent + fontMetrics.descent) / 2f,
+                                    melodyPitchLabelPaint
+                                )
+                            }
                         }
                     }
                 }
@@ -2159,7 +2439,7 @@ fun QuizTab(
                                                     } else {
                                                         state.currentDegreeLabel
                                                     }
-                                                    onSingingTargetsRequested(
+                                                    requestSingingTargets(
                                                         SingingTargetRequest(
                                                             first = SingingTargetNote(intervalPreviewNote(previousIntervalPitch), previousLabel),
                                                             second = SingingTargetNote(intervalPreviewNote(currentIntervalPitch), currentLabel),
@@ -2191,8 +2471,8 @@ fun QuizTab(
                                 }
                                 Surface(
                                     modifier = Modifier.weight(1f).fillMaxHeight()
-                                        .semantics { contentDescription = "Play current root scale degree. Double tap to sing it back." }
-                                        .combinedClickable(
+                                        .semantics { contentDescription = "Play current root scale degree. Double tap to sing it back. Triple tap to toggle persistent pitch practice." }
+                                        .tripleClickable(
                                             enabled = rootAudioNote > 0,
                                             onClick = {
                                                 intervalPreviewJob?.cancel()
@@ -2206,7 +2486,7 @@ fun QuizTab(
                                             },
                                             onDoubleClick = {
                                                 if (rootAudioNote > 0) {
-                                                    onSingingTargetsRequested(
+                                                    requestSingingTargets(
                                                         SingingTargetRequest(
                                                             first = SingingTargetNote(rootAudioNote, rootDegreeLabel),
                                                             second = null,
@@ -2214,6 +2494,14 @@ fun QuizTab(
                                                         )
                                                     )
                                                 }
+                                            },
+                                            onTripleClick = {
+                                                togglePersistentPitch(
+                                                    selection = PersistentPitchSelection.SimpleRoot,
+                                                    isDisplayedTargetActive =
+                                                        resolvedPersistentPitchTarget?.position == PersistentPitchCardPosition.SimpleRoot,
+                                                    target = simpleRootPitchTarget
+                                                )
                                             }
                                         ),
                                     shape = RoundedCornerShape(32.dp),
@@ -2229,6 +2517,16 @@ fun QuizTab(
                                                 val romanDisplay = RomanNumeralDisplay.fromChord(symbol, activeSimpleChord["borrowed"])
                                                 RomanNumeralText(display = romanDisplay, fontSize = 64.sp, modifier = Modifier.fillMaxWidth())
                                             }
+                                        }
+                                        if (
+                                            resolvedPersistentPitchTarget?.position == PersistentPitchCardPosition.SimpleRoot &&
+                                            persistentPitchGaugeResult != null
+                                        ) {
+                                            PitchGauge(
+                                                pitchResult = persistentPitchGaugeResult,
+                                                targetLabel = resolvedPersistentPitchTarget.label,
+                                                modifier = Modifier.matchParentSize()
+                                            )
                                         }
                                         if (rootAudioNote > 0) {
                                             DoubleTapHint(
@@ -2261,9 +2559,9 @@ fun QuizTab(
                                                     .weight(1f)
                                                     .fillMaxHeight()
                                                     .semantics {
-                                                        contentDescription = "Play current melody note ${singleMelodyPitchCard.scaleDegreeLabel}. Double tap to sing it back."
+                                                        contentDescription = "Play current melody note ${singleMelodyPitchCard.scaleDegreeLabel}. Double tap to sing it back. Triple tap to toggle persistent pitch practice."
                                                     }
-                                                    .combinedClickable(
+                                                    .tripleClickable(
                                                         onClick = {
                                                             playSingleNotePreview(singleMelodyPitchCard.pitch)
                                                         },
@@ -2271,6 +2569,14 @@ fun QuizTab(
                                                             openSingleMelodySingingTarget(
                                                                 singleMelodyPitchCard.pitch,
                                                                 singleMelodyPitchCard.scaleDegreeLabel
+                                                            )
+                                                        },
+                                                        onTripleClick = {
+                                                            togglePersistentPitch(
+                                                                selection = PersistentPitchSelection.Melody,
+                                                                isDisplayedTargetActive =
+                                                                    persistentPitchController.selection == PersistentPitchSelection.Melody,
+                                                                target = melodyPersistentPitchTarget
                                                             )
                                                         }
                                                     ),
@@ -2289,6 +2595,16 @@ fun QuizTab(
                                                         modifier = Modifier.fillMaxSize(),
                                                         color = MaterialTheme.colorScheme.onPrimary
                                                     )
+                                                    if (
+                                                        resolvedPersistentPitchTarget?.position == PersistentPitchCardPosition.MelodyCurrent &&
+                                                        persistentPitchGaugeResult != null
+                                                    ) {
+                                                        PitchGauge(
+                                                            pitchResult = persistentPitchGaugeResult,
+                                                            targetLabel = resolvedPersistentPitchTarget.label,
+                                                            modifier = Modifier.matchParentSize()
+                                                        )
+                                                    }
                                                     DoubleTapHint(
                                                         modifier = Modifier.padding(4.dp),
                                                         isTessituraAdjusted = isTessituraAdjusted
@@ -2325,12 +2641,12 @@ fun QuizTab(
                                                     .height(30.dp)
                                                     .semantics {
                                                         contentDescription = when (pitchCard?.role) {
-                                                            MelodyPitchCardRole.PREVIOUS -> "Play prior melody note ${pitchCard.scaleDegreeLabel}. Double tap to sing it back."
-                                                            MelodyPitchCardRole.CURRENT -> "Play current melody note ${pitchCard.scaleDegreeLabel}. Double tap to sing it back."
+                                                            MelodyPitchCardRole.PREVIOUS -> "Play prior melody note ${pitchCard.scaleDegreeLabel}. Double tap to sing it back. Triple tap to toggle persistent pitch practice."
+                                                            MelodyPitchCardRole.CURRENT -> "Play current melody note ${pitchCard.scaleDegreeLabel}. Double tap to sing it back. Triple tap to toggle persistent pitch practice."
                                                             null -> "Melody note unavailable"
                                                         }
                                                     }
-                                                    .combinedClickable(
+                                                    .tripleClickable(
                                                         enabled = pitchCard != null,
                                                         onClick = {
                                                             pitchCard?.let { playSingleNotePreview(it.pitch) }
@@ -2340,6 +2656,16 @@ fun QuizTab(
                                                                 openSingleMelodySingingTarget(
                                                                     it.pitch,
                                                                     it.scaleDegreeLabel
+                                                                )
+                                                            }
+                                                        },
+                                                        onTripleClick = {
+                                                            if (pitchCard != null) {
+                                                                togglePersistentPitch(
+                                                                    selection = PersistentPitchSelection.Melody,
+                                                                    isDisplayedTargetActive =
+                                                                        persistentPitchController.selection == PersistentPitchSelection.Melody,
+                                                                    target = melodyPersistentPitchTarget
                                                                 )
                                                             }
                                                         }
@@ -2362,6 +2688,17 @@ fun QuizTab(
                                                         )
                                                     } else {
                                                         Text("—", fontSize = 18.sp)
+                                                    }
+                                                    if (
+                                                        pitchCard?.role == MelodyPitchCardRole.CURRENT &&
+                                                        resolvedPersistentPitchTarget?.position == PersistentPitchCardPosition.MelodyCurrent &&
+                                                        persistentPitchGaugeResult != null
+                                                    ) {
+                                                        PitchGauge(
+                                                            pitchResult = persistentPitchGaugeResult,
+                                                            targetLabel = resolvedPersistentPitchTarget.label,
+                                                            modifier = Modifier.matchParentSize()
+                                                        )
                                                     }
                                                     if (pitchCard != null) {
                                                         DoubleTapHint(
@@ -2388,7 +2725,7 @@ fun QuizTab(
                                             },
                                             onDoubleClick = {
                                                 melodyIntervalState?.let { state ->
-                                                    onSingingTargetsRequested(
+                                                    requestSingingTargets(
                                                         SingingTargetRequest(
                                                             first = SingingTargetNote(intervalPreviewNote(state.previous), melodyPreviousTargetLabel),
                                                             second = SingingTargetNote(intervalPreviewNote(state.current), melodyCurrentTargetLabel),
@@ -2443,23 +2780,36 @@ fun QuizTab(
                                             }
                                         }
                                         if (rootMidi > 0) { Spacer(Modifier.height(8.dp)); Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(degreeSpacing)) {
-                                            notes.forEach { note ->
+                                            notes.forEachIndexed { index, note ->
                                                 // Chord-tone cards describe the chord's internal structure, so
                                                 // their degrees always stay relative to the effective chord root.
-                                                val internalLabel = MusicTheory.getRelativeDegreeLabel(note, rootMidi)
-                                                val previewNote = if (useRelativeIonianContext) (spelledRoot?.let { ionianContextPreviewAudioNote(note, it, ionianContextKey) } ?: ionianContextPreviewAudioNote(note, ionianContextKey)) ?: note else note
+                                                val cardTarget = currentChordToneTargets.getOrNull(index)
+                                                val internalLabel = cardTarget?.label
+                                                    ?: MusicTheory.getRelativeDegreeLabel(note, rootMidi)
+                                                val previewNote = cardTarget?.sourceMidi
+                                                    ?: if (useRelativeIonianContext) (spelledRoot?.let { ionianContextPreviewAudioNote(note, it, ionianContextKey) } ?: ionianContextPreviewAudioNote(note, ionianContextKey)) ?: note else note
+                                                val activeChordToneIndex =
+                                                    (resolvedPersistentPitchTarget?.position as? PersistentPitchCardPosition.ChordTone)
+                                                        ?.displayedIndex
                                                 Surface(
                                                     modifier = Modifier.weight(1f).height(54.dp)
-                                                        .semantics { contentDescription = "Play scale degree $internalLabel. Double tap to sing it back." }
-                                                        .combinedClickable(
+                                                        .semantics { contentDescription = "Play scale degree $internalLabel. Double tap to sing it back. Triple tap to toggle persistent pitch practice." }
+                                                        .tripleClickable(
                                                             onClick = { scope.launch { AudioEngine.playChord(listOf(previewNote), channel = AudioEngine.PlaybackChannel.PREVIEW) } },
                                                             onDoubleClick = {
-                                                                onSingingTargetsRequested(
+                                                                requestSingingTargets(
                                                                     SingingTargetRequest(
                                                                         first = SingingTargetNote(previewNote, internalLabel),
                                                                         second = null,
                                                                         requestId = 0
                                                                     )
+                                                                )
+                                                            },
+                                                            onTripleClick = {
+                                                                togglePersistentPitch(
+                                                                    selection = PersistentPitchSelection.ChordTone(index),
+                                                                    isDisplayedTargetActive = activeChordToneIndex == index,
+                                                                    target = cardTarget
                                                                 )
                                                             }
                                                         ),
@@ -2468,6 +2818,16 @@ fun QuizTab(
                                                     contentColor = MaterialTheme.colorScheme.onPrimary
                                                 ) {
                                                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { ScaleDegreeText(label = internalLabel, fontSize = degreeFontSize, modifier = Modifier.fillMaxWidth(), minFontSize = 12.sp)
+                                                        if (
+                                                            activeChordToneIndex == index &&
+                                                            persistentPitchGaugeResult != null
+                                                        ) {
+                                                            PitchGauge(
+                                                                pitchResult = persistentPitchGaugeResult,
+                                                                targetLabel = resolvedPersistentPitchTarget?.label.orEmpty(),
+                                                                modifier = Modifier.matchParentSize()
+                                                            )
+                                                        }
                                                         DoubleTapHint(
                                                             modifier = Modifier.padding(2.dp),
                                                             isTessituraAdjusted = isTessituraAdjusted
@@ -2502,6 +2862,13 @@ fun QuizTab(
             Box(modifier = Modifier.align(Alignment.BottomStart).offset(x = (-8).dp, y = (-88).dp)) { waveformPickerComposable() }
             
             Column(modifier = Modifier.align(Alignment.BottomEnd), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                persistentPitchController.errorMessage?.let { message ->
+                    Text(
+                        text = message,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
                 playbackState.error?.let { message ->
                     Text(
                         text = message,
@@ -2512,7 +2879,13 @@ fun QuizTab(
                 Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(text = "Root Only", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Switch(checked = isSimpleMode, onCheckedChange = onSimpleModeChange)
+                        Switch(
+                            checked = isSimpleMode,
+                            onCheckedChange = {
+                                persistentPitchController.cancel()
+                                onSimpleModeChange(it)
+                            }
+                        )
                     }
                     FilledTonalButton(
                         onClick = {

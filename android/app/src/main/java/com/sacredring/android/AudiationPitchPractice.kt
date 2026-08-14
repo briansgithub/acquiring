@@ -314,21 +314,26 @@ fun AudiationPitchPracticeContainer(
 
 private fun Float.format(digits: Int) = "%.${digits}f".format(this)
 
+internal fun pitchFeedbackColor(centsError: Double): Color {
+    val absoluteCents = Math.abs(centsError)
+    return when {
+        absoluteCents < 15 -> Color(0xFF4CAF50) // Green
+        absoluteCents < 50 -> Color(0xFFFFEB3B) // Yellow
+        else -> Color(0xFFF44336) // Red
+    }
+}
+
+internal fun formatPitchCentsError(centsError: Double): String {
+    val roundedCents = centsError.roundToInt()
+    return "${if (roundedCents > 0) "+" else ""}$roundedCents¢"
+}
+
 @Composable
 fun PitchGauge(
     modifier: Modifier = Modifier,
     pitchResult: MicrophonePitchTracker.PitchResult,
     targetLabel: String
 ) {
-    fun getPitchColor(cents: Double): Color {
-        val absCents = Math.abs(cents)
-        return when {
-            absCents < 15 -> Color(0xFF4CAF50) // Green
-            absCents < 50 -> Color(0xFFFFEB3B) // Yellow
-            else -> Color(0xFFF44336) // Red
-        }
-    }
-
     Box(modifier = modifier.background(Color.Black.copy(alpha = 0.1f))) {
         Canvas(modifier = Modifier.fillMaxSize().semantics {
             contentDescription = when (pitchResult) {
@@ -353,7 +358,7 @@ fun PitchGauge(
             )
 
             if (pitchResult is MicrophonePitchTracker.PitchResult.Estimate) {
-                val gaugeColor = getPitchColor(pitchResult.centsError)
+                val gaugeColor = pitchFeedbackColor(pitchResult.centsError)
                 // Allow error beyond 200 cents for pinning behavior
                 val normalized = (pitchResult.centsError / 200.0).coerceIn(-1.2, 1.2)
                 val barY = centerY - normalized.toFloat() * usableHalfHeight
@@ -389,11 +394,10 @@ fun PitchGauge(
         }
         
         if (pitchResult is MicrophonePitchTracker.PitchResult.Estimate) {
-            val cents = pitchResult.centsError.roundToInt()
-            val gaugeColor = getPitchColor(pitchResult.centsError)
-            
+            val gaugeColor = pitchFeedbackColor(pitchResult.centsError)
+
             Text(
-                text = "${if (cents > 0) "+" else ""}$cents¢",
+                text = formatPitchCentsError(pitchResult.centsError),
                 color = gaugeColor,
                 fontSize = 12.sp,
                 modifier = Modifier
