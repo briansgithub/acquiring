@@ -55,6 +55,22 @@ node cli/sync-catalog.js --cdx-max-age-days 7  # re-pull the archive index soone
 node cli/sync-catalog.js --resume           # continue an interrupted sync
 ```
 
+### Authorization gate
+
+Hooktheory's current Terms prohibit scraping, bulk download, and redistribution
+of TheoryTab data without express authorization. Remote sync therefore fails
+closed by default. After obtaining written data-license or API authorization,
+set `HOOKTHEORY_CATALOG_AUTHORIZED=1`, or use the explicit PowerShell attestation:
+
+```powershell
+.\Sync-Catalog.ps1 -ConfirmHooktheoryAuthorization
+.\Register-SyncTask.ps1 -ConfirmHooktheoryAuthorization
+```
+
+`--dry-run` / `-DryRun` remains available without authorization because it makes
+no remote requests. The authorization gate is a safety control, not a grant of
+permission and not a substitute for Hooktheory's written approval.
+
 **Why it is cheap to re-run.** Every request-costing step is gated on work not
 already done, so a second run immediately after a first does almost nothing:
 

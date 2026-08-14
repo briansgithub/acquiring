@@ -146,23 +146,41 @@ class RunState {
  * @returns {{acquired: boolean, holder?: {pid: number, startedAt: string}}}
  */
 function acquireLock(file, { label = 'run' } = {}) {
-  if (fs.existsSync(file)) {
-    let holder = null;
-    try { holder = JSON.parse(fs.readFileSync(file, 'utf8')); } catch (_) { holder = null; }
-
-    const pid = holder && Number(holder.pid);
-    let alive = false;
-    if (pid && pid !== process.pid) {
-      try { process.kill(pid, 0); alive = true; } catch (_) { alive = false; }
-    }
-    if (alive) return { acquired: false, holder };
-    // Corrupt or stale: the previous holder is gone, so take it over.
-  }
-
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(file, JSON.stringify({
+  const payload = JSON.stringify({
     pid: process.pid, label, startedAt: new Date().toISOString(),
-  }, null, 2));
+  }, null, 2);
+
+  // `wx` is atomic: two processes starting together cannot both believe they
+  // acquired the lock. If an existing holder is stale, remove it and make one
+  // more atomic attempt; a competing process may win that attempt legitimately.
+  let acquired = false;
+  for (let attempt = 0; attempt < 2 && !acquired; attempt++) {
+    try {
+      const fd = fs.openSync(file, 'wx');
+      try { fs.writeFileSync(fd, payload); } finally { fs.closeSync(fd); }
+      acquired = true;
+    } catch (err) {
+      if (err.code !== 'EEXIST') throw err;
+
+      let holder = null;
+      try { holder = JSON.parse(fs.readFileSync(file, 'utf8')); } catch (_) { holder = null; }
+      const pid = holder && Number(holder.pid);
+      let alive = false;
+      if (pid) {
+        if (pid === process.pid) alive = true;
+        else {
+          try { process.kill(pid, 0); alive = true; } catch (_) { alive = false; }
+        }
+      }
+      if (alive || attempt > 0) return { acquired: false, holder };
+
+      try { fs.unlinkSync(file); } catch (unlinkErr) {
+        if (unlinkErr.code !== 'ENOENT') return { acquired: false, holder };
+      }
+    }
+  }
+  if (!acquired) return { acquired: false };
 
   // Best-effort release if the process exits without unwinding its finally.
   const release = () => releaseLock(file);

@@ -121,6 +121,12 @@ function newCountOf(result) {
   return result.inserted ?? result.added ?? result.found ?? result.newUrls ?? 0;
 }
 
+function unsuccessfulPhases(phases) {
+  return Object.entries(phases || {})
+    .filter(([, v]) => v.status === 'error' || v.status === 'interrupted')
+    .map(([name, v]) => `${name}=${v.status}${v.error ? ` (${v.error})` : ''}`);
+}
+
 /** Run a phase with isolation: a thrown error is recorded, never fatal. */
 async function phase(state, name, args, fn) {
   if (args.only && !args.only.includes(name)) { log(`--- skip ${name} (not in --only) ---`); return; }
@@ -585,6 +591,15 @@ async function main() {
   const summary = Object.entries(state.data.phases)
     .map(([k, v]) => `${k}=${v.status}`).join(' ');
   log(`########## overnight-run complete: ${summary} ##########`);
+
+  // Phases are isolated so later cleanup/verification can still run, but the
+  // orchestrator itself must fail if any selected phase failed or stopped
+  // early. Otherwise Task Scheduler records a green run while discovery may
+  // have been broken for days.
+  const unsuccessful = unsuccessfulPhases(state.data.phases);
+  if (unsuccessful.length) {
+    throw new Error(`sync incomplete: ${unsuccessful.join(', ')}`);
+  }
 }
 
 if (require.main === module) {
@@ -594,4 +609,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { main, parseArgs };
+module.exports = { main, parseArgs, unsuccessfulPhases };

@@ -16,8 +16,8 @@
     shipping the ~62MB Android release asset stays a deliberate manual step
     (.\Sync-Catalog.ps1 -Publish).
 
-      .\Register-SyncTask.ps1                 # daily at 04:00
-      .\Register-SyncTask.ps1 -At 02:30       # daily at a different time
+      .\Register-SyncTask.ps1 -ConfirmHooktheoryAuthorization
+      .\Register-SyncTask.ps1 -At 02:30 -ConfirmHooktheoryAuthorization
       .\Register-SyncTask.ps1 -Unregister     # remove it
       Get-ScheduledTask SacredRingCatalogSync # confirm it exists
       Start-ScheduledTask SacredRingCatalogSync   # run it now
@@ -25,7 +25,8 @@
 [CmdletBinding()]
 param(
     [string]$At = '04:00',
-    [switch]$Unregister
+    [switch]$Unregister,
+    [switch]$ConfirmHooktheoryAuthorization
 )
 
 $ErrorActionPreference = 'Stop'
@@ -41,6 +42,14 @@ if ($Unregister) {
     Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false
     Write-Host "Removed scheduled task '$TaskName'." -ForegroundColor Green
     exit 0
+}
+
+if (-not $ConfirmHooktheoryAuthorization) {
+    throw @"
+The scheduled catalog sync makes recurring access to Hooktheory's catalog.
+Register it only after Hooktheory has expressly authorized this project's use,
+then re-run with -ConfirmHooktheoryAuthorization.
+"@
 }
 
 $syncScript = Join-Path $PSScriptRoot 'Sync-Catalog.ps1'
@@ -59,7 +68,7 @@ $logFile = Join-Path $logDir 'sync-task.log'
 # Tee-Object has no -Encoding and writes UTF-16LE, which renders as spaced-out
 # nonsense in git bash / grep / tail - exactly the tools reached for when a
 # scheduled run has failed and the log is the only evidence.
-$inner = "& '$syncScript' *>&1 | Out-File -FilePath '$logFile' -Append -Encoding utf8"
+$inner = "& '$syncScript' -ConfirmHooktheoryAuthorization *>&1 | Out-File -FilePath '$logFile' -Append -Encoding utf8"
 $psArgs = "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""$inner"""
 
 $action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument $psArgs -WorkingDirectory $PSScriptRoot
