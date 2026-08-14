@@ -24,7 +24,7 @@ Master map of repo documentation. **Read the linked file when your task matches 
 |----------|------------|
 | [sacred_ring_data/README.md](../data/README.md) | You need to understand the **Modular Data Root**, how to move the project via flash drive, or how the catalog/cache directory is structured. |
 | [DATA_FIELDS.md](../_Research_testing/hooktheory_catalog/DATA_FIELDS.md) | You need to know the schema of the **`hooktheory_catalog.db`** SQLite database. |
-| [USAGE.md](../_Research_testing/hooktheory_catalog/USAGE.md) | You need to use the catalog CLI to discover, enrich, or update the database. |
+| [USAGE.md](../_Research_testing/hooktheory_catalog/USAGE.md) | You need to use the catalog CLI to discover, enrich, or update the database, run the daily sync, or drive a one-off full recovery run. |
 
 ---
 
@@ -32,8 +32,8 @@ Master map of repo documentation. **Read the linked file when your task matches 
 
 | Document | Read when… |
 |----------|------------|
-| [Hooktheory Song Catalog — USAGE](../_Research_testing/hooktheory_catalog/USAGE.md) | You need to **discover, store, enrich, or query TheoryTab songs** from hooktheory.com: SQLite catalog (`data/hooktheory_catalog.db`), Meilisearch discovery, Puppeteer + public API enrichment, Hooktheory SongMetrics / complexity ratings, the background daemon (`cli/catalogDaemon.js`, PS1 scripts), `cli/update.js` / `cli/status.js`, rate probing, web-player `/api/catalog/*` and **`/api/library`** routes (Song Selector), or programmatic access via `hooktheory_catalog/index.js`. Isolated under `_Research_testing/hooktheory_catalog/` (`lib/`, `cli/`, `web/`, `data/`). **Not** the oracle decode harness — that lives in `_Decode_oracle/`. |
-| [Hooktheory Song Catalog — CHEATSHEET](../_Research_testing/hooktheory_catalog/CHEATSHEET.md) | You need a **quick command lookup** (copy-paste examples) for catalog CLI, daemon PS1 scripts, rate probe, and web API triggers — no prose, tables only. |
+| [Hooktheory Song Catalog — USAGE](../_Research_testing/hooktheory_catalog/USAGE.md) | You need to **discover, store, enrich, or query TheoryTab songs** from hooktheory.com: SQLite catalog (`data/hooktheory_catalog.db`), Meilisearch discovery, Puppeteer + public API enrichment, Hooktheory SongMetrics / complexity ratings, the background daemon (`cli/catalogDaemon.js`, PS1 scripts), `cli/update.js` / `cli/status.js`, rate probing, web-player `/api/catalog/*` and **`/api/library`** routes (Song Selector), or programmatic access via `hooktheory_catalog/index.js`. Also covers the **on-demand sync** (`Sync-Catalog.ps1`, authorization gate, daily scheduling) and **one-off recovery runs** (`Start/Status/Stop-Recovery.ps1`, isolated worktrees, and the measured findings behind the artist-page soft-404 and interrupted-phase handling). Isolated under `_Research_testing/hooktheory_catalog/` (`lib/`, `cli/`, `web/`, `data/`). **Not** the oracle decode harness — that lives in `_Decode_oracle/`. |
+| [Hooktheory Song Catalog — CHEATSHEET](../_Research_testing/hooktheory_catalog/CHEATSHEET.md) | You need a **quick command lookup** (copy-paste examples) for catalog CLI, sync + recovery-run PS1 scripts, daemon, rate probe, and web API triggers — no prose, tables only. |
 | [Hooktheory Catalog — DATA_FIELDS](../_Research_testing/hooktheory_catalog/DATA_FIELDS.md) | You need to know **which Hooktheory/API fields are stored in the catalog DB** vs deferred to cache — used vs unused columns, JSON bundles, and intentionally omitted blobs. |
 
 ---
