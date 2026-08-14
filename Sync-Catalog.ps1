@@ -10,6 +10,7 @@
       .\Sync-Catalog.ps1                 # update the catalog
       .\Sync-Catalog.ps1 -Publish        # ...and ship the Android asset
       .\Sync-Catalog.ps1 -DryRun         # report only, zero requests
+      .\Sync-Catalog.ps1 -ConfirmHooktheoryAuthorization # authorized live run
       .\Sync-Catalog.ps1 -WithArtistSweep    # add the slow, low-yield channel
       .\Sync-Catalog.ps1 -CdxMaxAgeDays 7    # re-pull the archive index sooner
 #>
@@ -19,7 +20,8 @@ param(
     [switch]$DryRun,
     [switch]$WithArtistSweep,
     [int]$CdxMaxAgeDays = 30,
-    [switch]$Resume
+    [switch]$Resume,
+    [switch]$ConfirmHooktheoryAuthorization
 )
 
 $ErrorActionPreference = 'Stop'
@@ -35,6 +37,16 @@ if ($DryRun)          { $syncArgs += '--dry-run' }
 if ($WithArtistSweep) { $syncArgs += '--with-artist-sweep' }
 if ($Resume)          { $syncArgs += '--resume' }
 
+if (-not $DryRun -and -not $ConfirmHooktheoryAuthorization) {
+    throw @"
+Remote catalog discovery is disabled unless Hooktheory has expressly authorized
+this project's catalog access. After obtaining written data-license or API
+authorization, re-run with -ConfirmHooktheoryAuthorization.
+
+You can inspect the local plan safely with: .\Sync-Catalog.ps1 -DryRun
+"@
+}
+
 Write-Host ""
 Write-Host "Syncing catalog: node $($syncArgs -join ' ')" -ForegroundColor Cyan
 if (-not $Publish -and -not $DryRun) {
@@ -44,9 +56,18 @@ Write-Host ""
 
 Push-Location $catalogRoot
 try {
+    $previousAuthorization = $env:HOOKTHEORY_CATALOG_AUTHORIZED
+    if ($ConfirmHooktheoryAuthorization) {
+        $env:HOOKTHEORY_CATALOG_AUTHORIZED = '1'
+    }
     & node @syncArgs
     $code = $LASTEXITCODE
 } finally {
+    if ($null -eq $previousAuthorization) {
+        Remove-Item Env:\HOOKTHEORY_CATALOG_AUTHORIZED -ErrorAction SilentlyContinue
+    } else {
+        $env:HOOKTHEORY_CATALOG_AUTHORIZED = $previousAuthorization
+    }
     Pop-Location
 }
 

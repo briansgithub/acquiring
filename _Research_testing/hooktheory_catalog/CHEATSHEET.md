@@ -6,7 +6,7 @@ Run from `_Research_testing/hooktheory_catalog/` unless noted. Root shims (`node
 
 | Command | What it does |
 |---------|----------------|
-| `node cli/sync-catalog.js` | **Usual command.** Find + add any songs Hooktheory has that we don't; DB only |
+| `$env:HOOKTHEORY_CATALOG_AUTHORIZED='1'; node cli/sync-catalog.js` | Find + add songs after written Hooktheory authorization; DB only |
 | `node cli/sync-catalog.js --publish` | ...and rebuild + upload the Android release asset |
 | `node cli/sync-catalog.js --dry-run` | Report what it would do; zero requests |
 | `node cli/sync-catalog.js --cdx-max-age-days 7` | Re-pull the archive index if older than 7d (default 30) |
@@ -17,11 +17,16 @@ Re-running is cheap: already-playable songs and links confirmed dead are
 skipped before any request. Dead links are never re-checked. Only one sync runs
 at a time; an overlapping invocation exits 0 without doing anything.
 
+Remote sync is gated because Hooktheory's current Terms require express
+authorization for scraping/bulk download. `--dry-run` is always allowed. The
+environment flag records an authorization you already obtained; it does not
+itself grant permission.
+
 ## Run it daily / check coverage
 
 | Command | What it does |
 |---------|----------------|
-| `.\Register-SyncTask.ps1` (repo root) | Register a Windows task running the sync daily at 04:00, DB only |
+| `.\Register-SyncTask.ps1 -ConfirmHooktheoryAuthorization` (repo root) | After written authorization, register a daily 04:00 sync; DB only |
 | `.\Register-SyncTask.ps1 -At 02:30` | Same, different time |
 | `.\Register-SyncTask.ps1 -Unregister` | Remove the scheduled task |
 | `Start-ScheduledTask SacredRingCatalogSync` | Run the scheduled task immediately |
