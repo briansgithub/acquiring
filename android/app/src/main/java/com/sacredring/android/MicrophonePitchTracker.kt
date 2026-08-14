@@ -37,6 +37,10 @@ class MicrophonePitchTracker(
     }
 
     override fun start(targetMidi: Int) {
+        start(targetMidi, PitchTrackingMode.STANDARD)
+    }
+
+    internal fun start(targetMidi: Int, trackingMode: PitchTrackingMode) {
         // Wind the previous session down and hand the new one a job that waits for it.
         // Joining here rather than in stop() keeps the caller (the Compose main thread)
         // off the blocking teardown path, while still guaranteeing the old AudioRecord is
@@ -46,15 +50,28 @@ class MicrophonePitchTracker(
         previous?.cancel()
         _pitchFlow.value = PitchResult.NoSignal
 
+        val analysisWindowSize = trackingMode.windowSizeOverride ?: windowSize
+        val analysisHopSize = trackingMode.hopSizeOverride ?: hopSize
+
         job = scope.launch {
             previous?.join()
             running = true
-            captureLoop(targetMidi)
+            captureLoop(
+                targetMidi = targetMidi,
+                trackingMode = trackingMode,
+                analysisWindowSize = analysisWindowSize,
+                analysisHopSize = analysisHopSize
+            )
         }
     }
 
     @SuppressLint("MissingPermission")
-    private suspend fun CoroutineScope.captureLoop(targetMidi: Int) {
+    private suspend fun CoroutineScope.captureLoop(
+        targetMidi: Int,
+        trackingMode: PitchTrackingMode,
+        analysisWindowSize: Int,
+        analysisHopSize: Int
+    ) {
         val minBufferSize = AudioRecord.getMinBufferSize(
             sampleRate,
             AudioFormat.CHANNEL_IN_MONO,
@@ -77,12 +94,24 @@ class MicrophonePitchTracker(
             } ?: true
 
             val opened = (if (unprocessedSupported) {
-                createAudioRecord(MediaRecorder.AudioSource.UNPROCESSED, minBufferSize)
+                createAudioRecord(
+                    MediaRecorder.AudioSource.UNPROCESSED,
+                    minBufferSize,
+                    analysisHopSize
+                )
                     ?.let { it to "UNPROCESSED" }
             } else null)
-                ?: createAudioRecord(MediaRecorder.AudioSource.VOICE_RECOGNITION, minBufferSize)
+                ?: createAudioRecord(
+                    MediaRecorder.AudioSource.VOICE_RECOGNITION,
+                    minBufferSize,
+                    analysisHopSize
+                )
                     ?.let { it to "VOICE_RECOGNITION" }
-                ?: createAudioRecord(MediaRecorder.AudioSource.MIC, minBufferSize)
+                ?: createAudioRecord(
+                    MediaRecorder.AudioSource.MIC,
+                    minBufferSize,
+                    analysisHopSize
+                )
                     ?.let { it to "MIC" }
                 ?: throw IllegalStateException("Could not initialize AudioRecord")
 
@@ -90,7 +119,8 @@ class MicrophonePitchTracker(
             Log.i(
                 TAG,
                 "Capture started: source=${opened.second} rate=${sampleRate}Hz " +
-                    "window=$windowSize hop=$hopSize unprocessedSupported=$unprocessedSupported"
+                    "window=$analysisWindowSize hop=$analysisHopSize " +
+                    "mode=$trackingMode unprocessedSupported=$unprocessedSupported"
             )
         } catch (e: Exception) {
             _pitchFlow.value = PitchResult.Error(e.message ?: "Unknown initialization error")
@@ -100,20 +130,26 @@ class MicrophonePitchTracker(
         try {
             recorder.startRecording()
 
-            val buffer = ShortArray(windowSize + hopSize)
-            val rollingBuffer = ShortArray(windowSize)
+            val buffer = ShortArray(analysisWindowSize + analysisHopSize)
+            val rollingBuffer = ShortArray(analysisWindowSize)
             var writeIdx = 0
 
-            val smoother = PitchSmoother(targetMidi)
+            val smoother = PitchSmoother(targetMidi, trackingMode)
             var lastValidTime = 0L
 
             while (isActive && running && recorder.recordingState == AudioRecord.RECORDSTATE_RECORDING) {
-                val read = recorder.read(buffer, writeIdx, hopSize)
+                val read = recorder.read(buffer, writeIdx, analysisHopSize)
                 if (read > 0) {
                     writeIdx += read
 
-                    if (writeIdx >= windowSize) {
-                        System.arraycopy(buffer, writeIdx - windowSize, rollingBuffer, 0, windowSize)
+                    if (writeIdx >= analysisWindowSize) {
+                        System.arraycopy(
+                            buffer,
+                            writeIdx - analysisWindowSize,
+                            rollingBuffer,
+                            0,
+                            analysisWindowSize
+                        )
 
                         val estimate = PitchDetector.estimatePitch(
                             rollingBuffer,
@@ -139,8 +175,14 @@ class MicrophonePitchTracker(
                         }
 
                         // Shift buffer to make room for next hop
-                        System.arraycopy(buffer, hopSize, buffer, 0, writeIdx - hopSize)
-                        writeIdx -= hopSize
+                        System.arraycopy(
+                            buffer,
+                            analysisHopSize,
+                            buffer,
+                            0,
+                            writeIdx - analysisHopSize
+                        )
+                        writeIdx -= analysisHopSize
                     }
                 } else if (read < 0) {
                     _pitchFlow.value = PitchResult.Error("Audio read error: $read")
@@ -165,11 +207,15 @@ class MicrophonePitchTracker(
     }
 
     @SuppressLint("MissingPermission")
-    private fun createAudioRecord(source: Int, minBufferSize: Int): AudioRecord? {
+    private fun createAudioRecord(
+        source: Int,
+        minBufferSize: Int,
+        analysisHopSize: Int
+    ): AudioRecord? {
         return try {
             // AudioRecord sizes its buffer in BYTES; a 16-bit mono frame is 2 bytes. Hold
             // several hops so a scheduling hiccup during analysis cannot overrun the capture.
-            val desiredBytes = hopSize * BYTES_PER_SAMPLE * HOP_BUFFER_MULTIPLE
+            val desiredBytes = analysisHopSize * BYTES_PER_SAMPLE * HOP_BUFFER_MULTIPLE
             val recorder = AudioRecord(
                 source,
                 sampleRate,

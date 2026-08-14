@@ -114,4 +114,29 @@ class PitchSmootherTest {
         assertTrue(published.isNotEmpty())
         published.forEach { assertEquals(0.0, it.centsError, 1e-9) }
     }
+
+    @Test
+    fun maximumSpeedProfilePublishesTheFirstFrameWithoutEmaLag() {
+        val smoother = PitchSmoother(target, PitchTrackingMode.MELODY_FAST)
+
+        val first = smoother.accept(60.25, 0.9)
+        val second = smoother.accept(60.75, 0.9)
+
+        assertNotNull(first)
+        assertNotNull(second)
+        assertEquals(60.25, first!!.midi, 0.0)
+        assertEquals(60.75, second!!.midi, 0.0)
+    }
+
+    @Test
+    fun maximumSpeedProfileDropsOneOctaveErrorFrameThenReseeds() {
+        val smoother = PitchSmoother(target, PitchTrackingMode.MELODY_FAST)
+        assertNotNull(smoother.accept(60.0, 0.9))
+
+        assertNull(smoother.accept(72.0, 0.9))
+        val reseeded = smoother.accept(72.0, 0.9)
+
+        assertNotNull(reseeded)
+        assertEquals(72.0, reseeded!!.midi, 0.0)
+    }
 }

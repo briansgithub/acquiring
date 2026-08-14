@@ -401,8 +401,9 @@ object AudioEngine {
     }
 
     /**
-     * Synthesizes and plays exact frequencies (Hz), bypassing MIDI/note quantization.
-     * Applies the same global transpose and waveform selection as note-based playback.
+     * Synthesizes and plays literal frequencies (Hz), bypassing MIDI/note quantization and the
+     * app-wide transpose. Callers use this path for already-measured physical pitches, where
+     * applying transpose again would no longer reproduce what the microphone captured.
      */
     suspend fun playExactFrequencies(
         frequenciesHz: List<Double>,
@@ -412,10 +413,9 @@ object AudioEngine {
         fadeInMs: Int = 0,
         playbackToken: PlaybackToken? = null
     ) {
-        val transposed = frequenciesHz.filter { it > 0 }
-            .map { it * Math.pow(2.0, globalTranspose / 12.0) }
-        if (transposed.isEmpty()) return
-        val prepared = synthesizeNotes(transposed, durationMs, arpeggiate = false, stepMs = 80, volume, channel, fadeInMs, playbackToken)
+        val exactFrequencies = literalPlaybackFrequencies(frequenciesHz)
+        if (exactFrequencies.isEmpty()) return
+        val prepared = synthesizeNotes(exactFrequencies, durationMs, arpeggiate = false, stepMs = 80, volume, channel, fadeInMs, playbackToken)
             ?: return
         if (!currentCoroutineContext().isActive) {
             releasePreparedPlayback(prepared)
@@ -423,6 +423,9 @@ object AudioEngine {
         }
         startPreparedPlayback(prepared)
     }
+
+    internal fun literalPlaybackFrequencies(frequenciesHz: List<Double>): List<Double> =
+        frequenciesHz.filter { it.isFinite() && it > 0.0 }
 
     private suspend fun synthesizeNotes(
         freqs: List<Double>,

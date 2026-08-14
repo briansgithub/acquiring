@@ -59,7 +59,9 @@ import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.style.TextAlign
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.exponentialDecay
+import androidx.compose.animation.core.tween
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.input.pointer.util.addPointerInputChange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -1426,12 +1428,6 @@ internal fun DraggableQuizPlayPauseButton(
 }
 
 
-private data class QuizTimelineMelodyVisual(
-    val beat: Double,
-    val duration: Double,
-    val staffDegree: Int
-)
-
 private data class QuizTimelineChordVisual(
     val beat: Double,
     val duration: Double,
@@ -1654,7 +1650,12 @@ fun QuizTab(
             } else {
                 val rawStaffDegree = MusicTheory.getRawDegree(note.sd) + note.octave * 7
                 val sourceKey = sectionKeys.keyAtBeat(note.beat)
-                QuizTimelineMelodyVisual(
+                val resolvedPitch = MusicTheory.resolveScaleDegreePitch(
+                    sd = note.sd,
+                    relativeOctave = note.octave,
+                    key = sourceKey
+                )
+                MelodyTimelinePitchVisual(
                     beat = note.beat,
                     duration = note.duration,
                     staffDegree = if (useRelativeIonianContext) {
@@ -1666,10 +1667,24 @@ fun QuizTab(
                         ) ?: rawStaffDegree
                     } else {
                         rawStaffDegree
+                    },
+                    sourceMidi = resolvedPitch?.let { pitch ->
+                        if (useRelativeIonianContext) {
+                            ionianContextPreviewAudioNote(pitch, ionianContextKey)
+                                ?: pitch.toAudioNoteNumber()
+                        } else {
+                            pitch.toAudioNoteNumber()
+                        }
                     }
                 )
             }
         }
+    }
+    val timelineMelodyPitchRuns = remember(timelineMelodyVisuals) {
+        buildMelodyTimelinePitchRuns(timelineMelodyVisuals)
+    }
+    val timelineMelodyPitchRunsById = remember(timelineMelodyPitchRuns) {
+        timelineMelodyPitchRuns.associateBy(MelodyTimelinePitchRun::id)
     }
     val timelineChordVisuals = remember(
         section.chords,
@@ -2169,17 +2184,92 @@ fun QuizTab(
                     resolvedTarget = resolvedPersistentPitchTarget,
                     pitchResult = persistentPitchGaugeResult
                 )
+                val activeMelodyPitchRun = remember(timelineMelodyPitchRuns, currentBeat) {
+                    melodyTimelinePitchRunAtBeat(timelineMelodyPitchRuns, currentBeat)
+                }
+                val melodyRunScoringEnabled =
+                    persistentPitchController.selection == PersistentPitchSelection.Melody &&
+                        persistentPitchController.phase == PersistentPitchPhase.LISTENING &&
+                        ownsPersistentMicrophone
+                val melodyRunScoreAccumulator = remember(sessionKey) {
+                    MelodyTimelinePitchScoreAccumulator()
+                }
+                var fixedMelodyPitchScores by remember(sessionKey) {
+                    mutableStateOf<Map<Int, MelodyTimelinePitchScore>>(emptyMap())
+                }
+                val latestMelodyTimelinePitchEstimate by rememberUpdatedState(
+                    melodyTimelinePitchEstimate
+                )
+
+                DisposableEffect(
+                    melodyRunScoringEnabled,
+                    activeMelodyPitchRun?.id,
+                    melodyRunScoreAccumulator
+                ) {
+                    val scoringRun = activeMelodyPitchRun.takeIf { melodyRunScoringEnabled }
+                    if (!melodyRunScoringEnabled) {
+                        melodyRunScoreAccumulator.clear()
+                        fixedMelodyPitchScores = emptyMap()
+                    } else if (scoringRun != null) {
+                        melodyRunScoreAccumulator.begin(scoringRun.id)
+                        fixedMelodyPitchScores = fixedMelodyPitchScores - scoringRun.id
+                    }
+
+                    onDispose {
+                        if (scoringRun != null) {
+                            melodyRunScoreAccumulator.finish(scoringRun.id)?.let { score ->
+                                fixedMelodyPitchScores = fixedMelodyPitchScores +
+                                    (score.runId to score)
+                            }
+                        }
+                    }
+                }
+
+                LaunchedEffect(
+                    melodyRunScoringEnabled,
+                    activeMelodyPitchRun?.id,
+                    melodyRunScoreAccumulator
+                ) {
+                    val scoringRun = activeMelodyPitchRun.takeIf { melodyRunScoringEnabled }
+                        ?: return@LaunchedEffect
+                    while (true) {
+                        latestMelodyTimelinePitchEstimate?.let { estimate ->
+                            melodyRunScoreAccumulator.add(scoringRun.id, estimate.centsError)
+                        }
+                        delay(MELODY_PITCH_SCORE_SAMPLE_MS)
+                    }
+                }
+                val animatedMelodyTimelineCents by animateFloatAsState(
+                    targetValue = melodyTimelinePitchEstimate?.centsError?.toFloat() ?: 0f,
+                    animationSpec = tween(durationMillis = 32),
+                    label = "melody timeline pitch"
+                )
+                val sampledMelodyTimelineCents = rememberSampledPitchErrorCents(
+                    melodyTimelinePitchEstimate?.centsError
+                ).takeIf { melodyTimelinePitchEstimate != null }
                 val melodyTimelinePitchVisual = currentMelodyNote?.let { activeNote ->
                     timelineMelodyVisuals.firstOrNull { visual ->
                         visual.beat == activeNote.beat && visual.duration == activeNote.duration
                     }
                 }
-                val pitchAwareTimelineContentDescription = melodyTimelinePitchEstimate?.let { estimate ->
-                    "$timelineContentDescription. Melody pitch error ${formatPitchCentsError(estimate.centsError)}"
+                val pitchAwareTimelineContentDescription = sampledMelodyTimelineCents?.let { centsError ->
+                    val direction = when {
+                        centsError > 0.0 -> "high"
+                        centsError < 0.0 -> "low"
+                        else -> "on target"
+                    }
+                    "$timelineContentDescription. Melody pitch error " +
+                        "${pitchErrorPercentage(centsError)} percent, $direction"
                 } ?: timelineContentDescription
                 val melodyPitchLabelPaint = remember {
                     Paint(Paint.ANTI_ALIAS_FLAG).apply {
                         textAlign = Paint.Align.RIGHT
+                        typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                    }
+                }
+                val melodyScorePaint = remember {
+                    Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                        textAlign = Paint.Align.CENTER
                         typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                     }
                 }
@@ -2283,6 +2373,51 @@ fun QuizTab(
                                     size = Size(w, noteHeight)
                                 )
                             }
+                            fixedMelodyPitchScores.forEach { (runId, score) ->
+                                val run = timelineMelodyPitchRunsById[runId]
+                                    ?: return@forEach
+                                val scoreCenterX = (run.centerBeat - 1.0).toFloat() * pixelsPerBeatPx
+                                val scoreScreenX = scoreCenterX + translationX
+                                val scoreLabel = formatMelodyTimelinePitchScore(score)
+                                val scoreColor = pitchFeedbackColor(score.averageAbsoluteCentsError)
+                                melodyScorePaint.apply {
+                                    color = scoreColor.toArgb()
+                                    textSize = 11.sp.toPx()
+                                }
+                                val fontMetrics = melodyScorePaint.fontMetrics
+                                val horizontalPadding = 5.dp.toPx()
+                                val verticalPadding = 2.dp.toPx()
+                                val scoreWidth = melodyScorePaint.measureText(scoreLabel) +
+                                    horizontalPadding * 2f
+                                if (
+                                    scoreScreenX + scoreWidth / 2f < 0f ||
+                                    scoreScreenX - scoreWidth / 2f > size.width
+                                ) {
+                                    return@forEach
+                                }
+
+                                val scoreHeight = fontMetrics.descent - fontMetrics.ascent +
+                                    verticalPadding * 2f
+                                val noteTopY = melodyBaseY - (run.staffDegree * noteHeight)
+                                val desiredBaseline = noteTopY - 4.dp.toPx() - fontMetrics.descent
+                                val scoreBaseline = desiredBaseline.coerceAtLeast(
+                                    -fontMetrics.ascent + verticalPadding
+                                )
+                                val scoreTop = scoreBaseline + fontMetrics.ascent - verticalPadding
+
+                                drawRoundRect(
+                                    color = Color.Black.copy(alpha = 0.76f),
+                                    topLeft = Offset(scoreCenterX - scoreWidth / 2f, scoreTop),
+                                    size = Size(scoreWidth, scoreHeight),
+                                    cornerRadius = CornerRadius(scoreHeight / 2f, scoreHeight / 2f)
+                                )
+                                drawContext.canvas.nativeCanvas.drawText(
+                                    scoreLabel,
+                                    scoreCenterX,
+                                    scoreBaseline,
+                                    melodyScorePaint
+                                )
+                            }
                             timelineChordVisuals.forEach { chord ->
                                 val x = (chord.beat - 1).toFloat() * pixelsPerBeatPx
                                 val w = chord.duration.toFloat() * pixelsPerBeatPx
@@ -2316,30 +2451,22 @@ fun QuizTab(
                             val activeMelodyVisual = melodyTimelinePitchVisual
                             if (pitchEstimate != null && activeMelodyVisual != null) {
                                 val feedbackColor = pitchFeedbackColor(pitchEstimate.centsError)
-                                val haloRadius = 13.dp.toPx()
-                                val markerRadius = 6.dp.toPx()
-                                val rawMarkerY = melodyBaseY -
+                                val haloRadius = 6.dp.toPx()
+                                val markerRadius = 2.5f.dp.toPx()
+                                val targetMarkerY = melodyBaseY -
                                     (activeMelodyVisual.staffDegree * noteHeight) + noteHeight / 2f
+                                val measuredPitchStaffOffset = pitchErrorToTimelineStaffSteps(
+                                    animatedMelodyTimelineCents.toDouble()
+                                ).toFloat() * noteHeight
+                                val rawMarkerY = targetMarkerY - measuredPitchStaffOffset
                                 val markerY = rawMarkerY.coerceIn(
                                     haloRadius,
                                     (mLaneHeightPx - haloRadius).coerceAtLeast(haloRadius)
                                 )
 
-                                drawLine(
-                                    color = feedbackColor,
-                                    start = Offset(centerX, markerY - haloRadius),
-                                    end = Offset(centerX, markerY + haloRadius),
-                                    strokeWidth = 4.dp.toPx(),
-                                    cap = androidx.compose.ui.graphics.StrokeCap.Round
-                                )
                                 drawCircle(
-                                    color = feedbackColor.copy(alpha = 0.22f),
+                                    color = feedbackColor.copy(alpha = 0.28f),
                                     radius = haloRadius,
-                                    center = Offset(centerX, markerY)
-                                )
-                                drawCircle(
-                                    color = Color.Black.copy(alpha = 0.82f),
-                                    radius = markerRadius + 2.dp.toPx(),
                                     center = Offset(centerX, markerY)
                                 )
                                 drawCircle(
@@ -2347,40 +2474,38 @@ fun QuizTab(
                                     radius = markerRadius,
                                     center = Offset(centerX, markerY)
                                 )
-                                drawCircle(
-                                    color = Color.White.copy(alpha = 0.9f),
-                                    radius = 1.5.dp.toPx(),
-                                    center = Offset(centerX, markerY)
-                                )
 
-                                val centsLabel = formatPitchCentsError(pitchEstimate.centsError)
-                                melodyPitchLabelPaint.apply {
-                                    color = feedbackColor.toArgb()
-                                    textSize = 12.sp.toPx()
+                                sampledMelodyTimelineCents?.let { sampledCentsError ->
+                                    val percentageLabel = formatPitchErrorPercentage(sampledCentsError)
+                                    val percentageColor = pitchFeedbackColor(sampledCentsError)
+                                    melodyPitchLabelPaint.apply {
+                                        color = percentageColor.toArgb()
+                                        textSize = 11.sp.toPx()
+                                    }
+                                    val fontMetrics = melodyPitchLabelPaint.fontMetrics
+                                    val horizontalPadding = 5.dp.toPx()
+                                    val verticalPadding = 2.dp.toPx()
+                                    val labelWidth = melodyPitchLabelPaint.measureText(percentageLabel) +
+                                        horizontalPadding * 2f
+                                    val labelHeight = fontMetrics.descent - fontMetrics.ascent +
+                                        verticalPadding * 2f
+                                    val labelRight = centerX - 8.dp.toPx()
+                                    val labelLeft = labelRight - labelWidth
+                                    val labelTop = markerY - labelHeight / 2f
+
+                                    drawRoundRect(
+                                        color = Color.Black.copy(alpha = 0.76f),
+                                        topLeft = Offset(labelLeft, labelTop),
+                                        size = Size(labelWidth, labelHeight),
+                                        cornerRadius = CornerRadius(labelHeight / 2f, labelHeight / 2f)
+                                    )
+                                    drawContext.canvas.nativeCanvas.drawText(
+                                        percentageLabel,
+                                        labelRight - horizontalPadding,
+                                        markerY - (fontMetrics.ascent + fontMetrics.descent) / 2f,
+                                        melodyPitchLabelPaint
+                                    )
                                 }
-                                val fontMetrics = melodyPitchLabelPaint.fontMetrics
-                                val horizontalPadding = 6.dp.toPx()
-                                val verticalPadding = 3.dp.toPx()
-                                val labelWidth = melodyPitchLabelPaint.measureText(centsLabel) +
-                                    horizontalPadding * 2f
-                                val labelHeight = fontMetrics.descent - fontMetrics.ascent +
-                                    verticalPadding * 2f
-                                val labelRight = centerX - 11.dp.toPx()
-                                val labelLeft = labelRight - labelWidth
-                                val labelTop = markerY - labelHeight / 2f
-
-                                drawRoundRect(
-                                    color = Color.Black.copy(alpha = 0.76f),
-                                    topLeft = Offset(labelLeft, labelTop),
-                                    size = Size(labelWidth, labelHeight),
-                                    cornerRadius = CornerRadius(labelHeight / 2f, labelHeight / 2f)
-                                )
-                                drawContext.canvas.nativeCanvas.drawText(
-                                    centsLabel,
-                                    labelRight - horizontalPadding,
-                                    markerY - (fontMetrics.ascent + fontMetrics.descent) / 2f,
-                                    melodyPitchLabelPaint
-                                )
                             }
                         }
                     }

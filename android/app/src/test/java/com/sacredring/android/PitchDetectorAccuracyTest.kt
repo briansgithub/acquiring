@@ -30,14 +30,23 @@ class PitchDetectorAccuracyTest {
 
     private fun cents(measured: Double, reference: Double) = 1200.0 * (ln(measured / reference) / ln(2.0))
 
-    private fun sine(freq: Double, phase: Double = 0.0): ShortArray =
-        ShortArray(bufferLength) { i ->
+    private fun sine(
+        freq: Double,
+        phase: Double = 0.0,
+        length: Int = bufferLength
+    ): ShortArray =
+        ShortArray(length) { i ->
             (sin(2.0 * PI * freq * i / sampleRate + phase) * 32767).toInt().toShort()
         }
 
     /** Harmonic-rich tone: partials 1..[partials] at 1/k amplitude, approximating a sung vowel. */
-    private fun harmonic(freq: Double, partials: Int, phase: Double = 0.0): ShortArray {
-        val raw = DoubleArray(bufferLength) { i ->
+    private fun harmonic(
+        freq: Double,
+        partials: Int,
+        phase: Double = 0.0,
+        length: Int = bufferLength
+    ): ShortArray {
+        val raw = DoubleArray(length) { i ->
             var s = 0.0
             for (k in 1..partials) {
                 if (k * freq >= sampleRate / 2.0) break
@@ -46,7 +55,7 @@ class PitchDetectorAccuracyTest {
             s
         }
         val peak = raw.maxOf { abs(it) }
-        return ShortArray(bufferLength) { i -> ((raw[i] / peak) * 26000).toInt().toShort() }
+        return ShortArray(length) { i -> ((raw[i] / peak) * 26000).toInt().toShort() }
     }
 
     private fun assertDetectsWithinTolerance(signal: ShortArray, expectedHz: Double, label: String) {
@@ -71,6 +80,32 @@ class PitchDetectorAccuracyTest {
     fun detectsReferenceTonesWithinFiveCents() {
         assertDetectsWithinTolerance(sine(440.0), 440.0, "A4 sine")
         assertDetectsWithinTolerance(sine(82.41), 82.41, "E2 sine")
+    }
+
+    @Test
+    fun maximumSpeedWindowDetectsRepresentativeVocalTones() {
+        val fastWindowSize = PitchTrackingMode.MELODY_FAST.windowSizeOverride
+            ?: error("melody fast mode must override the analysis window")
+        val frequencies = listOf(82.41, 110.0, 220.0, 440.0, 587.33)
+
+        frequencies.forEach { frequency ->
+            val signals = listOf(
+                "sine" to sine(frequency, length = fastWindowSize),
+                "harmonic" to harmonic(frequency, partials = 6, length = fastWindowSize)
+            )
+            signals.forEach { (label, signal) ->
+                val estimate = PitchDetector.estimatePitch(signal, sampleRate)
+                assertTrue(
+                    "$label: expected a fast-window detection for $frequency Hz",
+                    estimate.frequencyHz > 0.0
+                )
+                val error = abs(cents(estimate.frequencyHz, frequency))
+                assertTrue(
+                    "$label: fast-window error was ${"%.1f".format(error)} cents at $frequency Hz",
+                    error <= 8.0
+                )
+            }
+        }
     }
 
     @Test

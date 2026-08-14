@@ -734,10 +734,10 @@ internal fun HummingIntervalPopup(
                     isTessituraAdjusted = activeTarget?.first != null && octaveShift != 0,
                     recordingTimeRemaining = if (recordingSlot == 1) recordingTimeRemaining else if (activeListenSlot == 1) listenTimeRemaining else 0,
                     onSingleClick = {
-                        slot1?.let {
+                        recordedPitchPlaybackFrequency(slot1)?.let { frequencyHz ->
                             scope.launch {
                                 AudioEngine.playExactFrequencies(
-                                    listOf(midiToFrequency(it.rawMidi)),
+                                    listOf(frequencyHz),
                                     durationMs = 1000,
                                     channel = AudioEngine.PlaybackChannel.PREVIEW
                                 )
@@ -770,10 +770,10 @@ internal fun HummingIntervalPopup(
                     isTessituraAdjusted = activeTarget?.second != null && octaveShift != 0,
                     recordingTimeRemaining = if (recordingSlot == 2) recordingTimeRemaining else if (activeListenSlot == 2) listenTimeRemaining else 0,
                     onSingleClick = {
-                        slot2?.let {
+                        recordedPitchPlaybackFrequency(slot2)?.let { frequencyHz ->
                             scope.launch {
                                 AudioEngine.playExactFrequencies(
-                                    listOf(midiToFrequency(it.rawMidi)),
+                                    listOf(frequencyHz),
                                     durationMs = 1000,
                                     channel = AudioEngine.PlaybackChannel.PREVIEW
                                 )
@@ -813,11 +813,9 @@ internal fun HummingIntervalPopup(
                         .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp))
                         .testTag(SINGING_INTERVAL_RESULT_TEST_TAG)
                         .clickable(enabled = capturedSlot1 != null && capturedSlot2 != null) {
-                            val firstTarget = activeTarget?.first
-                            val secondTarget = activeTarget?.second
-                            if (firstTarget != null && secondTarget != null) {
-                                val firstMidi = firstTarget.targetPlaybackMidiInput(octaveShift)
-                                val secondMidi = secondTarget.targetPlaybackMidiInput(octaveShift)
+                            val idealTargetMidis = idealIntervalPlaybackMidis(activeTarget, octaveShift)
+                            if (idealTargetMidis != null) {
+                                val (firstMidi, secondMidi) = idealTargetMidis
                                 scope.launch {
                                     AudioEngine.playChord(
                                         listOf(firstMidi),
@@ -1015,7 +1013,22 @@ internal data class PitchData(
     val rawMidi: Double
 )
 
-private fun midiToFrequency(midi: Double): Double = 440.0 * Math.pow(2.0, (midi - 69) / 12.0)
+internal fun recordedPitchPlaybackFrequency(data: PitchData?): Double? =
+    data?.rawMidi
+        ?.takeIf(Double::isFinite)
+        ?.let(::midiToFrequency)
+
+private fun midiToFrequency(midi: Double): Double =
+    440.0 * Math.pow(2.0, (midi - 69.0) / 12.0)
+
+internal fun idealIntervalPlaybackMidis(
+    target: SingingTargetRequest?,
+    octaveShift: Int
+): Pair<Int, Int>? {
+    val first = target?.first ?: return null
+    val second = target.second ?: return null
+    return first.targetPlaybackMidiInput(octaveShift) to second.targetPlaybackMidiInput(octaveShift)
+}
 
 @Composable
 internal fun RowScope.HummingSlotView(

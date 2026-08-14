@@ -17,7 +17,7 @@ internal enum class MicrophonePitchOwner {
  */
 internal interface ExclusivePitchSource : PitchSource {
     val ownsMicrophone: StateFlow<Boolean>
-    fun claim()
+    fun claim(trackingMode: PitchTrackingMode = PitchTrackingMode.STANDARD)
 }
 
 /** Serializes the app's quiz-related microphone interactions over one pitch tracker. */
@@ -27,6 +27,7 @@ internal class MicrophonePitchCoordinator(
     private val lock = Any()
     private val ownership = MicrophonePitchOwner.entries.associateWith { MutableStateFlow(false) }
     private var owner: MicrophonePitchOwner? = null
+    private var ownerTrackingMode = PitchTrackingMode.STANDARD
     private var isReleased = false
 
     fun sourceFor(requestedOwner: MicrophonePitchOwner): ExclusivePitchSource =
@@ -38,13 +39,19 @@ internal class MicrophonePitchCoordinator(
             isReleased = true
             delegate.release()
             owner = null
+            ownerTrackingMode = PitchTrackingMode.STANDARD
             ownership.values.forEach { it.value = false }
         }
     }
 
-    private fun claim(requestedOwner: MicrophonePitchOwner) {
+    private fun claim(
+        requestedOwner: MicrophonePitchOwner,
+        trackingMode: PitchTrackingMode
+    ) {
         synchronized(lock) {
-            if (isReleased || owner == requestedOwner) return
+            if (isReleased) return
+            ownerTrackingMode = trackingMode
+            if (owner == requestedOwner) return
             delegate.stop()
             owner?.let { ownership.getValue(it).value = false }
             owner = requestedOwner
@@ -55,7 +62,12 @@ internal class MicrophonePitchCoordinator(
     private fun start(requestedOwner: MicrophonePitchOwner, targetMidi: Int) {
         synchronized(lock) {
             if (isReleased || owner != requestedOwner) return
-            delegate.start(targetMidi)
+            val tracker = delegate as? MicrophonePitchTracker
+            if (tracker != null) {
+                tracker.start(targetMidi, ownerTrackingMode)
+            } else {
+                delegate.start(targetMidi)
+            }
         }
     }
 
@@ -64,6 +76,7 @@ internal class MicrophonePitchCoordinator(
             if (isReleased || owner != requestedOwner) return
             delegate.stop()
             owner = null
+            ownerTrackingMode = PitchTrackingMode.STANDARD
             ownership.getValue(requestedOwner).value = false
         }
     }
@@ -75,7 +88,8 @@ internal class MicrophonePitchCoordinator(
         override val ownsMicrophone: StateFlow<Boolean> =
             ownership.getValue(requestedOwner).asStateFlow()
 
-        override fun claim() = this@MicrophonePitchCoordinator.claim(requestedOwner)
+        override fun claim(trackingMode: PitchTrackingMode) =
+            this@MicrophonePitchCoordinator.claim(requestedOwner, trackingMode)
 
         override fun start(targetMidi: Int) =
             this@MicrophonePitchCoordinator.start(requestedOwner, targetMidi)
