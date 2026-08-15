@@ -1,6 +1,6 @@
-# Sacred Ring - Android App
+# Inquiring - Android App
 
-Android port of key features from the Sacred Ring web application.
+Android port of key features from the web player in the parent repository.
 
 ## Catalog release
 

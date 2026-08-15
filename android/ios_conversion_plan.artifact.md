@@ -1,9 +1,9 @@
-# Sacred Ring: Android to iOS Conversion Master Plan
+# Inquiring: Android to iOS Conversion Master Plan
 
-This document provides a comprehensive, structured strategy for porting the Sacred Ring application from Android (Kotlin/Compose) to iOS (Swift/SwiftUI).
+This document provides a comprehensive, structured strategy for porting the Inquiring application from Android (Kotlin/Compose) to iOS (Swift/SwiftUI).
 
 ## 1. Project Overview & Scope
-Sacred Ring is a music-theoretical tool and ear training app. The core value lies in its ability to:
+Inquiring is a music-theoretical tool and ear training app. The core value lies in its ability to:
 - Harvest and parse Hooktheory data.
 - Interpret complex chord progressions and scale degrees.
 - Provide a real-time audio synthesis engine for playback.
@@ -86,7 +86,7 @@ To maintain maintainability, we will map Android components to their closest iOS
 ## 4. Technical Implementation Details
 
 ### Audio Synthesis Parity
-The Android app uses a custom `AudioEngine` with Sawtooth/Sine waveforms. On iOS, we will use `AVAudioSourceNode` to render the same math-based waveforms to ensure the "Sacred Ring" sound is identical.
+The Android app uses a custom `AudioEngine` with Sawtooth/Sine waveforms. On iOS, we will use `AVAudioSourceNode` to render the same math-based waveforms to ensure the "Inquiring" sound is identical.
 - **Android:** `AudioTrack` with manual buffer filling.
 - **iOS:** `AVAudioSourceNode` callback for real-time synthesis.
 
