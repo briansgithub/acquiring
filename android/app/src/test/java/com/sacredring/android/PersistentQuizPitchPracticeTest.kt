@@ -13,6 +13,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import kotlin.math.abs
 
 class PersistentQuizPitchPracticeTest {
 
@@ -150,34 +151,199 @@ class PersistentQuizPitchPracticeTest {
     }
 
     @Test
-    fun finishedMelodyRunScoreAveragesErrorWithoutCancellingDirection() {
-        val accumulator = MelodyTimelinePitchScoreAccumulator()
-        accumulator.begin(runId = 4)
-        accumulator.add(runId = 4, centsError = 10.0)
-        accumulator.add(runId = 4, centsError = 30.0)
+    fun finishedMelodyRunScoreReportsMagnitudeWithoutCancellingDirection() {
+        val sharp = scoreOf(runId = 4, samples = List(12) { 20.0 })
+        assertEquals(20, sharp?.errorPercentage)
+        assertEquals(20.0, sharp?.signedCentsError ?: Double.NaN, 0.0)
+        assertEquals(20.0, sharp?.centsErrorMagnitude ?: Double.NaN, 0.0)
+        assertEquals(12, sharp?.sampleCount)
+        assertEquals("+20%", sharp?.let(::formatMelodyTimelinePitchScore))
 
-        val score = accumulator.finish(runId = 4)
-
-        assertEquals(20, score?.errorPercentage)
-        assertEquals(20.0, score?.averageCentsError ?: Double.NaN, 0.0)
-        assertEquals(20.0, score?.averageAbsoluteCentsError ?: Double.NaN, 0.0)
-        assertEquals(2, score?.sampleCount)
-        assertEquals("+20%", score?.let(::formatMelodyTimelinePitchScore))
-
-        accumulator.begin(runId = 5)
-        accumulator.add(runId = 5, centsError = -20.0)
-        accumulator.add(runId = 5, centsError = -40.0)
-        val lowScore = accumulator.finish(runId = 5)
-        assertEquals(30, lowScore?.errorPercentage)
-        assertEquals("-30%", lowScore?.let(::formatMelodyTimelinePitchScore))
+        val flat = scoreOf(runId = 5, samples = List(12) { -30.0 })
+        assertEquals(30, flat?.errorPercentage)
+        assertEquals("-30%", flat?.let(::formatMelodyTimelinePitchScore))
     }
 
     @Test
-    fun melodyRunWithoutValidPitchDoesNotProduceAScore() {
+    fun oneWildFrameDoesNotFlipTheBadgeSignOrColour() {
+        // A single subharmonic lock inside the tritone that PitchSmoother would not reject.
+        // The running mean this replaced rendered "-15%" in yellow for this exact input.
+        val score = scoreOf(runId = 9, samples = List(30) { 12.0 } + (-600.0))
+
+        assertEquals(12, score?.errorPercentage)
+        assertEquals("+12%", score?.let(::formatMelodyTimelinePitchScore))
+        assertEquals(Color(0xFF4CAF50), pitchFeedbackColor(score!!.centsErrorMagnitude))
+        assertEquals(31, score.sampleCount)
+    }
+
+    @Test
+    fun scoreIsWithheldUntilEnoughSamplesSurvive() {
+        val accumulator = MelodyTimelinePitchScoreAccumulator()
+        accumulator.begin(runId = 1)
+        repeat(MELODY_MIN_SCORE_SAMPLES - 1) { accumulator.add(runId = 1, centsError = 8.0) }
+        assertEquals(MelodyRunScoreOutcome.Unscored(1), accumulator.finish(runId = 1))
+
+        accumulator.begin(runId = 2)
+        repeat(MELODY_MIN_SCORE_SAMPLES) { accumulator.add(runId = 2, centsError = 8.0) }
+        val outcome = accumulator.finish(runId = 2)
+        assertTrue(outcome is MelodyRunScoreOutcome.Scored)
+        assertEquals(MELODY_MIN_SCORE_SAMPLES, (outcome as MelodyRunScoreOutcome.Scored).score.sampleCount)
+    }
+
+    @Test
+    fun magnitudeIsClampedOnceAtTheDisplayBoundary() {
+        val outlier = scoreOf(runId = 6, samples = List(10) { -20.0 } + (-3000.0))
+        assertEquals("-20%", outlier?.let(::formatMelodyTimelinePitchScore))
+
+        val genuinelyFar = scoreOf(runId = 7, samples = List(10) { -300.0 })
+        assertEquals(100, genuinelyFar?.errorPercentage)
+        assertEquals("-100%", genuinelyFar?.let(::formatMelodyTimelinePitchScore))
+        assertEquals(Color(0xFFF44336), pitchFeedbackColor(genuinelyFar!!.centsErrorMagnitude))
+    }
+
+    @Test
+    fun aCentredWobbleDropsTheDirectionPrefix() {
+        // Evenly either side of the target: real magnitude, no meaningful direction.
+        val score = scoreOf(
+            runId = 8,
+            samples = listOf(20.0, -20.0, 21.0, -19.0, 20.0, -21.0, 19.0, -20.0, 1.5, -1.0)
+        )
+
+        assertEquals("", formatMelodyTimelinePitchScore(score!!).takeWhile { !it.isDigit() })
+        assertTrue(abs(score.signedCentsError) < 5.0)
+        assertTrue(score.centsErrorMagnitude > 15.0)
+    }
+
+    @Test
+    fun aRunThatIsNotTheActiveOneIsNotFinished() {
+        val accumulator = MelodyTimelinePitchScoreAccumulator()
+        accumulator.begin(runId = 3)
+        repeat(MELODY_MIN_SCORE_SAMPLES) { accumulator.add(runId = 3, centsError = 5.0) }
+
+        assertNull(accumulator.finish(runId = 4))
+        assertTrue(accumulator.finish(runId = 3) is MelodyRunScoreOutcome.Scored)
+    }
+
+    @Test
+    fun aCleanAttackOpensScoringBetweenTheLatencyFloorAndTheHardCap() {
+        val openedAt = firstSettleMs(MelodyRunSettleDetector()) { 10.0 + (it % 5L) * 0.5 }
+
+        assertTrue("never settled", openedAt != null)
+        assertTrue("settled inside the detector's own latency, at $openedAt",
+            openedAt!! >= MELODY_PITCH_SETTLE_FLOOR_MS)
+        assertTrue("a clean attack should not wait for the cap, settled at $openedAt",
+            openedAt < MELODY_PITCH_SETTLE_FLOOR_MS + 64L)
+    }
+
+    @Test
+    fun scoopIntoTheNoteDelaysScoringUntilThePitchStopsMoving() {
+        // A semitone-and-a-bit slide up to the note over 300ms, then held.
+        val openedAt = firstSettleMs(MelodyRunSettleDetector()) { elapsed ->
+            if (elapsed < 300L) -250.0 + elapsed * 250.0 / 300.0 else 3.0 + (elapsed % 3L)
+        }
+
+        assertTrue("settled mid-scoop at $openedAt", (openedAt ?: 0L) >= 300L)
+        assertTrue("scoop should settle on its own, not via the cap, at $openedAt",
+            openedAt!! < MELODY_PITCH_SETTLE_CAP_MS)
+    }
+
+    @Test
+    fun hardCapOpensScoringEvenWhileThePitchIsStillMoving() {
+        // Pins the invariant that the adaptive gate is never worse than the flat 500ms grace.
+        val openedAt = firstSettleMs(MelodyRunSettleDetector()) { elapsed -> -600.0 + elapsed }
+
+        assertTrue("never opened", openedAt != null)
+        assertTrue("opened before the cap at $openedAt", openedAt!! >= MELODY_PITCH_SETTLE_CAP_MS)
+        assertTrue("opened well after the cap at $openedAt",
+            openedAt < MELODY_PITCH_SETTLE_CAP_MS + MELODY_PITCH_SCORE_SAMPLE_MS * 2L)
+    }
+
+    @Test
+    fun aFrozenPitchReadingIsNotTreatedAsSettled() {
+        // MicrophonePitchTracker republishes its last estimate for 200ms after signal loss,
+        // so a bit-identical reading is the previous note being replayed into this one.
+        val openedAt = firstSettleMs(MelodyRunSettleDetector()) { -180.0 }
+
+        assertTrue("a stale frozen reading settled at $openedAt",
+            openedAt!! >= MELODY_PITCH_SETTLE_CAP_MS)
+    }
+
+    @Test
+    fun aDropoutClearsThePartialSettleWindow() {
+        val withDropout = firstSettleMs(MelodyRunSettleDetector()) { elapsed ->
+            if (elapsed == 160L) null else 9.0 + (elapsed % 3L)
+        }
+        val uninterrupted = firstSettleMs(MelodyRunSettleDetector()) { 9.0 + (it % 3L) }
+
+        assertTrue("a dropout must restart the window", withDropout!! > uninterrupted!!)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun melodyRunScoreIgnoresPitchesFromTheScoopOntoTheNote() = runTest {
+        val accumulator = MelodyTimelinePitchScoreAccumulator()
+        accumulator.begin(runId = 7)
+        var elapsedMs = 0L
+        val samplingJob = launch {
+            accumulateMelodyRunPitchSamples(
+                runId = 7,
+                accumulator = accumulator,
+                latestCentsError = {
+                    if (elapsedMs < 300L) -250.0 + elapsedMs * 250.0 / 300.0
+                    else 4.0 + (elapsedMs % 3L)
+                }
+            )
+        }
+
+        repeat(50) {
+            advanceTimeBy(MELODY_PITCH_SCORE_SAMPLE_MS)
+            elapsedMs += MELODY_PITCH_SCORE_SAMPLE_MS
+            runCurrent()
+        }
+        samplingJob.cancel()
+
+        val outcome = accumulator.finish(runId = 7)
+        assertTrue(outcome is MelodyRunScoreOutcome.Scored)
+        // Every banked sample came from the held portion, none from the slide.
+        assertTrue((outcome as MelodyRunScoreOutcome.Scored).score.centsErrorMagnitude < 10.0)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun shortRunWithACleanAttackStillBanksAScore() = runTest {
+        val accumulator = MelodyTimelinePitchScoreAccumulator()
+        accumulator.begin(runId = 3)
+        var elapsedMs = 0L
+        val samplingJob = launch {
+            accumulateMelodyRunPitchSamples(
+                runId = 3,
+                accumulator = accumulator,
+                latestCentsError = { 25.0 + (elapsedMs % 3L) }
+            )
+        }
+
+        // ~300ms - a quarter note at 200bpm - which the flat 500ms grace scored as nothing.
+        repeat(19) {
+            advanceTimeBy(MELODY_PITCH_SCORE_SAMPLE_MS)
+            elapsedMs += MELODY_PITCH_SCORE_SAMPLE_MS
+            runCurrent()
+        }
+        samplingJob.cancel()
+
+        val outcome = accumulator.finish(runId = 3)
+        assertTrue("a short clean note should score", outcome is MelodyRunScoreOutcome.Scored)
+        assertTrue(
+            (outcome as MelodyRunScoreOutcome.Scored).score.sampleCount >= MELODY_MIN_SCORE_SAMPLES
+        )
+    }
+
+    @Test
+    fun melodyRunWithoutValidPitchIsReportedAsUnscoredRatherThanOmitted() {
         val accumulator = MelodyTimelinePitchScoreAccumulator()
         accumulator.begin(runId = 2)
 
-        assertNull(accumulator.finish(runId = 2))
+        // Distinct from finish() returning null, which means "this run is not the active one".
+        assertEquals(MelodyRunScoreOutcome.Unscored(2), accumulator.finish(runId = 2))
     }
 
     @Test
@@ -189,6 +355,21 @@ class PersistentQuizPitchPracticeTest {
         assertEquals("0%", formatPitchErrorPercentage(0.0))
         assertEquals("+48%", formatPitchErrorPercentage(47.6))
         assertEquals("-48%", formatPitchErrorPercentage(-47.6))
+    }
+
+    @Test
+    fun liveReadoutHidesThePercentageOnceItPinsInEitherDirection() {
+        assertTrue(showsLivePitchErrorPercentage(0.0))
+        assertTrue(showsLivePitchErrorPercentage(99.4))
+        assertTrue(showsLivePitchErrorPercentage(-99.4))
+        // 99.5 rounds to 100, which is where the number stops meaning anything.
+        assertFalse(showsLivePitchErrorPercentage(99.5))
+        assertFalse(showsLivePitchErrorPercentage(-99.5))
+        assertFalse(showsLivePitchErrorPercentage(-1200.0))
+
+        // Banked run scores are a separate path and still report a pinned value.
+        val pinned = scoreOf(runId = 11, samples = List(10) { -300.0 })
+        assertEquals("-100%", pinned?.let(::formatMelodyTimelinePitchScore))
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -312,6 +493,28 @@ class PersistentQuizPitchPracticeTest {
         assertEquals(TapSequenceAction.SINGLE, tapSequenceAction(1))
         assertEquals(TapSequenceAction.DOUBLE, tapSequenceAction(2))
         assertEquals(TapSequenceAction.TRIPLE, tapSequenceAction(3))
+    }
+
+    /** Runs a whole run's worth of samples through the accumulator and returns its score. */
+    private fun scoreOf(runId: Int, samples: List<Double>): MelodyTimelinePitchScore? {
+        val accumulator = MelodyTimelinePitchScoreAccumulator()
+        accumulator.begin(runId)
+        samples.forEach { accumulator.add(runId, it) }
+        return (accumulator.finish(runId) as? MelodyRunScoreOutcome.Scored)?.score
+    }
+
+    /** Steps [detector] at the real frame interval and reports when scoring opened. */
+    private fun firstSettleMs(
+        detector: MelodyRunSettleDetector,
+        untilMs: Long = 900L,
+        centsAt: (Long) -> Double?
+    ): Long? {
+        var elapsedMs = 0L
+        while (elapsedMs <= untilMs) {
+            if (detector.observe(elapsedMs, centsAt(elapsedMs))) return elapsedMs
+            elapsedMs += MELODY_PITCH_SCORE_SAMPLE_MS
+        }
+        return null
     }
 
     private fun target(midi: Int) = QuizPitchCardTarget(midi, midi.toString())

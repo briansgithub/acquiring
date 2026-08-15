@@ -15,11 +15,8 @@ import androidx.compose.ui.test.performClick
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
-import kotlin.math.max
-import kotlin.math.min
 
 class TessituraUiTest {
     @get:Rule
@@ -106,33 +103,56 @@ class TessituraUiTest {
     }
 
     @Test
-    fun calibrationCardOverlapsLowerTargetArea() {
-        setHummingContent()
+    fun calibrationCardOpensAndCancelsFromTheTessituraControl() {
+        val pitchSource = FakePitchSource()
+        composeTestRule.setContent {
+            MaterialTheme {
+                TessituraControl(
+                    octaveShift = 0,
+                    canCalibrate = true,
+                    pitchSource = pitchSource,
+                    recordAudioPermissionOverride = true
+                )
+            }
+        }
         composeTestRule.mainClock.autoAdvance = false
 
         composeTestRule.onNodeWithText("Set Tessitura").performClick()
         composeTestRule.onNodeWithTag(TESSITURA_CALIBRATION_MODAL_TEST_TAG).assertExists()
         composeTestRule.onNodeWithTag(TESSITURA_CALIBRATION_CARD_TEST_TAG).assertExists()
 
-        val card = composeTestRule
-            .onNodeWithTag(TESSITURA_CALIBRATION_CARD_TEST_TAG)
-            .fetchSemanticsNode()
-            .boundsInRoot
-        val targets = composeTestRule
-            .onNodeWithTag(SINGING_TARGET_ROW_TEST_TAG)
-            .fetchSemanticsNode()
-            .boundsInRoot
-        val verticalOverlap = min(card.bottom, targets.bottom) - max(card.top, targets.top)
-
-        assertTrue("Calibration card should overlap the target row", verticalOverlap > 0f)
-        assertTrue("Calibration card should begin inside the target row", card.top > targets.top)
-
         composeTestRule.onNodeWithText("Cancel").performClick()
         composeTestRule.onNodeWithTag(TESSITURA_CALIBRATION_CARD_TEST_TAG).assertDoesNotExist()
     }
 
     @Test
-    fun clearCalibrationKeepsLoadedTargets() {
+    fun tessituraControlOctaveSelectorReportsShifts() {
+        val shift = mutableStateOf(0)
+        composeTestRule.setContent {
+            MaterialTheme {
+                TessituraControl(
+                    octaveShift = shift.value,
+                    canCalibrate = true,
+                    onOctaveShiftChange = { shift.value = it },
+                    pitchSource = FakePitchSource(),
+                    recordAudioPermissionOverride = true
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithContentDescription("Raise tessitura shift by one octave").performClick()
+        composeTestRule.runOnIdle { assertEquals(1, shift.value) }
+        composeTestRule.onNodeWithContentDescription(
+            "Tessitura shifted 1 octaves from the song's actual pitch"
+        ).assertExists()
+
+        composeTestRule.onNodeWithContentDescription("Lower tessitura shift by one octave").performClick()
+        composeTestRule.onNodeWithContentDescription("Lower tessitura shift by one octave").performClick()
+        composeTestRule.runOnIdle { assertEquals(-1, shift.value) }
+    }
+
+    @Test
+    fun clearingTheShiftKeepsLoadedTargets() {
         val shift = mutableStateOf(1)
         val pitchSource = FakePitchSource()
         composeTestRule.setContent {
@@ -140,8 +160,6 @@ class TessituraUiTest {
                 HummingIntervalPopup(
                     targetRequest = targetRequest,
                     octaveShift = shift.value,
-                    canCalibrate = true,
-                    onCalibrateResetRequested = { shift.value = 0 },
                     pitchSource = pitchSource,
                     autoListenOnTargetLoad = false,
                     recordAudioPermissionOverride = true
@@ -149,9 +167,8 @@ class TessituraUiTest {
             }
         }
 
-        composeTestRule.onNodeWithContentDescription(
-            "Clear tessitura calibration and reset to the default octave"
-        ).performClick()
+        composeTestRule.runOnIdle { shift.value = 0 }
+        composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithContentDescription("Scale degree flat 3").assertExists()
         composeTestRule.onAllNodes(
@@ -160,7 +177,6 @@ class TessituraUiTest {
                 "Original target octave"
             )
         ).assertCountEquals(2)
-        composeTestRule.runOnIdle { assertEquals(0, shift.value) }
     }
 
     @Test
@@ -212,7 +228,6 @@ class TessituraUiTest {
                 HummingIntervalPopup(
                     targetRequest = request,
                     octaveShift = octaveShift,
-                    canCalibrate = true,
                     pitchSource = pitchSource,
                     autoListenOnTargetLoad = false,
                     recordAudioPermissionOverride = true

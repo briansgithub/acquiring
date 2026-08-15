@@ -283,6 +283,9 @@ internal fun MainScreen(
     val singingToolPitchSource = remember(microphonePitchCoordinator) {
         microphonePitchCoordinator.sourceFor(MicrophonePitchOwner.SINGING_TOOL)
     }
+    val tessituraCalibrationPitchSource = remember(microphonePitchCoordinator) {
+        microphonePitchCoordinator.sourceFor(MicrophonePitchOwner.TESSITURA_CALIBRATION)
+    }
     DisposableEffect(microphonePitchCoordinator) {
         onDispose { microphonePitchCoordinator.release() }
     }
@@ -765,6 +768,22 @@ internal fun MainScreen(
                         singingTargetRequest = request.copy(requestId = singingTargetRequestId)
                     },
                     tessituraShiftOctaves = tessituraShiftOctaves,
+                    tessituraControl = {
+                        TessituraControl(
+                            octaveShift = tessituraShiftOctaves,
+                            canCalibrate = selectedSectionRootMidis.isNotEmpty(),
+                            onCalibrationCaptured = { hummedMidi ->
+                                calculateSingingTessituraShift(
+                                    comfortableMidi = hummedMidi,
+                                    targetRequest = singingTargetRequest,
+                                    sectionRootMidis = selectedSectionRootMidis,
+                                    globalTranspose = globalTranspose
+                                )?.let(tessituraSessionViewModel::updateShift)
+                            },
+                            onOctaveShiftChange = { tessituraSessionViewModel.updateShift(it) },
+                            pitchSource = tessituraCalibrationPitchSource
+                        )
+                    },
                     persistentPitchSource = persistentQuizPitchSource,
                     onBack = returnToParent
                 )
@@ -778,19 +797,6 @@ internal fun MainScreen(
             targetRequest = singingTargetRequest,
             globalTranspose = globalTranspose,
             octaveShift = tessituraShiftOctaves,
-            canCalibrate = selectedSectionRootMidis.isNotEmpty(),
-            onCalibrationCaptured = { hummedMidi ->
-                calculateSingingTessituraShift(
-                    comfortableMidi = hummedMidi,
-                    targetRequest = singingTargetRequest,
-                    sectionRootMidis = selectedSectionRootMidis,
-                    globalTranspose = globalTranspose
-                )?.let(tessituraSessionViewModel::updateShift)
-            },
-            onCalibrateResetRequested = {
-                tessituraSessionViewModel.clearAdjustment()
-            },
-            onOctaveShiftChange = { tessituraSessionViewModel.updateShift(it) },
             pitchSource = singingToolPitchSource
         )
     }
@@ -1107,6 +1113,7 @@ fun SongDetailView(
     onArtistClick: (String) -> Unit,
     onSingingTargetsRequested: (SingingTargetRequest) -> Unit,
     tessituraShiftOctaves: Int,
+    tessituraControl: @Composable () -> Unit,
     persistentPitchSource: PitchSource,
     onBack: () -> Unit
 ) {
@@ -1120,6 +1127,10 @@ fun SongDetailView(
     var isTransposeExpanded by remember { mutableStateOf(false) }
     var isSimpleMode by remember { mutableStateOf(false) }
     var useRelativeIonianContext by remember { mutableStateOf(false) }
+    // The quiz's key/scale readout is rendered by the song header rather than by
+    // QuizTab itself, so QuizTab publishes it up here as playback moves through
+    // key changes.
+    var quizKeyDisplay by remember { mutableStateOf<QuizKeyDisplay?>(null) }
     val uriHandler = LocalUriHandler.current
 
     val transposePickerComposable: @Composable () -> Unit = {
@@ -1245,16 +1256,6 @@ fun SongDetailView(
                 ?.let(::canonicalArtistName)
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp)
-                ) {
-                    TextButton(onClick = onBack) { Text("< Back") }
-                    Spacer(modifier = Modifier.weight(1f))
-                    TextButton(onClick = { uriHandler.openUri(song.url) }) { Text("URL") }
-                    TextButton(onClick = { onTabChange(0) }) { Text("Info") }
-                    TextButton(onClick = { onTabChange(1) }) { Text("Chords") }
-                }
-                Row(
                     modifier = Modifier.fillMaxWidth().height(28.dp),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
@@ -1275,6 +1276,39 @@ fun SongDetailView(
                                 Text(text = artist, style = MaterialTheme.typography.bodySmall, maxLines = 1)
                             }
                         }
+                    }
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    TextButton(onClick = onBack) { Text("< Back") }
+                    Spacer(modifier = Modifier.weight(1f))
+                    TextButton(onClick = { uriHandler.openUri(song.url) }) { Text("URL") }
+                    TextButton(onClick = { onTabChange(0) }) { Text("Info") }
+                    TextButton(onClick = { onTabChange(1) }) { Text("Chords") }
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth().height(40.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    quizKeyDisplay?.let { keyDisplay ->
+                        Text(
+                            text = keyDisplay.label,
+                            textAlign = TextAlign.Center,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = keyDisplay.color,
+                            maxLines = 1,
+                            modifier = if (keyDisplay.isLockedToMajor) {
+                                Modifier
+                                    .border(1.dp, Color.Red, RoundedCornerShape(4.dp))
+                                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                            } else {
+                                Modifier
+                            }
+                        )
                     }
                 }
             }
@@ -1318,6 +1352,8 @@ fun SongDetailView(
                 onWaveformChange = onWaveformChange,
                 sectionPicker = sectionPickerComposable,
                 transposePicker = transposePickerComposable,
+                tessituraControl = tessituraControl,
+                onKeyDisplayChange = { quizKeyDisplay = it },
                 globalTranspose = globalTranspose,
                 quizPlayButtonXFraction = quizPlayButtonXFraction,
                 quizPlayButtonYFraction = quizPlayButtonYFraction,
@@ -1342,6 +1378,13 @@ fun SongDetailView(
         }
     }
 }
+
+/** The quiz's live key/scale readout, hoisted so the song header can render it. */
+data class QuizKeyDisplay(
+    val label: String,
+    val color: Color,
+    val isLockedToMajor: Boolean
+)
 
 private fun ringModeColor(scale: String): Color = when (scale) {
     "major", "ionian" -> Color(0xFFFF0000)
@@ -1446,6 +1489,8 @@ fun QuizTab(
     onWaveformChange: (AudioEngine.Waveform) -> Unit,
     sectionPicker: @Composable () -> Unit,
     transposePicker: @Composable () -> Unit,
+    tessituraControl: @Composable () -> Unit,
+    onKeyDisplayChange: (QuizKeyDisplay?) -> Unit,
     globalTranspose: Int,
     quizPlayButtonXFraction: Float,
     quizPlayButtonYFraction: Float,
@@ -1942,6 +1987,14 @@ fun QuizTab(
     val persistentPitchController = remember(sessionKey, exclusivePersistentPitchSource) {
         PersistentQuizPitchController(exclusivePersistentPitchSource)
     }
+    // Declared out here rather than beside the timeline because the Reset control at the
+    // bottom of the tab has to clear them too.
+    val melodyRunScoreAccumulator = remember(sessionKey) {
+        MelodyTimelinePitchScoreAccumulator()
+    }
+    var fixedMelodyPitchScores by remember(sessionKey) {
+        mutableStateOf<Map<Int, MelodyRunScoreOutcome>>(emptyMap())
+    }
     val persistentPitchResult by exclusivePersistentPitchSource.pitchFlow.collectAsState()
     val ownsPersistentMicrophone by exclusivePersistentPitchSource.ownsMicrophone.collectAsState()
     val context = androidx.compose.ui.platform.LocalContext.current
@@ -2070,8 +2123,22 @@ fun QuizTab(
                     activeKey.scale.replace(Regex("([a-z])([A-Z])"), "$1 $2").replaceFirstChar { it.titlecase() }
                 }
                 val activeModeColor = ringModeColor(activeKey.scale)
+                // The key/scale readout itself is drawn by the song header above the
+                // quiz, so publish it from here instead of rendering it inline.
+                val keyDisplay = QuizKeyDisplay(
+                    label = if (isSimpleMode) displayScale
+                        else if (useRelativeIonianContext) "${ionianContextKey.tonic} $displayScale"
+                        else "${activeKey.tonic} $displayScale",
+                    color = activeModeColor,
+                    isLockedToMajor = useRelativeIonianContext
+                )
+                val latestOnKeyDisplayChange by rememberUpdatedState(onKeyDisplayChange)
+                LaunchedEffect(keyDisplay) { latestOnKeyDisplayChange(keyDisplay) }
+                DisposableEffect(Unit) {
+                    onDispose { latestOnKeyDisplayChange(null) }
+                }
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    Box(modifier = Modifier.fillMaxWidth().height(40.dp)) {
+                    Box(modifier = Modifier.fillMaxWidth().heightIn(min = 40.dp)) {
                         Row(
                             modifier = Modifier.align(Alignment.CenterStart),
                             verticalAlignment = Alignment.CenterVertically
@@ -2090,27 +2157,14 @@ fun QuizTab(
                                     .semantics { contentDescription = "Lock in Major" }
                             )
                         }
-                        
-                        Text(
-                            text = if (isSimpleMode) displayScale
-                                else if (useRelativeIonianContext) "${ionianContextKey.tonic} $displayScale"
-                                else "${activeKey.tonic} $displayScale",
-                            textAlign = TextAlign.Center,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = activeModeColor,
-                            modifier = if (useRelativeIonianContext) {
-                                Modifier
-                                    .align(Alignment.Center)
-                                    .border(1.dp, Color.Red, RoundedCornerShape(4.dp))
-                                    .padding(horizontal = 8.dp, vertical = 2.dp)
-                            } else {
-                                Modifier.align(Alignment.Center)
-                            }
-                        )
 
-                        if (!isSimpleMode) {
-                            Box(modifier = Modifier.align(Alignment.CenterEnd)) {
+                        Column(
+                            modifier = Modifier.align(Alignment.CenterEnd),
+                            horizontalAlignment = Alignment.End
+                        ) {
+                            tessituraControl()
+                            if (!isSimpleMode) {
+                                Spacer(modifier = Modifier.height(4.dp))
                                 transposePicker()
                             }
                         }
@@ -2191,12 +2245,6 @@ fun QuizTab(
                     persistentPitchController.selection == PersistentPitchSelection.Melody &&
                         persistentPitchController.phase == PersistentPitchPhase.LISTENING &&
                         ownsPersistentMicrophone
-                val melodyRunScoreAccumulator = remember(sessionKey) {
-                    MelodyTimelinePitchScoreAccumulator()
-                }
-                var fixedMelodyPitchScores by remember(sessionKey) {
-                    mutableStateOf<Map<Int, MelodyTimelinePitchScore>>(emptyMap())
-                }
                 val latestMelodyTimelinePitchEstimate by rememberUpdatedState(
                     melodyTimelinePitchEstimate
                 )
@@ -2217,9 +2265,9 @@ fun QuizTab(
 
                     onDispose {
                         if (scoringRun != null) {
-                            melodyRunScoreAccumulator.finish(scoringRun.id)?.let { score ->
+                            melodyRunScoreAccumulator.finish(scoringRun.id)?.let { outcome ->
                                 fixedMelodyPitchScores = fixedMelodyPitchScores +
-                                    (score.runId to score)
+                                    (outcome.runId to outcome)
                             }
                         }
                     }
@@ -2232,12 +2280,14 @@ fun QuizTab(
                 ) {
                     val scoringRun = activeMelodyPitchRun.takeIf { melodyRunScoringEnabled }
                         ?: return@LaunchedEffect
-                    while (true) {
-                        latestMelodyTimelinePitchEstimate?.let { estimate ->
-                            melodyRunScoreAccumulator.add(scoringRun.id, estimate.centsError)
-                        }
-                        delay(MELODY_PITCH_SCORE_SAMPLE_MS)
-                    }
+                    // This effect restarts as the playhead enters each run, so the sampler's
+                    // default settle detector is built fresh per run and its elapsed clock
+                    // starts at the moment the note starts sounding.
+                    accumulateMelodyRunPitchSamples(
+                        runId = scoringRun.id,
+                        accumulator = melodyRunScoreAccumulator,
+                        latestCentsError = { latestMelodyTimelinePitchEstimate?.centsError }
+                    )
                 }
                 val animatedMelodyTimelineCents by animateFloatAsState(
                     targetValue = melodyTimelinePitchEstimate?.centsError?.toFloat() ?: 0f,
@@ -2373,13 +2423,26 @@ fun QuizTab(
                                     size = Size(w, noteHeight)
                                 )
                             }
-                            fixedMelodyPitchScores.forEach { (runId, score) ->
+                            fixedMelodyPitchScores.forEach { (runId, outcome) ->
                                 val run = timelineMelodyPitchRunsById[runId]
                                     ?: return@forEach
                                 val scoreCenterX = (run.centerBeat - 1.0).toFloat() * pixelsPerBeatPx
                                 val scoreScreenX = scoreCenterX + translationX
-                                val scoreLabel = formatMelodyTimelinePitchScore(score)
-                                val scoreColor = pitchFeedbackColor(score.averageAbsoluteCentsError)
+                                // A run we listened through but could not score shows a muted
+                                // dot, so the timeline separates "no verdict" from "never heard".
+                                val scoreLabel = when (outcome) {
+                                    is MelodyRunScoreOutcome.Scored ->
+                                        formatMelodyTimelinePitchScore(outcome.score)
+
+                                    is MelodyRunScoreOutcome.Unscored -> "·"
+                                }
+                                val scoreColor = when (outcome) {
+                                    is MelodyRunScoreOutcome.Scored ->
+                                        pitchFeedbackColor(outcome.score.centsErrorMagnitude)
+
+                                    is MelodyRunScoreOutcome.Unscored ->
+                                        Color.White.copy(alpha = 0.45f)
+                                }
                                 melodyScorePaint.apply {
                                     color = scoreColor.toArgb()
                                     textSize = 11.sp.toPx()
@@ -2475,7 +2538,9 @@ fun QuizTab(
                                     center = Offset(centerX, markerY)
                                 )
 
-                                sampledMelodyTimelineCents?.let { sampledCentsError ->
+                                sampledMelodyTimelineCents
+                                    ?.takeIf(::showsLivePitchErrorPercentage)
+                                    ?.let { sampledCentsError ->
                                     val percentageLabel = formatPitchErrorPercentage(sampledCentsError)
                                     val percentageColor = pitchFeedbackColor(sampledCentsError)
                                     melodyPitchLabelPaint.apply {
@@ -2634,15 +2699,6 @@ fun QuizTab(
                                     contentColor = MaterialTheme.colorScheme.onPrimary
                                 ) {
                                     Box(modifier = Modifier.fillMaxSize().padding(8.dp), contentAlignment = Alignment.Center) {
-                                        if (activeSimpleChord != null) {
-                                            if (rootDegreeLabel.isNotEmpty()) {
-                                                ScaleDegreeText(label = rootDegreeLabel, fontSize = 100.sp, modifier = Modifier.fillMaxWidth(), minFontSize = 36.sp)
-                                            } else {
-                                                val symbol = if (useRelativeIonianContext) ChordInterpreter.getRelativeIonianRomanSymbol(activeSimpleChord, activeKey, ionianContextKey) else ChordInterpreter.getRomanSymbol(activeSimpleChord, activeKey)
-                                                val romanDisplay = RomanNumeralDisplay.fromChord(symbol, activeSimpleChord["borrowed"])
-                                                RomanNumeralText(display = romanDisplay, fontSize = 64.sp, modifier = Modifier.fillMaxWidth())
-                                            }
-                                        }
                                         if (
                                             resolvedPersistentPitchTarget?.position == PersistentPitchCardPosition.SimpleRoot &&
                                             persistentPitchGaugeResult != null
@@ -2652,6 +2708,17 @@ fun QuizTab(
                                                 targetLabel = resolvedPersistentPitchTarget.label,
                                                 modifier = Modifier.matchParentSize()
                                             )
+                                        }
+                                        // After the gauge, so the moving bar passes behind the degree
+                                        // rather than across it.
+                                        if (activeSimpleChord != null) {
+                                            if (rootDegreeLabel.isNotEmpty()) {
+                                                ScaleDegreeText(label = rootDegreeLabel, fontSize = 100.sp, modifier = Modifier.fillMaxWidth(), minFontSize = 36.sp)
+                                            } else {
+                                                val symbol = if (useRelativeIonianContext) ChordInterpreter.getRelativeIonianRomanSymbol(activeSimpleChord, activeKey, ionianContextKey) else ChordInterpreter.getRomanSymbol(activeSimpleChord, activeKey)
+                                                val romanDisplay = RomanNumeralDisplay.fromChord(symbol, activeSimpleChord["borrowed"])
+                                                RomanNumeralText(display = romanDisplay, fontSize = 64.sp, modifier = Modifier.fillMaxWidth())
+                                            }
                                         }
                                         if (rootAudioNote > 0) {
                                             DoubleTapHint(
@@ -2713,13 +2780,6 @@ fun QuizTab(
                                                     modifier = Modifier.fillMaxSize().padding(horizontal = 4.dp),
                                                     contentAlignment = Alignment.Center
                                                 ) {
-                                                    ScaleDegreeText(
-                                                        label = singleMelodyPitchCard.scaleDegreeLabel,
-                                                        fontSize = 28.sp,
-                                                        minFontSize = 12.sp,
-                                                        modifier = Modifier.fillMaxSize(),
-                                                        color = MaterialTheme.colorScheme.onPrimary
-                                                    )
                                                     if (
                                                         resolvedPersistentPitchTarget?.position == PersistentPitchCardPosition.MelodyCurrent &&
                                                         persistentPitchGaugeResult != null
@@ -2730,6 +2790,15 @@ fun QuizTab(
                                                             modifier = Modifier.matchParentSize()
                                                         )
                                                     }
+                                                    // After the gauge, so the moving bar passes behind
+                                                    // the degree rather than across it.
+                                                    ScaleDegreeText(
+                                                        label = singleMelodyPitchCard.scaleDegreeLabel,
+                                                        fontSize = 28.sp,
+                                                        minFontSize = 12.sp,
+                                                        modifier = Modifier.fillMaxSize(),
+                                                        color = MaterialTheme.colorScheme.onPrimary
+                                                    )
                                                     DoubleTapHint(
                                                         modifier = Modifier.padding(4.dp),
                                                         isTessituraAdjusted = isTessituraAdjusted
@@ -2814,17 +2883,6 @@ fun QuizTab(
                                                     } else {
                                                         Text("—", fontSize = 18.sp)
                                                     }
-                                                    if (
-                                                        pitchCard?.role == MelodyPitchCardRole.CURRENT &&
-                                                        resolvedPersistentPitchTarget?.position == PersistentPitchCardPosition.MelodyCurrent &&
-                                                        persistentPitchGaugeResult != null
-                                                    ) {
-                                                        PitchGauge(
-                                                            pitchResult = persistentPitchGaugeResult,
-                                                            targetLabel = resolvedPersistentPitchTarget.label,
-                                                            modifier = Modifier.matchParentSize()
-                                                        )
-                                                    }
                                                     if (pitchCard != null) {
                                                         DoubleTapHint(
                                                             modifier = Modifier.padding(2.dp),
@@ -2865,6 +2923,23 @@ fun QuizTab(
                                     contentColor = MaterialTheme.colorScheme.onPrimary
                                 ) {
                                     Box(modifier = Modifier.fillMaxSize()) {
+                                        // Once there is a prior note this card occupies the slot the
+                                        // lone scale-degree card sits in, so hosting the gauge here
+                                        // keeps the singer's feedback in one place on screen as the
+                                        // melody moves in and out of having a predecessor. What is
+                                        // being measured is unchanged: still the current note.
+                                        if (
+                                            resolvedPersistentPitchTarget?.position == PersistentPitchCardPosition.MelodyCurrent &&
+                                            persistentPitchGaugeResult != null
+                                        ) {
+                                            PitchGauge(
+                                                pitchResult = persistentPitchGaugeResult,
+                                                targetLabel = resolvedPersistentPitchTarget.label,
+                                                modifier = Modifier.matchParentSize()
+                                            )
+                                        }
+                                        // After the gauge, so the moving bar passes behind the
+                                        // interval rather than across it.
                                         Text(
                                             text = melodyIntervalState?.interval?.shorthand ?: "—",
                                             modifier = Modifier.align(Alignment.Center),
@@ -2942,7 +3017,7 @@ fun QuizTab(
                                                     color = MaterialTheme.colorScheme.primary,
                                                     contentColor = MaterialTheme.colorScheme.onPrimary
                                                 ) {
-                                                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { ScaleDegreeText(label = internalLabel, fontSize = degreeFontSize, modifier = Modifier.fillMaxWidth(), minFontSize = 12.sp)
+                                                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                                         if (
                                                             activeChordToneIndex == index &&
                                                             persistentPitchGaugeResult != null
@@ -2953,6 +3028,9 @@ fun QuizTab(
                                                                 modifier = Modifier.matchParentSize()
                                                             )
                                                         }
+                                                        // After the gauge, so the moving bar passes
+                                                        // behind the degree rather than across it.
+                                                        ScaleDegreeText(label = internalLabel, fontSize = degreeFontSize, modifier = Modifier.fillMaxWidth(), minFontSize = 12.sp)
                                                         DoubleTapHint(
                                                             modifier = Modifier.padding(2.dp),
                                                             isTessituraAdjusted = isTessituraAdjusted
@@ -3021,6 +3099,11 @@ fun QuizTab(
                             wasPlayingBeforeScrub = false
                             scrubBeat = 1.0
                             quizPlaybackEngine.reset()
+                            // Clearing the accumulator first matters: rewinding to the top
+                            // disposes the run that was sounding, and that dispose would
+                            // otherwise bank its score right back into the map we just emptied.
+                            melodyRunScoreAccumulator.clear()
+                            fixedMelodyPitchScores = emptyMap()
                         },
                         modifier = Modifier.size(56.dp),
                         contentPadding = PaddingValues(0.dp),

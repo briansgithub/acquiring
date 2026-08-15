@@ -13,6 +13,24 @@ import kotlin.math.roundToInt
 
 internal const val MELODY_PITCH_PERCENTAGE_UPDATE_MS = 250L
 internal const val MELODY_PITCH_SCORE_SAMPLE_MS = 16L
+
+// Onset gating. The detector analyses a 64ms window every 16ms, so a settle window has to
+// be longer than 64ms or consecutive frames share most of their audio and agree trivially.
+internal const val MELODY_PITCH_SETTLE_WINDOW_MS = 96L
+// Wider than raw YIN jitter on a sustained vowel and light vibrato, narrower than a
+// semitone so a scoop can never pass as a hold, and under the 50-cent yellow/red boundary
+// so sitting inside the band still claims nothing about accuracy.
+internal const val MELODY_PITCH_SETTLE_TOLERANCE_CENTS = 40.0
+// Capture and analysis lag is ~80-130ms; anything read before this is the previous note.
+internal const val MELODY_PITCH_SETTLE_FLOOR_MS = 150L
+internal const val MELODY_PITCH_SETTLE_CAP_MS = 500L
+
+// Below this a median is a coin flip: 8 samples is ~128ms, two independent analysis windows.
+internal const val MELODY_MIN_SCORE_SAMPLES = 8
+// ~8.2s of audio, longer than any melody note here, at a fixed 4KB per accumulator.
+internal const val MELODY_MAX_SCORE_SAMPLES = 512
+
+private const val MELODY_SCORE_DIRECTION_DEADBAND_CENTS = 5.0
 private const val MELODY_RUN_CONTIGUITY_EPSILON = 1e-6
 
 internal sealed interface PersistentPitchSelection {
@@ -90,24 +108,53 @@ internal fun melodyTimelinePitchRunAtBeat(
 }
 
 internal data class MelodyTimelinePitchScore(
-    val runId: Int,
+    /** Displayed number: [centsErrorMagnitude] clamped and rounded. */
     val errorPercentage: Int,
-    val averageCentsError: Double,
-    val averageAbsoluteCentsError: Double,
+    /** Median of the signed samples. Chooses the +/- prefix, nothing else. */
+    val signedCentsError: Double,
+    /** Median of the absolute samples. Drives both the number and the colour. */
+    val centsErrorMagnitude: Double,
     val sampleCount: Int
 )
 
+internal sealed interface MelodyRunScoreOutcome {
+    val runId: Int
+
+    /** The run held still long enough to say something about it. */
+    data class Scored(
+        override val runId: Int,
+        val score: MelodyTimelinePitchScore
+    ) : MelodyRunScoreOutcome
+
+    /** Listened through the run and could not score it: silent, or never settled. */
+    data class Unscored(override val runId: Int) : MelodyRunScoreOutcome
+}
+
 internal fun formatMelodyTimelinePitchScore(score: MelodyTimelinePitchScore): String {
-    val directionPrefix = if (score.averageCentsError < 0.0) "-" else "+"
+    // Signed and absolute medians are different statistics, so a singer wobbling evenly
+    // either side of the target has a real magnitude but no meaningful direction. Say
+    // nothing rather than let a sign flip on noise.
+    val directionPrefix = when {
+        score.signedCentsError <= -MELODY_SCORE_DIRECTION_DEADBAND_CENTS -> "-"
+        score.signedCentsError >= MELODY_SCORE_DIRECTION_DEADBAND_CENTS -> "+"
+        else -> ""
+    }
     return "$directionPrefix${score.errorPercentage}%"
 }
 
+/**
+ * Collects the cents error measured across one melody run and reduces it to a badge.
+ *
+ * Melody practice runs on [PitchTrackingMode.MELODY_FAST], which disables the median and
+ * EMA in [PitchSmoother] to keep the live gauge responsive, so every sample here is a raw
+ * detector frame and a single harmonic glitch can be hundreds of cents out. Number, sign
+ * and colour are therefore all taken from medians of the same sample set: one bad frame
+ * cannot move the badge, and the three cannot disagree with each other.
+ */
 internal class MelodyTimelinePitchScoreAccumulator {
     private var activeRunId: Int? = null
-    private var errorPercentageSum = 0.0
-    private var centsSum = 0.0
-    private var absoluteCentsSum = 0.0
-    private var sampleCount = 0
+    private val samples = DoubleArray(MELODY_MAX_SCORE_SAMPLES)
+    private var storedCount = 0
 
     fun begin(runId: Int) {
         clear()
@@ -116,37 +163,42 @@ internal class MelodyTimelinePitchScoreAccumulator {
 
     fun add(runId: Int, centsError: Double) {
         if (runId != activeRunId || !centsError.isFinite()) return
-        errorPercentageSum += abs(centsError).coerceIn(0.0, 100.0)
-        centsSum += centsError
-        absoluteCentsSum += abs(centsError)
-        sampleCount++
+        // A run this long is beyond any melody note here; keeping the earliest samples is
+        // as representative as any other choice and keeps the allocation fixed.
+        if (storedCount >= samples.size) return
+        samples[storedCount++] = centsError
     }
 
-    fun finish(runId: Int): MelodyTimelinePitchScore? {
+    /**
+     * @return null when [runId] is not the run in progress (the call does not apply), an
+     *   [MelodyRunScoreOutcome.Unscored] when too little of the run was measurable, and a
+     *   [MelodyRunScoreOutcome.Scored] otherwise.
+     */
+    fun finish(runId: Int): MelodyRunScoreOutcome? {
         if (runId != activeRunId) return null
-        val score = if (sampleCount == 0) {
-            null
+        val outcome = if (storedCount < MELODY_MIN_SCORE_SAMPLES) {
+            MelodyRunScoreOutcome.Unscored(runId)
         } else {
-            MelodyTimelinePitchScore(
+            val signed = samples.copyOf(storedCount).apply { sort() }
+            val magnitudes = DoubleArray(storedCount) { abs(samples[it]) }.apply { sort() }
+            val medianMagnitude = magnitudes[storedCount / 2]
+            MelodyRunScoreOutcome.Scored(
                 runId = runId,
-                errorPercentage = (errorPercentageSum / sampleCount)
-                    .roundToInt()
-                    .coerceIn(0, 100),
-                averageCentsError = centsSum / sampleCount,
-                averageAbsoluteCentsError = absoluteCentsSum / sampleCount,
-                sampleCount = sampleCount
+                score = MelodyTimelinePitchScore(
+                    errorPercentage = medianMagnitude.roundToInt().coerceIn(0, 100),
+                    signedCentsError = signed[storedCount / 2],
+                    centsErrorMagnitude = medianMagnitude,
+                    sampleCount = storedCount
+                )
             )
         }
         clear()
-        return score
+        return outcome
     }
 
     fun clear() {
         activeRunId = null
-        errorPercentageSum = 0.0
-        centsSum = 0.0
-        absoluteCentsSum = 0.0
-        sampleCount = 0
+        storedCount = 0
     }
 }
 
@@ -226,6 +278,18 @@ internal fun pitchErrorToTimelineStaffSteps(centsError: Double): Double =
 internal fun pitchErrorPercentage(centsError: Double): Int =
     abs(centsError).roundToInt().coerceIn(0, 100)
 
+/**
+ * Whether the live readout should print a percentage at all.
+ *
+ * [pitchErrorPercentage] saturates at 100, which it reaches a semitone out. Past that the
+ * number no longer separates "slightly flat" from "singing a different note entirely", so
+ * printing it claims a precision the reading does not have. The marker keeps tracking the
+ * pitch either way, and banked run scores are unaffected - those are medians over a whole
+ * run rather than one instant, so a pinned value there is a real finding.
+ */
+internal fun showsLivePitchErrorPercentage(centsError: Double): Boolean =
+    pitchErrorPercentage(centsError) < 100
+
 internal fun formatPitchErrorPercentage(centsError: Double): String {
     val directionPrefix = when {
         centsError > 0.0 -> "+"
@@ -233,6 +297,108 @@ internal fun formatPitchErrorPercentage(centsError: Double): String {
         else -> ""
     }
     return "$directionPrefix${pitchErrorPercentage(centsError)}%"
+}
+
+/**
+ * Decides when a sung note has stopped moving and may be scored.
+ *
+ * At a note change the singer is still hearing the new pitch and sliding onto it, and the
+ * detector is still reporting the tail of the previous note. Those frames measure the
+ * transition, not the note. How long that takes is not fixed - a clean attack lands in a
+ * fraction of the time a leap with a scoop does - so rather than discard a fixed window
+ * this watches the measurement itself and opens as soon as it holds still.
+ *
+ * Bounded by [floorMs] and [capMs], so it can only ever open earlier than a flat [capMs]
+ * grace, never later. Once open it latches: re-closing when the singer drifts away would
+ * score only the parts they sang well, which is the accuracy bias this feature exists to
+ * report on.
+ */
+internal class MelodyRunSettleDetector(
+    private val settleWindowMs: Long = MELODY_PITCH_SETTLE_WINDOW_MS,
+    private val toleranceCents: Double = MELODY_PITCH_SETTLE_TOLERANCE_CENTS,
+    private val floorMs: Long = MELODY_PITCH_SETTLE_FLOOR_MS,
+    private val capMs: Long = MELODY_PITCH_SETTLE_CAP_MS
+) {
+    private val windowCents = ArrayDeque<Double>()
+    private val windowAtMs = ArrayDeque<Long>()
+    private var settled = false
+
+    init {
+        require(settleWindowMs > 0L)
+        require(toleranceCents > 0.0)
+        require(floorMs >= 0L)
+        require(capMs >= floorMs)
+    }
+
+    /**
+     * Observes one frame.
+     *
+     * Deliberately keyed on self-consistency rather than nearness to the target: a singer
+     * confidently holding the wrong note has settled, and that reading is exactly what the
+     * badge should report. Gating on target proximity would bias every score toward
+     * flattering the user.
+     *
+     * @return true once samples from this instant onward may be scored. Latches.
+     */
+    fun observe(elapsedMs: Long, centsError: Double?): Boolean {
+        if (settled) return true
+        if (elapsedMs >= capMs) {
+            settled = true
+            return true
+        }
+        if (centsError == null || !centsError.isFinite()) {
+            // A dropout says nothing about whether the singer landed, and the frames on
+            // either side of it are not contiguous.
+            windowCents.clear()
+            windowAtMs.clear()
+            return false
+        }
+
+        windowCents.addLast(centsError)
+        windowAtMs.addLast(elapsedMs)
+        while (windowAtMs.size > 1 && elapsedMs - windowAtMs.first() > settleWindowMs) {
+            windowCents.removeFirst()
+            windowAtMs.removeFirst()
+        }
+
+        if (elapsedMs < floorMs) return false
+        if (elapsedMs - windowAtMs.first() < settleWindowMs) return false
+        // MicrophonePitchTracker republishes its last estimate for 200ms after signal loss,
+        // so a bit-identical reading is a stale value being replayed into the new note - not
+        // a singer holding still. A real held pitch always jitters.
+        if (windowCents.all { it == windowCents.first() }) return false
+        if (windowCents.max() - windowCents.min() > toleranceCents) return false
+
+        settled = true
+        return true
+    }
+}
+
+/**
+ * Feeds measured cents error into [accumulator] for the run that is currently sounding,
+ * starting once [settleDetector] reports the sung pitch has landed.
+ *
+ * Elapsed time is counted nominally, in [sampleIntervalMs] steps, rather than read from a
+ * clock: it keeps the loop deterministic under `runTest`, and when the dispatcher runs long
+ * the count lags real time, so the detector's hard cap fires late rather than early.
+ */
+internal suspend fun accumulateMelodyRunPitchSamples(
+    runId: Int,
+    accumulator: MelodyTimelinePitchScoreAccumulator,
+    latestCentsError: () -> Double?,
+    settleDetector: MelodyRunSettleDetector = MelodyRunSettleDetector(),
+    sampleIntervalMs: Long = MELODY_PITCH_SCORE_SAMPLE_MS
+) {
+    require(sampleIntervalMs > 0L)
+    var elapsedMs = 0L
+    while (true) {
+        val centsError = latestCentsError()
+        if (settleDetector.observe(elapsedMs, centsError) && centsError != null) {
+            accumulator.add(runId, centsError)
+        }
+        delay(sampleIntervalMs)
+        elapsedMs += sampleIntervalMs
+    }
 }
 
 internal suspend fun samplePitchErrorCents(

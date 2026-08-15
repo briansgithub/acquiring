@@ -394,18 +394,24 @@ fun PitchGauge(
         }
         
         if (pitchResult is MicrophonePitchTracker.PitchResult.Estimate) {
-            val gaugeColor = pitchFeedbackColor(pitchResult.centsError)
+            // Same statistic, cadence and pin-suppression as the melody timeline percentage,
+            // so the card and the timeline can never disagree about how far off the singer is.
+            val sampledCentsError = rememberSampledPitchErrorCents(pitchResult.centsError)
 
-            Text(
-                text = formatPitchCentsError(pitchResult.centsError),
-                color = gaugeColor,
-                fontSize = 12.sp,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(4.dp)
-                    .background(Color.Black.copy(alpha = 0.5f), CircleShape)
-                    .padding(horizontal = 4.dp)
-            )
+            sampledCentsError
+                ?.takeIf(::showsLivePitchErrorPercentage)
+                ?.let { centsError ->
+                    Text(
+                        text = formatPitchErrorPercentage(centsError),
+                        color = pitchFeedbackColor(centsError),
+                        fontSize = 12.sp,
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(4.dp)
+                            .background(Color.Black.copy(alpha = 0.5f), CircleShape)
+                            .padding(horizontal = 4.dp)
+                    )
+                }
         } else {
             Text(
                 text = "Hum a steady note...",
