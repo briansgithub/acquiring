@@ -99,7 +99,14 @@ function upsertSong(db, entry) {
     ON CONFLICT(slug) DO UPDATE SET
       artist = excluded.artist,
       title = excluded.title,
-      url = excluded.url,
+      -- Never trade a URL that worked for one we guessed. Discovery re-runs
+      -- re-synthesize URLs from display text every pass; letting that
+      -- overwrite the address an enriched row was actually harvested from
+      -- would re-break songs whose real path holds punctuation.
+      url = CASE
+        WHEN songs.status = 'enriched' OR songs.url_source = 'observed' THEN songs.url
+        ELSE excluded.url
+      END,
       last_checked_at = excluded.last_checked_at,
       discovery_source = COALESCE(excluded.discovery_source, songs.discovery_source)
   `).run({
