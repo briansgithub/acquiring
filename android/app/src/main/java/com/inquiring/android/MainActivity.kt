@@ -252,7 +252,6 @@ internal fun MainScreen(
     var isShowingAllSongs by rememberSaveable { mutableStateOf(false) }
     var currentTab by remember { mutableStateOf(2) }
     var songParentPage by remember { mutableStateOf(SongParentPage.LIBRARY) }
-    var quizReturnTab by remember { mutableStateOf<Int?>(null) }
     var showLetterNames by remember { mutableStateOf(false) }
     var isArpeggiated by remember { mutableStateOf(false) }
     var arpeggioStepMs by remember { mutableStateOf(80f) }
@@ -320,16 +319,15 @@ internal fun MainScreen(
             // Close the artist detail page.
             selectedArtistName = null
             selectedArtistSongs = null
-        } else if (selectedSongSections != null && currentTab == 2 && quizReturnTab != null) {
-            // Quiz was opened from another tab in this song.
-            currentTab = quizReturnTab!!
-            quizReturnTab = null
+        } else if (selectedSongSections != null && currentTab == 2) {
+            // The quiz always hands back to this song's info page, however it
+            // was opened.
+            currentTab = 0
         } else if (selectedSongSections != null) {
             // Return to the page that opened the song.
             tessituraSessionViewModel.clearSession()
             selectedSongSections = null
             selectedSong = null
-            quizReturnTab = null
             if (songParentPage == SongParentPage.LIBRARY) {
                 selectedArtistName = null
                 selectedArtistSongs = null
@@ -417,7 +415,6 @@ internal fun MainScreen(
             isShowingAllSongs -> SongParentPage.ALL_SONGS
             else -> SongParentPage.LIBRARY
         }
-        quizReturnTab = null
         selectedSong = song
 
         val storedBlob = song.dataBlob
@@ -721,14 +718,7 @@ internal fun MainScreen(
                     selectedSectionId = selectedSectionId,
                     onSectionChange = { selectedSectionId = it },
                     currentTab = currentTab,
-                    onTabChange = {
-                        if (it == 2 && currentTab != 2) {
-                            quizReturnTab = currentTab
-                        } else if (it != 2) {
-                            quizReturnTab = null
-                        }
-                        currentTab = it
-                    },
+                    onTabChange = { currentTab = it },
                     showLetterNames = showLetterNames,
                     onShowLetterNamesChange = { showLetterNames = it },
                     isArpeggiated = isArpeggiated,
@@ -760,7 +750,6 @@ internal fun MainScreen(
                             selectedArtistSongs = results
                             selectedSongSections = null
                             selectedSong = null
-                            quizReturnTab = null
                         }
                     },
                     onSingingTargetsRequested = { request ->
@@ -1249,50 +1238,81 @@ fun SongDetailView(
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.weight(1f).padding(start = 8.dp)
                 )
+                // The source link lives on the song info page only; the quiz header
+                // stays clear of navigation.
+                if (currentTab == 0) {
+                    TextButton(onClick = { uriHandler.openUri(song.url) }) { Text("URL") }
+                }
             }
         } else {
             val canonicalArtist = song.artist
                 ?.takeIf { it.isNotBlank() }
                 ?.let(::canonicalArtistName)
             Column(modifier = Modifier.fillMaxWidth()) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().height(28.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+                // Back shares the title line: it sits at the start while the
+                // "song by artist" string stays centred on the screen.
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(36.dp)
+                        .padding(horizontal = 8.dp)
                 ) {
-                    if (!isSimpleMode) {
-                        Text(
-                            text = song.title ?: "Unknown Title",
-                            style = MaterialTheme.typography.bodySmall,
-                            maxLines = 1
-                        )
-                        canonicalArtist?.let { artist ->
-                            Text(" by ", style = MaterialTheme.typography.bodySmall)
-                            TextButton(
-                                onClick = { onArtistClick(artist) },
-                                contentPadding = PaddingValues(0.dp),
-                                modifier = Modifier.height(28.dp)
-                            ) {
-                                Text(text = artist, style = MaterialTheme.typography.bodySmall, maxLines = 1)
+                    TextButton(
+                        onClick = onBack,
+                        contentPadding = PaddingValues(horizontal = 8.dp),
+                        modifier = Modifier.align(Alignment.CenterStart).height(32.dp)
+                    ) { Text("< Back") }
+
+                    Row(
+                        // Symmetric inset keeps the string centred on the screen
+                        // while stopping a long title from running under Back.
+                        modifier = Modifier.align(Alignment.Center).padding(horizontal = 72.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        if (!isSimpleMode) {
+                            Text(
+                                text = song.title ?: "Unknown Title",
+                                style = MaterialTheme.typography.bodySmall,
+                                maxLines = 1
+                            )
+                            canonicalArtist?.let { artist ->
+                                Text(" by ", style = MaterialTheme.typography.bodySmall)
+                                TextButton(
+                                    onClick = { onArtistClick(artist) },
+                                    contentPadding = PaddingValues(0.dp),
+                                    modifier = Modifier.height(28.dp)
+                                ) {
+                                    Text(text = artist, style = MaterialTheme.typography.bodySmall, maxLines = 1)
+                                }
                             }
                         }
                     }
                 }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp)
+                        .padding(horizontal = 16.dp)
                 ) {
-                    TextButton(onClick = onBack) { Text("< Back") }
-                    Spacer(modifier = Modifier.weight(1f))
-                    TextButton(onClick = { uriHandler.openUri(song.url) }) { Text("URL") }
-                    TextButton(onClick = { onTabChange(0) }) { Text("Info") }
-                    TextButton(onClick = { onTabChange(1) }) { Text("Chords") }
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth().height(40.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                    Row(
+                        modifier = Modifier.align(Alignment.CenterStart),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Lock in Major",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Start
+                        )
+                        Checkbox(
+                            checked = useRelativeIonianContext,
+                            onCheckedChange = { useRelativeIonianContext = it },
+                            modifier = Modifier
+                                .scale(0.85f)
+                                .semantics { contentDescription = "Lock in Major" }
+                        )
+                    }
+
                     quizKeyDisplay?.let { keyDisplay ->
                         Text(
                             text = keyDisplay.label,
@@ -1303,10 +1323,11 @@ fun SongDetailView(
                             maxLines = 1,
                             modifier = if (keyDisplay.isLockedToMajor) {
                                 Modifier
+                                    .align(Alignment.Center)
                                     .border(1.dp, Color.Red, RoundedCornerShape(4.dp))
                                     .padding(horizontal = 8.dp, vertical = 2.dp)
                             } else {
-                                Modifier
+                                Modifier.align(Alignment.Center)
                             }
                         )
                     }
@@ -1347,7 +1368,6 @@ fun SongDetailView(
                 isSimpleMode = isSimpleMode,
                 onSimpleModeChange = { isSimpleMode = it },
                 useRelativeIonianContext = useRelativeIonianContext,
-                onRelativeIonianContextChange = { useRelativeIonianContext = it },
                 currentWaveform = currentWaveform,
                 onWaveformChange = onWaveformChange,
                 sectionPicker = sectionPickerComposable,
@@ -1484,7 +1504,6 @@ fun QuizTab(
     isSimpleMode: Boolean,
     onSimpleModeChange: (Boolean) -> Unit,
     useRelativeIonianContext: Boolean,
-    onRelativeIonianContextChange: (Boolean) -> Unit,
     currentWaveform: AudioEngine.Waveform,
     onWaveformChange: (AudioEngine.Waveform) -> Unit,
     sectionPicker: @Composable () -> Unit,
@@ -2138,30 +2157,13 @@ fun QuizTab(
                     onDispose { latestOnKeyDisplayChange(null) }
                 }
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    Box(modifier = Modifier.fillMaxWidth().heightIn(min = 40.dp)) {
-                        Row(
-                            modifier = Modifier.align(Alignment.CenterStart),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Lock in Major",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                textAlign = TextAlign.Start
-                            )
-                            Checkbox(
-                                checked = useRelativeIonianContext,
-                                onCheckedChange = onRelativeIonianContextChange,
-                                modifier = Modifier
-                                    .scale(0.85f)
-                                    .semantics { contentDescription = "Lock in Major" }
-                            )
-                        }
-
-                        Column(
-                            modifier = Modifier.align(Alignment.CenterEnd),
-                            horizontalAlignment = Alignment.End
-                        ) {
+                    // "Lock in Major" now sits beside the key/scale readout in the
+                    // song header, so this row only carries the pitch controls.
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Column(horizontalAlignment = Alignment.End) {
                             tessituraControl()
                             if (!isSimpleMode) {
                                 Spacer(modifier = Modifier.height(4.dp))
@@ -3193,6 +3195,7 @@ fun InfoTab(
     onSectionChange: (String) -> Unit
 ) {
     val uriHandler = LocalUriHandler.current
+    val scope = rememberCoroutineScope()
 
     val keys = remember(section) { section.getKeys() }
     val tempos = remember(section) { section.metadataObjects("tempos") }
@@ -3293,9 +3296,17 @@ fun InfoTab(
                         val beat = chord.num("beat") ?: 1.0
                         val chordKey = section.getKeyAtBeat(beat)
                         val symbol = ChordInterpreter.getRomanSymbol(chord, chordKey)
+                        val letterName = ChordInterpreter.getLetterName(chord, chordKey)
                         ChordPill(
                             display = RomanNumeralDisplay.fromChord(symbol, chord["borrowed"]),
-                            letterName = ChordInterpreter.getLetterName(chord, chordKey)
+                            letterName = letterName,
+                            contentDescription = "Play $letterName at beat ${formatBeat(beat)}",
+                            onClick = {
+                                val notes = ChordInterpreter.getChordNotes(chord, chordKey)
+                                if (notes.isNotEmpty()) {
+                                    scope.launch { AudioEngine.playChord(notes) }
+                                }
+                            }
                         )
                     }
                 }
@@ -3413,12 +3424,21 @@ private fun InfoRow(label: String, value: String) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ChordPill(display: RomanNumeralDisplay, letterName: String) {
+private fun ChordPill(
+    display: RomanNumeralDisplay,
+    letterName: String,
+    contentDescription: String,
+    onClick: () -> Unit
+) {
     Surface(
+        onClick = onClick,
         shape = RoundedCornerShape(10.dp),
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f),
-        modifier = Modifier.padding(bottom = 6.dp)
+        modifier = Modifier
+            .padding(bottom = 6.dp)
+            .semantics { this.contentDescription = contentDescription }
     ) {
         Column(
             modifier = Modifier
