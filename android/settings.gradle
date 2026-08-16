@@ -15,5 +15,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "Sacred Ring"
+rootProject.name = "Inquiring"
 include ':app'

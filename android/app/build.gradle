@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace 'com.sacredring.android'
+    namespace 'com.inquiring.android'
     compileSdk 34
     
     kapt {
@@ -15,7 +15,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.sacredring.android"
+        applicationId "com.inquiring.android"
         minSdk 26
         targetSdk 34
         versionCode 1

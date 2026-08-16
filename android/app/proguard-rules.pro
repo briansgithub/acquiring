@@ -1,1 +1,1 @@
-# Proguard rules for Sacred Ring
+# Proguard rules for Inquiring
