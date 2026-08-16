@@ -77,6 +77,12 @@ const SONGS_PIPELINE_COLUMNS = [
   ['harvest_mode', 'TEXT'],
   ['is_favorite', 'INTEGER NOT NULL DEFAULT 0'],
   ['alt_checked_at', 'TEXT'],
+  // Where songs.url came from: 'observed' = a path Hooktheory or the Wayback
+  // index actually served, 'synthesized' (or NULL, for rows predating this
+  // column) = guessed from display text by slugify and therefore only as good
+  // as that guess. Lets a re-check target the guesses without re-probing URLs
+  // already known to be real.
+  ['url_source', 'TEXT'],
 ];
 
 const ALT_CANDIDATES_DDL = `
