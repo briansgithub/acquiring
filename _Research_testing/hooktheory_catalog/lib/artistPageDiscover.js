@@ -32,7 +32,9 @@ const CANDIDATE_PATTERNS = [
  *
  * Canonicalization is not cosmetic: live pages emit percent-encoded paths
  * (`.../advanced-card-game-%28pop%29`), which compare as "missing" against our
- * decoded slugs and would inject thousands of duplicate rows.
+ * decoded slugs and would inject thousands of duplicate rows. It settles the
+ * comparison key ONLY — `url` keeps the page's own path, because that path is
+ * the one that actually resolves.
  */
 function extractSongUrls(html) {
   const out = new Map();
