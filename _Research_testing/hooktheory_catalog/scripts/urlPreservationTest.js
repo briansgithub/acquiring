@@ -11,6 +11,7 @@
 const assert = require('assert');
 const {
   slugify,
+  hooktheorySlug,
   isJunkUrl,
   parseTheoryTabUrl,
   buildTheoryTabUrl,
@@ -79,6 +80,22 @@ check('junk filter still rejects what it should', () => {
   assert.strictEqual(isJunkUrl('https://www.hooktheory.com/theorytab/view/foo/major-scales'), true);
   assert.strictEqual(isJunkUrl('https://www.hooktheory.com/theorytab/view/_scratch/thing'), true);
   assert.strictEqual(isJunkUrl('https://www.hooktheory.com/not-a-theorytab-url'), true);
+});
+
+check('synthesized URLs follow Hooktheory\'s rule, not the key rule', () => {
+  // The song this whole repair started from: reported dead, alive all along at
+  // the parenthesized path.
+  assert.strictEqual(
+    buildTheoryTabUrl('Yasushi Ishii', 'The World Without Logos (Hellsing Opening)'),
+    'https://www.hooktheory.com/theorytab/view/yasushi-ishii/the-world-without-logos-(hellsing-opening)',
+  );
+  assert.strictEqual(hooktheorySlug("Sweet Child O' Mine"), 'sweet-child-o-mine');
+  assert.strictEqual(hooktheorySlug('Earthbound Zero - Pollyanna'), 'earthbound-zero---pollyanna');
+  assert.strictEqual(hooktheorySlug('Lights, Camera, Action'), 'lights-camera-action');
+  assert.strictEqual(hooktheorySlug('Dimention No.N'), 'dimention-no.n');
+  assert.strictEqual(hooktheorySlug('10/10'), '10-slash-10');
+  assert.strictEqual(hooktheorySlug('A&W'), 'a-and-w');
+  assert.strictEqual(hooktheorySlug('brand new chanel$'), 'brand-new-chanels');
 });
 
 check('slugify stays lossy on purpose', () => {

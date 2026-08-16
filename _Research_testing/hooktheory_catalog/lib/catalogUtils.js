@@ -75,15 +75,44 @@ function parseTheoryTabUrl(url) {
 }
 
 /**
- * Synthesize a URL from display text. Only correct when no observed path
- * exists (Meilisearch hits carry artist/song strings but no URL) — it is a
- * best guess, and for titles containing punctuation it is often wrong. Prefer
- * theoryTabUrlFromPath() wherever a real path is available.
+ * Hooktheory's own slug rule, reconstructed from ground truth: 35,603 pairs of
+ * (song_details.hooktheory_song_name, the title_slug that actually fetched).
+ * It reproduces 99.99% of them, against 99.94% for slugify() — and unlike
+ * slugify() it is right about the punctuation classes that were failing:
+ * parentheses and dots survive, " - " stays three hyphens.
+ *
+ * Character behaviour, all measured rather than assumed:
+ *   apostrophes  dropped        don't      -> dont
+ *   whitespace   -> '-'         a b        -> a-b
+ *   ( ) . _ ~ -  kept           foo (bar)  -> foo-(bar)
+ *   /            -> '-slash-'   10/10      -> 10-slash-10
+ *   &            -> '-and-'     A&W        -> a-and-w
+ *   $            -> 's'         chanel$    -> chanels
+ *   , ! : ; etc  dropped        Lights, C  -> lights-c
+ *
+ * HTML entities are deliberately NOT decoded: Hooktheory stores some titles
+ * with the entity text intact, so "A&amp;E" really does live at "a-and-ampe".
+ *
+ * Still a guess, not an observation — only for sources that hand us display
+ * text and no URL. Prefer theoryTabUrlFromPath() whenever a path was observed.
+ */
+function hooktheorySlug(text) {
+  return String(text || '')
+    .toLowerCase()
+    .replace(/[''´`]/g, '')
+    .replace(/\//g, '-slash-')
+    .replace(/&/g, '-and-')
+    .replace(/\$/g, 's')
+    .replace(/[^a-z0-9().~_\s-]/g, '')
+    .replace(/\s/g, '-');
+}
+
+/**
+ * Synthesize a URL from display text, for sources that carry no URL of their
+ * own (a Meilisearch hit is artist + song strings and nothing else).
  */
 function buildTheoryTabUrl(artist, song) {
-  const artistSlug = slugify(artist);
-  const titleSlug = slugify(song);
-  return `${BASE}/theorytab/view/${artistSlug}/${titleSlug}`;
+  return theoryTabUrlFromPath(hooktheorySlug(artist), hooktheorySlug(song));
 }
 
 function normalizeTheoryTabUrl(href) {
@@ -121,6 +150,7 @@ function isJunkUrl(url) {
 module.exports = {
   BASE,
   slugify,
+  hooktheorySlug,
   slugForUrl,
   parseTheoryTabUrl,
   buildTheoryTabUrl,
