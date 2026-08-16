@@ -13,7 +13,7 @@
 const fs = require('fs');
 const path = require('path');
 const catalogConfig = require('./catalogConfig');
-const { slugify, buildTheoryTabUrl, isJunkUrl } = require('./catalogUtils');
+const { slugify, theoryTabUrlFromPath, isJunkUrl } = require('./catalogUtils');
 
 const CDX_BASE = 'http://web.archive.org/cdx/search/cdx';
 const CDX_TARGET = 'hooktheory.com/theorytab/view*';
@@ -176,7 +176,11 @@ function parseArchivedUrl(rawUrl) {
   if (/\.(xml|html|json|js|css|png|jpg|svg)$/i.test(titleRaw)) return { rejected: 'asset-artifact' };
   if (isScratchUpload(artistSlug, titleSlug)) return { rejected: 'scratch-upload' };
 
-  const url = buildTheoryTabUrl(artistRaw, titleRaw);
+  // The archived path IS the URL Hooktheory served — keep it verbatim rather
+  // than rebuilding it from the slug. slugify collapses punctuation runs, so a
+  // rebuilt URL misses every page whose real path holds parentheses, dots or a
+  // " - " separator: 13% of the archived index, and 83% of our dead rows.
+  const url = theoryTabUrlFromPath(artistRaw, titleRaw);
   return { slug: `${artistSlug}__${titleSlug}`, url, artistSlug, titleSlug };
 }
 
