@@ -103,5 +103,61 @@ check('slugify stays lossy on purpose', () => {
   assert.strictEqual(slugify('Foo - Bar'), 'foo-bar');
 });
 
+check('double-encoded archived paths decode to the real page, not the once-decoded artifact', () => {
+  // melody-%2528bermei-inazawa-original%2529: one decode pass leaves literal
+  // %28/%29 in the string; confirmed live that only the fully-decoded path
+  // (with real parens) resolves.
+  const canon = canonicalizeTheoryTabUrl(
+    'https://www.hooktheory.com/theorytab/view/bermei-inazawa/melody-%2528bermei-inazawa-original%2529',
+  );
+  assert.strictEqual(canon.url, 'https://www.hooktheory.com/theorytab/view/bermei-inazawa/melody-(bermei-inazawa-original)');
+  assert.strictEqual(canon.slug, 'bermei-inazawa__melody-bermei-inazawa-original');
+});
+
+check('double-decode does not run past a literal percent sign', () => {
+  // No escape sequence present at all — must be returned unchanged, not
+  // mangled by an errant decode attempt.
+  const canon = canonicalizeTheoryTabUrl('https://www.hooktheory.com/theorytab/view/artist/50-off-sale');
+  assert.strictEqual(canon.url, 'https://www.hooktheory.com/theorytab/view/artist/50-off-sale');
+});
+
+check('double-decode never introduces a path separator', () => {
+  // %2F decodes to '/', which would move the artist/title boundary — must
+  // stop before that, even though the string still looks like an escape.
+  const canon = canonicalizeTheoryTabUrl('https://www.hooktheory.com/theorytab/view/artist/foo%252Fbar');
+  assert.ok(!canon.url.includes('/theorytab/view/artist/foo/bar'), canon.url);
+});
+
+check('crawler artifacts are rejected, not ingested as songs', () => {
+  const fragment = canonicalizeTheoryTabUrl(
+    'https://www.hooktheory.com/theorytab/view/billie-eilish/lunch%23%3A~%3Atext%3DLunch-is-written-in-the%2Cmost-popular-among-all-keys.',
+  );
+  assert.strictEqual(fragment.rejected, 'crawler-artifact');
+
+  const pastedNewlines = canonicalizeTheoryTabUrl('https://www.hooktheory.com/theorytab/view/afi/miss-murder)%5Cn%5Cn');
+  assert.strictEqual(pastedNewlines.rejected, 'crawler-artifact');
+
+  const redirectParams = canonicalizeTheoryTabUrl(
+    'https://www.hooktheory.com/theorytab/view/x/seventeen%26amp%3Bsa%3DU%26amp%3Bved%3D2ahUKEwj1oNS40PqJAxXjATQIHS1RA0YQFnoECAwQHg',
+  );
+  assert.strictEqual(redirectParams.rejected, 'crawler-artifact');
+});
+
+check('crawler-artifact filter does not reject a real song title', () => {
+  // A real, currently-enriched title that is long, all-lowercase, and could
+  // be mistaken for a base64 token by a length-only check.
+  const drumPattern = canonicalizeTheoryTabUrl(
+    'https://www.hooktheory.com/theorytab/view/patricia-taxxon/dedgdedcdedgdeoegeceghgcgogctcochcotohotohthththt',
+  );
+  assert.notStrictEqual(drumPattern.rejected, 'crawler-artifact');
+
+  // A real base64-looking token IS caught — it mixes case and digits and
+  // pads with '==', which the drum-pattern title never does.
+  const base64 = canonicalizeTheoryTabUrl(
+    'https://www.hooktheory.com/theorytab/view/aretha-franklin/bk52VFRhdVY5djh0S2RQfjZLbHBadGtjeHRpOVFlfmf4PZTYlcjeqTBsGxIjMMgtTnEm9a8T2nbD-JBP0-Ed2Q%3D%3D',
+  );
+  assert.strictEqual(base64.rejected, 'crawler-artifact');
+});
+
 console.log(failures === 0 ? 'urlPreservationTest: all passed' : `urlPreservationTest: ${failures} FAILED`);
 process.exit(failures === 0 ? 0 : 1);
