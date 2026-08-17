@@ -58,12 +58,34 @@ function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+/**
+ * Decode until the string stops changing, not just once.
+ *
+ * Some archived paths were encoded twice, so a single decodeURIComponent()
+ * leaves literal `%28`/`%29` sitting in the "decoded" text, which then gets
+ * re-encoded on write into `%2528` — a URL that never existed. Confirmed live
+ * against 5 songs recovered this way: melody-%2528bermei-inazawa-original%2529
+ * only resolves once decoded twice, to melody-(bermei-inazawa-original).
+ *
+ * Capped at 3 passes (real encoding depth never exceeds 2) and only continues
+ * while a percent-escape is still present, so a literal '%' that isn't part of
+ * an escape sequence is left alone. Stops before introducing a '/' — that would
+ * mean decoding past the real path into a segment boundary that wasn't there,
+ * which would corrupt the artist/title split rather than reveal it.
+ */
 function safeDecode(s) {
-  try {
-    return decodeURIComponent(s);
-  } catch (_) {
-    return s;
+  let cur = String(s);
+  for (let i = 0; i < 3 && /%[0-9a-fA-F]{2}/.test(cur); i++) {
+    let next;
+    try {
+      next = decodeURIComponent(cur);
+    } catch (_) {
+      break;
+    }
+    if (next === cur || next.includes('/')) break;
+    cur = next;
   }
+  return cur;
 }
 
 /**
@@ -154,6 +176,34 @@ async function pullAllCdx(cacheFile, { onProgress = null, force = false } = {}) 
   return [...urls];
 }
 
+/**
+ * Text the crawler recorded that was never part of a TheoryTab path: Google
+ * text-fragment anchors and redirect params pasted in whole
+ * (`lunch#:~:text=Lunch-is-written-in-the,...`, `...&sa=U&ved=...`), literal
+ * `\n\n` from a pasted text dump, markdown link syntax, an embedded URL, a
+ * bare base64 token, or a sentence trailing off past the song title into the
+ * next one (`starman.18`, `where-are-we-now.As`). Cross-checked against the
+ * catalog: every one of these that looked like it might be a song turned out
+ * to already be held under its clean title — the garbage tail names no song
+ * we don't have.
+ */
+const CRAWLER_ARTIFACT_PATTERNS = [
+  /[#&]/,
+  /\\n/,
+  /\]\(/,
+  /https?:/i,
+  // Base64 token: requires a digit AND an uppercase letter, not just length —
+  // a run of 40+ lowercase letters is also how a real drum/note-pattern title
+  // looks (patricia-taxxon/dedgdedcdedgdeoegeceghgcgogctcochcotohotohthththt,
+  // a real enriched song), and that plain-length check flagged it.
+  /^(?=.*[A-Z])(?=.*[0-9])[A-Za-z0-9+/_-]{40,}={0,2}$/,
+  /\.[A-Z][a-z]/,
+];
+
+function isCrawlerArtifact(text) {
+  return CRAWLER_ARTIFACT_PATTERNS.some((re) => re.test(text));
+}
+
 /** Parse an archived URL into our canonical slug + URL, or null if unusable. */
 function parseArchivedUrl(rawUrl) {
   const m = String(rawUrl).match(/theorytab\/view\/([^/?#]+)\/([^/?#]+)/i);
@@ -167,6 +217,10 @@ function parseArchivedUrl(rawUrl) {
   // under its correctly-encoded slug, so drop it rather than fetch a bad URL.
   if (/[�?]/.test(artistRaw) || /[�?]/.test(titleRaw)) {
     return { rejected: 'mojibake' };
+  }
+
+  if (isCrawlerArtifact(artistRaw) || isCrawlerArtifact(titleRaw)) {
+    return { rejected: 'crawler-artifact' };
   }
 
   const artistSlug = slugify(artistRaw);
@@ -196,6 +250,7 @@ function buildCandidates(rawUrls, knownSlugs) {
     rawUrls: rawUrls.length,
     unparseable: 0,
     mojibake: 0,
+    crawlerArtifact: 0,
     assetArtifact: 0,
     scratchUpload: 0,
     emptySegment: 0,
@@ -211,6 +266,7 @@ function buildCandidates(rawUrls, knownSlugs) {
     const parsed = parseArchivedUrl(rawUrl);
     if (!parsed) { stats.unparseable += 1; continue; }
     if (parsed.rejected === 'mojibake') { stats.mojibake += 1; continue; }
+    if (parsed.rejected === 'crawler-artifact') { stats.crawlerArtifact += 1; continue; }
     if (parsed.rejected === 'asset-artifact') { stats.assetArtifact += 1; continue; }
     if (parsed.rejected === 'scratch-upload') { stats.scratchUpload += 1; continue; }
     if (parsed.rejected === 'empty-segment') { stats.emptySegment += 1; continue; }
