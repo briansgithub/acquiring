@@ -18,7 +18,7 @@ import java.util.zip.GZIPInputStream
 
 object DatabaseDownloader {
 
-    private const val EXPECTED_BROWSE_SONGS = 34_101L
+    private const val EXPECTED_BROWSE_SONGS = 40_609L
 
     private const val DEFAULT_CATALOG_URL =
         "https://github.com/briansgithub/diatonic_ring/releases/download/v1.0.0-data/catalog.db.gz"
@@ -86,7 +86,7 @@ object DatabaseDownloader {
                     deleteDatabaseSidecars(targetDbFile)
                     replaceDatabaseAtomically(stagedDbFile, targetDbFile)
 
-                    onProgress("Full library installed! (34,101 songs ready with chords)")
+                    onProgress("Full library installed! (40,609 songs ready with chords)")
 
                     Result.success(true)
                 } finally {
