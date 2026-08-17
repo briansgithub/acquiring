@@ -49,8 +49,13 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -130,6 +135,9 @@ private fun Modifier.dropdownScrollbar(
     )
 }
 
+/** Row height for the transpose menu's single-number entries. */
+private val QUIZ_TRANSPOSE_ITEM_HEIGHT = 32.dp
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ExposedDropdownMenuBoxScope.ExposedDropdownMenuWithScrollbar(
@@ -137,10 +145,22 @@ private fun ExposedDropdownMenuBoxScope.ExposedDropdownMenuWithScrollbar(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     onLoadMore: (() -> Unit)? = null,
+    centerScrollOnExpand: Boolean = false,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val scrollState = rememberScrollState()
-    
+
+    // Opening a symmetric range (say -12..+12) at the top buries the identity
+    // value. Half of maxValue centres the middle item whatever the item height
+    // and menu height work out to be.
+    if (centerScrollOnExpand) {
+        LaunchedEffect(expanded, scrollState.maxValue) {
+            if (expanded && scrollState.maxValue > 0) {
+                scrollState.scrollTo(scrollState.maxValue / 2)
+            }
+        }
+    }
+
     if (onLoadMore != null) {
         LaunchedEffect(scrollState.value, scrollState.maxValue) {
             if (scrollState.maxValue > 0 && scrollState.value >= scrollState.maxValue - 100) {
@@ -828,6 +848,9 @@ fun LibraryView(
 ) {
     var isHarvestExpanded by remember { mutableStateOf(false) }
     var isDownloadCatalogExpanded by remember { mutableStateOf(false) }
+    // Sends the title search out to Hooktheory's own catalog in the browser instead of
+    // querying the downloaded database.
+    var searchOnHooktheory by rememberSaveable { mutableStateOf(false) }
     val uriHandler = LocalUriHandler.current
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -889,16 +912,37 @@ fun LibraryView(
             }
         }
 
-        Button(onClick = onSearchTitle, modifier = Modifier.fillMaxWidth().padding(top = 4.dp)) {
+        Button(
+            onClick = {
+                if (searchOnHooktheory) {
+                    uriHandler.openUri(
+                        "https://www.hooktheory.com/theorytab/search?q=${Uri.encode(searchQuery)}"
+                    )
+                } else {
+                    onSearchTitle()
+                }
+            },
+            enabled = !searchOnHooktheory || searchQuery.isNotBlank(),
+            modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+        ) {
             Text("Search Title")
         }
 
-        OutlinedButton(
-            onClick = { uriHandler.openUri("https://www.hooktheory.com/theorytab/search?q=${Uri.encode(searchQuery)}") },
-            enabled = searchQuery.isNotBlank(),
-            modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { searchOnHooktheory = !searchOnHooktheory }
+                .semantics { contentDescription = "Search Hooktheory.com instead of the downloaded catalog" }
         ) {
-            Text("Search Hooktheory.com ↗")
+            Checkbox(
+                checked = searchOnHooktheory,
+                onCheckedChange = { searchOnHooktheory = it }
+            )
+            Text(
+                text = "Search Hooktheory.com ↗",
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -1127,12 +1171,14 @@ fun SongDetailView(
         ExposedDropdownMenuBox(
             expanded = isTransposeExpanded,
             onExpandedChange = { isTransposeExpanded = !isTransposeExpanded },
-            modifier = Modifier.width(84.dp)
+            modifier = Modifier.width(120.dp)
         ) {
-            Box(
+            // Label and value share one line so the control stays a thin strip
+            // instead of a tall box with dead space above and below the value.
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(48.dp)
+                    .height(32.dp)
                     .border(
                         width = 1.dp,
                         color = MaterialTheme.colorScheme.outline,
@@ -1140,36 +1186,31 @@ fun SongDetailView(
                     )
                     .menuAnchor()
                     .semantics { contentDescription = "Transpose: $transposeText" }
+                    .padding(start = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 4.dp, bottom = 4.dp),
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "Transpose",
-                        maxLines = 1,
-                        style = MaterialTheme.typography.labelSmall.copy(lineHeight = 12.sp),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.End,
-                        modifier = Modifier.fillMaxWidth().padding(end = 28.dp)
-                    )
-                    Text(
-                        text = transposeText,
-                        maxLines = 1,
-                        style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 18.sp),
-                        modifier = Modifier.padding(start = 10.dp)
-                    )
-                }
-                Box(modifier = Modifier.align(Alignment.CenterEnd)) {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = isTransposeExpanded)
-                }
+                Text(
+                    text = "Transpose",
+                    maxLines = 1,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                // The value sits centred in what is left between the caption and the
+                // chevron rather than hugging the caption.
+                Text(
+                    text = transposeText,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
+                )
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = isTransposeExpanded)
             }
 
             ExposedDropdownMenuWithScrollbar(
                 expanded = isTransposeExpanded,
-                onDismissRequest = { isTransposeExpanded = false }
+                onDismissRequest = { isTransposeExpanded = false },
+                centerScrollOnExpand = true
             ) {
                 (-12..12).forEach { transpose ->
                     DropdownMenuItem(
@@ -1177,13 +1218,18 @@ fun SongDetailView(
                             Text(
                                 text = if (transpose > 0) "+$transpose" else "$transpose",
                                 modifier = Modifier.fillMaxWidth(),
+                                style = MaterialTheme.typography.bodyMedium,
                                 textAlign = TextAlign.Center
                             )
                         },
                         onClick = {
                             onTransposeChange(transpose)
                             isTransposeExpanded = false
-                        }
+                        },
+                        // Material's 48dp default row turns 25 semitones into a very long
+                        // menu; a short row keeps the useful range on screen at once.
+                        modifier = Modifier.height(QUIZ_TRANSPOSE_ITEM_HEIGHT),
+                        contentPadding = PaddingValues(horizontal = 8.dp)
                     )
                 }
             }
@@ -1405,6 +1451,123 @@ data class QuizKeyDisplay(
     val color: Color,
     val isLockedToMajor: Boolean
 )
+
+/**
+ * Width of the quiz's left-hand label gutter. Every row of cards reserves it so
+ * the melody, chord, and chord-tone rows stay aligned even when a row is empty.
+ */
+private val QUIZ_ROW_LABEL_WIDTH = 44.dp
+
+/**
+ * Cross-axis width of the balance slider. Kept just wide enough for the 20dp thumb:
+ * the Slider centres its track in whatever cross-axis space it is given, so surplus
+ * width reads as margin either side of the fader.
+ */
+private val QUIZ_BALANCE_FADER_WIDTH = 28.dp
+
+/**
+ * Half the Material thumb width. A Slider insets its track by this much at each end to
+ * leave the thumb room, so the fader is measured this much longer than the space it
+ * occupies and hangs the surplus off both ends, putting the drawn track flush with the
+ * top and bottom of the card stack.
+ */
+private val QUIZ_BALANCE_FADER_TRACK_INSET = 10.dp
+
+/** Fixed fader length used in simple mode, which has no melody/chord-tone rows. */
+private val QUIZ_SIMPLE_MODE_FADER_HEIGHT = 200.dp
+
+// The full-quiz card stack. Every row keeps its height whether or not it currently has
+// cards, so the stack never shifts under the reader and the fader beside it can be one
+// fixed length that ends level with the bottom of the chord-tone cards.
+private val QUIZ_CARD_STACK_TOP_INSET = 8.dp
+private val QUIZ_CARD_ROW_SPACING = 8.dp
+private val QUIZ_MELODY_ROW_HEIGHT = 64.dp
+private val QUIZ_CHORD_ROW_HEIGHT = 60.dp
+private val QUIZ_CHORD_TONE_ROW_HEIGHT = 54.dp
+private val QUIZ_CARD_STACK_HEIGHT = QUIZ_CARD_STACK_TOP_INSET +
+    QUIZ_MELODY_ROW_HEIGHT + QUIZ_CARD_ROW_SPACING +
+    QUIZ_CHORD_ROW_HEIGHT + QUIZ_CARD_ROW_SPACING +
+    QUIZ_CHORD_TONE_ROW_HEIGHT
+
+/** Row caption in the quiz's left gutter. Pass a blank label to hold the space only. */
+@Composable
+private fun QuizRowLabel(text: String, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.width(QUIZ_ROW_LABEL_WIDTH),
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelSmall.copy(lineHeight = 12.sp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 2
+        )
+    }
+}
+
+/**
+ * Melody/chord balance as a vertical fader spanning the card stack: up favours the
+ * melody, down the chords. A stacked "Volume Mix" caption names the axis beside it —
+ * one letter per line so each stays upright rather than turned on its side.
+ *
+ * Compose ships no vertical Slider, so the horizontal one is measured with its
+ * constraints swapped and drawn a quarter turn counter-clockwise. That puts the
+ * slider's minimum (all chord) at the bottom and its maximum (all melody) at the
+ * top, which is the orientation a mixing fader is read in.
+ */
+@Composable
+private fun MelodyChordBalanceFader(
+    value: Float,
+    onValueChange: (Float) -> Unit,
+    trackLength: Dp,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Slider(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier
+                .width(QUIZ_BALANCE_FADER_WIDTH)
+                .height(trackLength)
+                .semantics {
+                    contentDescription =
+                        "Chord and melody volume balance. Raise for melody, lower for chords."
+                }
+                .graphicsLayer {
+                    rotationZ = 270f
+                    transformOrigin = TransformOrigin(0f, 0f)
+                }
+                .layout { measurable, constraints ->
+                    // Measure the slider a thumb-radius longer at each end than the length
+                    // it reports, so the part of it that reads as the track covers exactly
+                    // the requested span and the overshoot falls outside.
+                    val overshoot = QUIZ_BALANCE_FADER_TRACK_INSET.roundToPx()
+                    val reportedLength = constraints.maxHeight
+                    val measuredLength = reportedLength + overshoot * 2
+                    val placeable = measurable.measure(
+                        Constraints(
+                            minWidth = measuredLength,
+                            maxWidth = measuredLength,
+                            minHeight = constraints.minWidth,
+                            maxHeight = constraints.maxWidth
+                        )
+                    )
+                    layout(placeable.height, reportedLength) {
+                        placeable.place(-(reportedLength + overshoot), 0)
+                    }
+                }
+        )
+        Text(
+            text = "Volume Mix".toCharArray().joinToString("\n"),
+            style = MaterialTheme.typography.labelSmall.copy(lineHeight = 12.sp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center
+        )
+    }
+}
 
 private fun ringModeColor(scale: String): Color = when (scale) {
     "major", "ionian" -> Color(0xFFFF0000)
@@ -1669,10 +1832,17 @@ fun QuizTab(
         cancelInertia()
         intervalPreviewJob?.cancel()
         AudioEngine.stopPreviewPlayback()
+        // Switching sections carries the transport across: a section that was sounding
+        // keeps sounding from the top of the new one, and a paused section arrives
+        // paused. The engine's requested state is the one to copy — the published phase
+        // trails the command queue, so a section swap right after a play/pause tap would
+        // otherwise carry the state the user just left behind. A scrub that is holding
+        // playback counts as playing; it is a pause the user never asked for.
+        val continuePlaying = quizPlaybackEngine.isPlaybackRequested || wasPlayingBeforeScrub
         isScrubbing = false
         wasPlayingBeforeScrub = false
         scrubBeat = timeline.startBeat
-        quizPlaybackEngine.load(timeline, continuePlaying = isPlaying)
+        quizPlaybackEngine.load(timeline, continuePlaying = continuePlaying)
     }
 
     LaunchedEffect(playbackConfig) {
@@ -2117,6 +2287,10 @@ fun QuizTab(
 
     fun requestSingingTargets(request: SingingTargetRequest) {
         persistentPitchController.cancel()
+        // The singing tool needs a quiet room. Opening it from a note card holds the
+        // transport where it is so the microphone hears the user rather than the
+        // backing parts; the play button is right there when they want it again.
+        if (quizPlaybackEngine.isPlaybackRequested) quizPlaybackEngine.pause()
         onSingingTargetsRequested(request)
     }
 
@@ -2134,7 +2308,9 @@ fun QuizTab(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    // Minimal side insets: the row labels on the left and the volume
+                    // fader on the right should sit as close to the edges as they can.
+                    .padding(horizontal = 4.dp, vertical = 8.dp)
             ) {
                 val displayScale = if (useRelativeIonianContext) {
                     "Major"
@@ -2157,36 +2333,19 @@ fun QuizTab(
                     onDispose { latestOnKeyDisplayChange(null) }
                 }
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    // "Lock in Major" now sits beside the key/scale readout in the
-                    // song header, so this row only carries the pitch controls.
+                    // "Lock in Major" sits beside the key/scale readout in the song
+                    // header; Tessitura and Transpose share this line, and the
+                    // melody/chord balance moved to the fader beside the card rows.
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column(horizontalAlignment = Alignment.End) {
-                            tessituraControl()
-                            if (!isSimpleMode) {
-                                Spacer(modifier = Modifier.height(4.dp))
-                                transposePicker()
-                            }
+                        tessituraControl()
+                        if (!isSimpleMode) {
+                            Spacer(modifier = Modifier.width(8.dp))
+                            transposePicker()
                         }
-                    }
-                    Row(modifier = Modifier.height(34.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Box(modifier = Modifier.width(104.dp), contentAlignment = Alignment.CenterStart) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(
-                                    "Chord / Melody", 
-                                    style = MaterialTheme.typography.labelSmall,
-                                    maxLines = 1
-                                )
-                                Text(
-                                    "Vol.", 
-                                    style = MaterialTheme.typography.labelSmall,
-                                    maxLines = 1
-                                )
-                            }
-                        }
-                        Slider(value = melodyChordBalance, onValueChange = { melodyChordBalance = it }, modifier = Modifier.weight(1f))
                     }
                     Row(modifier = Modifier.height(34.dp), verticalAlignment = Alignment.CenterVertically) {
                         Text("Tempo", style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Start, maxLines = 1, modifier = Modifier.width(40.dp))
@@ -2585,9 +2744,21 @@ fun QuizTab(
                         .padding(bottom = 96.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    // The full quiz always shows all three card rows, so the fader is a
+                    // fixed length that spans the stack from the melody row's top edge
+                    // down to the bottom of the chord-tone cards.
+                    val balanceFaderHeight = if (isSimpleMode) {
+                        QUIZ_SIMPLE_MODE_FADER_HEIGHT
+                    } else {
+                        QUIZ_CARD_STACK_HEIGHT
+                    }
+
+                    // The fader sits outside the card block so it holds the same spot
+                    // on screen whether simple mode is on or off.
+                    Row(modifier = Modifier.fillMaxWidth()) {
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .weight(1f)
                             .wrapContentHeight(),
                         contentAlignment = if (isSimpleMode) Alignment.Center else Alignment.TopCenter
                     ) {
@@ -2735,12 +2906,21 @@ fun QuizTab(
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(top = 8.dp),
+                                    .padding(top = QUIZ_CARD_STACK_TOP_INSET),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Top
                             ) {
-                                Box(modifier = Modifier.fillMaxWidth().height(64.dp)) {
-                                if (melodyCardDisplayMode != MelodyPitchCardDisplayMode.HIDDEN) {
+                                val hasMelodyCards =
+                                    melodyCardDisplayMode != MelodyPitchCardDisplayMode.HIDDEN
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().height(QUIZ_MELODY_ROW_HEIGHT),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                // Each row names itself whether or not it currently holds
+                                // cards, so the reader can tell an empty row from a missing one.
+                                QuizRowLabel("Melody")
+                                Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
+                                if (hasMelodyCards) {
                                     if (singleMelodyPitchCard != null) {
                                         Row(
                                             modifier = Modifier.fillMaxWidth().height(64.dp),
@@ -2962,27 +3142,51 @@ fun QuizTab(
                                     }
                                 }
                                 }
-                                Spacer(Modifier.height(8.dp))
-                                currentChord?.let { chord ->
-                                    val isRest = (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
-                                    if (!isRest) {
-                                        val symbol = if (useRelativeIonianContext) ChordInterpreter.getRelativeIonianRomanSymbol(chord, activeKey, ionianContextKey) else ChordInterpreter.getRomanSymbol(chord, activeKey)
-                                        val romanDisplay = RomanNumeralDisplay.fromChord(symbol, chord["borrowed"])
-                                        val notes = ChordInterpreter.getChordNotes(chord, activeKey)
-                                        val rootMidi = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull() ?: 0
-                                        val spelledRoot = ChordInterpreter.resolveChordRoot(chord, activeKey)?.pitch
-                                        val chordDurationBeats = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
-                                        val chordDurationMs = remainingPlaybackDurationMs(chordDurationBeats, 0.0, bpm)
-                                        val previewNotes = notes
-                                        val degreeSpacing = when { notes.size >= 7 -> 2.dp; notes.size >= 5 -> 4.dp; else -> 6.dp }
-                                        val degreeFontSize = when { notes.size >= 7 -> 24.sp; notes.size >= 5 -> 26.sp; else -> 28.sp }
-                                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                                            Button(onClick = { scope.launch { chordDurationMs?.let { AudioEngine.playChord(previewNotes, durationMs = it, channel = AudioEngine.PlaybackChannel.PREVIEW) } } }, enabled = chordDurationMs != null, modifier = Modifier.weight(1f).height(60.dp), shape = RoundedCornerShape(16.dp), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)) {
-                                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { RomanNumeralText(display = romanDisplay, fontSize = 32.sp, modifier = Modifier.fillMaxWidth(), minFontSize = 12.sp) }
-                                            }
+                                }
+                                // A rest, or a chord whose root will not resolve, empties these
+                                // rows but does not remove them: the captions and the row heights
+                                // stay put so the stack never shifts and the fader beside it
+                                // always ends level with the chord-tone cards.
+                                val soundingChord = currentChord?.takeUnless { chord ->
+                                    (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true ||
+                                        (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
+                                }
+                                val romanDisplay = soundingChord?.let { chord ->
+                                    val symbol = if (useRelativeIonianContext) ChordInterpreter.getRelativeIonianRomanSymbol(chord, activeKey, ionianContextKey) else ChordInterpreter.getRomanSymbol(chord, activeKey)
+                                    RomanNumeralDisplay.fromChord(symbol, chord["borrowed"])
+                                }
+                                val notes = soundingChord?.let { ChordInterpreter.getChordNotes(it, activeKey) } ?: emptyList()
+                                val rootMidi = soundingChord?.let { ChordInterpreter.getRootPositionChordNotes(it, activeKey).firstOrNull() } ?: 0
+                                val spelledRoot = soundingChord?.let { ChordInterpreter.resolveChordRoot(it, activeKey)?.pitch }
+                                val chordDurationMs = soundingChord?.let { chord ->
+                                    val chordDurationBeats = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
+                                    remainingPlaybackDurationMs(chordDurationBeats, 0.0, bpm)
+                                }
+                                val previewNotes = notes
+                                val degreeSpacing = when { notes.size >= 7 -> 2.dp; notes.size >= 5 -> 4.dp; else -> 6.dp }
+                                val degreeFontSize = when { notes.size >= 7 -> 24.sp; notes.size >= 5 -> 26.sp; else -> 28.sp }
+
+                                Spacer(Modifier.height(QUIZ_CARD_ROW_SPACING))
+                                Row(modifier = Modifier.fillMaxWidth().height(QUIZ_CHORD_ROW_HEIGHT), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                                    QuizRowLabel("Chord")
+                                    if (romanDisplay != null) {
+                                        Button(onClick = { scope.launch { chordDurationMs?.let { AudioEngine.playChord(previewNotes, durationMs = it, channel = AudioEngine.PlaybackChannel.PREVIEW) } } }, enabled = chordDurationMs != null, modifier = Modifier.weight(1f).fillMaxHeight(), shape = RoundedCornerShape(16.dp), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)) {
+                                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { RomanNumeralText(display = romanDisplay, fontSize = 32.sp, modifier = Modifier.fillMaxWidth(), minFontSize = 12.sp) }
                                         }
-                                        if (rootMidi > 0) { Spacer(Modifier.height(8.dp)); Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(degreeSpacing)) {
-                                            notes.forEachIndexed { index, note ->
+                                    } else {
+                                        Spacer(modifier = Modifier.weight(1f))
+                                    }
+                                }
+                                Spacer(Modifier.height(QUIZ_CARD_ROW_SPACING))
+                                Row(modifier = Modifier.fillMaxWidth().height(QUIZ_CHORD_TONE_ROW_HEIGHT), horizontalArrangement = Arrangement.spacedBy(degreeSpacing), verticalAlignment = Alignment.CenterVertically) {
+                                            QuizRowLabel("Chord tones")
+                                            // Degrees are measured from the chord root, so without one
+                                            // there is nothing to label: hold the row empty instead.
+                                            val toneCards = if (rootMidi > 0) notes else emptyList()
+                                            if (toneCards.isEmpty()) {
+                                                Spacer(modifier = Modifier.weight(1f))
+                                            }
+                                            toneCards.forEachIndexed { index, note ->
                                                 // Chord-tone cards describe the chord's internal structure, so
                                                 // their degrees always stay relative to the effective chord root.
                                                 val cardTarget = currentChordToneTargets.getOrNull(index)
@@ -2994,7 +3198,7 @@ fun QuizTab(
                                                     (resolvedPersistentPitchTarget?.position as? PersistentPitchCardPosition.ChordTone)
                                                         ?.displayedIndex
                                                 Surface(
-                                                    modifier = Modifier.weight(1f).height(54.dp)
+                                                    modifier = Modifier.weight(1f).fillMaxHeight()
                                                         .semantics { contentDescription = "Play scale degree $internalLabel. Double tap to sing it back. Triple tap to toggle persistent pitch practice." }
                                                         .tripleClickable(
                                                             onClick = { scope.launch { AudioEngine.playChord(listOf(previewNote), channel = AudioEngine.PlaybackChannel.PREVIEW) } },
@@ -3038,26 +3242,33 @@ fun QuizTab(
                                                             isTessituraAdjusted = isTessituraAdjusted
                                                         ) }
                                                 } }
-                                        } }
-                                    }
-                                }
+                                        }
                             }
                         }
                     }
 
+                    MelodyChordBalanceFader(
+                        value = melodyChordBalance,
+                        onValueChange = { melodyChordBalance = it },
+                        trackLength = balanceFaderHeight
+                    )
+                    }
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    // Unified playback scrub bar
-                    Slider(
-                        value = currentBeat.toFloat().coerceIn(1f, endBeat.toFloat()),
-                        onValueChange = { beat -> scrubTo(beat.toDouble()) },
-                        onValueChangeFinished = { finishScrubbing() },
-                        valueRange = 1f..endBeat.toFloat(),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(32.dp)
-                    )
+                    // Unified playback scrub bar. Simple mode only: the full quiz
+                    // scrubs by dragging its own timeline instead.
+                    if (isSimpleMode) {
+                        Slider(
+                            value = currentBeat.toFloat().coerceIn(1f, endBeat.toFloat()),
+                            onValueChange = { beat -> scrubTo(beat.toDouble()) },
+                            onValueChangeFinished = { finishScrubbing() },
+                            valueRange = 1f..endBeat.toFloat(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(32.dp)
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(72.dp))
                 }

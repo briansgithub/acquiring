@@ -376,6 +376,14 @@ internal class QuizPlaybackEngine(
         runWorker()
     }
 
+    /**
+     * Whether the transport is meant to be sounding right now. Reads the intent recorded
+     * by the last transport command instead of the published phase, which trails the
+     * command queue, so a caller that must preserve the transport across a reload sees
+     * the state the user last asked for rather than the one the worker has caught up to.
+     */
+    val isPlaybackRequested: Boolean get() = playbackRequested.get()
+
     fun load(timeline: QuizTimeline, continuePlaying: Boolean) {
         val revision = transportRevision.incrementAndGet()
         latestTimeline.set(timeline)

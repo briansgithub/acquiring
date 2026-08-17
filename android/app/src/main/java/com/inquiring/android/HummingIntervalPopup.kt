@@ -5,12 +5,17 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.ui.input.pointer.pointerInput
@@ -48,6 +53,12 @@ import kotlin.math.roundToInt
 private const val EXPAND_ANIMATION_MS = 300
 private const val AUTO_LISTEN_DELAY_MS = 500L
 private const val LISTEN_TIMEOUT_MS = 3000
+
+/** Height of the two pitch cards and the interval readout beside them. */
+private val SINGING_CARD_HEIGHT = 104.dp
+
+/** Half-period of the pulse that marks the card the microphone is feeding. */
+private const val ACTIVE_CARD_PULSE_MS = 650
 internal const val SINGING_TARGET_ROW_TEST_TAG = "singing-target-row"
 internal const val SINGING_INTERVAL_RESULT_TEST_TAG = "singing-interval-result"
 
@@ -476,21 +487,24 @@ internal fun HummingIntervalPopup(
                     isExpanded = true
                 }
             }
-            .padding(8.dp)
+            .padding(horizontal = 8.dp, vertical = 2.dp)
     ) {
         // Handle/Header
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(32.dp),
+                .height(24.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (isExpanded) {
-                IconButton(onClick = {
-                    clearAfterCollapse = true
-                    isExpanded = false
-                }) {
+                IconButton(
+                    onClick = {
+                        clearAfterCollapse = true
+                        isExpanded = false
+                    },
+                    modifier = Modifier.size(24.dp)
+                ) {
                     Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Collapse")
                 }
             } else {
@@ -508,7 +522,7 @@ internal fun HummingIntervalPopup(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 2.dp),
+                        .padding(horizontal = 8.dp),
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -535,7 +549,7 @@ internal fun HummingIntervalPopup(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp)
+                        .padding(horizontal = 4.dp, vertical = 2.dp)
                         .testTag(SINGING_TARGET_ROW_TEST_TAG),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
@@ -624,8 +638,8 @@ internal fun HummingIntervalPopup(
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .height(120.dp)
-                        .padding(4.dp)
+                        .height(SINGING_CARD_HEIGHT)
+                        .padding(3.dp)
                         .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp))
                         .testTag(SINGING_INTERVAL_RESULT_TEST_TAG)
                         .clickable(enabled = capturedSlot1 != null && capturedSlot2 != null) {
@@ -677,12 +691,12 @@ internal fun HummingIntervalPopup(
                                 }
                             }
                         }
-                        .padding(8.dp),
+                        .padding(horizontal = 6.dp, vertical = 4.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text("Interval", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
                     if (interval != null) {
                         Text(
                             text = interval.shorthand,
@@ -744,12 +758,36 @@ internal fun RowScope.HummingSlotView(
     onSingleClick: () -> Unit,
     onDoubleClick: () -> Unit
 ) {
-    Box(modifier = Modifier.weight(1f).height(120.dp).padding(4.dp)) {
+    val isActive = isRecording || isListening
+    val cardShape = RoundedCornerShape(8.dp)
+    // A tinted background alone is easy to miss on a small card beside its twin, so
+    // the live card also carries a thick ring that breathes while the microphone is on.
+    val pulseAlpha by rememberInfiniteTransition(label = "activeSingingCard").animateFloat(
+        initialValue = 0.35f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(ACTIVE_CARD_PULSE_MS),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "activeSingingCardAlpha"
+    )
+    Box(modifier = Modifier.weight(1f).height(SINGING_CARD_HEIGHT).padding(3.dp)) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .clip(RoundedCornerShape(8.dp))
-                .background(if (isRecording || isListening) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface)
+                .clip(cardShape)
+                .background(if (isActive) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface)
+                .then(
+                    if (isActive) {
+                        Modifier.border(
+                            width = 3.dp,
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = pulseAlpha),
+                            shape = cardShape
+                        )
+                    } else {
+                        Modifier
+                    }
+                )
                 .pointerInput(isRecording, isInteractionEnabled) {
                     if (!isRecording && isInteractionEnabled) {
                         detectTapGestures(
@@ -758,7 +796,7 @@ internal fun RowScope.HummingSlotView(
                         )
                     }
                 }
-                .padding(8.dp),
+                .padding(horizontal = 6.dp, vertical = 4.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(
@@ -807,12 +845,15 @@ internal fun RowScope.HummingSlotView(
                     Text("Double tap\nto record", fontSize = 10.sp, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
                 }
 
-                if (isRecording || isListening) {
+                if (isActive) {
                     Text(
                         text = "${(recordingTimeRemaining / 1000f).roundToInt()}s",
-                        modifier = Modifier.align(Alignment.TopEnd),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp))
+                            .padding(horizontal = 4.dp),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }

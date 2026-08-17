@@ -231,6 +231,31 @@ class QuizPlaybackEngineTest {
     }
 
     @Test
+    fun engine_reloadCarriesTheRequestedTransportEvenWhileThePhaseTrails() {
+        val sink = FakeSink(blockAfterPlay = true)
+        val engine = QuizPlaybackEngine(config(), sampleRate = 1_000) { sink }
+        try {
+            engine.load(simpleTimeline(), continuePlaying = false)
+            assertFalse(engine.isPlaybackRequested)
+
+            // A section swap immediately after the tap: the worker is still inside a
+            // blocking write, so only the requested state names what the user asked for.
+            engine.play()
+            assertTrue(engine.isPlaybackRequested)
+            engine.load(simpleTimeline(), continuePlaying = engine.isPlaybackRequested)
+            assertTrue(engine.isPlaybackRequested)
+
+            engine.pause()
+            assertFalse(engine.isPlaybackRequested)
+            engine.load(simpleTimeline(), continuePlaying = engine.isPlaybackRequested)
+            assertFalse(engine.isPlaybackRequested)
+        } finally {
+            sink.unblockWrites()
+            engine.release()
+        }
+    }
+
+    @Test
     fun engine_pausedScrubToEndPublishesAndKeepsTheEndBeat() {
         val sink = FakeSink()
         val engine = QuizPlaybackEngine(config(), sampleRate = 1_000) { sink }
