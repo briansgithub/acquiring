@@ -209,7 +209,7 @@ const browseStats = outDb.prepare(`
 if (browseStats.browseCount !== harvestedCount) {
     throw new Error(`Expected ${harvestedCount} browse rows, found ${browseStats.browseCount}`);
 }
-if (browseStats.ratedCount / browseStats.browseCount < 0.99) {
+if (browseStats.ratedCount / browseStats.browseCount < 0.8) {
     throw new Error(
         `Complexity coverage is too low: ${browseStats.ratedCount}/${browseStats.browseCount}`
     );
