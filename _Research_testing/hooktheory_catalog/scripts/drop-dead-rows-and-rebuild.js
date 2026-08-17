@@ -82,7 +82,7 @@ function rebuildAsset() {
     INNER JOIN songs s ON s.slug = e.slug WHERE s.dataBlob IS NOT NULL
   `).get().c;
 
-  const EXPECTED_FLOOR = 34101;
+  const EXPECTED_FLOOR = 40609;
   if (after < EXPECTED_FLOOR || browse < EXPECTED_FLOOR || withChords !== browse) {
     d.close();
     throw new Error(
