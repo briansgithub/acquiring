@@ -31,6 +31,28 @@ function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+/**
+ * Did the headless browser go away, as opposed to the song being unfetchable?
+ * These are the shapes Puppeteer reports when the process or the DevTools
+ * connection dies underneath us.
+ */
+const BROWSER_DEAD_PATTERNS = [
+  /connection closed/i,
+  /target closed/i,
+  /session closed/i,
+  /protocol error/i,
+  /browser has disconnected/i,
+  /websocket/i,
+];
+
+function isBrowserDead(err) {
+  const msg = String(err?.message || '');
+  return BROWSER_DEAD_PATTERNS.some((re) => re.test(msg));
+}
+
+/** Enough to ride out a crash or two; not enough to loop forever on a broken host. */
+const MAX_BROWSER_RELAUNCHES = 5;
+
 function makePacer() {
   return new AdaptivePacer({
     baseMs: INTERVAL_MS,
@@ -112,6 +134,7 @@ async function runHarvestPhase(db, opts) {
 
   let harvested = 0;
   let failed = 0;
+  let browserDeaths = 0;
   const skipSlugs = new Set();
   let browser = null;
   const pacer = makePacer();
@@ -154,12 +177,34 @@ async function runHarvestPhase(db, opts) {
           continue;
         }
         harvested++;
+        browserDeaths = 0; // consecutive deaths are the signal, not lifetime ones
         writeState({
           songs_harvested_session: harvested,
           last_error: null,
         });
         appendLog(`[light-catalog] harvested ${song.slug} (${harvested} ok)`);
       } catch (e) {
+        // A dead browser is not a verdict on the song. Puppeteer surfaces it as
+        // "Connection closed." / "Target closed" / "Protocol error", and every
+        // later song then fails instantly against the same corpse: one crash
+        // 4.5h into a 5,231-song run burned 2,575 songs in minutes, each logged
+        // as a failure though none was ever fetched. Relaunch and retry the song
+        // instead, and give up entirely rather than sprint through the queue if
+        // the browser won't come back.
+        if (isBrowserDead(e)) {
+          browserDeaths += 1;
+          appendLog(`[light-catalog] browser died on ${song.slug} (${e.message}) — relaunching (${browserDeaths}/${MAX_BROWSER_RELAUNCHES})`);
+          if (browserDeaths > MAX_BROWSER_RELAUNCHES) {
+            appendLog('[light-catalog] browser will not stay up — stopping so the queue survives for a re-run');
+            writeState({ last_error: `browser unrecoverable: ${e.message}` });
+            break;
+          }
+          try { await browser?.close(); } catch (_) {}
+          browser = await launchBrowser();
+          await sleep(pacer.jittered(JITTER_MS));
+          continue; // same song, next pass — not counted, not skipped
+        }
+
         pacer.recordResult(e);
         failed++;
         skipSlugs.add(song.slug);
