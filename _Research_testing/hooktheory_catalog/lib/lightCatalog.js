@@ -53,6 +53,50 @@ function isBrowserDead(err) {
 /** Enough to ride out a crash or two; not enough to loop forever on a broken host. */
 const MAX_BROWSER_RELAUNCHES = 5;
 
+/**
+ * Did the network go away, as opposed to the song being unfetchable?
+ *
+ * An HTTP status is an answer about the song; a transport error is not an
+ * answer at all. Chrome reports a dropped connection as net::ERR_*, Node as
+ * ENOTFOUND/ECONNRESET/ETIMEDOUT — and, when a page evaluation is cut off
+ * mid-flight, as an error with an EMPTY message, which is how a real outage
+ * cost 18 songs their turn in the queue at 04:01 on 2026-08-17.
+ */
+const NETWORK_DOWN_PATTERNS = [
+  /net::ERR_/i,
+  /ENOTFOUND|EAI_AGAIN|ECONNRESET|ECONNREFUSED|ETIMEDOUT|EHOSTUNREACH|ENETUNREACH/i,
+  /network|socket hang up|fetch failed/i,
+  /navigation timeout|timeout exceeded/i,
+];
+
+function isNetworkDown(err) {
+  const msg = String(err?.message || '').trim();
+  if (!msg) return true; // an error that won't even say what went wrong is not a verdict
+  return NETWORK_DOWN_PATTERNS.some((re) => re.test(msg));
+}
+
+/**
+ * How long to wait out an outage before giving up on the run. Backs off
+ * 30s, 60s, 120s, ... capped, and re-probes the site rather than the song, so
+ * an hour offline costs the queue nothing.
+ */
+const MAX_NETWORK_WAITS = 12;
+const NETWORK_PROBE_URL = 'https://www.hooktheory.com/theorytab/view/toto/africa';
+
+async function waitForNetwork(attempt) {
+  const delay = Math.min(30000 * 2 ** (attempt - 1), 300000);
+  appendLog(`[light-catalog] network unreachable — waiting ${Math.round(delay / 1000)}s before re-probing (${attempt}/${MAX_NETWORK_WAITS})`);
+  await sleep(delay);
+  try {
+    const res = await fetch(NETWORK_PROBE_URL, { method: 'HEAD' });
+    if (res.status > 0) {
+      appendLog('[light-catalog] network is back — resuming harvest');
+      return true;
+    }
+  } catch (_) {}
+  return false;
+}
+
 function makePacer() {
   return new AdaptivePacer({
     baseMs: INTERVAL_MS,
@@ -135,6 +179,7 @@ async function runHarvestPhase(db, opts) {
   let harvested = 0;
   let failed = 0;
   let browserDeaths = 0;
+  let networkWaits = 0;
   const skipSlugs = new Set();
   let browser = null;
   const pacer = makePacer();
@@ -178,6 +223,7 @@ async function runHarvestPhase(db, opts) {
         }
         harvested++;
         browserDeaths = 0; // consecutive deaths are the signal, not lifetime ones
+        networkWaits = 0;
         writeState({
           songs_harvested_session: harvested,
           last_error: null,
@@ -202,6 +248,25 @@ async function runHarvestPhase(db, opts) {
           try { await browser?.close(); } catch (_) {}
           browser = await launchBrowser();
           await sleep(pacer.jittered(JITTER_MS));
+          continue; // same song, next pass — not counted, not skipped
+        }
+
+        // Same principle for the transport: wait the outage out and re-try the
+        // song, rather than spending the queue on a connection that is down.
+        if (isNetworkDown(e)) {
+          networkWaits += 1;
+          appendLog(`[light-catalog] network error on ${song.slug}: ${e.message || '(no message)'}`);
+          if (networkWaits > MAX_NETWORK_WAITS) {
+            appendLog('[light-catalog] network still down after backoff — stopping so the queue survives for a re-run');
+            writeState({ last_error: `network unreachable: ${e.message || '(no message)'}` });
+            break;
+          }
+          if (await waitForNetwork(networkWaits)) {
+            networkWaits = 0;
+            // The browser has been sitting on a dead connection; start it fresh.
+            try { await browser?.close(); } catch (_) {}
+            browser = await launchBrowser();
+          }
           continue; // same song, next pass — not counted, not skipped
         }
 
