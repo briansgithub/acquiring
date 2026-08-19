@@ -2,6 +2,7 @@
  * Audit and repair unresolved catalog URLs from current discovery sources.
  *
  *   node cli/reconcile-catalog.js --audit-unresolved
+ *   node cli/reconcile-catalog.js --audit-unresolved --focus-journal <rollback.json>
  *   node cli/reconcile-catalog.js --apply --cleanup-test-rows
  *   node cli/reconcile-catalog.js --apply-report <audit.json> --cleanup-test-rows
  *   node cli/reconcile-catalog.js --rollback <journal.json>
@@ -30,6 +31,7 @@ function parseArgs(argv = process.argv.slice(2)) {
     refreshWayback: true,
     artistPages: true,
     applyReport: null,
+    focusJournal: null,
     rollback: null,
   };
   for (let i = 0; i < argv.length; i++) {
@@ -42,6 +44,7 @@ function parseArgs(argv = process.argv.slice(2)) {
       args.apply = true;
       args.applyReport = argv[++i] || null;
     }
+    else if (argv[i] === '--focus-journal') args.focusJournal = argv[++i] || null;
     else if (argv[i] === '--rollback') args.rollback = argv[++i] || null;
   }
   return args;
@@ -162,6 +165,17 @@ function loadApplyReport(db, reportFile) {
   };
 }
 
+function focusSlugsFromJournal(journalFile) {
+  if (!journalFile) return null;
+  const journal = JSON.parse(fs.readFileSync(path.resolve(journalFile), 'utf8'));
+  if (!Array.isArray(journal.changes)) {
+    throw new Error(`Invalid reconciliation rollback journal: ${journalFile}`);
+  }
+  return new Set(journal.changes
+    .filter((change) => change.action === 'inserted')
+    .map((change) => change.slug));
+}
+
 function tableRowsForSlugs(db, slugs) {
   if (!slugs.length) return {};
   const placeholders = slugs.map(() => '?').join(',');
@@ -245,6 +259,7 @@ function rollback(db, journalFile) {
 async function collectCandidates(db, args, log = console.log) {
   const groups = new Map();
   const knownSongs = new Map(db.prepare('SELECT * FROM songs').all().map((r) => [r.slug, r]));
+  const focusSlugs = focusSlugsFromJournal(args.focusJournal);
 
   log('[reconcile] walking complete Meilisearch index');
   const meili = await discoverFromMeili(0, 0, ({ page, offset }) => {
@@ -283,6 +298,7 @@ async function collectCandidates(db, args, log = console.log) {
       .map((p) => p.slug));
     const artists = [...new Set([...knownSongs.values()]
       .filter((r) => isUnresolved(r) && !repaired.has(r.slug)
+        && (!focusSlugs || focusSlugs.has(r.slug))
         && r.artist_slug && r.url_source !== 'observed')
       .map((r) => r.artist_slug))];
 
@@ -413,6 +429,7 @@ module.exports = {
   resolveCandidateGroups,
   deleteTestRows,
   loadApplyReport,
+  focusSlugsFromJournal,
   rollback,
   collectCandidates,
   main,
