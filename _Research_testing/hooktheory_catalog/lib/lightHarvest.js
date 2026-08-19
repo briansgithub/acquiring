@@ -6,7 +6,12 @@ const fs = require('fs');
 const { fetchSongData, fetchHtml } = require('./api/hooktheoryApi');
 const { extractChordAndMelodyObjects } = require('./dataExtractor');
 const { parseMetricsFromHtml } = require('./metricsParse');
-const { listSectionsForSlug, setHarvestMode, markLightHarvestBlocked } = require('./db');
+const {
+  listSectionsForSlug,
+  setHarvestMode,
+  markLightHarvestBlocked,
+  clearLightHarvestBlocked,
+} = require('./db');
 const { isJunkUrl } = require('./catalogUtils');
 const {
   harvestDirForSlug,
@@ -19,6 +24,29 @@ const { ensureSectionsResolved, isPublicSongId } = require('./sectionResolve');
 async function fetchSectionJson(songId) {
   const body = await fetchSongData(songId);
   return extractChordAndMelodyObjects(body);
+}
+
+function isRetryableHarvestError(err) {
+  const message = String(err?.message || err || '').trim();
+  const status = Number(err?.status)
+    || Number(message.match(/\b(?:API|HTTP)\s+(\d{3})\b/i)?.[1])
+    || 0;
+  if (status) return status === 403 || status === 429 || status >= 500;
+  if (!message) return true;
+  return /net::ERR_|ENOTFOUND|EAI_AGAIN|ECONNRESET|ECONNREFUSED|ETIMEDOUT|EHOSTUNREACH|ENETUNREACH|network|socket hang up|fetch failed|navigation timeout|timeout exceeded/i.test(message);
+}
+
+function releaseRetryableBlockedSongs(db) {
+  const rows = db.prepare(`
+    SELECT slug, error_message FROM songs WHERE harvest_mode = 'blocked'
+  `).all();
+  let released = 0;
+  for (const row of rows) {
+    if (!isRetryableHarvestError(row.error_message)) continue;
+    clearLightHarvestBlocked(db, row.slug);
+    released += 1;
+  }
+  return released;
 }
 
 async function harvestLightSong(db, slug, url, { fetchMetrics = true, browser = null } = {}) {
@@ -48,6 +76,7 @@ async function harvestLightSong(db, slug, url, { fetchMetrics = true, browser = 
     sections: [],
     errors: [],
   };
+  const sectionFailures = [];
 
   for (const sec of sections) {
     if (!isPublicSongId(sec.song_id)) {
@@ -64,12 +93,19 @@ async function harvestLightSong(db, slug, url, { fetchMetrics = true, browser = 
         strips: [],
       });
     } catch (e) {
+      sectionFailures.push(e);
       scrape.errors.push(`${sec.section_name}/${sec.song_id}: ${e.message}`);
     }
   }
 
   if (!scrape.sections.length) {
     const err = scrape.errors.join('; ') || 'no sections fetched';
+    const retryable = sectionFailures.find(isRetryableHarvestError);
+    if (retryable) {
+      const failure = new Error(err);
+      failure.status = retryable.status;
+      throw failure;
+    }
     markLightHarvestBlocked(db, slug, err);
     throw new Error(err);
   }
@@ -161,4 +197,6 @@ module.exports = {
   harvestLightSong,
   countSongsNeedingLightHarvest,
   listSongsNeedingLightHarvest,
+  isRetryableHarvestError,
+  releaseRetryableBlockedSongs,
 };

@@ -10,6 +10,8 @@ const { openDb, upsertSong, upsertMeiliSectionStub, setHarvestMode } = require('
 const {
   countSongsNeedingLightHarvest,
   listSongsNeedingLightHarvest,
+  isRetryableHarvestError,
+  releaseRetryableBlockedSongs,
 } = require('../lib/lightHarvest');
 const { harvestOk, harvestFileForSlug, harvestDirForSlug } = require('../lib/harvestArtifact');
 
@@ -58,7 +60,19 @@ async function main() {
   const afterFull = listSongsNeedingLightHarvest(db, 50);
   assert(!afterFull.some((r) => r.slug === TEST_SLUG), 'full mode should exclude from light queue');
 
+  assert(isRetryableHarvestError(new Error('API 403 for songId x')), 'API 403 should be retryable');
+  assert(isRetryableHarvestError(new Error('HTTP 500 for https://example.test')), 'HTTP 5xx should be retryable');
+  assert(isRetryableHarvestError(new Error('ECONNRESET')), 'transport errors should be retryable');
+  assert(!isRetryableHarvestError(new Error('No jsonData or xmlData in API response')), 'missing source data should remain blocked');
+
+  db.prepare(`UPDATE songs SET status='pending', harvest_mode='blocked', error_message=? WHERE slug=?`)
+    .run('API 403 for songId x', TEST_SLUG);
+  assert(releaseRetryableBlockedSongs(db) === 1, 'transient blocked row should return to queue');
+  assert(listSongsNeedingLightHarvest(db, 10, { slugs: [TEST_SLUG] }).some((r) => r.slug === TEST_SLUG),
+    'released transient row should be harvest eligible');
+
   const { harvestLightSong } = require('../lib/lightHarvest');
+  setHarvestMode(db, TEST_SLUG, 'full');
   const skip = await harvestLightSong(db, TEST_SLUG, 'https://www.hooktheory.com/theorytab/view/test-artist/test-song');
   assert(skip.skipped && skip.reason === 'full_fetch_complete', 'should skip light harvest when full');
 

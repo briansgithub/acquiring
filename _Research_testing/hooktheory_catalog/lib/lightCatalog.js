@@ -9,6 +9,7 @@ const {
   harvestLightSong,
   countSongsNeedingLightHarvest,
   listSongsNeedingLightHarvest,
+  releaseRetryableBlockedSongs,
 } = require('./lightHarvest');
 const { launchBrowser } = require('./theoryTabSections');
 const { AdaptivePacer } = require('./adaptivePacer');
@@ -174,6 +175,8 @@ async function runDiscoverPhase(db, opts, state) {
 
 async function runHarvestPhase(db, opts) {
   writeState({ phase: 'harvest', running: true });
+  const released = releaseRetryableBlockedSongs(db);
+  if (released) appendLog(`[light-catalog] returned ${released} transient blocked song(s) to the retry queue`);
   appendLog(`[light-catalog] harvest start limit=${opts.limit}`);
 
   let harvested = 0;
