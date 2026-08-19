@@ -18,10 +18,11 @@ import {
   ROMAN_NUMERALS_HARMONIC_MINOR,
   ROMAN_NUMERALS_PHRYGIAN_DOMINANT
 } from "./scales.js";
-import { getNoteLabel, getCustomBorrowedIntervals } from "./music.js";
+import { getNoteLabel, getCustomBorrowedIntervals } from "./musicScale.js";
 import { resolveTriSubRoot } from "./chordSubstitutions.js";
 import { shiftNoteBySemitones, noteLabel } from "./chordNoteUtils.js";
 import { isMajorSeventh as policyIsMajorSeventh } from "./chordPolicy.js";
+import { resolveHarmonicAnalysis } from "./harmonicContract.js";
 
 function isTriSubApplied(chord) {
     return chord?.applied === 5
@@ -416,7 +417,10 @@ function buildNumeral(degree, qualities, chord, prefix, opts = {}) {
  * @returns {string} The Roman Numeral symbol (e.g., "ii", "vii°/ii", "V7/V", "♭VI(min)").
  */
 export function getChordSymbol(chord, key) {
-    if (!chord || !chord.root) return "";
+    const analysis = resolveHarmonicAnalysis(chord, key, { enrichModifiers: false, strict: true });
+    if (analysis.isRest || !analysis.labelChord || !analysis.labelChord.root) return "";
+    chord = analysis.labelChord;
+    key = analysis.key;
 
     // --- Applied chords (secondary dominants / leading-tone chords) ---
     // HOOKTHEORY DATA MODEL: `applied` is the NUMERATOR chord degree, `root` is the
@@ -498,7 +502,10 @@ export function getChordSymbol(chord, key) {
  * @returns {string} The letter name symbol (e.g., "Cm", "C7", "F#m").
  */
 export function getChordLetterName(chord, key) {
-    if (!chord || !chord.root) return "";
+    const analysis = resolveHarmonicAnalysis(chord, key, { enrichModifiers: false, strict: true });
+    if (analysis.isRest || !analysis.labelChord || !analysis.labelChord.root) return "";
+    chord = analysis.labelChord;
+    key = analysis.key;
 
     // Resolve the degree + key the chord root should be read from. For applied chords the
     // root note comes from the MAJOR scale of the tonicization target (degree `root`), and

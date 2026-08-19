@@ -1,4 +1,4 @@
-import { resolveHarmonicIntent } from "./harmonicIntent.js";
+import { resolveHarmonicAnalysis } from "./harmonicContract.js";
 import { applyChordSubstitutions, resolveTriSubRoot } from "./chordSubstitutions.js";
 import { MAJOR_SCALE_CHORD_QUALITIES } from "./scales.js";
 import {
@@ -19,12 +19,21 @@ export {
   scaleDegreeToSpecificInterval,
   getCustomBorrowedIntervals,
   rootToDiatonicTriad,
-  resolveHarmonicIntent,
+  resolveHarmonicAnalysis,
 };
+export { normalizeHooktheoryChord, validateHooktheoryChord, HarmonicValidationError } from "./harmonicContract.js";
 export { borrowedModeDimSeventhDegree } from "./chordPolicy.js";
 
 export function chordInterpreter(chord, key, opts = {}) {
-  const intent = resolveHarmonicIntent(chord, key, opts);
+  const analysis = resolveHarmonicAnalysis(chord, key, {
+    ...opts,
+    strict: opts.strict !== false,
+  });
+  if (analysis.isRest) return { notes: [], chordDegrees: [], isRest: true };
+  if (!analysis.soundIntent) {
+    throw new TypeError("A chord object is required");
+  }
+  const intent = analysis.soundIntent;
   const effective = intent.rawChord;
   const defaultChordOctave = intent.baseOctave || 3;
   const borrowed = intent.borrowed;

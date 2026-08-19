@@ -15,6 +15,7 @@ Master map of repo documentation. **Read the linked file when your task matches 
 | [BUGS.md](./BUGS.md) | You are fixing a known bug or checking whether an issue is already tracked. |
 | [PRONUNCIATION.md](./PRONUNCIATION.md) | You need chord **spoken readings** (analytic/functional/letter), `romanNumeralSpeak.js`, fixtures, or `npm run test:pronunciation`. |
 | [ROMAN_NUMERALS.md](./ROMAN_NUMERALS.md) | You need **roman symbol display** (figured-bass stacks, °/ø quality glyphs, HTML + canvas rendering), `romanNumeralCanvas.js`, or `npm run test:roman-symbols`. |
+| [MIDI_THEORY_ANALYZER.md](./MIDI_THEORY_ANALYZER.md) | You need JSON↔MIDI rendering, MIDI analysis, corpus manifests/acquisition, storage/rights gates, API contracts, or evaluation/model-promotion rules. |
 
 ---
 
@@ -63,6 +64,9 @@ Task involves chord correctness / regression / scrape-and-compare?
 
 Task involves playback / UI / audio engine?
   → ARCHITECTURE.md § Web-player (Song Selector Load gate)
+
+Task involves MIDI rendering, MIDI analysis, corpus matching, or inverse-theory evaluation?
+  → MIDI_THEORY_ANALYZER.md
 
 Task involves chord pronunciation / spoken roman readings?
   → PRONUNCIATION.md

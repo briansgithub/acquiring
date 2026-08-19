@@ -1,0 +1,259 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://diatonic-ring.local/schema/midi-analysis-v1.json",
+  "title": "Hooktheory MIDI analysis v1",
+  "$defs": {
+    "probability": { "type": "number", "minimum": 0, "maximum": 1 },
+    "warning": {
+      "type": "object",
+      "required": ["code", "message"],
+      "properties": {
+        "code": { "type": "string", "minLength": 1 },
+        "message": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": true
+    },
+    "modifierArray": { "type": "array", "items": { "type": ["string", "number"] } },
+    "chord": {
+      "type": "object",
+      "required": ["root", "type", "inversion", "applied", "adds", "omits", "alterations", "suspensions", "substitutions", "isRest"],
+      "properties": {
+        "root": { "type": "integer" },
+        "beat": { "type": "number" },
+        "duration": { "type": "number", "minimum": 0 },
+        "type": { "enum": [5, 7, 9, 11, 13] },
+        "inversion": { "type": "integer", "minimum": 0, "maximum": 3 },
+        "applied": { "type": "integer", "minimum": 0, "maximum": 7 },
+        "borrowed": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string" },
+            { "type": "array", "minItems": 7, "maxItems": 7, "items": { "type": "number" } }
+          ]
+        },
+        "adds": { "$ref": "#/$defs/modifierArray" },
+        "omits": { "$ref": "#/$defs/modifierArray" },
+        "alterations": { "$ref": "#/$defs/modifierArray" },
+        "suspensions": { "$ref": "#/$defs/modifierArray" },
+        "substitutions": { "$ref": "#/$defs/modifierArray" },
+        "isRest": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    },
+    "note": {
+      "type": "object",
+      "required": ["sd", "octave", "beat", "duration", "isRest"],
+      "properties": {
+        "sd": { "type": ["string", "number"] },
+        "octave": { "type": "integer" },
+        "beat": { "type": "number" },
+        "duration": { "type": "number", "minimum": 0 },
+        "isRest": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    },
+    "roles": {
+      "type": "object",
+      "required": ["melody", "bass", "chord", "accompaniment", "drums"],
+      "properties": {
+        "melody": { "$ref": "#/$defs/probability" },
+        "bass": { "$ref": "#/$defs/probability" },
+        "chord": { "$ref": "#/$defs/probability" },
+        "accompaniment": { "$ref": "#/$defs/probability" },
+        "drums": { "$ref": "#/$defs/probability" }
+      },
+      "additionalProperties": false
+    },
+    "candidate": {
+      "type": "object",
+      "required": ["chord", "family", "pitchClasses", "bassPitchClass", "score", "probability", "selected", "diagnostics"],
+      "properties": {
+        "chord": { "$ref": "#/$defs/chord" },
+        "family": { "type": "string" },
+        "pitchClasses": { "type": "array", "items": { "type": "integer", "minimum": 0, "maximum": 11 }, "uniqueItems": true },
+        "bassPitchClass": { "type": ["integer", "null"], "minimum": 0, "maximum": 11 },
+        "score": { "type": "number" },
+        "probability": { "$ref": "#/$defs/probability" },
+        "selected": { "type": "boolean" },
+        "diagnostics": {
+          "type": "object",
+          "required": ["coverage", "presence", "bassAgreement", "rootStrength"],
+          "properties": {
+            "coverage": { "type": "number" },
+            "presence": { "type": "number" },
+            "bassAgreement": { "type": "number" },
+            "rootStrength": { "type": "number" },
+            "timingFit": { "type": ["number", "null"] }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": ["schemaVersion", "version", "analyzer", "source", "sections"],
+  "properties": {
+    "schemaVersion": { "const": "hooktheory.midi-analysis.v1" },
+    "version": { "const": 1 },
+    "analyzer": {
+      "type": "object",
+      "required": ["name", "version", "mode", "modelVersion", "catalogPriors"],
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "mode": { "const": "deterministic" },
+        "modelVersion": { "type": "null" },
+        "catalogPriors": {
+          "type": "object",
+          "required": ["schemaVersion", "algorithmVersion", "manifestId", "trainingSplit", "trainObjects", "trainOccurrences"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "object",
+      "required": ["sha256", "byteLength", "format", "trackCount", "eventCount", "ppq", "durationTicks", "durationBeats", "markers", "metadata", "warnings"],
+      "properties": {
+        "name": { "type": ["string", "null"] },
+        "filename": { "type": ["string", "null"] },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "byteLength": { "type": "integer", "minimum": 0, "maximum": 104857600 },
+        "format": { "enum": [0, 1] },
+        "trackCount": { "type": "integer", "minimum": 0 },
+        "eventCount": { "type": "integer", "minimum": 0, "maximum": 5000000 },
+        "ppq": { "type": "integer", "minimum": 1 },
+        "durationTicks": { "type": "integer", "minimum": 0 },
+        "durationBeats": { "type": "number", "minimum": 0 },
+        "markers": { "type": "array" },
+        "metadata": { "type": "object" },
+        "warnings": { "type": "array", "items": { "$ref": "#/$defs/warning" } }
+      },
+      "additionalProperties": false
+    },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "range", "hooktheory", "analysis"],
+        "properties": {
+          "name": { "type": "string" },
+          "range": {
+            "type": "object",
+            "required": ["startTick", "endTick", "startBeat", "endBeat"],
+            "properties": {
+              "startTick": { "type": "integer", "minimum": 0 },
+              "endTick": { "type": "integer", "minimum": 0 },
+              "startBeat": { "type": "number" },
+              "endBeat": { "type": "number" }
+            },
+            "additionalProperties": false
+          },
+          "hooktheory": {
+            "type": "object",
+            "required": ["sectionName", "chords", "notes", "metadata"],
+            "properties": {
+              "sectionName": { "type": "string" },
+              "songId": { "type": ["string", "number", "null"] },
+              "songInfo": { "type": ["string", "null"] },
+              "chords": { "type": "array", "items": { "$ref": "#/$defs/chord" } },
+              "notes": { "type": "array", "items": { "$ref": "#/$defs/note" } },
+              "metadata": {
+                "type": "object",
+                "required": ["keys", "tempos", "meters", "endBeat"],
+                "properties": {
+                  "keys": { "type": "array" },
+                  "tempos": { "type": "array" },
+                  "meters": { "type": "array" },
+                  "endBeat": { "type": "number" }
+                },
+                "additionalProperties": true
+              }
+            },
+            "additionalProperties": true
+          },
+          "analysis": {
+            "type": "object",
+            "required": ["analyzerVersion", "modelVersion", "globalConfidence", "confidenceCalibration", "quantization", "inferredMetadata", "keyAlternatives", "chordAlternatives", "sequenceAlternatives", "frames", "segmentation", "tracks", "melody", "noteRoles", "defaultsUsed", "warnings"],
+            "properties": {
+              "analyzerVersion": { "type": "string" },
+              "modelVersion": { "type": "null" },
+              "globalConfidence": { "$ref": "#/$defs/probability" },
+              "confidenceCalibration": {
+                "type": "object",
+                "required": ["status", "method", "benchmark"],
+                "properties": {
+                  "status": { "enum": ["uncalibrated", "calibrated"] },
+                  "method": { "type": "string" },
+                  "benchmark": { "type": ["object", "null"] }
+                }
+              },
+              "quantization": {
+                "type": "object",
+                "required": ["originalTicksPreserved", "melodyTimingQuantized", "harmonicGridBeats", "adaptiveBoundaries"]
+              },
+              "inferredMetadata": {
+                "type": "object",
+                "required": ["key", "tempo", "meter"]
+              },
+              "keyAlternatives": { "type": "array", "minItems": 1 },
+              "chordAlternatives": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["chordIndex", "beat", "duration", "key", "family", "confidence", "selected", "alternatives"],
+                  "properties": {
+                    "chordIndex": { "type": "integer", "minimum": 0 },
+                    "beat": { "type": "number" },
+                    "duration": { "type": "number", "minimum": 0 },
+                    "confidence": { "$ref": "#/$defs/probability" },
+                    "selected": { "$ref": "#/$defs/chord" },
+                    "alternatives": { "type": "array", "items": { "$ref": "#/$defs/candidate" } }
+                  },
+                  "additionalProperties": true
+                }
+              },
+              "sequenceAlternatives": { "type": "array" },
+              "frames": { "type": "array" },
+              "segmentation": { "type": "object" },
+              "tracks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["index", "noteCount", "roles"],
+                  "properties": { "roles": { "$ref": "#/$defs/roles" } },
+                  "additionalProperties": true
+                }
+              },
+              "melody": { "type": "object", "required": ["trackIndex", "noteCount", "confidence", "method", "trackAlternatives"] },
+              "noteRoles": {
+                "type": "object",
+                "required": ["total", "returned", "truncated", "items"],
+                "properties": {
+                  "total": { "type": "integer", "minimum": 0 },
+                  "returned": { "type": "integer", "minimum": 0, "maximum": 100000 },
+                  "truncated": { "type": "boolean" },
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["trackIndex", "noteIndex", "midi", "startTick", "endTick", "roles"],
+                      "properties": { "roles": { "$ref": "#/$defs/roles" } },
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              },
+              "defaultsUsed": { "type": "object" },
+              "warnings": { "type": "array", "items": { "$ref": "#/$defs/warning" } }
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

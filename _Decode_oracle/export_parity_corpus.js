@@ -34,6 +34,7 @@ async function exportCorpus() {
 
     // 5. Extensions (9, 11, 13)
     { id: "V9", json: { root: 5, type: 9 }, key: { tonic: "C", scale: "major" } },
+    { id: "V9sus4", json: { root: 5, type: 9, suspensions: [4] }, key: { tonic: "C", scale: "major" } },
     { id: "V11", json: { root: 5, type: 11 }, key: { tonic: "C", scale: "major" } },
     { id: "V13", json: { root: 5, type: 13 }, key: { tonic: "C", scale: "major" } },
 
@@ -71,8 +72,59 @@ async function exportCorpus() {
     { id: "iø6(b5)5", json: { root: 1, type: 7, inversion: 1, alterations: ["b5"] }, key: { tonic: "C", scale: "locrian" } },
     { id: "III+△7 (HM)", json: { root: 3, type: 7 }, key: { tonic: "C", scale: "harmonicMinor" } },
     { id: "v13 (Minor)", json: { root: 5, type: 13 }, key: { tonic: "C", scale: "minor" } },
-    { id: "iiø65 (Minor)", json: { root: 2, type: 7, inversion: 1 }, key: { tonic: "C", scale: "minor" } }
+    { id: "iiø65 (Minor)", json: { root: 2, type: 7, inversion: 1 }, key: { tonic: "C", scale: "minor" } },
+
+    // 12. Canonical contract coverage (custom scales, applied+borrowed, rests)
+    { id: "Custom minor i7", json: { root: 1, type: 7, borrowed: [0, 2, 3, 5, 7, 8, 10] }, key: { tonic: "C", scale: "major" } },
+    { id: "Custom minor ii dim7", json: { root: 2, type: 7, borrowed: [0, 2, 3, 5, 7, 8, 10] }, key: { tonic: "C", scale: "major" } },
+    { id: "Custom minor flat III maj7", json: { root: 3, type: 7, borrowed: [0, 2, 3, 5, 7, 8, 10] }, key: { tonic: "C", scale: "major" } },
+    { id: "Custom scale inversion add", json: { root: 6, type: 9, inversion: 2, adds: [6], borrowed: [0, 2, 3, 5, 7, 8, 10] }, key: { tonic: "C", scale: "major" } },
+    { id: "Applied borrowed minor", json: { root: 6, applied: 5, borrowed: "minor", type: 7 }, key: { tonic: "C", scale: "major" } },
+    { id: "Applied custom borrowed", json: { root: 5, applied: 5, borrowed: [0, 2, 3, 5, 7, 8, 10], type: 7, inversion: 1 }, key: { tonic: "C", scale: "major" } },
+    { id: "Explicit rest with root", json: { root: 1, type: 5, isRest: true, beat: 1, duration: 1 }, key: { tonic: "C", scale: "major" } },
   ];
+
+  for (const mode of ["major", "minor", "dorian", "phrygian", "lydian", "mixolydian", "locrian", "harmonicMinor", "phrygianDominant"]) {
+    testCases.push({
+      id: `Mode coverage ${mode}`,
+      json: { root: 2, type: 7, inversion: 1, borrowed: mode },
+      key: { tonic: "F#", scale: "major" },
+    });
+  }
+
+  // Exhaust every supported chord type/inversion boundary rather than relying
+  // on a few representative figured-bass examples above.
+  for (const type of [5, 7, 9, 11, 13]) {
+    for (const inversion of [0, 1, 2, 3]) {
+      testCases.push({
+        id: `Type ${type} inversion ${inversion}`,
+        json: { root: 4, type, inversion },
+        key: { tonic: "Db", scale: "mixolydian" },
+      });
+    }
+  }
+
+  // Applied-plus-borrowed sound/label policy is mode-dependent and therefore
+  // gets one parity row for every named mode plus several custom arrays.
+  const parityModes = ["major", "minor", "dorian", "phrygian", "lydian", "mixolydian", "locrian", "harmonicMinor", "phrygianDominant"];
+  for (const mode of parityModes) {
+    testCases.push({
+      id: `Applied borrowed coverage ${mode}`,
+      json: { root: 5, applied: 5, type: 7, inversion: 1, borrowed: mode },
+      key: { tonic: "Eb", scale: "major" },
+    });
+  }
+  for (const [name, borrowed] of [
+    ["major", [0, 2, 4, 5, 7, 9, 11]],
+    ["natural minor", [0, 2, 3, 5, 7, 8, 10]],
+    ["harmonic minor", [0, 2, 3, 5, 7, 8, 11]],
+  ]) {
+    testCases.push({
+      id: `Applied custom coverage ${name}`,
+      json: { root: 5, applied: 5, type: 7, inversion: 2, borrowed },
+      key: { tonic: "C", scale: "major" },
+    });
+  }
 
   const results = [];
   for (const tc of testCases) {
@@ -104,12 +156,18 @@ async function exportCorpus() {
     });
   }
 
-  const targetDir = path.join(__dirname, '..', 'android', 'app', 'src', 'test', 'resources');
+  const outputArgIndex = process.argv.indexOf('--output');
+  const explicitOutput = outputArgIndex >= 0 ? process.argv[outputArgIndex + 1] : null;
+  const targetDir = explicitOutput
+    ? path.dirname(path.resolve(explicitOutput))
+    : path.join(__dirname, '..', 'android', 'app', 'src', 'test', 'resources');
   if (!fs.existsSync(targetDir)) {
     fs.mkdirSync(targetDir, { recursive: true });
   }
-  const targetPath = path.join(targetDir, 'corpus_parity.json');
-  fs.writeFileSync(targetPath, JSON.stringify(results, null, 2), 'utf8');
+  const targetPath = explicitOutput
+    ? path.resolve(explicitOutput)
+    : path.join(targetDir, 'corpus_parity.json');
+  fs.writeFileSync(targetPath, `${JSON.stringify(results, null, 2)}\n`, 'utf8');
   console.log(`Successfully exported ${results.length} benchmark test cases to ${targetPath}`);
 }
 

@@ -1,10 +1,27 @@
 {
   "dependencies": {
+    "@tonejs/midi": "^2.0.28",
     "better-sqlite3": "^12.11.1",
+    "midi-file": "^1.2.4",
     "puppeteer": "^24.33.0",
     "xml2js": "^0.6.2"
   },
   "scripts": {
+    "benchmark:midi-analyze": "node tools/midi-analyze/benchmark.mjs",
+    "gate:midi-synthetic": "node tools/midi-analyze/synthetic-roundtrip.mjs --summary",
+    "corpus-manifest": "node tools/corpus/cli.js",
+    "decoder-audit": "node tools/decoder-audit/index.mjs",
+    "midi-analyze": "node tools/midi-analyze/index.mjs",
+    "midi-corpus": "node tools/midi-corpus/cli.js",
+    "midi-evaluate": "node tools/midi-evaluate/index.mjs",
+    "theory-to-midi": "node tools/theory-to-midi/cli.mjs",
+    "theory-to-midi-batch": "node tools/theory-to-midi/batch.mjs",
+    "test:midi": "node --test lib/midi/render/*.test.mjs lib/midi/evaluate/*.test.mjs tests/midi-analyze/*.test.mjs tests/midi-roundtrip/*.test.mjs tests/midi-synthetic-roundtrip/*.test.mjs tools/midi-analyze/*.test.mjs tools/corpus/test/*.test.js tools/midi-corpus/test/*.test.js tools/theory-to-midi/*.test.mjs web-player/lib/harmonicContract.test.mjs web-player/midiAnalysisApi.test.mjs _Decode_oracle/rawLane.test.mjs tools/decoder-audit/index.test.mjs",
+    "test:midi-analyze": "node --test tests/midi-analyze/*.test.mjs",
+    "test:midi-corpus": "node --test tools/corpus/test/*.test.js tools/midi-corpus/test/*.test.js",
+    "test:midi-contract": "node --test web-player/lib/harmonicContract.test.mjs _Decode_oracle/rawLane.test.mjs web-player/midiAnalysisApi.test.mjs tools/decoder-audit/index.test.mjs",
+    "test:midi-roundtrip": "node --test tests/midi-roundtrip/*.test.mjs",
+    "test:midi-render": "node --test lib/midi/render/*.test.mjs",
     "test:scale-degrees": "node web-player/scripts/runScaleDegreeVerifier.mjs",
     "test:scale-degrees:corpus": "node web-player/scripts/runScaleDegreeVerifier.mjs --corpus chord_db --tier quick --fail-under 88",
     "test:roman-symbols": "node _Research_testing/romanNumeralCanvasTest.mjs && node _Research_testing/stackDigitSizingVerify.mjs && node _Research_testing/halfDimSuperscriptVerify.mjs && node _Research_testing/romanSymbolCorpusTest.mjs",

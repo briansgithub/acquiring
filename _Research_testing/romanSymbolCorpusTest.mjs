@@ -40,9 +40,17 @@ const entries = loadEntries();
 let romanExact = 0;
 let romanCore = 0;
 const mismatches = [];
+const quarantined = [];
 
 for (const entry of entries) {
-  const engRoman = getChordSymbol(entry.chord, entry.key);
+  let engRoman;
+  try {
+    engRoman = getChordSymbol(entry.chord, entry.key);
+  } catch (error) {
+    if (error?.code !== 'INVALID_HOOKTHEORY_CHORD') throw error;
+    quarantined.push({ id: entry.id, issues: error.issues || [] });
+    continue;
+  }
   const exact = canonRoman(entry.truthRoman) === canonRoman(engRoman);
   const core = canonCore(entry.truthRoman) === canonCore(engRoman);
   if (exact) romanExact += 1;
@@ -59,17 +67,25 @@ for (const entry of entries) {
   }
 }
 
+const validTotal = entries.length - quarantined.length;
+
 const summary = {
-  total: entries.length,
+  corpusTotal: entries.length,
+  total: validTotal,
+  quarantinedCount: quarantined.length,
   romanExact,
-  romanExactPct: entries.length ? ((100 * romanExact) / entries.length).toFixed(1) : '0',
+  romanExactPct: validTotal ? ((100 * romanExact) / validTotal).toFixed(1) : '0',
   romanCore,
-  romanCorePct: entries.length ? ((100 * romanCore) / entries.length).toFixed(1) : '0',
+  romanCorePct: validTotal ? ((100 * romanCore) / validTotal).toFixed(1) : '0',
   mismatchCount: mismatches.length,
 };
 
 const reportPath = path.join(REPO, '_Research_testing', 'romanSymbolCorpusReport.json');
-fs.writeFileSync(reportPath, JSON.stringify({ summary, mismatches: mismatches.slice(0, 200) }, null, 2));
+fs.writeFileSync(reportPath, JSON.stringify({
+  summary,
+  mismatches: mismatches.slice(0, 200),
+  quarantined: quarantined.slice(0, 200),
+}, null, 2));
 
 console.log('Corpus roman symbol test');
 console.log(summary);

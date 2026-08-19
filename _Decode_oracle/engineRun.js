@@ -86,7 +86,8 @@ async function loadEngine() {
   if (engine) return engine;
   const sym = await import(libUrl('jsonToSymbol.js'));
   const music = await import(libUrl('music.js'));
-  engine = { sym, music };
+  const contract = await import(libUrl('harmonicContract.js'));
+  engine = { sym, music, contract };
   return engine;
 }
 
@@ -97,25 +98,32 @@ function quiet(fn) {
   try { return fn(); } finally { console.log = log; console.warn = warn; console.error = err; }
 }
 
-async function runChord(chord, key) {
-  const { sym, music } = await loadEngine();
+async function runChord(chord, key, options = {}) {
+  const lane = options.lane || 'self-enriched';
+  if (!['raw', 'self-enriched'].includes(lane)) {
+    throw new Error(`Unknown decoder lane: ${lane}`);
+  }
+  const { sym, music, contract } = await loadEngine();
   const { verifyScaleDegrees } = await import(libUrl('scaleDegreeVerifier.js'));
   const out = {
     roman: null, letter: null, notes: null, pcs: null, bassPc: null,
-    chordDegrees: null, degreesOk: null, degreesWarnings: null, error: null,
+    chordDegrees: null, degreesOk: null, degreesWarnings: null, error: null, lane,
   };
   try {
     quiet(() => {
-      let enriched = enrichChordFromSymbol(chord, '', '');
-      if (chord._truthLetter) {
+      const inputChord = lane === 'raw' ? contract.sanitizePublicHooktheoryChord(chord) : chord;
+      let decoderChord = inputChord;
+      if (lane === 'self-enriched' && chord._truthLetter) {
         out.letter = chord._truthLetter;
         out.roman = chord._truthRoman || '';
       } else {
-        out.roman = sym.getChordSymbol(chord, key);
-        out.letter = sym.getChordLetterName(chord, key);
-        enriched = enrichChordFromSymbol(chord, out.roman, out.letter);
+        out.roman = sym.getChordSymbol(inputChord, key);
+        out.letter = sym.getChordLetterName(inputChord, key);
+        if (lane === 'self-enriched') {
+          decoderChord = enrichChordFromSymbol(inputChord, out.roman, out.letter);
+        }
       }
-      const interp = music.chordInterpreter(enriched, key);
+      const interp = music.chordInterpreter(decoderChord, key);
       out.notes = interp.notes;
       out.chordDegrees = interp.chordDegrees;
       const bare = (interp.notes || []).map(bareNote);
@@ -137,30 +145,39 @@ async function runChord(chord, key) {
 }
 
 // Run the engine over one section; returns one entry per NON-REST chord, in order.
-async function runSection(section) {
+async function runSection(section, options = {}) {
   const json = section.json || {};
   const keys = (json.metadata && json.metadata.keys) || [];
   const chords = (json.chords || []).filter((c) => !c.isRest);
   const results = [];
   for (const chord of chords) {
     const key = activeKeyAtBeat(keys, chord.beat ?? 1);
-    const res = await runChord(chord, key);
+    const res = await runChord(chord, key, options);
     results.push({ beat: chord.beat, key, chord, ...res });
   }
   return results;
 }
 
-module.exports = { runSection, runChord, activeKeyAtBeat, noteNameToPc, loadEngine };
+module.exports = {
+  runSection,
+  runChord,
+  activeKeyAtBeat,
+  noteNameToPc,
+  loadEngine,
+};
 
 // CLI: node _Decode_oracle/engineRun.js <scrape.json>
 if (require.main === module) {
   const path = require('path');
-  const file = process.argv[2] || path.join(__dirname, 'out', 'maple', 'scrape.json');
+  const laneArg = process.argv.find((arg) => arg.startsWith('--lane='));
+  const lane = laneArg ? laneArg.slice('--lane='.length) : 'raw';
+  const fileArg = process.argv.slice(2).find((arg) => !arg.startsWith('--'));
+  const file = fileArg || path.join(__dirname, 'out', 'maple', 'scrape.json');
   const data = require(path.resolve(file));
   (async () => {
     for (const s of data.sections) {
       console.log(`\n== ${s.name} (${s.songId}) key=${JSON.stringify(activeKeyAtBeat((s.json.metadata||{}).keys, 1))} ==`);
-      const res = await runSection(s);
+      const res = await runSection(s, { lane });
       for (const r of res) {
         console.log(`  beat ${String(r.beat).padStart(3)}  roman=${String(r.roman).padEnd(12)} letter=${String(r.letter).padEnd(12)} notes=${JSON.stringify(r.notes)} pcs=[${r.pcs}]${r.error ? '  ERR:' + r.error : ''}`);
       }
