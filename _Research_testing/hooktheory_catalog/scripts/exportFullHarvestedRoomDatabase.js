@@ -39,6 +39,10 @@ if (!hasMetricsTable) {
     throw new Error(`song_metrics is missing from complexity source: ${catalogDbPath}`);
 }
 
+const catalogRows = catalogDb.prepare('SELECT slug, artist, title, url, status FROM songs').all();
+const urlKey = (value) => String(value || '').trim().replace(/\/+$/, '');
+const catalogSlugByUrl = new Map(catalogRows.map(row => [urlKey(row.url), row.slug]));
+
 if (fs.existsSync(outputDbPath)) fs.unlinkSync(outputDbPath);
 if (fs.existsSync(outputGzPath)) fs.unlinkSync(outputGzPath);
 
@@ -145,7 +149,14 @@ for (let i = 0; i < folders.length; i++) {
         if (!meta.url) continue;
 
         const cleanUrl = meta.url.trim().replace(/\/+$/, '');
-        const slug = cleanUrl.substringAfter ? cleanUrl.substringAfter("theorytab/view/").replace("/", "__") : cleanUrl.split('theorytab/view/')[1].replace(/\//g, '__');
+        const urlDerivedSlug = cleanUrl.substringAfter
+            ? cleanUrl.substringAfter("theorytab/view/").replace("/", "__")
+            : cleanUrl.split('theorytab/view/')[1].replace(/\//g, '__');
+        // The source slug is the catalog identity. URL paths deliberately keep
+        // punctuation that slugify removes, so deriving identity from a repaired
+        // URL would create a second Android-only song (for example `(hellsing-
+        // opening)` versus `hellsing-opening`). Match the unique source URL first.
+        const slug = catalogSlugByUrl.get(urlKey(cleanUrl)) || urlDerivedSlug;
 
         const files = fs.readdirSync(folderPath).filter(f => f !== '_metadata.json' && f.endsWith('.json'));
         if (files.length === 0) continue;
@@ -233,8 +244,6 @@ if (missingModes.length > 0) {
 
 // 2. Also populate remaining catalog index songs from hooktheory_catalog.db (if any missing)
 console.log('Merging catalog index from:', catalogDbPath);
-const catalogRows = catalogDb.prepare('SELECT slug, artist, title, url, status FROM songs').all();
-
 const insertMissingStmt = outDb.prepare(`
     INSERT OR IGNORE INTO songs (slug, artist, title, url, status, dataBlob)
     VALUES (?, ?, ?, ?, ?, NULL)
@@ -247,6 +256,17 @@ const insertMissingBatch = outDb.transaction((rows) => {
 });
 
 insertMissingBatch(catalogRows);
+
+const identityMismatches = outDb.prepare(`
+    SELECT slug, url FROM songs WHERE dataBlob IS NOT NULL
+`).all().filter(row => {
+    const sourceSlug = catalogSlugByUrl.get(urlKey(row.url));
+    return sourceSlug && sourceSlug !== row.slug;
+});
+if (identityMismatches.length > 0) {
+    throw new Error(`Generated catalog changed source identity for ${identityMismatches.length} harvested song(s): `
+        + JSON.stringify(identityMismatches.slice(0, 5)));
+}
 
 const integrityResult = outDb.pragma('quick_check', { simple: true });
 if (integrityResult !== 'ok') {
