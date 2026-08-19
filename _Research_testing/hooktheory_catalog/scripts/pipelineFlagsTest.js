@@ -5,6 +5,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const isolation = require('./testIsolation').isolateCatalogTest('pipeline-flags');
 const { openDb, upsertSong, setHarvestMode } = require('../lib/db');
 const { computeFlags } = require('../lib/pipelineFlags');
 const { harvestDirForSlug, harvestFileForSlug } = require('../lib/harvestArtifact');
@@ -67,7 +68,12 @@ function main() {
 
   fs.rmSync(dir, { recursive: true, force: true });
   db.prepare('DELETE FROM songs WHERE slug = ?').run(SLUG);
+  db.close();
   console.log('pipelineFlagsTest: all passed');
 }
 
-main();
+try {
+  main();
+} finally {
+  isolation.cleanup();
+}

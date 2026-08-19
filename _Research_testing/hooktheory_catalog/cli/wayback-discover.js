@@ -16,7 +16,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { openDb, upsertSong } = require('../lib/db');
+const { openDb, reconcileSong } = require('../lib/db');
 const { pullAllCdx, buildCandidates } = require('../lib/waybackDiscover');
 const { parseTheoryTabUrl } = require('../lib/catalogUtils');
 const { runLightCatalog } = require('../lib/lightCatalog');
@@ -43,10 +43,8 @@ function parseArgs(argv) {
   return a;
 }
 
-function loadKnownSlugs(db) {
-  // Every slug, not just playable ones: a known-dead slug is a question we
-  // already answered, and re-asking costs a request for a guaranteed 404.
-  return new Set(db.prepare('SELECT slug FROM songs').all().map((r) => r.slug));
+function loadKnownSongs(db) {
+  return new Map(db.prepare('SELECT * FROM songs').all().map((r) => [r.slug, r]));
 }
 
 function loadCachedUrls() {
@@ -80,8 +78,8 @@ async function main() {
   }
 
   const db = openDb();
-  const knownSlugs = loadKnownSlugs(db);
-  const { candidates, stats } = buildCandidates(rawUrls, knownSlugs);
+  const knownSongs = loadKnownSongs(db);
+  const { candidates, stats } = buildCandidates(rawUrls, knownSongs);
 
   console.log('\n=== Candidate analysis (local only, 0 requests) ===');
   for (const [k, v] of Object.entries(stats)) console.log(`  ${k.padEnd(16)} ${v}`);
@@ -93,16 +91,19 @@ async function main() {
   if (args.ingest && candidates.length) {
     const slice = args.limit > 0 ? candidates.slice(0, args.limit) : candidates;
     console.log(`\n=== Ingesting ${slice.length} candidates into songs (status=pending) ===`);
-    let inserted = 0;
+    const actions = { inserted: 0, updated: 0, revived: 0, unchanged: 0, conflict: 0 };
     const tx = db.transaction((rows) => {
       for (const c of rows) {
         const parsed = parseTheoryTabUrl(c.url);
         if (!parsed) continue;
-        if (upsertSong(db, { ...parsed, discovery_source: 'wayback' })) inserted += 1;
+        const result = reconcileSong(db, {
+          ...parsed, discovery_source: 'wayback', url_source: 'observed',
+        });
+        actions[result.action] = (actions[result.action] || 0) + 1;
       }
     });
     tx(slice);
-    console.log(`  ${inserted} new rows added (existing rows untouched)`);
+    console.log(`  reconciled: ${JSON.stringify(actions)}`);
   }
 
   db.close();

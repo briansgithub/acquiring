@@ -88,41 +88,162 @@ function nowIso() {
   return new Date().toISOString();
 }
 
-function upsertSong(db, entry) {
-  const ts = nowIso();
-  const existing = db.prepare('SELECT slug, first_seen_at FROM songs WHERE slug = ?').get(entry.slug);
+const LIVE_OBSERVED_SOURCES = new Set(['artist-page', 'recent', 'add-by-url']);
+const ARCHIVE_OBSERVED_SOURCES = new Set(['wayback']);
+const SYNTHESIZED_SOURCES = new Set(['meilisearch', 'alt-lookup']);
+
+function inferUrlSource(entry) {
+  if (entry.url_source === 'observed' || entry.url_source === 'synthesized') {
+    return entry.url_source;
+  }
+  const source = String(entry.discovery_source || '');
+  if (LIVE_OBSERVED_SOURCES.has(source) || ARCHIVE_OBSERVED_SOURCES.has(source)
+      || source.startsWith('search:')) return 'observed';
+  if (SYNTHESIZED_SOURCES.has(source)) return 'synthesized';
+  return null;
+}
+
+function urlEvidenceRank(urlSource, discoverySource) {
+  if (urlSource !== 'observed') return 1;
+  const source = String(discoverySource || '');
+  if (LIVE_OBSERVED_SOURCES.has(source) || source.startsWith('search:')) return 3;
+  return 2;
+}
+
+/**
+ * Reconcile one discovery result with the catalog without allowing an URL
+ * collision to abort the surrounding discovery run.
+ *
+ * A direct 404 remains authoritative when rediscovery merely repeats the same
+ * URL. A different, credible URL for the same canonical slug means the old
+ * verdict answered the wrong address, so unresolved rows are re-queued.
+ */
+function reconcileSong(db, entry, { apply = true } = {}) {
+  if (!entry?.slug || !entry?.url) {
+    return { action: 'conflict', slug: entry?.slug || null, reason: 'missing-slug-or-url' };
+  }
+
+  const existing = db.prepare('SELECT * FROM songs WHERE slug = ?').get(entry.slug);
+  const candidateUrlSource = inferUrlSource(entry);
+  const candidateSource = entry.discovery_source || null;
+  const candidateRank = urlEvidenceRank(candidateUrlSource, candidateSource);
+
+  if (!existing) {
+    const owner = db.prepare('SELECT slug FROM songs WHERE url = ?').get(entry.url);
+    if (owner && owner.slug !== entry.slug) {
+      return {
+        action: 'conflict', slug: entry.slug, url: entry.url,
+        ownerSlug: owner.slug, reason: 'url-owned-by-another-slug',
+      };
+    }
+    if (!apply) return { action: 'inserted', slug: entry.slug, url: entry.url };
+
+    const ts = nowIso();
+    db.prepare(`
+      INSERT INTO songs (slug, artist_slug, title_slug, artist, title, url, difficulty_label,
+        first_seen_at, last_checked_at, status, discovery_source, url_source)
+      VALUES (@slug, @artist_slug, @title_slug, @artist, @title, @url, @difficulty_label,
+        @first_seen_at, @last_checked_at, @status, @discovery_source, @url_source)
+    `).run({
+      slug: entry.slug,
+      artist_slug: entry.artist_slug || null,
+      title_slug: entry.title_slug || null,
+      artist: entry.artist || null,
+      title: entry.title || null,
+      url: entry.url,
+      difficulty_label: entry.difficulty_label || null,
+      first_seen_at: entry.first_seen_at || ts,
+      last_checked_at: entry.last_checked_at || null,
+      status: entry.status || 'pending',
+      discovery_source: candidateSource,
+      url_source: candidateUrlSource,
+    });
+    return { action: 'inserted', slug: entry.slug, url: entry.url };
+  }
+
+  const urlChanged = existing.url !== entry.url;
+  if (!urlChanged) {
+    if (apply) {
+      db.prepare(`
+        UPDATE songs SET
+          artist_slug = COALESCE(?, artist_slug),
+          title_slug = COALESCE(?, title_slug),
+          artist = COALESCE(?, artist),
+          title = COALESCE(?, title),
+          difficulty_label = COALESCE(?, difficulty_label),
+          discovery_source = COALESCE(discovery_source, ?),
+          url_source = COALESCE(url_source, ?)
+        WHERE slug = ?
+      `).run(
+        entry.artist_slug || null, entry.title_slug || null,
+        entry.artist || null, entry.title || null,
+        entry.difficulty_label || null, candidateSource, candidateUrlSource, entry.slug,
+      );
+    }
+    return { action: 'unchanged', slug: entry.slug, url: existing.url };
+  }
+
+  const existingRank = urlEvidenceRank(existing.url_source, existing.discovery_source);
+  if (existing.status === 'enriched'
+      || candidateRank < existingRank
+      || (candidateRank === existingRank && candidateUrlSource === 'observed')) {
+    return {
+      action: candidateRank === existingRank && candidateUrlSource === 'observed'
+        ? 'conflict' : 'unchanged',
+      slug: entry.slug,
+      url: existing.url,
+      candidateUrl: entry.url,
+      reason: existing.status === 'enriched'
+        ? 'enriched-url-preserved'
+        : candidateRank < existingRank
+          ? 'weaker-url-evidence'
+          : 'ambiguous-observed-urls',
+    };
+  }
+
+  const owner = db.prepare('SELECT slug FROM songs WHERE url = ?').get(entry.url);
+  if (owner && owner.slug !== entry.slug) {
+    return {
+      action: 'conflict', slug: entry.slug, url: entry.url,
+      previousUrl: existing.url, ownerSlug: owner.slug,
+      reason: 'url-owned-by-another-slug',
+    };
+  }
+
+  const revived = existing.status === 'dead' || existing.status === 'error'
+    || existing.harvest_mode === 'blocked';
+  const action = revived ? 'revived' : 'updated';
+  if (!apply) {
+    return { action, slug: entry.slug, previousUrl: existing.url, url: entry.url };
+  }
+
   db.prepare(`
-    INSERT INTO songs (slug, artist_slug, title_slug, artist, title, url, difficulty_label,
-      first_seen_at, last_checked_at, status, discovery_source)
-    VALUES (@slug, @artist_slug, @title_slug, @artist, @title, @url, @difficulty_label,
-      @first_seen_at, @last_checked_at, @status, @discovery_source)
-    ON CONFLICT(slug) DO UPDATE SET
-      artist = excluded.artist,
-      title = excluded.title,
-      -- Never trade a URL that worked for one we guessed. Discovery re-runs
-      -- re-synthesize URLs from display text every pass; letting that
-      -- overwrite the address an enriched row was actually harvested from
-      -- would re-break songs whose real path holds punctuation.
-      url = CASE
-        WHEN songs.status = 'enriched' OR songs.url_source = 'observed' THEN songs.url
-        ELSE excluded.url
-      END,
-      last_checked_at = excluded.last_checked_at,
-      discovery_source = COALESCE(excluded.discovery_source, songs.discovery_source)
-  `).run({
-    slug: entry.slug,
-    artist_slug: entry.artist_slug || null,
-    title_slug: entry.title_slug || null,
-    artist: entry.artist || null,
-    title: entry.title || null,
-    url: entry.url,
-    difficulty_label: entry.difficulty_label || null,
-    first_seen_at: existing?.first_seen_at || ts,
-    last_checked_at: ts,
-    status: entry.status || existing?.status || 'pending',
-    discovery_source: entry.discovery_source || null,
-  });
-  return !existing;
+    UPDATE songs SET
+      artist_slug = COALESCE(?, artist_slug),
+      title_slug = COALESCE(?, title_slug),
+      artist = COALESCE(?, artist),
+      title = COALESCE(?, title),
+      url = ?, difficulty_label = COALESCE(?, difficulty_label),
+      status = CASE WHEN ? THEN 'pending' ELSE status END,
+      error_message = CASE WHEN ? THEN NULL ELSE error_message END,
+      last_checked_at = CASE WHEN ? THEN NULL ELSE last_checked_at END,
+      harvest_mode = CASE WHEN ? THEN NULL ELSE harvest_mode END,
+      discovery_source = COALESCE(?, discovery_source),
+      url_source = COALESCE(?, url_source)
+    WHERE slug = ?
+  `).run(
+    entry.artist_slug || null, entry.title_slug || null,
+    entry.artist || null, entry.title || null,
+    entry.url, entry.difficulty_label || null,
+    revived ? 1 : 0, urlChanged ? 1 : 0, urlChanged ? 1 : 0, revived ? 1 : 0,
+    candidateSource, candidateUrlSource, entry.slug,
+  );
+  return { action, slug: entry.slug, previousUrl: existing.url, url: entry.url };
+}
+
+/** Backward-compatible insert predicate for older callers. */
+function upsertSong(db, entry) {
+  return reconcileSong(db, entry).action === 'inserted';
 }
 
 function upsertMeiliSectionStub(db, slug, sectionName, songId) {
@@ -384,6 +505,7 @@ function toggleFavorite(db, slug, isFavorite) {
 module.exports = {
   DB_PATH,
   openDb,
+  reconcileSong,
   upsertSong,
   upsertMeiliSectionStub,
   setHarvestMode,

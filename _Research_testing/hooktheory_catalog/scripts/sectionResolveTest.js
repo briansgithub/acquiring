@@ -2,6 +2,7 @@
  * Unit tests for section ID validation and light-harvest queue (no network).
  */
 
+const isolation = require('./testIsolation').isolateCatalogTest('section-resolve');
 const { openDb, upsertSong, upsertMeiliSectionStub, setHarvestMode } = require('../lib/db');
 const { isPublicSongId, stubsAreValid } = require('../lib/sectionResolve');
 const {
@@ -45,6 +46,7 @@ function testQueueBlocked() {
   assert(!listSongsNeedingLightHarvest(db, 100, { force: false }).some((r) => r.slug === slug), 'light excluded');
 
   db.prepare('DELETE FROM songs WHERE slug = ?').run(slug);
+  db.close();
 }
 
 function testMeiliStubsInvalid() {
@@ -59,4 +61,8 @@ function main() {
   console.log('sectionResolveTest: PASS');
 }
 
-main();
+try {
+  main();
+} finally {
+  isolation.cleanup();
+}

@@ -77,11 +77,12 @@ already done, so a second run immediately after a first does almost nothing:
 | Already known | Skipped because |
 |---|---|
 | Songs we hold playable | `listSongsNeedingLightHarvest` filters `harvest_mode NOT IN ('light','blocked','full')` |
-| Links confirmed dead (404) | Same filter excludes `status='dead'`; candidate diffing compares against *every* known slug, dead included |
+| Links confirmed dead (404) | The harvest queue excludes `status='dead'`; discovery only revives one when a different, stronger URL is found for the same canonical slug |
 | Archive index still fresh | `wayback-refresh` re-pulls only past `--cdx-max-age-days` (default 30), and costs hooktheory.com nothing regardless |
 
-Dead links are **never** re-checked — once a URL 404s it stays skipped
-permanently. (Measured: 0 of 5,098 dead songs recovered when re-tested.)
+Dead URLs are not blindly re-checked. The same URL remains skipped, while a
+different unambiguous URL from live discovery or the archive clears the stale
+404 and returns the row to `pending`.
 
 **Channels it runs**, in order:
 
@@ -239,14 +240,11 @@ next run skipped it — observed live stranding ~9.4k unswept artists after a
 single stop. `sweepArtists` now returns an `interrupted` flag with the true
 index, and `phase()` records status `interrupted` so the phase is re-entered.
 
-**Dead rows are genuinely deleted, not renamed.** The obvious hypothesis — that
-the 404 cluster on video-game artists is Hooktheory re-filing songs under
-composer slugs — is wrong. `alt-lookup` checked 1,177 dead rows and found
-candidates for 262, but 160 pointed at songs we already hold playable and 205
-pointed at rows already marked dead; a live probe of those candidate URLs
-returned 404 on 6 of 6. Meilisearch's index simply lists songs that no longer
-exist. Net new playable songs from the whole avenue: **0**. Do not re-attempt it
-without a new signal — the 6,304 dead rows are dead.
+**A dead status is a verdict on one URL, not necessarily on the song.** Repeating
+that URL or merely seeing the slug again in Meilisearch is not a new signal.
+An observed or newly synthesized *different* path is: reconciliation journals
+the replacement, clears the old error, and queues one fresh harvest. Ambiguous
+paths are reported rather than guessed.
 
 For scale when budgeting a run: the full artist sweep is 12,144 artists at
 ~2.4s each, and yielded 74 songs.

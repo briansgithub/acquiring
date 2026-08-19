@@ -9,6 +9,11 @@
 const fs = require('fs');
 const path = require('path');
 const http = require('http');
+require('./testIsolation').isolateCatalogTest('pipeline-closed-loop', {
+  cloneCatalog: true,
+  playbackDirs: ['the-beatles - Hey_Jude', 'oasis - Wonderwall'],
+  harvestDirs: ['the-beatles__hey-jude', 'oasis__wonderwall'],
+});
 const { openDb, upsertSong } = require('../lib/db');
 const { parseTheoryTabUrl } = require('../lib/catalogUtils');
 const {
@@ -98,7 +103,9 @@ function findCatalogOnlySlug(db) {
 
 function findPendingSlug(db) {
   const row = db.prepare(`
-    SELECT slug FROM songs WHERE status = 'pending' LIMIT 1
+    SELECT slug FROM songs
+    WHERE status = 'pending' AND cache_dir IS NOT NULL AND cache_dir != ''
+    LIMIT 1
   `).get();
   return row?.slug || null;
 }
@@ -441,6 +448,7 @@ async function main() {
   fs.writeFileSync(REPORT_PATH, JSON.stringify(report, null, 2));
   console.log(`\n=== SUMMARY: ${passed} passed, ${failed} failed ===`);
   console.log(`Report: ${REPORT_PATH}`);
+  db.close();
   process.exit(failed > 0 ? 1 : 0);
 }
 

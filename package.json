@@ -15,6 +15,7 @@
     "test:android-catalog-browse": "node _Research_testing/hooktheory_catalog/scripts/androidCatalogBrowseTest.cjs",
     "test:catalog-sync-safety": "node _Research_testing/hooktheory_catalog/scripts/syncSafetyTest.js",
     "test:catalog-url-preservation": "node _Research_testing/hooktheory_catalog/scripts/urlPreservationTest.js",
+    "test:catalog-reconciliation": "node _Research_testing/hooktheory_catalog/scripts/reconciliationTest.js",
     "player:start": "node _Debug_testing/playerServerCtl.mjs start",
     "player:stop": "node _Debug_testing/playerServerCtl.mjs stop",
     "player:status": "node _Debug_testing/playerServerCtl.mjs status",
