@@ -11,6 +11,7 @@ const { orderUniqueSections } = require("../lib/sectionOrder");
 const { loadLibrary: loadCachedLibrary } = require("./playbackLibraryCache");
 const { handleCorpusStats } = require("./corpusStatsApi");
 const { handleMidiAnalyze } = require("./midiAnalysisApi");
+const { handleLocalLibrary, matchLocalLibraryRoute } = require("./localLibraryApi");
 
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || "127.0.0.1";
@@ -206,6 +207,8 @@ const server = http.createServer((req, res) => {
     if (req.method !== "POST") return sendJson(res, { error: { code: "METHOD_NOT_ALLOWED", message: "POST required" } }, 405);
     return handleMidiAnalyze(req, reqUrl, res);
   }
+  const localLibraryRoute = matchLocalLibraryRoute(reqUrl.pathname, req.method);
+  if (localLibraryRoute) return handleLocalLibrary(req, reqUrl, res, localLibraryRoute);
   if (reqUrl.pathname === "/api/library") return handleLibraryList(req, res);
   if (reqUrl.pathname === "/api/library/song") return handleLibrarySong(reqUrl, res);
   if (reqUrl.pathname === "/api/library/load" && req.method === "POST") return handleLibraryLoad(reqUrl, res);

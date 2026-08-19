@@ -10,6 +10,29 @@ export const CONTROL_DEFAULTS = {
   arpUnlockFromTempo: true,
 };
 
+export function sectionOptionLabel(section, index) {
+  return String(section?.sectionName || section?.name || `Section ${index + 1}`);
+}
+
+export function replaceSectionOptions(select, sections) {
+  if (!select) return;
+  const doc = select.ownerDocument || document;
+  if (!Array.isArray(sections) || !sections.length) {
+    const option = doc.createElement("option");
+    option.value = "";
+    option.textContent = "No sections";
+    select.replaceChildren(option);
+    return;
+  }
+  const options = sections.map((section, index) => {
+    const option = doc.createElement("option");
+    option.value = String(index);
+    option.textContent = sectionOptionLabel(section, index);
+    return option;
+  });
+  select.replaceChildren(...options);
+}
+
 export function renderControls({ topContainer, tempoContainer, footerContainer, playbackContainer }, {
   onPlayPause,
   onRestart,
@@ -155,14 +178,7 @@ export function renderControls({ topContainer, tempoContainer, footerContainer, 
       tempoLabel.textContent = `${tempoSlider.value}%`;
     },
     setSections(sections) {
-      if (!sectionSelect) return;
-      if (!Array.isArray(sections) || !sections.length) {
-        sectionSelect.innerHTML = '<option value="">No sections</option>';
-        return;
-      }
-      sectionSelect.innerHTML = sections
-        .map((s, idx) => `<option value="${idx}">${s.sectionName || `Section ${idx + 1}`}</option>`)
-        .join("");
+      replaceSectionOptions(sectionSelect, sections);
     },
     updateProgress() {},
     resetPlayState() {

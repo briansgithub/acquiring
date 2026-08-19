@@ -11,6 +11,9 @@ Bulky runtime data lives **outside** the git-tracked codebase in a single portab
     .hooktheory_cache/   section JSON + _metadata.json per song
   harvest/
     <slug>/          scrape.json, report.json, oracle outputs per song
+  local-library/
+    library.db       immutable local MIDI/theory library index
+    objects/         content-addressed source, analysis, and playable snapshots
   README.txt         flash-drive copy notes (generated in real bundle)
 ```
 
