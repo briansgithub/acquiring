@@ -12,18 +12,21 @@ import {
   priorManifest,
   stableJson,
 } from "./priors.mjs";
+import { generateGoldenFixtures } from "./goldens.mjs";
 
 function parseArgs(argv) {
   const options = {
     input: path.resolve("lib/midi/analyze/catalog-priors.json"),
     outputDir: path.resolve("midi_data/android"),
     verify: false,
+    fixturesDir: null,
   };
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
     if (token === "--input") options.input = path.resolve(argv[++index]);
     else if (token === "--output-dir") options.outputDir = path.resolve(argv[++index]);
     else if (token === "--verify") options.verify = true;
+    else if (token === "--fixtures-dir") options.fixturesDir = path.resolve(argv[++index]);
     else if (token === "--help" || token === "-h") options.help = true;
     else throw new TypeError(`Unknown option: ${token}`);
   }
@@ -38,6 +41,7 @@ function usage() {
     "  --input <catalog-priors.json>",
     "  --output-dir <directory>",
     "  --verify  Decode and compare every prior row before writing",
+    "  --fixtures-dir <directory>  Write deterministic MIDI/analysis golden pairs",
   ].join("\n");
 }
 
@@ -81,6 +85,7 @@ async function main(argv = process.argv.slice(2)) {
     return;
   }
   const result = await generateAndroidMidiAssets(options);
+  if (options.fixturesDir) await generateGoldenFixtures(options.fixturesDir);
   process.stdout.write(`${JSON.stringify(result.manifest, null, 2)}\n`);
 }
 

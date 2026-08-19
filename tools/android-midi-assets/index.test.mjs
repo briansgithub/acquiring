@@ -5,6 +5,7 @@ import path from "node:path";
 import test from "node:test";
 
 import { generateAndroidMidiAssets } from "./index.mjs";
+import { generateGoldenFixtures } from "./goldens.mjs";
 import {
   MAX_PACKAGED_PRIOR_BYTES,
   canonicalizePriors,
@@ -76,4 +77,28 @@ test("CLI generator writes verified binary and manifest atomically", async (t) =
   assert.equal(result.manifest.size, result.binary.length);
   assert.equal(result.manifest.counts.objects, 2);
   assert.match(result.manifest.sha256, /^[0-9a-f]{64}$/);
+});
+
+test("golden MIDI and analyzer fixtures regenerate byte-identically", async (t) => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "android-midi-goldens-"));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const first = path.join(root, "first");
+  const second = path.join(root, "second");
+  const firstManifest = await generateGoldenFixtures(first);
+  const secondManifest = await generateGoldenFixtures(second);
+  assert.deepEqual(firstManifest, secondManifest);
+  for (const entry of firstManifest.cases) {
+    assert.deepEqual(
+      await fs.readFile(path.join(first, entry.source.file)),
+      await fs.readFile(path.join(second, entry.source.file)),
+    );
+    assert.deepEqual(
+      await fs.readFile(path.join(first, entry.result.file)),
+      await fs.readFile(path.join(second, entry.result.file)),
+    );
+  }
+  const typeTwo = JSON.parse(await fs.readFile(path.join(first, "type2.mid.analysis.json"), "utf8"));
+  const smpte = JSON.parse(await fs.readFile(path.join(first, "smpte.mid.analysis.json"), "utf8"));
+  assert.equal(typeTwo.error.code, "UNSUPPORTED_MIDI_FORMAT");
+  assert.equal(smpte.error.code, "UNSUPPORTED_MIDI_TIMING");
 });
