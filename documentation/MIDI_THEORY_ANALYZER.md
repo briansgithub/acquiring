@@ -8,6 +8,27 @@ determine spelling, function, chord modifiers, or section boundaries.
 The parent Node repository owns the canonical implementation. Android remains a
 fixture-tested consumer/port; there is no third on-device analyzer in v1.
 
+## Quick start
+
+On Windows, double-click [`shortcuts/0 - MIDI Tools Menu.cmd`](../shortcuts/0%20-%20MIDI%20Tools%20Menu.cmd),
+or drag a `.mid`/`.midi` file onto [`shortcuts/1 - Analyze MIDI.cmd`](../shortcuts/1%20-%20Analyze%20MIDI.cmd).
+Drag a Hooktheory section `.json` file onto
+[`shortcuts/2 - Theory JSON to MIDI.cmd`](../shortcuts/2%20-%20Theory%20JSON%20to%20MIDI.cmd).
+The setup checker is [`shortcuts/4 - Check Setup.cmd`](../shortcuts/4%20-%20Check%20Setup.cmd).
+
+The same friendly entry point works on Windows, macOS, and Linux from a terminal:
+
+```powershell
+npm run midi
+npm run midi -- analyze "C:/Music/My Song.mid"
+npm run midi -- render "C:/Music/section.json"
+npm run midi:doctor
+```
+
+Analysis and rendering default to a new file beside the input. Existing files
+are not silently replaced; an unused numbered name is selected automatically.
+Use `npm run midi -- help` for all guided and advanced commands.
+
 ## Architecture
 
 The forward and inverse paths meet at the typed harmonic contract in
