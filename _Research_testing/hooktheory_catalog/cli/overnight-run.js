@@ -19,7 +19,7 @@ const zlib = require('zlib');
 const { execFileSync } = require('child_process');
 const Database = require('better-sqlite3');
 
-const { openDb, upsertSong } = require('../lib/db');
+const { openDb, reconcileSong, upsertSong } = require('../lib/db');
 const { dataPath } = require('../lib/paths');
 const { RunState, sleep } = require('../lib/runGuard');
 const { verifyAll } = require('../lib/verifyPlayable');
@@ -240,22 +240,26 @@ function phaseWaybackIngest(args) {
   const rawUrls = fs.readFileSync(WAYBACK_CACHE, 'utf8').split('\n').filter(Boolean);
   const db = openDb();
   try {
-    const knownSlugs = new Set(db.prepare('SELECT slug FROM songs').all().map((r) => r.slug));
-    const { candidates, stats } = buildCandidates(rawUrls, knownSlugs);
+    const knownSongs = new Map(db.prepare('SELECT * FROM songs').all().map((r) => [r.slug, r]));
+    const { candidates, stats } = buildCandidates(rawUrls, knownSongs);
     log(`  candidates=${candidates.length} (${JSON.stringify(stats)})`);
     if (args.dryRun) return { dryRun: true, candidates: candidates.length };
 
     const slice = args.limit > 0 ? candidates.slice(0, args.limit) : candidates;
-    let inserted = 0;
+    const actions = { inserted: 0, updated: 0, revived: 0, unchanged: 0, conflict: 0 };
     const tx = db.transaction((rows) => {
       for (const c of rows) {
         const parsed = parseTheoryTabUrl(c.url);
-        if (parsed && upsertSong(db, { ...parsed, discovery_source: 'wayback' })) inserted += 1;
+        if (!parsed) continue;
+        const result = reconcileSong(db, {
+          ...parsed, discovery_source: 'wayback', url_source: 'observed',
+        });
+        actions[result.action] = (actions[result.action] || 0) + 1;
       }
     });
     tx(slice);
-    log(`  ingested ${inserted} new rows`);
-    return { candidates: candidates.length, inserted };
+    log(`  reconciled ${slice.length} archived candidates: ${JSON.stringify(actions)}`);
+    return { candidates: candidates.length, inserted: actions.inserted, actions };
   } finally {
     db.close();
   }
@@ -511,8 +515,16 @@ async function phaseMeiliRefresh(args) {
     }, db);
     const after = db.prepare('SELECT COUNT(*) c FROM songs').get().c;
     const added = after - before.size;
-    log(`  meili index=${result.uniqueSongs} newRows=${added}`);
-    return { indexTotal: result.uniqueSongs, added };
+    log(`  meili index=${result.uniqueSongs} newRows=${added} actions=${JSON.stringify(result.actions)} conflicts=${result.conflicts.length} errors=${result.errors.length}`);
+    return {
+      indexTotal: result.uniqueSongs,
+      added,
+      finalOffset: result.finalOffset,
+      complete: result.complete,
+      actions: result.actions,
+      conflicts: result.conflicts,
+      recordErrors: result.errors,
+    };
   } finally {
     db.close();
   }

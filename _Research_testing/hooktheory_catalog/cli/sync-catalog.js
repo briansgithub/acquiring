@@ -6,9 +6,9 @@
  *
  *   - Songs we already hold playable are skipped before any request
  *     (lightHarvest's queue filters `harvest_mode NOT IN light/blocked/full`).
- *   - Links already confirmed dead are skipped permanently
- *     (same filter excludes `status='dead'`; candidate diffing compares against
- *     every known slug, dead ones included).
+ *   - A dead row is only re-queued when discovery supplies a different,
+ *     stronger URL for the same canonical slug. Repeating the URL that already
+ *     returned 404 remains a no-op.
  *   - The Internet Archive index is only re-pulled once it goes stale, and
  *     costs hooktheory.com nothing when it is.
  *
@@ -66,7 +66,13 @@ if (require.main === module) {
     process.exit(0);
   }
 
-  main()
+  const run = process.argv.includes('--audit-unresolved')
+    ? require('./reconcile-catalog').main(process.argv.slice(2))
+    : process.argv.includes('--reconcile-unresolved')
+      ? require('./reconcile-catalog').main(process.argv.slice(2))
+      : main();
+
+  run
     .then(() => { releaseLock(LOCK_FILE); })
     .catch((err) => {
       releaseLock(LOCK_FILE);

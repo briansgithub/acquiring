@@ -239,13 +239,13 @@ function parseArchivedUrl(rawUrl) {
 }
 
 /**
- * Reduce raw archived URLs to genuinely-new candidates.
+ * Reduce raw archived URLs to new or safely-repairable candidates.
  *
- * knownSlugs must contain EVERY slug in our songs table (not just playable
- * ones) — a slug we already hold as dead is a song we already answered, and
- * re-fetching it would spend requests re-confirming a known 404.
+ * A Set preserves the legacy "new rows only" behavior. A Map of slug -> song
+ * row also permits an unresolved row to be reconciled when the archive holds
+ * exactly one different observed path for the same canonical identity.
  */
-function buildCandidates(rawUrls, knownSlugs) {
+function buildCandidates(rawUrls, knownSongs) {
   const stats = {
     rawUrls: rawUrls.length,
     unparseable: 0,
@@ -257,9 +257,11 @@ function buildCandidates(rawUrls, knownSlugs) {
     junkFiltered: 0,
     alreadyKnown: 0,
     swapDuplicate: 0,
+    ambiguousObserved: 0,
+    recoverable: 0,
     candidates: 0,
   };
-  const seen = new Set();
+  const parsedBySlug = new Map();
   const candidates = [];
 
   for (const rawUrl of rawUrls) {
@@ -271,20 +273,38 @@ function buildCandidates(rawUrls, knownSlugs) {
     if (parsed.rejected === 'scratch-upload') { stats.scratchUpload += 1; continue; }
     if (parsed.rejected === 'empty-segment') { stats.emptySegment += 1; continue; }
 
-    const { slug, url, artistSlug, titleSlug } = parsed;
-    if (seen.has(slug)) continue;
-    seen.add(slug);
+    const { slug, url } = parsed;
+    if (isJunkUrl(url)) { stats.junkFiltered += 1; continue; }
+    if (!parsedBySlug.has(slug)) parsedBySlug.set(slug, new Map());
+    parsedBySlug.get(slug).set(url, parsed);
+  }
 
-    if (knownSlugs.has(slug)) { stats.alreadyKnown += 1; continue; }
+  const hasKnown = (slug) => knownSongs?.has?.(slug) || false;
+  const knownRow = (slug) => knownSongs instanceof Map ? knownSongs.get(slug) : null;
+  for (const [slug, paths] of parsedBySlug) {
+    if (paths.size > 1) { stats.ambiguousObserved += 1; continue; }
+    const parsed = [...paths.values()][0];
+    const { url, artistSlug, titleSlug } = parsed;
+    const existing = knownRow(slug);
+
+    if (hasKnown(slug)) {
+      const unresolved = existing && (
+        existing.status === 'dead' || existing.status === 'error'
+        || existing.status === 'pending' || existing.harvest_mode === 'blocked'
+      );
+      if (!unresolved || existing.url === url) { stats.alreadyKnown += 1; continue; }
+      stats.recoverable += 1;
+    }
 
     // Some archived URLs have artist/title reversed relative to the canonical
     // page. Measured at ~1.7% of not-in-DB slugs. Fetching these would 404 and
     // pollute the catalog with a bogus row for a song we already have.
-    if (knownSlugs.has(`${titleSlug}__${artistSlug}`)) { stats.swapDuplicate += 1; continue; }
+    if (!hasKnown(slug) && hasKnown(`${titleSlug}__${artistSlug}`)) {
+      stats.swapDuplicate += 1;
+      continue;
+    }
 
-    if (isJunkUrl(url)) { stats.junkFiltered += 1; continue; }
-
-    candidates.push({ slug, url, artistSlug, titleSlug });
+    candidates.push({ slug, url, artistSlug, titleSlug, recovery: Boolean(existing) });
   }
 
   stats.candidates = candidates.length;

@@ -5,7 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 const puppeteer = require('puppeteer');
-const { openDb, upsertSong, upsertMeiliSectionStub } = require('./db');
+const { openDb, reconcileSong, upsertSong, upsertMeiliSectionStub } = require('./db');
 const { paginateAll } = require('./meiliClient');
 const {
   BASE,
@@ -35,7 +35,8 @@ function entryFromUrl(url, source) {
   if (isJunkUrl(url)) return null;
   const parsed = parseTheoryTabUrl(url);
   if (!parsed) return null;
-  return { ...parsed, discovery_source: source };
+  const synthesized = source === 'meilisearch' || source === 'alt-lookup';
+  return { ...parsed, discovery_source: source, url_source: synthesized ? 'synthesized' : 'observed' };
 }
 
 function entryFromArtistSong(artist, song, source) {
@@ -111,13 +112,22 @@ async function discoverFromSearchQueries(queries) {
  * @param {number} startOffset resume pagination offset
  * @param {function} [onPage] callback({ page, offset, batch, uniqueCount })
  */
-async function discoverFromMeili(maxPages = 0, startOffset = 0, onPage = null, db = null) {
+async function discoverFromMeili(
+  maxPages = 0,
+  startOffset = 0,
+  onPage = null,
+  db = null,
+  { pageIterator = paginateAll } = {},
+) {
   const found = [];
   const seenSongs = new Set();
   let lastOffset = startOffset;
   let totalEstimate = null;
+  const actions = { inserted: 0, updated: 0, revived: 0, unchanged: 0, conflict: 0 };
+  const conflicts = [];
+  const errors = [];
 
-  for await (const { hits, offset, page } of paginateAll({
+  for await (const { hits, offset, page } of pageIterator({
     pageSize: 200,
     query: '',
     startOffset,
@@ -130,7 +140,13 @@ async function discoverFromMeili(maxPages = 0, startOffset = 0, onPage = null, d
       if (!entry) continue;
 
       if (db) {
-        upsertSong(db, entry);
+        try {
+          const result = reconcileSong(db, entry);
+          actions[result.action] = (actions[result.action] || 0) + 1;
+          if (result.action === 'conflict') conflicts.push(result);
+        } catch (err) {
+          errors.push({ slug: entry.slug, url: entry.url, error: String(err.message || err) });
+        }
         // Meili hit.id is an index row id, NOT the public API song id — sections
         // are resolved from the TheoryTab page at light-harvest time (sectionResolve.js).
       }
@@ -152,7 +168,15 @@ async function discoverFromMeili(maxPages = 0, startOffset = 0, onPage = null, d
     console.log(`[discover] meili page=${page} offset=${lastOffset} batch=${hits.length} unique=${seenSongs.size}`);
   }
 
-  return { entries: found, finalOffset: lastOffset, complete: true, uniqueSongs: seenSongs.size };
+  return {
+    entries: found,
+    finalOffset: lastOffset,
+    complete: true,
+    uniqueSongs: seenSongs.size,
+    actions,
+    conflicts,
+    errors,
+  };
 }
 
 function loadLegacyDiscovered() {

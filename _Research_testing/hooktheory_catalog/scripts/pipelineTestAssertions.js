@@ -111,6 +111,9 @@ function seedHarvestFromCache(db, slug) {
   const outDir = harvestDirForSlug(slug);
   fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(harvestFileForSlug(slug), JSON.stringify(scrape, null, 2));
+  // This helper reconstructs the full-browser artifact shape, not the light
+  // API harvest shape, so make the fixture's database flag agree with it.
+  db.prepare("UPDATE songs SET harvest_mode = 'full' WHERE slug = ?").run(slug);
   return scrape;
 }
 

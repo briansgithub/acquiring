@@ -5,6 +5,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const isolation = require('./testIsolation').isolateCatalogTest('light-queue');
 const { openDb, upsertSong, upsertMeiliSectionStub, setHarvestMode } = require('../lib/db');
 const {
   countSongsNeedingLightHarvest,
@@ -64,11 +65,12 @@ async function main() {
   try { fs.unlinkSync(harvestFileForSlug(TEST_SLUG)); } catch (_) {}
   db.prepare('DELETE FROM song_sections WHERE slug = ?').run(TEST_SLUG);
   db.prepare('DELETE FROM songs WHERE slug = ?').run(TEST_SLUG);
+  db.close();
 
   console.log('lightCatalogQueueTest: PASS');
 }
 
-main().catch((e) => {
+main().finally(isolation.cleanup).catch((e) => {
   console.error(e);
   process.exit(1);
 });
