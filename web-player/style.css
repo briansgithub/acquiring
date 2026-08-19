@@ -1706,6 +1706,161 @@ body {
   background: rgba(148, 163, 184, 0.55);
 }
 
+#sel-local-files {
+  flex: 0 0 auto;
+  min-width: 0;
+  margin-top: 10px;
+}
+
+.local-files-shelf {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 9px;
+  border: 1px solid rgba(34, 211, 238, 0.28);
+  border-radius: 8px;
+  background: rgba(8, 17, 33, 0.88);
+}
+
+.local-files-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.local-files-title {
+  margin: 0;
+  color: #dbeafe;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.local-files-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.local-files-open-button {
+  min-width: 0;
+  padding: 7px 6px;
+  border: 1px solid rgba(34, 211, 238, 0.45);
+  border-radius: 6px;
+  background: rgba(34, 211, 238, 0.1);
+  color: #cffafe;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.local-files-open-button:hover:not(:disabled),
+.local-files-open-button:focus-visible {
+  border-color: var(--accent);
+  background: rgba(34, 211, 238, 0.18);
+}
+
+.local-files-open-button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.local-files-status,
+.local-files-empty {
+  min-height: 14px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.local-files-status:empty {
+  display: none;
+}
+
+.local-files-status[data-kind="success"] {
+  color: #86efac;
+}
+
+.local-files-status[data-kind="error"] {
+  color: #fca5a5;
+}
+
+.local-files-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-height: 132px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.local-file-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 6px;
+  border: 1px solid rgba(71, 85, 105, 0.55);
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.72);
+}
+
+.local-file-main {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.local-file-main:hover .local-file-name,
+.local-file-main:focus-visible .local-file-name {
+  color: var(--accent);
+}
+
+.local-file-name {
+  overflow: hidden;
+  color: #e2e8f0;
+  font-size: 11px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.local-file-meta {
+  overflow: hidden;
+  color: #64748b;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.local-file-downloads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 9px;
+}
+
+.local-file-download {
+  color: #93c5fd;
+  font-size: 9px;
+  text-decoration: none;
+}
+
+.local-file-download:hover,
+.local-file-download:focus-visible {
+  color: #dbeafe;
+  text-decoration: underline;
+}
+
 .sel-song-nav {
   display: flex;
   flex-direction: column;

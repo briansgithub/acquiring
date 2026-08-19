@@ -40,3 +40,21 @@ export function formatArpCyclesLabel(sliderIndex) {
 export function isArpeggiationActive(checked) {
   return checked;
 }
+
+/** Keep an explicit section boundary while extending it for later events. */
+export function sectionLengthBeats(metadataEndBeat, ...eventGroups) {
+  const suppliedEnd = Number(metadataEndBeat);
+  let endBeat = Number.isFinite(suppliedEnd) && suppliedEnd > 0 ? suppliedEnd : 1;
+
+  for (const events of eventGroups) {
+    if (!Array.isArray(events)) continue;
+    for (const event of events) {
+      const rawBeat = Number(event?.beat);
+      const duration = Number(event?.duration);
+      if (!Number.isFinite(rawBeat) || !Number.isFinite(duration) || duration < 0) continue;
+      const beat = rawBeat === 0 ? 1 : rawBeat;
+      endBeat = Math.max(endBeat, beat + duration);
+    }
+  }
+  return endBeat;
+}

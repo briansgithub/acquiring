@@ -137,6 +137,27 @@ MIDI content type. Uploads are streamed into an ephemeral bounded file, analyzed
 from that path, and removed in a `finally` block; the endpoint does not retain
 the uploaded MIDI after the request.
 
+## Web player Local Files
+
+Start the local player with `npm run midi -- serve`, then use the always-visible
+**Local Files** shelf in the Song Selector:
+
+- **Open MIDI** analyzes an SMF type 0/1 file, saves byte-identical source and
+  complete analysis artifacts, downloads `<name>.analysis.json`, and opens the
+  best-path theory in the ordinary player without autoplaying.
+- **Open Theory JSON** accepts project-compatible Hooktheory sections, analyzer
+  results, arrays/maps of sections, Android section maps, and `jsonData`
+  wrappers. Every section remains available in the existing section selector.
+- Saved entries survive refresh and retain source/theory download actions. They
+  use `local:<uuid>` identities and never enter catalog search or pipeline jobs.
+
+The local-only API is rooted at `/api/v1/local-library`. Persistent files live
+under `<SACRED_RING_DATA>/local-library/`, separately from catalog and harvest
+data. Its SQLite index references immutable, content-addressed source, analysis,
+and normalized playable snapshots. Imports are atomic, deduplicate exact source
+content, enforce the 100 MiB/five-million-event analyzer limits, and use the
+same storage preflight that preserves at least 20 GiB of free space.
+
 ## Corpus integrity and leakage controls
 
 `corpus-manifest` creates an immutable, checksummed manifest without copying the

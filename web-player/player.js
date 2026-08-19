@@ -21,6 +21,7 @@ import {
   arpStepMs,
   ARP_HIGHLIGHT_MAX_CYCLES,
   isArpeggiationActive as arpActive,
+  sectionLengthBeats,
   sliderIndexToCyclesPerBeat,
   TICKS_PER_BEAT,
 } from "./lib/timing.js";
@@ -493,8 +494,8 @@ const songSelector = renderSongSelector(selectorPane, {
         const err = await res.json().catch(() => ({}));
         throw new Error(err.error || `HTTP ${res.status}`);
       }
-      const entry = await res.json();
-      let idx = library.findIndex((s) => s.artist === cacheKey);
+      const entry = { ...await res.json(), key: cacheKey };
+      let idx = library.findIndex((s) => songIdentity(s) === cacheKey);
       if (idx < 0) {
         library.push(entry);
         idx = library.length - 1;
@@ -502,11 +503,26 @@ const songSelector = renderSongSelector(selectorPane, {
         library[idx] = entry;
       }
       loadedCacheKey = cacheKey;
-      handleSongChange(String(idx));
+      await handleSongChange(String(idx));
     } catch (err) {
       console.error("Selector load failed:", err);
       loadingSplash.hide();
     }
+  },
+  onOpenLocalSong: async (song) => {
+    const key = songIdentity(song);
+    if (!key?.startsWith("local:")) {
+      throw new Error("Local song is missing a stable identity.");
+    }
+    let idx = library.findIndex((entry) => songIdentity(entry) === key);
+    if (idx < 0) {
+      library.push(song);
+      idx = library.length - 1;
+    } else {
+      library[idx] = song;
+    }
+    loadedCacheKey = key;
+    await handleSongChange(String(idx));
   },
 });
 
@@ -584,6 +600,11 @@ let sectionLoopInProgress = false;
 let loadedCacheKey = null;
 let quizMode = null;
 
+function songIdentity(song) {
+  const identity = song?.key || song?.id || song?.artist;
+  return identity ? String(identity) : null;
+}
+
 function buildQuizSongContext() {
   if (!currentRawChords?.length || !currentKey) return null;
   const entries = buildSongEntries(currentRawChords, currentSectionKeys, currentKey, interpretChord);
@@ -597,14 +618,14 @@ function buildQuizSongContext() {
 
 function getLoadedSongTitle() {
   const song = library[resolveSongIndex(currentSongIdx)];
-  if (!song || !currentRawChords?.length) return null;
+  if (!song || (!currentRawChords?.length && !currentRawNotes?.length)) return null;
   const artist = song.artist ? `${song.artist} — ` : "";
   return `${artist}${song.title || "Unknown"}`;
 }
 
 function getLoadedSectionName() {
   const song = library[resolveSongIndex(currentSongIdx)];
-  if (!song || !currentRawChords?.length) return null;
+  if (!song || (!currentRawChords?.length && !currentRawNotes?.length)) return null;
   const section = song.sections?.[currentSectionIdx];
   return section?.sectionName || section?.name
     || (song.sections?.length > 1 ? `Section ${currentSectionIdx + 1}` : null);
@@ -692,7 +713,7 @@ function resetIdleState() {
 
 function resolveSongIndex(preferredIndex = currentSongIdx) {
   if (!loadedCacheKey || !library.length) return preferredIndex;
-  const idx = library.findIndex((s) => s.artist === loadedCacheKey);
+  const idx = library.findIndex((song) => songIdentity(song) === loadedCacheKey);
   return idx >= 0 ? idx : preferredIndex;
 }
 
@@ -849,6 +870,25 @@ function setAppMode(mode, { stopQuiz = true } = {}) {
 modePlayerBtn?.addEventListener("click", () => setAppMode("player"));
 modeQuizBtn?.addEventListener("click", () => setAppMode("quiz"));
 
+async function readSectionData(section) {
+  if (Object.prototype.hasOwnProperty.call(section || {}, "inlineData")) {
+    const inlineData = section.inlineData;
+    if (!inlineData || typeof inlineData !== "object" || Array.isArray(inlineData)) {
+      throw new Error("Inline section theory data is invalid.");
+    }
+    return inlineData;
+  }
+  if (!section?.relPath) {
+    throw new Error("Section has neither inline theory data nor a cache path.");
+  }
+  const response = await fetch(`/api/song?file=${encodeURIComponent(section.relPath)}`);
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`HTTP ${response.status} ${text}`);
+  }
+  return response.json();
+}
+
 async function loadSection(songIndex, sectionIndex) {
   if (isLoading) return;
   isLoading = true;
@@ -882,17 +922,11 @@ async function loadSection(songIndex, sectionIndex) {
       return;
     }
 
-    const data = await fetch(`/api/song?file=${encodeURIComponent(section.relPath)}`).then(async (r) => {
-      if (!r.ok) {
-        const text = await r.text();
-        throw new Error(`HTTP ${r.status} ${text}`);
-      }
-      return r.json();
-    });
+    const data = await readSectionData(section);
     currentSong = migrateLegacySectionData(data);
     currentSongIdx = songIndex;
     currentSectionIdx = sectionIndex;
-    loadedCacheKey = song.artist;
+    loadedCacheKey = songIdentity(song);
 
     currentSectionKeys = Array.isArray(data.metadata?.keys)
       ? [...data.metadata.keys].sort((a, b) => (a?.beat ?? 1) - (b?.beat ?? 1))
@@ -903,7 +937,7 @@ async function loadSection(songIndex, sectionIndex) {
     originalBpm = bpm;
     currentBpm = bpm;
     currentSecondsPerBeat = 60 / bpm;
-    songLength = getSongLength(data.metadata) || 1;
+    const metadataEndBeat = getSongLength(data.metadata);
 
     const notesArray = Array.isArray(data.notes)
       ? data.notes
@@ -918,17 +952,8 @@ async function loadSection(songIndex, sectionIndex) {
     const melodyEvents = createMelodyEvents(notesArray, key, currentSectionKeys);
     const chordEvents = createChordEvents(currentRawChords, key, currentSectionKeys);
 
-    // Calculate actual section length in BEATS from raw data
-    // (metadata length is often just an estimate or in bars)
-    const allEventEnds = [
-      ...notesArray.map((n) => (n.beat === 0 ? 1 : n.beat) + n.duration),
-      ...currentRawChords.map((c) => (c.beat === 0 ? 1 : c.beat) + c.duration),
-    ];
-    if (allEventEnds.length > 0) {
-      const actualSectionLength = Math.max(...allEventEnds);
-      songLength = actualSectionLength;
-    }
-    // If no events, keep songLength from metadata (ensure it's treated as beats)
+    // Preserve explicit trailing silence while extending stale metadata for later events.
+    songLength = sectionLengthBeats(metadataEndBeat, notesArray, currentRawChords);
 
     // Store events for potential restart
     currentMelodyEvents = melodyEvents;
@@ -977,7 +1002,10 @@ async function loadSection(songIndex, sectionIndex) {
     chordRing.setSongData(currentRawChords, currentKey);
     chordRing.update(null, null, null);
     timeline.setSongData(currentRawChords, currentKey, songLength, data.metadata);
-    timeline.setSongInfo(song.title, song.artist, song.url || data.metadata?.url);
+    const timelineUrl = songIdentity(song)?.startsWith("local:")
+      ? null
+      : song.url || data.metadata?.url;
+    timeline.setSongInfo(song.title, song.artist, timelineUrl);
     timeline.forceRelayout();
     requestAnimationFrame(() => timeline.forceRelayout());
     noteIndicator.reset();
@@ -1031,6 +1059,7 @@ async function loadSection(songIndex, sectionIndex) {
     ringPane?.classList.remove("disabled");
   } catch (err) {
     console.error("Error during playback setup in loadSection:", err);
+    throw err;
   } finally {
     isLoading = false;
     loadingSplash.hide();
@@ -1347,7 +1376,7 @@ function handleSeek(ratio, time) {
   isManualChordPreview = false;
 }
 
-function handleSongChange(songIdx) {
+async function handleSongChange(songIdx) {
   if (quizClozeActive) {
     stopClozeQuiz({ restartPlayback: false });
   }
@@ -1360,10 +1389,12 @@ function handleSongChange(songIdx) {
       loadingSplash.hide();
       return;
     }
+    loadedCacheKey = songIdentity(song);
     controls.setSections(song.sections);
-    loadSection(idx, 0).catch(err => console.error("LoadSection failed inside song change:", err));
+    await loadSection(idx, 0);
   } catch (e) {
     console.error("HandleSongChange failed:", e);
+    throw e;
   }
 }
 

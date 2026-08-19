@@ -13,6 +13,7 @@ import {
   createLazyPlayableCaches,
   wirePlayablePicker,
 } from "./songSelectorPlayable.js";
+import { renderLocalFilesShelf } from "./localFilesShelf.js";
 
 const MIN_CHARS = 3;
 const MAX_SUGGESTIONS = 10;
@@ -84,6 +85,7 @@ export function renderSongSelector(container, options = {}) {
       </div>
     </div>
     <div id="sel-body" class="selector-body"></div>
+    <div id="sel-local-files"></div>
     <div id="sel-url-footer" class="sel-url-footer">
       <label class="sel-label" for="sel-url-input">Add song by URL</label>
       <div class="sel-url-example">https://www.hooktheory.com/theorytab/view/artist/song</div>
@@ -97,6 +99,7 @@ export function renderSongSelector(container, options = {}) {
   `;
 
   const body = container.querySelector("#sel-body");
+  const localFilesContainer = container.querySelector("#sel-local-files");
   const songNav = container.querySelector("#sel-song-nav");
   const backBtn = container.querySelector("#sel-back");
   const songNavBrowse = container.querySelector("#sel-song-nav-browse");
@@ -110,6 +113,10 @@ export function renderSongSelector(container, options = {}) {
   const urlInput = container.querySelector("#sel-url-input");
   const urlAddBtn = container.querySelector("#sel-url-add");
   const urlStatus = container.querySelector("#sel-url-status");
+
+  const localFilesShelf = renderLocalFilesShelf(localFilesContainer, {
+    onOpenSong: (song, item) => options.onOpenLocalSong?.(song, item),
+  });
 
   function setUrlFooterVisible(visible) {
     if (urlFooter) urlFooter.hidden = !visible;
@@ -656,6 +663,9 @@ export function renderSongSelector(container, options = {}) {
     showSearch,
     showArtist,
     showSongDetail,
-    reload: () => loadIndex().then(() => showSearch()),
+    reload: () => Promise.all([
+      loadIndex().then(() => showSearch()),
+      localFilesShelf.refresh({ silent: true }),
+    ]),
   };
 }

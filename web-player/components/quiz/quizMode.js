@@ -30,11 +30,48 @@ const IDLE_HTML = `
   </div>`;
 
 /** Map section object name to a display label showing type (Chorus, Verse, etc.) */
-function sectionDisplayName(section, index) {
+export function sectionDisplayName(section, index) {
   const raw = section?.sectionName ?? section?.name;
   if (!raw) return `Section ${index + 1}`;
   // Already descriptive enough
-  return raw;
+  return String(raw);
+}
+
+export function renderQuizSectionPicker(sectionBarEl, sections, index, onSectionChange) {
+  sectionBarEl.replaceChildren();
+  if (!Array.isArray(sections) || !sections.length) return null;
+
+  const doc = sectionBarEl.ownerDocument || document;
+  const label = doc.createElement("label");
+  label.className = "quiz-section-label";
+  label.htmlFor = "quiz-section-select";
+  label.textContent = "Section";
+
+  const select = doc.createElement("select");
+  select.id = "quiz-section-select";
+  select.className = "select quiz-select quiz-section-select";
+  select.title = "Switch section for this song";
+  sections.forEach((section, sectionIndex) => {
+    const option = doc.createElement("option");
+    option.value = String(sectionIndex);
+    option.textContent = sectionDisplayName(section, sectionIndex);
+    option.selected = sectionIndex === index;
+    select.append(option);
+  });
+  select.value = String(index);
+  select.addEventListener("change", () => {
+    const next = Number(select.value);
+    if (Number.isInteger(next) && next >= 0 && next < sections.length) {
+      onSectionChange?.(next);
+    }
+  });
+
+  const hint = doc.createElement("span");
+  hint.className = "quiz-section-hint";
+  hint.title = "Expand the Songs strip on the left (») to change songs";
+  hint.textContent = "Songs: left panel »";
+  sectionBarEl.append(label, select, hint);
+  return select;
 }
 
 export function renderQuizMode(container, ctx) {
@@ -145,25 +182,8 @@ export function renderQuizMode(container, ctx) {
   function updateSectionBar() {
     const sections = ctx.getSections?.() ?? [];
     const idx = ctx.getSectionIndex?.() ?? 0;
-    if (!sections.length) {
-      sectionBarEl.innerHTML = "";
-      return;
-    }
-    const options = sections
-      .map(
-        (s, i) =>
-          `<option value="${i}"${i === idx ? " selected" : ""}>${sectionDisplayName(s, i)}</option>`,
-      )
-      .join("");
-    sectionBarEl.innerHTML = `
-      <label class="quiz-section-label" for="quiz-section-select">Section</label>
-      <select id="quiz-section-select" class="select quiz-select quiz-section-select" title="Switch section for this song">${options}</select>
-      <span class="quiz-section-hint" title="Expand the Songs strip on the left (») to change songs">Songs: left panel »</span>
-    `;
-    const sel = sectionBarEl.querySelector("#quiz-section-select");
-    sel?.addEventListener("change", () => {
-      const next = Number(sel.value);
-      if (Number.isFinite(next)) ctx.setSectionIndex?.(next);
+    renderQuizSectionPicker(sectionBarEl, sections, idx, (next) => {
+      ctx.setSectionIndex?.(next);
     });
   }
 
