@@ -10,8 +10,10 @@ const { getPlaybackCacheDir } = require("../lib/dataRoot");
 const { orderUniqueSections } = require("../lib/sectionOrder");
 const { loadLibrary: loadCachedLibrary } = require("./playbackLibraryCache");
 const { handleCorpusStats } = require("./corpusStatsApi");
+const { handleMidiAnalyze } = require("./midiAnalysisApi");
 
 const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || "127.0.0.1";
 const CACHE_ROOT = getPlaybackCacheDir();
 const STATIC_ROOT = __dirname;
 
@@ -200,6 +202,10 @@ const server = http.createServer((req, res) => {
   if (reqUrl.pathname === "/api/catalog/songs") return handleCatalogSongs(res);
   if (reqUrl.pathname === "/api/catalog/song") return handleCatalogSongDetail(reqUrl, res);
   if (reqUrl.pathname === "/api/quiz/corpus-stats") return handleCorpusStats(req, res);
+  if (reqUrl.pathname === "/api/v1/midi/analyze") {
+    if (req.method !== "POST") return sendJson(res, { error: { code: "METHOD_NOT_ALLOWED", message: "POST required" } }, 405);
+    return handleMidiAnalyze(req, reqUrl, res);
+  }
   if (reqUrl.pathname === "/api/library") return handleLibraryList(req, res);
   if (reqUrl.pathname === "/api/library/song") return handleLibrarySong(reqUrl, res);
   if (reqUrl.pathname === "/api/library/load" && req.method === "POST") return handleLibraryLoad(reqUrl, res);
@@ -242,8 +248,8 @@ function scheduleShutdown(reason = "signal") {
 process.on("SIGINT", () => scheduleShutdown("SIGINT"));
 process.on("SIGTERM", () => scheduleShutdown("SIGTERM"));
 
-server.listen(PORT, () => {
-  console.log(`Player server running at http://localhost:${PORT}`);
+server.listen(PORT, HOST, () => {
+  console.log(`Player server running at http://${HOST}:${PORT}`);
   console.log(`PID ${process.pid}`);
 });
 

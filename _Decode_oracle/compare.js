@@ -197,17 +197,25 @@ function alignPairs(truth, eng) {
   return pairs;
 }
 
-async function compareSection(section) {
+async function compareSection(section, options = {}) {
+  const lane = options.lane || 'truth-enriched';
+  if (!['raw', 'truth-enriched'].includes(lane)) {
+    throw new Error(`Unknown compare lane: ${lane}`);
+  }
   const truth = sectionTruth(section);
-  const baselineEng = await runSection(section);
+  const baselineEng = await runSection(section, { lane: 'raw' });
   const countMatch = truth.length === baselineEng.length;
   const pairs = countMatch ? truth.map((t, i) => [t, baselineEng[i]]) : alignPairs(truth, baselineEng);
   const rendered = section.rendered || [];
   const eng = [];
   for (let i = 0; i < pairs.length; i++) {
     const [t, e] = pairs[i];
+    if (lane === 'raw') {
+      eng.push(e);
+      continue;
+    }
     const enriched = enrichChordFromTruth(e.chord, t.roman, t.letter.letter);
-    const res = await runChord(enriched, e.key);
+    const res = await runChord(enriched, e.key, { lane: 'raw' });
     eng.push({ beat: e.beat, key: e.key, chord: e.chord, ...res });
   }
   const rows = pairs.map(([t, e], i) => {
@@ -221,14 +229,15 @@ async function compareSection(section) {
     countMatch,
     truthCount: truth.length,
     engCount: eng.length,
+    lane,
     rows,
   };
 }
 
-async function compareSong(scrape) {
+async function compareSong(scrape, options = {}) {
   const sections = [];
-  for (const s of scrape.sections) sections.push(await compareSection(s));
-  return { url: scrape.url, title: scrape.title, sections };
+  for (const s of scrape.sections) sections.push(await compareSection(s, options));
+  return { url: scrape.url, title: scrape.title, lane: options.lane || 'truth-enriched', sections };
 }
 
 module.exports = { compareSong, compareSection, compareChord, alignPairs, leadingJsonSkipCount };
@@ -236,10 +245,13 @@ module.exports = { compareSong, compareSection, compareChord, alignPairs, leadin
 // CLI: node _Decode_oracle/compare.js <scrape.json>
 if (require.main === module) {
   const path = require('path');
-  const file = process.argv[2] || path.join(__dirname, 'out', '500miles', 'scrape.json');
+  const laneArg = process.argv.find((arg) => arg.startsWith('--lane='));
+  const lane = laneArg ? laneArg.slice('--lane='.length) : 'truth-enriched';
+  const fileArg = process.argv.slice(2).find((arg) => !arg.startsWith('--'));
+  const file = fileArg || path.join(__dirname, 'out', '500miles', 'scrape.json');
   const scrape = require(path.resolve(file));
   (async () => {
-    const res = await compareSong(scrape);
+    const res = await compareSong(scrape, { lane });
     let total = 0, okRoman = 0, okPcs = 0, okOrder = 0, okPiano = 0, okBass = 0, okNotes = 0, okAll = 0;
     for (const s of res.sections) {
       console.log(`\n== ${s.name} (${s.songId})  count ${s.truthCount}/${s.engCount} ${s.countMatch ? '' : '!! COUNT MISMATCH'} ==`);

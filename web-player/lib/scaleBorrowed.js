@@ -13,6 +13,18 @@ import {
   PHRYGIAN_DOMINANT_SCALE_CHORD_QUALITIES,
 } from "./scales.js";
 
+export const SUPPORTED_BORROWED_MODES = new Set([
+  "major",
+  "minor",
+  "dorian",
+  "phrygian",
+  "lydian",
+  "mixolydian",
+  "locrian",
+  "harmonicMinor",
+  "phrygianDominant",
+]);
+
 function getChordQualityFromCustomScale(borrowedArray, degree) {
   const intervals = getCustomScaleIntervals(borrowedArray);
   const rootIdx = (degree - 1) % 7;
@@ -82,21 +94,10 @@ export function resolveBorrowedScale(key, borrowed) {
   if (borrowed === null || borrowed === "") {
     scale = key.scale;
   } else if (typeof borrowed === "string") {
-    const modeMap = {
-      major: "major",
-      minor: "minor",
-      dorian: "dorian",
-      phrygian: "phrygian",
-      lydian: "lydian",
-      mixolydian: "mixolydian",
-      locrian: "locrian",
-      harmonicMinor: "harmonicMinor",
-      phrygianDominant: "phrygianDominant",
-    };
-    if (!(borrowed in modeMap)) {
+    if (!SUPPORTED_BORROWED_MODES.has(borrowed)) {
       throw new Error(`Unsupported borrowed type: ${borrowed}`);
     }
-    scale = modeMap[borrowed];
+    scale = borrowed;
   } else if (Array.isArray(borrowed)) {
     customScaleIntervals = getCustomScaleIntervals(borrowed);
     scaleChordQualities = generateChordQualitiesFromCustomScale(borrowed);
