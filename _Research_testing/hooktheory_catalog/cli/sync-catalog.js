@@ -20,6 +20,7 @@
  *   node cli/sync-catalog.js --with-artist-sweep   # add the slow, low-yield channel
  *   node cli/sync-catalog.js --cdx-max-age-days 7  # re-pull the archive sooner
  *   node cli/sync-catalog.js --resume         # continue an interrupted sync
+ *   node cli/sync-catalog.js --apply-report <audit.json> # apply a completed audit
  */
 
 const { main } = require('./overnight-run');
@@ -68,7 +69,7 @@ if (require.main === module) {
 
   const run = process.argv.includes('--audit-unresolved')
     ? require('./reconcile-catalog').main(process.argv.slice(2))
-    : process.argv.includes('--reconcile-unresolved')
+    : process.argv.includes('--reconcile-unresolved') || process.argv.includes('--apply-report')
       ? require('./reconcile-catalog').main(process.argv.slice(2))
       : main();
 

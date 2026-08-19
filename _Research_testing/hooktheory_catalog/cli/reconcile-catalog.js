@@ -3,6 +3,7 @@
  *
  *   node cli/reconcile-catalog.js --audit-unresolved
  *   node cli/reconcile-catalog.js --apply --cleanup-test-rows
+ *   node cli/reconcile-catalog.js --apply-report <audit.json> --cleanup-test-rows
  *   node cli/reconcile-catalog.js --rollback <journal.json>
  *
  * Remote audit/apply runs require HOOKTHEORY_CATALOG_AUTHORIZED=1. Rollback is
@@ -28,6 +29,7 @@ function parseArgs(argv = process.argv.slice(2)) {
     cleanupTestRows: false,
     refreshWayback: true,
     artistPages: true,
+    applyReport: null,
     rollback: null,
   };
   for (let i = 0; i < argv.length; i++) {
@@ -36,6 +38,10 @@ function parseArgs(argv = process.argv.slice(2)) {
     else if (argv[i] === '--cleanup-test-rows') args.cleanupTestRows = true;
     else if (argv[i] === '--no-wayback-refresh') args.refreshWayback = false;
     else if (argv[i] === '--no-artist-pages') args.artistPages = false;
+    else if (argv[i] === '--apply-report') {
+      args.apply = true;
+      args.applyReport = argv[++i] || null;
+    }
     else if (argv[i] === '--rollback') args.rollback = argv[++i] || null;
   }
   return args;
@@ -119,6 +125,41 @@ function unresolvedReport(db, plans) {
     ORDER BY slug
   `).all();
   return rows.filter((r) => !planned.has(r.slug));
+}
+
+function loadApplyReport(db, reportFile) {
+  if (!reportFile) throw new Error('--apply-report requires an audit report path');
+  const resolved = path.resolve(reportFile);
+  const source = JSON.parse(fs.readFileSync(resolved, 'utf8'));
+  if (!Array.isArray(source.actionable)) {
+    throw new Error(`Invalid reconciliation audit report: ${resolved}`);
+  }
+
+  const plans = [];
+  const stale = [];
+  for (const expected of source.actionable) {
+    const actual = reconcileSong(db, expected.entry, { apply: false });
+    if (actual.action !== expected.action
+        || actual.slug !== expected.slug
+        || actual.url !== expected.url) {
+      stale.push({ expected, actual });
+    } else {
+      plans.push({ ...actual, entry: expected.entry });
+    }
+  }
+  if (stale.length) {
+    throw new Error(`Audit report is stale for ${stale.length} action(s); run --audit-unresolved again`);
+  }
+  return {
+    plans,
+    conflicts: source.conflicts || [],
+    meili: {
+      uniqueSongs: source.summary?.meiliSongs || 0,
+      finalOffset: source.summary?.meiliFinalOffset || 0,
+    },
+    waybackStats: source.summary?.wayback || {},
+    sourceAuditReport: resolved,
+  };
 }
 
 function tableRowsForSlugs(db, slugs) {
@@ -288,12 +329,15 @@ async function main(argv = process.argv.slice(2), log = console.log) {
       throw new Error('HOOKTHEORY_CATALOG_AUTHORIZED=1 is required for remote catalog reconciliation');
     }
 
-    const collected = await collectCandidates(db, args, log);
+    const collected = args.applyReport
+      ? loadApplyReport(db, args.applyReport)
+      : await collectCandidates(db, args, log);
     const actionable = collected.plans.filter((p) => ['inserted', 'updated', 'revived'].includes(p.action));
     const unresolved = unresolvedReport(db, collected.plans);
     const report = {
       generatedAt: new Date().toISOString(),
       apply: args.apply,
+      sourceAuditReport: collected.sourceAuditReport || null,
       summary: {
         meiliSongs: collected.meili.uniqueSongs,
         meiliFinalOffset: collected.meili.finalOffset,
@@ -368,6 +412,7 @@ module.exports = {
   addCandidate,
   resolveCandidateGroups,
   deleteTestRows,
+  loadApplyReport,
   rollback,
   collectCandidates,
   main,
