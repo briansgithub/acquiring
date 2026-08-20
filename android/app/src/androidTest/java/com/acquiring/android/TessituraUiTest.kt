@@ -39,14 +39,15 @@ class TessituraUiTest {
     }
 
     private val targetRequest = SingingTargetRequest(
-        first = SingingTargetNote(sourceMidi = 60, scaleDegreeLabel = "\u266D3\u0302"),
-        second = SingingTargetNote(sourceMidi = 67, scaleDegreeLabel = "\u266F4\u0302"),
+        first = SingingTargetNote(sourceMidi = 60, scaleDegreeLabel = "♭3̂"),
+        second = SingingTargetNote(sourceMidi = 67, scaleDegreeLabel = "♯4̂"),
         requestId = 1
     )
 
     @Test
     fun targetSlotsRenderVectorScaleDegreesAndAdjustedHints() {
-        setHummingContent(octaveShift = 1)
+        // Anchored at C3, the pair moves down an octave to C3 and G3.
+        setHummingContent(comfortablePitchMidi = 48.0)
 
         composeTestRule.onNodeWithContentDescription("Scale degree flat 3").assertExists()
         composeTestRule.onNodeWithContentDescription("Scale degree sharp 4").assertExists()
@@ -63,6 +64,21 @@ class TessituraUiTest {
     }
 
     @Test
+    fun anAnchorThatLeavesTheRegisterAloneDoesNotMarkTheSlotsAdjusted() {
+        // Anchored at C4, the pair is already in the register it would be moved
+        // to, so nothing about it has been adjusted.
+        setHummingContent(comfortablePitchMidi = 60.0)
+
+        composeTestRule.onAllNodes(
+            SemanticsMatcher.expectValue(
+                SemanticsProperties.StateDescription,
+                "Original target octave"
+            ),
+            useUnmergedTree = true
+        ).assertCountEquals(2)
+    }
+
+    @Test
     fun emptyTargetsUseBlankLabels() {
         setHummingContent(request = null)
         composeTestRule.onNodeWithText("Pitch 1").assertDoesNotExist()
@@ -74,7 +90,7 @@ class TessituraUiTest {
     fun naturalTargetUsesVectorLabel() {
         setHummingContent(
             request = SingingTargetRequest(
-                first = SingingTargetNote(60, "1\u0302"),
+                first = SingingTargetNote(60, "1̂"),
                 second = null,
                 requestId = 2
             )
@@ -109,7 +125,7 @@ class TessituraUiTest {
         composeTestRule.setContent {
             MaterialTheme {
                 TessituraControl(
-                    octaveShift = 0,
+                    comfortablePitchMidi = null,
                     canCalibrate = true,
                     pitchSource = pitchSource,
                     recordAudioPermissionOverride = true
@@ -131,64 +147,78 @@ class TessituraUiTest {
     }
 
     @Test
-    fun tessituraControlOctaveSelectorReportsShifts() {
-        val shift = mutableStateOf(0)
+    fun pillOffersNothingToClearUntilAPitchHasBeenRecorded() {
         composeTestRule.setContent {
             MaterialTheme {
                 TessituraControl(
-                    octaveShift = shift.value,
+                    comfortablePitchMidi = null,
                     canCalibrate = true,
-                    onOctaveShiftChange = { shift.value = it },
                     pitchSource = FakePitchSource(),
                     recordAudioPermissionOverride = true
                 )
             }
         }
 
-        composeTestRule.onNodeWithContentDescription("Raise tessitura shift by one octave").performClick()
-        composeTestRule.runOnIdle { assertEquals(1, shift.value) }
-        composeTestRule.onNodeWithContentDescription(
-            "Tessitura shifted 1 octaves from the song's actual pitch"
-        ).assertExists()
-
-        composeTestRule.onNodeWithContentDescription("Lower tessitura shift by one octave").performClick()
-        composeTestRule.onNodeWithContentDescription("Lower tessitura shift by one octave").performClick()
-        composeTestRule.runOnIdle { assertEquals(-1, shift.value) }
+        composeTestRule.onNodeWithText("Set Tessitura").assertExists()
+        composeTestRule.onNodeWithText("Clear").assertDoesNotExist()
+        composeTestRule.onNodeWithTag(TESSITURA_ACTIVE_DOT_TEST_TAG).assertDoesNotExist()
     }
 
     @Test
-    fun tessituraControlShowsSingingOctaveAndStopsAtBothBounds() {
-        val shift = mutableStateOf(4)
+    fun pillShowsTheDotAndClearsTheAnchorOnDemand() {
+        val anchor = mutableStateOf<Double?>(57.0) // A3
         composeTestRule.setContent {
             MaterialTheme {
                 TessituraControl(
-                    octaveShift = shift.value,
+                    comfortablePitchMidi = anchor.value,
                     canCalibrate = true,
-                    onOctaveShiftChange = { shift.value = it },
+                    onClearAdjustment = { anchor.value = null },
                     pitchSource = FakePitchSource(),
                     recordAudioPermissionOverride = true
                 )
             }
         }
 
-        composeTestRule.onNodeWithText("Singing octave").assertExists()
-        composeTestRule.onNodeWithContentDescription("Raise tessitura shift by one octave").performClick()
-        composeTestRule.runOnIdle { assertEquals(4, shift.value) }
+        composeTestRule.onNodeWithTag(TESSITURA_ACTIVE_DOT_TEST_TAG).assertExists()
+        composeTestRule.onNodeWithText("Clear").assertExists()
 
-        composeTestRule.runOnIdle { shift.value = -4 }
-        composeTestRule.onNodeWithContentDescription("Lower tessitura shift by one octave").performClick()
-        composeTestRule.runOnIdle { assertEquals(-4, shift.value) }
+        composeTestRule.onNodeWithContentDescription("Clear tessitura anchor").performClick()
+        composeTestRule.runOnIdle { assertEquals(null, anchor.value) }
+
+        composeTestRule.onNodeWithText("Clear").assertDoesNotExist()
+        composeTestRule.onNodeWithTag(TESSITURA_ACTIVE_DOT_TEST_TAG).assertDoesNotExist()
     }
 
     @Test
-    fun clearingTheShiftKeepsLoadedTargets() {
-        val shift = mutableStateOf(1)
+    fun pillNoLongerOffersTheOctaveStepper() {
+        composeTestRule.setContent {
+            MaterialTheme {
+                TessituraControl(
+                    comfortablePitchMidi = 57.0,
+                    canCalibrate = true,
+                    pitchSource = FakePitchSource(),
+                    recordAudioPermissionOverride = true
+                )
+            }
+        }
+
+        composeTestRule
+            .onNodeWithContentDescription("Raise tessitura shift by one octave")
+            .assertDoesNotExist()
+        composeTestRule
+            .onNodeWithContentDescription("Lower tessitura shift by one octave")
+            .assertDoesNotExist()
+    }
+
+    @Test
+    fun clearingTheTessituraKeepsLoadedTargets() {
+        val anchor = mutableStateOf<Double?>(48.0)
         val pitchSource = FakePitchSource()
         composeTestRule.setContent {
             MaterialTheme {
                 HummingIntervalPopup(
                     targetRequest = targetRequest,
-                    octaveShift = shift.value,
+                    comfortablePitchMidi = anchor.value,
                     pitchSource = pitchSource,
                     autoListenOnTargetLoad = false,
                     recordAudioPermissionOverride = true
@@ -196,7 +226,7 @@ class TessituraUiTest {
             }
         }
 
-        composeTestRule.runOnIdle { shift.value = 0 }
+        composeTestRule.runOnIdle { anchor.value = null }
         composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithContentDescription("Scale degree flat 3").assertExists()
@@ -210,15 +240,15 @@ class TessituraUiTest {
     }
 
     @Test
-    fun targetAutoListenStartsOnceAndRetargetsOnlyAfterShiftChanges() {
-        val shift = mutableStateOf(0)
+    fun targetAutoListenStartsOnceAndRetargetsOnlyAfterTheAnchorChanges() {
+        val anchor = mutableStateOf<Double?>(null)
         val pitchSource = FakePitchSource()
         composeTestRule.mainClock.autoAdvance = false
         composeTestRule.setContent {
             MaterialTheme {
                 HummingIntervalPopup(
                     targetRequest = targetRequest,
-                    octaveShift = shift.value,
+                    comfortablePitchMidi = anchor.value,
                     pitchSource = pitchSource,
                     autoListenOnTargetLoad = true,
                     recordAudioPermissionOverride = true
@@ -229,7 +259,7 @@ class TessituraUiTest {
         composeTestRule.mainClock.advanceTimeBy(850)
         composeTestRule.runOnIdle { assertEquals(1, pitchSource.startCount) }
 
-        composeTestRule.runOnIdle { shift.value = 1 }
+        composeTestRule.runOnIdle { anchor.value = 48.0 }
         composeTestRule.mainClock.advanceTimeByFrame()
         composeTestRule.runOnIdle { assertEquals(2, pitchSource.startCount) }
     }
@@ -249,7 +279,7 @@ class TessituraUiTest {
     }
 
     private fun setHummingContent(
-        octaveShift: Int = 0,
+        comfortablePitchMidi: Double? = null,
         request: SingingTargetRequest? = targetRequest,
         pitchSource: FakePitchSource = FakePitchSource()
     ) {
@@ -257,7 +287,7 @@ class TessituraUiTest {
             MaterialTheme {
                 HummingIntervalPopup(
                     targetRequest = request,
-                    octaveShift = octaveShift,
+                    comfortablePitchMidi = comfortablePitchMidi,
                     pitchSource = pitchSource,
                     autoListenOnTargetLoad = false,
                     recordAudioPermissionOverride = true

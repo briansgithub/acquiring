@@ -1,9 +1,5 @@
 package com.acquiring.android
 
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.doubleOrNull
-import kotlin.math.roundToInt
-
 /** A pitch that can be assigned to one slot in the Interval Singing Tool. */
 data class SingingTargetNote(
     /** Source register only; manual transpose and tessitura are applied later. */
@@ -19,64 +15,66 @@ data class SingingTargetRequest(
     val requestId: Int
 )
 
-/** Written chord roots in the stable source register used for calibration. */
-internal fun ExtractedSection.tessituraReferenceRootMidis(): List<Int> =
-    chords.mapNotNull { chord ->
-        val beat = normalizePlaybackBeat(
-            (chord["beat"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
-        )
-        ChordInterpreter.resolveChordRoot(chord, getKeyAtBeat(beat))
-            ?.simpleModePitch
-            ?.toAudioNoteNumber()
-    }
-
-/**
- * Chooses the section-wide whole-octave shift that places the section's root
- * register nearest the captured comfortable pitch.
- */
-internal fun calculateSectionTessituraShift(
-    comfortableMidi: Double,
-    sectionRootMidis: List<Int>,
-    globalTranspose: Int
-): Int? {
-    if (sectionRootMidis.isEmpty()) return null
-    val transposedReferenceMidi = sectionRootMidis.average() + globalTranspose
-    return ((comfortableMidi - transposedReferenceMidi) / 12.0).roundToInt()
-}
-
-/**
- * Chooses the whole-octave shift that places the notes the singer is actually
- * being asked to sing nearest their captured comfortable pitch.
- *
- * The loaded singing targets are the correct reference. The section's chord
- * roots sit an octave or more below the sung targets, so measuring against them
- * systematically under-shifts and usually rounds to zero, leaving the targets
- * unmoved. Only fall back to the section roots when no target is loaded.
- */
-internal fun calculateSingingTessituraShift(
-    comfortableMidi: Double,
-    targetRequest: SingingTargetRequest?,
-    sectionRootMidis: List<Int>,
-    globalTranspose: Int
-): Int? {
-    val targetMidis = listOfNotNull(targetRequest?.first, targetRequest?.second)
-        .map { it.sourceMidi }
-    val referenceMidis = if (targetMidis.isNotEmpty()) targetMidis else sectionRootMidis
-    if (referenceMidis.isEmpty()) return null
-    val transposedReferenceMidi = referenceMidis.average() + globalTranspose
-    return ((comfortableMidi - transposedReferenceMidi) / 12.0).roundToInt()
-}
-
 /** Final MIDI used by the microphone scorer. */
 internal fun SingingTargetNote.effectiveTargetMidi(
     globalTranspose: Int,
-    tessituraShiftOctaves: Int
-): Int = sourceMidi + globalTranspose + tessituraShiftOctaves * 12
+    comfortablePitchMidi: Double?,
+    lastSourceMidi: Int? = null,
+    lastTargetMidi: Int? = null
+): Int {
+    val source = sourceMidi + globalTranspose
+    if (comfortablePitchMidi == null) return source
+    return TessituraResolver.resolveTarget(
+        source,
+        comfortablePitchMidi,
+        lastSourceMidi,
+        lastTargetMidi
+    )
+}
 
 /**
- * MIDI supplied to AudioEngine for target preview. AudioEngine adds the
- * current manual transpose itself, so it is intentionally excluded here.
+ * MIDI supplied to AudioEngine for target preview.
+ *
+ * The register has to be chosen against the pitch that will actually sound,
+ * transpose included, or a preview could land an octave away from the note the
+ * microphone is scoring. AudioEngine adds the manual transpose itself, so it is
+ * taken back off the result rather than left out of the decision.
  */
 internal fun SingingTargetNote.targetPlaybackMidiInput(
-    tessituraShiftOctaves: Int
-): Int = sourceMidi + tessituraShiftOctaves * 12
+    globalTranspose: Int,
+    comfortablePitchMidi: Double?,
+    lastSourceMidi: Int? = null,
+    lastTargetMidi: Int? = null
+): Int = effectiveTargetMidi(
+    globalTranspose,
+    comfortablePitchMidi,
+    lastSourceMidi,
+    lastTargetMidi
+) - globalTranspose
+
+/**
+ * Resolves the registers for one singing request.
+ *
+ * A filled pair is an interval and moves as a unit so its size and direction
+ * stay exact; a lone note is placed on its own. With no tessitura set the
+ * source registers pass through untouched.
+ */
+internal fun resolveSingingTargetRequest(
+    request: SingingTargetRequest,
+    globalTranspose: Int,
+    comfortablePitchMidi: Double?
+): Pair<Int?, Int?> {
+    val firstSource = request.first?.let { it.sourceMidi + globalTranspose }
+    val secondSource = request.second?.let { it.sourceMidi + globalTranspose }
+    if (comfortablePitchMidi == null) return Pair(firstSource, secondSource)
+
+    return when {
+        firstSource != null && secondSource != null ->
+            TessituraResolver.resolveInterval(firstSource, secondSource, comfortablePitchMidi)
+        firstSource != null ->
+            Pair(TessituraResolver.resolveTarget(firstSource, comfortablePitchMidi), null)
+        secondSource != null ->
+            Pair(null, TessituraResolver.resolveTarget(secondSource, comfortablePitchMidi))
+        else -> Pair(null, null)
+    }
+}

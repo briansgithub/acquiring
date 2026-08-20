@@ -83,7 +83,7 @@ internal fun HummingIntervalPopup(
     sectionSessionKey: String? = null,
     targetRequest: SingingTargetRequest? = null,
     globalTranspose: Int = 0,
-    octaveShift: Int = 0,
+    comfortablePitchMidi: Double? = null,
     pitchSource: PitchSource = LocalContext.current.applicationContext.let { appContext ->
         remember(appContext) { MicrophonePitchTracker(appContext) }
     },
@@ -164,6 +164,23 @@ internal fun HummingIntervalPopup(
     // unless the user (or a fresh double-tap) has already moved it on.
     fun targetForSlot(target: SingingTargetRequest, slotId: Int): SingingTargetNote? =
         if (slotId == 1) target.first else target.second
+
+    // Resolved once for the whole request: a filled pair is an interval and
+    // takes a single shared shift, so its size and direction stay exact even
+    // when that leaves one endpoint away from the anchor.
+    val resolvedTargetMidis = remember(activeTarget, globalTranspose, comfortablePitchMidi) {
+        activeTarget?.let { resolveSingingTargetRequest(it, globalTranspose, comfortablePitchMidi) }
+            ?: Pair(null, null)
+    }
+
+    fun resolvedTargetForSlot(slotId: Int): Int? =
+        if (slotId == 1) resolvedTargetMidis.first else resolvedTargetMidis.second
+
+    fun isSlotTessituraAdjusted(slotId: Int): Boolean {
+        val target = activeTarget?.let { targetForSlot(it, slotId) } ?: return false
+        val resolved = resolvedTargetForSlot(slotId) ?: return false
+        return resolved != target.sourceMidi + globalTranspose
+    }
 
     fun stopMicrophoneAction() {
         microphoneAction = ActiveMicrophoneAction.Idle
@@ -313,9 +330,7 @@ internal fun HummingIntervalPopup(
         val estimate = (pitchResult as? MicrophonePitchTracker.PitchResult.Estimate)
             ?.takeIf { !it.isHeld }
             ?: return@LaunchedEffect
-        val targetMidi = targetForSlot(target, slotId)
-            ?.effectiveTargetMidi(globalTranspose, octaveShift)
-            ?: return@LaunchedEffect
+        val targetMidi = resolvedTargetForSlot(slotId) ?: return@LaunchedEffect
         val cents = (estimate.midi - targetMidi) * 100.0
         val nearestMidi = estimate.midi.roundToInt()
         val data = PitchData(SpelledPitch.fromMidi(nearestMidi), cents, estimate.midi)
@@ -325,11 +340,10 @@ internal fun HummingIntervalPopup(
     // Manual transpose and tessitura are independent layers. If either changes
     // during a target session, retarget the microphone without replacing the
     // request or mutating a captured user pitch.
-    LaunchedEffect(globalTranspose, octaveShift) {
-        val target = activeTarget ?: return@LaunchedEffect
+    LaunchedEffect(globalTranspose, comfortablePitchMidi) {
         val slotId = activeListenSlot ?: return@LaunchedEffect
-        val assignedTarget = targetForSlot(target, slotId) ?: return@LaunchedEffect
-        pitchTracker.retarget(assignedTarget.effectiveTargetMidi(globalTranspose, octaveShift))
+        val targetMidi = resolvedTargetForSlot(slotId) ?: return@LaunchedEffect
+        pitchTracker.retarget(targetMidi)
     }
 
     // Every microphone feature is represented by exactly one action. Switching
@@ -343,12 +357,12 @@ internal fun HummingIntervalPopup(
                 is ActiveMicrophoneAction.AwaitingPermission -> Unit
 
                 is ActiveMicrophoneAction.Listening -> {
-                    val target = activeTarget?.let { targetForSlot(it, action.slotId) }
-                    if (target == null) {
+                    val targetMidi = resolvedTargetForSlot(action.slotId)
+                    if (targetMidi == null) {
                         microphoneAction = ActiveMicrophoneAction.Idle
                         return@LaunchedEffect
                     }
-                    pitchTracker.start(target.effectiveTargetMidi(globalTranspose, octaveShift))
+                    pitchTracker.start(targetMidi)
                     var remaining = LISTEN_TIMEOUT_MS
                     while (
                         remaining > 0 &&
@@ -470,8 +484,7 @@ internal fun HummingIntervalPopup(
     }
 
     fun displayedSlotData(slotId: Int, captured: PitchData?): PitchData? {
-        val assignedTarget = activeTarget?.let { targetForSlot(it, slotId) } ?: return captured
-        val effectiveTargetMidi = assignedTarget.effectiveTargetMidi(globalTranspose, octaveShift)
+        val effectiveTargetMidi = resolvedTargetForSlot(slotId) ?: return captured
         return if (captured == null) {
             PitchData(
                 pitch = SpelledPitch.fromMidi(effectiveTargetMidi),
@@ -537,8 +550,8 @@ internal fun HummingIntervalPopup(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // The tessitura control that used to sit here now lives in the quiz
-                    // header, above the Transpose picker; this tool only reads the shift
-                    // it produces via `octaveShift`.
+                    // header, above the Transpose picker; this tool only reads the anchor
+                    // it produces via `comfortablePitchMidi`.
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text("Flip-Flop", style = MaterialTheme.typography.labelMedium)
                         Spacer(modifier = Modifier.width(8.dp))
@@ -571,7 +584,7 @@ internal fun HummingIntervalPopup(
                     isRecording = recordingSlot == 1,
                     isListening = activeListenSlot == 1,
                     isInteractionEnabled = !flipFlopEnabled,
-                    isTessituraAdjusted = octaveShift != 0,
+                    isTessituraAdjusted = isSlotTessituraAdjusted(1),
                     recordingTimeRemaining = if (recordingSlot == 1) recordingTimeRemaining else if (activeListenSlot == 1) listenTimeRemaining else 0,
                     onSingleClick = {
                         recordedPitchPlaybackFrequency(slot1)?.let { frequencyHz ->
@@ -607,7 +620,7 @@ internal fun HummingIntervalPopup(
                     isRecording = recordingSlot == 2,
                     isListening = activeListenSlot == 2,
                     isInteractionEnabled = !flipFlopEnabled,
-                    isTessituraAdjusted = octaveShift != 0,
+                    isTessituraAdjusted = isSlotTessituraAdjusted(2),
                     recordingTimeRemaining = if (recordingSlot == 2) recordingTimeRemaining else if (activeListenSlot == 2) listenTimeRemaining else 0,
                     onSingleClick = {
                         recordedPitchPlaybackFrequency(slot2)?.let { frequencyHz ->
@@ -653,7 +666,11 @@ internal fun HummingIntervalPopup(
                         .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp))
                         .testTag(SINGING_INTERVAL_RESULT_TEST_TAG)
                         .clickable(enabled = capturedSlot1 != null && capturedSlot2 != null) {
-                            val idealTargetMidis = idealIntervalPlaybackMidis(activeTarget, octaveShift)
+                            val idealTargetMidis = idealIntervalPlaybackMidis(
+                                activeTarget,
+                                globalTranspose,
+                                comfortablePitchMidi
+                            )
                             if (idealTargetMidis != null) {
                                 val (firstMidi, secondMidi) = idealTargetMidis
                                 scope.launch {
@@ -749,11 +766,15 @@ private fun midiToFrequency(midi: Double): Double =
 
 internal fun idealIntervalPlaybackMidis(
     target: SingingTargetRequest?,
-    octaveShift: Int
+    globalTranspose: Int,
+    comfortablePitchMidi: Double?
 ): Pair<Int, Int>? {
-    val first = target?.first ?: return null
-    val second = target.second ?: return null
-    return first.targetPlaybackMidiInput(octaveShift) to second.targetPlaybackMidiInput(octaveShift)
+    if (target?.first == null || target.second == null) return null
+    // Resolved as a pair so the previewed interval is the one being taught, then
+    // de-transposed because AudioEngine applies the manual transpose itself.
+    val (first, second) = resolveSingingTargetRequest(target, globalTranspose, comfortablePitchMidi)
+    if (first == null || second == null) return null
+    return (first - globalTranspose) to (second - globalTranspose)
 }
 
 @Composable

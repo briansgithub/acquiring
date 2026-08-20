@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -39,6 +37,7 @@ private const val CALIBRATION_DROPOUT_GRACE_MS = 1000
 internal const val TESSITURA_CALIBRATION_CARD_TEST_TAG = "tessitura-calibration-card"
 internal const val TESSITURA_CALIBRATION_MODAL_TEST_TAG = "tessitura-calibration-modal"
 internal const val TESSITURA_CONTROL_TEST_TAG = "tessitura-control"
+internal const val TESSITURA_ACTIVE_DOT_TEST_TAG = "tessitura-active-dot"
 internal val QUIZ_HEADER_CONTROL_HEIGHT = 48.dp
 
 internal sealed interface TessituraCalibrationStatus {
@@ -58,9 +57,10 @@ private sealed interface CalibrationAction {
 }
 
 /**
- * Hum a note to shift every singing target up/down by octaves so they land in the
- * singer's own tessitura (comfortable vocal range). This only re-aims what the mic
- * listens for; it never changes the pitch/octave the song itself plays back.
+ * Hum a note to anchor every singing target near that pitch, so targets land in
+ * the singer's own tessitura (comfortable vocal range) while keeping the melodic
+ * contour. This only re-aims what the mic listens for; it never changes the
+ * pitch/octave the song itself plays back.
  *
  * The control owns its own microphone lease, so starting a calibration supersedes
  * whatever the quiz or the interval singing tool was listening to.
@@ -68,10 +68,10 @@ private sealed interface CalibrationAction {
 @Composable
 internal fun TessituraControl(
     modifier: Modifier = Modifier,
-    octaveShift: Int = 0,
+    comfortablePitchMidi: Double? = null,
     canCalibrate: Boolean = true,
     onCalibrationCaptured: (Double) -> Unit = {},
-    onOctaveShiftChange: (Int) -> Unit = {},
+    onClearAdjustment: () -> Unit = {},
     pitchSource: PitchSource = LocalContext.current.applicationContext.let { appContext ->
         remember(appContext) { MicrophonePitchTracker(appContext) }
     },
@@ -288,7 +288,7 @@ internal fun TessituraControl(
                             letterSpacing = 0.5.sp
                         )
                         Text(
-                            "(Singing octave)",
+                            "(Comfortable pitch)",
                             style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
                             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
                             lineHeight = 10.sp
@@ -297,56 +297,43 @@ internal fun TessituraControl(
                 }
             }
 
-            // Subtle vertical divider
-            Box(
-                modifier = Modifier
-                    .width(1.dp)
-                    .height(24.dp)
-                    .background(MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.15f))
-            )
-
-            val octaveShiftText = if (octaveShift > 0) "+$octaveShift" else "$octaveShift"
-            Column(
-                modifier = Modifier.padding(horizontal = 6.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Surface(
-                    onClick = { if (octaveShift < 4) onOctaveShiftChange(octaveShift + 1) },
-                    shape = RoundedCornerShape(4.dp),
-                    color = Color.Transparent,
-                    modifier = Modifier.size(width = 48.dp, height = 14.dp)
-                ) {
-                    Icon(
-                        Icons.Default.KeyboardArrowUp,
-                        contentDescription = "Raise tessitura shift by one octave",
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                    )
-                }
-                Text(
-                    text = octaveShiftText,
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Black,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+            // Nothing to clear until a pitch has been captured, so the whole
+            // trailing group — divider included — stays out of the pill.
+            if (comfortablePitchMidi != null) {
+                // Subtle vertical divider
+                Box(
                     modifier = Modifier
-                        .padding(vertical = 0.dp)
-                        .semantics {
-                            contentDescription = "Tessitura shifted $octaveShift octaves from the song's actual pitch"
-                        }
+                        .width(1.dp)
+                        .height(24.dp)
+                        .background(MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.15f))
                 )
-                Surface(
-                    onClick = { if (octaveShift > -4) onOctaveShiftChange(octaveShift - 1) },
-                    shape = RoundedCornerShape(4.dp),
-                    color = Color.Transparent,
-                    modifier = Modifier.size(width = 48.dp, height = 14.dp)
+
+                Row(
+                    modifier = Modifier.padding(start = 8.dp, end = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        Icons.Default.KeyboardArrowDown,
-                        contentDescription = "Lower tessitura shift by one octave",
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                    // The same gray dot the quiz draws on tessitura-adjusted
+                    // targets, so the pill and the targets read as one setting.
+                    PitchHintDot(
+                        modifier = Modifier.testTag(TESSITURA_ACTIVE_DOT_TEST_TAG),
+                        color = TESSITURA_DOT_COLOR,
+                        size = 14.dp
                     )
+                    TextButton(
+                        onClick = onClearAdjustment,
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                        modifier = Modifier.semantics {
+                            contentDescription = "Clear tessitura anchor"
+                        }
+                    ) {
+                        Text(
+                            "Clear",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 0.5.sp,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
                 }
             }
         }

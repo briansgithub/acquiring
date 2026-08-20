@@ -6,67 +6,85 @@ import org.junit.Test
 
 class TessituraSessionViewModelTest {
     @Test
-    fun reenteringSameSessionRetainsAdjustment() {
+    fun reenteringSameSessionRetainsAnchorAndContinuity() {
         val state = TessituraSessionViewModel()
         state.enterSession("song-a:verse")
-        state.updateShift(2)
+        state.updateComfortablePitch(57.0)
+        state.updateContinuity(source = 60, target = 48)
 
         state.enterSession("song-a:verse")
 
-        assertEquals(2, state.shiftOctaves)
+        assertEquals(57.0, state.comfortablePitchMidi)
+        assertEquals(60, state.lastSourceMidi)
+        assertEquals(48, state.lastTargetMidi)
     }
 
     @Test
-    fun sectionChangeAndExplicitExitClearAdjustment() {
+    fun aDifferentSectionEndsTheSequenceButKeepsTheSingersAnchor() {
         val state = TessituraSessionViewModel()
         state.enterSession("song-a:verse")
-        state.updateShift(-1)
+        state.updateComfortablePitch(57.0)
+        state.updateContinuity(source = 60, target = 48)
 
         state.enterSession("song-a:chorus")
-        assertEquals(0, state.shiftOctaves)
 
-        state.updateShift(1)
-        state.clearSession()
-        assertEquals(0, state.shiftOctaves)
+        // The anchor belongs to the singer, the contour to the section.
+        assertEquals(57.0, state.comfortablePitchMidi)
+        assertNull(state.lastSourceMidi)
+        assertNull(state.lastTargetMidi)
+    }
+
+    @Test
+    fun recordingANewPitchDiscardsRegistersChosenAgainstTheOldOne() {
+        val state = TessituraSessionViewModel()
+        state.enterSession("song-a:verse")
+        state.updateComfortablePitch(57.0)
+        state.updateContinuity(source = 60, target = 48)
+
+        state.updateComfortablePitch(64.0)
+
+        assertEquals(64.0, state.comfortablePitchMidi)
+        assertNull(state.lastSourceMidi)
+        assertNull(state.lastTargetMidi)
+    }
+
+    @Test
+    fun aCalibrationArrivingWithoutASessionIsStillKept() {
+        val state = TessituraSessionViewModel()
+
+        state.updateComfortablePitch(57.0)
+
+        assertEquals(57.0, state.comfortablePitchMidi)
         assertNull(state.sessionKey)
     }
 
     @Test
-    fun shiftIsBoundedWhereverItArrivesFrom() {
+    fun clearOnlyResetsTheTessituraAndLeavesTheSessionInPlace() {
         val state = TessituraSessionViewModel()
         state.enterSession("song-a:verse")
-
-        // The arrow handlers stop at the bound by refusing the click, which says nothing
-        // about a value arriving from calibration or a restored session.
-        state.updateShift(9)
-        assertEquals(TessituraSessionViewModel.MAX_SHIFT_OCTAVES, state.shiftOctaves)
-
-        state.updateShift(-9)
-        assertEquals(TessituraSessionViewModel.MIN_SHIFT_OCTAVES, state.shiftOctaves)
-
-        state.updateShift(2)
-        assertEquals(2, state.shiftOctaves)
-    }
-
-    @Test
-    fun clearButtonOnlyResetsAdjustmentWithinCurrentSession() {
-        val state = TessituraSessionViewModel()
-        state.enterSession("song-a:verse")
-        state.updateShift(1)
+        state.updateComfortablePitch(57.0)
+        state.updateContinuity(source = 60, target = 48)
 
         state.clearAdjustment()
 
-        assertEquals(0, state.shiftOctaves)
+        assertNull(state.comfortablePitchMidi)
+        assertNull(state.lastSourceMidi)
+        assertNull(state.lastTargetMidi)
         assertEquals("song-a:verse", state.sessionKey)
     }
 
     @Test
-    fun adjustmentIsClampedToTheSupportedVocalRange() {
+    fun leavingTheSongClearsEverything() {
         val state = TessituraSessionViewModel()
-        state.updateShift(20)
-        assertEquals(4, state.shiftOctaves)
+        state.enterSession("song-a:verse")
+        state.updateComfortablePitch(57.0)
+        state.updateContinuity(source = 60, target = 48)
 
-        state.updateShift(-20)
-        assertEquals(-4, state.shiftOctaves)
+        state.clearSession()
+
+        assertNull(state.sessionKey)
+        assertNull(state.comfortablePitchMidi)
+        assertNull(state.lastSourceMidi)
+        assertNull(state.lastTargetMidi)
     }
 }

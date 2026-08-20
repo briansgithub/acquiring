@@ -288,7 +288,9 @@ internal fun MainScreen(
     var quizPlayButtonYFraction by rememberSaveable { mutableStateOf(Float.NaN) }
     var singingTargetRequest by remember { mutableStateOf<SingingTargetRequest?>(null) }
     var singingTargetRequestId by remember { mutableStateOf(0) }
-    val tessituraShiftOctaves = tessituraSessionViewModel.shiftOctaves
+    val comfortablePitchMidi = tessituraSessionViewModel.comfortablePitchMidi
+    val lastSourceMidi = tessituraSessionViewModel.lastSourceMidi
+    val lastTargetMidi = tessituraSessionViewModel.lastTargetMidi
     
     var titleOffset by remember { mutableStateOf(0) }
     var artistOffset by remember { mutableStateOf(0) }
@@ -324,15 +326,6 @@ internal fun MainScreen(
     val harvestService = remember(activeDb) { HarvestService(activeDb) }
     val json = remember { Json { ignoreUnknownKeys = true } }
     val singingSessionKey = selectedSong?.slug?.let { slug -> "$slug:${selectedSectionId.orEmpty()}" }
-    val selectedSectionRootMidis = remember(selectedSongSections, selectedSectionId) {
-        val sections = selectedSongSections ?: return@remember emptyList()
-        val section = selectedSectionId?.let(sections::get)
-            ?: sections.sectionsInSongOrder().firstOrNull()?.value
-            ?: sections.values.firstOrNull()
-            ?: return@remember emptyList()
-        section.tessituraReferenceRootMidis()
-    }
-
     LaunchedEffect(singingSessionKey) {
         singingSessionKey?.let(tessituraSessionViewModel::enterSession)
         singingTargetRequest = null
@@ -791,20 +784,16 @@ internal fun MainScreen(
                         singingTargetRequestId++
                         singingTargetRequest = request.copy(requestId = singingTargetRequestId)
                     },
-                    tessituraShiftOctaves = tessituraShiftOctaves,
+                    comfortablePitchMidi = comfortablePitchMidi,
+                    lastSourceMidi = lastSourceMidi,
+                    lastTargetMidi = lastTargetMidi,
+                    onUpdateContinuity = tessituraSessionViewModel::updateContinuity,
                     tessituraControl = {
                         TessituraControl(
-                            octaveShift = tessituraShiftOctaves,
-                            canCalibrate = selectedSectionRootMidis.isNotEmpty(),
-                            onCalibrationCaptured = { hummedMidi ->
-                                calculateSingingTessituraShift(
-                                    comfortableMidi = hummedMidi,
-                                    targetRequest = singingTargetRequest,
-                                    sectionRootMidis = selectedSectionRootMidis,
-                                    globalTranspose = globalTranspose
-                                )?.let(tessituraSessionViewModel::updateShift)
-                            },
-                            onOctaveShiftChange = { tessituraSessionViewModel.updateShift(it) },
+                            comfortablePitchMidi = comfortablePitchMidi,
+                            canCalibrate = singingSessionKey != null,
+                            onCalibrationCaptured = tessituraSessionViewModel::updateComfortablePitch,
+                            onClearAdjustment = tessituraSessionViewModel::clearAdjustment,
                             pitchSource = tessituraCalibrationPitchSource
                         )
                     },
@@ -820,7 +809,7 @@ internal fun MainScreen(
             sectionSessionKey = singingSessionKey,
             targetRequest = singingTargetRequest,
             globalTranspose = globalTranspose,
-            octaveShift = tessituraShiftOctaves,
+            comfortablePitchMidi = comfortablePitchMidi,
             pitchSource = singingToolPitchSource
         )
     }
@@ -1164,7 +1153,10 @@ fun SongDetailView(
     onQuizPlayButtonPositionChange: (Float, Float) -> Unit,
     onArtistClick: (String) -> Unit,
     onSingingTargetsRequested: (SingingTargetRequest) -> Unit,
-    tessituraShiftOctaves: Int,
+    comfortablePitchMidi: Double?,
+    lastSourceMidi: Int?,
+    lastTargetMidi: Int?,
+    onUpdateContinuity: (Int, Int) -> Unit,
     tessituraControl: @Composable () -> Unit,
     persistentPitchSource: PitchSource,
     onBack: () -> Unit
@@ -1475,7 +1467,10 @@ fun SongDetailView(
                 quizPlayButtonYFraction = quizPlayButtonYFraction,
                 onQuizPlayButtonPositionChange = onQuizPlayButtonPositionChange,
                 onSingingTargetsRequested = onSingingTargetsRequested,
-                tessituraShiftOctaves = tessituraShiftOctaves,
+                comfortablePitchMidi = comfortablePitchMidi,
+                lastSourceMidi = lastSourceMidi,
+                lastTargetMidi = lastTargetMidi,
+                onUpdateContinuity = onUpdateContinuity,
                 sessionKey = "${song.slug}:${selectedSectionKey.orEmpty()}",
                 persistentPitchSource = persistentPitchSource
             )
@@ -1748,14 +1743,41 @@ fun QuizTab(
     quizPlayButtonYFraction: Float,
     onQuizPlayButtonPositionChange: (Float, Float) -> Unit,
     onSingingTargetsRequested: (SingingTargetRequest) -> Unit,
-    tessituraShiftOctaves: Int,
+    comfortablePitchMidi: Double?,
+    lastSourceMidi: Int?,
+    lastTargetMidi: Int?,
+    onUpdateContinuity: (Int, Int) -> Unit,
     sessionKey: String,
     persistentPitchSource: PitchSource
 ) {
     val exclusivePersistentPitchSource = persistentPitchSource as? ExclusivePitchSource
         ?: error("QuizTab requires an exclusive persistent pitch source")
     val baseBpm = section.getBpm().toFloat().coerceIn(40f, 240f)
-    val isTessituraAdjusted = tessituraShiftOctaves != 0
+    val isTessituraAdjusted = comfortablePitchMidi != null
+
+    // AudioEngine applies the manual transpose itself, so a preview's register
+    // is chosen against the pitch that will actually sound and the transpose is
+    // then taken back off the result.
+    fun tessituraPreviewMidi(audioNote: Int): Int {
+        if (comfortablePitchMidi == null) return audioNote
+        return TessituraResolver.resolveTarget(
+            audioNote + globalTranspose,
+            comfortablePitchMidi
+        ) - globalTranspose
+    }
+
+    // A root-motion preview is two notes heard as one interval, so both take the
+    // single shared shift that keeps its size and direction exact.
+    fun tessituraIntervalShiftSemitones(previousAudioNote: Int, currentAudioNote: Int): Int {
+        if (comfortablePitchMidi == null) return 0
+        val transposedPrevious = previousAudioNote + globalTranspose
+        val (resolvedPrevious, _) = TessituraResolver.resolveInterval(
+            transposedPrevious,
+            currentAudioNote + globalTranspose,
+            comfortablePitchMidi
+        )
+        return resolvedPrevious - transposedPrevious
+    }
     val arpeggiateCycles = QUIZ_ARPEGGIO_OPTIONS[arpeggioOptionIndex].cyclesPerBeat
     val bpm = (baseBpm * tempoPercent / 100f).toDouble()
 
@@ -2195,7 +2217,10 @@ fun QuizTab(
             rootIntervalPreviewSteps(
                 previousAudioNote = previous.toAudioNoteNumber(),
                 currentAudioNote = current.toAudioNoteNumber(),
-                octaveShiftSemitones = tessituraShiftOctaves * 12,
+                octaveShiftSemitones = tessituraIntervalShiftSemitones(
+                    previous.toAudioNoteNumber(),
+                    current.toAudioNoteNumber()
+                ),
                 durationMs = ROOT_INTERVAL_PREVIEW_DURATION_MS
             ).forEach { step ->
                 AudioEngine.playChord(
@@ -2213,7 +2238,7 @@ fun QuizTab(
         AudioEngine.stopPreviewPlayback()
         intervalPreviewJob = scope.launch {
             AudioEngine.playChord(
-                listOf(pitch.toAudioNoteNumber() + tessituraShiftOctaves * 12),
+                listOf(tessituraPreviewMidi(pitch.toAudioNoteNumber())),
                 durationMs = ROOT_INTERVAL_PREVIEW_DURATION_MS,
                 channel = AudioEngine.PlaybackChannel.PREVIEW
             )
@@ -2326,7 +2351,12 @@ fun QuizTab(
         ?.let { target ->
             retargetPitchResult(
                 persistentPitchResult,
-                target.effectiveTargetMidi(globalTranspose, tessituraShiftOctaves)
+                target.effectiveTargetMidi(
+                    globalTranspose,
+                    comfortablePitchMidi,
+                    lastSourceMidi,
+                    lastTargetMidi
+                )
             )
         }
 
@@ -2340,8 +2370,16 @@ fun QuizTab(
             return
         }
         val initialTarget = target ?: return
-        val effectiveTargetMidi = initialTarget.sourceMidi +
-            globalTranspose + tessituraShiftOctaves * 12
+        val effectiveTargetMidi = if (comfortablePitchMidi == null) {
+            initialTarget.sourceMidi + globalTranspose
+        } else {
+            TessituraResolver.resolveTarget(
+                initialTarget.sourceMidi + globalTranspose,
+                comfortablePitchMidi,
+                lastSourceMidi,
+                lastTargetMidi
+            )
+        }
         val hasPermission = androidx.core.content.ContextCompat.checkSelfPermission(
             context,
             android.Manifest.permission.RECORD_AUDIO
@@ -2356,10 +2394,21 @@ fun QuizTab(
         }
     }
 
-    LaunchedEffect(resolvedPersistentPitchTarget, globalTranspose, tessituraShiftOctaves) {
+    LaunchedEffect(
+        resolvedPersistentPitchTarget,
+        globalTranspose,
+        comfortablePitchMidi,
+        lastSourceMidi,
+        lastTargetMidi
+    ) {
         val target = resolvedPersistentPitchTarget ?: return@LaunchedEffect
         persistentPitchController.updateTarget(
-            target.effectiveTargetMidi(globalTranspose, tessituraShiftOctaves)
+            target.effectiveTargetMidi(
+                globalTranspose,
+                comfortablePitchMidi,
+                lastSourceMidi,
+                lastTargetMidi
+            )
         )
     }
 
@@ -2528,7 +2577,12 @@ fun QuizTab(
                     melodyTimelinePitchEstimate
                 )
                 val activeMelodyRunTargetMidi = resolvedPersistentPitchTarget
-                    ?.effectiveTargetMidi(globalTranspose, tessituraShiftOctaves)
+                    ?.effectiveTargetMidi(
+                        globalTranspose,
+                        comfortablePitchMidi,
+                        lastSourceMidi,
+                        lastTargetMidi
+                    )
 
                 DisposableEffect(
                     melodyRunScoringEnabled,
@@ -2543,12 +2597,24 @@ fun QuizTab(
                         melodyRunScoreAccumulator.begin(scoringRun.id)
                         fixedMelodyPitchScores = fixedMelodyPitchScores - scoringRun.id
                     }
+                    // The register this run is sung in, captured with the run that
+                    // chose it rather than read again at dispose time.
+                    val runSourceMidi = resolvedPersistentPitchTarget
+                        ?.sourceMidi
+                        ?.plus(globalTranspose)
+                    val runTargetMidi = activeMelodyRunTargetMidi
 
                     onDispose {
                         if (scoringRun != null) {
                             melodyRunScoreAccumulator.finish(scoringRun.id)?.let { outcome ->
                                 fixedMelodyPitchScores = fixedMelodyPitchScores +
                                     (outcome.runId to outcome)
+                            }
+                            // Where the melody just went is what the next note has to
+                            // continue from, whether or not the attempt scored: the
+                            // contour belongs to the exercise, not to the singer.
+                            if (runSourceMidi != null && runTargetMidi != null) {
+                                onUpdateContinuity(runSourceMidi, runTargetMidi)
                             }
                         }
                     }
@@ -2974,7 +3040,7 @@ fun QuizTab(
                                                 AudioEngine.stopPreviewPlayback()
                                                 intervalPreviewJob = scope.launch {
                                                     AudioEngine.playChord(
-                                                        listOf(rootAudioNote + tessituraShiftOctaves * 12),
+                                                        listOf(tessituraPreviewMidi(rootAudioNote)),
                                                         channel = AudioEngine.PlaybackChannel.PREVIEW
                                                     )
                                                 }
@@ -3311,7 +3377,7 @@ fun QuizTab(
                                                     modifier = Modifier.weight(1f).fillMaxHeight()
                                                         .semantics { contentDescription = "Play scale degree $internalLabel. Double tap to sing it back. Long press to toggle persistent pitch practice." }
                                                         .combinedClickable(
-                                                            onClick = { scope.launch { AudioEngine.playChord(listOf(previewNote + tessituraShiftOctaves * 12), channel = AudioEngine.PlaybackChannel.PREVIEW) } },
+                                                            onClick = { scope.launch { AudioEngine.playChord(listOf(tessituraPreviewMidi(previewNote)), channel = AudioEngine.PlaybackChannel.PREVIEW) } },
                                                             onDoubleClick = {
                                                                 requestSingingTargets(
                                                                     SingingTargetRequest(

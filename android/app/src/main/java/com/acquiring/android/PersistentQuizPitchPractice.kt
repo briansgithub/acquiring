@@ -213,8 +213,21 @@ internal data class ResolvedPersistentPitchTarget(
     val label: String,
     val position: PersistentPitchCardPosition
 ) {
-    fun effectiveTargetMidi(globalTranspose: Int, tessituraShiftOctaves: Int): Int =
-        sourceMidi + globalTranspose + tessituraShiftOctaves * 12
+    fun effectiveTargetMidi(
+        globalTranspose: Int,
+        comfortablePitchMidi: Double?,
+        lastSourceMidi: Int? = null,
+        lastTargetMidi: Int? = null
+    ): Int {
+        val source = sourceMidi + globalTranspose
+        if (comfortablePitchMidi == null) return source
+        return TessituraResolver.resolveTarget(
+            source,
+            comfortablePitchMidi,
+            lastSourceMidi,
+            lastTargetMidi
+        )
+    }
 }
 
 internal fun resolvePersistentPitchTarget(
