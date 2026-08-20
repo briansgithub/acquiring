@@ -71,6 +71,7 @@ import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.input.pointer.util.addPointerInputChange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
@@ -1189,40 +1190,67 @@ fun SongDetailView(
         ExposedDropdownMenuBox(
             expanded = isTransposeExpanded,
             onExpandedChange = { isTransposeExpanded = !isTransposeExpanded },
-            modifier = Modifier.width(120.dp)
+            modifier = Modifier.width(172.dp)
         ) {
-            // Label and value share one line so the control stays a thin strip
-            // instead of a tall box with dead space above and below the value.
-            Row(
+            Surface(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(QUIZ_HEADER_CONTROL_HEIGHT)
-                    .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.outline,
-                        shape = RoundedCornerShape(4.dp)
-                    )
                     .menuAnchor()
-                    .semantics { contentDescription = "Transpose: $transposeText" }
-                    .padding(start = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .semantics { contentDescription = "Transpose: $transposeText" },
+                shape = RoundedCornerShape(50),
+                color = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                tonalElevation = 2.dp,
+                shadowElevation = 1.dp
             ) {
-                Text(
-                    text = "Transpose",
-                    maxLines = 1,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                // The value sits centred in what is left between the caption and the
-                // chevron rather than hugging the caption.
-                Text(
-                    text = transposeText,
-                    maxLines = 1,
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f)
-                )
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = isTransposeExpanded)
+                Row(
+                    modifier = Modifier
+                        .height(QUIZ_HEADER_CONTROL_HEIGHT)
+                        .padding(horizontal = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        modifier = Modifier.padding(start = 12.dp, end = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            "Transpose",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 0.5.sp
+                        )
+                    }
+
+                    // Subtle vertical divider
+                    Box(
+                        modifier = Modifier
+                            .width(1.dp)
+                            .height(24.dp)
+                            .background(MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.15f))
+                    )
+
+                    Row(
+                        modifier = Modifier.padding(start = 8.dp, end = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = transposeText,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Black,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.widthIn(min = 32.dp)
+                        )
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = isTransposeExpanded)
+                    }
+                }
             }
 
             ExposedDropdownMenuWithScrollbar(

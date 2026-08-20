@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
@@ -38,7 +39,7 @@ private const val CALIBRATION_DROPOUT_GRACE_MS = 1000
 internal const val TESSITURA_CALIBRATION_CARD_TEST_TAG = "tessitura-calibration-card"
 internal const val TESSITURA_CALIBRATION_MODAL_TEST_TAG = "tessitura-calibration-modal"
 internal const val TESSITURA_CONTROL_TEST_TAG = "tessitura-control"
-internal val QUIZ_HEADER_CONTROL_HEIGHT = 52.dp
+internal val QUIZ_HEADER_CONTROL_HEIGHT = 48.dp
 
 internal sealed interface TessituraCalibrationStatus {
     object Idle : TessituraCalibrationStatus
@@ -244,70 +245,110 @@ internal fun TessituraControl(
         }
     }
 
-    Row(
+    Surface(
         modifier = modifier
-            .height(QUIZ_HEADER_CONTROL_HEIGHT)
-            .testTag(TESSITURA_CONTROL_TEST_TAG),
-        verticalAlignment = Alignment.CenterVertically
+            .testTag(TESSITURA_CONTROL_TEST_TAG)
+            .height(QUIZ_HEADER_CONTROL_HEIGHT),
+        shape = RoundedCornerShape(50),
+        color = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        tonalElevation = 2.dp,
+        shadowElevation = 1.dp
     ) {
-        Surface(
-            onClick = { requestCalibration() },
-            enabled = canCalibrate,
-            shape = RoundedCornerShape(50),
-            color = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            modifier = Modifier
-                .fillMaxHeight()
-                .semantics {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(2.dp)
+        ) {
+            Surface(
+                onClick = { requestCalibration() },
+                enabled = canCalibrate,
+                shape = RoundedCornerShape(50),
+                color = Color.Transparent,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.semantics {
                     contentDescription = "Match target pitch to your comfortable singing tessitura. Hum a note to calibrate. Song and source-object playback are unaffected; target previews follow this setting."
                 }
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(horizontal = 10.dp, vertical = 3.dp),
-                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("🎤", fontSize = 14.sp)
-                Spacer(modifier = Modifier.width(4.dp))
-                Column(horizontalAlignment = Alignment.Start) {
-                    Text("Set Tessitura", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold)
-                    Text("Singing octave", style = MaterialTheme.typography.labelSmall)
+                Row(
+                    modifier = Modifier.padding(start = 12.dp, end = 10.dp, top = 6.dp, bottom = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Face,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            "Set Tessitura",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 0.5.sp
+                        )
+                        Text(
+                            "(Singing octave)",
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+                            lineHeight = 10.sp
+                        )
+                    }
                 }
             }
-        }
-        Spacer(modifier = Modifier.width(6.dp))
-        val octaveShiftText = if (octaveShift > 0) "+$octaveShift" else "$octaveShift"
-        Column(
-            modifier = Modifier.fillMaxHeight(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                Icons.Default.KeyboardArrowUp,
-                contentDescription = "Raise tessitura shift by one octave",
+
+            // Subtle vertical divider
+            Box(
                 modifier = Modifier
-                    .size(16.dp)
-                    .clickable(enabled = octaveShift < 4) { onOctaveShiftChange(octaveShift + 1) },
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (octaveShift < 4) 1f else 0.3f)
+                    .width(1.dp)
+                    .height(24.dp)
+                    .background(MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.15f))
             )
-            Text(
-                text = octaveShiftText,
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.semantics {
-                    contentDescription = "Tessitura shifted $octaveShift octaves from the song's actual pitch"
+
+            val octaveShiftText = if (octaveShift > 0) "+$octaveShift" else "$octaveShift"
+            Column(
+                modifier = Modifier.padding(horizontal = 6.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Surface(
+                    onClick = { if (octaveShift < 4) onOctaveShiftChange(octaveShift + 1) },
+                    shape = RoundedCornerShape(4.dp),
+                    color = Color.Transparent,
+                    modifier = Modifier.size(width = 48.dp, height = 14.dp)
+                ) {
+                    Icon(
+                        Icons.Default.KeyboardArrowUp,
+                        contentDescription = "Raise tessitura shift by one octave",
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                    )
                 }
-            )
-            Icon(
-                Icons.Default.KeyboardArrowDown,
-                contentDescription = "Lower tessitura shift by one octave",
-                modifier = Modifier
-                    .size(16.dp)
-                    .clickable(enabled = octaveShift > -4) { onOctaveShiftChange(octaveShift - 1) },
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (octaveShift > -4) 1f else 0.3f)
-            )
+                Text(
+                    text = octaveShiftText,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Black,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier
+                        .padding(vertical = 0.dp)
+                        .semantics {
+                            contentDescription = "Tessitura shifted $octaveShift octaves from the song's actual pitch"
+                        }
+                )
+                Surface(
+                    onClick = { if (octaveShift > -4) onOctaveShiftChange(octaveShift - 1) },
+                    shape = RoundedCornerShape(4.dp),
+                    color = Color.Transparent,
+                    modifier = Modifier.size(width = 48.dp, height = 14.dp)
+                ) {
+                    Icon(
+                        Icons.Default.KeyboardArrowDown,
+                        contentDescription = "Lower tessitura shift by one octave",
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                    )
+                }
+            }
         }
     }
 
