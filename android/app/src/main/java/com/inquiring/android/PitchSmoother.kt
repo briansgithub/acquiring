@@ -13,7 +13,7 @@ import kotlin.math.abs
  * Split out of [MicrophonePitchTracker] so the filtering can be exercised without a microphone.
  */
 class PitchSmoother private constructor(
-    private val targetMidi: Int,
+    private var targetMidi: Int,
     private val settings: PitchSmoothingSettings
 ) {
 
@@ -76,6 +76,11 @@ class PitchSmoother private constructor(
         smoothedMidi = 0.0
         validFrames = 0
         rejectedFrames = 0
+    }
+
+    fun retarget(newTargetMidi: Int) {
+        targetMidi = newTargetMidi
+        reset()
     }
 
     companion object {

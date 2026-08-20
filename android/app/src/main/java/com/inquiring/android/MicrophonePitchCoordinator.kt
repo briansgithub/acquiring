@@ -72,6 +72,13 @@ internal class MicrophonePitchCoordinator(
         }
     }
 
+    private fun retarget(requestedOwner: MicrophonePitchOwner, targetMidi: Int) {
+        synchronized(lock) {
+            if (isReleased || owner != requestedOwner) return
+            delegate.retarget(targetMidi)
+        }
+    }
+
     private fun stop(requestedOwner: MicrophonePitchOwner) {
         synchronized(lock) {
             if (isReleased || owner != requestedOwner) return
@@ -94,6 +101,9 @@ internal class MicrophonePitchCoordinator(
 
         override fun start(targetMidi: Int) =
             this@MicrophonePitchCoordinator.start(requestedOwner, targetMidi)
+
+        override fun retarget(targetMidi: Int) =
+            this@MicrophonePitchCoordinator.retarget(requestedOwner, targetMidi)
 
         override fun stop() = this@MicrophonePitchCoordinator.stop(requestedOwner)
 

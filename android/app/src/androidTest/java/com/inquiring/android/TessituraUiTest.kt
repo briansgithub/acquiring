@@ -54,7 +54,8 @@ class TessituraUiTest {
             SemanticsMatcher.expectValue(
                 SemanticsProperties.StateDescription,
                 "Tessitura adjusted"
-            )
+            ),
+            useUnmergedTree = true
         ).assertCountEquals(2)
         composeTestRule.onNodeWithText("Pitch 1").assertDoesNotExist()
         composeTestRule.onNodeWithText("Pitch 2").assertDoesNotExist()
@@ -117,11 +118,15 @@ class TessituraUiTest {
         }
         composeTestRule.mainClock.autoAdvance = false
 
-        composeTestRule.onNodeWithText("Set Tessitura").performClick()
+        composeTestRule.onNodeWithContentDescription(
+            "Match target pitch to your comfortable singing tessitura. Hum a note to calibrate. Song and source-object playback are unaffected; target previews follow this setting."
+        ).performClick()
+        composeTestRule.mainClock.advanceTimeByFrame()
         composeTestRule.onNodeWithTag(TESSITURA_CALIBRATION_MODAL_TEST_TAG).assertExists()
         composeTestRule.onNodeWithTag(TESSITURA_CALIBRATION_CARD_TEST_TAG).assertExists()
 
         composeTestRule.onNodeWithText("Cancel").performClick()
+        composeTestRule.mainClock.advanceTimeByFrame()
         composeTestRule.onNodeWithTag(TESSITURA_CALIBRATION_CARD_TEST_TAG).assertDoesNotExist()
     }
 
@@ -152,6 +157,30 @@ class TessituraUiTest {
     }
 
     @Test
+    fun tessituraControlShowsSingingOctaveAndStopsAtBothBounds() {
+        val shift = mutableStateOf(4)
+        composeTestRule.setContent {
+            MaterialTheme {
+                TessituraControl(
+                    octaveShift = shift.value,
+                    canCalibrate = true,
+                    onOctaveShiftChange = { shift.value = it },
+                    pitchSource = FakePitchSource(),
+                    recordAudioPermissionOverride = true
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithText("Singing octave").assertExists()
+        composeTestRule.onNodeWithContentDescription("Raise tessitura shift by one octave").performClick()
+        composeTestRule.runOnIdle { assertEquals(4, shift.value) }
+
+        composeTestRule.runOnIdle { shift.value = -4 }
+        composeTestRule.onNodeWithContentDescription("Lower tessitura shift by one octave").performClick()
+        composeTestRule.runOnIdle { assertEquals(-4, shift.value) }
+    }
+
+    @Test
     fun clearingTheShiftKeepsLoadedTargets() {
         val shift = mutableStateOf(1)
         val pitchSource = FakePitchSource()
@@ -175,7 +204,8 @@ class TessituraUiTest {
             SemanticsMatcher.expectValue(
                 SemanticsProperties.StateDescription,
                 "Original target octave"
-            )
+            ),
+            useUnmergedTree = true
         ).assertCountEquals(2)
     }
 

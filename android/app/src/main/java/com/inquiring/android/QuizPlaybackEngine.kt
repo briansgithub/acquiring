@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.concurrent.thread
+import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -49,8 +50,30 @@ internal data class QuizPlaybackConfig(
     val waveform: AudioEngine.Waveform,
     val chordMode: QuizChordMode,
     val melodyGain: Float,
-    val chordGain: Float
+    val chordGain: Float,
+    val arpeggiateCycles: Int = 0
 )
+
+internal fun arpeggioToneIndex(
+    elapsedBeats: Double,
+    noteCount: Int,
+    cyclesPerBeat: Int
+): Int {
+    if (noteCount <= 1 || cyclesPerBeat <= 0) return 0
+    val slotsPerBeat = noteCount.toLong() * cyclesPerBeat.toLong()
+    val slot = floor(elapsedBeats.coerceAtLeast(0.0) * slotsPerBeat).toLong()
+    return (slot % noteCount).toInt()
+}
+
+internal fun arpeggioSlotProgress(
+    elapsedBeats: Double,
+    noteCount: Int,
+    cyclesPerBeat: Int
+): Double {
+    if (noteCount <= 1 || cyclesPerBeat <= 0) return 0.0
+    val exactSlot = elapsedBeats.coerceAtLeast(0.0) * noteCount * cyclesPerBeat
+    return exactSlot - floor(exactSlot)
+}
 
 internal enum class QuizPlaybackPhase { STOPPED, BUFFERING, PLAYING, PAUSED, ERROR }
 
@@ -114,9 +137,10 @@ internal class QuizPcmRenderer(
         val waveformOrPitchChanged = sanitized.waveform != config.waveform ||
             sanitized.transpose != config.transpose
         val chordModeChanged = sanitized.chordMode != config.chordMode
+        val arpeggioChanged = sanitized.arpeggiateCycles != config.arpeggiateCycles
         config = sanitized
 
-        if (waveformOrPitchChanged || chordModeChanged) {
+        if (waveformOrPitchChanged || chordModeChanged || arpeggioChanged) {
             val affectedLayers = if (waveformOrPitchChanged) {
                 QuizAudioLayer.entries.toSet()
             } else {
@@ -191,12 +215,36 @@ internal class QuizPcmRenderer(
                 } else {
                     currentChordGain
                 }
-                var oscillatorSum = 0.0
-                var oscillatorIndex = 0
-                while (oscillatorIndex < active.oscillators.size) {
-                    oscillatorSum += active.oscillators[oscillatorIndex]
-                        .nextSample(envelope, elapsedSeconds) * NOTE_GAIN
-                    oscillatorIndex++
+                val isArpeggiatedChord = active.event.layer == QuizAudioLayer.CHORD &&
+                    config.arpeggiateCycles > 0 && active.oscillators.size > 1
+                val oscillatorSum = if (isArpeggiatedChord) {
+                    val elapsedBeats = (beat - active.event.startBeat).coerceAtLeast(0.0)
+                    val slotProgress = arpeggioSlotProgress(
+                        elapsedBeats,
+                        active.oscillators.size,
+                        config.arpeggiateCycles
+                    )
+                    val slotEnvelope = minOf(
+                        (slotProgress / 0.08).coerceIn(0.0, 1.0),
+                        ((1.0 - slotProgress) / 0.12).coerceIn(0.0, 1.0)
+                    )
+                    val toneIndex = arpeggioToneIndex(
+                        elapsedBeats,
+                        active.oscillators.size,
+                        config.arpeggiateCycles
+                    )
+                    active.oscillators[toneIndex]
+                        .nextSample(envelope * slotEnvelope, elapsedSeconds, arpeggiated = true) *
+                        NOTE_GAIN * slotEnvelope
+                } else {
+                    var sum = 0.0
+                    var oscillatorIndex = 0
+                    while (oscillatorIndex < active.oscillators.size) {
+                        sum += active.oscillators[oscillatorIndex]
+                            .nextSample(envelope, elapsedSeconds) * NOTE_GAIN
+                        oscillatorIndex++
+                    }
+                    sum
                 }
                 mixed += oscillatorSum * envelope * active.transitionGain * layerGain
                 active.ageFrames++
@@ -291,7 +339,8 @@ internal class QuizPcmRenderer(
     private fun QuizPlaybackConfig.sanitized(): QuizPlaybackConfig = copy(
         bpm = bpm.coerceAtLeast(0.0),
         melodyGain = melodyGain.coerceIn(0f, 1f),
-        chordGain = chordGain.coerceIn(0f, 1f)
+        chordGain = chordGain.coerceIn(0f, 1f),
+        arpeggiateCycles = arpeggiateCycles.coerceIn(0, 8)
     )
 
     companion object {

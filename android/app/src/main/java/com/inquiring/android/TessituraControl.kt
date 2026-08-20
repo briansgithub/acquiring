@@ -38,6 +38,7 @@ private const val CALIBRATION_DROPOUT_GRACE_MS = 1000
 internal const val TESSITURA_CALIBRATION_CARD_TEST_TAG = "tessitura-calibration-card"
 internal const val TESSITURA_CALIBRATION_MODAL_TEST_TAG = "tessitura-calibration-modal"
 internal const val TESSITURA_CONTROL_TEST_TAG = "tessitura-control"
+internal val QUIZ_HEADER_CONTROL_HEIGHT = 52.dp
 
 internal sealed interface TessituraCalibrationStatus {
     object Idle : TessituraCalibrationStatus
@@ -242,7 +243,9 @@ internal fun TessituraControl(
     }
 
     Row(
-        modifier = modifier.testTag(TESSITURA_CONTROL_TEST_TAG),
+        modifier = modifier
+            .height(QUIZ_HEADER_CONTROL_HEIGHT)
+            .testTag(TESSITURA_CONTROL_TEST_TAG),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Surface(
@@ -251,28 +254,40 @@ internal fun TessituraControl(
             shape = RoundedCornerShape(50),
             color = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            modifier = Modifier.semantics {
-                contentDescription = "Match target pitch to your comfortable singing tessitura. Hum a note to calibrate. Song and source-object playback are unaffected; target previews follow this setting."
-            }
+            modifier = Modifier
+                .fillMaxHeight()
+                .semantics {
+                    contentDescription = "Match target pitch to your comfortable singing tessitura. Hum a note to calibrate. Song and source-object playback are unaffected; target previews follow this setting."
+                }
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(horizontal = 10.dp, vertical = 3.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("🎤", fontSize = 14.sp)
                 Spacer(modifier = Modifier.width(4.dp))
-                Text("Set Tessitura", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold)
+                Column(horizontalAlignment = Alignment.Start) {
+                    Text("Set Tessitura", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold)
+                    Text("Singing octave", style = MaterialTheme.typography.labelSmall)
+                }
             }
         }
         Spacer(modifier = Modifier.width(6.dp))
         val octaveShiftText = if (octaveShift > 0) "+$octaveShift" else "$octaveShift"
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            modifier = Modifier.fillMaxHeight(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
             Icon(
                 Icons.Default.KeyboardArrowUp,
                 contentDescription = "Raise tessitura shift by one octave",
                 modifier = Modifier
-                    .size(18.dp)
-                    .clickable { onOctaveShiftChange(octaveShift + 1) }
+                    .size(16.dp)
+                    .clickable(enabled = octaveShift < 4) { onOctaveShiftChange(octaveShift + 1) },
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (octaveShift < 4) 1f else 0.3f)
             )
             Text(
                 text = octaveShiftText,
@@ -287,8 +302,9 @@ internal fun TessituraControl(
                 Icons.Default.KeyboardArrowDown,
                 contentDescription = "Lower tessitura shift by one octave",
                 modifier = Modifier
-                    .size(18.dp)
-                    .clickable { onOctaveShiftChange(octaveShift - 1) }
+                    .size(16.dp)
+                    .clickable(enabled = octaveShift > -4) { onOctaveShiftChange(octaveShift - 1) },
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (octaveShift > -4) 1f else 0.3f)
             )
         }
     }

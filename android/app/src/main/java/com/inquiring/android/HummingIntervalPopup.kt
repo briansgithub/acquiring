@@ -324,7 +324,7 @@ internal fun HummingIntervalPopup(
         val target = activeTarget ?: return@LaunchedEffect
         val slotId = activeListenSlot ?: return@LaunchedEffect
         val assignedTarget = targetForSlot(target, slotId) ?: return@LaunchedEffect
-        pitchTracker.start(assignedTarget.effectiveTargetMidi(globalTranspose, octaveShift))
+        pitchTracker.retarget(assignedTarget.effectiveTargetMidi(globalTranspose, octaveShift))
     }
 
     // Every microphone feature is represented by exactly one action. Switching
@@ -561,7 +561,7 @@ internal fun HummingIntervalPopup(
                     isRecording = recordingSlot == 1,
                     isListening = activeListenSlot == 1,
                     isInteractionEnabled = !flipFlopEnabled,
-                    isTessituraAdjusted = activeTarget?.first != null && octaveShift != 0,
+                    isTessituraAdjusted = octaveShift != 0,
                     recordingTimeRemaining = if (recordingSlot == 1) recordingTimeRemaining else if (activeListenSlot == 1) listenTimeRemaining else 0,
                     onSingleClick = {
                         recordedPitchPlaybackFrequency(slot1)?.let { frequencyHz ->
@@ -597,7 +597,7 @@ internal fun HummingIntervalPopup(
                     isRecording = recordingSlot == 2,
                     isListening = activeListenSlot == 2,
                     isInteractionEnabled = !flipFlopEnabled,
-                    isTessituraAdjusted = activeTarget?.second != null && octaveShift != 0,
+                    isTessituraAdjusted = octaveShift != 0,
                     recordingTimeRemaining = if (recordingSlot == 2) recordingTimeRemaining else if (activeListenSlot == 2) listenTimeRemaining else 0,
                     onSingleClick = {
                         recordedPitchPlaybackFrequency(slot2)?.let { frequencyHz ->

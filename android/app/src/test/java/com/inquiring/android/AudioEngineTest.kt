@@ -5,6 +5,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -15,6 +16,13 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
 class AudioEngineTest {
+
+    @Test
+    fun cyclesPerBeatStep_evenlyFitsEveryChordToneInsideTheBeat() {
+        assertEquals(167, AudioEngine.cyclesPerBeatStepSamples(120.0, 3, 1, sampleRate = 1_000))
+        assertEquals(83, AudioEngine.cyclesPerBeatStepSamples(120.0, 3, 2, sampleRate = 1_000))
+        assertEquals(0, AudioEngine.cyclesPerBeatStepSamples(120.0, 3, 0, sampleRate = 1_000))
+    }
 
     @Test
     fun staticPlaybackSampleCount_longDurationsAreCheckedAndCapped() {

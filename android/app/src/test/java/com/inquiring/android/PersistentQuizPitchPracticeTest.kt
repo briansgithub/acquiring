@@ -443,6 +443,20 @@ class PersistentQuizPitchPracticeTest {
     }
 
     @Test
+    fun activePracticeRetargetsWithoutReclaimingOrRestartingTheSource() {
+        val source = FakeExclusivePitchSource()
+        val controller = PersistentQuizPitchController(source)
+        controller.activate(PersistentPitchSelection.Melody, 72, hasRecordPermission = true)
+
+        controller.updateTarget(74)
+
+        assertEquals(listOf(72), source.startedTargets)
+        assertEquals(listOf(74), source.retargetedTargets)
+        assertEquals(1, source.claimedModes.size)
+        assertEquals(PersistentPitchPhase.LISTENING, controller.phase)
+    }
+
+    @Test
     fun effectiveTargetIncludesManualTransposeAndTessituraShift() {
         val resolved = ResolvedPersistentPitchTarget(
             sourceMidi = 60,
@@ -532,11 +546,16 @@ class PersistentQuizPitchPracticeTest {
         )
         override val pitchFlow: StateFlow<MicrophonePitchTracker.PitchResult> = flow
         val startedTargets = mutableListOf<Int>()
+        val retargetedTargets = mutableListOf<Int>()
         var stopCount = 0
         var releaseCount = 0
 
         override fun start(targetMidi: Int) {
             startedTargets += targetMidi
+        }
+
+        override fun retarget(targetMidi: Int) {
+            retargetedTargets += targetMidi
         }
 
         override fun stop() {
@@ -557,6 +576,7 @@ class PersistentQuizPitchPracticeTest {
         override val ownsMicrophone: StateFlow<Boolean> = ownership
         val claimedModes = mutableListOf<PitchTrackingMode>()
         val startedTargets = mutableListOf<Int>()
+        val retargetedTargets = mutableListOf<Int>()
 
         override fun claim(trackingMode: PitchTrackingMode) {
             claimedModes += trackingMode
@@ -565,6 +585,10 @@ class PersistentQuizPitchPracticeTest {
 
         override fun start(targetMidi: Int) {
             startedTargets += targetMidi
+        }
+
+        override fun retarget(targetMidi: Int) {
+            retargetedTargets += targetMidi
         }
 
         override fun stop() {

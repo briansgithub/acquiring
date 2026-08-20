@@ -108,6 +108,21 @@ class PitchSmootherTest {
     }
 
     @Test
+    fun retargetClearsHistoryAndScoresOnlyAgainstTheNewTarget() {
+        val smoother = PitchSmoother(60)
+        publish(smoother, listOf(60.0, 60.0, 60.0, 60.0))
+
+        smoother.retarget(64)
+
+        assertNull(smoother.accept(64.0, 0.9))
+        assertNull(smoother.accept(64.0, 0.9))
+        assertNull(smoother.accept(64.0, 0.9))
+        val first = smoother.accept(64.0, 0.9)
+        assertNotNull(first)
+        assertEquals(0.0, first!!.centsError, 1e-9)
+    }
+
+    @Test
     fun centsErrorTracksTheTargetItWasBuiltWith() {
         val smoother = PitchSmoother(69) // A4
         val published = publish(smoother, List(6) { 69.0 })

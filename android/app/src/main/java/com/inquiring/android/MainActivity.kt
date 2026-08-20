@@ -275,6 +275,8 @@ internal fun MainScreen(
     var showLetterNames by remember { mutableStateOf(false) }
     var isArpeggiated by remember { mutableStateOf(false) }
     var arpeggioStepMs by remember { mutableStateOf(80f) }
+    var quizTempoPercent by remember(selectedSong?.slug) { mutableStateOf(100f) }
+    var quizArpeggiateCycles by remember(selectedSong?.slug) { mutableStateOf(0) }
     var isShowingRecent by remember { mutableStateOf(false) }
     var isShowingRecentArtists by remember { mutableStateOf(false) }
     var currentWaveform by remember { mutableStateOf(AudioEngine.Waveform.SAWTOOTH) }
@@ -331,6 +333,12 @@ internal fun MainScreen(
     LaunchedEffect(singingSessionKey) {
         singingSessionKey?.let(tessituraSessionViewModel::enterSession)
         singingTargetRequest = null
+    }
+    LaunchedEffect(selectedSong?.slug) {
+        if (selectedSong != null) {
+            globalTranspose = 0
+            AudioEngine.globalTranspose = 0
+        }
     }
     val returnToParent = {
         browseOpenJob?.cancel()
@@ -751,6 +759,10 @@ internal fun MainScreen(
                         AudioEngine.currentWaveform = it
                     },
                     globalTranspose = globalTranspose,
+                    quizTempoPercent = quizTempoPercent,
+                    onQuizTempoPercentChange = { quizTempoPercent = it },
+                    quizArpeggiateCycles = quizArpeggiateCycles,
+                    onQuizArpeggiateCyclesChange = { quizArpeggiateCycles = it },
                     onTransposeChange = {
                         globalTranspose = it
                         AudioEngine.globalTranspose = it
@@ -1139,6 +1151,10 @@ fun SongDetailView(
     currentWaveform: AudioEngine.Waveform,
     onWaveformChange: (AudioEngine.Waveform) -> Unit,
     globalTranspose: Int,
+    quizTempoPercent: Float,
+    onQuizTempoPercentChange: (Float) -> Unit,
+    quizArpeggiateCycles: Int,
+    onQuizArpeggiateCyclesChange: (Int) -> Unit,
     onTransposeChange: (Int) -> Unit,
     quizPlayButtonXFraction: Float,
     quizPlayButtonYFraction: Float,
@@ -1178,7 +1194,7 @@ fun SongDetailView(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(32.dp)
+                    .height(QUIZ_HEADER_CONTROL_HEIGHT)
                     .border(
                         width = 1.dp,
                         color = MaterialTheme.colorScheme.outline,
@@ -1421,6 +1437,10 @@ fun SongDetailView(
                 tessituraControl = tessituraControl,
                 onKeyDisplayChange = { quizKeyDisplay = it },
                 globalTranspose = globalTranspose,
+                tempoPercent = quizTempoPercent,
+                onTempoPercentChange = onQuizTempoPercentChange,
+                arpeggiateCycles = quizArpeggiateCycles,
+                onArpeggiateCyclesChange = onQuizArpeggiateCyclesChange,
                 quizPlayButtonXFraction = quizPlayButtonXFraction,
                 quizPlayButtonYFraction = quizPlayButtonYFraction,
                 onQuizPlayButtonPositionChange = onQuizPlayButtonPositionChange,
@@ -1493,7 +1513,9 @@ private val QUIZ_CARD_STACK_HEIGHT = QUIZ_CARD_STACK_TOP_INSET +
 @Composable
 private fun QuizRowLabel(text: String, modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier.width(QUIZ_ROW_LABEL_WIDTH),
+        modifier = modifier
+            .width(QUIZ_ROW_LABEL_WIDTH)
+            .fillMaxHeight(),
         contentAlignment = Alignment.CenterStart
     ) {
         Text(
@@ -1674,6 +1696,10 @@ fun QuizTab(
     tessituraControl: @Composable () -> Unit,
     onKeyDisplayChange: (QuizKeyDisplay?) -> Unit,
     globalTranspose: Int,
+    tempoPercent: Float,
+    onTempoPercentChange: (Float) -> Unit,
+    arpeggiateCycles: Int,
+    onArpeggiateCyclesChange: (Int) -> Unit,
     quizPlayButtonXFraction: Float,
     quizPlayButtonYFraction: Float,
     onQuizPlayButtonPositionChange: (Float, Float) -> Unit,
@@ -1686,7 +1712,6 @@ fun QuizTab(
         ?: error("QuizTab requires an exclusive persistent pitch source")
     val baseBpm = section.getBpm().toFloat().coerceIn(40f, 240f)
     val isTessituraAdjusted = tessituraShiftOctaves != 0
-    var tempoPercent by remember(section) { mutableStateOf(100f) }
     val bpm = (baseBpm * tempoPercent / 100f).toDouble()
 
     val notesJson = when (val rawNotes = section.notes) {
@@ -1753,7 +1778,8 @@ fun QuizTab(
         waveform = currentWaveform,
         chordMode = if (isSimpleMode) QuizChordMode.ROOT_ONLY else QuizChordMode.FULL,
         melodyGain = melodyVolume,
-        chordGain = chordVolume
+        chordGain = chordVolume,
+        arpeggiateCycles = arpeggiateCycles
     )
     val quizPlaybackEngine = remember {
         QuizPlaybackEngine(playbackConfig)
@@ -2124,7 +2150,7 @@ fun QuizTab(
             rootIntervalPreviewSteps(
                 previousAudioNote = previous.toAudioNoteNumber(),
                 currentAudioNote = current.toAudioNoteNumber(),
-                octaveShiftSemitones = 0,
+                octaveShiftSemitones = tessituraShiftOctaves * 12,
                 durationMs = ROOT_INTERVAL_PREVIEW_DURATION_MS
             ).forEach { step ->
                 AudioEngine.playChord(
@@ -2142,7 +2168,7 @@ fun QuizTab(
         AudioEngine.stopPreviewPlayback()
         intervalPreviewJob = scope.launch {
             AudioEngine.playChord(
-                listOf(pitch.toAudioNoteNumber()),
+                listOf(pitch.toAudioNoteNumber() + tessituraShiftOctaves * 12),
                 durationMs = ROOT_INTERVAL_PREVIEW_DURATION_MS,
                 channel = AudioEngine.PlaybackChannel.PREVIEW
             )
@@ -2285,6 +2311,51 @@ fun QuizTab(
         }
     }
 
+    LaunchedEffect(resolvedPersistentPitchTarget, globalTranspose, tessituraShiftOctaves) {
+        val target = resolvedPersistentPitchTarget ?: return@LaunchedEffect
+        persistentPitchController.updateTarget(
+            target.effectiveTargetMidi(globalTranspose, tessituraShiftOctaves)
+        )
+    }
+
+    val latestMelodyTarget by rememberUpdatedState(melodyPersistentPitchTarget)
+    val latestSimpleRootTarget by rememberUpdatedState(simpleRootPitchTarget)
+    val latestChordToneTargets by rememberUpdatedState(currentChordToneTargets)
+    val latestTogglePersistentPitch = rememberUpdatedState(
+        newValue = { selection: PersistentPitchSelection,
+                     isDisplayedTargetActive: Boolean,
+                     target: QuizPitchCardTarget? ->
+            togglePersistentPitch(selection, isDisplayedTargetActive, target)
+        }
+    )
+    val handleMelodyLongClick: () -> Unit = remember(persistentPitchController) {
+        {
+            latestTogglePersistentPitch.value(
+                PersistentPitchSelection.Melody,
+                    persistentPitchController.selection == PersistentPitchSelection.Melody,
+                latestMelodyTarget
+            )
+        }
+    }
+    val handleSimpleRootLongClick: () -> Unit = remember(persistentPitchController) {
+        {
+            latestTogglePersistentPitch.value(
+                PersistentPitchSelection.SimpleRoot,
+                    persistentPitchController.selection == PersistentPitchSelection.SimpleRoot,
+                latestSimpleRootTarget
+            )
+        }
+    }
+    val handleChordToneLongClick: (Int) -> Unit = remember(persistentPitchController) {
+        { index ->
+            latestTogglePersistentPitch.value(
+                PersistentPitchSelection.ChordTone(index),
+                    persistentPitchController.selection == PersistentPitchSelection.ChordTone(index),
+                latestChordToneTargets.getOrNull(index)
+            )
+        }
+    }
+
     fun requestSingingTargets(request: SingingTargetRequest) {
         persistentPitchController.cancel()
         // The singing tool needs a quiet room. Opening it from a note card holds the
@@ -2347,19 +2418,21 @@ fun QuizTab(
                             transposePicker()
                         }
                     }
-                    Row(modifier = Modifier.height(34.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text("Tempo", style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Start, maxLines = 1, modifier = Modifier.width(40.dp))
-                        Text(text = "${tempoPercent.roundToInt()}%", style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center, maxLines = 1, modifier = Modifier.width(44.dp))
-                        Box(
-                            modifier = Modifier
-                                .size(20.dp)
-                                .clickable { tempoPercent = 100f }
-                                .semantics { contentDescription = "Reset tempo to 100%" },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(imageVector = Icons.Filled.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
+                    if (isSimpleMode) {
+                        Row(modifier = Modifier.height(34.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Text("Tempo", style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Start, maxLines = 1, modifier = Modifier.width(40.dp))
+                            Text(text = "${tempoPercent.roundToInt()}%", style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center, maxLines = 1, modifier = Modifier.width(44.dp))
+                            Box(
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .clickable { onTempoPercentChange(100f) }
+                                    .semantics { contentDescription = "Reset tempo to 100%" },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(imageVector = Icons.Filled.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
+                            }
+                            Slider(value = tempoPercent, onValueChange = onTempoPercentChange, valueRange = 0f..200f, modifier = Modifier.weight(1f))
                         }
-                        Slider(value = tempoPercent, onValueChange = { tempoPercent = it }, valueRange = 0f..200f, modifier = Modifier.weight(1f))
                     }
                 }
 
@@ -2779,7 +2852,7 @@ fun QuizTab(
                                     modifier = Modifier.weight(1f).fillMaxHeight()
                                         .semantics {
                                             contentDescription = rootInterval?.let {
-                                                "Play root interval ${it.spokenName}. Double tap to sing it back."
+                                                "Play root interval ${it.spokenName}. Double tap to sing it back. Long press to toggle persistent pitch practice."
                                             } ?: "Root interval unavailable"
                                         }
                                         .combinedClickable(
@@ -2810,7 +2883,8 @@ fun QuizTab(
                                                         )
                                                     )
                                                 }
-                                            }
+                                            },
+                                            onLongClick = handleSimpleRootLongClick
                                         ),
                                     shape = RoundedCornerShape(32.dp),
                                     color = MaterialTheme.colorScheme.primary,
@@ -2834,15 +2908,15 @@ fun QuizTab(
                                 }
                                 Surface(
                                     modifier = Modifier.weight(1f).fillMaxHeight()
-                                        .semantics { contentDescription = "Play current root scale degree. Double tap to sing it back. Triple tap to toggle persistent pitch practice." }
-                                        .tripleClickable(
+                                        .semantics { contentDescription = "Play current root scale degree. Double tap to sing it back. Long press to toggle persistent pitch practice." }
+                                        .combinedClickable(
                                             enabled = rootAudioNote > 0,
                                             onClick = {
                                                 intervalPreviewJob?.cancel()
                                                 AudioEngine.stopPreviewPlayback()
                                                 intervalPreviewJob = scope.launch {
                                                     AudioEngine.playChord(
-                                                        listOf(rootAudioNote),
+                                                        listOf(rootAudioNote + tessituraShiftOctaves * 12),
                                                         channel = AudioEngine.PlaybackChannel.PREVIEW
                                                     )
                                                 }
@@ -2858,14 +2932,7 @@ fun QuizTab(
                                                     )
                                                 }
                                             },
-                                            onTripleClick = {
-                                                togglePersistentPitch(
-                                                    selection = PersistentPitchSelection.SimpleRoot,
-                                                    isDisplayedTargetActive =
-                                                        resolvedPersistentPitchTarget?.position == PersistentPitchCardPosition.SimpleRoot,
-                                                    target = simpleRootPitchTarget
-                                                )
-                                            }
+                                            onLongClick = handleSimpleRootLongClick
                                         ),
                                     shape = RoundedCornerShape(32.dp),
                                     color = MaterialTheme.colorScheme.primary,
@@ -2933,9 +3000,9 @@ fun QuizTab(
                                                     .weight(1f)
                                                     .fillMaxHeight()
                                                     .semantics {
-                                                        contentDescription = "Play current melody note ${singleMelodyPitchCard.scaleDegreeLabel}. Double tap to sing it back. Triple tap to toggle persistent pitch practice."
+                                                        contentDescription = "Play current melody note ${singleMelodyPitchCard.scaleDegreeLabel}. Double tap to sing it back. Long press to toggle persistent pitch practice."
                                                     }
-                                                    .tripleClickable(
+                                                    .combinedClickable(
                                                         onClick = {
                                                             playSingleNotePreview(singleMelodyPitchCard.pitch)
                                                         },
@@ -2945,14 +3012,7 @@ fun QuizTab(
                                                                 singleMelodyPitchCard.scaleDegreeLabel
                                                             )
                                                         },
-                                                        onTripleClick = {
-                                                            togglePersistentPitch(
-                                                                selection = PersistentPitchSelection.Melody,
-                                                                isDisplayedTargetActive =
-                                                                    persistentPitchController.selection == PersistentPitchSelection.Melody,
-                                                                target = melodyPersistentPitchTarget
-                                                            )
-                                                        }
+                                                        onLongClick = handleMelodyLongClick
                                                     ),
                                                 shape = RoundedCornerShape(16.dp),
                                                 color = MaterialTheme.colorScheme.primary,
@@ -3017,12 +3077,12 @@ fun QuizTab(
                                                     .height(30.dp)
                                                     .semantics {
                                                         contentDescription = when (pitchCard?.role) {
-                                                            MelodyPitchCardRole.PREVIOUS -> "Play prior melody note ${pitchCard.scaleDegreeLabel}. Double tap to sing it back. Triple tap to toggle persistent pitch practice."
-                                                            MelodyPitchCardRole.CURRENT -> "Play current melody note ${pitchCard.scaleDegreeLabel}. Double tap to sing it back. Triple tap to toggle persistent pitch practice."
+                                                            MelodyPitchCardRole.PREVIOUS -> "Play prior melody note ${pitchCard.scaleDegreeLabel}. Double tap to sing it back. Long press to toggle persistent pitch practice."
+                                                            MelodyPitchCardRole.CURRENT -> "Play current melody note ${pitchCard.scaleDegreeLabel}. Double tap to sing it back. Long press to toggle persistent pitch practice."
                                                             null -> "Melody note unavailable"
                                                         }
                                                     }
-                                                    .tripleClickable(
+                                                    .combinedClickable(
                                                         enabled = pitchCard != null,
                                                         onClick = {
                                                             pitchCard?.let { playSingleNotePreview(it.pitch) }
@@ -3035,16 +3095,7 @@ fun QuizTab(
                                                                 )
                                                             }
                                                         },
-                                                        onTripleClick = {
-                                                            if (pitchCard != null) {
-                                                                togglePersistentPitch(
-                                                                    selection = PersistentPitchSelection.Melody,
-                                                                    isDisplayedTargetActive =
-                                                                        persistentPitchController.selection == PersistentPitchSelection.Melody,
-                                                                    target = melodyPersistentPitchTarget
-                                                                )
-                                                            }
-                                                        }
+                                                        onLongClick = handleMelodyLongClick
                                                     ),
                                                 shape = RoundedCornerShape(16.dp),
                                                 color = MaterialTheme.colorScheme.primary,
@@ -3078,7 +3129,7 @@ fun QuizTab(
                                     Surface(
                                     modifier = Modifier.weight(1f).fillMaxHeight()
                                         .semantics {
-                                            contentDescription = melodyIntervalState?.contentDescription?.let { "$it Double tap to sing it back." }
+                                            contentDescription = melodyIntervalState?.contentDescription?.let { "$it Double tap to sing it back. Long press to toggle persistent pitch practice." }
                                                 ?: "Melody interval unavailable"
                                         }
                                         .combinedClickable(
@@ -3098,7 +3149,8 @@ fun QuizTab(
                                                         )
                                                     )
                                                 }
-                                            }
+                                            },
+                                            onLongClick = handleMelodyLongClick
                                         ),
                                     shape = RoundedCornerShape(16.dp),
                                     color = MaterialTheme.colorScheme.primary,
@@ -3170,7 +3222,7 @@ fun QuizTab(
                                 Row(modifier = Modifier.fillMaxWidth().height(QUIZ_CHORD_ROW_HEIGHT), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                                     QuizRowLabel("Chord")
                                     if (romanDisplay != null) {
-                                        Button(onClick = { scope.launch { chordDurationMs?.let { AudioEngine.playChord(previewNotes, durationMs = it, channel = AudioEngine.PlaybackChannel.PREVIEW) } } }, enabled = chordDurationMs != null, modifier = Modifier.weight(1f).fillMaxHeight(), shape = RoundedCornerShape(16.dp), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)) {
+                                        Button(onClick = { scope.launch { chordDurationMs?.let { AudioEngine.playChord(previewNotes, durationMs = it, arpeggiateCycles = arpeggiateCycles, bpm = bpm, channel = AudioEngine.PlaybackChannel.PREVIEW) } } }, enabled = chordDurationMs != null, modifier = Modifier.weight(1f).fillMaxHeight(), shape = RoundedCornerShape(16.dp), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)) {
                                             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { RomanNumeralText(display = romanDisplay, fontSize = 32.sp, modifier = Modifier.fillMaxWidth(), minFontSize = 12.sp) }
                                         }
                                     } else {
@@ -3179,7 +3231,7 @@ fun QuizTab(
                                 }
                                 Spacer(Modifier.height(QUIZ_CARD_ROW_SPACING))
                                 Row(modifier = Modifier.fillMaxWidth().height(QUIZ_CHORD_TONE_ROW_HEIGHT), horizontalArrangement = Arrangement.spacedBy(degreeSpacing), verticalAlignment = Alignment.CenterVertically) {
-                                            QuizRowLabel("Chord tones")
+                                            QuizRowLabel("Chord Tones")
                                             // Degrees are measured from the chord root, so without one
                                             // there is nothing to label: hold the row empty instead.
                                             val toneCards = if (rootMidi > 0) notes else emptyList()
@@ -3199,9 +3251,9 @@ fun QuizTab(
                                                         ?.displayedIndex
                                                 Surface(
                                                     modifier = Modifier.weight(1f).fillMaxHeight()
-                                                        .semantics { contentDescription = "Play scale degree $internalLabel. Double tap to sing it back. Triple tap to toggle persistent pitch practice." }
-                                                        .tripleClickable(
-                                                            onClick = { scope.launch { AudioEngine.playChord(listOf(previewNote), channel = AudioEngine.PlaybackChannel.PREVIEW) } },
+                                                        .semantics { contentDescription = "Play scale degree $internalLabel. Double tap to sing it back. Long press to toggle persistent pitch practice." }
+                                                        .combinedClickable(
+                                                            onClick = { scope.launch { AudioEngine.playChord(listOf(previewNote + tessituraShiftOctaves * 12), channel = AudioEngine.PlaybackChannel.PREVIEW) } },
                                                             onDoubleClick = {
                                                                 requestSingingTargets(
                                                                     SingingTargetRequest(
@@ -3211,13 +3263,7 @@ fun QuizTab(
                                                                     )
                                                                 )
                                                             },
-                                                            onTripleClick = {
-                                                                togglePersistentPitch(
-                                                                    selection = PersistentPitchSelection.ChordTone(index),
-                                                                    isDisplayedTargetActive = activeChordToneIndex == index,
-                                                                    target = cardTarget
-                                                                )
-                                                            }
+                                                            onLongClick = { handleChordToneLongClick(index) }
                                                         ),
                                                     shape = RoundedCornerShape(14.dp),
                                                     color = MaterialTheme.colorScheme.primary,
@@ -3252,6 +3298,35 @@ fun QuizTab(
                         onValueChange = { melodyChordBalance = it },
                         trackLength = balanceFaderHeight
                     )
+                    }
+
+                    if (!isSimpleMode) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.Top
+                        ) {
+                            QuizDial(
+                                label = "Tempo",
+                                valueLabel = "${tempoPercent.roundToInt()}%",
+                                value = tempoPercent,
+                                onValueChange = onTempoPercentChange,
+                                valueRange = 0f..200f,
+                                steps = 200,
+                                onTap = { onTempoPercentChange(100f) },
+                                modifier = Modifier.weight(1f)
+                            )
+                            QuizDial(
+                                label = "Arpeggiate",
+                                valueLabel = "cycles per beat",
+                                value = arpeggiateCycles.toFloat(),
+                                onValueChange = { onArpeggiateCyclesChange(it.roundToInt()) },
+                                valueRange = 0f..8f,
+                                steps = 8,
+                                ringLabels = listOf("off", "1", "2", "3", "4", "5", "6", "7", "8"),
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.weight(1f))

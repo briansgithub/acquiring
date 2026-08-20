@@ -19,6 +19,47 @@ import java.util.concurrent.atomic.AtomicLong
 @Config(manifest = Config.NONE)
 class QuizPlaybackEngineTest {
 
+    @Test
+    fun arpeggioToneIndex_usesEveryToneBeforeRestartingAtTheBeatBoundary() {
+        val singleCycleTriad = (0 until 3).map { slot ->
+            arpeggioToneIndex(slot / 3.0, noteCount = 3, cyclesPerBeat = 1)
+        }
+        val triadSlots = (0 until 6).map { slot ->
+            arpeggioToneIndex(slot / 6.0, noteCount = 3, cyclesPerBeat = 2)
+        }
+        val eightCycleSeventhChord = (0 until 32).map { slot ->
+            arpeggioToneIndex(slot / 32.0, noteCount = 4, cyclesPerBeat = 8)
+        }
+
+        assertEquals(listOf(0, 1, 2), singleCycleTriad)
+        assertEquals(listOf(0, 1, 2, 0, 1, 2), triadSlots)
+        assertEquals(List(8) { listOf(0, 1, 2, 3) }.flatten(), eightCycleSeventhChord)
+        assertEquals(2, arpeggioToneIndex(1.0 - 1e-9, 3, 2))
+        assertEquals(3, arpeggioToneIndex(1.0 - 1e-9, 4, 8))
+        assertEquals(0, arpeggioToneIndex(1.0, 3, 2))
+        assertEquals(0, arpeggioToneIndex(1.0, 4, 8))
+        assertEquals(0, arpeggioToneIndex(0.75, 4, 0))
+    }
+
+    @Test
+    fun renderer_appliesArpeggioChangeWithoutMovingOrSilencingTheCurrentBeat() {
+        val chord = event(1, 1.0, 4.0, QuizAudioLayer.CHORD, 48, 52, 55)
+        val renderer = QuizPcmRenderer(
+            QuizTimeline(endBeat = 5.0, events = listOf(chord)),
+            config(),
+            sampleRate = 1_000
+        )
+        renderer.renderInto(ShortArray(125))
+        val beatBeforeChange = renderer.currentBeat
+        val arpeggiated = ShortArray(125)
+
+        renderer.updateConfig(config().copy(arpeggiateCycles = 2))
+        renderer.renderInto(arpeggiated)
+
+        assertEquals(beatBeforeChange + 0.125, renderer.currentBeat, 1e-9)
+        assertTrue(arpeggiated.any { it.toInt() != 0 })
+    }
+
     private fun config(
         bpm: Double = 60.0,
         chordMode: QuizChordMode = QuizChordMode.FULL,

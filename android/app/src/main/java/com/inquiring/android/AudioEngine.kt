@@ -12,6 +12,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.math.roundToInt
 
 object AudioEngine {
     private const val SAMPLE_RATE = 44100
@@ -93,6 +94,18 @@ object AudioEngine {
             SAMPLE_RATE.toLong() * durationMs.coerceAtLeast(1) / 1_000L
         }
         return requestedSamples.coerceIn(200L, maxStaticSamples).toInt()
+    }
+
+    internal fun cyclesPerBeatStepSamples(
+        bpm: Double,
+        noteCount: Int,
+        cyclesPerBeat: Int,
+        sampleRate: Int = SAMPLE_RATE
+    ): Int {
+        if (bpm <= 0.0 || noteCount <= 0 || cyclesPerBeat <= 0) return 0
+        return (sampleRate * 60.0 / (bpm * noteCount * cyclesPerBeat))
+            .roundToInt()
+            .coerceAtLeast(1)
     }
 
     internal fun staticTrackCanAcceptData(state: Int): Boolean =
@@ -389,6 +402,8 @@ object AudioEngine {
         durationMs: Int = 450,
         arpeggiate: Boolean = false,
         stepMs: Int = 80,
+        arpeggiateCycles: Int = 0,
+        bpm: Double = 120.0,
         volume: Float = 1.0f,
         channel: PlaybackChannel = PlaybackChannel.CHORD,
         fadeInMs: Int = 0,
@@ -397,7 +412,18 @@ object AudioEngine {
         val validNotes = midiNotes.filter { it > 0 }.map { it + globalTranspose }
         if (validNotes.isEmpty()) return null
         val freqs = validNotes.map { midi -> 440.0 * Math.pow(2.0, (midi - 69) / 12.0) }
-        return synthesizeNotes(freqs, durationMs, arpeggiate, stepMs, volume, channel, fadeInMs, playbackToken)
+        return synthesizeNotes(
+            freqs,
+            durationMs,
+            arpeggiate,
+            stepMs,
+            arpeggiateCycles,
+            bpm,
+            volume,
+            channel,
+            fadeInMs,
+            playbackToken
+        )
     }
 
     /**
@@ -415,7 +441,18 @@ object AudioEngine {
     ) {
         val exactFrequencies = literalPlaybackFrequencies(frequenciesHz)
         if (exactFrequencies.isEmpty()) return
-        val prepared = synthesizeNotes(exactFrequencies, durationMs, arpeggiate = false, stepMs = 80, volume, channel, fadeInMs, playbackToken)
+        val prepared = synthesizeNotes(
+            exactFrequencies,
+            durationMs,
+            arpeggiate = false,
+            stepMs = 80,
+            arpeggiateCycles = 0,
+            bpm = 120.0,
+            volume = volume,
+            channel = channel,
+            fadeInMs = fadeInMs,
+            playbackToken = playbackToken
+        )
             ?: return
         if (!currentCoroutineContext().isActive) {
             releasePreparedPlayback(prepared)
@@ -432,6 +469,8 @@ object AudioEngine {
         durationMs: Int,
         arpeggiate: Boolean,
         stepMs: Int,
+        arpeggiateCycles: Int,
+        bpm: Double,
         volume: Float,
         channel: PlaybackChannel,
         fadeInMs: Int,
@@ -452,15 +491,26 @@ object AudioEngine {
         if (validNotes.isEmpty()) return@withContext null
 
         val numNotes = validNotes.size
-        val stepSamples = (SAMPLE_RATE.toLong() * stepMs.coerceAtLeast(1) / 1_000L)
-            .coerceIn(200L, Int.MAX_VALUE.toLong())
-            .toInt()
-        val numSamples = staticPlaybackSampleCount(
-            durationMs = durationMs,
-            arpeggiate = arpeggiate,
-            noteCount = numNotes,
-            stepMs = stepMs
-        )
+        val cycleMode = arpeggiateCycles > 0 && bpm > 0.0 && numNotes > 1
+        val stepSamples = if (cycleMode) {
+            cyclesPerBeatStepSamples(bpm, numNotes, arpeggiateCycles)
+        } else {
+            (SAMPLE_RATE.toLong() * stepMs.coerceAtLeast(1) / 1_000L)
+                .coerceIn(200L, Int.MAX_VALUE.toLong())
+                .toInt()
+        }
+        val numSamples = if (cycleMode) {
+            (SAMPLE_RATE.toLong() * durationMs.coerceAtLeast(1) / 1_000L)
+                .coerceIn(200L, SAMPLE_RATE.toLong() * MAX_STATIC_PLAYBACK_MS / 1_000L)
+                .toInt()
+        } else {
+            staticPlaybackSampleCount(
+                durationMs = durationMs,
+                arpeggiate = arpeggiate,
+                noteCount = numNotes,
+                stepMs = stepMs
+            )
+        }
 
         val samples = ShortArray(numSamples)
 
@@ -475,7 +525,7 @@ object AudioEngine {
             }
             var sum = 0.0
 
-            if (!arpeggiate || numNotes <= 1) {
+            if ((!arpeggiate && !cycleMode) || numNotes <= 1) {
                 // Simultaneous block chord
                 val env = when {
                     i < 200 -> i / 200.0
@@ -493,7 +543,11 @@ object AudioEngine {
                 }
             } else {
                 // Non-overlapping monophonic arpeggiated chord
-                val noteIdx = (i / stepSamples).coerceIn(0, numNotes - 1)
+                val noteIdx = if (cycleMode) {
+                    (i / stepSamples) % numNotes
+                } else {
+                    (i / stepSamples).coerceIn(0, numNotes - 1)
+                }
                 val noteSampleIdx = i % stepSamples
                 val voice = voices[noteIdx]
                 val noteElapsedSeconds = noteSampleIdx / SAMPLE_RATE.toDouble()
@@ -592,6 +646,8 @@ object AudioEngine {
         durationMs: Int = 450,
         arpeggiate: Boolean = false,
         stepMs: Int = 80,
+        arpeggiateCycles: Int = 0,
+        bpm: Double = 120.0,
         volume: Float = 1.0f,
         channel: PlaybackChannel = PlaybackChannel.CHORD,
         fadeInMs: Int = 0,
@@ -601,6 +657,8 @@ object AudioEngine {
         durationMs = durationMs,
         arpeggiate = arpeggiate,
         stepMs = stepMs,
+        arpeggiateCycles = arpeggiateCycles,
+        bpm = bpm,
         volume = volume,
         channel = channel,
         fadeInMs = fadeInMs,
@@ -612,6 +670,8 @@ object AudioEngine {
         durationMs: Int = 450,
         arpeggiate: Boolean = false,
         stepMs: Int = 80,
+        arpeggiateCycles: Int = 0,
+        bpm: Double = 120.0,
         volume: Float = 1.0f,
         channel: PlaybackChannel = PlaybackChannel.CHORD,
         fadeInMs: Int = 0,
@@ -622,6 +682,8 @@ object AudioEngine {
             durationMs = durationMs,
             arpeggiate = arpeggiate,
             stepMs = stepMs,
+            arpeggiateCycles = arpeggiateCycles,
+            bpm = bpm,
             volume = volume,
             channel = channel,
             fadeInMs = fadeInMs,

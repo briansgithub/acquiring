@@ -509,6 +509,12 @@ internal class PersistentQuizPitchController(
         phase = PersistentPitchPhase.IDLE
     }
 
+    fun updateTarget(targetMidi: Int) {
+        if (phase != PersistentPitchPhase.LISTENING) return
+        initialTargetMidi = targetMidi
+        pitchSource.retarget(targetMidi)
+    }
+
     fun cancel() {
         pitchSource.stop()
         selection = null

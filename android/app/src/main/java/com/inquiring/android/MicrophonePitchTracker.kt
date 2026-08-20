@@ -28,6 +28,9 @@ class MicrophonePitchTracker(
     @Volatile
     private var running = false
 
+    @Volatile
+    private var currentTargetMidi = 60
+
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     sealed class PitchResult {
@@ -49,6 +52,7 @@ class MicrophonePitchTracker(
         running = false
         previous?.cancel()
         _pitchFlow.value = PitchResult.NoSignal
+        currentTargetMidi = targetMidi
 
         val analysisWindowSize = trackingMode.windowSizeOverride ?: windowSize
         val analysisHopSize = trackingMode.hopSizeOverride ?: hopSize
@@ -57,7 +61,6 @@ class MicrophonePitchTracker(
             previous?.join()
             running = true
             captureLoop(
-                targetMidi = targetMidi,
                 trackingMode = trackingMode,
                 analysisWindowSize = analysisWindowSize,
                 analysisHopSize = analysisHopSize
@@ -65,9 +68,16 @@ class MicrophonePitchTracker(
         }
     }
 
+    override fun retarget(targetMidi: Int) {
+        if (job == null) {
+            start(targetMidi)
+            return
+        }
+        currentTargetMidi = targetMidi
+    }
+
     @SuppressLint("MissingPermission")
     private suspend fun CoroutineScope.captureLoop(
-        targetMidi: Int,
         trackingMode: PitchTrackingMode,
         analysisWindowSize: Int,
         analysisHopSize: Int
@@ -134,10 +144,18 @@ class MicrophonePitchTracker(
             val rollingBuffer = ShortArray(analysisWindowSize)
             var writeIdx = 0
 
-            val smoother = PitchSmoother(targetMidi, trackingMode)
+            var smootherTargetMidi = currentTargetMidi
+            val smoother = PitchSmoother(smootherTargetMidi, trackingMode)
             var lastValidTime = 0L
 
             while (isActive && running && recorder.recordingState == AudioRecord.RECORDSTATE_RECORDING) {
+                val targetMidi = currentTargetMidi
+                if (targetMidi != smootherTargetMidi) {
+                    smoother.retarget(targetMidi)
+                    smootherTargetMidi = targetMidi
+                    lastValidTime = 0L
+                    _pitchFlow.value = PitchResult.NoSignal
+                }
                 val read = recorder.read(buffer, writeIdx, analysisHopSize)
                 if (read > 0) {
                     writeIdx += read

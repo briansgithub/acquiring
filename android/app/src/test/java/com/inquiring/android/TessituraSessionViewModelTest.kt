@@ -42,4 +42,14 @@ class TessituraSessionViewModelTest {
         assertEquals(0, state.shiftOctaves)
         assertEquals("song-a:verse", state.sessionKey)
     }
+
+    @Test
+    fun adjustmentIsClampedToTheSupportedVocalRange() {
+        val state = TessituraSessionViewModel()
+        state.updateShift(20)
+        assertEquals(4, state.shiftOctaves)
+
+        state.updateShift(-20)
+        assertEquals(-4, state.shiftOctaves)
+    }
 }
