@@ -1,1 +1,1 @@
-# Proguard rules for Inquiring
+# Proguard rules for Acquiring

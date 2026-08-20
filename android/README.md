@@ -1,4 +1,4 @@
-# Inquiring - Android App
+# Acquiring - Android App
 
 Android port of key features from the web player in the parent repository.
 

@@ -3,7 +3,7 @@
  * Offline accuracy harness for PitchDetector.kt.
  *
  * `estimatePitch` below is a faithful line-by-line port of
- * app/src/main/java/com/inquiring/android/PitchDetector.kt, with two behaviours
+ * app/src/main/java/com/acquiring/android/PitchDetector.kt, with two behaviours
  * put behind flags so each can be isolated in the error budget:
  *
  *   opts.descend   - add the canonical YIN local-minimum descent after the
