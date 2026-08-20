@@ -47,13 +47,13 @@ class QuizPlaybackEngineTest {
         val triadSlots = (0 until 6).map { slot ->
             arpeggioToneIndex(slot / 6.0, noteCount = 3, cyclesPerBeat = 2.0)
         }
-        val eightCycleSeventhChord = (0 until 32).map { slot ->
-            arpeggioToneIndex(slot / 32.0, noteCount = 4, cyclesPerBeat = 4.0)
+        val fourCycleSeventhChord = (0 until 16).map { slot ->
+            arpeggioToneIndex(slot / 16.0, noteCount = 4, cyclesPerBeat = 4.0)
         }
 
         assertEquals(listOf(0, 1, 2), singleCycleTriad)
         assertEquals(listOf(0, 1, 2, 0, 1, 2), triadSlots)
-        assertEquals(List(4) { listOf(0, 1, 2, 3) }.flatten(), eightCycleSeventhChord)
+        assertEquals(List(4) { listOf(0, 1, 2, 3) }.flatten(), fourCycleSeventhChord)
         assertEquals(2, arpeggioToneIndex(1.0 - 1e-9, 3, 2.0))
         assertEquals(3, arpeggioToneIndex(1.0 - 1e-9, 4, 4.0))
         assertEquals(0, arpeggioToneIndex(1.0, 3, 2.0))
