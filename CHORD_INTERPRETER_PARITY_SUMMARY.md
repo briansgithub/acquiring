@@ -23,7 +23,7 @@
 
 ### D. Web vs. Android Parity Benchmark Harness
 - **Parity Exporter (`_Decode_oracle/export_parity_corpus.js`)**: Created a Node.js script that extracts 31 representative benchmark test cases from the JS web player engine (`web-player/lib/jsonToSymbol.js` and `web-player/lib/music.js`).
-- **Kotlin Parity Test Suite (`CorpusParityTest.kt`)**: Implemented a JUnit 4 test suite in `android/app/src/test/java/com/inquiring/android/CorpusParityTest.kt` that loads `corpus_parity.json` and evaluates Android's `ChordInterpreter` against JS web player ground truth for Roman numerals, letter names, and pitch-class sets.
+- **Kotlin Parity Test Suite (`CorpusParityTest.kt`)**: Implemented a JUnit 4 test suite in `android/app/src/test/java/com/acquiring/android/CorpusParityTest.kt` that loads `corpus_parity.json` and evaluates Android's `ChordInterpreter` against JS web player ground truth for Roman numerals, letter names, and pitch-class sets.
 
 ---
 
