@@ -3358,6 +3358,9 @@ fun QuizTab(
                                 valueRange = 0f..QUIZ_ARPEGGIO_OPTIONS.lastIndex.toFloat(),
                                 steps = QUIZ_ARPEGGIO_OPTIONS.lastIndex,
                                 ringLabels = QUIZ_ARPEGGIO_OPTIONS.map { it.label },
+                                onTap = {
+                                    onArpeggioOptionIndexChange(DEFAULT_QUIZ_ARPEGGIO_OPTION_INDEX)
+                                },
                                 modifier = Modifier.weight(1f)
                             )
                         }
