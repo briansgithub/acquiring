@@ -276,7 +276,9 @@ internal fun MainScreen(
     var isArpeggiated by remember { mutableStateOf(false) }
     var arpeggioStepMs by remember { mutableStateOf(80f) }
     var quizTempoPercent by remember(selectedSong?.slug) { mutableStateOf(100f) }
-    var quizArpeggiateCycles by remember(selectedSong?.slug) { mutableStateOf(0) }
+    var quizArpeggioOptionIndex by remember(selectedSong?.slug) {
+        mutableStateOf(DEFAULT_QUIZ_ARPEGGIO_OPTION_INDEX)
+    }
     var isShowingRecent by remember { mutableStateOf(false) }
     var isShowingRecentArtists by remember { mutableStateOf(false) }
     var currentWaveform by remember { mutableStateOf(AudioEngine.Waveform.SAWTOOTH) }
@@ -761,8 +763,8 @@ internal fun MainScreen(
                     globalTranspose = globalTranspose,
                     quizTempoPercent = quizTempoPercent,
                     onQuizTempoPercentChange = { quizTempoPercent = it },
-                    quizArpeggiateCycles = quizArpeggiateCycles,
-                    onQuizArpeggiateCyclesChange = { quizArpeggiateCycles = it },
+                    quizArpeggioOptionIndex = quizArpeggioOptionIndex,
+                    onQuizArpeggioOptionIndexChange = { quizArpeggioOptionIndex = it },
                     onTransposeChange = {
                         globalTranspose = it
                         AudioEngine.globalTranspose = it
@@ -1153,8 +1155,8 @@ fun SongDetailView(
     globalTranspose: Int,
     quizTempoPercent: Float,
     onQuizTempoPercentChange: (Float) -> Unit,
-    quizArpeggiateCycles: Int,
-    onQuizArpeggiateCyclesChange: (Int) -> Unit,
+    quizArpeggioOptionIndex: Int,
+    onQuizArpeggioOptionIndexChange: (Int) -> Unit,
     onTransposeChange: (Int) -> Unit,
     quizPlayButtonXFraction: Float,
     quizPlayButtonYFraction: Float,
@@ -1439,8 +1441,8 @@ fun SongDetailView(
                 globalTranspose = globalTranspose,
                 tempoPercent = quizTempoPercent,
                 onTempoPercentChange = onQuizTempoPercentChange,
-                arpeggiateCycles = quizArpeggiateCycles,
-                onArpeggiateCyclesChange = onQuizArpeggiateCyclesChange,
+                arpeggioOptionIndex = quizArpeggioOptionIndex,
+                onArpeggioOptionIndexChange = onQuizArpeggioOptionIndexChange,
                 quizPlayButtonXFraction = quizPlayButtonXFraction,
                 quizPlayButtonYFraction = quizPlayButtonYFraction,
                 onQuizPlayButtonPositionChange = onQuizPlayButtonPositionChange,
@@ -1682,6 +1684,20 @@ private data class QuizTimelineChordVisual(
     val display: RomanNumeralDisplay?
 )
 
+internal data class QuizArpeggioOption(val label: String, val cyclesPerBeat: Double)
+
+internal val QUIZ_ARPEGGIO_OPTIONS = listOf(
+    QuizArpeggioOption("1/4", 0.25),
+    QuizArpeggioOption("1/3", 1.0 / 3.0),
+    QuizArpeggioOption("1/2", 0.5),
+    QuizArpeggioOption("off", 0.0),
+    QuizArpeggioOption("1", 1.0),
+    QuizArpeggioOption("2", 2.0),
+    QuizArpeggioOption("3", 3.0),
+    QuizArpeggioOption("4", 4.0)
+)
+internal const val DEFAULT_QUIZ_ARPEGGIO_OPTION_INDEX = 3
+
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun QuizTab(
@@ -1698,8 +1714,8 @@ fun QuizTab(
     globalTranspose: Int,
     tempoPercent: Float,
     onTempoPercentChange: (Float) -> Unit,
-    arpeggiateCycles: Int,
-    onArpeggiateCyclesChange: (Int) -> Unit,
+    arpeggioOptionIndex: Int,
+    onArpeggioOptionIndexChange: (Int) -> Unit,
     quizPlayButtonXFraction: Float,
     quizPlayButtonYFraction: Float,
     onQuizPlayButtonPositionChange: (Float, Float) -> Unit,
@@ -1712,6 +1728,7 @@ fun QuizTab(
         ?: error("QuizTab requires an exclusive persistent pitch source")
     val baseBpm = section.getBpm().toFloat().coerceIn(40f, 240f)
     val isTessituraAdjusted = tessituraShiftOctaves != 0
+    val arpeggiateCycles = QUIZ_ARPEGGIO_OPTIONS[arpeggioOptionIndex].cyclesPerBeat
     val bpm = (baseBpm * tempoPercent / 100f).toDouble()
 
     val notesJson = when (val rawNotes = section.notes) {
@@ -3319,11 +3336,15 @@ fun QuizTab(
                             QuizDial(
                                 label = "Arpeggiate",
                                 valueLabel = "cycles per beat",
-                                value = arpeggiateCycles.toFloat(),
-                                onValueChange = { onArpeggiateCyclesChange(it.roundToInt()) },
-                                valueRange = 0f..8f,
-                                steps = 8,
-                                ringLabels = listOf("off", "1", "2", "3", "4", "5", "6", "7", "8"),
+                                value = arpeggioOptionIndex.toFloat(),
+                                onValueChange = {
+                                    onArpeggioOptionIndexChange(
+                                        it.roundToInt().coerceIn(QUIZ_ARPEGGIO_OPTIONS.indices)
+                                    )
+                                },
+                                valueRange = 0f..QUIZ_ARPEGGIO_OPTIONS.lastIndex.toFloat(),
+                                steps = QUIZ_ARPEGGIO_OPTIONS.lastIndex,
+                                ringLabels = QUIZ_ARPEGGIO_OPTIONS.map { it.label },
                                 modifier = Modifier.weight(1f)
                             )
                         }

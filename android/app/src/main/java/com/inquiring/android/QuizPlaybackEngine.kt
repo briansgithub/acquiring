@@ -51,26 +51,25 @@ internal data class QuizPlaybackConfig(
     val chordMode: QuizChordMode,
     val melodyGain: Float,
     val chordGain: Float,
-    val arpeggiateCycles: Int = 0
+    val arpeggiateCycles: Double = 0.0
 )
 
 internal fun arpeggioToneIndex(
     elapsedBeats: Double,
     noteCount: Int,
-    cyclesPerBeat: Int
+    cyclesPerBeat: Double
 ): Int {
-    if (noteCount <= 1 || cyclesPerBeat <= 0) return 0
-    val slotsPerBeat = noteCount.toLong() * cyclesPerBeat.toLong()
-    val slot = floor(elapsedBeats.coerceAtLeast(0.0) * slotsPerBeat).toLong()
+    if (noteCount <= 1 || cyclesPerBeat <= 0.0) return 0
+    val slot = floor(elapsedBeats.coerceAtLeast(0.0) * noteCount * cyclesPerBeat).toLong()
     return (slot % noteCount).toInt()
 }
 
 internal fun arpeggioSlotProgress(
     elapsedBeats: Double,
     noteCount: Int,
-    cyclesPerBeat: Int
+    cyclesPerBeat: Double
 ): Double {
-    if (noteCount <= 1 || cyclesPerBeat <= 0) return 0.0
+    if (noteCount <= 1 || cyclesPerBeat <= 0.0) return 0.0
     val exactSlot = elapsedBeats.coerceAtLeast(0.0) * noteCount * cyclesPerBeat
     return exactSlot - floor(exactSlot)
 }
@@ -216,7 +215,7 @@ internal class QuizPcmRenderer(
                     currentChordGain
                 }
                 val isArpeggiatedChord = active.event.layer == QuizAudioLayer.CHORD &&
-                    config.arpeggiateCycles > 0 && active.oscillators.size > 1
+                    config.arpeggiateCycles > 0.0 && active.oscillators.size > 1
                 val oscillatorSum = if (isArpeggiatedChord) {
                     val elapsedBeats = (beat - active.event.startBeat).coerceAtLeast(0.0)
                     val slotProgress = arpeggioSlotProgress(
@@ -340,7 +339,7 @@ internal class QuizPcmRenderer(
         bpm = bpm.coerceAtLeast(0.0),
         melodyGain = melodyGain.coerceIn(0f, 1f),
         chordGain = chordGain.coerceIn(0f, 1f),
-        arpeggiateCycles = arpeggiateCycles.coerceIn(0, 8)
+        arpeggiateCycles = arpeggiateCycles.coerceIn(0.0, 4.0)
     )
 
     companion object {

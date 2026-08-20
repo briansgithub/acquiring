@@ -99,10 +99,10 @@ object AudioEngine {
     internal fun cyclesPerBeatStepSamples(
         bpm: Double,
         noteCount: Int,
-        cyclesPerBeat: Int,
+        cyclesPerBeat: Double,
         sampleRate: Int = SAMPLE_RATE
     ): Int {
-        if (bpm <= 0.0 || noteCount <= 0 || cyclesPerBeat <= 0) return 0
+        if (bpm <= 0.0 || noteCount <= 0 || cyclesPerBeat <= 0.0) return 0
         return (sampleRate * 60.0 / (bpm * noteCount * cyclesPerBeat))
             .roundToInt()
             .coerceAtLeast(1)
@@ -402,7 +402,7 @@ object AudioEngine {
         durationMs: Int = 450,
         arpeggiate: Boolean = false,
         stepMs: Int = 80,
-        arpeggiateCycles: Int = 0,
+        arpeggiateCycles: Double = 0.0,
         bpm: Double = 120.0,
         volume: Float = 1.0f,
         channel: PlaybackChannel = PlaybackChannel.CHORD,
@@ -446,7 +446,7 @@ object AudioEngine {
             durationMs,
             arpeggiate = false,
             stepMs = 80,
-            arpeggiateCycles = 0,
+            arpeggiateCycles = 0.0,
             bpm = 120.0,
             volume = volume,
             channel = channel,
@@ -469,7 +469,7 @@ object AudioEngine {
         durationMs: Int,
         arpeggiate: Boolean,
         stepMs: Int,
-        arpeggiateCycles: Int,
+        arpeggiateCycles: Double,
         bpm: Double,
         volume: Float,
         channel: PlaybackChannel,
@@ -491,7 +491,7 @@ object AudioEngine {
         if (validNotes.isEmpty()) return@withContext null
 
         val numNotes = validNotes.size
-        val cycleMode = arpeggiateCycles > 0 && bpm > 0.0 && numNotes > 1
+        val cycleMode = arpeggiateCycles > 0.0 && bpm > 0.0 && numNotes > 1
         val stepSamples = if (cycleMode) {
             cyclesPerBeatStepSamples(bpm, numNotes, arpeggiateCycles)
         } else {
@@ -646,7 +646,7 @@ object AudioEngine {
         durationMs: Int = 450,
         arpeggiate: Boolean = false,
         stepMs: Int = 80,
-        arpeggiateCycles: Int = 0,
+        arpeggiateCycles: Double = 0.0,
         bpm: Double = 120.0,
         volume: Float = 1.0f,
         channel: PlaybackChannel = PlaybackChannel.CHORD,
@@ -670,7 +670,7 @@ object AudioEngine {
         durationMs: Int = 450,
         arpeggiate: Boolean = false,
         stepMs: Int = 80,
-        arpeggiateCycles: Int = 0,
+        arpeggiateCycles: Double = 0.0,
         bpm: Double = 120.0,
         volume: Float = 1.0f,
         channel: PlaybackChannel = PlaybackChannel.CHORD,
