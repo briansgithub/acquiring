@@ -32,6 +32,23 @@ class TessituraSessionViewModelTest {
     }
 
     @Test
+    fun shiftIsBoundedWhereverItArrivesFrom() {
+        val state = TessituraSessionViewModel()
+        state.enterSession("song-a:verse")
+
+        // The arrow handlers stop at the bound by refusing the click, which says nothing
+        // about a value arriving from calibration or a restored session.
+        state.updateShift(9)
+        assertEquals(TessituraSessionViewModel.MAX_SHIFT_OCTAVES, state.shiftOctaves)
+
+        state.updateShift(-9)
+        assertEquals(TessituraSessionViewModel.MIN_SHIFT_OCTAVES, state.shiftOctaves)
+
+        state.updateShift(2)
+        assertEquals(2, state.shiftOctaves)
+    }
+
+    @Test
     fun clearButtonOnlyResetsAdjustmentWithinCurrentSession() {
         val state = TessituraSessionViewModel()
         state.enterSession("song-a:verse")
