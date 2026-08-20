@@ -29,7 +29,7 @@ internal class TessituraSessionViewModel : ViewModel() {
         // Applied unconditionally: song and section navigation already reset the
         // adjustment via enterSession/clearSession, so gating on a session key
         // here only risks silently discarding a calibration the user just made.
-        shiftOctaves = octaves.coerceIn(-4, 4)
+        shiftOctaves = octaves.coerceIn(MIN_SHIFT_OCTAVES, MAX_SHIFT_OCTAVES)
     }
 
     fun clearAdjustment() {
@@ -39,5 +39,10 @@ internal class TessituraSessionViewModel : ViewModel() {
     fun clearSession() {
         sessionKey = null
         shiftOctaves = 0
+    }
+
+    companion object {
+        const val MIN_SHIFT_OCTAVES = -4
+        const val MAX_SHIFT_OCTAVES = 4
     }
 }

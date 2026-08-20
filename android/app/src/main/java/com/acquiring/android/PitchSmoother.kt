@@ -97,6 +97,12 @@ class PitchSmoother private constructor(
         )
     }
 
+    /** Starts a fresh scoring history for a new note target. */
+    fun retarget(newTargetMidi: Int) {
+        targetMidi = newTargetMidi
+        reset()
+    }
+
     fun reset() {
         recent.clear()
         smoothedMidi = 0.0

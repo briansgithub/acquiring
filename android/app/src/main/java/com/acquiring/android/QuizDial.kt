@@ -1,4 +1,4 @@
-package com.inquiring.android
+package com.acquiring.android
 
 import android.graphics.Paint
 import android.graphics.Typeface

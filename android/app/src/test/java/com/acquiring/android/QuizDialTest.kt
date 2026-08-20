@@ -1,4 +1,4 @@
-package com.inquiring.android
+package com.acquiring.android
 
 import androidx.compose.ui.geometry.Offset
 import org.junit.Assert.assertEquals

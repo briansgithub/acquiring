@@ -28,15 +28,15 @@ class AudioEngineTest {
     fun staticPlaybackSampleCount_longDurationsAreCheckedAndCapped() {
         val fortyEightSecondBoundary = AudioEngine.staticPlaybackSampleCount(
             durationMs = 48_700,
-            arpeggiateCycles = 0.0,
+            arpeggiate = false,
             noteCount = 1,
-            bpm = 120.0
+            stepMs = 80
         )
         val multiMinuteDuration = AudioEngine.staticPlaybackSampleCount(
             durationMs = Int.MAX_VALUE,
-            arpeggiateCycles = 0.0,
+            arpeggiate = false,
             noteCount = 1,
-            bpm = 120.0
+            stepMs = 80
         )
 
         assertTrue(fortyEightSecondBoundary > 200)
