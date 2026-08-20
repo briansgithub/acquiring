@@ -1,4 +1,4 @@
-package com.inquiring.android
+package com.acquiring.android
 
 import kotlin.math.abs
 
@@ -13,7 +13,7 @@ import kotlin.math.abs
  * Split out of [MicrophonePitchTracker] so the filtering can be exercised without a microphone.
  */
 class PitchSmoother private constructor(
-    private var targetMidi: Int,
+    var targetMidi: Int,
     private val settings: PitchSmoothingSettings
 ) {
 
@@ -31,6 +31,7 @@ class PitchSmoother private constructor(
     private var smoothedMidi = 0.0
     private var validFrames = 0
     private var rejectedFrames = 0
+    private var lastConfidence = 0.0
 
     /**
      * Feeds one raw per-frame estimate.
@@ -61,6 +62,7 @@ class PitchSmoother private constructor(
             smoothedMidi * (1.0 - settings.emaAdmit) + median * settings.emaAdmit
         }
         validFrames++
+        lastConfidence = confidence
 
         if (validFrames < settings.minFramesBeforePublish) return null
 
@@ -71,16 +73,36 @@ class PitchSmoother private constructor(
         )
     }
 
+    /**
+     * Re-aims the filter at a new reference pitch.
+     *
+     * The microphone signal has not changed - only the note being measured against - so the
+     * pitch history stays. Clearing it would blind the tracker through a warm-up it does not
+     * need, and re-seeding it with a synthesised value would report an accuracy the singer
+     * has not been measured to have. Keeping [smoothedMidi] also keeps the octave-rejection
+     * window in [accept] centred on what the singer is actually producing, so a target move
+     * wider than [PitchSmoothingSettings.octaveRejectSemitones] no longer discards their
+     * genuine held pitch as a detector glitch.
+     *
+     * @return the last measured estimate re-scored against [newTarget], or null when nothing
+     *   publishable has been measured yet.
+     */
+    fun setTarget(newTarget: Int): MicrophonePitchTracker.PitchResult.Estimate? {
+        targetMidi = newTarget
+        if (validFrames < settings.minFramesBeforePublish) return null
+        return MicrophonePitchTracker.PitchResult.Estimate(
+            midi = smoothedMidi,
+            centsError = 100.0 * (smoothedMidi - newTarget),
+            confidence = lastConfidence
+        )
+    }
+
     fun reset() {
         recent.clear()
         smoothedMidi = 0.0
         validFrames = 0
         rejectedFrames = 0
-    }
-
-    fun retarget(newTargetMidi: Int) {
-        targetMidi = newTargetMidi
-        reset()
+        lastConfidence = 0.0
     }
 
     companion object {

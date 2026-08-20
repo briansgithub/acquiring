@@ -1,4 +1,4 @@
-package com.inquiring.android
+package com.acquiring.android
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -29,13 +29,26 @@ class MicrophonePitchTracker(
     private var running = false
 
     @Volatile
-    private var currentTargetMidi = 60
+    private var currentTargetMidi = 0
+
+    @Volatile
+    private var currentTrackingMode: PitchTrackingMode? = null
 
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     sealed class PitchResult {
         object NoSignal : PitchResult()
-        data class Estimate(val midi: Double, val centsError: Double, val confidence: Double) : PitchResult()
+        data class Estimate(
+            val midi: Double,
+            val centsError: Double,
+            val confidence: Double,
+            /**
+             * True when this is the previous live reading being held through a brief
+             * dropout rather than a fresh measurement. Safe to keep displaying so the
+             * gauge does not flicker on a consonant; never safe to measure from.
+             */
+            val isHeld: Boolean = false
+        ) : PitchResult()
         data class Error(val message: String) : PitchResult()
     }
 
@@ -44,6 +57,11 @@ class MicrophonePitchTracker(
     }
 
     internal fun start(targetMidi: Int, trackingMode: PitchTrackingMode) {
+        if (running && currentTrackingMode == trackingMode) {
+            currentTargetMidi = targetMidi
+            return
+        }
+
         // Wind the previous session down and hand the new one a job that waits for it.
         // Joining here rather than in stop() keeps the caller (the Compose main thread)
         // off the blocking teardown path, while still guaranteeing the old AudioRecord is
@@ -52,7 +70,9 @@ class MicrophonePitchTracker(
         running = false
         previous?.cancel()
         _pitchFlow.value = PitchResult.NoSignal
+
         currentTargetMidi = targetMidi
+        currentTrackingMode = trackingMode
 
         val analysisWindowSize = trackingMode.windowSizeOverride ?: windowSize
         val analysisHopSize = trackingMode.hopSizeOverride ?: hopSize
@@ -66,14 +86,6 @@ class MicrophonePitchTracker(
                 analysisHopSize = analysisHopSize
             )
         }
-    }
-
-    override fun retarget(targetMidi: Int) {
-        if (job == null) {
-            start(targetMidi)
-            return
-        }
-        currentTargetMidi = targetMidi
     }
 
     @SuppressLint("MissingPermission")
@@ -144,18 +156,26 @@ class MicrophonePitchTracker(
             val rollingBuffer = ShortArray(analysisWindowSize)
             var writeIdx = 0
 
-            var smootherTargetMidi = currentTargetMidi
-            val smoother = PitchSmoother(smootherTargetMidi, trackingMode)
+            val smoother = PitchSmoother(currentTargetMidi, trackingMode)
+            var lastSmootherTargetMidi = currentTargetMidi
             var lastValidTime = 0L
 
             while (isActive && running && recorder.recordingState == AudioRecord.RECORDSTATE_RECORDING) {
-                val targetMidi = currentTargetMidi
-                if (targetMidi != smootherTargetMidi) {
-                    smoother.retarget(targetMidi)
-                    smootherTargetMidi = targetMidi
-                    lastValidTime = 0L
-                    _pitchFlow.value = PitchResult.NoSignal
+                // Update smoother with latest target in case it changed mid-loop
+                val currentTarget = currentTargetMidi
+                if (currentTarget != lastSmootherTargetMidi) {
+                    // Re-score what the microphone is already hearing against the new note.
+                    // The reading is real, so publishing it immediately keeps the gauge live
+                    // through the transition instead of blanking for a warm-up.
+                    val wasHeld = (_pitchFlow.value as? PitchResult.Estimate)?.isHeld == true
+                    smoother.setTarget(currentTarget)?.let {
+                        // The smoother keeps its reading through a dropout, so re-scoring
+                        // one carries the hold with it rather than laundering it as live.
+                        _pitchFlow.value = it.copy(isHeld = wasHeld)
+                    }
+                    lastSmootherTargetMidi = currentTarget
                 }
+
                 val read = recorder.read(buffer, writeIdx, analysisHopSize)
                 if (read > 0) {
                     writeIdx += read
@@ -177,18 +197,25 @@ class MicrophonePitchTracker(
                             maxFreq = 1000.0
                         )
 
-                        processEstimate(estimate, targetMidi) { result ->
+                        processEstimate(estimate, currentTargetMidi) { result ->
                             val now = System.currentTimeMillis()
                             if (result is PitchResult.Estimate) {
                                 lastValidTime = now
                                 smoother.accept(result.midi, result.confidence)?.let {
                                     _pitchFlow.value = it
                                 }
+                            } else if (now - lastValidTime > 200) {
+                                _pitchFlow.value = PitchResult.NoSignal
+                                smoother.reset()
                             } else {
-                                if (now - lastValidTime > 200) {
-                                    _pitchFlow.value = PitchResult.NoSignal
-                                    smoother.reset()
-                                }
+                                // Hold the last live reading briefly so the gauge does not
+                                // flicker on a consonant or a breath, but say plainly that
+                                // it is held: nothing downstream may measure from it. Only
+                                // the first frame of a dropout emits, so a sustained gap is
+                                // one state change rather than one per hop.
+                                (_pitchFlow.value as? PitchResult.Estimate)
+                                    ?.takeIf { !it.isHeld }
+                                    ?.let { _pitchFlow.value = it.copy(isHeld = true) }
                             }
                         }
 

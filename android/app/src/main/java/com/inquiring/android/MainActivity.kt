@@ -2499,6 +2499,8 @@ fun QuizTab(
                 val latestMelodyTimelinePitchEstimate by rememberUpdatedState(
                     melodyTimelinePitchEstimate
                 )
+                val activeMelodyRunTargetMidi = resolvedPersistentPitchTarget
+                    ?.effectiveTargetMidi(globalTranspose, tessituraShiftOctaves)
 
                 DisposableEffect(
                     melodyRunScoringEnabled,
@@ -2527,6 +2529,7 @@ fun QuizTab(
                 LaunchedEffect(
                     melodyRunScoringEnabled,
                     activeMelodyPitchRun?.id,
+                    activeMelodyRunTargetMidi,
                     melodyRunScoreAccumulator
                 ) {
                     val scoringRun = activeMelodyPitchRun.takeIf { melodyRunScoringEnabled }
@@ -2534,10 +2537,20 @@ fun QuizTab(
                     // This effect restarts as the playhead enters each run, so the sampler's
                     // default settle detector is built fresh per run and its elapsed clock
                     // starts at the moment the note starts sounding.
+                    //
+                    // It also restarts when the effective target moves under a sounding note
+                    // - transpose or tessitura - because everything banked so far was scored
+                    // against a different pitch. Re-beginning drops those samples, and the
+                    // rebuilt detector makes the singer serve the onset delay again, exactly
+                    // as they would at a note boundary. The DisposableEffect below stays
+                    // keyed on the run alone, so a re-aim never banks a partial score.
+                    melodyRunScoreAccumulator.begin(scoringRun.id)
                     accumulateMelodyRunPitchSamples(
                         runId = scoringRun.id,
                         accumulator = melodyRunScoreAccumulator,
-                        latestCentsError = { latestMelodyTimelinePitchEstimate?.centsError }
+                        latestCentsError = {
+                            liveMeasuredCentsError(latestMelodyTimelinePitchEstimate)
+                        }
                     )
                 }
                 val animatedMelodyTimelineCents by animateFloatAsState(

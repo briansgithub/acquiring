@@ -209,7 +209,9 @@ internal fun TessituraControl(
                 lastTick = now
                 when (val currentPitch = pitchTracker.pitchFlow.value) {
                     is MicrophonePitchTracker.PitchResult.Estimate -> {
-                        capture.observe(delta, currentPitch.midi)
+                        // A held reading is the previous live frame surviving a dropout.
+                        // Observing it again would let a pause read as a rock-steady hum.
+                        capture.observe(delta, currentPitch.midi.takeIf { !currentPitch.isHeld })
                     }
                     is MicrophonePitchTracker.PitchResult.Error -> {
                         calibrationStatus =

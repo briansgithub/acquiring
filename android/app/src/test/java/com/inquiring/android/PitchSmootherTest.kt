@@ -144,6 +144,71 @@ class PitchSmootherTest {
     }
 
     @Test
+    fun setTargetReportsTheMeasuredPitchAgainstTheNewTarget() {
+        val smoother = PitchSmoother(target)
+        publish(smoother, List(6) { 60.0 })
+
+        // The singer is still holding C4; only the note being asked of them moved to E4.
+        val retargeted = smoother.setTarget(64)
+
+        assertNotNull(retargeted)
+        assertEquals("must report the pitch the microphone heard", 60.0, retargeted!!.midi, 1e-9)
+        assertEquals("must score it against the new note", -400.0, retargeted.centsError, 1e-9)
+    }
+
+    @Test
+    fun setTargetCarriesTheMeasuredConfidenceRatherThanAssertingCertainty() {
+        val smoother = PitchSmoother(target)
+        publish(smoother, listOf(60.0, 60.0, 60.0, 60.0, 60.0))
+        assertNotNull(smoother.accept(60.0, 0.42))
+
+        val retargeted = smoother.setTarget(62)
+
+        assertNotNull(retargeted)
+        assertEquals(0.42, retargeted!!.confidence, 1e-9)
+    }
+
+    @Test
+    fun setTargetKeepsHistorySoALargeTargetMoveIsNotAnOctaveError() {
+        val smoother = PitchSmoother(target)
+        publish(smoother, List(6) { 60.0 })
+
+        // A tessitura octave shift moves the target 12 semitones - twice the octave-reject
+        // window. The singer has not moved, so their frames must still be accepted.
+        smoother.setTarget(72)
+
+        val afterRetarget = publish(smoother, List(4) { 60.0 })
+        assertTrue("held pitch must survive a distant retarget", afterRetarget.isNotEmpty())
+        afterRetarget.forEach {
+            assertEquals(60.0, it.midi, 1e-9)
+            assertEquals(-1200.0, it.centsError, 1e-9)
+        }
+    }
+
+    @Test
+    fun setTargetBeforeAnythingIsMeasuredPublishesNothing() {
+        val smoother = PitchSmoother(target)
+
+        assertNull(smoother.setTarget(64))
+
+        // The new target still applies once real frames arrive.
+        val published = publish(smoother, List(4) { 64.0 })
+        assertTrue(published.isNotEmpty())
+        published.forEach { assertEquals(0.0, it.centsError, 1e-9) }
+    }
+
+    @Test
+    fun setTargetDoesNotStrandStateThatResetShouldClear() {
+        val smoother = PitchSmoother(target)
+        publish(smoother, List(6) { 60.0 })
+        smoother.setTarget(64)
+
+        smoother.reset()
+
+        assertNull(smoother.setTarget(67))
+    }
+
+    @Test
     fun maximumSpeedProfileDropsOneOctaveErrorFrameThenReseeds() {
         val smoother = PitchSmoother(target, PitchTrackingMode.MELODY_FAST)
         assertNotNull(smoother.accept(60.0, 0.9))

@@ -10,6 +10,7 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -276,6 +277,97 @@ class PersistentQuizPitchPracticeTest {
         val uninterrupted = firstSettleMs(MelodyRunSettleDetector()) { 9.0 + (it % 3L) }
 
         assertTrue("a dropout must restart the window", withDropout!! > uninterrupted!!)
+    }
+
+    @Test
+    fun liveMeasuredCentsErrorIgnoresAHeldReading() {
+        val live = MicrophonePitchTracker.PitchResult.Estimate(
+            midi = 60.0,
+            centsError = -35.0,
+            confidence = 0.9
+        )
+
+        assertEquals(-35.0, liveMeasuredCentsError(live)!!, 1e-9)
+        assertNull(liveMeasuredCentsError(live.copy(isHeld = true)))
+        assertNull(liveMeasuredCentsError(null))
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun heldReadingsDoNotEnterTheRunScore() = runTest {
+        // The singer holds 40 cents sharp, then goes quiet halfway through the note. The
+        // tracker keeps republishing that last live frame for up to 200ms; none of those
+        // repeats may be banked as though the note were still being sung.
+        val accumulator = MelodyTimelinePitchScoreAccumulator()
+        accumulator.begin(runId = 3)
+        var elapsedMs = 0L
+        val samplingJob = launch {
+            accumulateMelodyRunPitchSamples(
+                runId = 3,
+                accumulator = accumulator,
+                latestCentsError = {
+                    val estimate = MicrophonePitchTracker.PitchResult.Estimate(
+                        midi = 60.4,
+                        centsError = if (elapsedMs >= 500L) 40.0 else 4.0 + (elapsedMs % 3L),
+                        confidence = 0.9,
+                        isHeld = elapsedMs >= 500L
+                    )
+                    liveMeasuredCentsError(estimate)
+                }
+            )
+        }
+
+        repeat(60) {
+            advanceTimeBy(MELODY_PITCH_SCORE_SAMPLE_MS)
+            elapsedMs += MELODY_PITCH_SCORE_SAMPLE_MS
+        }
+        samplingJob.cancel()
+
+        val score = (accumulator.finish(3) as? MelodyRunScoreOutcome.Scored)?.score
+        assertNotNull(score)
+        assertTrue(
+            "held repeats leaked into the score: ${score!!.centsErrorMagnitude}",
+            score.centsErrorMagnitude < 10.0
+        )
+    }
+
+    @Test
+    fun aHeldReadingClearsThePartialSettleWindow() {
+        // Mirrors aDropoutClearsThePartialSettleWindow: a held frame is a gap in live audio
+        // and must restart the onset window rather than count toward holding still.
+        fun estimateAt(elapsed: Long, isHeld: Boolean) =
+            MicrophonePitchTracker.PitchResult.Estimate(
+                midi = 60.0,
+                centsError = 9.0 + (elapsed % 3L),
+                confidence = 0.9,
+                isHeld = isHeld
+            )
+
+        val withHold = firstSettleMs(MelodyRunSettleDetector()) { elapsed ->
+            liveMeasuredCentsError(estimateAt(elapsed, isHeld = elapsed == 160L))
+        }
+        val uninterrupted = firstSettleMs(MelodyRunSettleDetector()) { elapsed ->
+            liveMeasuredCentsError(estimateAt(elapsed, isHeld = false))
+        }
+
+        assertTrue("a held reading must restart the window", withHold!! > uninterrupted!!)
+    }
+
+    @Test
+    fun beginningARunAgainDropsSamplesMeasuredAgainstTheOldTarget() {
+        // Transpose or tessitura moving mid-note re-begins the run, because everything
+        // banked so far was scored against a different note.
+        val accumulator = MelodyTimelinePitchScoreAccumulator()
+        accumulator.begin(runId = 11)
+        repeat(12) { accumulator.add(11, 90.0) }
+
+        accumulator.begin(runId = 11)
+        repeat(12) { accumulator.add(11, 6.0) }
+
+        val score = (accumulator.finish(11) as? MelodyRunScoreOutcome.Scored)?.score
+        assertNotNull(score)
+        assertEquals(12, score!!.sampleCount)
+        assertEquals(6.0, score.centsErrorMagnitude, 1e-9)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

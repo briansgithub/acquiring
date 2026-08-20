@@ -272,6 +272,18 @@ internal fun melodyTimelinePitchEstimate(
     return pitchResult as? MicrophonePitchTracker.PitchResult.Estimate
 }
 
+/**
+ * The cents error a measurement may be taken from, or null when nothing live is arriving.
+ *
+ * A held estimate is the previous live frame surviving a brief dropout: fine to keep on
+ * screen so the gauge does not flicker on a consonant, never a sample of what is being sung
+ * at this instant. Reporting it as absent both keeps it out of the banked score and lets
+ * [MelodyRunSettleDetector] treat the gap as the gap it is.
+ */
+internal fun liveMeasuredCentsError(
+    estimate: MicrophonePitchTracker.PitchResult.Estimate?
+): Double? = estimate?.takeIf { !it.isHeld }?.centsError
+
 internal fun pitchErrorToTimelineStaffSteps(centsError: Double): Double =
     centsError * 7.0 / 1200.0
 

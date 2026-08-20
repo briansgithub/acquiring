@@ -90,7 +90,11 @@ fun AudiationPitchPracticeContainer(
                 // Read latest directly from flow to avoid Compose state observation issues in loop
                 val currentPitch = pitchSource.pitchFlow.value
 
-                if (currentPitch is MicrophonePitchTracker.PitchResult.Estimate) {
+                // A held reading is the previous live frame surviving a dropout, so it is
+                // the dropout branch's business, not a sample of what is being sung now.
+                if (currentPitch is MicrophonePitchTracker.PitchResult.Estimate &&
+                    !currentPitch.isHeld
+                ) {
                     dropoutGraceMs = 1000 // 1s grace
                     remainingMs -= delta
                     // Take average from 2s to 0s

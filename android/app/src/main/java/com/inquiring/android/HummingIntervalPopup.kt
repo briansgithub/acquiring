@@ -307,7 +307,12 @@ internal fun HummingIntervalPopup(
     LaunchedEffect(pitchResult, activeListenSlot, activeTarget) {
         val target = activeTarget ?: return@LaunchedEffect
         val slotId = activeListenSlot ?: return@LaunchedEffect
-        val estimate = pitchResult as? MicrophonePitchTracker.PitchResult.Estimate ?: return@LaunchedEffect
+        // A held reading is the previous live frame surviving a dropout. Skipping the write
+        // leaves the slot showing that same reading, so nothing flickers and nothing is
+        // recorded that the microphone is not producing right now.
+        val estimate = (pitchResult as? MicrophonePitchTracker.PitchResult.Estimate)
+            ?.takeIf { !it.isHeld }
+            ?: return@LaunchedEffect
         val targetMidi = targetForSlot(target, slotId)
             ?.effectiveTargetMidi(globalTranspose, octaveShift)
             ?: return@LaunchedEffect
@@ -373,7 +378,9 @@ internal fun HummingIntervalPopup(
                         remaining -= 100
                     }
                     if (microphoneAction == action) {
-                        val estimate = pitchTracker.pitchFlow.value as? MicrophonePitchTracker.PitchResult.Estimate
+                        val estimate = (pitchTracker.pitchFlow.value
+                            as? MicrophonePitchTracker.PitchResult.Estimate)
+                            ?.takeIf { !it.isHeld }
                         if (estimate != null) {
                             val nearestMidi = estimate.midi.roundToInt()
                             val centsFromNearest = (estimate.midi - nearestMidi) * 100
@@ -410,7 +417,9 @@ internal fun HummingIntervalPopup(
                             remaining -= 100
                         }
 
-                        val estimate = pitchTracker.pitchFlow.value as? MicrophonePitchTracker.PitchResult.Estimate
+                        val estimate = (pitchTracker.pitchFlow.value
+                            as? MicrophonePitchTracker.PitchResult.Estimate)
+                            ?.takeIf { !it.isHeld }
                         pitchTracker.stop()
                         recordingSlot = null
                         recordingTimeRemaining = 0
@@ -441,8 +450,9 @@ internal fun HummingIntervalPopup(
 
     // Handle real-time updates for the active recording slot
     LaunchedEffect(pitchResult, recordingSlot) {
-        if (recordingSlot != null && pitchResult is MicrophonePitchTracker.PitchResult.Estimate) {
-            val estimate = pitchResult as MicrophonePitchTracker.PitchResult.Estimate
+        val estimate = (pitchResult as? MicrophonePitchTracker.PitchResult.Estimate)
+            ?.takeIf { !it.isHeld }
+        if (recordingSlot != null && estimate != null) {
             val nearestMidi = estimate.midi.roundToInt()
             val centsFromNearest = (estimate.midi - nearestMidi) * 100
             val spelled = if (recordingSlot == 2 && slot1 != null) {
