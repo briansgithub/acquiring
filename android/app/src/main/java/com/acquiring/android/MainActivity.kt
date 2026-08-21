@@ -1457,12 +1457,14 @@ fun SongDetailView(
 
         // Names the loaded section for the media notification and the lock screen.
         // Kept out of the tab switch: what is loaded does not change with the tab.
-        LaunchedEffect(song.slug, song.title, song.artist, selectedSectionKey) {
+        LaunchedEffect(song.slug, song.title, song.artist, selectedSection) {
             QuizPlaybackController.setNowPlaying(
                 QuizNowPlaying(
                     title = song.title?.takeIf { it.isNotBlank() } ?: song.slug,
                     artist = song.artist.orEmpty(),
-                    sectionLabel = selectedSectionKey.orEmpty()
+                    // The section's own name, as the picker shows it. The map key is an
+                    // opaque Hooktheory id and reads as noise on the lock screen.
+                    sectionLabel = selectedSection.safeSectionName
                 )
             )
         }
