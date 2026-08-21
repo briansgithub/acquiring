@@ -1,12 +1,15 @@
 package com.acquiring.android
 
+import android.content.pm.PackageManager
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ScrollState
@@ -199,9 +202,25 @@ class MainActivity : ComponentActivity() {
     private lateinit var db: AppDatabase
     private val tessituraSessionViewModel by viewModels<TessituraSessionViewModel>()
 
+    /**
+     * The media notification is the only surface that can reach the transport once the
+     * app is in the background, so ask for it. A refusal is not fatal: playback and its
+     * foreground service still run, the tray entry is just missing.
+     */
+    private val notificationPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
+        QuizPlaybackController.initialize(this)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) !=
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+        }
+
         db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java, AppDatabase.DB_NAME
@@ -1436,6 +1455,18 @@ fun SongDetailView(
             }
         }
 
+        // Names the loaded section for the media notification and the lock screen.
+        // Kept out of the tab switch: what is loaded does not change with the tab.
+        LaunchedEffect(song.slug, song.title, song.artist, selectedSectionKey) {
+            QuizPlaybackController.setNowPlaying(
+                QuizNowPlaying(
+                    title = song.title?.takeIf { it.isNotBlank() } ?: song.slug,
+                    artist = song.artist.orEmpty(),
+                    sectionLabel = selectedSectionKey.orEmpty()
+                )
+            )
+        }
+
         when (currentTab) {
             0 -> InfoTab(song, selectedSection, sections, selectedSectionKey, onSectionChange)
             1 -> ChordsTab(
@@ -1848,10 +1879,15 @@ fun QuizTab(
         chordGain = chordVolume,
         arpeggiateCycles = arpeggiateCycles
     )
-    val quizPlaybackEngine = remember {
-        QuizPlaybackEngine(playbackConfig)
+    // The transport outlives this composable. It belongs to QuizPlaybackController,
+    // which QuizPlaybackService publishes as a media session, so a section keeps its
+    // place when the tab goes away and can be driven from the notification tray.
+    // Configuring here rather than further down keeps the engine built before the
+    // timeline effect below tries to load into it.
+    LaunchedEffect(playbackConfig) {
+        QuizPlaybackController.configure(playbackConfig)
     }
-    val playbackState by quizPlaybackEngine.state.collectAsState()
+    val playbackState by QuizPlaybackController.state.collectAsState()
     val isPlaying = playbackState.phase == QuizPlaybackPhase.BUFFERING ||
         playbackState.phase == QuizPlaybackPhase.PLAYING
     val currentBeat = if (isScrubbing) {
@@ -1884,14 +1920,14 @@ fun QuizTab(
         if (isScrubbing) {
             scrubBeat = boundedBeat
         } else {
-            quizPlaybackEngine.seek(boundedBeat, resume = latestIsPlaying)
+            QuizPlaybackController.seek(boundedBeat, resume = latestIsPlaying)
         }
     }
 
     fun beginScrubbing() {
         cancelInertia()
         if (isScrubbing) return
-        wasPlayingBeforeScrub = quizPlaybackEngine.pauseForScrub()
+        wasPlayingBeforeScrub = QuizPlaybackController.pauseForScrub()
         scrubBeat = playbackBeat()
         isScrubbing = true
         intervalPreviewJob?.cancel()
@@ -1909,7 +1945,7 @@ fun QuizTab(
         val shouldResume = wasPlayingBeforeScrub && latestBpm > 0.0
         isScrubbing = false
         wasPlayingBeforeScrub = false
-        quizPlaybackEngine.seek(targetBeat, resume = shouldResume)
+        QuizPlaybackController.seek(targetBeat, resume = shouldResume)
     }
 
     fun skipBack(seconds: Double) {
@@ -1918,7 +1954,7 @@ fun QuizTab(
         intervalPreviewJob?.cancel()
         AudioEngine.stopPreviewPlayback()
         val beatsToSkip = seconds * (bpm / 60.0)
-        quizPlaybackEngine.seek(playbackBeat() - beatsToSkip, resume = isPlaying)
+        QuizPlaybackController.seek(playbackBeat() - beatsToSkip, resume = isPlaying)
     }
 
     LaunchedEffect(timeline) {
@@ -1931,22 +1967,23 @@ fun QuizTab(
         // trails the command queue, so a section swap right after a play/pause tap would
         // otherwise carry the state the user just left behind. A scrub that is holding
         // playback counts as playing; it is a pause the user never asked for.
-        val continuePlaying = quizPlaybackEngine.isPlaybackRequested || wasPlayingBeforeScrub
+        val continuePlaying = QuizPlaybackController.isPlaybackRequested || wasPlayingBeforeScrub
         isScrubbing = false
         wasPlayingBeforeScrub = false
         scrubBeat = timeline.startBeat
-        quizPlaybackEngine.load(timeline, continuePlaying = continuePlaying)
+        QuizPlaybackController.load(
+            timeline,
+            metadata = null,
+            continuePlaying = continuePlaying
+        )
     }
 
-    LaunchedEffect(playbackConfig) {
-        quizPlaybackEngine.updateConfig(playbackConfig)
-    }
-
-    DisposableEffect(quizPlaybackEngine) {
+    DisposableEffect(Unit) {
         onDispose {
+            // Card previews are tied to the cards on screen, so they go. The section
+            // transport does not: leaving the tab is not a request to stop the music.
             intervalPreviewJob?.cancel()
-            quizPlaybackEngine.release()
-            AudioEngine.stopAllPlayback()
+            AudioEngine.stopPreviewPlayback()
         }
     }
 
@@ -2469,7 +2506,7 @@ fun QuizTab(
         // The singing tool needs a quiet room. Opening it from a note card holds the
         // transport where it is so the microphone hears the user rather than the
         // backing parts; the play button is right there when they want it again.
-        if (quizPlaybackEngine.isPlaybackRequested) quizPlaybackEngine.pause()
+        if (QuizPlaybackController.isPlaybackRequested) QuizPlaybackController.pause()
         onSingingTargetsRequested(request)
     }
 
@@ -3529,7 +3566,7 @@ fun QuizTab(
                             isScrubbing = false
                             wasPlayingBeforeScrub = false
                             scrubBeat = 1.0
-                            quizPlaybackEngine.reset()
+                            QuizPlaybackController.reset()
                             // Clearing the accumulator first matters: rewinding to the top
                             // disposes the run that was sounding, and that dispose would
                             // otherwise bank its score right back into the map we just emptied.
@@ -3556,7 +3593,7 @@ fun QuizTab(
                     if (!isScrubbing && bpm > 0.0) {
                         intervalPreviewJob?.cancel()
                         AudioEngine.stopPreviewPlayback()
-                        if (isPlaying) quizPlaybackEngine.pause() else quizPlaybackEngine.play()
+                        if (isPlaying) QuizPlaybackController.pause() else QuizPlaybackController.play()
                     }
                 },
                 modifier = Modifier.fillMaxSize()

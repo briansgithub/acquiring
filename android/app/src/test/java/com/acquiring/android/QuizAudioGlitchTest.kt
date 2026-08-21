@@ -284,6 +284,36 @@ class QuizAudioGlitchTest {
         )
     }
 
+    @Test
+    fun cardTap_gainIsRenderedIntoTheSamples() {
+        // Whatever the listener sets has to end up in the PCM. AudioTrack.setVolume is
+        // applied downstream by the mixer, and what a screen recorder captures of that
+        // is not something the app controls — so no listener-facing gain may ride on it.
+        val chord = chordHz(60, 64, 67)
+        fun render(gain: Float) = AudioEngine.renderStaticSamples(
+            freqs = chord,
+            durationMs = CARD_TAP_MS,
+            arpeggiate = false,
+            stepMs = 80,
+            waveform = AudioEngine.Waveform.SINE,
+            gain = gain
+        )!!
+
+        val full = peak(render(1f))
+        val half = peak(render(0.5f))
+        val silent = peak(render(0f))
+        println("rendered peak: full=$full half=$half silent=$silent")
+
+        assertTrue("full-gain render is silent", full > 1_000)
+        assertEquals(
+            "half gain is not half the amplitude",
+            full / 2.0,
+            half.toDouble(),
+            2.0
+        )
+        assertEquals("zero gain still makes sound", 0, silent)
+    }
+
     // ------------------------------------------------- transport / track churn
 
     @Test

@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Acquiring</string>
+    <string name="playback_channel_name">Section playback</string>
+    <string name="playback_channel_description">Transport controls for the song section you are practising.</string>
+    <string name="playback_play">Play</string>
+    <string name="playback_pause">Pause</string>
+    <string name="playback_stop">Stop</string>
 </resources>

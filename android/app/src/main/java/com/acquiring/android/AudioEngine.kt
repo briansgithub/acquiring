@@ -52,7 +52,6 @@ object AudioEngine {
     class PreparedPlayback internal constructor(
         internal val track: AudioTrack,
         internal val channel: PlaybackChannel,
-        internal val baseVolume: Float,
         internal val sampleCount: Int,
         internal val fadeInMs: Int,
         internal val generation: Long
@@ -64,15 +63,12 @@ object AudioEngine {
         val id: Long,
         val track: AudioTrack,
         val channel: PlaybackChannel,
-        val baseVolume: Float,
         val sampleCount: Int,
         var transitionGain: Float = 1f
     )
 
     private val activeTracks = mutableListOf<ActiveTrack>()
     private var nextTrackId = 1L
-    private var melodyGain = 1f
-    private var chordGain = 1f
     // Incremented per layer whenever playback is replaced. A synthesis job
     // that started before its layer changed must not register a late track.
     private val playbackGenerations = LongArray(PlaybackChannel.entries.size)
@@ -108,26 +104,15 @@ object AudioEngine {
         playbackGenerations[token.channel.ordinal] == token.generation
     }
 
-    private fun gainFor(channel: PlaybackChannel): Float = when (channel) {
-        PlaybackChannel.MELODY -> melodyGain
-        PlaybackChannel.CHORD -> chordGain
-        PlaybackChannel.PREVIEW -> 1f
-    }
-
+    /**
+     * Applies the fade a transition is part-way through. This is the only thing left on
+     * AudioTrack.setVolume: every gain the listener controls is rendered into the samples
+     * instead, so what a screen recorder captures is what the speaker was asked to play.
+     */
     private fun applyTrackGain(active: ActiveTrack) {
         try {
-            active.track.setVolume(
-                (active.baseVolume * gainFor(active.channel) * active.transitionGain).coerceIn(0f, 1f)
-            )
+            active.track.setVolume(active.transitionGain.coerceIn(0f, 1f))
         } catch (_: Exception) {}
-    }
-
-    fun setLayerVolumes(melody: Float, chords: Float) {
-        synchronized(activeTracks) {
-            melodyGain = melody.coerceIn(0f, 1f)
-            chordGain = chords.coerceIn(0f, 1f)
-            activeTracks.forEach(::applyTrackGain)
-        }
     }
 
     fun hasPlayback(channels: Set<PlaybackChannel>): Boolean = synchronized(activeTracks) {
@@ -304,7 +289,6 @@ object AudioEngine {
                 id = nextTrackId++,
                 track = prepared.track,
                 channel = prepared.channel,
-                baseVolume = prepared.baseVolume,
                 sampleCount = prepared.sampleCount,
                 transitionGain = if (prepared.fadeInMs > 0) 0f else 1f
             )
@@ -480,10 +464,12 @@ object AudioEngine {
         arpeggiate: Boolean,
         stepMs: Int,
         waveform: Waveform,
+        gain: Float = 1f,
         shouldAbort: () -> Boolean = { false }
     ): ShortArray? {
         val validNotes = freqs
         if (validNotes.isEmpty()) return null
+        val renderedGain = gain.coerceIn(0f, 1f)
 
         val numNotes = validNotes.size
         val stepSamples = (SAMPLE_RATE.toLong() * stepMs.coerceAtLeast(1) / 1_000L)
@@ -549,7 +535,10 @@ object AudioEngine {
                 sum = wave * 0.25 * env
             }
 
-            samples[i] = (sum * Short.MAX_VALUE).toInt().coerceIn(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt()).toShort()
+            samples[i] = (sum * renderedGain * Short.MAX_VALUE)
+                .toInt()
+                .coerceIn(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt())
+                .toShort()
         }
         return samples
     }
@@ -583,7 +572,8 @@ object AudioEngine {
             durationMs = durationMs,
             arpeggiate = arpeggiate,
             stepMs = stepMs,
-            waveform = waveform
+            waveform = waveform,
+            gain = volume
         ) {
             // Synthesis can take longer than a short note. Stop promptly when
             // its parent playback job is cancelled or the timeline is replaced.
@@ -643,7 +633,6 @@ object AudioEngine {
                 PreparedPlayback(
                     track = track,
                     channel = channel,
-                    baseVolume = volume.coerceIn(0f, 1f),
                     sampleCount = numSamples,
                     fadeInMs = fadeInMs,
                     generation = generation
