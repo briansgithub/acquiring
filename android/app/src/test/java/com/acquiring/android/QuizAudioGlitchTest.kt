@@ -1,5 +1,6 @@
 package com.acquiring.android
 
+import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -182,6 +183,37 @@ class QuizAudioGlitchTest {
 
         // A 1kHz sine at 44.1kHz moves at most ~14% of full scale per sample.
         assertTrue("slot boundary jumps $slew of full scale", slew < 0.15)
+    }
+
+    @Test
+    fun cardTap_soundsABlockChordWhateverTheArpeggioKnobSays() {
+        // The arpeggio knob feeds QuizPlaybackConfig, which only the streaming section
+        // reads; AudioEngine has no cycles-per-beat parameter left for a card to pick
+        // up. What remains is the default on playChord, which the cards rely on, so
+        // pin it: a tapped card sounds every note together, and the arpeggiated render
+        // it is not getting is genuinely a different sound.
+        val chord = chordHz(60, 64, 67)
+        val asCardsCallIt = renderTap(chord, AudioEngine.Waveform.SINE)
+        val block = AudioEngine.renderStaticSamples(
+            freqs = chord,
+            durationMs = CARD_TAP_MS,
+            arpeggiate = false,
+            stepMs = 80,
+            waveform = AudioEngine.Waveform.SINE
+        )!!
+        val arpeggiated = AudioEngine.renderStaticSamples(
+            freqs = chord,
+            durationMs = CARD_TAP_MS,
+            arpeggiate = true,
+            stepMs = 80,
+            waveform = AudioEngine.Waveform.SINE
+        )!!
+
+        assertArrayEquals("a card tap is not a block chord", block, asCardsCallIt)
+        assertTrue(
+            "block and arpeggiated renders are identical, so the default proves nothing",
+            !arpeggiated.contentEquals(asCardsCallIt)
+        )
     }
 
     @Test

@@ -2257,7 +2257,7 @@ fun QuizTab(
     fun playIntervalPreview(previous: SpelledPitch, current: SpelledPitch) {
         intervalPreviewJob?.cancel()
         AudioEngine.stopPreviewPlayback()
-        intervalPreviewJob = scope.launch {
+        intervalPreviewJob = scope.launch(Dispatchers.Default) {
             rootIntervalPreviewSteps(
                 previousAudioNote = previous.toAudioNoteNumber(),
                 currentAudioNote = current.toAudioNoteNumber(),
@@ -2290,7 +2290,10 @@ fun QuizTab(
         AudioEngine.stopPreviewPlayback()
         val notes = audioNotes.filter { it > 0 }
         if (notes.isEmpty()) return
-        intervalPreviewJob = scope.launch {
+        // Off the main thread deliberately: see playIntervalPreview. Synthesis, the
+        // AudioTrack, and its start all run here, so a tap sounds when it is tapped
+        // rather than when the next recomposition finishes.
+        intervalPreviewJob = scope.launch(Dispatchers.Default) {
             AudioEngine.playChord(
                 notes,
                 durationMs = durationMs,
