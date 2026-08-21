@@ -834,6 +834,8 @@ internal class QuizPlaybackEngine(
             require(minBytes > 0) { "AudioTrack reported invalid minimum buffer: $minBytes" }
             val capacityBytes = max(minBytes, capacityFrames * Short.SIZE_BYTES)
             val track = AudioTrack.Builder()
+                // Same session as the card previews: one effect chain for the whole app.
+                .setSessionId(AppAudioSession.id)
                 .setAudioAttributes(
                     AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_MEDIA)

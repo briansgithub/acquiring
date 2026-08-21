@@ -592,6 +592,9 @@ object AudioEngine {
         try {
             val bufferSizeBytes = numSamples * 2
             val track = AudioTrack.Builder()
+                // Every preview shares the app's session, so an equaliser attached to
+                // it keeps one effect chain rather than rebuilding one per tap.
+                .setSessionId(AppAudioSession.id)
                 .setAudioAttributes(
                     AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_MEDIA)
