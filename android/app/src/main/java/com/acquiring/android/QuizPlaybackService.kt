@@ -60,6 +60,9 @@ internal class QuizPlaybackService : Service() {
     private var hasSounded = false
     private var lastMetadata: QuizNowPlaying? = null
     private var lastSessionPublishNanos = 0L
+    private var lastPublishedPositionMs = 0L
+    /** lastMetadata starts null, which is also a legitimate value, so track the send. */
+    private var hasPublishedMetadata = false
 
     /** Pause when the headphones come out, the way every other media app does. */
     private val becomingNoisy = object : BroadcastReceiver() {
@@ -165,19 +168,28 @@ internal class QuizPlaybackService : Service() {
     private fun onPlaybackChanged(playback: QuizPlaybackState, metadata: QuizNowPlaying?) {
         val identityChanged = playback.phase != lastPhase || metadata != lastMetadata
         val now = System.nanoTime()
-        // The transport publishes a beat every frame. Only the phase and the metadata
-        // need to reach the notification promptly; position rides on the session's own
-        // extrapolation from playback speed, refreshed on a slow tick.
-        if (!identityChanged && now - lastSessionPublishNanos < SESSION_REFRESH_NANOS) return
+        // The transport publishes a beat every frame, but a MediaSession does not need
+        // to hear most of them: it carries a playback speed and extrapolates position
+        // between updates. Every publish is a binder call that fans out to the system's
+        // Bluetooth and BLE media services, so it is only worth making when the session
+        // could not have worked the answer out for itself -- the phase or the metadata
+        // changed, or the position jumped somewhere extrapolation would not have gone,
+        // which is what a loop wrap or a seek looks like from here.
+        val republish = identityChanged ||
+            positionDivergedFromExtrapolation(now) ||
+            now - lastSessionPublishNanos >= SESSION_RESYNC_NANOS
+        if (!republish) return
         lastSessionPublishNanos = now
+        lastPublishedPositionMs = QuizPlaybackController.positionMs
         lastPhase = playback.phase
+        val metadataChanged = metadata != lastMetadata || !hasPublishedMetadata
         lastMetadata = metadata
 
         val playing = playback.phase == QuizPlaybackPhase.PLAYING ||
             playback.phase == QuizPlaybackPhase.BUFFERING
         if (playing || playback.phase == QuizPlaybackPhase.PAUSED) hasSounded = true
 
-        publishSession(playback, metadata, playing)
+        publishSession(playback, metadata, playing, metadataChanged)
 
         if (playing) requestFocus() else if (playback.phase != QuizPlaybackPhase.PAUSED) abandonFocus()
 
@@ -196,21 +208,42 @@ internal class QuizPlaybackService : Service() {
         }
     }
 
+    /**
+     * Whether the transport has moved somewhere the session would not have predicted.
+     * Extrapolation only holds while playing and only forwards, so a loop back to the
+     * top or a seek shows up here as a gap between where it would be and where it is.
+     */
+    private fun positionDivergedFromExtrapolation(now: Long): Boolean {
+        if (lastPhase != QuizPlaybackPhase.PLAYING) return false
+        val elapsedMs = (now - lastSessionPublishNanos) / 1_000_000L
+        val predictedMs = lastPublishedPositionMs + elapsedMs
+        return kotlin.math.abs(QuizPlaybackController.positionMs - predictedMs) > POSITION_DRIFT_MS
+    }
+
     private fun publishSession(
         playback: QuizPlaybackState,
         metadata: QuizNowPlaying?,
-        playing: Boolean
+        playing: Boolean,
+        metadataChanged: Boolean
     ) {
-        mediaSession.setMetadata(
-            MediaMetadata.Builder()
-                .putString(
-                    MediaMetadata.METADATA_KEY_TITLE,
-                    metadata?.title ?: getString(R.string.app_name)
-                )
-                .putString(MediaMetadata.METADATA_KEY_ARTIST, metadata?.subtitle.orEmpty())
-                .putLong(MediaMetadata.METADATA_KEY_DURATION, QuizPlaybackController.durationMs)
-                .build()
-        )
+        // Metadata only moves when the section does, so re-sending it on every position
+        // resync would be pure traffic.
+        if (metadataChanged) {
+            hasPublishedMetadata = true
+            mediaSession.setMetadata(
+                MediaMetadata.Builder()
+                    .putString(
+                        MediaMetadata.METADATA_KEY_TITLE,
+                        metadata?.title ?: getString(R.string.app_name)
+                    )
+                    .putString(MediaMetadata.METADATA_KEY_ARTIST, metadata?.subtitle.orEmpty())
+                    .putLong(
+                        MediaMetadata.METADATA_KEY_DURATION,
+                        QuizPlaybackController.durationMs
+                    )
+                    .build()
+            )
+        }
         mediaSession.setPlaybackState(
             PlaybackState.Builder()
                 .setActions(
@@ -378,7 +411,10 @@ internal class QuizPlaybackService : Service() {
         private const val MEDIA_SESSION_TAG = "AcquiringQuizPlayback"
         private const val NOTIFICATION_ID = 1001
         private const val REQUEST_OPEN_APP = 1
-        private const val SESSION_REFRESH_NANOS = 1_000_000_000L
+        /** Backstop resync, in case a jump ever slips past the drift check. */
+        private const val SESSION_RESYNC_NANOS = 10_000_000_000L
+        /** How far the session's extrapolated position may drift before it is corrected. */
+        private const val POSITION_DRIFT_MS = 400L
 
         const val ACTION_ATTACH = "com.acquiring.android.playback.ATTACH"
         const val ACTION_PLAY = "com.acquiring.android.playback.PLAY"

@@ -42,6 +42,8 @@ android {
     }
     buildFeatures {
         compose true
+        // Needed for BuildConfig.DEBUG, which gates the app's diagnostic logging.
+        buildConfig true
     }
     packagingOptions {
         resources {

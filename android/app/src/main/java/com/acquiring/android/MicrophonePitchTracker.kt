@@ -138,12 +138,17 @@ class MicrophonePitchTracker(
                 ?: throw IllegalStateException("Could not initialize AudioRecord")
 
             recorder = opened.first
-            Log.i(
-                TAG,
-                "Capture started: source=${opened.second} rate=${sampleRate}Hz " +
-                    "window=$analysisWindowSize hop=$analysisHopSize " +
-                    "mode=$trackingMode unprocessedSupported=$unprocessedSupported"
-            )
+            // Diagnostic only: which source the device actually granted, and at what
+            // analysis size. Nothing acts on it, and interpolating it costs a string
+            // per capture start, so it is a debug build's concern alone.
+            if (BuildConfig.DEBUG) {
+                Log.i(
+                    TAG,
+                    "Capture started: source=${opened.second} rate=${sampleRate}Hz " +
+                        "window=$analysisWindowSize hop=$analysisHopSize " +
+                        "mode=$trackingMode unprocessedSupported=$unprocessedSupported"
+                )
+            }
         } catch (e: Exception) {
             _pitchFlow.value = PitchResult.Error(e.message ?: "Unknown initialization error")
             return
