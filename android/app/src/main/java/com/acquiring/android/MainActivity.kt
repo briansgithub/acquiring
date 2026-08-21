@@ -2233,16 +2233,30 @@ fun QuizTab(
         }
     }
 
-    fun playSingleNotePreview(pitch: SpelledPitch) {
+    /**
+     * Sounds one card. Cards are exclusive: a tap retires whatever the previous one
+     * left ringing — faded, not cut — so previews replace each other instead of
+     * stacking into a thicker and thicker chord. Every card tap goes through here.
+     */
+    fun playCardPreview(
+        audioNotes: List<Int>,
+        durationMs: Int = ROOT_INTERVAL_PREVIEW_DURATION_MS
+    ) {
         intervalPreviewJob?.cancel()
         AudioEngine.stopPreviewPlayback()
+        val notes = audioNotes.filter { it > 0 }
+        if (notes.isEmpty()) return
         intervalPreviewJob = scope.launch {
             AudioEngine.playChord(
-                listOf(tessituraPreviewMidi(pitch.toAudioNoteNumber())),
-                durationMs = ROOT_INTERVAL_PREVIEW_DURATION_MS,
+                notes,
+                durationMs = durationMs,
                 channel = AudioEngine.PlaybackChannel.PREVIEW
             )
         }
+    }
+
+    fun playSingleNotePreview(pitch: SpelledPitch) {
+        playCardPreview(listOf(tessituraPreviewMidi(pitch.toAudioNoteNumber())))
     }
 
     val simpleRootPitchTarget = remember(currentRootPreviewAudioNote, currentRootDegreeLabel) {
@@ -3036,14 +3050,7 @@ fun QuizTab(
                                         .combinedClickable(
                                             enabled = rootAudioNote > 0,
                                             onClick = {
-                                                intervalPreviewJob?.cancel()
-                                                AudioEngine.stopPreviewPlayback()
-                                                intervalPreviewJob = scope.launch {
-                                                    AudioEngine.playChord(
-                                                        listOf(tessituraPreviewMidi(rootAudioNote)),
-                                                        channel = AudioEngine.PlaybackChannel.PREVIEW
-                                                    )
-                                                }
+                                                playCardPreview(listOf(tessituraPreviewMidi(rootAudioNote)))
                                             },
                                             onDoubleClick = {
                                                 if (rootAudioNote > 0) {
@@ -3334,9 +3341,12 @@ fun QuizTab(
                                 val notes = soundingChord?.let { ChordInterpreter.getChordNotes(it, activeKey) } ?: emptyList()
                                 val rootMidi = soundingChord?.let { ChordInterpreter.getRootPositionChordNotes(it, activeKey).firstOrNull() } ?: 0
                                 val spelledRoot = soundingChord?.let { ChordInterpreter.resolveChordRoot(it, activeKey)?.pitch }
+                                // The card plays the chord as written, at the song's own
+                                // tempo. The tempo and arpeggio knobs steer the transport,
+                                // not the cards, so neither is read here.
                                 val chordDurationMs = soundingChord?.let { chord ->
                                     val chordDurationBeats = (chord["duration"] as? JsonPrimitive)?.doubleOrNull ?: 1.0
-                                    remainingPlaybackDurationMs(chordDurationBeats, 0.0, bpm)
+                                    remainingPlaybackDurationMs(chordDurationBeats, 0.0, baseBpm.toDouble())
                                 }
                                 val previewNotes = notes
                                 val degreeSpacing = when { notes.size >= 7 -> 2.dp; notes.size >= 5 -> 4.dp; else -> 6.dp }
@@ -3346,7 +3356,7 @@ fun QuizTab(
                                 Row(modifier = Modifier.fillMaxWidth().height(QUIZ_CHORD_ROW_HEIGHT), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                                     QuizRowLabel("Chord")
                                     if (romanDisplay != null) {
-                                        Button(onClick = { scope.launch { chordDurationMs?.let { AudioEngine.playChord(previewNotes, durationMs = it, arpeggiateCycles = arpeggiateCycles, bpm = bpm, channel = AudioEngine.PlaybackChannel.PREVIEW) } } }, enabled = chordDurationMs != null, modifier = Modifier.weight(1f).fillMaxHeight(), shape = RoundedCornerShape(16.dp), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)) {
+                                        Button(onClick = { chordDurationMs?.let { playCardPreview(previewNotes, durationMs = it) } }, enabled = chordDurationMs != null, modifier = Modifier.weight(1f).fillMaxHeight(), shape = RoundedCornerShape(16.dp), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)) {
                                             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { RomanNumeralText(display = romanDisplay, fontSize = 32.sp, modifier = Modifier.fillMaxWidth(), minFontSize = 12.sp) }
                                         }
                                     } else {
@@ -3377,7 +3387,9 @@ fun QuizTab(
                                                     modifier = Modifier.weight(1f).fillMaxHeight()
                                                         .semantics { contentDescription = "Play scale degree $internalLabel. Double tap to sing it back. Long press to toggle persistent pitch practice." }
                                                         .combinedClickable(
-                                                            onClick = { scope.launch { AudioEngine.playChord(listOf(tessituraPreviewMidi(previewNote)), channel = AudioEngine.PlaybackChannel.PREVIEW) } },
+                                                            onClick = {
+                                                                playCardPreview(listOf(tessituraPreviewMidi(previewNote)))
+                                                            },
                                                             onDoubleClick = {
                                                                 requestSingingTargets(
                                                                     SingingTargetRequest(

@@ -18,13 +18,6 @@ import org.robolectric.annotation.Config
 class AudioEngineTest {
 
     @Test
-    fun cyclesPerBeatStep_evenlyFitsEveryChordToneInsideTheBeat() {
-        assertEquals(167, AudioEngine.cyclesPerBeatStepSamples(120.0, 3, 1.0, sampleRate = 1_000))
-        assertEquals(83, AudioEngine.cyclesPerBeatStepSamples(120.0, 3, 2.0, sampleRate = 1_000))
-        assertEquals(0, AudioEngine.cyclesPerBeatStepSamples(120.0, 3, 0.0, sampleRate = 1_000))
-    }
-
-    @Test
     fun staticPlaybackSampleCount_longDurationsAreCheckedAndCapped() {
         val fortyEightSecondBoundary = AudioEngine.staticPlaybackSampleCount(
             durationMs = 48_700,
@@ -92,12 +85,12 @@ class AudioEngineTest {
         val triad = listOf(60, 64, 67)
         val seventh = listOf(60, 64, 67, 71)
 
-        AudioEngine.playChord(triad, durationMs = 300, arpeggiateCycles = 4.0, bpm = 120.0)
-        AudioEngine.playChord(seventh, durationMs = 300, arpeggiateCycles = 4.0, bpm = 120.0)
-        AudioEngine.playChord(triad, durationMs = 300, arpeggiateCycles = 2.0, bpm = 120.0)
-        AudioEngine.playChord(seventh, durationMs = 300, arpeggiateCycles = 2.0, bpm = 120.0)
+        AudioEngine.playChord(triad, durationMs = 300, arpeggiate = true, stepMs = 60)
+        AudioEngine.playChord(seventh, durationMs = 300, arpeggiate = true, stepMs = 60)
+        AudioEngine.playChord(triad, durationMs = 300, arpeggiate = true, stepMs = 120)
+        AudioEngine.playChord(seventh, durationMs = 300, arpeggiate = true, stepMs = 120)
 
-        println("✅ Successfully synthesized and played 4-cycle and 2-cycle chord buffers without error!")
+        println("✅ Successfully synthesized and played arpeggiated chord buffers without error!")
         assertTrue(true)
     }
 
@@ -113,8 +106,8 @@ class AudioEngineTest {
                 AudioEngine.playChord(
                     triad,
                     durationMs = 120,
-                    arpeggiateCycles = 4.0,
-                    bpm = 120.0
+                    arpeggiate = true,
+                    stepMs = 60
                 )
                 AudioEngine.stopAllPlayback()
             }

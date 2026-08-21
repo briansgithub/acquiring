@@ -12,11 +12,12 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.math.roundToInt
 
 object AudioEngine {
     private const val SAMPLE_RATE = 44100
     private const val MAX_STATIC_PLAYBACK_MS = 30_000
+    /** Ramp applied when a card preview is retired early, matching the timeline handoff. */
+    private const val PREVIEW_FADE_OUT_MS = 24
     private const val TAG = "AudioEngine"
 
     enum class Waveform {
@@ -94,18 +95,6 @@ object AudioEngine {
             SAMPLE_RATE.toLong() * durationMs.coerceAtLeast(1) / 1_000L
         }
         return requestedSamples.coerceIn(200L, maxStaticSamples).toInt()
-    }
-
-    internal fun cyclesPerBeatStepSamples(
-        bpm: Double,
-        noteCount: Int,
-        cyclesPerBeat: Double,
-        sampleRate: Int = SAMPLE_RATE
-    ): Int {
-        if (bpm <= 0.0 || noteCount <= 0 || cyclesPerBeat <= 0.0) return 0
-        return (sampleRate * 60.0 / (bpm * noteCount * cyclesPerBeat))
-            .roundToInt()
-            .coerceAtLeast(1)
     }
 
     internal fun staticTrackCanAcceptData(state: Int): Boolean =
@@ -207,6 +196,16 @@ object AudioEngine {
         stopAndRelease(removeTracks(snapshot.trackIds))
     }
 
+    /**
+     * Gain multipliers a fade-out walks through before the track is stopped. The last
+     * one is always exactly zero: a track released while still sounding leaves a step
+     * behind, which is what a click is.
+     */
+    internal fun fadeOutGainRamp(durationMs: Int): List<Float> {
+        val steps = (durationMs / 4).coerceIn(2, 12)
+        return (1..steps).map { step -> 1f - step.toFloat() / steps }
+    }
+
     fun fadeOutAndStopPlayback(snapshot: PlaybackSnapshot, durationMs: Int = 24) {
         if (snapshot.trackIds.isEmpty()) return
         if (durationMs <= 0) {
@@ -220,10 +219,9 @@ object AudioEngine {
                     .filter { it.id in snapshot.trackIds }
                     .associate { it.id to it.transitionGain }
             }
-            val steps = (durationMs / 4).coerceIn(2, 12)
-            val stepDelayMs = (durationMs / steps).toLong().coerceAtLeast(1L)
-            for (step in 1..steps) {
-                val fractionRemaining = 1f - step.toFloat() / steps
+            val ramp = fadeOutGainRamp(durationMs)
+            val stepDelayMs = (durationMs / ramp.size).toLong().coerceAtLeast(1L)
+            for (fractionRemaining in ramp) {
                 synchronized(activeTracks) {
                     activeTracks.filter { it.id in snapshot.trackIds }.forEach { active ->
                         active.transitionGain = (startingGains[active.id] ?: 1f) * fractionRemaining
@@ -254,8 +252,22 @@ object AudioEngine {
         }
     }
 
+    /**
+     * Retires whatever a card is currently sounding. A preview holds a flat envelope
+     * until its last 23ms, so stopping one outright truncates it wherever the waveform
+     * happens to be — audibly, on every re-tap. Ramp it down instead, and invalidate the
+     * channel first so an in-flight synthesis job cannot register a track behind the fade.
+     */
     fun stopPreviewPlayback() {
-        stopPlayback(setOf(PlaybackChannel.PREVIEW))
+        val sounding = synchronized(activeTracks) {
+            invalidatePendingPlayback(setOf(PlaybackChannel.PREVIEW))
+            PlaybackSnapshot(
+                activeTracks
+                    .filter { it.channel == PlaybackChannel.PREVIEW }
+                    .mapTo(mutableSetOf()) { it.id }
+            )
+        }
+        fadeOutAndStopPlayback(sounding, durationMs = PREVIEW_FADE_OUT_MS)
     }
 
     fun stopAllPlayback() {
@@ -402,8 +414,6 @@ object AudioEngine {
         durationMs: Int = 450,
         arpeggiate: Boolean = false,
         stepMs: Int = 80,
-        arpeggiateCycles: Double = 0.0,
-        bpm: Double = 120.0,
         volume: Float = 1.0f,
         channel: PlaybackChannel = PlaybackChannel.CHORD,
         fadeInMs: Int = 0,
@@ -417,8 +427,6 @@ object AudioEngine {
             durationMs,
             arpeggiate,
             stepMs,
-            arpeggiateCycles,
-            bpm,
             volume,
             channel,
             fadeInMs,
@@ -446,8 +454,6 @@ object AudioEngine {
             durationMs,
             arpeggiate = false,
             stepMs = 80,
-            arpeggiateCycles = 0.0,
-            bpm = 120.0,
             volume = volume,
             channel = channel,
             fadeInMs = fadeInMs,
@@ -464,52 +470,38 @@ object AudioEngine {
     internal fun literalPlaybackFrequencies(frequenciesHz: List<Double>): List<Double> =
         frequenciesHz.filter { it.isFinite() && it > 0.0 }
 
-    private suspend fun synthesizeNotes(
+    /**
+     * Fills one static playback buffer. Pure apart from [shouldAbort], which is polled every
+     * 2048 samples so a caller can drop a buffer whose playback was superseded mid-render.
+     */
+    internal fun renderStaticSamples(
         freqs: List<Double>,
         durationMs: Int,
         arpeggiate: Boolean,
         stepMs: Int,
-        arpeggiateCycles: Double,
-        bpm: Double,
-        volume: Float,
-        channel: PlaybackChannel,
-        fadeInMs: Int,
-        playbackToken: PlaybackToken?
-    ): PreparedPlayback? = withContext(Dispatchers.Default) {
-        if (playbackToken != null && playbackToken.channel != channel) return@withContext null
-        val generation = playbackToken?.generation
-            ?: synchronized(activeTracks) { playbackGenerations[channel.ordinal] }
-        if (synchronized(activeTracks) { playbackGenerations[channel.ordinal] != generation }) {
-            return@withContext null
-        }
-        val playbackContext = currentCoroutineContext()
-        // Keep one preset for the entire rendered buffer. The dropdown may be
-        // changed while synthesis is running, and preset-specific state (such
-        // as a plucked-string delay line) is allocated below.
-        val waveform = currentWaveform
+        waveform: Waveform,
+        shouldAbort: () -> Boolean = { false }
+    ): ShortArray? {
         val validNotes = freqs
-        if (validNotes.isEmpty()) return@withContext null
+        if (validNotes.isEmpty()) return null
 
         val numNotes = validNotes.size
-        val cycleMode = arpeggiateCycles > 0.0 && bpm > 0.0 && numNotes > 1
-        val stepSamples = if (cycleMode) {
-            cyclesPerBeatStepSamples(bpm, numNotes, arpeggiateCycles)
+        val stepSamples = (SAMPLE_RATE.toLong() * stepMs.coerceAtLeast(1) / 1_000L)
+            .coerceIn(200L, Int.MAX_VALUE.toLong())
+            .toInt()
+        val requestedSamples = staticPlaybackSampleCount(
+            durationMs = durationMs,
+            arpeggiate = arpeggiate,
+            noteCount = numNotes,
+            stepMs = stepMs
+        )
+        // An arpeggio has to finish on a slot boundary. Each slot fades itself in and
+        // out, so a buffer cut part-way through one ends at full envelope, and the
+        // AudioTrack turns that step into a click when playback stops.
+        val numSamples = if (arpeggiate && numNotes > 1) {
+            (requestedSamples / stepSamples).coerceAtLeast(1) * stepSamples
         } else {
-            (SAMPLE_RATE.toLong() * stepMs.coerceAtLeast(1) / 1_000L)
-                .coerceIn(200L, Int.MAX_VALUE.toLong())
-                .toInt()
-        }
-        val numSamples = if (cycleMode) {
-            (SAMPLE_RATE.toLong() * durationMs.coerceAtLeast(1) / 1_000L)
-                .coerceIn(200L, SAMPLE_RATE.toLong() * MAX_STATIC_PLAYBACK_MS / 1_000L)
-                .toInt()
-        } else {
-            staticPlaybackSampleCount(
-                durationMs = durationMs,
-                arpeggiate = arpeggiate,
-                noteCount = numNotes,
-                stepMs = stepMs
-            )
+            requestedSamples
         }
 
         val samples = ShortArray(numSamples)
@@ -517,15 +509,10 @@ object AudioEngine {
         val voices = validNotes.map { frequency -> SynthVoice(frequency, waveform, SAMPLE_RATE) }
 
         for (i in 0 until numSamples) {
-            // Synthesis can take longer than a short note. Stop promptly when
-            // its parent playback job is cancelled or the timeline is replaced.
-            if ((i and 2047) == 0 &&
-                (!playbackContext.isActive || synchronized(activeTracks) { playbackGenerations[channel.ordinal] != generation })) {
-                return@withContext null
-            }
+            if ((i and 2047) == 0 && shouldAbort()) return null
             var sum = 0.0
 
-            if ((!arpeggiate && !cycleMode) || numNotes <= 1) {
+            if (!arpeggiate || numNotes <= 1) {
                 // Simultaneous block chord
                 val env = when {
                     i < 200 -> i / 200.0
@@ -543,11 +530,7 @@ object AudioEngine {
                 }
             } else {
                 // Non-overlapping monophonic arpeggiated chord
-                val noteIdx = if (cycleMode) {
-                    (i / stepSamples) % numNotes
-                } else {
-                    (i / stepSamples).coerceIn(0, numNotes - 1)
-                }
+                val noteIdx = (i / stepSamples).coerceIn(0, numNotes - 1)
                 val noteSampleIdx = i % stepSamples
                 val voice = voices[noteIdx]
                 val noteElapsedSeconds = noteSampleIdx / SAMPLE_RATE.toDouble()
@@ -568,6 +551,46 @@ object AudioEngine {
 
             samples[i] = (sum * Short.MAX_VALUE).toInt().coerceIn(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt()).toShort()
         }
+        return samples
+    }
+
+    private suspend fun synthesizeNotes(
+        freqs: List<Double>,
+        durationMs: Int,
+        arpeggiate: Boolean,
+        stepMs: Int,
+        volume: Float,
+        channel: PlaybackChannel,
+        fadeInMs: Int,
+        playbackToken: PlaybackToken?
+    ): PreparedPlayback? = withContext(Dispatchers.Default) {
+        if (playbackToken != null && playbackToken.channel != channel) return@withContext null
+        val generation = playbackToken?.generation
+            ?: synchronized(activeTracks) { playbackGenerations[channel.ordinal] }
+        if (synchronized(activeTracks) { playbackGenerations[channel.ordinal] != generation }) {
+            return@withContext null
+        }
+        val playbackContext = currentCoroutineContext()
+        // Keep one preset for the entire rendered buffer. The dropdown may be
+        // changed while synthesis is running, and preset-specific state (such
+        // as a plucked-string delay line) is allocated below.
+        val waveform = currentWaveform
+        val validNotes = freqs
+        if (validNotes.isEmpty()) return@withContext null
+
+        val samples = renderStaticSamples(
+            freqs = validNotes,
+            durationMs = durationMs,
+            arpeggiate = arpeggiate,
+            stepMs = stepMs,
+            waveform = waveform
+        ) {
+            // Synthesis can take longer than a short note. Stop promptly when
+            // its parent playback job is cancelled or the timeline is replaced.
+            !playbackContext.isActive ||
+                synchronized(activeTracks) { playbackGenerations[channel.ordinal] != generation }
+        } ?: return@withContext null
+        val numSamples = samples.size
 
         // A paused/restarted timeline cancels its child playback jobs.  Do not
         // create a late AudioTrack after that cancellation has already happened.
@@ -646,8 +669,6 @@ object AudioEngine {
         durationMs: Int = 450,
         arpeggiate: Boolean = false,
         stepMs: Int = 80,
-        arpeggiateCycles: Double = 0.0,
-        bpm: Double = 120.0,
         volume: Float = 1.0f,
         channel: PlaybackChannel = PlaybackChannel.CHORD,
         fadeInMs: Int = 0,
@@ -657,8 +678,6 @@ object AudioEngine {
         durationMs = durationMs,
         arpeggiate = arpeggiate,
         stepMs = stepMs,
-        arpeggiateCycles = arpeggiateCycles,
-        bpm = bpm,
         volume = volume,
         channel = channel,
         fadeInMs = fadeInMs,
@@ -670,8 +689,6 @@ object AudioEngine {
         durationMs: Int = 450,
         arpeggiate: Boolean = false,
         stepMs: Int = 80,
-        arpeggiateCycles: Double = 0.0,
-        bpm: Double = 120.0,
         volume: Float = 1.0f,
         channel: PlaybackChannel = PlaybackChannel.CHORD,
         fadeInMs: Int = 0,
@@ -682,8 +699,6 @@ object AudioEngine {
             durationMs = durationMs,
             arpeggiate = arpeggiate,
             stepMs = stepMs,
-            arpeggiateCycles = arpeggiateCycles,
-            bpm = bpm,
             volume = volume,
             channel = channel,
             fadeInMs = fadeInMs,
