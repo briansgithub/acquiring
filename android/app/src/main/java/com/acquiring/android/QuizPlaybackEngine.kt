@@ -95,7 +95,7 @@ internal data class RenderedQuizEvent(val id: Long, val frameOffset: Int)
 internal class QuizPcmRenderer(
     private var timeline: QuizTimeline,
     initialConfig: QuizPlaybackConfig,
-    private val sampleRate: Int = SAMPLE_RATE
+    private val sampleRate: Int = AppAudioOutput.sampleRate
 ) {
     private data class ActiveEvent(
         val event: QuizTimelineEvent,
@@ -377,9 +377,9 @@ private class AndroidQuizAudioSink(private val track: AudioTrack) : QuizAudioSin
 
 internal class QuizPlaybackEngine(
     initialConfig: QuizPlaybackConfig,
-    private val sampleRate: Int = QuizPcmRenderer.SAMPLE_RATE,
+    private val sampleRate: Int = AppAudioOutput.sampleRate,
     private val sinkFactory: (capacityFrames: Int) -> QuizAudioSink = { capacityFrames ->
-        createAndroidSink(capacityFrames)
+        createAndroidSink(capacityFrames, sampleRate)
     }
 ) {
     private sealed interface Command {
@@ -825,9 +825,9 @@ internal class QuizPlaybackEngine(
         private const val STATE_UPDATE_NANOS = 16_666_667L
         private const val RELEASE_JOIN_MS = 1_000L
 
-        private fun createAndroidSink(capacityFrames: Int): QuizAudioSink {
+        private fun createAndroidSink(capacityFrames: Int, sampleRate: Int): QuizAudioSink {
             val minBytes = AudioTrack.getMinBufferSize(
-                QuizPcmRenderer.SAMPLE_RATE,
+                sampleRate,
                 AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT
             )
@@ -835,7 +835,7 @@ internal class QuizPlaybackEngine(
             val capacityBytes = max(minBytes, capacityFrames * Short.SIZE_BYTES)
             val track = AudioTrack.Builder()
                 // Same session as the card previews: one effect chain for the whole app.
-                .setSessionId(AppAudioSession.id)
+                .setSessionId(AppAudioOutput.sessionId)
                 .setAudioAttributes(
                     AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_MEDIA)
@@ -845,7 +845,7 @@ internal class QuizPlaybackEngine(
                 .setAudioFormat(
                     AudioFormat.Builder()
                         .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                        .setSampleRate(QuizPcmRenderer.SAMPLE_RATE)
+                        .setSampleRate(sampleRate)
                         .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
                         .build()
                 )

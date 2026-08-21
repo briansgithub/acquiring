@@ -14,7 +14,11 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
 object AudioEngine {
-    private const val SAMPLE_RATE = 44100
+    /**
+     * The device's own output rate. Synthesising at anything else only buys a
+     * resampling pass in front of whatever effects are attached to the session.
+     */
+    private val SAMPLE_RATE: Int get() = AppAudioOutput.sampleRate
     private const val MAX_STATIC_PLAYBACK_MS = 30_000
     /** Ramp applied when a card preview is retired early, matching the timeline handoff. */
     private const val PREVIEW_FADE_OUT_MS = 24
@@ -594,7 +598,7 @@ object AudioEngine {
             val track = AudioTrack.Builder()
                 // Every preview shares the app's session, so an equaliser attached to
                 // it keeps one effect chain rather than rebuilding one per tap.
-                .setSessionId(AppAudioSession.id)
+                .setSessionId(AppAudioOutput.sessionId)
                 .setAudioAttributes(
                     AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_MEDIA)
