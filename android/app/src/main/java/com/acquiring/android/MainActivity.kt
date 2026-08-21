@@ -1562,10 +1562,15 @@ private val QUIZ_CARD_ROW_SPACING = 8.dp
 private val QUIZ_MELODY_ROW_HEIGHT = 64.dp
 private val QUIZ_CHORD_ROW_HEIGHT = 60.dp
 private val QUIZ_CHORD_TONE_ROW_HEIGHT = 54.dp
-private val QUIZ_CARD_STACK_HEIGHT = QUIZ_CARD_STACK_TOP_INSET +
-    QUIZ_MELODY_ROW_HEIGHT + QUIZ_CARD_ROW_SPACING +
+/**
+ * Melody row's top edge down to the chord-tone row's bottom edge: the span the balance
+ * fader is drawn against. It excludes [QUIZ_CARD_STACK_TOP_INSET], which sits above the
+ * melody row and is not part of any card.
+ */
+private val QUIZ_CARD_STACK_SPAN = QUIZ_MELODY_ROW_HEIGHT + QUIZ_CARD_ROW_SPACING +
     QUIZ_CHORD_ROW_HEIGHT + QUIZ_CARD_ROW_SPACING +
     QUIZ_CHORD_TONE_ROW_HEIGHT
+
 
 /** Row caption in the quiz's left gutter. Pass a blank label to hold the space only. */
 @Composable
@@ -2995,12 +3000,14 @@ fun QuizTab(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     // The full quiz always shows all three card rows, so the fader is a
-                    // fixed length that spans the stack from the melody row's top edge
-                    // down to the bottom of the chord-tone cards.
+                    // fixed length running from the melody row's top edge down to the
+                    // bottom of the chord-tone cards. The card column is pushed down by
+                    // QUIZ_CARD_STACK_TOP_INSET, so the fader takes the same offset
+                    // below rather than starting level with the row that holds them.
                     val balanceFaderHeight = if (isSimpleMode) {
                         QUIZ_SIMPLE_MODE_FADER_HEIGHT
                     } else {
-                        QUIZ_CARD_STACK_HEIGHT
+                        QUIZ_CARD_STACK_SPAN
                     }
 
                     // The fader sits outside the card block so it holds the same spot
@@ -3471,7 +3478,12 @@ fun QuizTab(
                     MelodyChordBalanceFader(
                         value = melodyChordBalance,
                         onValueChange = { melodyChordBalance = it },
-                        trackLength = balanceFaderHeight
+                        trackLength = balanceFaderHeight,
+                        modifier = if (isSimpleMode) {
+                            Modifier
+                        } else {
+                            Modifier.padding(top = QUIZ_CARD_STACK_TOP_INSET)
+                        }
                     )
                     }
 
