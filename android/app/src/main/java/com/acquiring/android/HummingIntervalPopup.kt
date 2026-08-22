@@ -150,6 +150,15 @@ internal fun HummingIntervalPopup(
                     recordingTimeRemaining = 0
                     listenTimeRemaining = 0
                     pitchTracker.stop()
+                    // Backgrounding ends the singing session, so reopening the app
+                    // always shows the tool collapsed and empty, exactly as a cold
+                    // launch does. Nothing is on screen to animate here, so the
+                    // targets are dropped immediately instead of via clearAfterCollapse.
+                    isExpanded = false
+                    clearAfterCollapse = false
+                    activeTarget = null
+                    slot1 = null
+                    slot2 = null
                 }
                 else -> Unit
             }
