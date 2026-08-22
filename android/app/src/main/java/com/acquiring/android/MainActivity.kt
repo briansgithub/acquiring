@@ -56,6 +56,7 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
@@ -66,6 +67,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -80,9 +82,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
-// Filled and outlined both export "Star", so the outlined one is aliased
-// to keep the two imports from colliding.
-import androidx.compose.material.icons.outlined.Star as StarOutline
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
@@ -1503,7 +1502,7 @@ fun SongDetailView(
                             imageVector = if (isFavorite) {
                                 Icons.Filled.Star
                             } else {
-                                Icons.Outlined.StarOutline
+                                ImageVector.vectorResource(R.drawable.ic_star_outline)
                             },
                             contentDescription = null,
                             tint = if (isFavorite) {
