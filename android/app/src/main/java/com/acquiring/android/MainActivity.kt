@@ -62,6 +62,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -75,6 +79,10 @@ import androidx.compose.ui.input.pointer.util.addPointerInputChange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
+// Filled and outlined both export "Star", so the outlined one is aliased
+// to keep the two imports from colliding.
+import androidx.compose.material.icons.outlined.Star as StarOutline
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
@@ -200,6 +208,7 @@ private fun ExposedDropdownMenuBoxScope.ExposedDropdownMenuWithScrollbar(
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
     private lateinit var db: AppDatabase
+    private lateinit var userDb: UserDataDatabase
     private val tessituraSessionViewModel by viewModels<TessituraSessionViewModel>()
 
     /**
@@ -226,6 +235,13 @@ class MainActivity : ComponentActivity() {
             applicationContext,
             AppDatabase::class.java, AppDatabase.DB_NAME
         ).addMigrations(AppDatabase.MIGRATION_1_2, AppDatabase.MIGRATION_2_3).build()
+
+        // A separate file from the catalog, and deliberately not rebuilt when a
+        // downloaded catalog replaces AppDatabase. See UserDataDatabase.
+        userDb = Room.databaseBuilder(
+            applicationContext,
+            UserDataDatabase::class.java, UserDataDatabase.DB_NAME
+        ).build()
 
         val neutralContainer = Color(0xFF3A3A3A)
         val neutralOnContainer = Color(0xFFE6E6E6)
@@ -256,7 +272,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen(db, tessituraSessionViewModel)
+                    MainScreen(db, userDb, tessituraSessionViewModel)
                 }
             }
         }
@@ -267,9 +283,12 @@ class MainActivity : ComponentActivity() {
 @Composable
 internal fun MainScreen(
     db: AppDatabase,
+    userDb: UserDataDatabase,
     tessituraSessionViewModel: TessituraSessionViewModel
 ) {
     var activeDb by remember { mutableStateOf(db) }
+    // Not swapped when the catalog is: playlists outlive a catalog download.
+    val playlistDao = remember(userDb) { userDb.playlistDao() }
     var urlToHarvest by remember { mutableStateOf("") }
     var harvestStatus by remember { mutableStateOf("") }
     var searchQuery by remember { mutableStateOf("") }
@@ -356,6 +375,58 @@ internal fun MainScreen(
             AudioEngine.globalTranspose = 0
         }
     }
+
+    // Whether the open song sits in Favorites, read once per song. The star
+    // flips this optimistically and writes through, the way every other control
+    // on this screen behaves.
+    var isSelectedSongFavorite by remember { mutableStateOf(false) }
+    LaunchedEffect(playlistDao, selectedSong?.slug) {
+        val slug = selectedSong?.slug
+        isSelectedSongFavorite = if (slug == null) {
+            false
+        } else {
+            try {
+                playlistDao.isInPlaylist(PlaylistIds.FAVORITES, slug)
+            } catch (cancellation: CancellationException) {
+                throw cancellation
+            } catch (_: Exception) {
+                false
+            }
+        }
+    }
+    val toggleSelectedSongFavorite = {
+        val slug = selectedSong?.slug
+        if (slug != null) {
+            val shouldAdd = !isSelectedSongFavorite
+            isSelectedSongFavorite = shouldAdd
+            scope.launch {
+                try {
+                    playlistDao.ensureBuiltInPlaylist(
+                        id = PlaylistIds.FAVORITES,
+                        name = PlaylistIds.FAVORITES_NAME,
+                        createdAt = System.currentTimeMillis()
+                    )
+                    if (shouldAdd) {
+                        playlistDao.addEntry(
+                            PlaylistEntry(
+                                playlistId = PlaylistIds.FAVORITES,
+                                slug = slug,
+                                addedAt = System.currentTimeMillis()
+                            )
+                        )
+                    } else {
+                        playlistDao.removeEntry(PlaylistIds.FAVORITES, slug)
+                    }
+                } catch (cancellation: CancellationException) {
+                    throw cancellation
+                } catch (_: Exception) {
+                    // Put the star back rather than claiming a write that failed.
+                    isSelectedSongFavorite = !shouldAdd
+                }
+            }
+        }
+    }
+
     val returnToParent = {
         browseOpenJob?.cancel()
         browseOpenJob = null
@@ -583,6 +654,7 @@ internal fun MainScreen(
                     // Library/Search View
                     LibraryView(
                     activeDb = activeDb,
+                    playlistDao = playlistDao,
                     urlToHarvest = urlToHarvest,
                     onUrlChange = { urlToHarvest = it },
                     harvestStatus = harvestStatus,
@@ -818,6 +890,8 @@ internal fun MainScreen(
                         )
                     },
                     persistentPitchSource = persistentQuizPitchSource,
+                    isFavorite = isSelectedSongFavorite,
+                    onToggleFavorite = toggleSelectedSongFavorite,
                     onBack = returnToParent
                 )
             }
@@ -839,6 +913,7 @@ internal fun MainScreen(
 @Composable
 fun LibraryView(
     activeDb: AppDatabase,
+    playlistDao: PlaylistDao,
     urlToHarvest: String,
     onUrlChange: (String) -> Unit,
     harvestStatus: String,
@@ -1060,6 +1135,14 @@ fun LibraryView(
             Text("All Songs")
         }
 
+        // Above the two catalog-maintenance sections, which belong together at
+        // the bottom.
+        PlaylistsSection(
+            playlistDao = playlistDao,
+            songDao = activeDb.songDao(),
+            onSongClick = onSongClick
+        )
+
         // Expandable Harvest Section
         Column(modifier = Modifier.fillMaxWidth()) {
             Surface(
@@ -1145,6 +1228,8 @@ fun LibraryView(
     }
 }
 
+internal const val QUIZ_FAVORITE_STAR_TEST_TAG = "QuizFavoriteStar"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SongDetailView(
@@ -1179,6 +1264,8 @@ fun SongDetailView(
     onUpdateContinuity: (Int, Int) -> Unit,
     tessituraControl: @Composable () -> Unit,
     persistentPitchSource: PitchSource,
+    isFavorite: Boolean,
+    onToggleFavorite: () -> Unit,
     onBack: () -> Unit
 ) {
     val sectionsInSongOrder = remember(sections) { sections.sectionsInSongOrder() }
@@ -1390,6 +1477,42 @@ fun SongDetailView(
                                 }
                             }
                         }
+                    }
+
+                    // Mirrors the URL button's slot on the other tabs, and sits
+                    // inside the 72.dp the centred title already keeps clear.
+                    // Sized down from the 48.dp IconButton default so it fits
+                    // this 36.dp row.
+                    IconButton(
+                        onClick = onToggleFavorite,
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .size(36.dp)
+                            .testTag(QUIZ_FAVORITE_STAR_TEST_TAG)
+                            .semantics {
+                                contentDescription = if (isFavorite) {
+                                    "Remove from ${PlaylistIds.FAVORITES_NAME}"
+                                } else {
+                                    "Add to ${PlaylistIds.FAVORITES_NAME}"
+                                }
+                                stateDescription = if (isFavorite) "Favorited" else "Not favorited"
+                                role = Role.Button
+                            }
+                    ) {
+                        Icon(
+                            imageVector = if (isFavorite) {
+                                Icons.Filled.Star
+                            } else {
+                                Icons.Outlined.StarOutline
+                            },
+                            contentDescription = null,
+                            tint = if (isFavorite) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            },
+                            modifier = Modifier.size(20.dp)
+                        )
                     }
                 }
                 Box(
