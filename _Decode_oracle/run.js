@@ -109,7 +109,7 @@ function writeGlobal(results, globalMatrix, globalDiscrepancies, { browserRan = 
 
   const browserLine = browserRan
     ? `- Browser matches engine: **${pct(agg.browserOk, agg.total)}** (${agg.browserOk}/${agg.total})\n`
-    : `- Browser matches engine: **skipped** (start web-player at :3000 and rerun without \`--no-browser\`)\n`;
+    : `- Browser matches engine: **skipped** (start web at :3000 and rerun without \`--no-browser\`)\n`;
 
   let sm = `# Decode oracle — global summary\n\n`;
   sm += `Songs: **${results.length}** | Chords: **${agg.total}**\n\n`;

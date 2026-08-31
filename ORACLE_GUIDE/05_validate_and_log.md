@@ -32,7 +32,7 @@ Never ship a fix without proving it didn't break the things that already work, t
 
 The target bar is **≥99% `notesOk` per corpus**. Prefer leaving a single-song edge case unfixed over introducing any regression in the gates above.
 
-## Logging protocol (do this every time you change `web-player/lib`)
+## Logging protocol (do this every time you change `web/lib`)
 
 1. **Append a numbered entry** to [`_Decode_oracle/DECODE_FIX_LOG.md`](../_Decode_oracle/DECODE_FIX_LOG.md), continuing the sequence (find the last `## Fix NNN`). Each entry states: **symptom → root cause → fix → files → exposed-by song(s)**, plus the before/after DB numbers. Use sub-letters (036a, 036b, …) when one session lands several related fixes.
 2. **Update the status table** in [`README.md`](README.md) if any corpus-wide number changed.

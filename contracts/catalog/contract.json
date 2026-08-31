@@ -1,0 +1,18 @@
+{
+  "name": "acquiring-catalog",
+  "schemaVersion": 3,
+  "databaseFilename": "catalog.db",
+  "archiveFilename": "catalog.db.gz",
+  "compression": "gzip",
+  "minimumBrowseRows": 40609,
+  "requiredTables": {
+    "songs": ["slug", "artist", "title", "url", "status", "dataBlob"],
+    "song_browse_entries": ["slug", "artist", "title", "alphaGroup", "complexityRating", "complexityBucket"],
+    "song_browse_modes": ["slug", "mode"]
+  },
+  "requiredIndexes": [
+    "index_song_browse_entries_alphaGroup",
+    "index_song_browse_entries_complexityBucket",
+    "index_song_browse_modes_mode"
+  ]
+}

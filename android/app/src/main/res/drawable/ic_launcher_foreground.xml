@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Degree 1: (54, 36.5) -->
+    <!-- 1. Drop Shadow -->
+    <path
+        android:fillColor="#33000000"
+        android:pathData="M 53.5, 32.8 a 4.2,4.2 0 1,0 0,8.4 a 4.2,4.2 0 1,0 0,-8.4" />
+    <!-- 2. Base Gem -->
+    <path
+        android:fillColor="@color/degree_1"
+        android:pathData="M 54, 32.5 a 4,4 0 1,0 0,8 a 4,4 0 1,0 0,-8" />
+    <!-- 4. Outer Rim -->
+    <path
+        android:strokeColor="#20FFFFFF"
+        android:strokeWidth="0.2"
+        android:pathData="M 54, 32.6 a 3.9,3.9 0 1,0 0,7.8 a 3.9,3.9 0 1,0 0,-7.8" />
+    <!-- 5. Bright Glint (Large Crescent) -->
+    <path
+        android:fillColor="#D0FFFFFF"
+        android:pathData="M 53.0, 33.0 a 3.9,3.9 0 0,1 4.8,4.8 a 6.0,6.0 0 0,0 -4.8,-4.8 z" />
+
+    <!-- Degree 2: (67.7, 43.2) -->
+    <!-- 1. Drop Shadow -->
+    <path
+        android:fillColor="#33000000"
+        android:pathData="M 67.2, 39.5 a 4.2,4.2 0 1,0 0,8.4 a 4.2,4.2 0 1,0 0,-8.4" />
+    <!-- 2. Base Gem -->
+    <path
+        android:fillColor="@color/degree_2"
+        android:pathData="M 67.7, 39.2 a 4,4 0 1,0 0,8 a 4,4 0 1,0 0,-8" />
+    <!-- 4. Outer Rim -->
+    <path
+        android:strokeColor="#20FFFFFF"
+        android:strokeWidth="0.2"
+        android:pathData="M 67.7, 39.3 a 3.9,3.9 0 1,0 0,7.8 a 3.9,3.9 0 1,0 0,-7.8" />
+    <!-- 5. Bright Glint (Large Crescent) -->
+    <path
+        android:fillColor="#D0FFFFFF"
+        android:pathData="M 66.7, 39.7 a 3.9,3.9 0 0,1 4.8,4.8 a 6.0,6.0 0 0,0 -4.8,-4.8 z" />
+
+    <!-- Degree 3: (71.1, 57.9) -->
+    <!-- 1. Drop Shadow -->
+    <path
+        android:fillColor="#33000000"
+        android:pathData="M 70.6, 54.2 a 4.2,4.2 0 1,0 0,8.4 a 4.2,4.2 0 1,0 0,-8.4" />
+    <!-- 2. Base Gem -->
+    <path
+        android:fillColor="@color/degree_3"
+        android:pathData="M 71.1, 53.9 a 4,4 0 1,0 0,8 a 4,4 0 1,0 0,-8" />
+    <!-- 4. Outer Rim -->
+    <path
+        android:strokeColor="#20FFFFFF"
+        android:strokeWidth="0.2"
+        android:pathData="M 71.1, 54.0 a 3.9,3.9 0 1,0 0,7.8 a 3.9,3.9 0 1,0 0,-7.8" />
+    <!-- 5. Bright Glint (Large Crescent) -->
+    <path
+        android:fillColor="#D0FFFFFF"
+        android:pathData="M 70.1, 54.4 a 3.9,3.9 0 0,1 4.8,4.8 a 6.0,6.0 0 0,0 -4.8,-4.8 z" />
+
+    <!-- Degree 4: (61.6, 69.8) -->
+    <!-- 1. Drop Shadow -->
+    <path
+        android:fillColor="#33000000"
+        android:pathData="M 61.1, 66.1 a 4.2,4.2 0 1,0 0,8.4 a 4.2,4.2 0 1,0 0,-8.4" />
+    <!-- 2. Base Gem -->
+    <path
+        android:fillColor="@color/degree_4"
+        android:pathData="M 61.6, 65.8 a 4,4 0 1,0 0,8 a 4,4 0 1,0 0,-8" />
+    <!-- 4. Outer Rim -->
+    <path
+        android:strokeColor="#20FFFFFF"
+        android:strokeWidth="0.2"
+        android:pathData="M 61.6, 65.9 a 3.9,3.9 0 1,0 0,7.8 a 3.9,3.9 0 1,0 0,-7.8" />
+    <!-- 5. Bright Glint (Large Crescent) -->
+    <path
+        android:fillColor="#D0FFFFFF"
+        android:pathData="M 60.6, 66.3 a 3.9,3.9 0 0,1 4.8,4.8 a 6.0,6.0 0 0,0 -4.8,-4.8 z" />
+
+    <!-- Degree 5: (46.5, 69.8) -->
+    <!-- 1. Drop Shadow -->
+    <path
+        android:fillColor="#33000000"
+        android:pathData="M 46.0, 66.1 a 4.2,4.2 0 1,0 0,8.4 a 4.2,4.2 0 1,0 0,-8.4" />
+    <!-- 2. Base Gem -->
+    <path
+        android:fillColor="@color/degree_5"
+        android:pathData="M 46.5, 65.8 a 4,4 0 1,0 0,8 a 4,4 0 1,0 0,-8" />
+    <!-- 4. Outer Rim -->
+    <path
+        android:strokeColor="#20FFFFFF"
+        android:strokeWidth="0.2"
+        android:pathData="M 46.5, 65.9 a 3.9,3.9 0 1,0 0,7.8 a 3.9,3.9 0 1,0 0,-7.8" />
+    <!-- 5. Bright Glint (Large Crescent) -->
+    <path
+        android:fillColor="#D0FFFFFF"
+        android:pathData="M 45.5, 66.3 a 3.9,3.9 0 0,1 4.8,4.8 a 6.0,6.0 0 0,0 -4.8,-4.8 z" />
+
+    <!-- Degree 6: (37, 57.9) -->
+    <!-- 1. Drop Shadow -->
+    <path
+        android:fillColor="#33000000"
+        android:pathData="M 36.5, 54.2 a 4.2,4.2 0 1,0 0,8.4 a 4.2,4.2 0 1,0 0,-8.4" />
+    <!-- 2. Base Gem -->
+    <path
+        android:fillColor="@color/degree_6"
+        android:pathData="M 37, 53.9 a 4,4 0 1,0 0,8 a 4,4 0 1,0 0,-8" />
+    <!-- 4. Outer Rim -->
+    <path
+        android:strokeColor="#20FFFFFF"
+        android:strokeWidth="0.2"
+        android:pathData="M 37, 54.0 a 3.9,3.9 0 1,0 0,7.8 a 3.9,3.9 0 1,0 0,-7.8" />
+    <!-- 5. Bright Glint (Large Crescent) -->
+    <path
+        android:fillColor="#D0FFFFFF"
+        android:pathData="M 36.0, 54.4 a 3.9,3.9 0 0,1 4.8,4.8 a 6.0,6.0 0 0,0 -4.8,-4.8 z" />
+
+    <!-- Degree 7: (40.4, 43.2) -->
+    <!-- 1. Drop Shadow -->
+    <path
+        android:fillColor="#33000000"
+        android:pathData="M 39.9, 39.5 a 4.2,4.2 0 1,0 0,8.4 a 4.2,4.2 0 1,0 0,-8.4" />
+    <!-- 2. Base Gem -->
+    <path
+        android:fillColor="@color/degree_7"
+        android:pathData="M 40.4, 39.2 a 4,4 0 1,0 0,8 a 4,4 0 1,0 0,-8" />
+    <!-- 4. Outer Rim -->
+    <path
+        android:strokeColor="#20FFFFFF"
+        android:strokeWidth="0.2"
+        android:pathData="M 40.4, 39.3 a 3.9,3.9 0 1,0 0,7.8 a 3.9,3.9 0 1,0 0,-7.8" />
+    <!-- 5. Bright Glint (Large Crescent) -->
+    <path
+        android:fillColor="#D0FFFFFF"
+        android:pathData="M 39.4, 39.7 a 3.9,3.9 0 0,1 4.8,4.8 a 6.0,6.0 0 0,0 -4.8,-4.8 z" />
+
+</vector>

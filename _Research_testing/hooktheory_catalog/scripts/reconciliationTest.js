@@ -8,7 +8,7 @@ const os = require('os');
 const path = require('path');
 
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'sacred-ring-reconcile-'));
-process.env.SACRED_RING_DATA = tempRoot;
+process.env.ACQUIRING_DATA = tempRoot;
 
 const { openDb, reconcileSong } = require('../lib/db');
 const { discoverFromMeili } = require('../lib/discover');

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import Database from "better-sqlite3";
-import { chordInterpreter } from "../web-player/lib/music.js";
-import { noteNameToPc } from "../web-player/lib/chordNoteUtils.js";
+import { chordInterpreter } from "../web/lib/music.js";
+import { noteNameToPc } from "../web/lib/chordNoteUtils.js";
 
-const db = new Database("sacred_ring_data/catalog/hooktheory_catalog.db", { readonly: true });
+const db = new Database("acquiring_data/catalog/hooktheory_catalog.db", { readonly: true });
 
 function pcs(notes) {
   return notes.map((n) => noteNameToPc(n)).sort((a, b) => a - b);

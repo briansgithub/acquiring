@@ -1,9 +1,9 @@
 # Overnight fetch: wait for current batchFullFetch to finish, then run fetch daemon until queue empty.
-# Logs to sacred_ring_data/catalog/overnight_fetch.log
+# Logs to acquiring_data/catalog/overnight_fetch.log
 
 $ErrorActionPreference = "Continue"
 $Repo = "H:\Desktop\3_sacred_ring"
-$LogDir = Join-Path $Repo "sacred_ring_data\catalog"
+$LogDir = Join-Path $Repo "acquiring_data\catalog"
 $LogFile = Join-Path $LogDir "overnight_fetch.log"
 $WaitPid = 35168
 

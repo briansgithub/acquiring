@@ -1,12 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { getChordSymbol, getChordLetterName } from '../../../web-player/lib/jsonToSymbol.js';
+import { getChordSymbol, getChordLetterName } from '../../../web/lib/jsonToSymbol.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const cacheDir = path.join(__dirname, '../../../sacred_ring_data/playback/.hooktheory_cache');
+const cacheDir = path.join(__dirname, '../../../acquiring_data/playback/.hooktheory_cache');
 const folders = fs.readdirSync(cacheDir).slice(0, 200); // Test 200 song sections
 
 console.log(`--- Testing ${folders.length} harvested song sections against JS Web Player Reference ---`);

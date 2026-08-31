@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 import Database from "better-sqlite3";
-import { chordInterpreter } from "../web-player/lib/music.js";
+import { chordInterpreter } from "../web/lib/music.js";
 import { createRequire } from "module";
 
 const require = createRequire(import.meta.url);
 const { mergeMods } = require("../_Decode_oracle/truthLetterParse.js");
 
-const db = new Database("sacred_ring_data/catalog/hooktheory_catalog.db", { readonly: true });
+const db = new Database("acquiring_data/catalog/hooktheory_catalog.db", { readonly: true });
 const rows = db
   .prepare(
     `SELECT slug, beat, truth_roman, truth_letter, chord_json, key_json, truth_pcs_json, eng_pcs_json

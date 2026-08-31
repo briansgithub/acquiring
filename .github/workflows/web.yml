@@ -1,0 +1,42 @@
+name: Web
+
+on:
+  pull_request:
+    paths:
+      - "web/**"
+      - "lib/**"
+      - "contracts/**"
+      - "scripts/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/web.yml"
+  push:
+    branches:
+      - main
+      - "codex/**"
+    paths:
+      - "web/**"
+      - "lib/**"
+      - "contracts/**"
+      - "scripts/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/web.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:section-order
+      - run: npm run test:hooktheory-compat
+      - run: npm run test:shared-parity
+      - run: npm run test:data-root

@@ -1,5 +1,5 @@
 /**
- * Unified harvest artifact paths and validation (SACRED_RING_DATA/harvest/<slug>/scrape.json).
+ * Unified harvest artifact paths and validation (ACQUIRING_DATA/harvest/<slug>/scrape.json).
  */
 
 const fs = require('fs');

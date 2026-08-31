@@ -23,12 +23,12 @@ Two separate codebases — keep them straight:
 
 | | Path | You edit it when… |
 |---|------|-------------------|
-| **Engine (the thing under test)** | `web-player/lib/` | fixing a chord decode bug |
+| **Engine (the thing under test)** | `web/lib/` | fixing a chord decode bug |
 | **Oracle harness (the test rig)** | `_Decode_oracle/` | changing how we scrape / compare / score |
 
-The harness imports the engine dynamically (`_Decode_oracle/engineRun.js` → `web-player/lib/music.js`), so an engine edit is picked up on the next harness run with no rebuild.
+The harness imports the engine dynamically (`_Decode_oracle/engineRun.js` → `web/lib/music.js`), so an engine edit is picked up on the next harness run with no rebuild.
 
-### Engine files (`web-player/lib/`)
+### Engine files (`web/lib/`)
 
 - `music.js` — `chordInterpreter` entry point; triad/seventh construction; applied + borrowed resolution; inversion; scale-degree labelling.
 - `scales.js` — scale interval tables, chord qualities, `generateScaleLabels`.

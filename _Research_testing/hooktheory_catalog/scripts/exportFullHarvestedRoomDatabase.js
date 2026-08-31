@@ -2,6 +2,11 @@ const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
 const Database = require('better-sqlite3');
+const catalogContractDir = path.resolve(__dirname, '../../../contracts/catalog');
+const catalogContract = JSON.parse(
+    fs.readFileSync(path.join(catalogContractDir, 'contract.json'), 'utf8')
+);
+const catalogSchema = fs.readFileSync(path.join(catalogContractDir, 'schema.sql'), 'utf8');
 const {
     buildOrderedAndroidSectionMap,
     alphabeticalGroup,
@@ -10,7 +15,7 @@ const {
 } = require('../lib/androidCatalogSections');
 
 // Resolve through dataRoot rather than __dirname: run from a git worktree,
-// __dirname-relative paths point inside the worktree, where sacred_ring_data
+// __dirname-relative paths point inside the worktree, where acquiring_data
 // has no catalog DB and android/ does not exist at all. That is exactly how
 // the overnight run's export/publish phases failed.
 const {
@@ -21,8 +26,8 @@ const {
 
 const cacheDir = getPlaybackCacheDir();
 const catalogDbPath = path.join(getCatalogDir(), 'hooktheory_catalog.db');
-const outputDbPath = path.join(getAndroidDir(), 'catalog.db');
-const outputGzPath = path.join(getAndroidDir(), 'catalog.db.gz');
+const outputDbPath = path.join(getAndroidDir(), catalogContract.databaseFilename);
+const outputGzPath = path.join(getAndroidDir(), catalogContract.archiveFilename);
 
 if (!fs.existsSync(catalogDbPath)) {
     throw new Error(`Complexity source database is required: ${catalogDbPath}`);
@@ -56,36 +61,7 @@ const complexityBySlug = new Map(
     `).all().map(row => [row.slug, row.complexity_rating])
 );
 
-outDb.exec(`
-CREATE TABLE IF NOT EXISTS songs (
-    slug TEXT NOT NULL PRIMARY KEY,
-    artist TEXT,
-    title TEXT,
-    url TEXT NOT NULL,
-    status TEXT NOT NULL,
-    dataBlob BLOB
-);
-CREATE TABLE IF NOT EXISTS song_browse_entries (
-    slug TEXT NOT NULL PRIMARY KEY,
-    artist TEXT,
-    title TEXT,
-    alphaGroup TEXT NOT NULL,
-    complexityRating REAL,
-    complexityBucket INTEGER
-);
-CREATE TABLE IF NOT EXISTS song_browse_modes (
-    slug TEXT NOT NULL,
-    mode TEXT NOT NULL,
-    PRIMARY KEY (slug, mode)
-);
-CREATE INDEX IF NOT EXISTS index_song_browse_entries_alphaGroup
-    ON song_browse_entries (alphaGroup);
-CREATE INDEX IF NOT EXISTS index_song_browse_entries_complexityBucket
-    ON song_browse_entries (complexityBucket);
-CREATE INDEX IF NOT EXISTS index_song_browse_modes_mode
-    ON song_browse_modes (mode);
-`);
-outDb.pragma('user_version = 3');
+outDb.exec(catalogSchema);
 
 const insertStmt = outDb.prepare(`
     INSERT OR REPLACE INTO songs (slug, artist, title, url, status, dataBlob)

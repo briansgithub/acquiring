@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { getChordSymbol, getChordLetterName } from '../../../web-player/lib/jsonToSymbol.js';
-import { getNoteLabel } from '../../../web-player/lib/musicScale.js';
+import { getChordSymbol, getChordLetterName } from '../../../web/lib/jsonToSymbol.js';
+import { getNoteLabel } from '../../../web/lib/musicScale.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

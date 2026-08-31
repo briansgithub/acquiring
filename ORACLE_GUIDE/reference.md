@@ -80,7 +80,7 @@ Gotchas worth memorizing:
 | `_Decode_oracle/run.js` | Orchestrate scrape→compare→report for URL(s) or a corpus. |
 | `_Decode_oracle/batchScrapeCorpus.js` | Scrape all (missing) songs in a corpus manifest. |
 | `_Decode_oracle/svgTruth.js`, `truthNotes.js`, `truthLetterParse.js`, `chordRootPc.js`, `pianoNotes.js` | Parse rendered labels → expected pitch classes/bass. |
-| `_Decode_oracle/engineRun.js` | Run the engine (`web-player/lib`) for a chord/section. |
+| `_Decode_oracle/engineRun.js` | Run the engine (`web/lib`) for a chord/section. |
 | `_Decode_oracle/compare.js` | Align truth vs engine; compute `notesOk` and channels. |
 | `_Decode_oracle/buildChordDb.js` / `updateChordDb.js` | Build/refresh the bucketed chord DB. |
 | `_Decode_oracle/testModification.js` | Query/re-run one bucket (`--list`, `--failing`, `<bucket> --rerun`). |

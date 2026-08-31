@@ -1,0 +1,661 @@
+/**
+ * Song Selector panel: catalog browse + pipeline actions.
+ * Songs with a complete pipeline auto-load into the player on detail view.
+ */
+
+import {
+  buildSongDetailHtml,
+  isPipelineComplete,
+  pipelineMissing,
+  wirePipelineButtons,
+} from "./songSelectorPipeline.js";
+import {
+  createLazyPlayableCaches,
+  wirePlayablePicker,
+} from "./songSelectorPlayable.js";
+
+const MIN_CHARS = 3;
+const MAX_SUGGESTIONS = 10;
+const DEBOUNCE_MS = 120;
+
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  }[c]));
+}
+
+function debounce(fn, ms) {
+  let t = null;
+  return (...args) => {
+    if (t) clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+
+function loadTooltip(missing) {
+  if (!missing?.length) {
+    return "Load into player — updates chord ring, timeline, and audio";
+  }
+  const labels = {
+    catalogued: "catalogue",
+    harvested: "full fetch",
+    metadata: "catalog enrich",
+    processed: "player cache",
+    tested: "oracle test",
+  };
+  return `Load blocked — needs: ${missing.map((m) => labels[m] || m).join(", ")}`;
+}
+
+export function renderSongSelector(container, options = {}) {
+  container.innerHTML = `
+    <div class="selector-head pane-panel-head">
+      <button id="sel-back" type="button" class="sel-back" hidden>Back</button>
+      <h2 class="pane-panel-title">Song Selector</h2>
+    </div>
+    <div id="sel-song-nav" class="sel-song-nav" hidden>
+      <div id="sel-song-nav-browse">
+        <div class="sel-song-nav-top">
+          <div class="sel-song-nav-sort-wrap">
+            <label class="sel-label sel-sort-label" for="sel-nav-playable-sort">Sort by:</label>
+            <select id="sel-nav-playable-sort" class="sel-select sel-playable-sort">
+              <option value="complexity" selected>Complexity</option>
+              <option value="alphabetical">Alphabetically</option>
+              <option value="artist">Artist</option>
+            </select>
+          </div>
+        </div>
+        <div class="sel-song-nav-picker">
+          <label class="sel-label" for="sel-nav-playable-input">Playable songs</label>
+          <div class="autocomplete">
+            <input id="sel-nav-playable-input" class="sel-input" type="text"
+              placeholder="Select a song…" autocomplete="off" spellcheck="false"
+              aria-label="Playable songs" />
+            <div id="sel-nav-playable-drop" class="autocomplete-drop" hidden></div>
+          </div>
+        </div>
+      </div>
+      <div id="sel-song-nav-search" class="sel-song-nav-picker" hidden>
+        <label class="sel-label" for="sel-nav-song-input">Search by song</label>
+        <div class="autocomplete">
+          <input id="sel-nav-song-input" class="sel-input" type="text"
+            autocomplete="off" spellcheck="false" />
+          <div id="sel-nav-song-drop" class="autocomplete-drop" hidden></div>
+        </div>
+      </div>
+    </div>
+    <div id="sel-body" class="selector-body"></div>
+    <div id="sel-url-footer" class="sel-url-footer">
+      <label class="sel-label" for="sel-url-input">Add song by URL</label>
+      <div class="sel-url-example">https://www.hooktheory.com/theorytab/view/artist/song</div>
+      <div class="sel-url-row">
+        <input id="sel-url-input" class="sel-input" type="url"
+          autocomplete="off" spellcheck="false" />
+        <button id="sel-url-add" class="sel-url-add" type="button" disabled>Add</button>
+      </div>
+      <div id="sel-url-status" class="sel-hint"></div>
+    </div>
+  `;
+
+  const body = container.querySelector("#sel-body");
+  const songNav = container.querySelector("#sel-song-nav");
+  const backBtn = container.querySelector("#sel-back");
+  const songNavBrowse = container.querySelector("#sel-song-nav-browse");
+  const songNavSearch = container.querySelector("#sel-song-nav-search");
+  const navPlayableInput = container.querySelector("#sel-nav-playable-input");
+  const navPlayableDrop = container.querySelector("#sel-nav-playable-drop");
+  const navPlayableSort = container.querySelector("#sel-nav-playable-sort");
+  const navSongInput = container.querySelector("#sel-nav-song-input");
+  const navSongDrop = container.querySelector("#sel-nav-song-drop");
+  const urlFooter = container.querySelector("#sel-url-footer");
+  const urlInput = container.querySelector("#sel-url-input");
+  const urlAddBtn = container.querySelector("#sel-url-add");
+  const urlStatus = container.querySelector("#sel-url-status");
+
+  function setUrlFooterVisible(visible) {
+    if (urlFooter) urlFooter.hidden = !visible;
+  }
+
+  // Client-side index from unified library API
+  let songs = [];          // [{slug, artist, title, flags, playable, cacheKey, _t, _a}]
+  let artists = [];        // [{name, _n}]
+  let loaded = false;
+  let loadError = null;
+  let playableCaches = null;
+  let playableSortMode = "complexity";
+
+  function getRecentSongs() {
+    try {
+      return JSON.parse(localStorage.getItem('recentSongs')) || [];
+    } catch {
+      return [];
+    }
+  }
+
+  function addRecentSong(s) {
+    if (!s || !s.slug) return;
+    let recent = getRecentSongs();
+    recent = recent.filter(r => r.slug !== s.slug);
+    recent.unshift({ slug: s.slug, title: s.title, artist: s.artist, playable: s.playable });
+    if (recent.length > 5) recent = recent.slice(0, 5);
+    localStorage.setItem('recentSongs', JSON.stringify(recent));
+  }
+
+  backBtn.addEventListener("click", () => showSearch());
+
+  function closeDrop(drop) {
+    drop.hidden = true;
+    drop.innerHTML = "";
+  }
+
+  function getPlayableSortMode() {
+    return navPlayableSort?.value || playableSortMode;
+  }
+
+  let playableCount = 0;
+
+  function schedulePlayableCachePrewarm() {
+    if (!loaded) {
+      playableCaches = null;
+      return;
+    }
+    playableCaches = createLazyPlayableCaches(songs);
+    const prewarm = () => playableCaches?.prewarmDefault();
+    if (typeof requestIdleCallback === "function") {
+      requestIdleCallback(prewarm, { timeout: 2000 });
+    } else {
+      setTimeout(prewarm, 50);
+    }
+  }
+
+  const playablePicker = (navPlayableInput && navPlayableDrop)
+    ? wirePlayablePicker(navPlayableInput, navPlayableDrop, {
+      getCaches: () => playableCaches,
+      getSortMode: getPlayableSortMode,
+      getLoaded: () => loaded,
+      onSelect: (slug) => showSongDetail(slug, { autoLoadPlayer: true }),
+      onSelectArtist: (artistName) => showArtist(artistName),
+      esc,
+      closeDrop,
+      debounceMs: DEBOUNCE_MS,
+    })
+    : null;
+
+  function showSongNav({ activeSlug = null, showBack = false, mode = "browse" } = {}) {
+    if (!songNav) return;
+    songNav.hidden = false;
+    if (navPlayableSort) navPlayableSort.value = playableSortMode;
+    if (backBtn) backBtn.hidden = !showBack;
+    if (songNavBrowse) songNavBrowse.hidden = mode !== "browse";
+    if (songNavSearch) songNavSearch.hidden = mode !== "search";
+    if (mode === "browse" && activeSlug) {
+      playablePicker?.setSelection(activeSlug);
+    }
+  }
+
+  navPlayableSort?.addEventListener("change", () => {
+    playableSortMode = navPlayableSort.value;
+    playableCaches?.ensure(playableSortMode);
+    if (document.activeElement === navPlayableInput) {
+      playablePicker?.refresh();
+    }
+  });
+
+  if (navSongInput && navSongDrop) {
+    wireSongInput(navSongInput, navSongDrop);
+  }
+
+  function populateFavorites() {
+    const favSelectEl = container.querySelector("#sel-nav-favorites-select");
+    if (favSelectEl) {
+      const favorites = songs.filter(s => s.is_favorite).sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+      favSelectEl.innerHTML = '<option value="">Select a favorite...</option>' + 
+        favorites.map(s => `<option value="${esc(s.slug)}">${esc(s.title || "(untitled)")} - ${esc(s.artist || "")}</option>`).join("");
+    }
+  }
+
+  async function loadIndex() {
+    try {
+      const res = await fetch("/api/library");
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(
+          res.status === 404
+            ? "Library API not found — start the player with: node web/server.js"
+            : `HTTP ${res.status}: ${text.slice(0, 80)}`,
+        );
+      }
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      playableCount = 0;
+      songs = (data.songs || []).map((s) => {
+        if (s.playable) playableCount++;
+        return {
+          ...s,
+          _t: (s.title || "").toLowerCase(),
+          _a: (s.artist || "").toLowerCase(),
+        };
+      });
+      const seen = new Map();
+      for (const s of songs) {
+        const name = s.artist || "";
+        if (!name) continue;
+        const key = name.toLowerCase();
+        if (!seen.has(key)) seen.set(key, { name, _n: key });
+      }
+      artists = [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
+      loaded = true;
+      loadError = null;
+      
+      populateFavorites();
+      schedulePlayableCachePrewarm();
+    } catch (err) {
+      loadError = err.message;
+      loaded = false;
+      playableCaches = null;
+    }
+  }
+
+  function updateHint(hintEl) {
+    if (!hintEl) return;
+    if (loadError) {
+      hintEl.innerHTML = `${esc(loadError)} <button type="button" class="sel-retry">Retry</button>`;
+      hintEl.querySelector(".sel-retry")?.addEventListener("click", () => {
+        loadIndex().then(() => {
+          updateHint(hintEl);
+          if (loaded) runAllSearches();
+        });
+      });
+      return;
+    }
+    if (!loaded) {
+      hintEl.textContent = "Loading catalog…";
+      return;
+    }
+    hintEl.textContent = `${songs.length} songs · ${artists.length} artists · ${playableCount} playable`;
+  }
+
+  let runAllSearches = () => {};
+
+  function matchSongs(q) {
+    const needle = q.toLowerCase();
+    const out = [];
+    for (const s of songs) {
+      if (s._t.includes(needle) || s._a.includes(needle)) {
+        out.push(s);
+        if (out.length >= MAX_SUGGESTIONS) break;
+      }
+    }
+    return out;
+  }
+
+  function matchArtists(q) {
+    const needle = q.toLowerCase();
+    const out = [];
+    for (const a of artists) {
+      if (a._n.includes(needle)) {
+        out.push(a);
+        if (out.length >= MAX_SUGGESTIONS) break;
+      }
+    }
+    return out;
+  }
+
+  // ---- Search view ----
+  function showSearch() {
+    setUrlFooterVisible(true);
+    showSongNav({ showBack: false, mode: "browse" });
+    body.innerHTML = `
+      <div class="sel-field">
+        <label class="sel-label" for="sel-song-input">Search by song</label>
+        <div class="autocomplete">
+          <input id="sel-song-input" class="sel-input" type="text"
+            autocomplete="off" spellcheck="false" />
+          <div id="sel-song-drop" class="autocomplete-drop" hidden></div>
+        </div>
+      </div>
+      <div class="sel-field">
+        <label class="sel-label" for="sel-artist-input">Search by artist</label>
+        <div class="autocomplete">
+          <input id="sel-artist-input" class="sel-input" type="text"
+            autocomplete="off" spellcheck="false" />
+          <div id="sel-artist-drop" class="autocomplete-drop" hidden></div>
+        </div>
+      </div>
+      <div class="sel-field">
+        <label class="sel-label" for="sel-nav-favorites-select">Favorites</label>
+        <select id="sel-nav-favorites-select" class="sel-select">
+          <option value="">Select a favorite...</option>
+        </select>
+      </div>
+      <div id="sel-hint" class="sel-hint"></div>
+    `;
+
+    const songInput = body.querySelector("#sel-song-input");
+    const songDrop = body.querySelector("#sel-song-drop");
+    const artistInput = body.querySelector("#sel-artist-input");
+    const artistDrop = body.querySelector("#sel-artist-drop");
+    const hint = body.querySelector("#sel-hint");
+
+    updateHint(hint);
+
+    const songRun = wireSongInput(songInput, songDrop);
+    const artistRun = wireArtistInput(artistInput, artistDrop);
+    runAllSearches = () => {
+      songRun();
+      artistRun();
+    };
+
+    const favSelectEl = body.querySelector("#sel-nav-favorites-select");
+    if (favSelectEl) {
+      favSelectEl.addEventListener("change", (e) => {
+        if (e.target.value) {
+          showSongDetail(e.target.value, { autoLoadPlayer: true });
+        }
+      });
+      if (loaded) {
+        populateFavorites();
+      }
+    }
+  }
+
+  async function pollAddJob(jobId, onRunning) {
+    for (;;) {
+      const res = await fetch(`/api/library/pipeline/job?id=${encodeURIComponent(jobId)}`);
+      const job = await res.json();
+      if (!res.ok) throw new Error(job.error || `HTTP ${res.status}`);
+      if (job.status === "running") {
+        onRunning?.(job);
+        await new Promise((r) => setTimeout(r, 500));
+        continue;
+      }
+      return job;
+    }
+  }
+
+  function wireAddUrl(input, addBtn, statusEl) {
+    const setStatus = (msg) => {
+      if (statusEl) statusEl.textContent = msg || "";
+    };
+
+    const syncAddBtn = () => {
+      if (!addBtn || !input) return;
+      addBtn.disabled = input.disabled || !input.value.trim();
+    };
+
+    const run = async () => {
+      const url = input.value.trim();
+      if (!url) return;
+      addBtn.disabled = true;
+      input.disabled = true;
+      setStatus("Adding — catalog + Fetch (one browser pass)…");
+      try {
+        const res = await fetch("/api/library/add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+        const job = await pollAddJob(data.jobId, (running) => {
+          if (running.message) setStatus(running.message);
+        });
+        if (job.status === "error") throw new Error(job.error || "add pipeline failed");
+        await loadIndex();
+        updateHint(body.querySelector("#sel-hint"));
+        setStatus(`Added ${data.slug} — opening detail`);
+        input.value = "";
+        showSongDetail(data.slug);
+      } catch (err) {
+        setStatus(err.message);
+      } finally {
+        input.disabled = false;
+        syncAddBtn();
+      }
+    };
+
+    syncAddBtn();
+    addBtn.addEventListener("click", run);
+    input.addEventListener("input", syncAddBtn);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if (!addBtn.disabled) run();
+      }
+    });
+  }
+
+  function wireSongInput(input, drop) {
+    const run = debounce(() => {
+      const q = input.value.trim();
+      if (q.length < MIN_CHARS) {
+        if (q.length === 0 && document.activeElement === input) {
+          const recents = getRecentSongs();
+          if (recents.length > 0) {
+            drop.innerHTML = `<div class="autocomplete-empty" style="text-align:left; font-size:10px; padding:4px 8px; color:#94a3b8; border-bottom:1px solid rgba(255,255,255,0.1)">RECENT SONGS</div>` + recents.map((s) => `
+              <div class="autocomplete-item" data-slug="${esc(s.slug)}">
+                <span class="ac-title">${esc(s.title || "(untitled)")}${s.playable ? ' <span class="ac-ready">●</span>' : ""}</span>
+                <span class="ac-sub">${esc(s.artist || "")}</span>
+              </div>
+            `).join("");
+            drop.hidden = false;
+            return;
+          }
+        }
+        return closeDrop(drop);
+      }
+      if (!loaded) {
+        drop.innerHTML = `<div class="autocomplete-empty">Catalog still loading…</div>`;
+        drop.hidden = false;
+        return;
+      }
+      const matches = matchSongs(q);
+      if (!matches.length) {
+        drop.innerHTML = `<div class="autocomplete-empty">No matches</div>`;
+        drop.hidden = false;
+        return;
+      }
+      drop.innerHTML = matches.map((s) => `
+        <div class="autocomplete-item" data-slug="${esc(s.slug)}">
+          <span class="ac-title">${esc(s.title || "(untitled)")}${s.playable ? ' <span class="ac-ready">●</span>' : ""}</span>
+          <span class="ac-sub">${esc(s.artist || "")}</span>
+        </div>
+      `).join("");
+      drop.hidden = false;
+    }, DEBOUNCE_MS);
+
+    input.addEventListener("input", run);
+    input.addEventListener("focus", run);
+    input.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrop(drop); });
+    input.addEventListener("blur", () => setTimeout(() => closeDrop(drop), 200));
+    drop.addEventListener("mousedown", (e) => {
+      const item = e.target.closest(".autocomplete-item");
+      if (!item) return;
+      e.preventDefault();
+      showSongDetail(item.dataset.slug, { autoLoadPlayer: true });
+    });
+    return run;
+  }
+
+  function wireArtistInput(input, drop) {
+    const run = debounce(() => {
+      const q = input.value.trim();
+      if (q.length < MIN_CHARS) return closeDrop(drop);
+      if (!loaded) {
+        drop.innerHTML = `<div class="autocomplete-empty">Catalog still loading…</div>`;
+        drop.hidden = false;
+        return;
+      }
+      const matches = matchArtists(q);
+      if (!matches.length) {
+        drop.innerHTML = `<div class="autocomplete-empty">No matches</div>`;
+        drop.hidden = false;
+        return;
+      }
+      drop.innerHTML = matches.map((a) => `
+        <div class="autocomplete-item" data-artist="${esc(a.name)}">
+          <span class="ac-title">${esc(a.name)}</span>
+        </div>
+      `).join("");
+      drop.hidden = false;
+    }, DEBOUNCE_MS);
+
+    input.addEventListener("input", run);
+    input.addEventListener("focus", run);
+    input.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrop(drop); });
+    input.addEventListener("blur", () => setTimeout(() => closeDrop(drop), 200));
+    drop.addEventListener("mousedown", (e) => {
+      const item = e.target.closest(".autocomplete-item");
+      if (!item) return;
+      e.preventDefault();
+      showArtist(item.dataset.artist);
+    });
+    return run;
+  }
+
+  // ---- Artist view ----
+  function showArtist(artistName) {
+    setUrlFooterVisible(true);
+    showSongNav({ showBack: true, mode: "browse" });
+    const list = songs
+      .filter((s) => (s.artist || "") === artistName)
+      .sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+    body.innerHTML = `
+      <div class="sel-artist-name">${esc(artistName)}</div>
+      <div class="sel-sub">${list.length} song${list.length === 1 ? "" : "s"}</div>
+      <div id="sel-song-list" class="sel-song-list">
+        ${list.map((s) => `
+          <a class="song-link" data-slug="${esc(s.slug)}">
+            ${esc(s.title || "(untitled)")}
+            ${s.playable ? '<span class="song-link-ready">ready</span>' : ""}
+            <span class="song-link-status">${esc(s.status || "")}</span>
+          </a>
+        `).join("")}
+      </div>
+    `;
+    body.querySelector("#sel-song-list").addEventListener("click", (e) => {
+      const link = e.target.closest(".song-link");
+      if (!link) return;
+      showSongDetail(link.dataset.slug);
+    });
+  }
+
+  // ---- Song detail view ----
+  async function loadSongIntoPlayer(slug, { auto = false } = {}) {
+    options.onLoadStart?.();
+    const loadBtn = body.querySelector("#sel-load-btn");
+    const statusEl = body.querySelector("#pipeline-status");
+    if (loadBtn) {
+      loadBtn.disabled = true;
+      loadBtn.textContent = "Loading…";
+    } else if (auto && statusEl) {
+      statusEl.textContent = "Loading into player…";
+    }
+    try {
+      const res = await fetch(`/api/library/load?slug=${encodeURIComponent(slug)}`, { method: "POST" });
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.error || `HTTP ${res.status}`);
+      await options.onLoad?.({ slug, cacheKey: payload.cacheKey });
+      if (loadBtn) {
+        loadBtn.textContent = "Loaded";
+        loadBtn.hidden = true;
+        loadBtn.closest(".entry-load-row")?.remove();
+      } else if (auto && statusEl) {
+        statusEl.textContent = "";
+      }
+    } catch (err) {
+      if (loadBtn) {
+        loadBtn.disabled = false;
+        loadBtn.textContent = "Load";
+        loadBtn.title = err.message;
+      } else if (statusEl) {
+        statusEl.textContent = `Load failed: ${err.message}`;
+      }
+      throw err;
+    }
+  }
+
+  async function showSongDetail(slug, { userNavigation = true, autoLoadPlayer = false } = {}) {
+    setUrlFooterVisible(false);
+    showSongNav({ showBack: false, mode: "search" });
+    body.innerHTML = `<div class="sel-hint">Loading song…</div>`;
+    let data;
+    try {
+      const res = await fetch(`/api/library/song?slug=${encodeURIComponent(slug)}`);
+      data = await res.json();
+      if (data.error) throw new Error(data.error);
+    } catch (err) {
+      body.innerHTML = `<div class="sel-hint">Failed to load song: ${esc(err.message)}</div>`;
+      return;
+    }
+    const s = data.song || {};
+    addRecentSong(s);
+
+    const flags = s.flags || {};
+    const sections = data.sections || [];
+    const canLoad = !!s.canLoad;
+    const complete = isPipelineComplete(flags);
+    const alreadyLoaded = !!s.cacheKey && options.isSongLoaded?.(s.cacheKey);
+    const missing = complete ? (s.loadGateMissing || []) : pipelineMissing(flags);
+
+    if (userNavigation && !(autoLoadPlayer && alreadyLoaded)) {
+      options.onSongPageOpen?.();
+    }
+
+    body.innerHTML = buildSongDetailHtml(s, sections, flags, canLoad, missing, esc, loadTooltip);
+    showSongNav({ showBack: true, mode: "search" });
+
+    wirePipelineButtons(body, slug, flags, {
+      esc,
+      loadTooltip,
+      reloadIndex: () => loadIndex(),
+      onJobDone: (jobSlug) => showSongDetail(jobSlug, { userNavigation: false }),
+    });
+
+    const favStar = body.querySelector(".favorite-star");
+    if (favStar) {
+      favStar.addEventListener("click", async () => {
+        const isActive = favStar.dataset.active === "true";
+        const newActive = !isActive;
+        favStar.dataset.active = newActive ? "true" : "false"; // Optimistic update
+        try {
+          const res = await fetch("/api/library/favorite", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ slug, isFavorite: newActive })
+          });
+          if (!res.ok) throw new Error("Failed to toggle favorite");
+          await loadIndex();
+        } catch (err) {
+          console.error(err);
+          favStar.dataset.active = isActive ? "true" : "false"; // Revert
+        }
+      });
+    }
+
+    const loadBtn = body.querySelector("#sel-load-btn");
+    loadBtn?.addEventListener("click", async () => {
+      if (!canLoad || loadBtn.disabled) return;
+      await loadSongIntoPlayer(slug);
+    });
+
+    const shouldAutoLoad = canLoad && !alreadyLoaded && (autoLoadPlayer || complete);
+    if (shouldAutoLoad) {
+      await loadSongIntoPlayer(slug, { auto: true });
+    }
+  }
+
+  // init: render once, load index, refresh hint (don't wipe inputs)
+  wireAddUrl(urlInput, urlAddBtn, urlStatus);
+  showSearch();
+  loadIndex().then(() => {
+    updateHint(body.querySelector("#sel-hint"));
+    if (loaded) runAllSearches();
+  });
+
+  return {
+    showSearch,
+    showArtist,
+    showSongDetail,
+    reload: () => loadIndex().then(() => showSearch()),
+  };
+}

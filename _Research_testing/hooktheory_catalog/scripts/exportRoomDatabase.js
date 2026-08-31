@@ -2,6 +2,11 @@ const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
 const Database = require('better-sqlite3');
+const catalogContractDir = path.resolve(__dirname, '../../../contracts/catalog');
+const catalogContract = JSON.parse(
+    fs.readFileSync(path.join(catalogContractDir, 'contract.json'), 'utf8')
+);
+const catalogSchema = fs.readFileSync(path.join(catalogContractDir, 'schema.sql'), 'utf8');
 const {
     alphabeticalGroup,
     complexityBucket,
@@ -14,8 +19,8 @@ const {
 const { getCatalogDir, getAndroidDir } = require('../../../lib/dataRoot');
 
 const sourceDbPath = path.join(getCatalogDir(), 'hooktheory_catalog.db');
-const outputDbPath = path.join(getAndroidDir(), 'catalog.db');
-const outputGzPath = path.join(getAndroidDir(), 'catalog.db.gz');
+const outputDbPath = path.join(getAndroidDir(), catalogContract.databaseFilename);
+const outputGzPath = path.join(getAndroidDir(), catalogContract.archiveFilename);
 
 if (fs.existsSync(outputDbPath)) fs.unlinkSync(outputDbPath);
 if (fs.existsSync(outputGzPath)) fs.unlinkSync(outputGzPath);
@@ -26,36 +31,7 @@ const srcDb = new Database(sourceDbPath);
 console.log('Creating Room-compatible SQLite DB at:', outputDbPath);
 const outDb = new Database(outputDbPath);
 
-outDb.exec(`
-CREATE TABLE IF NOT EXISTS songs (
-    slug TEXT NOT NULL PRIMARY KEY,
-    artist TEXT,
-    title TEXT,
-    url TEXT NOT NULL,
-    status TEXT NOT NULL,
-    dataBlob BLOB
-);
-CREATE TABLE IF NOT EXISTS song_browse_entries (
-    slug TEXT NOT NULL PRIMARY KEY,
-    artist TEXT,
-    title TEXT,
-    alphaGroup TEXT NOT NULL,
-    complexityRating REAL,
-    complexityBucket INTEGER
-);
-CREATE TABLE IF NOT EXISTS song_browse_modes (
-    slug TEXT NOT NULL,
-    mode TEXT NOT NULL,
-    PRIMARY KEY (slug, mode)
-);
-CREATE INDEX IF NOT EXISTS index_song_browse_entries_alphaGroup
-    ON song_browse_entries (alphaGroup);
-CREATE INDEX IF NOT EXISTS index_song_browse_entries_complexityBucket
-    ON song_browse_entries (complexityBucket);
-CREATE INDEX IF NOT EXISTS index_song_browse_modes_mode
-    ON song_browse_modes (mode);
-`);
-outDb.pragma('user_version = 3');
+outDb.exec(catalogSchema);
 
 const rows = srcDb.prepare(`
     SELECT s.slug, s.artist, s.title, s.url, s.status, m.complexity_rating

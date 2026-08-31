@@ -47,7 +47,7 @@ function minimalChord(chord) {
 }
 
 async function loadSymbolFn() {
-  const modPath = path.join(getRepoRoot(), 'web-player', 'lib', 'jsonToSymbol.js');
+  const modPath = path.join(getRepoRoot(), 'web', 'lib', 'jsonToSymbol.js');
   const mod = await import(pathToFileURL(modPath).href);
   return mod.getChordSymbol;
 }

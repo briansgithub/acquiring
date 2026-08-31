@@ -7,10 +7,10 @@ import path from 'node:path';
 const REPO = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const { getChordPronunciation } = await import(
-  pathToFileURL(path.join(REPO, 'web-player', 'lib', 'romanNumeralSpeak.js')).href
+  pathToFileURL(path.join(REPO, 'web', 'lib', 'romanNumeralSpeak.js')).href
 );
 const { getChordSymbol } = await import(
-  pathToFileURL(path.join(REPO, 'web-player', 'lib', 'jsonToSymbol.js')).href
+  pathToFileURL(path.join(REPO, 'web', 'lib', 'jsonToSymbol.js')).href
 );
 
 const cases = [

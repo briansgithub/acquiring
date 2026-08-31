@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 async function exportCorpus() {
-  const libUrl = (p) => require('url').pathToFileURL(path.join(__dirname, '..', 'web-player', 'lib', p)).href;
+  const libUrl = (p) => require('url').pathToFileURL(path.join(__dirname, '..', 'web', 'lib', p)).href;
   const sym = await import(libUrl('jsonToSymbol.js'));
   const music = await import(libUrl('music.js'));
 

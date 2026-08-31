@@ -21,7 +21,7 @@ const LOG_FILE = path.join(OUT_DIR, 'sync.log');
 const REPO_ROOT = path.join(__dirname, '../../..');
 const CATALOG_ROOT = path.join(__dirname, '..');
 
-const GH_REPO = 'briansgithub/diatonic_ring';
+const GH_REPO = 'briansgithub/acquiring';
 const GH_TAG = 'v1.0.0-data';
 
 function log(msg) {

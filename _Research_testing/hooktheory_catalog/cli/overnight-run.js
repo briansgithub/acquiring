@@ -42,7 +42,7 @@ const ARTIST_FOUND_FILE = path.join(dataPath('.'), 'wayback', 'artist-sweep-foun
 const UNKNOWN_ARTISTS_FILE = path.join(dataPath('.'), 'wayback', 'unknown-artists.json');
 const DEAD_ARTISTS_FILE = path.join(dataPath('.'), 'wayback', 'artist-no-page.json');
 
-const GH_REPO = 'briansgithub/diatonic_ring';
+const GH_REPO = 'briansgithub/acquiring';
 const GH_TAG = 'v1.0.0-data';
 const PROBE_ARTIST = 'nintendo'; // densest artist in our catalog (466 songs)
 
