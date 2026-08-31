@@ -43,7 +43,10 @@ class AllSongsDaoTest {
 
     @Test
     fun browseQueriesNeverSelectTheHeavyDataBlob() = runBlocking {
-        val heavyBlob = ByteArray(2 * 1024 * 1024) { index -> (index % 251).toByte() }
+        // Keep the round-trip fixture below Robolectric's platform-dependent
+        // CursorWindow ceiling. Captured SQL below enforces the list-query
+        // projection contract directly, independent of blob size.
+        val heavyBlob = ByteArray(512 * 1024) { index -> (index % 251).toByte() }
         addSong("alpha", "alpha", "Artist Z", 12.0, heavyBlob, "ionian")
 
         observedQueries.clear()
