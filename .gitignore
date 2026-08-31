@@ -36,9 +36,6 @@ _Debug_testing/top_errors.md
 _Decode_oracle/reports/
 sacred_ring_data.zip
 
-# Nested repositories
-android/
-
 # IDE and build artifacts
 .idea/
 .artifacts/
