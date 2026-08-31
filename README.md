@@ -17,7 +17,7 @@ The applications remain platform-native. Cross-platform agreement is enforced th
 Launch the web application:
 
 ```bash
-python launch_player.py
+python tooling/commands/launch_player.py
 ```
 
 Run Android unit tests:
@@ -27,6 +27,10 @@ android\gradlew.bat -p android testDebugUnitTest
 ```
 
 Open `ios/Acquiring.xcodeproj` in Xcode to build the iOS application.
+
+Development utilities, catalog research, validation harnesses, and operational
+commands are grouped under `tooling/` so the three application directories stay
+prominent at the repository root.
 
 ## Runtime data
 
@@ -41,3 +45,4 @@ Bulky catalog, playback, and harvest data lives outside Git in `acquiring_data/`
 - `docs/porting-plan.md` — Android-to-iOS implementation roadmap
 - `contracts/catalog/` — downloadable SQLite catalog contract
 - `contracts/fixtures/` — shared behavioral fixtures
+- `tooling/` — development, validation, catalog, and operational utilities

@@ -4,9 +4,8 @@ on:
   pull_request:
     paths:
       - "web/**"
-      - "lib/**"
+      - "tooling/**"
       - "contracts/**"
-      - "scripts/**"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/web.yml"
@@ -16,9 +15,8 @@ on:
       - "codex/**"
     paths:
       - "web/**"
-      - "lib/**"
+      - "tooling/**"
       - "contracts/**"
-      - "scripts/**"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/web.yml"
