@@ -1,5 +1,14 @@
 # Documentation Index
 
+## Product documentation
+
+| Document | Use it when… |
+| --- | --- |
+| [Product architecture](./architecture.md) | You need the web, Android, iOS, contract, data, or release boundaries. |
+| [Feature parity](./feature-parity.md) | You need the current cross-platform implementation status. |
+| [iOS porting plan](./porting-plan.md) | You are implementing the Swift/SwiftUI application. |
+| [Web architecture](./web-architecture.md) | You need the detailed web engine, catalog, and oracle design. |
+
 Master map of repo documentation. **Read the linked file when your task matches its scope** — do not guess module behavior from this index alone.
 
 ---
@@ -8,7 +17,7 @@ Master map of repo documentation. **Read the linked file when your task matches 
 
 | Document | Read when… |
 |----------|------------|
-| [ARCHITECTURE.md](./ARCHITECTURE.md) | You need the big picture: web engine, oracle closed-loop harness, repo/worktree layout, chord interpretation pipeline, and how scraped Hooktheory JSON flows into playback. |
+| [web-architecture.md](./web-architecture.md) | You need the big picture: web engine, oracle closed-loop harness, repo/worktree layout, chord interpretation pipeline, and how scraped Hooktheory JSON flows into playback. |
 | [TODO.md](./TODO.md) | You need the current prioritized work queue or open feature/fix items. |
 | [MEMORY.md](./MEMORY.md) | You need durable project decisions, conventions, or context carried across sessions. |
 | [HANDOFF.md](../HANDOFF.md) | **Starting a new session** — current repo state, Song Selector behavior, catalog/data layout. |
@@ -42,8 +51,8 @@ Master map of repo documentation. **Read the linked file when your task matches 
 
 | Path | One-line scope |
 |------|----------------|
-| `web/` | Browser UI + Tone.js playback; Song Selector + unified `/api/library`; serves cache. See ARCHITECTURE.md. |
-| `_Decode_oracle/` | Offline scrape → engine → score oracle loop. See ARCHITECTURE.md + `ORACLE_GUIDE/`. |
+| `web/` | Browser UI + Tone.js playback; Song Selector + unified `/api/library`; serves cache. See web-architecture.md. |
+| `_Decode_oracle/` | Offline scrape → engine → score oracle loop. See web-architecture.md + `ORACLE_GUIDE/`. |
 | `ORACLE_GUIDE/` | Step-by-step oracle workflow for agents. |
 | `lib/extractor/` | Shared chord JSON extraction (used by oracle and catalog enrich). |
 
@@ -59,10 +68,10 @@ Task involves catalog / complexity DB / daemon / TheoryTab inventory?
   → _Research_testing/hooktheory_catalog/USAGE.md
 
 Task involves chord correctness / regression / scrape-and-compare?
-  → ARCHITECTURE.md + _Decode_oracle/
+  → web-architecture.md + _Decode_oracle/
 
 Task involves playback / UI / audio engine?
-  → ARCHITECTURE.md § Web-player (Song Selector Load gate)
+  → web-architecture.md § Web-player (Song Selector Load gate)
 
 Task involves chord pronunciation / spoken roman readings?
   → PRONUNCIATION.md

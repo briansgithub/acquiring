@@ -67,8 +67,13 @@ class AllSongsDaoTest {
         }
         assertTrue("Expected to observe lightweight list queries", lightweightSelects.isNotEmpty())
         assertFalse(
-            "List SELECT must not mention dataBlob: $lightweightSelects",
-            lightweightSelects.any { it.contains("dataBlob", ignoreCase = true) }
+            "List SELECT must not project dataBlob: $lightweightSelects",
+            lightweightSelects.any { sql ->
+                sql.uppercase()
+                    .substringAfter("SELECT", "")
+                    .substringBefore("FROM", "")
+                    .contains("DATABLOB")
+            }
         )
 
         val selectedSong = dao.getSongBySlug(browseRows.single().slug)

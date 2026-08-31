@@ -50,6 +50,9 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    sourceSets {
+        test.resources.srcDir "${rootProject.projectDir}/../contracts/fixtures"
+    }
     testOptions {
         unitTests.returnDefaultValues = true
         unitTests.includeAndroidResources = true

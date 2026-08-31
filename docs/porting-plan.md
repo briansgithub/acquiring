@@ -20,10 +20,11 @@ To maintain maintainability, we will map Android components to their closest iOS
 | :--- | :--- | :--- |
 | **Jetpack Compose** | **SwiftUI** | Declarative mapping; Use `Canvas` for custom notation. |
 | **ViewModel (AAC)** | **@Observable classes** | Standard iOS state management. |
-| **Room Database** | **SwiftData** | Map Entity/DAO patterns to SwiftData models. |
+| **Replaceable Room catalog** | **Read-only SQLite** | Consume the shared catalog contract directly and replace the file atomically. |
+| **Room user database** | **SwiftData** | Store playlists and other user-owned records separately from the catalog. |
 | **Coroutines/Flow** | **Swift Concurrency (Async/Await/Combine)** | Task-based concurrency. |
 | **AudioTrack / Custom Engine** | **AVAudioEngine / AVFoundation** | Low-level C/Swift interop for DSP. |
-| **Room Migrations** | **SwiftData Versioning** | Handle database schema updates. |
+| **Room user-data migrations** | **SwiftData Versioning** | Handle user-owned schema updates independently of catalog releases. |
 | **Retrofit / Scraper** | **URLSession / SwiftSoup** | Port scraping logic directly. |
 
 ---
@@ -35,7 +36,7 @@ To maintain maintainability, we will map Android components to their closest iOS
 *   **AI Model:** **Claude Code: Sonnet 5 (High)**
 *   **Tasks:**
     1.  Create Xcode Project (SwiftUI, SwiftData).
-    2.  Define `Song` and `Section` models in SwiftData based on `AppDatabase.kt` and `Song.kt`.
+    2.  Define read-only catalog repository models and a separate SwiftData schema for user-owned records.
     3.  Implement `DataUtils` (Zlib decompression) using `Compression` framework.
     4.  Set up the `HistoryManager` equivalent using `UserDefaults`.
 
@@ -112,7 +113,7 @@ The `QuizTab` features a custom-rendered timeline. We will use SwiftUI's `Canvas
 
 - **Audio Latency (High Risk):** iOS usually has better latency, but the `vDSP` port for pitch detection must be highly optimized.
 - **Music Theory Complexity (Medium Risk):** The `ChordInterpreter` has many edge cases. We will mitigate this by porting the Android unit tests first.
-- **SwiftData Performance (Low Risk):** The library is large; we must ensure indexes are set correctly for the `Song` slug searches.
+- **Catalog Performance (Low Risk):** Use the contract-defined SQLite indexes for browsing and slug searches; do not import the full catalog into SwiftData.
 
 ---
 *Document Version: 1.1*
