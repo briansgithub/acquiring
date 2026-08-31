@@ -1,6 +1,6 @@
-# Agent Handoff — Sacred Ring (2026-06-29)
+# Agent Handoff — Acquiring (2026-06-29)
 
-**Read this first**, then [Documentation/INDEX.md](Documentation/INDEX.md) for the full doc map. Do **not** linearly read every `.md` under `_Decode_oracle/out/` (thousands of per-song oracle reports).
+**Read this first**, then [docs/INDEX.md](docs/INDEX.md) for the full doc map. Do **not** linearly read every `.md` under `_Decode_oracle/out/` (thousands of per-song oracle reports).
 
 **Latest commit:** `e879a8c` — *Optimize Song Selector: infinite scroll, collapsible groupings, dynamic width sizers, and artist selection flow.*
 
@@ -8,15 +8,15 @@
 
 ## 1. What the next task is
 
-**Data modularization is complete** (2026-06-30). Bulky runtime data lives in `sacred_ring_data/` (or `SACRED_RING_DATA` env). See [data/README.md](data/README.md).
+**Data modularization is complete** (2026-06-30). Bulky runtime data lives in `acquiring_data/` (or `ACQUIRING_DATA` env). See [data/README.md](data/README.md).
 
-If you are picking up a new task unrelated to data layout, read [Documentation/INDEX.md](Documentation/INDEX.md) for routing.
+If you are picking up a new task unrelated to data layout, read [docs/INDEX.md](docs/INDEX.md) for routing.
 
 ---
 
 ## 2. Current system (as of handoff)
 
-### Runtime layout (`web-player/index.html` grid)
+### Runtime layout (`web/index.html` grid)
 
 | Column (left → right) | Panel | Width |
 |----------------------|-------|-------|
@@ -32,7 +32,7 @@ Start player:
 |--------|-----|
 | `python launch_player.py` | Interactive — opens browser, Ctrl+C or Quit stops |
 | `npm run player:start` | Detached server for dev/automation (`player:stop`, `player:status`, `player:restart`) |
-| `node web-player/server.js` | Direct start (port 3000) |
+| `node web/server.js` | Direct start (port 3000) |
 
 Server control script: `_Debug_testing/playerServerCtl.mjs` — graceful shutdown via `POST /api/shutdown`, force-kill fallback. State in `_Debug_testing/.player-server.json`, logs in `_Debug_testing/player-server.log`.
 
@@ -98,7 +98,7 @@ Previously used for manual testing; no hardcoded seed scripts remain. Repopulate
 
 ## 3. Where data lives (modular layout)
 
-Resolved by `lib/dataRoot.js` — env `SACRED_RING_DATA`, or `sacred_ring_data.config.json`, or default `<repo>/sacred_ring_data/`.
+Resolved by `lib/dataRoot.js` — env `ACQUIRING_DATA`, or `acquiring_data.config.json`, or default `<repo>/acquiring_data/`.
 
 | Data | Path under data root | Git status |
 |------|----------------------|------------|
@@ -116,7 +116,7 @@ Legacy in-repo paths (`.hooktheory_cache/`, `_Decode_oracle/out/`, `hooktheory_c
 |------|------|
 | `lib/dataRoot.js` | `resolveDataRoot()`, `getCatalogDir()`, `getPlaybackCacheDir()`, `getHarvestRoot()` |
 | `hooktheory_catalog/lib/paths.js` | `DATA_DIR` → `catalog/` |
-| `web-player/server.js` | Serves `playback/.hooktheory_cache/` |
+| `web/server.js` | Serves `playback/.hooktheory_cache/` |
 | `hooktheory_catalog/lib/harvestArtifact.js` | `harvest/<slug>/` |
 | `hooktheory_catalog/lib/cacheSync.js` | Playback cache root |
 | `hooktheory_catalog/lib/oracleSummary.js` | `resolveDataPath()` for `report.json` |
@@ -169,8 +169,8 @@ Clean up any `_Debug_testing/` scratch scripts when done.
 | Order | File | Why |
 |-------|------|-----|
 | 1 | **This file** | Current state + next task |
-| 2 | [Documentation/INDEX.md](Documentation/INDEX.md) | Doc router |
-| 3 | [Documentation/ARCHITECTURE.md](Documentation/ARCHITECTURE.md) | Big picture (some UI details stale — see §2 here) |
+| 2 | [docs/INDEX.md](docs/INDEX.md) | Doc router |
+| 3 | [docs/web-architecture.md](docs/web-architecture.md) | Big picture (some UI details stale — see §2 here) |
 | 4 | [hooktheory_catalog/USAGE.md](_Research_testing/hooktheory_catalog/USAGE.md) | Catalog DB, API routes, pipeline |
 | 5 | [hooktheory_catalog/CHEATSHEET.md](_Research_testing/hooktheory_catalog/CHEATSHEET.md) | Copy-paste commands |
 | 6 | [hooktheory_catalog/DATA_FIELDS.md](_Research_testing/hooktheory_catalog/DATA_FIELDS.md) | DB columns |
@@ -195,12 +195,12 @@ Skip unless needed: `_Decode_oracle/out/**/summary.md`, `DECODE_FIX_LOG.md`, per
 The user's draft is good. Recommended **modifications**:
 
 ```
-Read HANDOFF.md and Documentation/INDEX.md first, then ARCHITECTURE.md and
+Read HANDOFF.md and docs/INDEX.md first, then web-architecture.md and
 hooktheory_catalog/USAGE.md. Do NOT read every .md in the repo (skip
 _Decode_oracle/out/**).
 
 Goal: modularize so bulky data is outside the code repo and gitignored,
-while remaining copy-paste portable via flash drive (single SACRED_RING_DATA
+while remaining copy-paste portable via flash drive (single ACQUIRING_DATA
 root with catalog DB, .hooktheory_cache, and harvest/oracle outputs).
 
 Plan before coding. Propose the data directory layout and env/config
@@ -221,7 +221,7 @@ Do not push to GitHub unless I ask.
 
 ### Optional additions user may want
 
-- **Name the data folder** explicitly (e.g. `sacred_ring_data/` vs `SacredRingData/`) to avoid bikeshedding.
+- **Name the data folder** explicitly (e.g. `acquiring_data/` vs `SacredRingData/`) to avoid bikeshedding.
 - Say whether **`_Decode_oracle/chord_db*`** stays in git (regression fixtures) or moves to data bundle.
 - Say whether **catalog module** should move from `_Research_testing/` to a top-level package in this same PR.
 - Request **Plan mode** first given scope.
@@ -235,7 +235,7 @@ Do not push to GitHub unless I ask.
 ## 9. Open issues / known gotchas (not blocking modularization)
 
 - Meili section stubs can store bad `song_id` → light catalog worker may retry forever (fixed via page resolve in `sectionResolve.js`).
-- ARCHITECTURE.md still describes old grid (selector on right), manual-only Load, auto cache sync — update after modularization PR.
+- web-architecture.md still describes old grid (selector on right), manual-only Load, auto cache sync — update after modularization PR.
 
 ---
 

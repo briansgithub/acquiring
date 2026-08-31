@@ -1,11 +1,11 @@
-# Sacred Ring: Agent Handoff Document
+# Acquiring: Agent Handoff Document
 
 ## Welcome, New Agent!
-You are picking up work on the **Sacred Ring** project, specifically focusing on the integration of the quiz system with the main visual components (the Chord Ring and Timeline). 
+You are picking up work on the **Acquiring** project, specifically focusing on the integration of the quiz system with the main visual components (the Chord Ring and Timeline).
 
 ### Critical Instructions Before You Begin:
 1. **Read all architectural documentation and `.md` files in the root directory.** This includes `README.md` or any other design docs to understand the core concepts.
-2. **IGNORE the `sacred_ring_data` folder.** This contains a massive database of song information in thousands of `.md` files which will bloat your context limit and provide no architectural value. Do not attempt to read or grep through it unless absolutely necessary.
+2. **IGNORE the `acquiring_data` folder.** This contains a massive database of song information in thousands of `.md` files which will bloat your context limit and provide no architectural value. Do not attempt to read or grep through it unless absolutely necessary.
 3. The project uses Vanilla JS, HTML5 Canvas, and Tone.js. **Keep your code modular and avoid adding new heavy dependencies.**
 4. Changes should generally stay under the 400-line limit per file. 
 5. Run the static server via `npm run player:start` (which binds to `127.0.0.1:3000`) and test your changes in the browser.
@@ -39,7 +39,7 @@ All quiz modes (`degreeId.js`, `transitionDrill.js`, `cloze.js`, `dictation.js`,
 - **`quizFreqPanel.js`**: Enhanced the stats table with background frequency bars. Hovering or clicking rows now dispatches events to dynamically draw highlights or transition arcs on the Chord Ring.
 
 ### 5. Automated Testing
-- Created a standalone, closed-loop test runner in `web-player/tests/quiz.test.html`. It mocks the application context (audio, canvas components) and programmatically simulates user flows (e.g. clicking the "Next" button, then selecting the correct answer choice) to ensure the quiz logic doesn't throw errors.
+- Created a standalone, closed-loop test runner in `web/tests/quiz.test.html`. It mocks the application context (audio, canvas components) and programmatically simulates user flows (e.g. clicking the "Next" button, then selecting the correct answer choice) to ensure the quiz logic doesn't throw errors.
 
 ---
 

@@ -9,7 +9,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.join(__dirname, '..');
 
 const { romanNumeralToHtml } = await import(
-  pathToFileURL(path.join(REPO, 'web-player', 'lib', 'romanNumeralCanvas.js')).href
+  pathToFileURL(path.join(REPO, 'web', 'lib', 'romanNumeralCanvas.js')).href
 );
 
 const CASES = ['I64', 'V65', 'ii43', 'viiø42', 'vii°42', 'vii°7/V'];

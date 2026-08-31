@@ -1,4 +1,4 @@
-import { chordInterpreter } from '../web-player/lib/music.js';
+import { chordInterpreter } from '../web/lib/music.js';
 
 const cases = [
   { name: 'minae bVI(min)', key: { tonic: 'Db', scale: 'major' },

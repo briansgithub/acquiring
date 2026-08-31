@@ -17,7 +17,7 @@ const CORPUS_DIRS = [
 ].map((d) => path.join(REPO, '_Decode_oracle', d, 'byModification'));
 
 const { getChordPronunciation, UNKNOWN } = await import(
-  pathToFileURL(path.join(REPO, 'web-player', 'lib', 'romanNumeralSpeak.js')).href
+  pathToFileURL(path.join(REPO, 'web', 'lib', 'romanNumeralSpeak.js')).href
 );
 
 function loadEntries() {

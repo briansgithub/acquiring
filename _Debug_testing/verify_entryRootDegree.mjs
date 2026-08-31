@@ -1,9 +1,9 @@
 /**
  * Verify entryRootDegree maps applied-chord roots to song-key scale degrees.
  */
-import { chordInterpreter } from "../web-player/lib/music.js";
-import { normalizeToneNotes } from "../web-player/lib/chordVoicing.js";
-import { entryRootDegree } from "../web-player/components/quiz/quizPool.js";
+import { chordInterpreter } from "../web/lib/music.js";
+import { normalizeToneNotes } from "../web/lib/chordVoicing.js";
+import { entryRootDegree } from "../web/components/quiz/quizPool.js";
 
 const key = { tonic: "C", scale: "major" };
 

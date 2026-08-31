@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 
 const LOG = path.resolve("debug-db5cc4.log");
-const CACHE = path.resolve("sacred_ring_data/playback/.hooktheory_cache");
+const CACHE = path.resolve("acquiring_data/playback/.hooktheory_cache");
 
 function log(location, message, data, hypothesisId) {
   fs.appendFileSync(

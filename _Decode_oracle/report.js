@@ -12,7 +12,7 @@
  *   romanCore  - identical after dropping parenthetical borrowed/alteration tags
  *   notesOk    - full pitch-class set matches letter-name implication (pcsExact) AND bass agrees
  *   degreesOk  - each chord-tone scale-degree pill matches its pitch class in the song key
- *   browserOk  - web-player #chord-notes matches engine notes (set in run.js after browserVerify)
+ *   browserOk  - web #chord-notes matches engine notes (set in run.js after browserVerify)
  */
 
 const fs = require('fs');

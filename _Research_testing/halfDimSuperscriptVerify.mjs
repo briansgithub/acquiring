@@ -10,14 +10,14 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.join(__dirname, '..');
 
 const { tokenizeRomanNumeral, romanNumeralToHtml } = await import(
-  pathToFileURL(path.join(REPO, 'web-player', 'lib', 'romanNumeralCanvas.js')).href
+  pathToFileURL(path.join(REPO, 'web', 'lib', 'romanNumeralCanvas.js')).href
 );
 const { chordTruth } = await import(
   pathToFileURL(path.join(REPO, '_Decode_oracle', 'svgTruth.js')).href
 );
 
 const scrape = JSON.parse(fs.readFileSync(
-  path.join(REPO, 'sacred_ring_data', 'harvest', 'scott-joplin__gladiolus-rag', 'scrape.json'),
+  path.join(REPO, 'acquiring_data', 'harvest', 'scott-joplin__gladiolus-rag', 'scrape.json'),
   'utf8',
 ));
 

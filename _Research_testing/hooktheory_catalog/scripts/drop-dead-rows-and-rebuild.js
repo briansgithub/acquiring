@@ -43,7 +43,7 @@ function writeManifest() {
 
   const manifest = {
     generatedAt: new Date().toISOString(),
-    sourceDb: 'sacred_ring_data/catalog/hooktheory_catalog.db',
+    sourceDb: 'acquiring_data/catalog/hooktheory_catalog.db',
     totalSongs: total,
     bucketCounts: counts,
     bucketMeanings: BUCKET_MEANINGS,

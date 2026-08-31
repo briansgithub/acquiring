@@ -1,6 +1,6 @@
 /**
  * engineRun.js
- * Runs the project's music-theory engine (web-player/lib) over the extracted JSON chords
+ * Runs the project's music-theory engine (web/lib) over the extracted JSON chords
  * and emits, for each non-rest chord, the engine's interpretation-under-test:
  *   - roman:  getChordSymbol(chord, key)
  *   - letter: getChordLetterName(chord, key)
@@ -79,7 +79,7 @@ function enrichChordFromSymbol(chord, roman, letter) {
     _truthRoman: chord._truthRoman,
   };
 }
-const libUrl = (p) => require('url').pathToFileURL(require('path').join(__dirname, '..', 'web-player', 'lib', p)).href;
+const libUrl = (p) => require('url').pathToFileURL(require('path').join(__dirname, '..', 'web', 'lib', p)).href;
 
 let engine = null;
 async function loadEngine() {

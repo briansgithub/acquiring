@@ -19,7 +19,7 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
-const SERVER_JS = path.join(ROOT, "web-player", "server.js");
+const SERVER_JS = path.join(ROOT, "web", "server.js");
 const STATE_FILE = path.join(__dirname, ".player-server.json");
 const LOG_FILE = path.join(__dirname, "player-server.log");
 const DEFAULT_PORT = 3000;

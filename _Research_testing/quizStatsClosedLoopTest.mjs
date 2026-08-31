@@ -2,8 +2,8 @@
  * Closed-loop stats verification for all 8 quiz modes.
  * Simulates notifyQuestion + quizRecord flows and asserts mode + symbol stats.
  */
-import { QuizSession } from "../web-player/lib/quizSession.js";
-import { poolStats } from "../web-player/components/quiz/quizPool.js";
+import { QuizSession } from "../web/lib/quizSession.js";
+import { poolStats } from "../web/components/quiz/quizPool.js";
 
 const store = {};
 globalThis.localStorage = {

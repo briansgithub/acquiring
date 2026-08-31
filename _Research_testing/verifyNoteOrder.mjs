@@ -21,16 +21,16 @@ const CORPUS_DIRS = [
 ].map((d) => path.join(REPO, '_Decode_oracle', d, 'byModification'));
 
 const { chordInterpreter } = await import(
-  pathToFileURL(path.join(REPO, 'web-player', 'lib', 'music.js')).href
+  pathToFileURL(path.join(REPO, 'web', 'lib', 'music.js')).href
 );
 const { getChordLetterName } = await import(
-  pathToFileURL(path.join(REPO, 'web-player', 'lib', 'jsonToSymbol.js')).href
+  pathToFileURL(path.join(REPO, 'web', 'lib', 'jsonToSymbol.js')).href
 );
 const { noteToMidi } = await import(
-  pathToFileURL(path.join(REPO, 'web-player', 'lib', 'chordVoicing.js')).href
+  pathToFileURL(path.join(REPO, 'web', 'lib', 'chordVoicing.js')).href
 );
 const { noteNameToPc } = await import(
-  pathToFileURL(path.join(REPO, 'web-player', 'lib', 'chordNoteUtils.js')).href
+  pathToFileURL(path.join(REPO, 'web', 'lib', 'chordNoteUtils.js')).href
 );
 
 function loadEntries() {

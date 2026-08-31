@@ -38,8 +38,8 @@ function emitFixBrief(wave, limit) {
         console.log(`\n>>> Wave ${wave.id} READY FOR FIX`);
         console.log(`    slugs=${wave.slugs?.length ?? 0} ok=${wave.ok} engineFails=${wave.engineFails}`);
         console.log(`    brief: ${outFile}`);
-        console.log('    Pause fetch:  touch sacred_ring_data/catalog/.fetch_pause_for_fix');
-        console.log('    Resume fetch: del sacred_ring_data/catalog/.fetch_pause_for_fix');
+        console.log('    Pause fetch:  touch acquiring_data/catalog/.fetch_pause_for_fix');
+        console.log('    Resume fetch: del acquiring_data/catalog/.fetch_pause_for_fix');
         console.log('    After fix:    node cli/batchCompareCatalog.js --wave <wave-id> --resync\n');
         resolve(outFile);
       } else reject(new Error(`queryTopErrors exited ${code}`));

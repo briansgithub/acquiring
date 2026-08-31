@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">#FF000000</color>
+    <color name="degree_1">#FFff0000</color>
+    <color name="degree_2">#FFffb014</color>
+    <color name="degree_3">#FFEFE600</color>
+    <color name="degree_4">#FF00D300</color>
+    <color name="degree_5">#FF4800FF</color>
+    <color name="degree_6">#FFB800E5</color>
+    <color name="degree_7">#FFFF00CB</color>
+</resources>

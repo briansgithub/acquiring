@@ -10,7 +10,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.join(__dirname, '..');
 
 const { getChordPronunciation, UNKNOWN } = await import(
-  pathToFileURL(path.join(REPO, 'web-player', 'lib', 'romanNumeralSpeak.js')).href
+  pathToFileURL(path.join(REPO, 'web', 'lib', 'romanNumeralSpeak.js')).href
 );
 
 const fixturesPath = path.join(REPO, '_Research_testing', 'pronunciationFixtures.json');

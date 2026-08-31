@@ -12,7 +12,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.join(__dirname, "..");
 const SCRAPE_PATH = path.join(
   REPO,
-  "sacred_ring_data",
+  "acquiring_data",
   "harvest",
   "nintendo__super-mario-galaxy---gusty-garden-galaxy",
   "scrape.json",
@@ -20,7 +20,7 @@ const SCRAPE_PATH = path.join(
 const OUT_PATH = path.join(REPO, "_Research_testing", "gustyPreChorusKeyChangeReport.json");
 
 const { parseKey, sdToToneJSNoteName, chordInterpreter } = await import(
-  pathToFileURL(path.join(REPO, "web-player", "lib", "music.js")).href
+  pathToFileURL(path.join(REPO, "web", "lib", "music.js")).href
 );
 
 function activeKeyAtBeat(keys, beat, fallback) {
