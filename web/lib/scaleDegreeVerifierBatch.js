@@ -13,10 +13,10 @@ export const REPO_ROOT = path.resolve(__dirname, "..", "..");
 /** @typedef {{ id: string, song?: string, section?: string, beat?: number, key: object, chord: object, buckets?: string[] }} ChordDbEntry */
 
 export const CORPUS_DIRS = {
-  chord_db: path.join(REPO_ROOT, "_Decode_oracle", "chord_db"),
-  corpus2: path.join(REPO_ROOT, "_Decode_oracle", "chord_db_corpus2"),
-  corpus3: path.join(REPO_ROOT, "_Decode_oracle", "chord_db_corpus3"),
-  corpus4: path.join(REPO_ROOT, "_Decode_oracle", "chord_db_corpus4"),
+  chord_db: path.join(REPO_ROOT, "tooling", "_Decode_oracle", "chord_db"),
+  corpus2: path.join(REPO_ROOT, "tooling", "_Decode_oracle", "chord_db_corpus2"),
+  corpus3: path.join(REPO_ROOT, "tooling", "_Decode_oracle", "chord_db_corpus3"),
+  corpus4: path.join(REPO_ROOT, "tooling", "_Decode_oracle", "chord_db_corpus4"),
 };
 
 /** High-risk buckets for --tier quick (chromatic / applied / inversion — not extensions/sus) */
