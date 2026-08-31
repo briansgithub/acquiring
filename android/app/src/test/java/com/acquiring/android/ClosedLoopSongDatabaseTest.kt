@@ -6,6 +6,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -33,6 +34,7 @@ class ClosedLoopSongDatabaseTest {
     }
 
     @Test
+    @Ignore("Requires the live Hooktheory service; run as an explicit integration test")
     fun testValidHooktheorySongs_foundInDatabase() = runBlocking {
         val testCases = listOf(
             TestCase(
@@ -82,7 +84,8 @@ class ClosedLoopSongDatabaseTest {
                 slug = "the-artists__hyphen-song",
                 artist = "The-Artists",
                 title = "Hyphen Song",
-                url = "https://example.com/the-artists/hyphen-song"
+                url = "https://example.com/the-artists/hyphen-song",
+                dataBlob = byteArrayOf(1)
             )
         )
         db.songDao().insertSong(
@@ -90,7 +93,8 @@ class ClosedLoopSongDatabaseTest {
                 slug = "the-artists__space-song",
                 artist = "The Artists",
                 title = "Space Song",
-                url = "https://example.com/the-artists/space-song"
+                url = "https://example.com/the-artists/space-song",
+                dataBlob = byteArrayOf(1)
             )
         )
 

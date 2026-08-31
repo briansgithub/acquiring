@@ -170,7 +170,7 @@ Clean up any `_Debug_testing/` scratch scripts when done.
 |-------|------|-----|
 | 1 | **This file** | Current state + next task |
 | 2 | [docs/INDEX.md](docs/INDEX.md) | Doc router |
-| 3 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Big picture (some UI details stale — see §2 here) |
+| 3 | [docs/web-architecture.md](docs/web-architecture.md) | Big picture (some UI details stale — see §2 here) |
 | 4 | [hooktheory_catalog/USAGE.md](_Research_testing/hooktheory_catalog/USAGE.md) | Catalog DB, API routes, pipeline |
 | 5 | [hooktheory_catalog/CHEATSHEET.md](_Research_testing/hooktheory_catalog/CHEATSHEET.md) | Copy-paste commands |
 | 6 | [hooktheory_catalog/DATA_FIELDS.md](_Research_testing/hooktheory_catalog/DATA_FIELDS.md) | DB columns |
@@ -195,7 +195,7 @@ Skip unless needed: `_Decode_oracle/out/**/summary.md`, `DECODE_FIX_LOG.md`, per
 The user's draft is good. Recommended **modifications**:
 
 ```
-Read HANDOFF.md and docs/INDEX.md first, then ARCHITECTURE.md and
+Read HANDOFF.md and docs/INDEX.md first, then web-architecture.md and
 hooktheory_catalog/USAGE.md. Do NOT read every .md in the repo (skip
 _Decode_oracle/out/**).
 
@@ -235,7 +235,7 @@ Do not push to GitHub unless I ask.
 ## 9. Open issues / known gotchas (not blocking modularization)
 
 - Meili section stubs can store bad `song_id` → light catalog worker may retry forever (fixed via page resolve in `sectionResolve.js`).
-- ARCHITECTURE.md still describes old grid (selector on right), manual-only Load, auto cache sync — update after modularization PR.
+- web-architecture.md still describes old grid (selector on right), manual-only Load, auto cache sync — update after modularization PR.
 
 ---
 

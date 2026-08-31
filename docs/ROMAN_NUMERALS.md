@@ -164,6 +164,6 @@ Runs in order:
 
 ## Related docs
 
-- [ARCHITECTURE.md](./ARCHITECTURE.md) — `jsonToSymbol.js`, chord symbol pipeline
+- [web-architecture.md](./web-architecture.md) — `jsonToSymbol.js`, chord symbol pipeline
 - [PRONUNCIATION.md](./PRONUNCIATION.md) — spoken readings (separate from glyph layout)
 - [BUGS.md](./BUGS.md) — BUG-003 song-load regression (`setKey`)

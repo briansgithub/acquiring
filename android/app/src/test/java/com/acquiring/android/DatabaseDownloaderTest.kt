@@ -3,6 +3,7 @@ package com.acquiring.android
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -13,6 +14,7 @@ import org.robolectric.annotation.Config
 class DatabaseDownloaderTest {
 
     @Test
+    @Ignore("Downloads the production catalog; run as an explicit integration test")
     fun testDownloadAndInstallCatalog_fromGitHubRelease() = runBlocking {
         val context = ApplicationProvider.getApplicationContext<android.content.Context>()
 
