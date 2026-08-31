@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Status-bar icon: the launcher's monochrome ring, scaled out of the launcher safe
+  zone so it fills a 24dp notification slot instead of sitting as a dot in the middle.
+  The system tints it, so the fill colour only has to be opaque.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <group
+        android:scaleX="0.89"
+        android:scaleY="0.89"
+        android:translateX="-24.1"
+        android:translateY="-23.3">
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M54,32.5a4,4 0 1,0 0,8a4,4 0 1,0 0,-8 M67.7,39.2a4,4 0 1,0 0,8a4,4 0 1,0 0,-8 M71.1,53.9a4,4 0 1,0 0,8a4,4 0 1,0 0,-8 M61.6,65.8a4,4 0 1,0 0,8a4,4 0 1,0 0,-8 M46.5,65.8a4,4 0 1,0 0,8a4,4 0 1,0 0,-8 M37,53.9a4,4 0 1,0 0,8a4,4 0 1,0 0,-8 M40.4,39.2a4,4 0 1,0 0,8a4,4 0 1,0 0,-8" />
+    </group>
+</vector>

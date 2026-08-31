@@ -1,0 +1,6 @@
+---
+description: Apply compact Android agent defaults
+alwaysApply: true
+---
+
+Follow `AGENTS.md`; do not plan routine Android Studio work. Probe large context, use targeted checks, and ask before optional broad expansion.

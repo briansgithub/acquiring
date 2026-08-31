@@ -1,0 +1,714 @@
+[
+  {
+    "id": "C Major I",
+    "json": "{\"root\":1,\"type\":5}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "I",
+    "expectedLetter": "C",
+    "expectedPcs": [
+      0,
+      4,
+      7
+    ]
+  },
+  {
+    "id": "C Major V",
+    "json": "{\"root\":5,\"type\":5}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "V",
+    "expectedLetter": "G",
+    "expectedPcs": [
+      2,
+      7,
+      11
+    ]
+  },
+  {
+    "id": "C Major vi",
+    "json": "{\"root\":6,\"type\":5}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "vi",
+    "expectedLetter": "Am",
+    "expectedPcs": [
+      0,
+      4,
+      9
+    ]
+  },
+  {
+    "id": "C Major IV",
+    "json": "{\"root\":4,\"type\":5}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "IV",
+    "expectedLetter": "F",
+    "expectedPcs": [
+      0,
+      5,
+      9
+    ]
+  },
+  {
+    "id": "A Minor i",
+    "json": "{\"root\":1,\"type\":5}",
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "expectedRoman": "i",
+    "expectedLetter": "Am",
+    "expectedPcs": [
+      0,
+      4,
+      9
+    ]
+  },
+  {
+    "id": "A Minor v",
+    "json": "{\"root\":5,\"type\":5}",
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "expectedRoman": "v",
+    "expectedLetter": "Em",
+    "expectedPcs": [
+      4,
+      7,
+      11
+    ]
+  },
+  {
+    "id": "C Major I7",
+    "json": "{\"root\":1,\"type\":7}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "I△7",
+    "expectedLetter": "Cmaj7",
+    "expectedPcs": [
+      0,
+      4,
+      7,
+      11
+    ]
+  },
+  {
+    "id": "C Major V7",
+    "json": "{\"root\":5,\"type\":7}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "V7",
+    "expectedLetter": "G7",
+    "expectedPcs": [
+      2,
+      5,
+      7,
+      11
+    ]
+  },
+  {
+    "id": "C Major ii7",
+    "json": "{\"root\":2,\"type\":7}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "ii7",
+    "expectedLetter": "Dm7",
+    "expectedPcs": [
+      0,
+      2,
+      5,
+      9
+    ]
+  },
+  {
+    "id": "C Major vii°7",
+    "json": "{\"root\":7,\"type\":7}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "viiø7",
+    "expectedLetter": "B°7",
+    "expectedPcs": [
+      2,
+      5,
+      8,
+      11
+    ]
+  },
+  {
+    "id": "C Major I6 (inv 1)",
+    "json": "{\"root\":1,\"inversion\":1,\"type\":5}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "I6",
+    "expectedLetter": "C/E",
+    "expectedPcs": [
+      0,
+      4,
+      7
+    ]
+  },
+  {
+    "id": "C Major I64 (inv 2)",
+    "json": "{\"root\":1,\"inversion\":2,\"type\":5}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "I64",
+    "expectedLetter": "C/G",
+    "expectedPcs": [
+      0,
+      4,
+      7
+    ]
+  },
+  {
+    "id": "C Major V42 (inv 3)",
+    "json": "{\"root\":5,\"type\":7,\"inversion\":3}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "V42",
+    "expectedLetter": "G7/F",
+    "expectedPcs": [
+      2,
+      5,
+      7,
+      11
+    ]
+  },
+  {
+    "id": "Isus4",
+    "json": "{\"root\":1,\"suspensions\":[4],\"type\":5}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "Isus4",
+    "expectedLetter": "Csus4",
+    "expectedPcs": [
+      0,
+      5,
+      7
+    ]
+  },
+  {
+    "id": "Isus2",
+    "json": "{\"root\":1,\"suspensions\":[2],\"type\":5}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "Isus2",
+    "expectedLetter": "Csus2",
+    "expectedPcs": [
+      0,
+      2,
+      7
+    ]
+  },
+  {
+    "id": "I5 (power chord)",
+    "json": "{\"root\":1,\"omits\":[3],\"type\":5}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "I(no3)",
+    "expectedLetter": "C5",
+    "expectedPcs": [
+      0,
+      7
+    ]
+  },
+  {
+    "id": "I(add9)",
+    "json": "{\"root\":1,\"adds\":[9],\"type\":5}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "I(add9)",
+    "expectedLetter": "C",
+    "expectedPcs": [
+      0,
+      2,
+      4,
+      7
+    ]
+  },
+  {
+    "id": "V9",
+    "json": "{\"root\":5,\"type\":9}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "V9",
+    "expectedLetter": "G9",
+    "expectedPcs": [
+      2,
+      5,
+      7,
+      9,
+      11
+    ]
+  },
+  {
+    "id": "V11",
+    "json": "{\"root\":5,\"type\":11}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "V11",
+    "expectedLetter": "G11",
+    "expectedPcs": [
+      0,
+      2,
+      5,
+      7,
+      9,
+      11
+    ]
+  },
+  {
+    "id": "V9sus4",
+    "json": "{\"root\":5,\"type\":9,\"suspensions\":[4]}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "V9sus4",
+    "expectedLetter": "G9sus4",
+    "expectedPcs": [
+      0,
+      5,
+      7,
+      9
+    ]
+  },
+  {
+    "id": "V13",
+    "json": "{\"root\":5,\"type\":13}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "V13",
+    "expectedLetter": "G13",
+    "expectedPcs": [
+      0,
+      2,
+      4,
+      5,
+      7,
+      9,
+      11
+    ]
+  },
+  {
+    "id": "I+(#5)",
+    "json": "{\"root\":1,\"alterations\":[\"#5\"],\"type\":5}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "I+(#5)",
+    "expectedLetter": "C+(#5)",
+    "expectedPcs": [
+      0,
+      4,
+      8
+    ]
+  },
+  {
+    "id": "ii7(b5)",
+    "json": "{\"root\":2,\"type\":7,\"alterations\":[\"b5\"]}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "iiø7",
+    "expectedLetter": "D°7(b5)",
+    "expectedPcs": [
+      0,
+      2,
+      5,
+      8
+    ]
+  },
+  {
+    "id": "V7(b9)",
+    "json": "{\"root\":5,\"type\":7,\"alterations\":[\"b9\"]}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "V7(b9)",
+    "expectedLetter": "G7(b9)",
+    "expectedPcs": [
+      2,
+      5,
+      7,
+      8,
+      11
+    ]
+  },
+  {
+    "id": "V/V",
+    "json": "{\"root\":5,\"applied\":5,\"type\":5}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "V/V",
+    "expectedLetter": "D",
+    "expectedPcs": [
+      2,
+      6,
+      9
+    ]
+  },
+  {
+    "id": "V7/vi",
+    "json": "{\"root\":6,\"applied\":5,\"type\":7}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "V7/vi(maj)",
+    "expectedLetter": "E7",
+    "expectedPcs": [
+      2,
+      4,
+      8,
+      11
+    ]
+  },
+  {
+    "id": "vii°7/V",
+    "json": "{\"root\":5,\"applied\":7,\"type\":7}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "vii°7/V",
+    "expectedLetter": "F#°7",
+    "expectedPcs": [
+      0,
+      3,
+      6,
+      9
+    ]
+  },
+  {
+    "id": "V7/vi(maj)",
+    "json": "{\"root\":6,\"applied\":5,\"type\":7}",
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "expectedRoman": "V7/VI",
+    "expectedLetter": "Eb7",
+    "expectedPcs": [
+      1,
+      3,
+      7,
+      10
+    ]
+  },
+  {
+    "id": "iv(min) in C major",
+    "json": "{\"root\":4,\"borrowed\":\"minor\",\"type\":5}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "iv(min)",
+    "expectedLetter": "Fm",
+    "expectedPcs": [
+      0,
+      5,
+      8
+    ]
+  },
+  {
+    "id": "bVI(min) in C major",
+    "json": "{\"root\":6,\"borrowed\":\"minor\",\"type\":5}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "♭VI(min)",
+    "expectedLetter": "Ab",
+    "expectedPcs": [
+      0,
+      3,
+      8
+    ]
+  },
+  {
+    "id": "bVII(mix) in C major",
+    "json": "{\"root\":7,\"borrowed\":\"mixolydian\",\"type\":5}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "♭VII(mix)",
+    "expectedLetter": "Bb",
+    "expectedPcs": [
+      2,
+      5,
+      10
+    ]
+  },
+  {
+    "id": "V(hmin) in C minor",
+    "json": "{\"root\":5,\"borrowed\":\"harmonicMinor\",\"type\":5}",
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "expectedRoman": "V(hmin)",
+    "expectedLetter": "G",
+    "expectedPcs": [
+      2,
+      7,
+      11
+    ]
+  },
+  {
+    "id": "bII(phdm) in C major",
+    "json": "{\"root\":2,\"borrowed\":\"phrygianDominant\",\"type\":5}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "♭II(phdm)",
+    "expectedLetter": "Db",
+    "expectedPcs": [
+      1,
+      5,
+      8
+    ]
+  },
+  {
+    "id": "I65",
+    "json": "{\"root\":1,\"type\":7,\"inversion\":1}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "I△65",
+    "expectedLetter": "Cmaj7/E",
+    "expectedPcs": [
+      0,
+      4,
+      7,
+      11
+    ]
+  },
+  {
+    "id": "V43",
+    "json": "{\"root\":5,\"type\":7,\"inversion\":2}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "V43",
+    "expectedLetter": "G7/D",
+    "expectedPcs": [
+      2,
+      5,
+      7,
+      11
+    ]
+  },
+  {
+    "id": "ii42",
+    "json": "{\"root\":2,\"type\":7,\"inversion\":3}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "ii42",
+    "expectedLetter": "Dm7/C",
+    "expectedPcs": [
+      0,
+      2,
+      5,
+      9
+    ]
+  },
+  {
+    "id": "Isus46",
+    "json": "{\"root\":1,\"type\":5,\"suspensions\":[4],\"inversion\":1}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "I6sus4",
+    "expectedLetter": "Csus4/F",
+    "expectedPcs": [
+      0,
+      5,
+      7
+    ]
+  },
+  {
+    "id": "iiø7(b5)",
+    "json": "{\"root\":2,\"type\":7,\"alterations\":[\"b5\"]}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "iiø7",
+    "expectedLetter": "D°7(b5)",
+    "expectedPcs": [
+      0,
+      2,
+      5,
+      8
+    ]
+  },
+  {
+    "id": "V7(b9b13)",
+    "json": "{\"root\":5,\"type\":7,\"alterations\":[\"b9\",\"b13\"]}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "V7(b9b13)",
+    "expectedLetter": "G7(b9)(b13)",
+    "expectedPcs": [
+      2,
+      3,
+      5,
+      7,
+      8,
+      11
+    ]
+  },
+  {
+    "id": "V7(∆-sub)",
+    "json": "{\"root\":5,\"applied\":5,\"type\":7,\"substitutions\":[\"tri\"]}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "♭ii7/V(∆-sub)",
+    "expectedLetter": "Ab7",
+    "expectedPcs": [
+      0,
+      3,
+      6,
+      8
+    ]
+  },
+  {
+    "id": "I△9(no3no5)",
+    "json": "{\"root\":1,\"type\":9,\"omits\":[3,5]}",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "expectedRoman": "I△9(no3)(no5)",
+    "expectedLetter": "Cmaj9",
+    "expectedPcs": [
+      0,
+      2,
+      11
+    ]
+  },
+  {
+    "id": "iø6(b5)5",
+    "json": "{\"root\":1,\"type\":7,\"inversion\":1,\"alterations\":[\"b5\"]}",
+    "key": {
+      "tonic": "C",
+      "scale": "locrian"
+    },
+    "expectedRoman": "iø65",
+    "expectedLetter": "C°7(b5)/Eb",
+    "expectedPcs": [
+      0,
+      3,
+      6,
+      9
+    ]
+  },
+  {
+    "id": "III+△7 (HM)",
+    "json": "{\"root\":3,\"type\":7}",
+    "key": {
+      "tonic": "C",
+      "scale": "harmonicMinor"
+    },
+    "expectedRoman": "III+△7",
+    "expectedLetter": "Eb++",
+    "expectedPcs": [
+      2,
+      3,
+      7,
+      10
+    ]
+  },
+  {
+    "id": "v13 (Minor)",
+    "json": "{\"root\":5,\"type\":13}",
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "expectedRoman": "v13",
+    "expectedLetter": "Gm13",
+    "expectedPcs": [
+      0,
+      2,
+      3,
+      4,
+      5,
+      7,
+      8,
+      10
+    ]
+  },
+  {
+    "id": "iiø65 (Minor)",
+    "json": "{\"root\":2,\"type\":7,\"inversion\":1}",
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "expectedRoman": "iiø65",
+    "expectedLetter": "D°7/F",
+    "expectedPcs": [
+      2,
+      5,
+      8,
+      11
+    ]
+  }
+]
