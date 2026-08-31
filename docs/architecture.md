@@ -16,7 +16,7 @@ Music-theory parity is specified by `contracts/fixtures/corpus_parity.json`. Web
 
 ## Data flow
 
-1. Catalog tooling under `_Research_testing/hooktheory_catalog/` builds the mobile SQLite artifact from harvested data.
+1. Catalog tooling under `tooling/_Research_testing/hooktheory_catalog/` builds the mobile SQLite artifact from harvested data.
 2. The exporter applies the canonical catalog schema and produces `catalog.db.gz` as a GitHub release artifact.
 3. Mobile clients download to a staging location, validate the contract, and atomically replace the live catalog.
 4. User data remains in a separate platform-owned store.

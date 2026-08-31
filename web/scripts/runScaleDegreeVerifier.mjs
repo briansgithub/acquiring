@@ -147,7 +147,7 @@ function runCorpus(opts) {
 
   const reportPath = opts.report
     ? path.resolve(REPO_ROOT, opts.report)
-    : path.join(REPO_ROOT, "_Decode_oracle", "reports", `scale_degree_${opts.corpus}_${opts.tier}.json`);
+    : path.join(REPO_ROOT, "tooling", "_Decode_oracle", "reports", `scale_degree_${opts.corpus}_${opts.tier}.json`);
 
   writeBatchReport(summary, reportPath, meta);
   console.log(`\nReport: ${reportPath}`);

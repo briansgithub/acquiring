@@ -3,11 +3,11 @@ const path = require("path");
 const fs = require("fs");
 const url = require("url");
 const { handleCatalogStatus, handleCatalogUpdate, handleDaemonStatus, handleDaemonStart, handleDaemonStop, handleCatalogSongs, handleCatalogSongDetail, handleLibraryList, handleLibrarySong, handleLibraryLoad, handleLibraryFavoriteToggle } = require("./catalogApi");
-const { handleBatchStatus, handleBatchStart, handleBatchPause, handleBatchResume, handleBatchCancel, matchCatalogBatchRoute } = require("../_Research_testing/hooktheory_catalog/web/catalogBatchApi");
-const { handlePipelineRun, handlePipelineClear, handlePipelineJob, matchPipelineRoute } = require("../_Research_testing/hooktheory_catalog/web/pipelineApi");
-const { handleAddSong } = require("../_Research_testing/hooktheory_catalog/web/addSongApi");
-const { getPlaybackCacheDir } = require("../lib/dataRoot");
-const { orderUniqueSections } = require("../lib/sectionOrder");
+const { handleBatchStatus, handleBatchStart, handleBatchPause, handleBatchResume, handleBatchCancel, matchCatalogBatchRoute } = require("../tooling/_Research_testing/hooktheory_catalog/web/catalogBatchApi");
+const { handlePipelineRun, handlePipelineClear, handlePipelineJob, matchPipelineRoute } = require("../tooling/_Research_testing/hooktheory_catalog/web/pipelineApi");
+const { handleAddSong } = require("../tooling/_Research_testing/hooktheory_catalog/web/addSongApi");
+const { getPlaybackCacheDir } = require("../tooling/lib/dataRoot");
+const { orderUniqueSections } = require("../tooling/lib/sectionOrder");
 const { loadLibrary: loadCachedLibrary } = require("./playbackLibraryCache");
 const { handleCorpusStats } = require("./corpusStatsApi");
 

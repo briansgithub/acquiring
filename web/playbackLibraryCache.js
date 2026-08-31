@@ -5,7 +5,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { getCatalogDir } = require("../lib/dataRoot");
+const { getCatalogDir } = require("../tooling/lib/dataRoot");
 
 let memoryCache = null;
 let buildPromise = null;

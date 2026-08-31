@@ -213,10 +213,10 @@ Then:
 ### Verification
 
 Closed-loop coverage for Gusty Garden Galaxy:
-- Script: `_Research_testing/gustySecondaryDominantRingClosedLoopTest.mjs`
+- Script: `tooling/_Research_testing/gustySecondaryDominantRingClosedLoopTest.mjs`
 - Outputs:
-  - `_Research_testing/gustySecondaryDominantRingClosedLoopReport.json`
-  - `_Research_testing/gustySecondaryDominantRingClosedLoopTable.md`
+  - `tooling/_Research_testing/gustySecondaryDominantRingClosedLoopReport.json`
+  - `tooling/_Research_testing/gustySecondaryDominantRingClosedLoopTable.md`
 
 Result:
 - Sections checked: 5
@@ -228,8 +228,8 @@ Result:
 ### References
 
 - `web/components/chordRing.js`
-- `_Research_testing/gustySecondaryDominantRingClosedLoopTest.mjs`
-- `_Research_testing/gustySecondaryDominantRingClosedLoopTable.md`
+- `tooling/_Research_testing/gustySecondaryDominantRingClosedLoopTest.mjs`
+- `tooling/_Research_testing/gustySecondaryDominantRingClosedLoopTable.md`
 
 ---
 
@@ -262,7 +262,7 @@ The `"Loaded library"` log is **not** a page reload; it is the delayed completio
 
 ### Final solution
 
-**Files changed:** `web/player.js`, `web/components/chordRing.js`, `web/lib/scales.js`, `web/server.js`, `_Debug_testing/playerServerCtl.mjs`
+**Files changed:** `web/player.js`, `web/components/chordRing.js`, `web/lib/scales.js`, `web/server.js`, `tooling/_Debug_testing/playerServerCtl.mjs`
 
 1. **`init()` guard** — call `resetIdleState()` only when `!currentSong` at fetch completion.
 2. **`chordRing.setKey()`** — early return when key signature unchanged (avoids full ring redraw every transport tick).
@@ -281,8 +281,8 @@ The `"Loaded library"` log is **not** a page reload; it is the delayed completio
 
 - `web/player.js` — `init()`, `resetIdleState()`, `clearPlayerState()`
 - `HANDOFF.md` — server start options and race description
-- `_Debug_testing/playerServerCtl.mjs` — detached server control
-- `_Debug_testing/boomwhackerInstrumentalSim.mjs` — color-scheme simulation for Instrumental section
+- `tooling/_Debug_testing/playerServerCtl.mjs` — detached server control
+- `tooling/_Debug_testing/boomwhackerInstrumentalSim.mjs` — color-scheme simulation for Instrumental section
 
 ---
 
@@ -317,7 +317,7 @@ Sibling race to BUG-005, different failure mode:
 
 ### Final solution
 
-**Files changed:** `web/player.js`, `_Debug_testing/sectionSwitchRaceSim.mjs`
+**Files changed:** `web/player.js`, `tooling/_Debug_testing/sectionSwitchRaceSim.mjs`
 
 1. **`resolveSongIndex(preferredIndex)`** — if `loadedCacheKey` is set, `library.findIndex(s => s.artist === loadedCacheKey)`; fall back to `preferredIndex` when not found.
 2. **`init()`** — after library fetch, if a song is already loaded (`hadSong && loadedCacheKey`), update `currentSongIdx` via `resolveSongIndex()`.
@@ -326,7 +326,7 @@ Sibling race to BUG-005, different failure mode:
 
 ### Verification
 
-`_Debug_testing/sectionSwitchRaceSim.mjs` reproduces the race offline against the real cache:
+`tooling/_Debug_testing/sectionSwitchRaceSim.mjs` reproduces the race offline against the real cache:
 
 - Pre-fix: `currentSongIdx: 0`, `artistAtCurrentIdx: "kendrick-lamar - __I__"`, `mismatch: true`
 - Post-fix: `currentSongIdx: 8807`, chorus `relPath` points at Weird Al's `Chorus - 1700298 - nJmBYZPEboA.json`
@@ -342,4 +342,4 @@ Sibling race to BUG-005, different failure mode:
 
 - `web/player.js` — `resolveSongIndex()`, `init()`, `loadSection()`, `handleSectionChange()`
 - `docs/BUGS.md` — BUG-005 (related library-init race)
-- `_Debug_testing/sectionSwitchRaceSim.mjs` — offline race reproduction and fix verification
+- `tooling/_Debug_testing/sectionSwitchRaceSim.mjs` — offline race reproduction and fix verification

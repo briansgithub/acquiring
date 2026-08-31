@@ -18,7 +18,7 @@
 
 ## Oracle / data
 
-- [ ] Document `_Decode_oracle` pipeline and how corpus outputs relate to player chord interpretation
+- [ ] Document `tooling/_Decode_oracle` pipeline and how corpus outputs relate to player chord interpretation
 - [ ] Track discrepancies between oracle reports and live player voicing
 
 ## Documentation

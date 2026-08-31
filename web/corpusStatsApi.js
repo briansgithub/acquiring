@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
-const { getCatalogDir } = require('../lib/dataRoot.js');
+const { getCatalogDir } = require('../tooling/lib/dataRoot.js');
 
 let rawCache = null;
 let gzipCache = null;
