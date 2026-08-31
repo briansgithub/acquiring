@@ -122,7 +122,7 @@ function groupNotesToRendered(noteViews, rendered) {
 let musicEngine = null;
 async function loadMusic() {
   if (musicEngine) return musicEngine;
-  const url = (p) => require('url').pathToFileURL(require('path').join(__dirname, '..', 'web-player', 'lib', p)).href;
+  const url = (p) => require('url').pathToFileURL(require('path').join(__dirname, '..', 'web', 'lib', p)).href;
   musicEngine = await import(url('music.js'));
   return musicEngine;
 }
@@ -151,7 +151,7 @@ async function rawToNoteNames(pianoRaw, chordRootTonic, baseOctave = 3) {
 
 async function chordRootTonic(chord, parentKey) {
   const sym = await import(require('url').pathToFileURL(
-    require('path').join(__dirname, '..', 'web-player', 'lib', 'jsonToSymbol.js'),
+    require('path').join(__dirname, '..', 'web', 'lib', 'jsonToSymbol.js'),
   ).href);
   const letter = sym.getChordLetterName(chord, parentKey);
   const m = String(letter || '').match(/^([A-G](?:x|#|b)*)/);

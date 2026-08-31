@@ -17,8 +17,8 @@ const CORPUS_DIRS = [
 ].map((d) => path.join(REPO, '_Decode_oracle', d, 'byModification'));
 
 const { canonRoman, canonCore } = await import(pathToFileURL(path.join(REPO, '_Decode_oracle', 'normalize.js')).href);
-const { getChordSymbol } = await import(pathToFileURL(path.join(REPO, 'web-player', 'lib', 'jsonToSymbol.js')).href);
-const { tokenizeRomanNumeral } = await import(pathToFileURL(path.join(REPO, 'web-player', 'lib', 'romanNumeralCanvas.js')).href);
+const { getChordSymbol } = await import(pathToFileURL(path.join(REPO, 'web', 'lib', 'jsonToSymbol.js')).href);
+const { tokenizeRomanNumeral } = await import(pathToFileURL(path.join(REPO, 'web', 'lib', 'romanNumeralCanvas.js')).href);
 
 function loadEntries() {
   const byId = new Map();

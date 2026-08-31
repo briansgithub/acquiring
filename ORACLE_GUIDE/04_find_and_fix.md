@@ -32,7 +32,7 @@ Hundreds of failing chords usually collapse to a handful of bugs. The signature 
 
 ## Step 4 — Locate the engine locus
 
-Notes are built in `web-player/lib/music.js` (`rootToDiatonicTriad` for diatonic/borrowed, `buildChordFromNoteName` for applied), in this **pipeline order**. Inversion only rotates octaves — so a wrong *pitch class* comes from construction, not from `applyInversion`.
+Notes are built in `web/lib/music.js` (`rootToDiatonicTriad` for diatonic/borrowed, `buildChordFromNoteName` for applied), in this **pipeline order**. Inversion only rotates octaves — so a wrong *pitch class* comes from construction, not from `applyInversion`.
 
 ```mermaid
 flowchart TD
@@ -82,7 +82,7 @@ Then run the regression gates in [`05_validate_and_log.md`](05_validate_and_log.
 
 1. **Diff:** `node _Debug_testing/diffSignature.cjs bor=locrian` showed `iø7(loc)` truth `[1,4,7,10]` vs eng `[1,5,7,10]` / `[…]+b7` across multiple songs — a shared pattern, not a one-off.
 2. **Reason:** `[1,4,7,10]` is a full diminished 7th (`bb7`); the engine built a half-dim (`b7`). Hooktheory labels several mode sevenths `ø` but voices a dim7 — a pattern already handled for dorian°6 / lydian°4 / minor°2 / phrygian°5 in `borrowedModeDimSeventhDegree`.
-3. **Locus:** that function in `web-player/lib/music.js` simply lacked the locrian degree-1 case.
+3. **Locus:** that function in `web/lib/music.js` simply lacked the locrian degree-1 case.
 4. **Edit:** add `if (scale === "locrian" && chordRootSD === 1) return "bb7";`.
 5. **Re-measure:** rebuild → engine failures dropped, no bucket regressed.
 6. **Log:** appended as Fix 036d to `DECODE_FIX_LOG.md`.

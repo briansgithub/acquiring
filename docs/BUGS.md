@@ -11,7 +11,7 @@ Log of significant issues: symptoms, root cause, attempts, resolution, and date.
 | **Date reported** | 2026-06-29 |
 | **Date resolved** | 2026-06-29 |
 | **Severity** | High — audible stuck/drone notes; later regressions broke entire playback |
-| **Affected area** | `web-player/audio/engine.js`, `web-player/player.js` |
+| **Affected area** | `web/audio/engine.js`, `web/player.js` |
 | **Repro** | Play a section with arpeggio enabled (e.g. Guns N' Roses — Sweet Child O' Mine, Chorus). Individual chord tones hang and keep sounding, especially on long chords and fast arpeggio settings (~100 ms). |
 | **Status** | **Resolved** |
 
@@ -43,7 +43,7 @@ Three interacting problems:
 
 ### Final solution
 
-**Files changed:** `web-player/audio/engine.js`, `web-player/player.js`
+**Files changed:** `web/audio/engine.js`, `web/player.js`
 
 1. **Added `arpeggioSynth`** — monophonic `Tone.Synth` used only for arpeggio playback.
 2. **Arpeggio events** — `createChordEvents()` emits `type: "arpeggio"` with `note` and `duration` (seconds); engine calls `arpeggioSynth.triggerAttackRelease(note, duration, time)`.
@@ -65,9 +65,9 @@ User confirmed fix after hard refresh. Pre-fix logs (session `224523`) showed hy
 
 ### References
 
-- `web-player/audio/engine.js` — `arpeggioSynth`, `scheduleChords()`
-- `web-player/player.js` — `createChordEvents()`, arpeggio branch
-- `documentation/MEMORY.md` — synth roles and API notes
+- `web/audio/engine.js` — `arpeggioSynth`, `scheduleChords()`
+- `web/player.js` — `createChordEvents()`, arpeggio branch
+- `docs/MEMORY.md` — synth roles and API notes
 
 ---
 
@@ -78,7 +78,7 @@ User confirmed fix after hard refresh. Pre-fix logs (session `224523`) showed hy
 | **Date reported** | 2026-07-01 |
 | **Date resolved** | 2026-07-01 |
 | **Severity** | High — chord tones sustain indefinitely, especially at section end |
-| **Affected area** | `web-player/audio/engine.js`, `web-player/player.js`, `web-player/lib/chordVoicing.js` |
+| **Affected area** | `web/audio/engine.js`, `web/player.js`, `web/lib/chordVoicing.js` |
 | **Repro** | Play **Smash Mouth — All Star**, especially **Verse** through beats 36–37 or **Outro** to the end. Final chord(s) hang and keep sounding after they should release. Also reproducible on other sections with fast back-to-back chords or long final holds. |
 | **Status** | **Resolved** |
 | **Commit** | `77a85d5` |
@@ -110,7 +110,7 @@ Four interacting problems (confirmed with runtime logs, session `ac401b`):
 
 ### Final solution
 
-**Files changed:** `web-player/audio/engine.js`, `web-player/player.js`, `web-player/lib/chordVoicing.js`
+**Files changed:** `web/audio/engine.js`, `web/player.js`, `web/lib/chordVoicing.js`
 
 1. **`normalizeToneNotes()`** — MIDI roundtrip in `chordVoicing.js` converts exotic spellings (e.g. `E#3, G##3, B#4` → Tone-safe names) before scheduling in `createChordEvents()`.
 
@@ -136,10 +136,10 @@ User confirmed fix after hard refresh. Pre-fix logs showed missing attack for `E
 
 ### References
 
-- `web-player/lib/chordVoicing.js` — `normalizeToneNotes()`, `midiToToneNote()`
-- `web-player/audio/engine.js` — `scheduleChords()`, tuple `partEvents`, `releaseAll` on release
-- `web-player/player.js` — `getLastReleaseTick()`, `createChordEvents()`, `setupProgressTracking()`
-- `documentation/BUGS.md` — BUG-001 (related arpeggio / `triggerRelease` lessons)
+- `web/lib/chordVoicing.js` — `normalizeToneNotes()`, `midiToToneNote()`
+- `web/audio/engine.js` — `scheduleChords()`, tuple `partEvents`, `releaseAll` on release
+- `web/player.js` — `getLastReleaseTick()`, `createChordEvents()`, `setupProgressTracking()`
+- `docs/BUGS.md` — BUG-001 (related arpeggio / `triggerRelease` lessons)
 
 ---
 
@@ -150,7 +150,7 @@ User confirmed fix after hard refresh. Pre-fix logs showed missing attack for `E
 | **Date reported** | 2026-07-02 |
 | **Date resolved** | 2026-07-02 |
 | **Severity** | High — selecting a song from Song Selector appeared to do nothing |
-| **Affected area** | `web-player/player.js`, `web-player/components/noteIndicator.js` |
+| **Affected area** | `web/player.js`, `web/components/noteIndicator.js` |
 | **Repro** | Open Song Selector, pick any song, click Load (or auto-load a pipeline-complete song). Player UI does not update; section does not load. |
 | **Status** | **Resolved** |
 | **Commit** | `e57dc72` |
@@ -169,8 +169,8 @@ Restored `setKey(key)` on the note indicator — updates internal `currentKey` u
 
 ### References
 
-- `web-player/player.js` — `loadSection`, `resetIdleState`
-- `web-player/components/noteIndicator.js` — `setKey()`
+- `web/player.js` — `loadSection`, `resetIdleState`
+- `web/components/noteIndicator.js` — `setKey()`
 - [ROMAN_NUMERALS.md](./ROMAN_NUMERALS.md) — other changes in same commit
 
 ---
@@ -182,7 +182,7 @@ Restored `setKey(key)` on the note indicator — updates internal `currentKey` u
 | **Date reported** | 2026-07-02 |
 | **Date resolved** | 2026-07-02 |
 | **Severity** | Medium — chord ring communicates wrong functional placement for applied harmony |
-| **Affected area** | `web-player/components/chordRing.js` |
+| **Affected area** | `web/components/chordRing.js` |
 | **Repro** | Load songs with applied chords (`V/x`, `vii°/x`). Node appears on `root` radius instead of the radius implied by applied harmony in the current key. |
 | **Status** | **Resolved** |
 
@@ -227,7 +227,7 @@ Result:
 
 ### References
 
-- `web-player/components/chordRing.js`
+- `web/components/chordRing.js`
 - `_Research_testing/gustySecondaryDominantRingClosedLoopTest.mjs`
 - `_Research_testing/gustySecondaryDominantRingClosedLoopTable.md`
 
@@ -240,7 +240,7 @@ Result:
 | **Date reported** | 2026-07-05 |
 | **Date resolved** | 2026-07-05 |
 | **Severity** | High — loaded song disappears during playback; play fails with "No song loaded" |
-| **Affected area** | `web-player/player.js` (`init()`, `resetIdleState()`) |
+| **Affected area** | `web/player.js` (`init()`, `resetIdleState()`) |
 | **Repro** | Hard refresh. Immediately load a section (e.g. Weird Al — Everything You Know Is Wrong, Instrumental). Start playback before `"Loaded library N songs"` appears (~20s with ~34k cache entries). Playback stops / UI clears when that log line finally prints. Often misread as a key-signature change bug (Instrumental modulates at beats 33, 65, 73, 81). |
 | **Status** | **Resolved** |
 
@@ -262,7 +262,7 @@ The `"Loaded library"` log is **not** a page reload; it is the delayed completio
 
 ### Final solution
 
-**Files changed:** `web-player/player.js`, `web-player/components/chordRing.js`, `web-player/lib/scales.js`, `web-player/server.js`, `_Debug_testing/playerServerCtl.mjs`
+**Files changed:** `web/player.js`, `web/components/chordRing.js`, `web/lib/scales.js`, `web/server.js`, `_Debug_testing/playerServerCtl.mjs`
 
 1. **`init()` guard** — call `resetIdleState()` only when `!currentSong` at fetch completion.
 2. **`chordRing.setKey()`** — early return when key signature unchanged (avoids full ring redraw every transport tick).
@@ -279,7 +279,7 @@ The `"Loaded library"` log is **not** a page reload; it is the delayed completio
 
 ### References
 
-- `web-player/player.js` — `init()`, `resetIdleState()`, `clearPlayerState()`
+- `web/player.js` — `init()`, `resetIdleState()`, `clearPlayerState()`
 - `HANDOFF.md` — server start options and race description
 - `_Debug_testing/playerServerCtl.mjs` — detached server control
 - `_Debug_testing/boomwhackerInstrumentalSim.mjs` — color-scheme simulation for Instrumental section
@@ -293,7 +293,7 @@ The `"Loaded library"` log is **not** a page reload; it is the delayed completio
 | **Date reported** | 2026-07-05 |
 | **Date resolved** | 2026-07-05 |
 | **Severity** | High — section switch plays a completely different song (e.g. Kendrick Lamar — `__I__` chorus instead of Weird Al — Everything You Know Is Wrong chorus) |
-| **Affected area** | `web-player/player.js` (`init()`, `loadSection()`, `handleSectionChange()`, `currentSongIdx`, `loadedCacheKey`) |
+| **Affected area** | `web/player.js` (`init()`, `loadSection()`, `handleSectionChange()`, `currentSongIdx`, `loadedCacheKey`) |
 | **Repro** | Hard refresh. Immediately load a song (e.g. Weird Al — Everything You Know Is Wrong) before `"Loaded library N songs"` appears (~20s with ~34k cache entries). Switch to Instrumental and play. Wait for library fetch to complete. Switch to Chorus — player loads a different song's section (often Kendrick Lamar — `__I__`, which sorts to library index 0). |
 | **Status** | **Resolved** |
 
@@ -317,7 +317,7 @@ Sibling race to BUG-005, different failure mode:
 
 ### Final solution
 
-**Files changed:** `web-player/player.js`, `_Debug_testing/sectionSwitchRaceSim.mjs`
+**Files changed:** `web/player.js`, `_Debug_testing/sectionSwitchRaceSim.mjs`
 
 1. **`resolveSongIndex(preferredIndex)`** — if `loadedCacheKey` is set, `library.findIndex(s => s.artist === loadedCacheKey)`; fall back to `preferredIndex` when not found.
 2. **`init()`** — after library fetch, if a song is already loaded (`hadSong && loadedCacheKey`), update `currentSongIdx` via `resolveSongIndex()`.
@@ -340,6 +340,6 @@ Sibling race to BUG-005, different failure mode:
 
 ### References
 
-- `web-player/player.js` — `resolveSongIndex()`, `init()`, `loadSection()`, `handleSectionChange()`
-- `documentation/BUGS.md` — BUG-005 (related library-init race)
+- `web/player.js` — `resolveSongIndex()`, `init()`, `loadSection()`, `handleSectionChange()`
+- `docs/BUGS.md` — BUG-005 (related library-init race)
 - `_Debug_testing/sectionSwitchRaceSim.mjs` — offline race reproduction and fix verification

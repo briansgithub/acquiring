@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Continuous fetch daemon — runs waves back-to-back; each wave signals ready_for_fix.
- * Fetch pauses while sacred_ring_data/catalog/.fetch_pause_for_fix exists (for engine edits).
+ * Fetch pauses while acquiring_data/catalog/.fetch_pause_for_fix exists (for engine edits).
  *
  *   node cli/runFetchDaemon.js --wave-size 20
  *   node cli/runFetchDaemon.js --wave-size 50 --max-waves 10

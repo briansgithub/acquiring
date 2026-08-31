@@ -9,9 +9,9 @@ function isolateCatalogTest(name, {
   harvestDirs = [],
 } = {}) {
   const repoRoot = path.resolve(__dirname, '..', '..', '..');
-  const sourceRoot = process.env.SACRED_RING_DATA
-    ? path.resolve(process.env.SACRED_RING_DATA)
-    : path.join(repoRoot, 'sacred_ring_data');
+  const sourceRoot = process.env.ACQUIRING_DATA
+    ? path.resolve(process.env.ACQUIRING_DATA)
+    : path.join(repoRoot, 'acquiring_data');
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), `sacred-ring-${name}-`));
 
   if (cloneCatalog) {
@@ -41,7 +41,7 @@ function isolateCatalogTest(name, {
     fs.cpSync(from, to, { recursive: true });
   }
 
-  process.env.SACRED_RING_DATA = tempRoot;
+  process.env.ACQUIRING_DATA = tempRoot;
   let cleaned = false;
   const cleanup = () => {
     if (cleaned) return;

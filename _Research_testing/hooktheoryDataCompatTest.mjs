@@ -3,7 +3,7 @@ import {
   LEGACY_PIANO_MAN_CHORUS,
   migrateLegacyChord,
   migrateLegacySectionData,
-} from "../web-player/lib/hooktheoryDataCompat.js";
+} from "../web/lib/hooktheoryDataCompat.js";
 
 const oldChord = {
   root: 5,

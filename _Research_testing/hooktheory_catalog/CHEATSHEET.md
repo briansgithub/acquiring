@@ -33,7 +33,7 @@ itself grant permission.
 | `node cli/coverage.js` | **"Have we got everything?"** verdict; exit 0 = caught up, 1 = action needed |
 
 Daily costs ~0.16% of Hooktheory's documented budget and caps the window a new
-song sits unharvested at 24h. Task log: `sacred_ring_data/catalog/sync-task.log`.
+song sits unharvested at 24h. Task log: `acquiring_data/catalog/sync-task.log`.
 
 ## One-off recovery run (hours, not minutes)
 
@@ -148,7 +148,7 @@ Budget: 12,144 artists at ~2.4s each; last full sweep yielded 74 songs.
 | Command | What it does |
 |---------|----------------|
 | `python launch_player.py` | Free port 3000, start server, Ctrl+C / Quit stops |
-| `node web-player/server.js` | Start server only |
+| `node web/server.js` | Start server only |
 | `GET /api/library` | Song Selector index (catalog + cache flags) |
 | `POST /api/library/add` | Body `{ url }` — upsert + Fetch + parallel locals |
 | `POST /api/library/pipeline/harvest?slug=…` | Fetch job (browser + parallel metadata/processed) |

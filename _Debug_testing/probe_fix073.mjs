@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /** Probe Fix 073 clusters: type=5 alt=b5, type=5 omit=5, type=7 inv=3 bor=phrygianDominant */
 import Database from "better-sqlite3";
-import { chordInterpreter } from "../web-player/lib/music.js";
+import { chordInterpreter } from "../web/lib/music.js";
 
-const db = new Database("sacred_ring_data/catalog/hooktheory_catalog.db", { readonly: true });
+const db = new Database("acquiring_data/catalog/hooktheory_catalog.db", { readonly: true });
 
 function pcs(notes) {
   const map = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };

@@ -14,8 +14,8 @@ const { getHarvestRoot } = require(path.join(REPO, 'lib', 'dataRoot.js'));
 const { scrapeSong } = require(path.join(REPO, '_Decode_oracle', 'scrapeSong.js'));
 const { compareSong } = require(path.join(REPO, '_Decode_oracle', 'compare.js'));
 const { canonRoman } = require(path.join(REPO, '_Decode_oracle', 'normalize.js'));
-const { getChordSymbol } = await import(pathToFileURL(path.join(REPO, 'web-player', 'lib', 'jsonToSymbol.js')).href);
-const { tokenizeRomanNumeral } = await import(pathToFileURL(path.join(REPO, 'web-player', 'lib', 'romanNumeralCanvas.js')).href);
+const { getChordSymbol } = await import(pathToFileURL(path.join(REPO, 'web', 'lib', 'jsonToSymbol.js')).href);
+const { tokenizeRomanNumeral } = await import(pathToFileURL(path.join(REPO, 'web', 'lib', 'romanNumeralCanvas.js')).href);
 const { activeKeyAtBeat } = require(path.join(REPO, '_Decode_oracle', 'engineRun.js'));
 
 const URL = 'https://www.hooktheory.com/theorytab/view/billy-joel/honesty';

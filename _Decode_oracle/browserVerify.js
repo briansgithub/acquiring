@@ -1,6 +1,6 @@
 /**
  * browserVerify.js
- * Live web-player check: notes shown in #chord-notes must match engine output for each
+ * Live web check: notes shown in #chord-notes must match engine output for each
  * compared chord (same path as Tone.js playback).
  */
 

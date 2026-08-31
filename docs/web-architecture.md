@@ -1,9 +1,9 @@
 # Architecture
 
-Reverse-engineers Hooktheory TheoryTab chord JSON into correct piano voicings + Roman symbols, validates with a closed-loop oracle, and plays it back in a browser web-player.
+Reverse-engineers Hooktheory TheoryTab chord JSON into correct piano voicings + Roman symbols, validates with a closed-loop oracle, and plays it back in a browser web.
 
 Two halves:
-- **`web-player/`** — runtime engine + UI that turns chord JSON into audio + visuals.
+- **`web/`** — runtime engine + UI that turns chord JSON into audio + visuals.
 - **`_Decode_oracle/`** — offline harness that scrapes Hooktheory ground truth, runs the engine, and scores correctness per chord.
 
 ---
@@ -27,7 +27,7 @@ Naming of `oracle/chord-db-suspensions-truth`: **chord-db** = bucketed regressio
 
 ## 2. Web-player runtime
 
-Entry: [`web-player/player.js`](../web-player/player.js) wires components + audio engine. Served by [`web-player/server.js`](../web-player/server.js) from `.hooktheory_cache/` and the Hooktheory catalog DB.
+Entry: [`web/player.js`](../web/player.js) wires components + audio engine. Served by [`web/server.js`](../web/server.js) from `.hooktheory_cache/` and the Hooktheory catalog DB.
 
 ```mermaid
 flowchart TD
@@ -72,7 +72,7 @@ Key state lives in `player.js`: `currentRawChords`, `currentKey`, `currentChordE
 
 ## 3. Chord engine + voicing pipeline
 
-`chordInterpreter(chord, key, opts)` in [`web-player/lib/music.js`](../web-player/lib/music.js) is the single entry for JSON-chord → notes.
+`chordInterpreter(chord, key, opts)` in [`web/lib/music.js`](../web/lib/music.js) is the single entry for JSON-chord → notes.
 
 Voicing is built in a fixed order; **modifiers run before inversion**:
 
@@ -88,7 +88,7 @@ flowchart LR
 
 - Modifier modules: `chord{Suspensions,Omits,Alterations,Adds,Extensions,Modifiers}.js` define *which* pitch classes exist.
 - Inversion only changes *order + octave placement*.
-- [`lib/chordVoicing.js`](../web-player/lib/chordVoicing.js) `finalizeVoicing`: for `inversion === 0`, pitch-ascending sort; dim7 chords get spread voicing (3rd/5th lifted an octave).
+- [`lib/chordVoicing.js`](../web/lib/chordVoicing.js) `finalizeVoicing`: for `inversion === 0`, pitch-ascending sort; dim7 chords get spread voicing (3rd/5th lifted an octave).
 
 ### Two inversion code paths
 | Path | Function | Notes |
@@ -104,11 +104,11 @@ Because octave choices differ per path, you **cannot reverse** an already-invert
 - `borrowed` = mode name (`minor`/`dorian`/.../`locrian`) or a custom interval array.
 - `inversion` 0–3; figured-bass slash symbols are derived from it in `jsonToSymbol.js`.
 
-Roman/letter symbols are built independently in [`lib/jsonToSymbol.js`](../web-player/lib/jsonToSymbol.js) (`getChordSymbol`, `getChordLetterName`) — they read `chord.inversion` directly, so they are independent of playback voicing.
+Roman/letter symbols are built independently in [`lib/jsonToSymbol.js`](../web/lib/jsonToSymbol.js) (`getChordSymbol`, `getChordLetterName`) — they read `chord.inversion` directly, so they are independent of playback voicing.
 
-**Display** (figured-bass stacks, °/ø quality glyphs, HTML + canvas): [`lib/romanNumeralCanvas.js`](../web-player/lib/romanNumeralCanvas.js) — see [ROMAN_NUMERALS.md](./ROMAN_NUMERALS.md).
+**Display** (figured-bass stacks, °/ø quality glyphs, HTML + canvas): [`lib/romanNumeralCanvas.js`](../web/lib/romanNumeralCanvas.js) — see [ROMAN_NUMERALS.md](./ROMAN_NUMERALS.md).
 
-**Pronunciation** (spoken readings): [`lib/romanNumeralSpeak.js`](../web-player/lib/romanNumeralSpeak.js) — see [PRONUNCIATION.md](./PRONUNCIATION.md).
+**Pronunciation** (spoken readings): [`lib/romanNumeralSpeak.js`](../web/lib/romanNumeralSpeak.js) — see [PRONUNCIATION.md](./PRONUNCIATION.md).
 
 ### Quiz chord-tone degree labels
 
@@ -133,7 +133,7 @@ Roman numerals remain functional labels in the active song key: the last example
 Goal: a "Root position" checkbox in the Chord card that re-voices all chords to root position for **display, preview, playback, and arpeggiate**, while leaving Roman symbols as written (e.g. still `V⁴³`).
 
 Implementation (merged `050360f`):
-- `chordInterpreter(chord, key, { forceRootPosition })` — when set, interprets a shallow clone with `inversion: 0`. ([`lib/music.js`](../web-player/lib/music.js))
+- `chordInterpreter(chord, key, { forceRootPosition })` — when set, interprets a shallow clone with `inversion: 0`. ([`lib/music.js`](../web/lib/music.js))
 - `noteIndicator.js` — checkbox in the Chord `.card`, `onRootPositionChange(checked)` callback, `setRootPositionChecked()` sync.
 - `player.js` — `forceRootPosition` state + `interpretChord()` wrapper used at every call site (playback `createChordEvents`, transport `findCurrentChordAtTick`, first-chord preview, timeline click); toggle triggers `updatePlaybackSettings()` to rebuild + reschedule.
 - `chordRing.js` — `getForceRootPosition` getter passed in so ring-click previews honor the flag.
@@ -148,14 +148,14 @@ No oracle/DB impact: it is a player voicing preference only. Verified on Maple L
 Hooktheory URL
   → scrapeSong.js            (SVG truth + JSON + screenshots)
   → svgTruth.js              (parse rendered chord labels)
-  → engineRun.js             (dynamic import of web-player/lib/music.js)
+  → engineRun.js             (dynamic import of web/lib/music.js)
   → compare.js               (align truth vs engine, pcsExact / notesOk / orderOk)
   → report.json / matrices
   → buildChordDb.js          → chord_db*/ (bucketed regression DB)
   → testModification.js      (per-bucket pass rates; --db-dir per corpus)
 ```
 
-**Scale-degree pills (`degreesOk`):** separate from `notesOk`. `notesOk` checks pitch-class sets + bass against Hooktheory truth; `degreesOk` checks that each UI scale-degree pill label matches its paired note's pitch class in the song key (`web-player/lib/scaleDegreeVerifier.js`, wired in `engineRun.js` → `compare.js` → `report.js`). CLI regression: `npm run test:scale-degrees` (fixtures) and `npm run test:scale-degrees:corpus` (quick `chord_db` batch). Dev assert: add `?verifyDegrees=1` to the player URL to log mismatches in `noteIndicator.js`.
+**Scale-degree pills (`degreesOk`):** separate from `notesOk`. `notesOk` checks pitch-class sets + bass against Hooktheory truth; `degreesOk` checks that each UI scale-degree pill label matches its paired note's pitch class in the song key (`web/lib/scaleDegreeVerifier.js`, wired in `engineRun.js` → `compare.js` → `report.js`). CLI regression: `npm run test:scale-degrees` (fixtures) and `npm run test:scale-degrees:corpus` (quick `chord_db` batch). Dev assert: add `?verifyDegrees=1` to the player URL to log mismatches in `noteIndicator.js`.
 
 Ground-truth hierarchy: (1) rendered SVG labels, (2) letter-inferred PC sets (`truthNotes.js`), (3) piano DOM scrape when it agrees (`pianoNotes.js`). Incomplete JSON is enriched with SVG letter modifiers.
 
@@ -203,10 +203,10 @@ Fix-by-fix detail: [`_Decode_oracle/DECODE_FIX_LOG.md`](../_Decode_oracle/DECODE
 
 ## 7. Data Architecture: Cache + Unified Library
 
-Bulky runtime data lives in a **Modular Data Root** (default: `sacred_ring_data/`), resolved by `lib/dataRoot.js`. This root contains the SQLite catalog, the playback cache, and harvest artifacts.
+Bulky runtime data lives in a **Modular Data Root** (default: `acquiring_data/`), resolved by `lib/dataRoot.js`. This root contains the SQLite catalog, the playback cache, and harvest artifacts.
 
 ### The Playback Cache
-Song data is cached under `playback/.hooktheory_cache/<artist> - <Song_Title>/`. Each folder contains one JSON per section plus `_metadata.json`. The web-player serves playback directly from this cache.
+Song data is cached under `playback/.hooktheory_cache/<artist> - <Song_Title>/`. Each folder contains one JSON per section plus `_metadata.json`. The web serves playback directly from this cache.
 
 ### The Catalog Database: `hooktheory_catalog.db`
 Located at `catalog/hooktheory_catalog.db`, this SQLite database is the search index for the Song Selector and the source of frequency statistics for the quiz engine.
@@ -234,7 +234,7 @@ node extract_hooktheory_data.js https://www.hooktheory.com/theorytab/view/<artis
 node _Research_testing/hooktheory_catalog/cli/discover.js --mode quick  # discover songs into catalog
 ```
 
-Library: six fetch+tested songs in cache (see HANDOFF.md). Start player: `python launch_player.py`, `npm run player:start`, or `node web-player/server.js`. Stop detached server: `npm run player:stop`. See HANDOFF.md for the library-init race (BUG-005, BUG-006).
+Library: six fetch+tested songs in cache (see HANDOFF.md). Start player: `python launch_player.py`, `npm run player:start`, or `node web/server.js`. Stop detached server: `npm run player:stop`. See HANDOFF.md for the library-init race (BUG-005, BUG-006).
 
 The page scraper ([`lib/scraper/pageScraper.js`](../lib/scraper/pageScraper.js), Fix 030) discovers sections via `a.tb-section-tab` → `tab-{songId}` containers (Hooktheory removed the old `div.col-md-8` layout).
 

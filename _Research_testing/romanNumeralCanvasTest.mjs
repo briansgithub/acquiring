@@ -1,5 +1,5 @@
-import { getChordSymbol } from '../web-player/lib/jsonToSymbol.js';
-import { romanNumeralVerticalExtents, tokenizeRomanNumeral } from '../web-player/lib/romanNumeralCanvas.js';
+import { getChordSymbol } from '../web/lib/jsonToSymbol.js';
+import { romanNumeralVerticalExtents, tokenizeRomanNumeral } from '../web/lib/romanNumeralCanvas.js';
 
 const key = { tonic: 'F', scale: 'major' };
 const chord = { root: 1, type: 7, inversion: 0, borrowed: null };

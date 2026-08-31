@@ -55,7 +55,7 @@ class HardwareStoreTimelineTest {
                 assertFalse("${section.safeSectionName} has no key metadata", keys.isEmpty())
 
                 // A key change takes effect on its stated beat, exactly as in
-                // web-player/player.js's activeSectionKeyAtBeat().
+                // web/player.js's activeSectionKeyAtBeat().
                 keys.forEach { keyAtBeat ->
                     val active = section.getKeyAtBeat(keyAtBeat.beat)
                     assertEquals(keyAtBeat.key.tonic, active.tonic)

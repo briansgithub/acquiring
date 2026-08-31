@@ -9,9 +9,9 @@
  *   tier-1 eleanor-rigby + 500-miles 100%
  *   catalog resync: engine failures trend down vs 488 baseline (781 slugs)
  */
-import { chordInterpreter } from "../web-player/lib/music.js";
-import { noteNameToPc } from "../web-player/lib/chordNoteUtils.js";
-import { getChordLetterName, getChordSymbol } from "../web-player/lib/jsonToSymbol.js";
+import { chordInterpreter } from "../web/lib/music.js";
+import { noteNameToPc } from "../web/lib/chordNoteUtils.js";
+import { getChordLetterName, getChordSymbol } from "../web/lib/jsonToSymbol.js";
 
 const BASELINE = {
   holst: { chord: { root: 2, type: 7, inversion: 3 }, key: { tonic: "C", scale: "phrygianDominant" }, pcs: [0, 1, 5, 8] },

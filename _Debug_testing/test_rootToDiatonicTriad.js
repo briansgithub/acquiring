@@ -11,7 +11,7 @@
  *   const { testSingleChord, testAllCases } = require('./test_rootToDiatonicTriad.js');
  */
 
-import { rootToDiatonicTriad, getNoteLabel, scaleDegreeToSpecificInterval, sdToToneJSNoteName } from '../web-player/lib/music.js';
+import { rootToDiatonicTriad, getNoteLabel, scaleDegreeToSpecificInterval, sdToToneJSNoteName } from '../web/lib/music.js';
 import { testCases } from './test_cases_rootToDiatonicTriad.js';
 
 // Color codes for console output

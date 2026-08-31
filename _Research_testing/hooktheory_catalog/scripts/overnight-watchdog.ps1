@@ -16,7 +16,7 @@ param(
 
 $ErrorActionPreference = "Continue"
 $catalogRoot = Split-Path -Parent $PSScriptRoot
-$dataDir = Join-Path (Split-Path -Parent (Split-Path -Parent $catalogRoot)) "sacred_ring_data\catalog"
+$dataDir = Join-Path (Split-Path -Parent (Split-Path -Parent $catalogRoot)) "acquiring_data\catalog"
 $stopFile = Join-Path $dataDir ".overnight_stop"
 $watchdogLog = Join-Path $dataDir "overnight_watchdog.log"
 
