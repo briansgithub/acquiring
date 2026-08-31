@@ -3,7 +3,7 @@ node_modules/
 # Cursor debug session logs
 .cursor/debug-*.log
 debug-*.log
-_Research_testing/debug-*.log
+tooling/_Research_testing/debug-*.log
 
 # Portable Acquiring data root (catalog DB, playback cache, harvest artifacts)
 acquiring_data/
@@ -15,29 +15,29 @@ sacred_ring_data.config.json
 
 # Legacy in-repo data paths (migrated to acquiring_data/)
 .hooktheory_cache/
-_Decode_oracle/out/
+tooling/_Decode_oracle/out/
 
 # Catalog runtime (legacy module path — also mirrored under acquiring_data/catalog/)
-_Research_testing/hooktheory_catalog/data/
-_Research_testing/hooktheory_catalog/hooktheory_catalog.db
-_Research_testing/hooktheory_catalog/hooktheory_catalog.db-*
-_Research_testing/hooktheory_catalog/.meili_auth.json
-_Research_testing/hooktheory_catalog/.update_state.json
-_Research_testing/hooktheory_catalog/.hooktheory_auth.json
-_Research_testing/hooktheory_catalog/.catalog_stop
-_Research_testing/hooktheory_catalog/daemon_state.json
-_Research_testing/hooktheory_catalog/daemon.pid
-_Research_testing/hooktheory_catalog/daemon.log
-_Research_testing/hooktheory_catalog/daemon.err
-_Research_testing/hooktheory_catalog/rate_probe_results.json
-_Research_testing/hooktheory_catalog/catalog_export.*
-_Research_testing/hooktheory_catalog/probe_results.json
-_Research_testing/discovered_urls.json
-_Research_testing/playable_songs_snapshot.json
-_Debug_testing/light_harvest_corpus2_report.json
-_Debug_testing/top_errors_wave-*.md
-_Debug_testing/top_errors.md
-_Decode_oracle/reports/
+tooling/_Research_testing/hooktheory_catalog/data/
+tooling/_Research_testing/hooktheory_catalog/hooktheory_catalog.db
+tooling/_Research_testing/hooktheory_catalog/hooktheory_catalog.db-*
+tooling/_Research_testing/hooktheory_catalog/.meili_auth.json
+tooling/_Research_testing/hooktheory_catalog/.update_state.json
+tooling/_Research_testing/hooktheory_catalog/.hooktheory_auth.json
+tooling/_Research_testing/hooktheory_catalog/.catalog_stop
+tooling/_Research_testing/hooktheory_catalog/daemon_state.json
+tooling/_Research_testing/hooktheory_catalog/daemon.pid
+tooling/_Research_testing/hooktheory_catalog/daemon.log
+tooling/_Research_testing/hooktheory_catalog/daemon.err
+tooling/_Research_testing/hooktheory_catalog/rate_probe_results.json
+tooling/_Research_testing/hooktheory_catalog/catalog_export.*
+tooling/_Research_testing/hooktheory_catalog/probe_results.json
+tooling/_Research_testing/discovered_urls.json
+tooling/_Research_testing/playable_songs_snapshot.json
+tooling/_Debug_testing/light_harvest_corpus2_report.json
+tooling/_Debug_testing/top_errors_wave-*.md
+tooling/_Debug_testing/top_errors.md
+tooling/_Decode_oracle/reports/
 sacred_ring_data.zip
 acquiring_data.zip
 

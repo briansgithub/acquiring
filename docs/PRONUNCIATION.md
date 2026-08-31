@@ -117,20 +117,20 @@ Runs three suites in order:
 
 ### Fixtures
 
-`_Research_testing/pronunciationFixtures.json` — hand-authored cases per `byModification` bucket, composites, and Honesty-oracle edge cases. Regenerate or extend when adding new `jsonToSymbol` branches.
+`tooling/_Research_testing/pronunciationFixtures.json` — hand-authored cases per `byModification` bucket, composites, and Honesty-oracle edge cases. Regenerate or extend when adding new `jsonToSymbol` branches.
 
 ### Audit report
 
 ```bash
-node _Research_testing/generatePronunciationAudit.mjs
+node tooling/_Research_testing/generatePronunciationAudit.mjs
 ```
 
-Writes `_Research_testing/pronunciationAudit.md` — human spot-check table (symbol, analytic, functional, letter). Flagged entries = analytic `UNKNOWN`.
+Writes `tooling/_Research_testing/pronunciationAudit.md` — human spot-check table (symbol, analytic, functional, letter). Flagged entries = analytic `UNKNOWN`.
 
 ### Quick verify harness
 
 ```bash
-node _Research_testing/pronunciationFixVerify.mjs
+node tooling/_Research_testing/pronunciationFixVerify.mjs
 ```
 
 Five-case smoke check after rule changes.

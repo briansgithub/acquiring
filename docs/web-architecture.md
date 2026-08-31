@@ -4,7 +4,7 @@ Reverse-engineers Hooktheory TheoryTab chord JSON into correct piano voicings + 
 
 Two halves:
 - **`web/`** — runtime engine + UI that turns chord JSON into audio + visuals.
-- **`_Decode_oracle/`** — offline harness that scrapes Hooktheory ground truth, runs the engine, and scores correctness per chord.
+- **`tooling/_Decode_oracle/`** — offline harness that scrapes Hooktheory ground truth, runs the engine, and scores correctness per chord.
 
 ---
 
@@ -48,7 +48,7 @@ flowchart TD
 
 **Add by URL:** search view has a TheoryTab URL field. `POST /api/library/add` upserts the row, runs **Fetch** (one browser pass), then parallel local **metadata + processed** (no oracle).
 
-**Unified harvest:** one Puppeteer session per song writes `_Decode_oracle/out/<slug>/scrape.json` (page SongMetrics + per-section API json + SVG + piano). **Fetch** is the only button that launches the browser. **metadata**, **processed**, and **tested** are local transforms over that artifact (`runLocalsParallel` — `Promise.all` + `worker_threads` for oracle compare).
+**Unified harvest:** one Puppeteer session per song writes `tooling/_Decode_oracle/out/<slug>/scrape.json` (page SongMetrics + per-section API json + SVG + piano). **Fetch** is the only button that launches the browser. **metadata**, **processed**, and **tested** are local transforms over that artifact (`runLocalsParallel` — `Promise.all` + `worker_threads` for oracle compare).
 
 **Pipeline buttons:** **catalogued** (read-only) · **Fetch** (harvest) · **metadata** / **processed** / **tested** (local; gated until harvested). Red = run; green hold ~800ms = clear that step only. Oracle **tested** keeps `scrape.json` on clear (report files removed).
 
@@ -124,7 +124,7 @@ Roman numerals remain functional labels in the active song key: the last example
 - Non-applied chords: node radius/angle placement follows `root`.
 - Applied chords (`applied` 1..7): node placement is computed by resolving the applied chord root note in the current key and mapping that note back to a scale degree (`placementDegree`).
 - Color is intentionally decoupled from placement: node color, tooltip scale-degree color chip, and transition table colors stay tied to original `root` (`colorDegree`), even when the node is drawn on another radius.
-- Closed-loop verification fixture: `_Research_testing/gustySecondaryDominantRingClosedLoopTest.mjs` with outputs in `_Research_testing/gustySecondaryDominantRingClosedLoop{Report,Table}.(json|md)` for Gusty Garden Galaxy.
+- Closed-loop verification fixture: `tooling/_Research_testing/gustySecondaryDominantRingClosedLoopTest.mjs` with outputs in `tooling/_Research_testing/gustySecondaryDominantRingClosedLoop{Report,Table}.(json|md)` for Gusty Garden Galaxy.
 
 ---
 
@@ -166,11 +166,11 @@ Key harness files: `compare.js`, `truthNotes.js`, `truthLetterParse.js`, `chordR
 ### Corpora
 | Corpus | DB dir | Config |
 |---|---|---|
-| 1 | `_Decode_oracle/chord_db/` | `corpus.json` |
-| 2 | `_Decode_oracle/chord_db_corpus2/` | `corpus2.json` |
-| 3 | `_Decode_oracle/chord_db_corpus3/` | `corpus3.json` |
+| 1 | `tooling/_Decode_oracle/chord_db/` | `corpus.json` |
+| 2 | `tooling/_Decode_oracle/chord_db_corpus2/` | `corpus2.json` |
+| 3 | `tooling/_Decode_oracle/chord_db_corpus3/` | `corpus3.json` |
 
-Rebuild: `node _Decode_oracle/buildChordDb.js --corpus _Decode_oracle/corpusN.json --db-dir _Decode_oracle/chord_db_corpusN`.
+Rebuild: `node tooling/_Decode_oracle/buildChordDb.js --corpus tooling/_Decode_oracle/corpusN.json --db-dir tooling/_Decode_oracle/chord_db_corpusN`.
 
 ---
 
@@ -192,18 +192,18 @@ Outcome: **0 engine failures across all corpora.** Most former "engine" failures
 - `svgTruth.js`: split collapsed (`y=0`) strips by fill color — `#ffffff` roman, `#dae0e6` letter (fixes Zombie `VII6` + `D/F#`).
 - `compare.js`: `alignByRootPc()` for repeat-condensed sections (`ratio < 0.8`); generalized `leadingJsonSkipCount()` (skip ≤3 leading JSON chords) — fixes Zombie 1↔16 and Bruno Mars repeat-prefix.
 
-### Deferred (see [`_Decode_oracle/REMAINING_FAILURES.md`](../_Decode_oracle/REMAINING_FAILURES.md))
+### Deferred (see [`tooling/_Decode_oracle/REMAINING_FAILURES.md`](../tooling/_Decode_oracle/REMAINING_FAILURES.md))
 - Penny Lane Verse (×10): analyst Roman on SVG vs figured-bass JSON (`I△42`/`vi7` dual representation); needs figured-bass-aware alignment.
 - Waterloo Bridge/41: `iiiø4(add13)2` compound figured-bass parse.
 - Piano noise (3): god-only-knows `#iø7(bor)` b5 bleed; whitney `iø7(loc)` bb7 vs natural 5.
 
-Fix-by-fix detail: [`_Decode_oracle/DECODE_FIX_LOG.md`](../_Decode_oracle/DECODE_FIX_LOG.md). Agent onboarding: [`_Decode_oracle/AGENT_WORK_RECORD.md`](../_Decode_oracle/AGENT_WORK_RECORD.md).
+Fix-by-fix detail: [`tooling/_Decode_oracle/DECODE_FIX_LOG.md`](../tooling/_Decode_oracle/DECODE_FIX_LOG.md). Agent onboarding: [`tooling/_Decode_oracle/AGENT_WORK_RECORD.md`](../tooling/_Decode_oracle/AGENT_WORK_RECORD.md).
 
 ---
 
 ## 7. Data Architecture: Cache + Unified Library
 
-Bulky runtime data lives in a **Modular Data Root** (default: `acquiring_data/`), resolved by `lib/dataRoot.js`. This root contains the SQLite catalog, the playback cache, and harvest artifacts.
+Bulky runtime data lives in a **Modular Data Root** (default: `acquiring_data/`), resolved by `tooling/lib/dataRoot.js`. This root contains the SQLite catalog, the playback cache, and harvest artifacts.
 
 ### The Playback Cache
 Song data is cached under `playback/.hooktheory_cache/<artist> - <Song_Title>/`. Each folder contains one JSON per section plus `_metadata.json`. The web serves playback directly from this cache.
@@ -219,7 +219,10 @@ Cache and catalog are joined by the TheoryTab URL slug.
 | `processed_at` | When section JSON was written to cache |
 | `oracle_tested_at` | When the oracle test was last run for this song |
 
-**Processed step:** `lib/cacheSync.js` `commitProcessedCache` sets `cache_dir` / `processed_at` on an **existing** catalog row only (no cache→DB import). Normal workflow: discover or add-by-URL → Fetch/light harvest → metadata → processed → tested.
+**Processed step:** `tooling/_Research_testing/hooktheory_catalog/lib/cacheSync.js`
+`commitProcessedCache` sets `cache_dir` / `processed_at` on an **existing**
+catalog row only (no cache→DB import). Normal workflow: discover or add-by-URL
+→ Fetch/light harvest → metadata → processed → tested.
 
 | Route | Role |
 |---|---|
@@ -231,18 +234,20 @@ Download a song:
 ```bash
 node extract_hooktheory_data.js https://www.hooktheory.com/theorytab/view/<artist>/<song>
 # --newcache to bypass/refresh
-node _Research_testing/hooktheory_catalog/cli/discover.js --mode quick  # discover songs into catalog
+node tooling/_Research_testing/hooktheory_catalog/cli/discover.js --mode quick  # discover songs into catalog
 ```
 
-Library: six fetch+tested songs in cache (see HANDOFF.md). Start player: `python launch_player.py`, `npm run player:start`, or `node web/server.js`. Stop detached server: `npm run player:stop`. See HANDOFF.md for the library-init race (BUG-005, BUG-006).
+Library: six fetch+tested songs in cache (see the archived legacy handoff). Start
+the player with `python tooling/commands/launch_player.py`, `npm run player:start`,
+or `node web/server.js`. Stop the detached server with `npm run player:stop`.
 
-The page scraper ([`lib/scraper/pageScraper.js`](../lib/scraper/pageScraper.js), Fix 030) discovers sections via `a.tb-section-tab` → `tab-{songId}` containers (Hooktheory removed the old `div.col-md-8` layout).
+The page scraper ([`tooling/lib/scraper/pageScraper.js`](../tooling/lib/scraper/pageScraper.js), Fix 030) discovers sections via `a.tb-section-tab` → `tab-{songId}` containers (Hooktheory removed the old `div.col-md-8` layout).
 
 ---
 
 ## 8. Conventions
 
-- Files ≤ 400 lines; debug scripts in `_Debug_testing/`, research scripts/output in `_Research_testing/`.
+- Files ≤ 400 lines; debug scripts in `tooling/_Debug_testing/`, research scripts/output in `tooling/_Research_testing/`.
 - Distinguish engine vs harness failures before "fixing" voicing — check `countMatch` / `orderOk` first.
 - Use `--db-dir` when testing corpus2/3 so corpus1 `chord_db/` is not overwritten.
 - Log new engine/harness fixes as a numbered entry in `DECODE_FIX_LOG.md`.

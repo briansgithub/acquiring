@@ -6,9 +6,9 @@ High-signal context for agents and contributors working on this repo.
 
 **Acquiring** is a music-theory visualization and playback system built around Hooktheory-style song data (chords, melody, key, sections). The primary interactive surface is the **web player** (`web/`), which renders a circular chord ring, note indicator, timeline, and transport controls while playing back sections via Tone.js.
 
-A separate **`_Decode_oracle`** pipeline validates and analyzes chord interpretation against corpus data; its outputs live under `_Decode_oracle/out/`.
+A separate **`tooling/_Decode_oracle`** pipeline validates and analyzes chord interpretation against corpus data; its outputs live under `tooling/_Decode_oracle/out/`.
 
-A **`_Research_testing/hooktheory_catalog`** module indexes TheoryTab songs in SQLite. The web **Song Selector** (left column) searches via `GET /api/library` (catalog + pipeline flags). Playback loads section JSON from `acquiring_data/playback/.hooktheory_cache/`; complete pipeline songs **auto-load** into the player on detail view.
+A **`tooling/_Research_testing/hooktheory_catalog`** module indexes TheoryTab songs in SQLite. The web **Song Selector** (left column) searches via `GET /api/library` (catalog + pipeline flags). Playback loads section JSON from `acquiring_data/playback/.hooktheory_cache/`; complete pipeline songs **auto-load** into the player on detail view.
 
 Bulky data (SQLite DB, playback cache, harvest artifacts) lives under **`acquiring_data/`** (portable data root). See [HANDOFF.md](../HANDOFF.md) and [Web player startup performance](#web-startup-performance-july-2026) below.
 
@@ -20,7 +20,8 @@ Bulky data (SQLite DB, playback cache, harvest artifacts) lives under **`acquiri
 - Section switches must resolve the active song by `loadedCacheKey`, not a stale array index, if `library` is rebuilt or reordered (see `docs/BUGS.md` BUG-006).
 - Timing uses **192 ticks per beat** (Tone.js transport ticks). Events are scheduled as `"<tick>i"` strings.
 - Chord voicing and scale logic live in `web/lib/` (`music.js`, `chordVoicing.js`, etc.).
-- Debug/research scripts go in `_Debug_testing` and `_Research_testing` respectively (per project rules).
+- Debug and research scripts go in `tooling/_Debug_testing` and
+  `tooling/_Research_testing`, respectively.
 - Source files should stay under **400 lines**; consult before exceeding 300.
 
 ## Web player startup performance (July 2026)
@@ -116,7 +117,7 @@ Format: `{ dirCount, builtAt, library: [...] }`. On later requests, if `dirCount
 
 ### Fix 4 — Gzip for `GET /api/library`
 
-**File:** `_Research_testing/hooktheory_catalog/web/api.js` — `handleLibraryList(req, res)`
+**File:** `tooling/_Research_testing/hooktheory_catalog/web/api.js` — `handleLibraryList(req, res)`
 
 The catalog cache file is ~16MB raw JSON. Browsers send `Accept-Encoding: gzip`; the server now compresses once (cached in memory keyed on `library_cache.json` mtime) to ~1.6MB (~10× smaller). `fetch()` decompresses transparently.
 
