@@ -10,10 +10,10 @@ import org.robolectric.annotation.Config
 
 /**
  * Regression coverage for applied+borrowed chords (modal-mixture secondary dominants /
- * functions), ported from web-player/lib/chordBuild.js's resolveAppliedBorrowedChord.
+ * functions), ported from web/lib/chordBuild.js's resolveAppliedBorrowedChord.
  *
  * Per the ported parity decision, the Roman numeral / letter name LABEL for these chords
- * intentionally does NOT reflect the borrow (matches web-player/lib/jsonToSymbol.js's
+ * intentionally does NOT reflect the borrow (matches web/lib/jsonToSymbol.js's
  * getChordSymbol, whose applied branch never reads chord.borrowed), while the actual SOUND
  * (getChordNotes / resolveChordRoot) IS tonicized against the borrowed-resolved target.
  */

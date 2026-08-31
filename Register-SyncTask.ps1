@@ -57,7 +57,7 @@ if (-not (Test-Path $syncScript)) {
     throw "Sync-Catalog.ps1 not found at $syncScript"
 }
 
-$logDir = Join-Path $PSScriptRoot 'sacred_ring_data\catalog'
+$logDir = Join-Path $PSScriptRoot 'acquiring_data\catalog'
 if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
 $logFile = Join-Path $logDir 'sync-task.log'
 

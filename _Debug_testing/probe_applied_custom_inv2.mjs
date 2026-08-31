@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 import Database from "better-sqlite3";
-import { chordInterpreter } from "../web-player/lib/music.js";
-import { resolveBorrowedScale, getScaleChordQualities } from "../web-player/lib/musicScale.js";
-import { getNoteLabel } from "../web-player/lib/musicScale.js";
-import { MAJOR_SCALE_CHORD_QUALITIES } from "../web-player/lib/scales.js";
+import { chordInterpreter } from "../web/lib/music.js";
+import { resolveBorrowedScale, getScaleChordQualities } from "../web/lib/musicScale.js";
+import { getNoteLabel } from "../web/lib/musicScale.js";
+import { MAJOR_SCALE_CHORD_QUALITIES } from "../web/lib/scales.js";
 
-const db = new Database("sacred_ring_data/catalog/hooktheory_catalog.db", { readonly: true });
+const db = new Database("acquiring_data/catalog/hooktheory_catalog.db", { readonly: true });
 const rows = db.prepare(`
   SELECT chord_json, key_json, truth_pcs_json, eng_pcs_json, slug, truth_roman, truth_letter
   FROM engine_errors

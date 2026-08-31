@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 3001;
 const DEBUG_ROOT = __dirname;
-const WEB_PLAYER_ROOT = path.resolve(__dirname, "..", "web-player");
+const WEB_PLAYER_ROOT = path.resolve(__dirname, "..", "web");
 
 const MIME_TYPES = {
   ".html": "text/html",
@@ -53,12 +53,12 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Serve web-player files (for ES module imports)
-  if (reqUrl.pathname.startsWith("/web-player/")) {
-    const relPath = reqUrl.pathname.replace(/^\/web-player\//, "");
+  // Serve web files (for ES module imports)
+  if (reqUrl.pathname.startsWith("/web/")) {
+    const relPath = reqUrl.pathname.replace(/^\/web\//, "");
     filePath = path.join(WEB_PLAYER_ROOT, relPath);
     
-    // Security check: ensure file is within web-player directory
+    // Security check: ensure file is within web directory
     const resolvedPath = path.resolve(filePath);
     if (!resolvedPath.startsWith(path.resolve(WEB_PLAYER_ROOT))) {
       res.writeHead(403, { "Content-Type": "text/plain" });

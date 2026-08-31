@@ -4,7 +4,7 @@
 
 ## Mission (3 sentences)
 
-Hooktheory TheoryTab pages encode each song's chords as JSON (`root`, `type`, `borrowed`, `inversion`, `alterations`, …). Our web-player engine (`web-player/lib/`) turns that JSON into actual piano notes + a Roman numeral symbol. **The job: make the engine's notes match the pitch classes and bass that Hooktheory actually renders** — measured as `notesOk` ≥ 99% across closed-loop corpora.
+Hooktheory TheoryTab pages encode each song's chords as JSON (`root`, `type`, `borrowed`, `inversion`, `alterations`, …). Our web engine (`web/lib/`) turns that JSON into actual piano notes + a Roman numeral symbol. **The job: make the engine's notes match the pitch classes and bass that Hooktheory actually renders** — measured as `notesOk` ≥ 99% across closed-loop corpora.
 
 ## Mental model
 
@@ -15,10 +15,10 @@ flowchart LR
   URL["Hooktheory URL"] --> Scrape["scrapeSong.js"]
   Scrape --> Truth["out/&lt;slug&gt;/scrape.json<br/>(SVG label + piano = ground truth)"]
   Truth --> Cmp["compare.js"]
-  Eng["engineRun.js -> web-player/lib"] --> Cmp
+  Eng["engineRun.js -> web/lib"] --> Cmp
   Cmp --> DB["chord_db_corpusN/<br/>(byModification buckets + SUMMARY.md)"]
   DB --> Diff["diffSignature.cjs<br/>truthPcs vs engPcs"]
-  Diff --> Fix["surgical edit in web-player/lib"]
+  Diff --> Fix["surgical edit in web/lib"]
   Fix --> Eng
 ```
 
@@ -35,10 +35,10 @@ flowchart LR
 
 | Area | Path | Role |
 |------|------|------|
-| Theory engine | `web-player/lib/music.js` | `chordInterpreter`, applied/borrowed paths, inversions |
-| Symbol builder | `web-player/lib/jsonToSymbol.js` | Roman + letter name from JSON |
-| Scales | `web-player/lib/scales.js` | Key + borrowed scale intervals/qualities |
-| Modifier modules | `web-player/lib/chord{Suspensions,Omits,Adds,Alterations,Extensions,Modifiers,NoteUtils}.js` | Post-triad note pipeline |
+| Theory engine | `web/lib/music.js` | `chordInterpreter`, applied/borrowed paths, inversions |
+| Symbol builder | `web/lib/jsonToSymbol.js` | Roman + letter name from JSON |
+| Scales | `web/lib/scales.js` | Key + borrowed scale intervals/qualities |
+| Modifier modules | `web/lib/chord{Suspensions,Omits,Adds,Alterations,Extensions,Modifiers,NoteUtils}.js` | Post-triad note pipeline |
 | Oracle harness | `_Decode_oracle/` | Scrape, compare, report, chord DB |
 | Decode scraper | `_Decode_oracle/scrapeSong.js` | Rich scrape (SVG truth + JSON + screenshots) |
 | Debug scripts | `_Debug_testing/` | e.g. `diffSignature.cjs` (truth-vs-engine PC diff) |
@@ -60,7 +60,7 @@ flowchart LR
 
 ## Catalog-scale error loop (34k songs)
 
-The Hooktheory catalog (`sacred_ring_data/catalog/hooktheory_catalog.db`) holds ~39k songs; most are **light-harvested** (API JSON only). Oracle ground truth still requires **full Fetch** (SVG `rendered[]`). This workflow distills failures locally and fetches the minimum song set to cover high-frequency chord signatures.
+The Hooktheory catalog (`acquiring_data/catalog/hooktheory_catalog.db`) holds ~39k songs; most are **light-harvested** (API JSON only). Oracle ground truth still requires **full Fetch** (SVG `rendered[]`). This workflow distills failures locally and fetches the minimum song set to cover high-frequency chord signatures.
 
 ```mermaid
 flowchart LR
@@ -69,7 +69,7 @@ flowchart LR
   Full["batchFullFetch.js"] --> Compare["batchCompareCatalog.js"]
   Compare --> SQL["engine_errors table"]
   SQL --> Report["queryTopErrors.mjs"]
-  Report --> Fix["web-player/lib fix"]
+  Report --> Fix["web/lib fix"]
 ```
 
 | Step | Command |
@@ -82,7 +82,7 @@ flowchart LR
 | 5. AI-ready fix brief | `node _Debug_testing/queryTopErrors.mjs --limit 20` |
 | 6. Diff by signature (SQL) | `node _Debug_testing/diffSignature.cjs --sql type=7 inv=3` |
 
-**Parallel fix workflow:** Each fetch wave compares slugs immediately and writes `ready_for_fix` to `sacred_ring_data/catalog/fetch_waves.json`. Run `watchFetchWaves.mjs` in a second terminal — it emits `top_errors_<wave>.md` when a wave completes while fetching continues. Touch `.fetch_pause_for_fix` to pause the fetch daemon during engine edits; delete to resume.
+**Parallel fix workflow:** Each fetch wave compares slugs immediately and writes `ready_for_fix` to `acquiring_data/catalog/fetch_waves.json`. Run `watchFetchWaves.mjs` in a second terminal — it emits `top_errors_<wave>.md` when a wave completes while fetching continues. Touch `.fetch_pause_for_fix` to pause the fetch daemon during engine edits; delete to resume.
 
 ## Golden rules (full list in 05 + reference)
 

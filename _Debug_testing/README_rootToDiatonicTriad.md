@@ -1,6 +1,6 @@
 # Testing rootToDiatonicTriad Function
 
-This directory contains test and debug utilities for the `rootToDiatonicTriad` function located in `web-player/lib/music.js`.
+This directory contains test and debug utilities for the `rootToDiatonicTriad` function located in `web/lib/music.js`.
 
 ## Files
 
@@ -171,7 +171,7 @@ The test file provides detailed output including:
 ## Dependencies
 
 The test files import from:
-- `../web-player/lib/music.js` - Main music functions
+- `../web/lib/music.js` - Main music functions
 - `./test_cases_rootToDiatonicTriad.js` - Test case definitions
 
 Make sure you're running from the `_Debug_testing` directory or adjust the import paths accordingly.

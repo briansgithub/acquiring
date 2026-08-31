@@ -1,10 +1,10 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { getChordSymbol } from "../web-player/lib/jsonToSymbol.js";
-import { getNoteLabel } from "../web-player/lib/music.js";
+import { getChordSymbol } from "../web/lib/jsonToSymbol.js";
+import { getNoteLabel } from "../web/lib/music.js";
 
 const SCRAPE_PATH = path.resolve(
-  "sacred_ring_data/harvest/nintendo__super-mario-galaxy---gusty-garden-galaxy/scrape.json",
+  "acquiring_data/harvest/nintendo__super-mario-galaxy---gusty-garden-galaxy/scrape.json",
 );
 const OUT_JSON = path.resolve("_Research_testing/gustySecondaryDominantRingClosedLoopReport.json");
 const OUT_MD = path.resolve("_Research_testing/gustySecondaryDominantRingClosedLoopTable.md");

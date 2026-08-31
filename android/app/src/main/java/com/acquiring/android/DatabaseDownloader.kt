@@ -21,7 +21,7 @@ object DatabaseDownloader {
     private const val EXPECTED_BROWSE_SONGS = 40_609L
 
     private const val DEFAULT_CATALOG_URL =
-        "https://github.com/briansgithub/diatonic_ring/releases/download/v1.0.0-data/catalog.db.gz"
+        "https://github.com/briansgithub/acquiring/releases/download/v1.0.0-data/catalog.db.gz"
 
     suspend fun downloadAndInstallCatalog(
         context: Context,

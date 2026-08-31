@@ -9,7 +9,7 @@ import webbrowser
 
 PORT = 3000
 ROOT = pathlib.Path(__file__).parent
-SERVER_JS = ROOT / "web-player" / "server.js"
+SERVER_JS = ROOT / "web" / "server.js"
 
 
 def free_port(port: int) -> None:

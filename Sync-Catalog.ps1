@@ -75,6 +75,6 @@ Write-Host ""
 if ($code -eq 0) {
     Write-Host "Sync complete." -ForegroundColor Green
 } else {
-    Write-Host "Sync exited with code $code - see sacred_ring_data\catalog\overnight_run.log" -ForegroundColor Red
+    Write-Host "Sync exited with code $code - see acquiring_data\catalog\overnight_run.log" -ForegroundColor Red
 }
 exit $code

@@ -5,15 +5,19 @@ node_modules/
 debug-*.log
 _Research_testing/debug-*.log
 
-# Portable data root (catalog DB, playback cache, harvest artifacts)
+# Portable Acquiring data root (catalog DB, playback cache, harvest artifacts)
+acquiring_data/
+acquiring_data.config.json
+
+# One-release compatibility names; never commit legacy runtime data.
 sacred_ring_data/
 sacred_ring_data.config.json
 
-# Legacy in-repo data paths (migrated to sacred_ring_data/)
+# Legacy in-repo data paths (migrated to acquiring_data/)
 .hooktheory_cache/
 _Decode_oracle/out/
 
-# Catalog runtime (legacy module path — also mirrored under sacred_ring_data/catalog/)
+# Catalog runtime (legacy module path — also mirrored under acquiring_data/catalog/)
 _Research_testing/hooktheory_catalog/data/
 _Research_testing/hooktheory_catalog/hooktheory_catalog.db
 _Research_testing/hooktheory_catalog/hooktheory_catalog.db-*
@@ -35,6 +39,7 @@ _Debug_testing/top_errors_wave-*.md
 _Debug_testing/top_errors.md
 _Decode_oracle/reports/
 sacred_ring_data.zip
+acquiring_data.zip
 
 # IDE and build artifacts
 .idea/

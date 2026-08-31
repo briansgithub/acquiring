@@ -50,7 +50,7 @@ Hooktheory chord JSON + key
   speakLetterChord()          ← jsonToSymbol.getChordLetterName → speakLetterSymbol()
 ```
 
-### Modules (`web-player/lib/`)
+### Modules (`web/lib/`)
 
 | File | Role |
 |------|------|
@@ -81,7 +81,7 @@ Wired in:
 | `timeline.js` | Chord hover tooltip |
 | `chordRing.js` | Degree-segment hover tooltip; center reading tooltip; follows Roman Numerals toggle |
 
-Styles: `web-player/style.css` — `.chord-pronunciation`, `.pronunciation-label`, `.pronunciation-text`.
+Styles: `web/style.css` — `.chord-pronunciation`, `.pronunciation-label`, `.pronunciation-text`.
 
 ---
 

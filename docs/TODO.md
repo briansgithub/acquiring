@@ -23,7 +23,7 @@
 
 ## Documentation
 
-- [x] Initial `documentation/` structure (MEMORY, ARCHITECTURE, BUGS, TODO)
+- [x] Initial `docs/` structure (MEMORY, ARCHITECTURE, BUGS, TODO)
 - [x] BUG-001 log: stuck arpeggio notes (2026-06-29)
 - [x] BUG-006 log: stale `currentSongIdx` wrong-song section switch after library fetch (2026-07-05)
 - [x] Unified library + Song Selector documented in ARCHITECTURE.md and catalog USAGE.md (2026-06-29)
@@ -32,7 +32,7 @@
 
 ## Housekeeping
 
-- [ ] **Modularize data from code** — portable `SACRED_RING_DATA` root; gitignore cache + harvest blobs; see [HANDOFF.md](../HANDOFF.md)
+- [ ] **Modularize data from code** — portable `ACQUIRING_DATA` root; gitignore cache + harvest blobs; see [HANDOFF.md](../HANDOFF.md)
 - [ ] Keep `engine.js` and `player.js` under 400-line limit — split if they grow further
 
 ## Quiz mode — deferred

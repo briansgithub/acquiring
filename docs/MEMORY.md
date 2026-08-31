@@ -4,22 +4,22 @@ High-signal context for agents and contributors working on this repo.
 
 ## What this project is
 
-**Sacred Ring** is a music-theory visualization and playback system built around Hooktheory-style song data (chords, melody, key, sections). The primary interactive surface is the **web player** (`web-player/`), which renders a circular chord ring, note indicator, timeline, and transport controls while playing back sections via Tone.js.
+**Acquiring** is a music-theory visualization and playback system built around Hooktheory-style song data (chords, melody, key, sections). The primary interactive surface is the **web player** (`web/`), which renders a circular chord ring, note indicator, timeline, and transport controls while playing back sections via Tone.js.
 
 A separate **`_Decode_oracle`** pipeline validates and analyzes chord interpretation against corpus data; its outputs live under `_Decode_oracle/out/`.
 
-A **`_Research_testing/hooktheory_catalog`** module indexes TheoryTab songs in SQLite. The web-player **Song Selector** (left column) searches via `GET /api/library` (catalog + pipeline flags). Playback loads section JSON from `sacred_ring_data/playback/.hooktheory_cache/`; complete pipeline songs **auto-load** into the player on detail view.
+A **`_Research_testing/hooktheory_catalog`** module indexes TheoryTab songs in SQLite. The web **Song Selector** (left column) searches via `GET /api/library` (catalog + pipeline flags). Playback loads section JSON from `acquiring_data/playback/.hooktheory_cache/`; complete pipeline songs **auto-load** into the player on detail view.
 
-Bulky data (SQLite DB, playback cache, harvest artifacts) lives under **`sacred_ring_data/`** (portable data root). See [HANDOFF.md](../HANDOFF.md) and [Web player startup performance](#web-player-startup-performance-july-2026) below.
+Bulky data (SQLite DB, playback cache, harvest artifacts) lives under **`acquiring_data/`** (portable data root). See [HANDOFF.md](../HANDOFF.md) and [Web player startup performance](#web-startup-performance-july-2026) below.
 
 ## Key conventions
 
-- Song/section JSON lives in `sacred_ring_data/playback/.hooktheory_cache/` (portable data root); the web player loads sections via `GET /api/song?file=…`.
-- **`GET /api/songs`** still exists and builds the *full* playable index from every cache folder, but the player **no longer calls it on page load** (see [Web player startup performance](#web-player-startup-performance-july-2026) below). When something does need the full index, it is served from a disk cache (`playback_library_cache.json`) after the first slow build.
+- Song/section JSON lives in `acquiring_data/playback/.hooktheory_cache/` (portable data root); the web player loads sections via `GET /api/song?file=…`.
+- **`GET /api/songs`** still exists and builds the *full* playable index from every cache folder, but the player **no longer calls it on page load** (see [Web player startup performance](#web-startup-performance-july-2026) below). When something does need the full index, it is served from a disk cache (`playback_library_cache.json`) after the first slow build.
 - **`GET /api/songs/entry?key=…`** loads **one** song's section list from cache (fast). The Song Selector uses this when you pick a song to play.
-- Section switches must resolve the active song by `loadedCacheKey`, not a stale array index, if `library` is rebuilt or reordered (see `documentation/BUGS.md` BUG-006).
+- Section switches must resolve the active song by `loadedCacheKey`, not a stale array index, if `library` is rebuilt or reordered (see `docs/BUGS.md` BUG-006).
 - Timing uses **192 ticks per beat** (Tone.js transport ticks). Events are scheduled as `"<tick>i"` strings.
-- Chord voicing and scale logic live in `web-player/lib/` (`music.js`, `chordVoicing.js`, etc.).
+- Chord voicing and scale logic live in `web/lib/` (`music.js`, `chordVoicing.js`, etc.).
 - Debug/research scripts go in `_Debug_testing` and `_Research_testing` respectively (per project rules).
 - Source files should stay under **400 lines**; consult before exceeding 300.
 
@@ -49,7 +49,7 @@ So “slow launch” was really: **20s server scan (unnecessary)** + **16MB JSON
 | `GET /api/songs/entry?key=…` | One folder under `.hooktheory_cache/` | Same shape as one element of `/api/songs` | Loading **one** song into the player |
 | `GET /api/song?file=…` | One section JSON file | Notes, chords, metadata for playback | Actually playing a section |
 
-The **cache key** (e.g. `queen - Bohemian_Rhapsody`) is the folder name under `sacred_ring_data/playback/.hooktheory_cache/`. The catalog’s `cacheKey` field points at that folder when `playable` is true.
+The **cache key** (e.g. `queen - Bohemian_Rhapsody`) is the folder name under `acquiring_data/playback/.hooktheory_cache/`. The catalog’s `cacheKey` field points at that folder when `playable` is true.
 
 ### What runs when you open the player now
 
@@ -78,7 +78,7 @@ You never wait for all 34k folders unless something explicitly calls `GET /api/s
 
 ### Fix 1 — Stop fetching `/api/songs` at startup
 
-**File:** `web-player/player.js` — `init()`
+**File:** `web/player.js` — `init()`
 
 **Before:** `init()` awaited `fetch("/api/songs")`, which triggered a full filesystem walk on the server.
 
@@ -88,11 +88,11 @@ You never wait for all 34k folders unless something explicitly calls `GET /api/s
 
 ### Fix 2 — Server disk cache for `/api/songs` (when something still needs the full index)
 
-**Files:** `web-player/playbackLibraryCache.js`, `web-player/server.js`
+**Files:** `web/playbackLibraryCache.js`, `web/server.js`
 
 If anything calls `GET /api/songs` (or the server needs `loadLibrary()`), the first request still scans every cache directory (~20s). Results are written to:
 
-`sacred_ring_data/catalog/playback_library_cache.json`
+`acquiring_data/catalog/playback_library_cache.json`
 
 Format: `{ dirCount, builtAt, library: [...] }`. On later requests, if `dirCount` still matches the number of folders in `.hooktheory_cache/`, the server reads the JSON file (~100ms) instead of rescanning. An in-memory copy avoids even that on repeated calls in one server session.
 
@@ -100,7 +100,7 @@ Format: `{ dirCount, builtAt, library: [...] }`. On later requests, if `dirCount
 
 ### Fix 3 — Lazy playable caches (Song Selector)
 
-**Files:** `web-player/components/songSelectorPlayable.js` (`createLazyPlayableCaches`), `web-player/components/songSelector.js` (`schedulePlayableCachePrewarm`)
+**Files:** `web/components/songSelectorPlayable.js` (`createLazyPlayableCaches`), `web/components/songSelector.js` (`schedulePlayableCachePrewarm`)
 
 **Before:** `buildPlayableCaches(songs)` immediately sorted the entire playable pool **three times** (complexity, alphabetical, artist lists for the dropdown).
 
@@ -138,8 +138,8 @@ This speeds up the network part of `loadIndex()` noticeably on slower links; loc
 
 | File | Built by | Purpose |
 |------|----------|---------|
-| `sacred_ring_data/catalog/library_cache.json` | `libraryCache.js` when catalog changes | Full catalog for `GET /api/library` |
-| `sacred_ring_data/catalog/playback_library_cache.json` | `playbackLibraryCache.js` after first full scan | Full playback index for `GET /api/songs` |
+| `acquiring_data/catalog/library_cache.json` | `libraryCache.js` when catalog changes | Full catalog for `GET /api/library` |
+| `acquiring_data/catalog/playback_library_cache.json` | `playbackLibraryCache.js` after first full scan | Full playback index for `GET /api/songs` |
 
 Deleting these files is safe; they rebuild on next access (slow once).
 

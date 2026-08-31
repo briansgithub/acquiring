@@ -109,7 +109,7 @@ internal data class MeasuredRomanNumeralDisplay(
 }
 
 /**
- * Native counterpart of web-player/lib/romanNumeralCanvas.js.
+ * Native counterpart of web/lib/romanNumeralCanvas.js.
  *
  * The generic serif family gives the analysis symbols a more typeset character
  * while retaining Android's built-in glyph fallback for accidentals and quality

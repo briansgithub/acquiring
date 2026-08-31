@@ -1,5 +1,5 @@
 /**
- * Catalog API handlers for web-player server.
+ * Catalog API handlers for web server.
  */
 
 const path = require('path');

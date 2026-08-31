@@ -18,13 +18,13 @@ function log(location, message, data, hypothesisId) {
   fs.appendFileSync(LOG, line + "\n");
 }
 
-const webPlayer = path.resolve("web-player");
+const webPlayer = path.resolve("web");
 const scales = await import(pathToFileURL(path.join(webPlayer, "lib/scales.js")).href);
 const music = await import(pathToFileURL(path.join(webPlayer, "lib/music.js")).href);
 const jsonToSymbol = await import(pathToFileURL(path.join(webPlayer, "lib/jsonToSymbol.js")).href);
 
 const songPath = path.resolve(
-  "sacred_ring_data/playback/.hooktheory_cache/weird-al-yankovic - Everything_You_Know_Is_Wrong/Instrumental - 1569999 - dPoDLORAonM.json"
+  "acquiring_data/playback/.hooktheory_cache/weird-al-yankovic - Everything_You_Know_Is_Wrong/Instrumental - 1569999 - dPoDLORAonM.json"
 );
 const data = JSON.parse(fs.readFileSync(songPath, "utf8"));
 const sectionKeys = [...data.metadata.keys].sort((a, b) => (a.beat ?? 1) - (b.beat ?? 1));

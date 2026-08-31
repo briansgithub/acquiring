@@ -1,7 +1,7 @@
 /**
  * Verify transition grouping + roman HTML rendering for transition table.
  */
-import { romanNumeralToHtml } from '../web-player/lib/romanNumeralCanvas.js';
+import { romanNumeralToHtml } from '../web/lib/romanNumeralCanvas.js';
 
 function groupTransitions(counts) {
   const byCount = new Map();

@@ -3,7 +3,7 @@
     Dot-sourced, not run directly.
 #>
 
-$script:RecoveryDataDir   = 'H:\Desktop\3_sacred_ring\sacred_ring_data\catalog'
+$script:RecoveryDataDir   = 'H:\Desktop\3_sacred_ring\acquiring_data\catalog'
 $script:RecoveryLogFile   = Join-Path $script:RecoveryDataDir 'overnight_run.log'
 $script:RecoveryStateFile = Join-Path $script:RecoveryDataDir 'overnight_run_state.json'
 $script:RecoveryStopFile  = Join-Path $script:RecoveryDataDir '.overnight_stop'

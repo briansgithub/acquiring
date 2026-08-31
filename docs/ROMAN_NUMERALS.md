@@ -2,7 +2,7 @@
 
 Renders Hooktheory-style roman chord symbols with correct figured-bass stacking in both **HTML** (Now Playing, tooltips, transition table) and **canvas** (chord ring, timeline blocks).
 
-Symbol strings come from [`web-player/lib/jsonToSymbol.js`](../web-player/lib/jsonToSymbol.js) (`getChordSymbol`). Display logic lives in [`web-player/lib/romanNumeralCanvas.js`](../web-player/lib/romanNumeralCanvas.js) — separate from pronunciation ([PRONUNCIATION.md](./PRONUNCIATION.md)), which reads chord JSON directly.
+Symbol strings come from [`web/lib/jsonToSymbol.js`](../web/lib/jsonToSymbol.js) (`getChordSymbol`). Display logic lives in [`web/lib/romanNumeralCanvas.js`](../web/lib/romanNumeralCanvas.js) — separate from pronunciation ([PRONUNCIATION.md](./PRONUNCIATION.md)), which reads chord JSON directly.
 
 **Commit:** `e57dc72` (2026-07-02) — figured-bass sizing, quality glyphs, verify harnesses.
 
@@ -83,7 +83,7 @@ Quality figured-bass uses a **two-column grid** (`.roman-stack--quality`):
 └────┴────┘
 ```
 
-CSS: `web-player/style.css` — `.roman-stack--quality`, `.roman-quality`, `.roman-figured-digit`.
+CSS: `web/style.css` — `.roman-stack--quality`, `.roman-quality`, `.roman-figured-digit`.
 
 Canvas: `drawStack()` offsets the subscript x by glyph width so digits column-align.
 
@@ -121,7 +121,7 @@ Standalone quality superscripts (`vii°7`, `vii°/ii`) use `.roman-quality-inlin
 
 Roman Numerals toggle in controls switches between roman and letter symbols; rendering path is unchanged — only the input string differs.
 
-Styles: `web-player/style.css` — `.roman-stack`, `.roman-stack--quality`, `.roman-quality--dim`, `.roman-figured-digit`, `.roman-quality-inline`, `.chord-roman-line`.
+Styles: `web/style.css` — `.roman-stack`, `.roman-stack--quality`, `.roman-quality--dim`, `.roman-figured-digit`, `.roman-quality-inline`, `.chord-roman-line`.
 
 ---
 
@@ -142,7 +142,7 @@ Runs in order:
 
 ### Gladiolus reference scrape
 
-`sacred_ring_data/harvest/scott-joplin__gladiolus-rag/scrape.json` — full harvest with per-chord SVG `rendered` arrays. Used by `halfDimSuperscriptVerify.mjs` to confirm Hooktheory superscript layout for ø/°.
+`acquiring_data/harvest/scott-joplin__gladiolus-rag/scrape.json` — full harvest with per-chord SVG `rendered` arrays. Used by `halfDimSuperscriptVerify.mjs` to confirm Hooktheory superscript layout for ø/°.
 
 ---
 

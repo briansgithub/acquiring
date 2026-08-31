@@ -204,7 +204,7 @@ object ChordInterpreter {
         val pitch: SpelledPitch
         val context: ChordRootContext
         // Forced triad quality for the applied+borrowed special cases below (ported from
-        // web-player/lib/chordBuild.js resolveAppliedBorrowedChord). Null means "use the
+        // web/lib/chordBuild.js resolveAppliedBorrowedChord). Null means "use the
         // normal scale-degree quality table lookup" further down.
         var borrowedAppliedQuality: String? = null
 
@@ -224,11 +224,11 @@ object ChordInterpreter {
             }
         } else if (applied in 1..7 && hasBorrowedScale) {
             // Applied + borrowed (modal mixture on a secondary dominant/function). Ported from
-            // resolveAppliedBorrowedChord in web-player/lib/chordBuild.js: the chord SOUNDS
+            // resolveAppliedBorrowedChord in web/lib/chordBuild.js: the chord SOUNDS
             // tonicized against the borrowed-resolved target (this branch and getChordNotes
             // below), while its Roman-numeral / letter-name LABEL intentionally does NOT
             // reflect the borrow - see the comment above the applied branch of getRomanSymbol
-            // for why (this matches web-player/lib/jsonToSymbol.js's getChordSymbol, which
+            // for why (this matches web/lib/jsonToSymbol.js's getChordSymbol, which
             // never reads chord.borrowed in its applied branch either).
             val chordType = safeInt(chordJson["type"], 5)
             val chordInversion = safeInt(chordJson["inversion"])
@@ -543,7 +543,7 @@ object ChordInterpreter {
         // Applied+borrowed chords (both fields set) are intentionally rendered the SAME way as
         // plain applied chords here: the label ignores `borrowed` entirely, even though the
         // chord's actual pitches (getChordNotes/resolveChordRoot) ARE tonicized against the
-        // borrowed-resolved target. This mirrors web-player/lib/jsonToSymbol.js's
+        // borrowed-resolved target. This mirrors web/lib/jsonToSymbol.js's
         // getChordSymbol, whose applied branch never reads chord.borrowed either - see the
         // longer note in resolveChordRoot's applied+borrowed branch.
         if (applied in 1..7) {
@@ -846,7 +846,7 @@ object ChordInterpreter {
         var forcedSeventh: Int? = null
         // True when this chord must use the wider "buildChordFromNoteName" applied-chord
         // inversion register (voiceAppliedChord) instead of the compact rotation used for
-        // plain diatonic/borrowed chords. Mirrors which web-player builder function
+        // plain diatonic/borrowed chords. Mirrors which web builder function
         // resolveAppliedBorrowedChord/chordInterpreter delegates to for each case.
         var useAppliedVoicing = false
 
@@ -864,7 +864,7 @@ object ChordInterpreter {
             useAppliedVoicing = true
         } else if (applied in 1..7 && hasBorrowedScale) {
             // Applied + borrowed (modal mixture on a secondary dominant/function). Ported from
-            // resolveAppliedBorrowedChord in web-player/lib/chordBuild.js. See resolveChordRoot
+            // resolveAppliedBorrowedChord in web/lib/chordBuild.js. See resolveChordRoot
             // for the parity note about labels intentionally NOT reflecting the borrow.
             val borrowedScaleForTarget = if (customIntervals != null) "custom" else borrowed
             val targetTonic = MusicTheory.getNoteLabel(root, key.tonic, borrowedScaleForTarget, customIntervals)

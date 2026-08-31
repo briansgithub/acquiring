@@ -17,10 +17,10 @@ const CORPUS_DIRS = [
 ].map((d) => path.join(REPO, '_Decode_oracle', d, 'byModification'));
 
 const { getChordPronunciation } = await import(
-  pathToFileURL(path.join(REPO, 'web-player', 'lib', 'romanNumeralSpeak.js')).href
+  pathToFileURL(path.join(REPO, 'web', 'lib', 'romanNumeralSpeak.js')).href
 );
 const { getChordLetterName } = await import(
-  pathToFileURL(path.join(REPO, 'web-player', 'lib', 'jsonToSymbol.js')).href
+  pathToFileURL(path.join(REPO, 'web', 'lib', 'jsonToSymbol.js')).href
 );
 
 function loadEntries() {

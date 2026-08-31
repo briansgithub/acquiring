@@ -1,12 +1,15 @@
 {
+  "name": "acquiring-monorepo",
+  "private": true,
+  "description": "Acquiring web, Android, and iOS applications with shared parity contracts.",
   "dependencies": {
     "better-sqlite3": "^12.11.1",
     "puppeteer": "^24.33.0",
     "xml2js": "^0.6.2"
   },
   "scripts": {
-    "test:scale-degrees": "node web-player/scripts/runScaleDegreeVerifier.mjs",
-    "test:scale-degrees:corpus": "node web-player/scripts/runScaleDegreeVerifier.mjs --corpus chord_db --tier quick --fail-under 88",
+    "test:scale-degrees": "node web/scripts/runScaleDegreeVerifier.mjs",
+    "test:scale-degrees:corpus": "node web/scripts/runScaleDegreeVerifier.mjs --corpus chord_db --tier quick --fail-under 88",
     "test:roman-symbols": "node _Research_testing/romanNumeralCanvasTest.mjs && node _Research_testing/stackDigitSizingVerify.mjs && node _Research_testing/halfDimSuperscriptVerify.mjs && node _Research_testing/romanSymbolCorpusTest.mjs",
     "test:pronunciation": "node _Research_testing/romanPronunciationTest.mjs && node _Research_testing/romanPronunciationCorpusTest.mjs && node _Research_testing/romanPronunciationLetterTest.mjs",
     "test:note-order": "node _Research_testing/verifyNoteOrder.mjs",

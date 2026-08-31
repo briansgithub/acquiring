@@ -18,7 +18,7 @@ Generated before overnight run (~2026-07-22).
 |---------|---------|
 | `_Debug_testing/overnightFetch.ps1` | Waits for current `batchFullFetch`, then `runFetchDaemon --wave-size 20` |
 | `_Debug_testing/watchFetchWaves.mjs` | Emits `_Debug_testing/top_errors_<wave-id>.md` per completed wave |
-| Log | `sacred_ring_data/catalog/overnight_fetch.log` |
+| Log | `acquiring_data/catalog/overnight_fetch.log` |
 
 ## Morning commands (run in order)
 
@@ -49,11 +49,11 @@ node _Decode_oracle/buildChordDb.js --corpus _Decode_oracle/corpus4.json --db-di
 
 ```powershell
 # pause
-New-Item -ItemType File -Path sacred_ring_data\catalog\.fetch_pause_for_fix -Force
+New-Item -ItemType File -Path acquiring_data\catalog\.fetch_pause_for_fix -Force
 # resume
-Remove-Item sacred_ring_data\catalog\.fetch_pause_for_fix -ErrorAction SilentlyContinue
+Remove-Item acquiring_data\catalog\.fetch_pause_for_fix -ErrorAction SilentlyContinue
 # hard stop daemon
-New-Item -ItemType File -Path sacred_ring_data\catalog\.full_fetch_stop -Force
+New-Item -ItemType File -Path acquiring_data\catalog\.full_fetch_stop -Force
 ```
 
 Delete `.full_fetch_stop` before next fetch run.

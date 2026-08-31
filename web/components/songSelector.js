@@ -220,7 +220,7 @@ export function renderSongSelector(container, options = {}) {
         const text = await res.text();
         throw new Error(
           res.status === 404
-            ? "Library API not found — start the player with: node web-player/server.js"
+            ? "Library API not found — start the player with: node web/server.js"
             : `HTTP ${res.status}: ${text.slice(0, 80)}`,
         );
       }

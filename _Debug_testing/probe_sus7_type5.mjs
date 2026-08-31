@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import Database from "better-sqlite3";
 
-const db = new Database("sacred_ring_data/catalog/hooktheory_catalog.db", { readonly: true });
+const db = new Database("acquiring_data/catalog/hooktheory_catalog.db", { readonly: true });
 const rows = db
   .prepare(
     `SELECT slug, truth_roman, truth_letter, mod_signature, notes_ok

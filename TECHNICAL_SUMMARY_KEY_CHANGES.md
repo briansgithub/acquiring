@@ -1,12 +1,12 @@
 # Technical Summary: Mid-Section Key Change Resolution & "Hardware Store" Audio Assessment
 
 ### **1. Executive Summary & Goal**
-- **Objective**: Assess and debug timeline melody playback in the Android app's **Quiz tab** for Weird Al Yankovic's "Hardware Store" (`weird-al-yankovic__hardware-store`). Ensure mid-section key modulations (which occur at specific beat offsets within a section) are handled dynamically during melody MIDI pitch generation, chord symbol rendering, and root degree label calculation, matching the JavaScript web app (`H:\Desktop\3_sacred_ring\web-player\player.js`).
+- **Objective**: Assess and debug timeline melody playback in the Android app's **Quiz tab** for Weird Al Yankovic's "Hardware Store" (`weird-al-yankovic__hardware-store`). Ensure mid-section key modulations (which occur at specific beat offsets within a section) are handled dynamically during melody MIDI pitch generation, chord symbol rendering, and root degree label calculation, matching the JavaScript web app (`H:\Desktop\3_sacred_ring\web\player.js`).
 
 ---
 
 ### **2. Architectural Analysis & Key Discoveries**
-- **Web App (`web-player/player.js`) Logic**:
+- **Web App (`web/player.js`) Logic**:
   - Web player defines `activeSectionKeyAtBeat(keys, beat, fallbackKey)` which iterates through `keys` (sorted by `beat` ascending) and picks the latest key where `k.beat <= beat`.
   - When scheduling melody notes (`createMelodyEvents`) and chord events (`createChordEvents`), active keys are resolved dynamically per note/chord beat position.
 - **Android App Defect**:

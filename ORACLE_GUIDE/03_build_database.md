@@ -62,7 +62,7 @@ So a chord can have the right notes but still fail `notesOk` if the **bass/inver
 - **harness** — alignment/parse issue in the test rig (e.g. SVG row split, count mismatch), or scrape noise like `truthRoman: "undefined"`. Do **not** edit the engine for these.
 - **piano_noise** — the piano scrape disagrees with the (correct) letter inference; deferred edge cases.
 
-Only **engine** failures justify a `web-player/lib` change. Confirm the class in `SUMMARY.md` (or via `diffSignature.cjs`, next doc) before touching code.
+Only **engine** failures justify a `web/lib` change. Confirm the class in `SUMMARY.md` (or via `diffSignature.cjs`, next doc) before touching code.
 
 ## Read the summary
 

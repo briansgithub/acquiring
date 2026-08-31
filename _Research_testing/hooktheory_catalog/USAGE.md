@@ -12,7 +12,7 @@ Self-contained module at `_Research_testing/hooktheory_catalog/`. Discovers Theo
 |------|---------|
 | `lib/` | Core logic: DB schema, discovery, enrichment, daemon, rate-limited API client |
 | `cli/` | Preferred CLI entrypoints |
-| `web/api.js` | HTTP handlers consumed by `web-player/catalogApi.js` |
+| `web/api.js` | HTTP handlers consumed by `web/catalogApi.js` |
 | `probes/` | One-off endpoint/auth research scripts |
 | `scripts/` | Windows PowerShell daemon control |
 | `data/` | Runtime artifacts (DB, logs, state, auth caches) — gitignored |
@@ -123,7 +123,7 @@ Start-ScheduledTask SacredRingCatalogSync   # run it now
 Registers a Windows Scheduled Task (`SacredRingCatalogSync`) — OS-native, so
 there is no resident process to die silently. `-StartWhenAvailable` is set, so a
 run missed because the machine was off happens at next boot instead of being
-skipped. Output appends to `sacred_ring_data/catalog/sync-task.log`.
+skipped. Output appends to `acquiring_data/catalog/sync-task.log`.
 
 **Why daily.** A sync costs ~210 requests (~4 min) — about **0.16%** of
 Hooktheory's documented daily budget — so frequency is essentially free, and the
@@ -160,9 +160,9 @@ total, and their search index has a measured ceiling (~40.3k) that the Internet
 Archive channel beat by 1,415 songs. "Caught up" therefore means *complete with
 respect to the channels we have*, never *we have every song on the site*.
 
-Web UI: start the player with `python launch_player.py` (or `node web-player/server.js`). The **Song Selector** panel (left column of `index.html`) uses `/api/library`. Catalog admin page: `/catalog.html` via `/api/catalog/*`.
+Web UI: start the player with `python launch_player.py` (or `node web/server.js`). The **Song Selector** panel (left column of `index.html`) uses `/api/library`. Catalog admin page: `/catalog.html` via `/api/catalog/*`.
 
-**Data layout note:** bulky runtime data lives in `sacred_ring_data/` (or `SACRED_RING_DATA` env) — see [data/README.md](../../data/README.md). Catalog SQLite is under `catalog/`; playback cache under `playback/.hooktheory_cache/`; harvest artifacts under `harvest/<slug>/`.
+**Data layout note:** bulky runtime data lives in `acquiring_data/` (or `ACQUIRING_DATA` env) — see [data/README.md](../../data/README.md). Catalog SQLite is under `catalog/`; playback cache under `playback/.hooktheory_cache/`; harvest artifacts under `harvest/<slug>/`.
 
 ---
 
@@ -202,16 +202,16 @@ straight past export/publish. Using it on a restart discards the artist sweep's
 A long run in the main checkout is vulnerable to anything that rewrites the
 working tree (`git checkout`, another agent editing files). Run it from a git
 worktree instead, with the data root pinned back at the original — otherwise
-`lib/dataRoot.js` resolves to an empty `sacred_ring_data/` inside the worktree
+`lib/dataRoot.js` resolves to an empty `acquiring_data/` inside the worktree
 and the run starts from a blank catalog:
 
 ```powershell
 git worktree add H:/Desktop/3_sacred_ring_harvest -b catalog-recovery-run
-'{ "dataRoot": "H:/Desktop/3_sacred_ring/sacred_ring_data" }' |
-    Set-Content H:/Desktop/3_sacred_ring_harvest/sacred_ring_data.config.json -Encoding utf8
+'{ "dataRoot": "H:/Desktop/3_sacred_ring/acquiring_data" }' |
+    Set-Content H:/Desktop/3_sacred_ring_harvest/acquiring_data.config.json -Encoding utf8
 ```
 
-`sacred_ring_data.config.json` is gitignored, so this pins the worktree without
+`acquiring_data.config.json` is gitignored, so this pins the worktree without
 polluting the branch. Note a fresh worktree carries only *tracked* dependencies —
 `better-sqlite3` and its native build are not among them, so copy `node_modules`
 across or `npm install` before starting.
@@ -447,7 +447,7 @@ Or require individual `lib/*` modules.
 
 Pipeline flags: **catalogued** (row exists), **harvested** (`scrape.json` valid), **metadata** (`status = enriched`), **processed** (`cache_dir` + `processed_at`), **tested** (`oracle_tested_at`). API `canLoad` requires metadata + processed; Song Selector **auto-load** requires all five flags.
 
-`web-player/catalogApi.js` re-exports `hooktheory_catalog/web/api.js`.
+`web/catalogApi.js` re-exports `hooktheory_catalog/web/api.js`.
 
 ---
 

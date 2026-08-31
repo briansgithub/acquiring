@@ -10,7 +10,7 @@ const {
 } = require('../lib/androidCatalogSections');
 
 // Resolve through dataRoot rather than __dirname: run from a git worktree,
-// __dirname-relative paths point inside the worktree, where sacred_ring_data
+// __dirname-relative paths point inside the worktree, where acquiring_data
 // has no catalog DB and android/ does not exist at all. That is exactly how
 // the overnight run's export/publish phases failed.
 const {
