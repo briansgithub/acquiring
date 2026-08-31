@@ -162,7 +162,7 @@ respect to the channels we have*, never *we have every song on the site*.
 
 Web UI: start the player with `python launch_player.py` (or `node web/server.js`). The **Song Selector** panel (left column of `index.html`) uses `/api/library`. Catalog admin page: `/catalog.html` via `/api/catalog/*`.
 
-**Data layout note:** bulky runtime data lives in `acquiring_data/` (or `ACQUIRING_DATA` env) — see [data/README.md](../../data/README.md). Catalog SQLite is under `catalog/`; playback cache under `playback/.hooktheory_cache/`; harvest artifacts under `harvest/<slug>/`.
+**Data layout note:** bulky runtime data lives in `acquiring_data/` (or `ACQUIRING_DATA` env) — see [docs/data-root.md](../../docs/data-root.md). Catalog SQLite is under `catalog/`; playback cache under `playback/.hooktheory_cache/`; harvest artifacts under `harvest/<slug>/`.
 
 ---
 

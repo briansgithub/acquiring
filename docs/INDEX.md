@@ -31,7 +31,7 @@ Master map of repo documentation. **Read the linked file when your task matches 
 
 | Document | Read when… |
 |----------|------------|
-| [acquiring_data/README.md](../data/README.md) | You need to understand the **Modular Data Root**, how to move the project via flash drive, or how the catalog/cache directory is structured. |
+| [data-root.md](data-root.md) | You need to understand the **Modular Data Root**, compatibility names, or how conflicts between old and new data directories are handled. |
 | [DATA_FIELDS.md](../_Research_testing/hooktheory_catalog/DATA_FIELDS.md) | You need to know the schema of the **`hooktheory_catalog.db`** SQLite database. |
 | [USAGE.md](../_Research_testing/hooktheory_catalog/USAGE.md) | You need to use the catalog CLI to discover, enrich, or update the database, run the daily sync, or drive a one-off full recovery run. |
 
