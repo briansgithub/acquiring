@@ -30,11 +30,12 @@ Open `ios/Acquiring.xcodeproj` in Xcode to build the iOS application.
 
 ## Runtime data
 
-Bulky catalog, playback, and harvest data lives outside Git in `acquiring_data/` by default. Set `ACQUIRING_DATA` or copy `acquiring_data.config.json.example` to `acquiring_data.config.json` to use another location. Legacy Sacred Ring configuration names remain readable for one compatibility release.
+Bulky catalog, playback, and harvest data lives outside Git in `acquiring_data/` by default. Set `ACQUIRING_DATA` or copy `acquiring_data.config.json.example` to `acquiring_data.config.json` to use another location. Legacy Sacred Ring configuration names remain readable for one compatibility release; see `docs/data-root.md` for precedence and migration safety.
 
 ## Documentation
 
 - `docs/architecture.md` — product and platform boundaries
+- `docs/data-root.md` — runtime-data location and compatibility rules
 - `docs/web-architecture.md` — web engine and oracle internals
 - `docs/feature-parity.md` — feature status across platforms
 - `docs/porting-plan.md` — Android-to-iOS implementation roadmap
