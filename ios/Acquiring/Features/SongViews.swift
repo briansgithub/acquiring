@@ -364,7 +364,7 @@ struct QuizView: View {
                     }
                     .onChange(of: selectedSectionKey) { _, key in
                         if let key { tessituraSession.enter("\(songID):\(key)") }
-                        Task { await loadSelectedTimeline(document) }
+                        Task { await loadSelectedTimeline(document, position: .restart) }
                     }
                 }
                 if let section = selected?.section {
@@ -393,27 +393,27 @@ struct QuizView: View {
                         Text("Simple").tag(true)
                     }
                     .pickerStyle(.segmented)
-                    .onChange(of: simpleMode) { _, _ in Task { await loadSelectedTimeline(document) } }
+                    .onChange(of: simpleMode) { _, _ in Task { await loadSelectedTimeline(document, position: .preserveProgress) } }
                     Stepper("Transpose: \(transpose)", value: $transpose, in: -12...12)
-                        .onChange(of: transpose) { _, _ in Task { await loadSelectedTimeline(document) } }
+                        .onChange(of: transpose) { _, _ in Task { await loadSelectedTimeline(document, position: .preserveProgress) } }
                     LabeledContent("Tempo", value: "\(Int(tempoPercent))%")
                     Slider(value: $tempoPercent, in: 0...200, step: 1)
                         .accessibilityLabel("Quiz tempo")
-                        .onChange(of: tempoPercent) { _, _ in Task { await loadSelectedTimeline(document) } }
+                        .onChange(of: tempoPercent) { _, _ in Task { await loadSelectedTimeline(document, position: .preserveProgress) } }
                     Picker("Chord arpeggiation", selection: $arpeggio) {
                         ForEach(QuizArpeggio.allCases) { Text($0.rawValue).tag($0) }
                     }
                     .pickerStyle(.menu)
-                    .onChange(of: arpeggio) { _, _ in Task { await loadSelectedTimeline(document) } }
+                    .onChange(of: arpeggio) { _, _ in Task { await loadSelectedTimeline(document, position: .preserveProgress) } }
                     LabeledContent("Melody / chord balance", value: "\(Int(melodyBalance * 100)) / \(Int((1 - melodyBalance) * 100))")
                     Slider(value: $melodyBalance, in: 0...1)
                         .accessibilityLabel("Melody and chord volume balance")
-                        .onChange(of: melodyBalance) { _, _ in Task { await loadSelectedTimeline(document) } }
+                        .onChange(of: melodyBalance) { _, _ in Task { await loadSelectedTimeline(document, position: .preserveProgress) } }
                     Picker("Instrument", selection: $waveform) {
                         ForEach(SynthWaveform.allCases, id: \.self) { Text($0.displayName).tag($0) }
                     }
                     .pickerStyle(.menu)
-                    .onChange(of: waveform) { _, _ in Task { await loadSelectedTimeline(document) } }
+                    .onChange(of: waveform) { _, _ in Task { await loadSelectedTimeline(document, position: .preserveProgress) } }
                     vocalPracticeActions(section)
                 }
             }
@@ -740,14 +740,17 @@ struct QuizView: View {
             state = document.sections.isEmpty ? .empty : .content(document)
             selectedSectionKey = document.orderedSections.first?.key
             if let selectedSectionKey { tessituraSession.enter("\(songID):\(selectedSectionKey)") }
-            await loadSelectedTimeline(document)
+            await loadSelectedTimeline(document, position: .restart)
         } catch { state = .failure(error.localizedDescription) }
     }
 
-    private func loadSelectedTimeline(_ document: SongDocument) async {
+    private func loadSelectedTimeline(
+        _ document: SongDocument,
+        position: QuizLoadPosition
+    ) async {
         guard let section = document.orderedSections.first(where: { $0.key == selectedSectionKey })?.section
                 ?? document.orderedSections.first?.section else { return }
-        do { try await environment.audio.load(timeline(for: section)) }
+        do { try await environment.audio.load(timeline(for: section), position: position) }
         catch { self.error = error.localizedDescription }
     }
 
@@ -809,7 +812,10 @@ struct QuizView: View {
             })
         }
         let metadataDuration = section.endBeat.map { max(($0 - 1) / beatsPerSecond, 0) } ?? 0
-        let duration = max(events.map { $0.onsetSeconds + $0.durationSeconds }.max() ?? 1, metadataDuration)
+        // Audible releases define the loop when playable content exists; Hooktheory
+        // metadata can contain trailing silent measures and is only a fallback.
+        let duration = events.map { $0.onsetSeconds + $0.durationSeconds }.max()
+            ?? (metadataDuration > 0 ? metadataDuration : 1)
         return AcquiringAudio.QuizTimeline(durationSeconds: max(duration, 0.1), events: events)
     }
 }

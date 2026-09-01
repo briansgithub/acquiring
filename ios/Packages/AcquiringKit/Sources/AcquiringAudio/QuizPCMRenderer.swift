@@ -19,9 +19,10 @@ public final class QuizPCMRenderer: @unchecked Sendable {
     private let releaseFrames: Int64
 
     public init(sampleRate: Double) {
-        self.sampleRate = sampleRate
-        attackFrames = max(Int64(sampleRate * 0.004), 1)
-        releaseFrames = max(Int64(sampleRate * 0.024), 1)
+        let validSampleRate = sampleRate.isFinite && sampleRate > 0 ? sampleRate : 48_000
+        self.sampleRate = validSampleRate
+        attackFrames = max(Int64(validSampleRate * 0.004), 1)
+        releaseFrames = max(Int64(validSampleRate * 0.024), 1)
     }
 
     public func configure(_ timeline: QuizTimeline) {
@@ -45,7 +46,8 @@ public final class QuizPCMRenderer: @unchecked Sendable {
     public func stop() { phase = .stopped; currentFrame = 0 }
 
     public func seek(progress: Double) {
-        currentFrame = Int64(Double(loopFrames) * min(max(progress, 0), 1)) % loopFrames
+        let bounded = progress.isFinite ? min(max(progress, 0), 1) : 0
+        currentFrame = Int64((Double(loopFrames) * bounded).rounded())
     }
 
     public var progress: Double { Double(currentFrame) / Double(loopFrames) }
@@ -57,8 +59,9 @@ public final class QuizPCMRenderer: @unchecked Sendable {
             return
         }
         for outputIndex in output.indices {
+            if currentFrame >= loopFrames { currentFrame = 0 }
             var mixed = 0.0
-            let timelineFrame = currentFrame % loopFrames
+            let timelineFrame = currentFrame
             for eventIndex in events.indices {
                 let relativeFrame = timelineFrame - events[eventIndex].onsetFrame
                 guard relativeFrame >= 0, relativeFrame < events[eventIndex].durationFrames else { continue }
