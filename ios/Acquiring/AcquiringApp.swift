@@ -9,11 +9,19 @@ struct AcquiringApp: App {
 
     init() {
         do {
+            let uiTestSession = UITestSession.current()
             let schema = Schema([PlaylistRecord.self, PlaylistEntryRecord.self])
-            let configuration = ModelConfiguration("UserDataV1", schema: schema)
+            let configuration = if uiTestSession == nil {
+                ModelConfiguration("UserDataV1", schema: schema)
+            } else {
+                ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+            }
             let container = try ModelContainer(for: schema, configurations: [configuration])
             modelContainer = container
-            environment = try AppEnvironment(modelContext: container.mainContext)
+            environment = try AppEnvironment(
+                modelContext: container.mainContext,
+                uiTestSession: uiTestSession
+            )
         } catch {
             fatalError("Unable to initialize Acquiring: \(error.localizedDescription)")
         }

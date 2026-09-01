@@ -109,6 +109,47 @@ final class AcquiringTests: XCTestCase {
     }
 
     @MainActor
+    func testCatalogMaintenanceCompletionIgnoresLaterProgress() async throws {
+        let maintenance = ScriptedCatalogMaintenanceService(downloads: [
+            { progressStream([.completed(songCount: 999), .preparing]) }
+        ])
+        let fixture = try makeLibraryStore(maintenance: maintenance, catalogCount: 42)
+        defer { fixture.cleanup() }
+
+        fixture.store.installCatalog()
+        await fixture.store.waitForMaintenance()
+
+        XCTAssertEqual(
+            fixture.store.maintenanceState,
+            .completed(operation: .downloadAndInstall, songCount: 42)
+        )
+        XCTAssertEqual(fixture.store.catalogState, .content(42))
+    }
+
+    @MainActor
+    func testCatalogMaintenanceCountFailurePreservesThePriorCatalog() async throws {
+        let maintenance = ScriptedCatalogMaintenanceService(downloads: [
+            { progressStream([.completed(songCount: 37)]) }
+        ])
+        let fixture = try makeLibraryStore(
+            maintenance: maintenance,
+            catalogCount: 7,
+            catalogCountThrows: true
+        )
+        defer { fixture.cleanup() }
+        fixture.store.catalogState = .content(7)
+
+        fixture.store.installCatalog()
+        await fixture.store.waitForMaintenance()
+
+        XCTAssertEqual(
+            fixture.store.maintenanceState,
+            .failed(operation: .downloadAndInstall, message: "Test catalog failure.")
+        )
+        XCTAssertEqual(fixture.store.catalogState, .content(7))
+    }
+
+    @MainActor
     func testCatalogMaintenanceEndingWithoutCompletionIsFailure() async throws {
         let maintenance = ScriptedCatalogMaintenanceService(downloads: [
             { progressStream([.connecting]) }
@@ -161,10 +202,21 @@ final class AcquiringTests: XCTestCase {
 
     @MainActor
     func testCancellingCatalogMaintenancePreservesTheUsableCatalog() async throws {
+        let cancellationProbe = CancellationProbe()
         let maintenance = ScriptedCatalogMaintenanceService(downloads: [
             {
                 AsyncThrowingStream { continuation in
-                    continuation.yield(.downloading(fraction: 0.25))
+                    let producer = Task {
+                        continuation.yield(.downloading(fraction: 0.25))
+                        do {
+                            try await Task.sleep(for: .seconds(60))
+                        } catch {
+                            await cancellationProbe.recordProducerTermination()
+                            continuation.yield(.preparing)
+                            continuation.finish()
+                        }
+                    }
+                    continuation.onTermination = { _ in producer.cancel() }
                 }
             }
         ])
@@ -174,13 +226,24 @@ final class AcquiringTests: XCTestCase {
 
         fixture.store.installCatalog()
         fixture.store.cancelMaintenance()
+        XCTAssertEqual(
+            fixture.store.maintenanceState,
+            .cancelling(operation: .downloadAndInstall)
+        )
         await fixture.store.waitForMaintenance()
+
+        for _ in 0..<100 {
+            if await cancellationProbe.terminationCount > 0 { break }
+            try await Task.sleep(for: .milliseconds(10))
+        }
 
         XCTAssertEqual(
             fixture.store.maintenanceState,
             .cancelled(operation: .downloadAndInstall)
         )
         XCTAssertEqual(fixture.store.catalogState, .content(7))
+        let terminationCount = await cancellationProbe.terminationCount
+        XCTAssertEqual(terminationCount, 1)
     }
 
     @MainActor
@@ -201,6 +264,24 @@ final class AcquiringTests: XCTestCase {
         XCTAssertEqual(maintenance.downloadCallCount, 1)
         fixture.store.cancelMaintenance()
         await fixture.store.waitForMaintenance()
+    }
+
+    @MainActor
+    func testCatalogMaintenanceCannotStartBeforeCatalogPreparationFinishes() throws {
+        let maintenance = ScriptedCatalogMaintenanceService()
+        let fixture = try makeLibraryStore(maintenance: maintenance)
+        defer { fixture.cleanup() }
+        fixture.store.catalogState = .loading
+        fixture.store.harvestURL = "https://www.hooktheory.com/theorytab/view/artist/song"
+
+        fixture.store.installCatalog()
+        fixture.store.harvest()
+
+        XCTAssertEqual(maintenance.downloadCallCount, 0)
+        XCTAssertTrue(maintenance.harvestURLs.isEmpty)
+        XCTAssertEqual(fixture.store.maintenanceState, .idle)
+        XCTAssertFalse(fixture.store.canInstallCatalog)
+        XCTAssertFalse(fixture.store.canHarvest)
     }
 
     @MainActor
@@ -228,11 +309,209 @@ final class AcquiringTests: XCTestCase {
     }
 
     @MainActor
+    func testInvalidHarvestSubmissionCannotRetryAnOlderURL() async throws {
+        let maintenance = ScriptedCatalogMaintenanceService(harvests: [
+            { _ in failureStream(TestCatalogFailure()) }
+        ])
+        let fixture = try makeLibraryStore(maintenance: maintenance, catalogCount: 1)
+        defer { fixture.cleanup() }
+        let original = "https://www.hooktheory.com/theorytab/view/artist/song"
+        fixture.store.harvestURL = original
+
+        fixture.store.harvest()
+        await fixture.store.waitForMaintenance()
+        fixture.store.harvestURL = "not a TheoryTab URL"
+        fixture.store.harvest()
+        fixture.store.retryMaintenance()
+
+        XCTAssertEqual(maintenance.harvestURLs.map(\.absoluteString), [original])
+        XCTAssertEqual(
+            fixture.store.maintenanceState,
+            .failed(
+                operation: .harvest,
+                message: "Enter a valid Hooktheory TheoryTab URL."
+            )
+        )
+    }
+
+    @MainActor
+    func testHarvestRetryWaitsForCatalogPreparation() async throws {
+        let maintenance = ScriptedCatalogMaintenanceService(harvests: [
+            { _ in failureStream(TestCatalogFailure()) },
+            { _ in progressStream([.completed(songCount: 1)]) }
+        ])
+        let fixture = try makeLibraryStore(maintenance: maintenance, catalogCount: 1)
+        defer { fixture.cleanup() }
+        let original = "https://www.hooktheory.com/theorytab/view/artist/song"
+        fixture.store.harvestURL = original
+
+        fixture.store.harvest()
+        await fixture.store.waitForMaintenance()
+        fixture.store.catalogState = .loading
+        fixture.store.retryMaintenance()
+
+        XCTAssertEqual(maintenance.harvestURLs.map(\.absoluteString), [original])
+        XCTAssertEqual(
+            fixture.store.maintenanceState,
+            .failed(operation: .harvest, message: "Test catalog failure.")
+        )
+    }
+
+    @MainActor
+    func testHarvestRejectsInvalidSchemesHostsAndPathsWithoutCallingTheService() throws {
+        let maintenance = ScriptedCatalogMaintenanceService()
+        let fixture = try makeLibraryStore(maintenance: maintenance)
+        defer { fixture.cleanup() }
+
+        for invalidURL in [
+            "ftp://www.hooktheory.com/theorytab/view/artist/song",
+            "https://hooktheory.com.example.com/theorytab/view/artist/song",
+            "https://www.hooktheory.com/search/theorytab/view/artist/song",
+            "https://www.hooktheory.com/theorytab/view/artist"
+        ] {
+            fixture.store.harvestURL = invalidURL
+            fixture.store.harvest()
+            fixture.store.retryMaintenance()
+        }
+
+        XCTAssertTrue(maintenance.harvestURLs.isEmpty)
+        XCTAssertEqual(
+            fixture.store.maintenanceState,
+            .failed(
+                operation: .harvest,
+                message: "Enter a valid Hooktheory TheoryTab URL."
+            )
+        )
+    }
+
+    @MainActor
+    func testHarvestValidationCannotHideAnActiveCatalogUpdate() async throws {
+        let maintenance = ScriptedCatalogMaintenanceService(downloads: [
+            {
+                AsyncThrowingStream { continuation in
+                    continuation.yield(.connecting)
+                }
+            }
+        ])
+        let fixture = try makeLibraryStore(maintenance: maintenance)
+        defer { fixture.cleanup() }
+        fixture.store.harvestURL = "not a TheoryTab URL"
+
+        fixture.store.installCatalog()
+        fixture.store.harvest()
+
+        XCTAssertEqual(
+            fixture.store.maintenanceState,
+            .running(operation: .downloadAndInstall, progress: .connecting)
+        )
+        fixture.store.cancelMaintenance()
+        await fixture.store.waitForMaintenance()
+    }
+
+    @MainActor
+    func testCatalogInstallCannotBeCancelledAfterTheCommitBoundary() async throws {
+        let maintenance = ScriptedCatalogMaintenanceService()
+        let fixture = try makeLibraryStore(maintenance: maintenance)
+        defer { fixture.cleanup() }
+        fixture.store.maintenanceState = .running(
+            operation: .downloadAndInstall,
+            progress: .installing
+        )
+
+        fixture.store.cancelMaintenance()
+
+        XCTAssertEqual(
+            fixture.store.maintenanceState,
+            .running(operation: .downloadAndInstall, progress: .installing)
+        )
+        XCTAssertFalse(fixture.store.maintenanceState.canCancel)
+    }
+
+    func testCatalogAccessibilityAnnouncementsIgnorePercentageChurn() {
+        let first = CatalogMaintenanceState.running(
+            operation: .downloadAndInstall,
+            progress: .downloading(fraction: 0.1)
+        )
+        let second = CatalogMaintenanceState.running(
+            operation: .downloadAndInstall,
+            progress: .downloading(fraction: 0.9)
+        )
+
+        XCTAssertEqual(first.accessibilityAnnouncement, second.accessibilityAnnouncement)
+        XCTAssertEqual(
+            CatalogMaintenanceState.completed(
+                operation: .downloadAndInstall,
+                songCount: 40_979
+            ).accessibilityAnnouncement,
+            "Catalog update complete. \(40_979.formatted()) songs ready."
+        )
+    }
+
+    @MainActor
+    func testLibraryLoadDistinguishesEmptyAndReadyCatalogs() async throws {
+        let maintenance = ScriptedCatalogMaintenanceService()
+        let empty = try makeLibraryStore(maintenance: maintenance)
+        defer { empty.cleanup() }
+        let ready = try makeLibraryStore(maintenance: maintenance, catalogCount: 40_979)
+        defer { ready.cleanup() }
+
+        await empty.store.load()
+        await ready.store.load()
+
+        XCTAssertEqual(empty.store.catalogState, .empty)
+        XCTAssertEqual(ready.store.catalogState, .content(40_979))
+    }
+
+    @MainActor
+    func testLibraryLoadReportsPreparationFailure() async throws {
+        let fixture = try makeLibraryStore(
+            maintenance: ScriptedCatalogMaintenanceService(),
+            prepareCatalog: { throw TestCatalogFailure() }
+        )
+        defer { fixture.cleanup() }
+
+        await fixture.store.load()
+
+        XCTAssertEqual(fixture.store.catalogState, .failure("Test catalog failure."))
+    }
+
+    @MainActor
+    func testFullCatalogInstallCanRepairAPreparationFailure() async throws {
+        let maintenance = ScriptedCatalogMaintenanceService(downloads: [
+            { progressStream([.completed(songCount: 999)]) }
+        ])
+        let fixture = try makeLibraryStore(
+            maintenance: maintenance,
+            catalogCount: 9,
+            prepareCatalog: { throw TestCatalogFailure() }
+        )
+        defer { fixture.cleanup() }
+
+        await fixture.store.load()
+        XCTAssertTrue(fixture.store.canInstallCatalog)
+        XCTAssertFalse(fixture.store.canHarvest)
+
+        fixture.store.installCatalog()
+        await fixture.store.waitForMaintenance()
+
+        XCTAssertEqual(fixture.store.catalogState, .content(9))
+        XCTAssertEqual(
+            fixture.store.maintenanceState,
+            .completed(operation: .downloadAndInstall, songCount: 9)
+        )
+    }
+
+    @MainActor
     private func makeLibraryStore(
         maintenance: any CatalogMaintenanceService,
-        catalogCount: Int = 0
+        catalogCount: Int = 0,
+        catalogCountThrows: Bool = false,
+        prepareCatalog: @escaping @MainActor () async throws -> Void = {}
     ) throws -> (store: LibraryStore, cleanup: () -> Void) {
-        let catalog = StubCatalogRepository(songCount: catalogCount)
+        let catalog = StubCatalogRepository(
+            songCount: catalogCount,
+            failsSongCount: catalogCountThrows
+        )
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(
             for: PlaylistRecord.self, PlaylistEntryRecord.self,
@@ -245,8 +524,9 @@ final class AcquiringTests: XCTestCase {
             maintenance: maintenance,
             history: history,
             userLibrary: try UserLibraryStore(context: container.mainContext),
-            prepareCatalog: {}
+            prepareCatalog: prepareCatalog
         )
+        store.catalogState = catalogCount == 0 ? .empty : .content(catalogCount)
         return (
             store,
             {
@@ -292,33 +572,38 @@ private final class ScriptedCatalogMaintenanceService: CatalogMaintenanceService
 
     func downloadAndInstall() -> Stream {
         lock.lock()
-        defer { lock.unlock() }
         downloadCalls += 1
-        guard !downloads.isEmpty else { return failureStream(TestCatalogFailure()) }
-        return downloads.removeFirst()()
+        let factory = downloads.isEmpty ? nil : downloads.removeFirst()
+        lock.unlock()
+        return factory?() ?? failureStream(TestCatalogFailure())
     }
 
     func harvest(url: URL) -> Stream {
         lock.lock()
-        defer { lock.unlock() }
         requestedHarvestURLs.append(url)
-        guard !harvests.isEmpty else { return failureStream(TestCatalogFailure()) }
-        return harvests.removeFirst()(url)
+        let factory = harvests.isEmpty ? nil : harvests.removeFirst()
+        lock.unlock()
+        return factory?(url) ?? failureStream(TestCatalogFailure())
     }
 }
 
 private actor StubCatalogRepository: CatalogRepository {
     let count: Int
+    let failsSongCount: Bool
 
-    init(songCount: Int) {
+    init(songCount: Int, failsSongCount: Bool = false) {
         count = songCount
+        self.failsSongCount = failsSongCount
     }
 
     func status() -> CatalogStatus {
         count == 0 ? .unavailable : .ready(songCount: count)
     }
 
-    func songCount() -> Int { count }
+    func songCount() throws -> Int {
+        if failsSongCount { throw TestCatalogFailure() }
+        return count
+    }
     func song(id: String) -> CatalogSong? { nil }
     func songDocument(id: String) throws -> SongDocument { throw CatalogError.missingSong(id) }
     func searchSongs(title query: String) -> [CatalogSong] { [] }
@@ -331,6 +616,14 @@ private actor StubCatalogRepository: CatalogRepository {
     }
     func browseCounts(mode: BrowseMode, filter: String) -> [BrowseGroupCount] { [] }
     func browseSongs(group: BrowseGroup, filter: String) -> [CatalogSong] { [] }
+}
+
+private actor CancellationProbe {
+    private(set) var terminationCount = 0
+
+    func recordProducerTermination() {
+        terminationCount += 1
+    }
 }
 
 private func progressStream(
