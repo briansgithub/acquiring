@@ -1,3 +1,4 @@
+import Foundation
 import XCTest
 
 @MainActor
@@ -7,18 +8,13 @@ final class AcquiringUITests: XCTestCase {
     }
 
     func testAppLaunches() {
-        let app = XCUIApplication()
-        app.launchArguments = ["--ui-testing"]
-        app.launch()
+        let app = launchApp()
 
-        XCTAssertTrue(app.navigationBars["Library"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["All Songs"].waitForExistence(timeout: 5))
     }
 
     func testAllSongsToQuizInfoAndParentRestoresNavigation() {
-        let app = XCUIApplication()
-        app.launchArguments = ["--ui-testing"]
-        app.launch()
+        let app = launchApp()
 
         XCTAssertTrue(app.buttons["All Songs"].waitForExistence(timeout: 5))
         app.buttons["All Songs"].tap()
@@ -32,32 +28,42 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["All Songs"].waitForExistence(timeout: 5))
     }
 
-    func testCatalogUpdateFailurePreservesReadyCatalogAndOffersRetry() {
-        let app = XCUIApplication()
-        app.launchArguments = ["--ui-testing", "--ui-testing-catalog-install-failure"]
-        app.launch()
-
-        let readyStatus = app.descendants(matching: .any)["catalog.status.ready"]
-        XCTAssertTrue(readyStatus.waitForExistence(timeout: 5))
-
-        app.buttons["catalog.download"].tap()
-
-        let maintenanceStatus = app.descendants(matching: .any)["catalog.maintenance.status"]
-        XCTAssertTrue(maintenanceStatus.waitForExistence(timeout: 5))
-        XCTAssertTrue(maintenanceStatus.label.contains("test catalog update failed"))
-        XCTAssertTrue(readyStatus.exists)
-        XCTAssertTrue(app.buttons["catalog.retry"].exists)
-    }
-
-    func testCatalogUpdateCanBeCancelledWithoutHidingReadyCatalog() {
-        let app = XCUIApplication()
-        app.launchArguments = ["--ui-testing", "--ui-testing-catalog-install-cancellable"]
-        app.launch()
+    func testCatalogUpdateFailurePreservesReadyCatalogAndRetryCompletes() {
+        let app = launchApp(arguments: ["--ui-testing-catalog-install-failure"])
 
         let readyStatus = app.descendants(matching: .any)["catalog.status.ready"]
         XCTAssertTrue(readyStatus.waitForExistence(timeout: 5))
 
         let downloadButton = app.buttons["catalog.download"]
+        scrollToHittable(downloadButton, in: app)
+        downloadButton.tap()
+
+        let maintenanceStatus = app.descendants(matching: .any)["catalog.maintenance.failed"]
+        XCTAssertTrue(maintenanceStatus.waitForExistence(timeout: 5))
+        XCTAssertTrue(maintenanceStatus.label.contains("test catalog update failed"))
+        XCTAssertTrue(
+            app.descendants(matching: .any)["catalog.maintenance.catalog-ready"]
+                .waitForExistence(timeout: 5)
+        )
+
+        let retryButton = app.buttons["catalog.retry"]
+        scrollToHittable(retryButton, in: app)
+        retryButton.tap()
+
+        let completedStatus = app.descendants(matching: .any)["catalog.maintenance.completed"]
+        XCTAssertTrue(completedStatus.waitForExistence(timeout: 5))
+        XCTAssertTrue(completedStatus.label.contains("2 songs ready"))
+        XCTAssertFalse(app.buttons["catalog.cancel"].exists)
+    }
+
+    func testCatalogUpdateCanBeCancelledWithoutHidingReadyCatalog() {
+        let app = launchApp(arguments: ["--ui-testing-catalog-install-cancellable"])
+
+        let readyStatus = app.descendants(matching: .any)["catalog.status.ready"]
+        XCTAssertTrue(readyStatus.waitForExistence(timeout: 5))
+
+        let downloadButton = app.buttons["catalog.download"]
+        scrollToHittable(downloadButton, in: app)
         downloadButton.tap()
 
         let cancelButton = app.buttons["catalog.cancel"]
@@ -65,21 +71,102 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertFalse(downloadButton.isEnabled)
         cancelButton.tap()
 
-        let maintenanceStatus = app.descendants(matching: .any)["catalog.maintenance.status"]
+        let maintenanceStatus = app.descendants(matching: .any)["catalog.maintenance.cancelled"]
         XCTAssertTrue(maintenanceStatus.waitForExistence(timeout: 5))
         XCTAssertTrue(maintenanceStatus.label.contains("cancelled"))
-        XCTAssertTrue(readyStatus.exists)
+        XCTAssertTrue(
+            app.descendants(matching: .any)["catalog.maintenance.catalog-ready"]
+                .waitForExistence(timeout: 5)
+        )
         XCTAssertTrue(app.buttons["catalog.retry"].exists)
     }
 
+    func testEmptyCatalogUpdateBecomesReadyWithoutLeavingCancellationAvailable() {
+        let app = launchApp(arguments: [
+            "--ui-testing-catalog-empty",
+            "--ui-testing-catalog-install-success"
+        ])
+        XCTAssertTrue(
+            app.descendants(matching: .any)["catalog.status.empty"].waitForExistence(timeout: 5)
+        )
+        let downloadButton = app.buttons["catalog.download"]
+        scrollToHittable(downloadButton, in: app)
+
+        downloadButton.tap()
+
+        XCTAssertTrue(
+            app.descendants(matching: .any)["catalog.status.ready"].waitForExistence(timeout: 5)
+        )
+        let completedStatus = app.descendants(matching: .any)["catalog.maintenance.completed"]
+        scrollToHittable(completedStatus, in: app)
+        XCTAssertTrue(completedStatus.label.contains("2 songs ready"))
+        XCTAssertFalse(app.buttons["catalog.cancel"].exists)
+    }
+
+    func testSongHarvestFailureCanRetryToCompletion() {
+        let app = launchApp(arguments: ["--ui-testing-catalog-harvest-failure"])
+        XCTAssertTrue(
+            app.descendants(matching: .any)["catalog.status.ready"].waitForExistence(timeout: 5)
+        )
+
+        let urlField = app.textFields["catalog.harvest.url"]
+        scrollToHittable(urlField, in: app)
+        urlField.tap()
+        urlField.typeText("https://www.hooktheory.com/theorytab/view/artist/song")
+        let harvestButton = app.buttons["catalog.harvest"]
+        scrollToHittable(harvestButton, in: app)
+        harvestButton.tap()
+
+        let failedStatus = app.descendants(matching: .any)["catalog.maintenance.failed"]
+        XCTAssertTrue(failedStatus.waitForExistence(timeout: 5))
+        XCTAssertTrue(failedStatus.label.contains("test song harvest failed"))
+        XCTAssertTrue(
+            app.descendants(matching: .any)["catalog.maintenance.catalog-ready"]
+                .waitForExistence(timeout: 5)
+        )
+
+        urlField.tap()
+        urlField.typeText("-edited")
+
+        let retryButton = app.buttons["catalog.retry"]
+        scrollToHittable(retryButton, in: app)
+        retryButton.tap()
+
+        let completedStatus = app.descendants(matching: .any)["catalog.maintenance.completed"]
+        XCTAssertTrue(completedStatus.waitForExistence(timeout: 5))
+        XCTAssertTrue(completedStatus.label.contains("Song harvest complete"))
+        XCTAssertTrue(completedStatus.label.contains("2 songs ready"))
+    }
+
     func testEmptyCatalogOffersOnePrimaryDownloadAction() {
-        let app = XCUIApplication()
-        app.launchArguments = ["--ui-testing", "--ui-testing-catalog-empty"]
-        app.launch()
+        let app = launchApp(arguments: ["--ui-testing-catalog-empty"])
 
         XCTAssertTrue(
             app.descendants(matching: .any)["catalog.status.empty"].waitForExistence(timeout: 5)
         )
         XCTAssertEqual(app.buttons.matching(identifier: "catalog.download").count, 1)
+    }
+
+    private func launchApp(arguments: [String] = []) -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments = ["--ui-testing"] + arguments
+        app.launchEnvironment["ACQUIRING_UI_TEST_SESSION_ID"] = UUID().uuidString
+        app.launch()
+        XCTAssertTrue(app.navigationBars["Library"].waitForExistence(timeout: 5))
+        return app
+    }
+
+    private func scrollToHittable(
+        _ element: XCUIElement,
+        in app: XCUIApplication,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        for _ in 0..<8 {
+            if element.waitForExistence(timeout: 0.5), element.isHittable { return }
+            app.swipeUp()
+        }
+        XCTAssertTrue(element.exists, "Element did not appear after scrolling", file: file, line: line)
+        XCTAssertTrue(element.isHittable, "Element is not hittable after scrolling", file: file, line: line)
     }
 }

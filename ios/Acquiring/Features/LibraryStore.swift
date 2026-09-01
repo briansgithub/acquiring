@@ -32,12 +32,54 @@ enum CatalogMaintenanceOperation: Equatable {
 enum CatalogMaintenanceState: Equatable {
     case idle
     case running(operation: CatalogMaintenanceOperation, progress: CatalogProgress)
+    case cancelling(operation: CatalogMaintenanceOperation)
     case cancelled(operation: CatalogMaintenanceOperation)
     case failed(operation: CatalogMaintenanceOperation, message: String)
     case completed(operation: CatalogMaintenanceOperation, songCount: Int)
 
     var isRunning: Bool {
-        if case .running = self { true } else { false }
+        switch self {
+        case .running, .cancelling: true
+        default: false
+        }
+    }
+
+    var canCancel: Bool {
+        guard case let .running(_, progress) = self else { return false }
+        if case .installing = progress { return false }
+        return true
+    }
+
+    var retainsCurrentCatalogMessage: Bool {
+        switch self {
+        case .running, .cancelling, .cancelled, .failed: true
+        case .idle, .completed: false
+        }
+    }
+
+    var accessibilityAnnouncement: String? {
+        switch self {
+        case .idle:
+            nil
+        case let .running(operation, progress):
+            switch progress {
+            case .connecting: "\(operation.title). Connecting."
+            case .downloading: "\(operation.title). Downloading catalog."
+            case .preparing: "\(operation.title). Preparing catalog."
+            case .validating: "\(operation.title). Validating catalog."
+            case .installing: "\(operation.title). Installing catalog."
+            case .harvesting: "\(operation.title). Fetching song sections."
+            case .completed: nil
+            }
+        case let .cancelling(operation):
+            "Cancelling \(operation.title.lowercased())."
+        case let .cancelled(operation):
+            "\(operation.title) cancelled."
+        case let .failed(operation, message):
+            "\(operation.title) failed. \(message)"
+        case let .completed(operation, songCount):
+            "\(operation.title) complete. \(songCount.formatted()) songs ready."
+        }
     }
 }
 
@@ -66,6 +108,22 @@ final class LibraryStore {
     @ObservationIgnored private var maintenanceTask: Task<Void, Never>?
     @ObservationIgnored private var maintenanceGeneration = 0
     @ObservationIgnored private var retryHarvestURL: URL?
+
+    var canInstallCatalog: Bool {
+        guard !maintenanceState.isRunning else { return false }
+        switch catalogState {
+        case .empty, .content, .failure: true
+        case .idle, .loading: false
+        }
+    }
+
+    var canHarvest: Bool {
+        guard !maintenanceState.isRunning else { return false }
+        switch catalogState {
+        case .empty, .content: true
+        case .idle, .loading, .failure: false
+        }
+    }
 
     convenience init(environment: AppEnvironment) {
         self.init(
@@ -125,7 +183,7 @@ final class LibraryStore {
     }
 
     func installCatalog() {
-        guard !maintenanceState.isRunning else { return }
+        guard canInstallCatalog else { return }
         begin(
             operation: .downloadAndInstall,
             stream: maintenance.downloadAndInstall()
@@ -133,23 +191,37 @@ final class LibraryStore {
     }
 
     func harvest() {
+        guard canHarvest else { return }
         guard let url = Self.validHarvestURL(from: harvestURL) else {
+            retryHarvestURL = nil
             maintenanceState = .failed(
                 operation: .harvest,
                 message: "Enter a valid Hooktheory TheoryTab URL."
             )
             return
         }
-        guard !maintenanceState.isRunning else { return }
         retryHarvestURL = url
         begin(operation: .harvest, stream: maintenance.harvest(url: url))
     }
 
     func cancelMaintenance() {
-        guard case let .running(operation, _) = maintenanceState else { return }
+        guard maintenanceState.canCancel,
+              case let .running(operation, _) = maintenanceState
+        else { return }
         maintenanceGeneration += 1
-        maintenanceState = .cancelled(operation: operation)
-        maintenanceTask?.cancel()
+        let generation = maintenanceGeneration
+        let taskToCancel = maintenanceTask
+        maintenanceState = .cancelling(operation: operation)
+        // The service must serialize producer cleanup before allowing a retry to touch staging files.
+        maintenanceTask = Task { [weak self] in
+            taskToCancel?.cancel()
+            await taskToCancel?.value
+            guard let self,
+                  generation == self.maintenanceGeneration,
+                  self.maintenanceState == .cancelling(operation: operation)
+            else { return }
+            self.maintenanceState = .cancelled(operation: operation)
+        }
     }
 
     func retryMaintenance() {
@@ -161,6 +233,7 @@ final class LibraryStore {
         switch operation {
         case .downloadAndInstall: installCatalog()
         case .harvest:
+            guard canHarvest else { return }
             guard let url = retryHarvestURL else {
                 harvest()
                 return
@@ -191,21 +264,23 @@ final class LibraryStore {
         operation: CatalogMaintenanceOperation,
         generation: Int
     ) async {
-        var completed = false
         do {
             for try await progress in stream {
-                guard generation == maintenanceGeneration else { return }
+                guard generation == maintenanceGeneration, !Task.isCancelled else { return }
                 if case .completed = progress {
+                    maintenanceState = .running(operation: operation, progress: .installing)
                     let count = try await catalog.songCount()
-                    completed = true
-                    maintenanceState = .completed(operation: operation, songCount: count)
+                    guard generation == maintenanceGeneration, !Task.isCancelled else { return }
                     catalogState = count == 0 ? .empty : .content(count)
                     await refreshUserContent()
+                    guard generation == maintenanceGeneration, !Task.isCancelled else { return }
+                    maintenanceState = .completed(operation: operation, songCount: count)
+                    return
                 } else {
                     maintenanceState = .running(operation: operation, progress: progress)
                 }
             }
-            guard generation == maintenanceGeneration, !completed else { return }
+            guard generation == maintenanceGeneration else { return }
             if Task.isCancelled {
                 maintenanceState = .cancelled(operation: operation)
             } else {
@@ -258,8 +333,14 @@ final class LibraryStore {
               let scheme = url.scheme?.lowercased(),
               scheme == "https" || scheme == "http",
               let host = url.host?.lowercased(),
-              host == "hooktheory.com" || host.hasSuffix(".hooktheory.com"),
-              url.path.lowercased().contains("/theorytab/view/")
+              host == "hooktheory.com" || host.hasSuffix(".hooktheory.com")
+        else { return nil }
+        let pathComponents = url.pathComponents.dropFirst().map { $0.lowercased() }
+        guard pathComponents.count >= 4,
+              pathComponents[0] == "theorytab",
+              pathComponents[1] == "view",
+              !pathComponents[2].isEmpty,
+              !pathComponents[3].isEmpty
         else { return nil }
         return url
     }

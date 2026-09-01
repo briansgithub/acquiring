@@ -1,3 +1,4 @@
+import Accessibility
 import AcquiringCatalog
 import AcquiringCore
 import SwiftUI
@@ -31,6 +32,7 @@ struct LibraryScene: View {
 
 private struct LibraryView: View {
     @Bindable var store: LibraryStore
+    @State private var lastMaintenanceAnnouncement: String?
 
     var body: some View {
         List {
@@ -72,6 +74,13 @@ private struct LibraryView: View {
             ForEach(SearchScope.allCases) { scope in Text(scope.rawValue).tag(scope) }
         }
         .refreshable { await store.refreshUserContent() }
+        .onChange(of: store.maintenanceState) { _, state in
+            guard let announcement = state.accessibilityAnnouncement,
+                  announcement != lastMaintenanceAnnouncement
+            else { return }
+            lastMaintenanceAnnouncement = announcement
+            AccessibilityNotification.Announcement(announcement).post()
+        }
     }
 
     @ViewBuilder
@@ -92,7 +101,7 @@ private struct LibraryView: View {
                 )
                 .accessibilityIdentifier("catalog.status.empty")
                 Button("Download full catalog", systemImage: "arrow.down.circle") { store.installCatalog() }
-                    .disabled(store.maintenanceState.isRunning)
+                    .disabled(!store.canInstallCatalog)
                     .accessibilityIdentifier("catalog.download")
             case let .failure(message):
                 Label(message, systemImage: "exclamationmark.triangle").foregroundStyle(.red)
@@ -142,15 +151,16 @@ private struct LibraryView: View {
                 Button("Download or replace full catalog", systemImage: "arrow.triangle.2.circlepath") {
                     store.installCatalog()
                 }
-                .disabled(store.maintenanceState.isRunning)
+                .disabled(!store.canInstallCatalog)
                 .accessibilityIdentifier("catalog.download")
             }
             TextField("Hooktheory TheoryTab URL", text: $store.harvestURL)
                 .textInputAutocapitalization(.never)
                 .keyboardType(.URL)
-                .disabled(store.maintenanceState.isRunning)
+                .disabled(!store.canHarvest)
+                .accessibilityIdentifier("catalog.harvest.url")
             Button("Harvest this song", systemImage: "leaf") { store.harvest() }
-                .disabled(store.harvestURL.isEmpty || store.maintenanceState.isRunning)
+                .disabled(store.harvestURL.isEmpty || !store.canHarvest)
                 .accessibilityIdentifier("catalog.harvest")
 
             switch store.maintenanceState {
@@ -158,26 +168,31 @@ private struct LibraryView: View {
                 EmptyView()
             case let .running(operation, progress):
                 maintenanceProgress(operation: operation, progress: progress)
-                Button("Cancel \(operation.title.lowercased())", role: .cancel) {
-                    store.cancelMaintenance()
+                if store.maintenanceState.canCancel {
+                    Button("Cancel \(operation.title.lowercased())", role: .cancel) {
+                        store.cancelMaintenance()
+                    }
+                    .accessibilityIdentifier("catalog.cancel")
                 }
-                .accessibilityIdentifier("catalog.cancel")
+            case let .cancelling(operation):
+                HStack {
+                    ProgressView()
+                    Text("Cancelling \(operation.title.lowercased())…")
+                        .font(.footnote)
+                }
+                .accessibilityElement(children: .combine)
+                .accessibilityIdentifier("catalog.maintenance.cancelling")
             case let .cancelled(operation):
                 Label("\(operation.title) cancelled.", systemImage: "xmark.circle")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
-                    .accessibilityIdentifier("catalog.maintenance.status")
+                    .accessibilityIdentifier("catalog.maintenance.cancelled")
                 retryButton(operation: operation)
             case let .failed(operation, message):
                 Label(message, systemImage: "exclamationmark.triangle")
                     .font(.footnote)
                     .foregroundStyle(.red)
-                    .accessibilityIdentifier("catalog.maintenance.status")
-                if case .content = store.catalogState {
-                    Text("The current catalog remains available.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
+                    .accessibilityIdentifier("catalog.maintenance.failed")
                 retryButton(operation: operation)
             case let .completed(operation, count):
                 Label(
@@ -186,7 +201,18 @@ private struct LibraryView: View {
                 )
                 .font(.footnote)
                 .foregroundStyle(.green)
-                .accessibilityIdentifier("catalog.maintenance.status")
+                .accessibilityIdentifier("catalog.maintenance.completed")
+            }
+
+            if store.maintenanceState.retainsCurrentCatalogMessage,
+               case let .content(count) = store.catalogState {
+                Label(
+                    "The current catalog remains available with \(count.formatted()) songs.",
+                    systemImage: "checkmark.shield"
+                )
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .accessibilityIdentifier("catalog.maintenance.catalog-ready")
             }
         }
     }
@@ -207,7 +233,7 @@ private struct LibraryView: View {
         .accessibilityElement(children: .combine)
         .accessibilityLabel(operation.title)
         .accessibilityValue(progress.message)
-        .accessibilityIdentifier("catalog.maintenance.status")
+        .accessibilityIdentifier("catalog.maintenance.running")
     }
 
     private func retryButton(operation: CatalogMaintenanceOperation) -> some View {
