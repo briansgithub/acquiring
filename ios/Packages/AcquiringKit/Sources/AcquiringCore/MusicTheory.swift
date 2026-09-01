@@ -69,8 +69,15 @@ public enum MusicTheory {
         Int(scaleDegree.filter(\.isNumber)) ?? 1
     }
 
-    public static func noteLabel(degree: Int, tonic: String, scale: String) -> String {
-        let intervals = scaleIntervals[scale] ?? scaleIntervals["major"]!
+    public static func noteLabel(
+        degree: Int,
+        tonic: String,
+        scale: String,
+        customIntervals: [Int]? = nil
+    ) -> String {
+        let intervals = scale == "custom" && customIntervals != nil
+            ? customIntervals!
+            : scaleIntervals[scale] ?? scaleIntervals["major"]!
         let tonic = tonic.trimmingCharacters(in: .whitespacesAndNewlines)
         guard let tonicLetter = tonic.first.map({ String($0).uppercased() }),
               let tonicIndex = letters.firstIndex(of: tonicLetter)
@@ -151,7 +158,8 @@ public enum MusicTheory {
         scaleDegree: String,
         relativeOctave: Int,
         key: KeyInfo,
-        baseOctave: Int = 4
+        baseOctave: Int = 4,
+        customIntervals: [Int]? = nil
     ) -> SpelledPitch? {
         let normalized = scaleDegree.trimmingCharacters(in: .whitespacesAndNewlines)
             .replacingOccurrences(of: "𝄪", with: "x")
@@ -165,7 +173,12 @@ public enum MusicTheory {
 
         let degreeBase = raw - 1
         let degreeIndex = floorMod(degreeBase, 7)
-        let baseLabel = noteLabel(degree: degreeIndex + 1, tonic: key.tonic, scale: key.scale)
+        let baseLabel = noteLabel(
+            degree: degreeIndex + 1,
+            tonic: key.tonic,
+            scale: key.scale,
+            customIntervals: customIntervals
+        )
         guard let basePitch = SpelledPitch.parse(noteName: baseLabel, octave: 0),
               let tonicPitch = SpelledPitch.parse(noteName: key.tonic, octave: baseOctave)
         else { return nil }

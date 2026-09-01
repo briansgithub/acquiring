@@ -1,12 +1,51 @@
 import Foundation
 
+public enum ChordRootContext: String, Equatable, Sendable {
+    case standard
+    case borrowed
+    case customBorrowed
+    case applied
+    case borrowedApplied
+    case tritoneSubstitution
+}
+
 public struct ResolvedChordRoot: Equatable, Sendable {
     public let pitch: SpelledPitch
+    public let simpleModePitch: SpelledPitch
+    public let sourceDegree: Int
+    public let effectiveDegree: Int
+    public let sourceKey: KeyInfo
+    public let effectiveKey: KeyInfo
+    public let customIntervals: [Int]?
     public let chordQuality: String
+    public let context: ChordRootContext
+    public let genericStepsFromTonic: Int
+    public let specificSemitonesFromTonic: Int
 
-    public init(pitch: SpelledPitch, chordQuality: String) {
+    public init(
+        pitch: SpelledPitch,
+        simpleModePitch: SpelledPitch,
+        sourceDegree: Int,
+        effectiveDegree: Int,
+        sourceKey: KeyInfo,
+        effectiveKey: KeyInfo,
+        customIntervals: [Int]?,
+        chordQuality: String,
+        context: ChordRootContext,
+        genericStepsFromTonic: Int,
+        specificSemitonesFromTonic: Int
+    ) {
         self.pitch = pitch
+        self.simpleModePitch = simpleModePitch
+        self.sourceDegree = sourceDegree
+        self.effectiveDegree = effectiveDegree
+        self.sourceKey = sourceKey
+        self.effectiveKey = effectiveKey
+        self.customIntervals = customIntervals
         self.chordQuality = chordQuality
+        self.context = context
+        self.genericStepsFromTonic = genericStepsFromTonic
+        self.specificSemitonesFromTonic = specificSemitonesFromTonic
     }
 }
 
@@ -121,20 +160,25 @@ public enum ChordInterpreter {
 
     public static func chordNotes(for chord: [String: JSONValue], key: KeyInfo) -> [Int] {
         let root = integer(chord, "root")
-        guard (1...7).contains(root) else { return [] }
+        guard (1...7).contains(root), !boolean(chord, "isRest"), !boolean(chord, "rest") else { return [] }
         let applied = integer(chord, "applied")
-        let borrowed = string(chord, "borrowed")
         let type = integer(chord, "type", default: 5)
+        let inversion = integer(chord, "inversion")
+        let borrowed = string(chord, "borrowed")
+        let customIntervals = customBorrowedIntervals(chord["borrowed"])
+        let hasBorrowedScale = !borrowed.isEmpty || customIntervals != nil
         let suspensions = integers(chord, "suspensions")
         let alterations = strings(chord, "alterations")
         let omits = integers(chord, "omits")
         let adds = integers(chord, "adds")
         var effectiveKey = key
         var effectiveRoot = root
+        var forcedTriadQuality: String?
+        var forcedSeventh: Int?
+        var usesAppliedVoicing = false
 
-        if (1...7).contains(applied) {
-            let targetScale = borrowedTags[borrowed] == nil ? key.scale : borrowed
-            let target = MusicTheory.noteLabel(degree: root, tonic: key.tonic, scale: targetScale)
+        if (1...7).contains(applied), !hasBorrowedScale {
+            let target = MusicTheory.noteLabel(degree: root, tonic: key.tonic, scale: key.scale)
             if isTritoneSubstitution(chord) {
                 effectiveKey = KeyInfo(tonic: pitchClassNames[(MusicTheory.pitchClass(note: target) + 1) % 12], scale: "major")
                 effectiveRoot = 1
@@ -142,15 +186,77 @@ public enum ChordInterpreter {
                 effectiveKey = KeyInfo(tonic: target, scale: "major")
                 effectiveRoot = applied
             }
-        } else if borrowedTags[borrowed] != nil {
-            effectiveKey = KeyInfo(tonic: key.tonic, scale: borrowed)
+            usesAppliedVoicing = true
+        } else if (1...7).contains(applied), hasBorrowedScale {
+            let targetScale = customIntervals == nil ? borrowed : "custom"
+            let target = MusicTheory.noteLabel(
+                degree: root,
+                tonic: key.tonic,
+                scale: targetScale,
+                customIntervals: customIntervals
+            )
+            if borrowed == "locrian", root == 1, applied == 1, type < 7 {
+                effectiveKey = KeyInfo(tonic: target, scale: "major")
+                effectiveRoot = 1
+                forcedTriadQuality = "minor"
+                usesAppliedVoicing = true
+            } else if isTritoneSubstitution(chord) {
+                effectiveKey = KeyInfo(
+                    tonic: pitchClassNames[(MusicTheory.pitchClass(note: target) + 1) % 12],
+                    scale: "major"
+                )
+                effectiveRoot = 1
+                forcedTriadQuality = "major"
+                forcedSeventh = 10
+                usesAppliedVoicing = true
+            } else if applied == 7, alterations.contains("#5") {
+                effectiveKey = KeyInfo(tonic: target, scale: "major")
+                effectiveRoot = 7
+                forcedTriadQuality = "minor"
+                forcedSeventh = 10
+                usesAppliedVoicing = true
+            } else if customIntervals != nil, inversion == 1 || inversion == 2 {
+                effectiveKey = KeyInfo(tonic: target, scale: "major")
+                effectiveRoot = 1
+                forcedTriadQuality = "major"
+                forcedSeventh = 10
+                usesAppliedVoicing = true
+            } else {
+                effectiveKey = KeyInfo(tonic: target, scale: "major")
+                effectiveRoot = applied
+            }
         }
 
-        let scale = effectiveKey.scale
-        let scaleIntervals = MusicTheory.scaleIntervals[scale] ?? MusicTheory.scaleIntervals["major"]!
+        let borrowedAppliedDefault = (1...7).contains(applied) && hasBorrowedScale && forcedTriadQuality == nil
+        let scale: String
+        if (1...7).contains(applied), hasBorrowedScale {
+            scale = effectiveKey.scale
+        } else if customIntervals != nil {
+            scale = "custom"
+        } else if !borrowed.isEmpty {
+            scale = borrowed
+        } else {
+            scale = effectiveKey.scale
+        }
+        let scaleIntervals: [Int]
+        if (1...7).contains(applied), hasBorrowedScale {
+            scaleIntervals = MusicTheory.scaleIntervals["major"]!
+        } else if let customIntervals {
+            scaleIntervals = customIntervals
+        } else {
+            scaleIntervals = MusicTheory.scaleIntervals[scale] ?? MusicTheory.scaleIntervals["major"]!
+        }
         let rootIndex = effectiveRoot - 1
         let rootPitchClass = (MusicTheory.pitchClass(note: effectiveKey.tonic) + scaleIntervals[rootIndex]) % 12
-        let quality = qualities(for: scale)[rootIndex]
+        let qualityTable: [String]
+        if (1...7).contains(applied), hasBorrowedScale {
+            qualityTable = qualities(for: "major")
+        } else if let customIntervals {
+            qualityTable = customChordQualities(customIntervals)
+        } else {
+            qualityTable = qualities(for: scale)
+        }
+        let quality = forcedTriadQuality ?? qualityTable[rootIndex]
         var degrees = [1: 0, 3: 4, 5: 7]
         if quality == "minor" || quality == "diminished" { degrees[3] = 3 }
         if quality == "diminished" { degrees[5] = 6 }
@@ -159,10 +265,18 @@ public enum ChordInterpreter {
         if suspensions.contains(4) { degrees[3] = 5 }
 
         if type >= 7 {
-            let fullyDiminished = quality == "diminished" && suspensions.isEmpty
-                || (key.scale == "minor" && root == 2)
+            let fullyDiminished = !borrowedAppliedDefault && (
+                quality == "diminished" && suspensions.isEmpty ||
+                    applied == 7 ||
+                    borrowed == "dorian" && effectiveRoot == 6 ||
+                    borrowed == "lydian" && effectiveRoot == 4 ||
+                    borrowed == "minor" && effectiveRoot == 2 ||
+                    borrowed == "phrygian" && effectiveRoot == 5
+            )
             let harmonicMinorAugmentedMajorSeven = scale == "harmonicMinor" && effectiveRoot == 3 && suspensions.isEmpty
-            if harmonicMinorAugmentedMajorSeven {
+            if let forcedSeventh {
+                degrees[7] = forcedSeventh
+            } else if harmonicMinorAugmentedMajorSeven {
                 degrees[7] = 7
                 degrees[11] = 11
                 degrees[5] = nil
@@ -171,7 +285,11 @@ public enum ChordInterpreter {
                 degrees[7] = 9
             } else if isTritoneSubstitution(chord) {
                 degrees[7] = 10
-            } else if isMajorSeventh(degree: effectiveRoot, key: effectiveKey) && suspensions.isEmpty {
+            } else if isMajorSeventh(
+                degree: effectiveRoot,
+                key: effectiveKey,
+                customIntervals: customIntervals
+            ) && suspensions.isEmpty {
                 degrees[7] = 11
             } else {
                 degrees[7] = 10
@@ -180,7 +298,7 @@ public enum ChordInterpreter {
         if type >= 9 { degrees[9] = 14 }
         if type >= 11 { degrees[11] = degrees[11] ?? 17 }
         if type >= 13 { degrees[13] = 21 }
-        if (scale == "minor" || scale == "harmonicMinor"), effectiveRoot == 5, type >= 13 {
+        if (effectiveKey.scale == "minor" || effectiveKey.scale == "harmonicMinor"), effectiveRoot == 5, type >= 13 {
             degrees[9] = 13
             degrees[13] = 21
             degrees[14] = 20
@@ -205,7 +323,28 @@ public enum ChordInterpreter {
         }
         let alteredFifth = alterations.contains { ["b5", "#5", "♭5", "♯5"].contains($0) }
         if type >= 9, !suspensions.isEmpty, !omits.contains(5), !alteredFifth, degrees[5] == 7 { degrees[5] = nil }
-        return degrees.values.map { 48 + rootPitchClass + $0 }.sorted()
+
+        let rootPositionPitches = degrees.keys.sorted().compactMap { degrees[$0] }.map { 48 + rootPitchClass + $0 }
+        if usesAppliedVoicing {
+            return voiceAppliedChord(
+                rootPositionPitches,
+                inversion: inversion,
+                chordType: type,
+                fullyDiminished: applied == 7 && quality == "diminished" && suspensions.isEmpty
+            )
+        }
+
+        var pitches = rootPositionPitches.sorted()
+        if inversion > 0, inversion < pitches.count {
+            for _ in 0..<inversion { pitches.append(pitches.removeFirst() + 12) }
+        }
+        return pitches
+    }
+
+    public static func rootPositionChordNotes(for chord: [String: JSONValue], key: KeyInfo) -> [Int] {
+        var rootPosition = chord
+        rootPosition["inversion"] = .number(0)
+        return chordNotes(for: rootPosition, key: key)
     }
 
     public static func resolvedRoot(
@@ -217,24 +356,38 @@ public enum ChordInterpreter {
         guard (1...7).contains(root), !boolean(chord, "isRest"), !boolean(chord, "rest") else { return nil }
 
         let sourceKey = KeyInfo(tonic: key.tonic, scale: RelativeIonianContext.canonicalScaleName(key.scale))
-        let borrowed = string(chord, "borrowed")
-        let borrowedIsNamed = borrowedTags[borrowed] != nil
-        let rootKey = borrowedIsNamed
-            ? KeyInfo(tonic: sourceKey.tonic, scale: RelativeIonianContext.canonicalScaleName(borrowed))
-            : sourceKey
+        let borrowedName = string(chord, "borrowed")
+        let customIntervals = customBorrowedIntervals(chord["borrowed"])
+        let borrowedIsNamed = borrowedTags[borrowedName] != nil
+        let hasBorrowedScale = !borrowedName.isEmpty || customIntervals != nil
+        let rootKey: KeyInfo
+        if customIntervals != nil {
+            rootKey = KeyInfo(tonic: sourceKey.tonic, scale: "custom")
+        } else if borrowedIsNamed {
+            rootKey = KeyInfo(tonic: sourceKey.tonic, scale: RelativeIonianContext.canonicalScaleName(borrowedName))
+        } else {
+            rootKey = sourceKey
+        }
         guard let targetPitch = MusicTheory.spelledPitch(
             scaleDegree: String(root),
             relativeOctave: 0,
             key: rootKey,
-            baseOctave: referenceOctave
+            baseOctave: referenceOctave,
+            customIntervals: customIntervals
         ) else { return nil }
 
         let applied = integer(chord, "applied")
         let tritoneSubstitution = isTritoneSubstitution(chord)
         let effectivePitch: SpelledPitch
-        let baseQuality: String
-        if (1...7).contains(applied) {
+        let effectiveDegree: Int
+        let effectiveKey: KeyInfo
+        let context: ChordRootContext
+        var borrowedAppliedQuality: String?
+
+        if (1...7).contains(applied), !hasBorrowedScale {
             let targetKey = KeyInfo(tonic: targetPitch.noteName, scale: "major")
+            effectiveDegree = tritoneSubstitution ? 2 : applied
+            effectiveKey = targetKey
             if tritoneSubstitution {
                 guard let pitch = MusicTheory.spelledPitch(
                     scaleDegree: "b2",
@@ -243,7 +396,7 @@ public enum ChordInterpreter {
                     baseOctave: targetPitch.octave
                 ) else { return nil }
                 effectivePitch = pitch
-                baseQuality = "major"
+                context = .tritoneSubstitution
             } else {
                 guard let pitch = MusicTheory.spelledPitch(
                     scaleDegree: String(applied),
@@ -252,11 +405,70 @@ public enum ChordInterpreter {
                     baseOctave: targetPitch.octave
                 ) else { return nil }
                 effectivePitch = pitch
-                baseQuality = qualities(for: "major")[applied - 1]
+                context = .applied
+            }
+        } else if (1...7).contains(applied), hasBorrowedScale {
+            let type = integer(chord, "type", default: 5)
+            let inversion = integer(chord, "inversion")
+            let alterations = strings(chord, "alterations")
+            let targetName = targetPitch.noteName
+
+            if borrowedName == "locrian", root == 1, applied == 1, type < 7 {
+                effectiveDegree = 1
+                effectiveKey = rootKey
+                effectivePitch = targetPitch
+                borrowedAppliedQuality = "minor"
+                context = .borrowedApplied
+            } else if tritoneSubstitution {
+                let targetKey = KeyInfo(tonic: targetName, scale: "major")
+                guard let pitch = MusicTheory.spelledPitch(
+                    scaleDegree: "b2",
+                    relativeOctave: 0,
+                    key: targetKey,
+                    baseOctave: targetPitch.octave
+                ) else { return nil }
+                effectiveDegree = 2
+                effectiveKey = targetKey
+                effectivePitch = pitch
+                borrowedAppliedQuality = "major"
+                context = .tritoneSubstitution
+            } else if applied == 7, alterations.contains("#5") {
+                let targetKey = KeyInfo(tonic: targetName, scale: "major")
+                guard let pitch = MusicTheory.spelledPitch(
+                    scaleDegree: "7",
+                    relativeOctave: 0,
+                    key: targetKey,
+                    baseOctave: targetPitch.octave
+                ) else { return nil }
+                effectiveDegree = 7
+                effectiveKey = targetKey
+                effectivePitch = pitch
+                borrowedAppliedQuality = "minor"
+                context = .borrowedApplied
+            } else if customIntervals != nil, inversion == 1 || inversion == 2 {
+                effectiveDegree = root
+                effectiveKey = rootKey
+                effectivePitch = targetPitch
+                borrowedAppliedQuality = "major"
+                context = .borrowedApplied
+            } else {
+                let targetKey = KeyInfo(tonic: targetName, scale: "major")
+                guard let pitch = MusicTheory.spelledPitch(
+                    scaleDegree: String(applied),
+                    relativeOctave: 0,
+                    key: targetKey,
+                    baseOctave: targetPitch.octave
+                ) else { return nil }
+                effectiveDegree = applied
+                effectiveKey = targetKey
+                effectivePitch = pitch
+                context = .borrowedApplied
             }
         } else {
+            effectiveDegree = root
+            effectiveKey = rootKey
             effectivePitch = targetPitch
-            baseQuality = qualities(for: rootKey.scale)[root - 1]
+            context = customIntervals != nil ? .customBorrowed : borrowedIsNamed ? .borrowed : .standard
         }
 
         guard let sourceTonic = SpelledPitch.parse(noteName: sourceKey.tonic, octave: referenceOctave) else { return nil }
@@ -267,11 +479,36 @@ public enum ChordInterpreter {
             accidental: effectivePitch.accidental,
             octave: floorDiv(registeredStaffPosition, 7)
         )
+        let qualityTable: [String]
+        if (1...7).contains(applied) {
+            qualityTable = qualities(for: "major")
+        } else if let customIntervals {
+            qualityTable = customChordQualities(customIntervals)
+        } else {
+            qualityTable = qualities(for: effectiveKey.scale)
+        }
+        let baseQuality = borrowedAppliedQuality ?? qualityTable[floorMod(effectiveDegree - 1, 7)]
         var quality = adjustedQuality(baseQuality, chord: chord)
         if strings(chord, "alterations").contains(where: { $0 == "#5" || $0 == "♯5" }), quality == "major" {
             quality = "augmented"
         }
-        return ResolvedChordRoot(pitch: registered, chordQuality: quality)
+        return ResolvedChordRoot(
+            pitch: registered,
+            simpleModePitch: SpelledPitch(
+                letter: effectivePitch.letter,
+                accidental: effectivePitch.accidental,
+                octave: referenceOctave
+            ),
+            sourceDegree: root,
+            effectiveDegree: effectiveDegree,
+            sourceKey: sourceKey,
+            effectiveKey: effectiveKey,
+            customIntervals: customIntervals,
+            chordQuality: quality,
+            context: context,
+            genericStepsFromTonic: registered.staffPosition - sourceTonic.staffPosition,
+            specificSemitonesFromTonic: registered.chromaticPosition - sourceTonic.chromaticPosition
+        )
     }
 
     public static func relativeIonianRomanSymbol(
@@ -437,16 +674,81 @@ public enum ChordInterpreter {
         MusicTheory.chordQualities[scale] ?? MusicTheory.chordQualities["major"]!
     }
 
+    private static func customBorrowedIntervals(_ value: JSONValue?) -> [Int]? {
+        guard case let .array(source) = value else { return nil }
+        if source.isEmpty { return MusicTheory.scaleIntervals["major"]! }
+        var intervals: [Int] = []
+        for index in 0..<7 {
+            let fallback = (intervals.last ?? 0) + 2
+            intervals.append(floorMod(source.indices.contains(index) ? source[index].intValue ?? fallback : fallback, 12))
+        }
+        return intervals
+    }
+
+    private static func customChordQualities(_ intervals: [Int]) -> [String] {
+        (0..<7).map { rootIndex in
+            let root = intervals[rootIndex]
+            var third = intervals[(rootIndex + 2) % 7]
+            var fifth = intervals[(rootIndex + 4) % 7]
+            if third < root { third += 12 }
+            if fifth < root { fifth += 12 }
+            return switch (third - root, fifth - root) {
+            case (4, 7): "major"
+            case (3, 7): "minor"
+            case (3, 6): "diminished"
+            case (4, 8): "augmented"
+            case (4, _): "major"
+            default: "minor"
+            }
+        }
+    }
+
     private static func adjustedQuality(_ quality: String, chord: [String: JSONValue]) -> String {
         strings(chord, "alterations").contains("b5") && quality == "minor" ? "diminished" : quality
     }
 
-    private static func isMajorSeventh(degree: Int, key: KeyInfo) -> Bool {
-        let intervals = MusicTheory.scaleIntervals[key.scale] ?? MusicTheory.scaleIntervals["major"]!
+    private static func isMajorSeventh(
+        degree: Int,
+        key: KeyInfo,
+        customIntervals: [Int]? = nil
+    ) -> Bool {
+        let intervals = key.scale == "custom" && customIntervals != nil
+            ? customIntervals!
+            : MusicTheory.scaleIntervals[key.scale] ?? MusicTheory.scaleIntervals["major"]!
         let root = intervals[(degree - 1 + 7) % 7]
         var seventh = intervals[(degree - 1 + 6) % 7]
         if seventh < root { seventh += 12 }
         return seventh - root == 11
+    }
+
+    private static func voiceAppliedChord(
+        _ rootPositionPitches: [Int],
+        inversion: Int,
+        chordType: Int,
+        fullyDiminished: Bool
+    ) -> [Int] {
+        guard !rootPositionPitches.isEmpty else { return [] }
+        if inversion > 0 {
+            let rotation = inversion % rootPositionPitches.count
+            let rotated = Array(rootPositionPitches.dropFirst(rotation)) + Array(rootPositionPitches.prefix(rotation))
+            let originalBass = rotated[0]
+            let bassOctave = max(1, originalBass / 12 - 2)
+            let bass = (bassOctave + 1) * 12 + floorMod(originalBass, 12)
+            let highestUpperOctave = rotated.dropFirst().map { $0 / 12 - 1 }.max() ?? 0
+            let targetUpperOctave = max(highestUpperOctave, bassOctave + 1)
+            let upperOctaveBase = (targetUpperOctave + 1) * 12
+            return [bass] + rotated.dropFirst().map { upperOctaveBase + floorMod($0, 12) }
+        }
+
+        if chordType >= 7, fullyDiminished, rootPositionPitches.count >= 4 {
+            var spread = rootPositionPitches
+            let rootOctave = spread[0] / 12 - 1
+            for index in [1, 2] where spread[index] / 12 - 1 == rootOctave {
+                spread[index] += 12
+            }
+            return spread.sorted()
+        }
+        return rootPositionPitches.sorted()
     }
 
     private static func borrowedPrefix(degree: Int, key: KeyInfo, borrowedScale: String) -> String {
