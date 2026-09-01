@@ -47,3 +47,7 @@ acquiring_data.zip
 
 # Python cache
 __pycache__/
+
+# Xcode per-user workspace state
+xcuserdata/
+*.xcuserstate
