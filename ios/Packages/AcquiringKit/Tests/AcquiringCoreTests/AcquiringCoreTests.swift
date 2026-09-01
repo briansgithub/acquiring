@@ -2,6 +2,12 @@ import XCTest
 @testable import AcquiringCore
 
 final class AcquiringCoreTests: XCTestCase {
+    private func chord(_ root: Int, type: Int = 5, applied: Int = 0) -> [String: JSONValue] {
+        var value: [String: JSONValue] = ["root": .number(Double(root)), "type": .number(Double(type))]
+        if applied > 0 { value["applied"] = .number(Double(applied)) }
+        return value
+    }
+
     func testYINFindsConcertA() {
         let sampleRate = 16_000
         let samples = (0..<2_048).map { index in
@@ -70,5 +76,97 @@ final class AcquiringCoreTests: XCTestCase {
         let named = ExtractedSection(notes: .object(["melody1": .array([note])]))
         XCTAssertEqual(direct.melodyNotes, named.melodyNotes)
         XCTAssertEqual(direct.melodyNotes.first, MelodyNote(sd: "#4", beat: 2, duration: 0.5, octave: 1))
+    }
+
+    func testEverySupportedModeResolvesToItsIonianTonic() {
+        let modalKeys = [
+            KeyInfo(tonic: "C", scale: "major"), KeyInfo(tonic: "C", scale: "ionian"),
+            KeyInfo(tonic: "D", scale: "dorian"), KeyInfo(tonic: "E", scale: "phrygian"),
+            KeyInfo(tonic: "F", scale: "lydian"), KeyInfo(tonic: "G", scale: "mixolydian"),
+            KeyInfo(tonic: "A", scale: "minor"), KeyInfo(tonic: "A", scale: "aeolian"),
+            KeyInfo(tonic: "B", scale: "locrian"), KeyInfo(tonic: "A", scale: "harmonicMinor"),
+            KeyInfo(tonic: "E", scale: "phrygianDominant")
+        ]
+        for source in modalKeys {
+            XCTAssertEqual(RelativeIonianContext.key(for: source), KeyInfo(tonic: "C", scale: "major"), source.scale)
+        }
+        XCTAssertEqual(
+            RelativeIonianContext.key(for: KeyInfo(tonic: "Bb", scale: "dorian")),
+            KeyInfo(tonic: "Ab", scale: "major")
+        )
+    }
+
+    func testRelativeIonianScaleDegreesAndStaffPositionsRotateWithoutChangingPitch() throws {
+        let key = KeyInfo(tonic: "A", scale: "minor")
+        let tonic = try XCTUnwrap(MusicTheory.spelledPitch(scaleDegree: "1", relativeOctave: 0, key: key))
+        let mediant = try XCTUnwrap(MusicTheory.spelledPitch(scaleDegree: "3", relativeOctave: 0, key: key))
+        XCTAssertEqual(RelativeIonianContext.degreeLabel(for: tonic, sourceKey: key), "6\u{0302}")
+        XCTAssertEqual(RelativeIonianContext.degreeLabel(for: mediant, sourceKey: key), "1\u{0302}")
+        XCTAssertEqual(RelativeIonianContext.degreeLabel(forMIDI: 70, contextKey: RelativeIonianContext.key(for: key)), "♭7\u{0302}")
+        XCTAssertEqual(RelativeIonianContext.staffDegree(scaleDegree: "1", relativeOctave: 0, sourceKey: key), 6)
+        XCTAssertEqual(RelativeIonianContext.staffDegree(scaleDegree: "3", relativeOctave: 0, sourceKey: key), 8)
+    }
+
+    func testNaturalMinorChordsUseTheirRelativeMajorNumerals() {
+        let key = KeyInfo(tonic: "A", scale: "minor")
+        XCTAssertEqual(ChordInterpreter.relativeIonianRomanSymbol(for: chord(1), key: key), "vi")
+        XCTAssertEqual(ChordInterpreter.relativeIonianRomanSymbol(for: chord(3), key: key), "I")
+        XCTAssertEqual(ChordInterpreter.relativeIonianRomanSymbol(for: chord(4), key: key), "ii")
+        XCTAssertEqual(ChordInterpreter.relativeIonianRomanSymbol(for: chord(5), key: key), "iii")
+        XCTAssertEqual(ChordInterpreter.relativeIonianRomanSymbol(for: chord(5, applied: 5), key: key), "V/iii")
+    }
+
+    func testAlteredModalQualitySurvivesRelativeIonianContextChange() {
+        let key = KeyInfo(tonic: "A", scale: "harmonicMinor")
+        XCTAssertEqual(ChordInterpreter.relativeIonianRomanSymbol(for: chord(5), key: key), "III")
+        XCTAssertEqual(ChordInterpreter.relativeIonianRomanSymbol(for: chord(7), key: key), "♯v°")
+    }
+
+    func testRelativeIonianLabelDoesNotMutatePlaybackInputs() {
+        let key = KeyInfo(tonic: "A", scale: "minor")
+        let sourceChord = chord(1, type: 7)
+        let notesBefore = ChordInterpreter.chordNotes(for: sourceChord, key: key)
+        XCTAssertEqual(ChordInterpreter.relativeIonianRomanSymbol(for: sourceChord, key: key), "vi7")
+        XCTAssertEqual(ChordInterpreter.chordNotes(for: sourceChord, key: key), notesBefore)
+        XCTAssertEqual(sourceChord["root"]?.intValue, 1)
+        XCTAssertEqual(key, KeyInfo(tonic: "A", scale: "minor"))
+    }
+
+    func testFixedIonianContextDoesNotRebaseAtKeyChanges() throws {
+        let contextKey = RelativeIonianContext.key(for: KeyInfo(tonic: "D", scale: "major"))
+        let dPhrygian = KeyInfo(tonic: "D", scale: "phrygian")
+        let fPhrygian = KeyInfo(tonic: "F", scale: "phrygian")
+        let tonicChord = chord(1)
+        let dRoot = try XCTUnwrap(ChordInterpreter.resolvedRoot(for: tonicChord, key: dPhrygian))
+        let fRoot = try XCTUnwrap(ChordInterpreter.resolvedRoot(for: tonicChord, key: fPhrygian))
+
+        XCTAssertEqual(RelativeIonianContext.degreeLabel(for: dRoot.pitch, sourceKey: dPhrygian), "3\u{0302}")
+        XCTAssertEqual(RelativeIonianContext.degreeLabel(for: fRoot.pitch, sourceKey: fPhrygian), "3\u{0302}")
+        XCTAssertEqual(RelativeIonianContext.degreeLabel(for: dRoot.pitch, contextKey: contextKey), "1\u{0302}")
+        XCTAssertEqual(RelativeIonianContext.degreeLabel(for: fRoot.pitch, contextKey: contextKey), "♭3\u{0302}")
+        XCTAssertEqual(ChordInterpreter.relativeIonianRomanSymbol(for: tonicChord, key: dPhrygian, contextKey: contextKey), "i")
+        XCTAssertEqual(ChordInterpreter.relativeIonianRomanSymbol(for: tonicChord, key: fPhrygian, contextKey: contextKey), "♭iii")
+        XCTAssertEqual(RelativeIonianContext.staffDegree(scaleDegree: "1", relativeOctave: 0, sourceKey: dPhrygian, contextKey: contextKey), 1)
+        XCTAssertEqual(RelativeIonianContext.staffDegree(scaleDegree: "1", relativeOctave: 0, sourceKey: fPhrygian, contextKey: contextKey), 3)
+
+        let lowC = try XCTUnwrap(SpelledPitch.parse(noteName: "C", octave: 3))
+        let highC = try XCTUnwrap(SpelledPitch.parse(noteName: "C", octave: 4))
+        XCTAssertEqual(RelativeIonianContext.degreeLabel(for: lowC, contextKey: contextKey), "♭7\u{0302}")
+        XCTAssertEqual(RelativeIonianContext.degreeLabel(for: highC, contextKey: contextKey), "♭7\u{0302}")
+        XCTAssertEqual(RelativeIonianContext.previewMIDI(for: lowC, contextKey: contextKey), 60)
+        XCTAssertEqual(RelativeIonianContext.previewMIDI(for: highC, contextKey: contextKey), 60)
+        XCTAssertEqual(RelativeIonianContext.previewMIDI(forMIDI: 48, contextKey: contextKey), 60)
+        XCTAssertEqual(RelativeIonianContext.previewMIDI(forMIDI: 72, contextKey: contextKey), 60)
+    }
+
+    func testSecondaryDominantChordTonesPreserveTheirRootRelativeSpelling() throws {
+        let key = KeyInfo(tonic: "A", scale: "minor")
+        let contextKey = RelativeIonianContext.key(for: key)
+        let sourceChord = chord(5, applied: 5)
+        let root = try XCTUnwrap(ChordInterpreter.resolvedRoot(for: sourceChord, key: key))
+        let notes = ChordInterpreter.chordNotes(for: sourceChord, key: key)
+        let third = try XCTUnwrap(notes.first { (($0 - root.pitch.midiNote) % 12 + 12) % 12 == 4 })
+        XCTAssertEqual(RelativeIonianContext.degreeLabel(forMIDI: third, rootPitch: root.pitch, contextKey: contextKey), "♯2\u{0302}")
+        XCTAssertEqual(RelativeIonianContext.degreeLabel(forMIDI: third, contextKey: contextKey), "♭3\u{0302}")
     }
 }

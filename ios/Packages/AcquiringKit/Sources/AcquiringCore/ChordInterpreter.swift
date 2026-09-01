@@ -1,5 +1,15 @@
 import Foundation
 
+public struct ResolvedChordRoot: Equatable, Sendable {
+    public let pitch: SpelledPitch
+    public let chordQuality: String
+
+    public init(pitch: SpelledPitch, chordQuality: String) {
+        self.pitch = pitch
+        self.chordQuality = chordQuality
+    }
+}
+
 public enum ChordInterpreter {
     private static let romanMap = [1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI", 7: "VII"]
     private static let pitchClassNames = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"]
@@ -198,6 +208,144 @@ public enum ChordInterpreter {
         return degrees.values.map { 48 + rootPitchClass + $0 }.sorted()
     }
 
+    public static func resolvedRoot(
+        for chord: [String: JSONValue],
+        key: KeyInfo,
+        referenceOctave: Int = 3
+    ) -> ResolvedChordRoot? {
+        let root = integer(chord, "root")
+        guard (1...7).contains(root), !boolean(chord, "isRest"), !boolean(chord, "rest") else { return nil }
+
+        let sourceKey = KeyInfo(tonic: key.tonic, scale: RelativeIonianContext.canonicalScaleName(key.scale))
+        let borrowed = string(chord, "borrowed")
+        let borrowedIsNamed = borrowedTags[borrowed] != nil
+        let rootKey = borrowedIsNamed
+            ? KeyInfo(tonic: sourceKey.tonic, scale: RelativeIonianContext.canonicalScaleName(borrowed))
+            : sourceKey
+        guard let targetPitch = MusicTheory.spelledPitch(
+            scaleDegree: String(root),
+            relativeOctave: 0,
+            key: rootKey,
+            baseOctave: referenceOctave
+        ) else { return nil }
+
+        let applied = integer(chord, "applied")
+        let tritoneSubstitution = isTritoneSubstitution(chord)
+        let effectivePitch: SpelledPitch
+        let baseQuality: String
+        if (1...7).contains(applied) {
+            let targetKey = KeyInfo(tonic: targetPitch.noteName, scale: "major")
+            if tritoneSubstitution {
+                guard let pitch = MusicTheory.spelledPitch(
+                    scaleDegree: "b2",
+                    relativeOctave: 0,
+                    key: targetKey,
+                    baseOctave: targetPitch.octave
+                ) else { return nil }
+                effectivePitch = pitch
+                baseQuality = "major"
+            } else {
+                guard let pitch = MusicTheory.spelledPitch(
+                    scaleDegree: String(applied),
+                    relativeOctave: 0,
+                    key: targetKey,
+                    baseOctave: targetPitch.octave
+                ) else { return nil }
+                effectivePitch = pitch
+                baseQuality = qualities(for: "major")[applied - 1]
+            }
+        } else {
+            effectivePitch = targetPitch
+            baseQuality = qualities(for: rootKey.scale)[root - 1]
+        }
+
+        guard let sourceTonic = SpelledPitch.parse(noteName: sourceKey.tonic, octave: referenceOctave) else { return nil }
+        let genericSteps = floorMod(effectivePitch.letter.rawValue - sourceTonic.letter.rawValue, 7)
+        let registeredStaffPosition = sourceTonic.staffPosition + genericSteps
+        let registered = SpelledPitch(
+            letter: effectivePitch.letter,
+            accidental: effectivePitch.accidental,
+            octave: floorDiv(registeredStaffPosition, 7)
+        )
+        var quality = adjustedQuality(baseQuality, chord: chord)
+        if strings(chord, "alterations").contains(where: { $0 == "#5" || $0 == "♯5" }), quality == "major" {
+            quality = "augmented"
+        }
+        return ResolvedChordRoot(pitch: registered, chordQuality: quality)
+    }
+
+    public static func relativeIonianRomanSymbol(
+        for chord: [String: JSONValue],
+        key: KeyInfo,
+        contextKey explicitContextKey: KeyInfo? = nil
+    ) -> String {
+        let root = integer(chord, "root")
+        guard (1...7).contains(root), !boolean(chord, "isRest"), !boolean(chord, "rest") else { return "Rest" }
+
+        let sourceKey = KeyInfo(tonic: key.tonic, scale: RelativeIonianContext.canonicalScaleName(key.scale))
+        let displayKey = KeyInfo(
+            tonic: (explicitContextKey ?? RelativeIonianContext.key(for: key)).tonic,
+            scale: "major"
+        )
+        let applied = integer(chord, "applied")
+        let borrowed = string(chord, "borrowed")
+
+        if (1...7).contains(applied) {
+            guard let targetPitch = MusicTheory.spelledPitch(
+                scaleDegree: String(root),
+                relativeOctave: 0,
+                key: sourceKey
+            ), let displayDegree = RelativeIonianContext.degree(for: targetPitch, in: displayKey)
+            else { return romanSymbol(for: chord, key: key) }
+
+            let numeratorKey = KeyInfo(tonic: targetPitch.noteName, scale: "major")
+            let tritoneSubstitution = isTritoneSubstitution(chord)
+            let numeratorDegree = tritoneSubstitution ? 2 : applied
+            let targetQuality = qualities(for: sourceKey.scale)[root - 1]
+            let type = integer(chord, "type", default: 5)
+            let majorSeventh = type >= 7 && applied != 5
+                && isMajorSeventh(degree: numeratorDegree, key: numeratorKey)
+                && integers(chord, "suspensions").isEmpty
+            let numerator = buildNumeral(
+                degree: numeratorDegree,
+                quality: qualities(for: "major")[numeratorDegree - 1],
+                chord: chord,
+                prefix: tritoneSubstitution ? "♭" : "",
+                majorSeventh: majorSeventh,
+                fullyDiminished: applied == 7 && !tritoneSubstitution
+            )
+            var denominator = romanMap[displayDegree.degree] ?? ""
+            if targetQuality == "minor" || targetQuality == "diminished" { denominator = denominator.lowercased() }
+            denominator = displayDegree.accidentalPrefix + denominator
+            if targetQuality == "diminished" { denominator += "°" }
+            if targetQuality == "augmented" { denominator += "+" }
+            let denominatorTag = applied == 5 && type >= 7 && targetQuality == "minor" ? "(maj)" : ""
+            return "\(numerator)/\(denominator)\(denominatorTag)\(tritoneSubstitution ? "(∆-sub)" : "")"
+        }
+
+        guard let resolved = resolvedRoot(for: chord, key: sourceKey),
+              let displayDegree = RelativeIonianContext.degree(for: resolved.pitch, in: displayKey)
+        else { return romanSymbol(for: chord, key: key) }
+
+        let sourceScale = borrowedTags[borrowed] == nil
+            ? sourceKey.scale
+            : RelativeIonianContext.canonicalScaleName(borrowed)
+        let borrowedTag = borrowedTags[borrowed].map { "(\($0))" } ?? (borrowed.hasPrefix("[") ? "(bor)" : "")
+        let type = integer(chord, "type", default: 5)
+        let majorSeventh = type >= 7 && resolved.chordQuality != "diminished"
+            && isMajorSeventh(degree: root, key: KeyInfo(tonic: sourceKey.tonic, scale: sourceScale))
+        let hasAdds = !integers(chord, "adds").isEmpty
+        let result = buildNumeral(
+            degree: displayDegree.degree,
+            quality: resolved.chordQuality,
+            chord: chord,
+            prefix: displayDegree.accidentalPrefix,
+            majorSeventh: majorSeventh,
+            borrowedTag: hasAdds ? borrowedTag : ""
+        )
+        return result + (hasAdds ? "" : borrowedTag)
+    }
+
     private static func buildNumeral(
         degree: Int,
         quality: String,
@@ -335,5 +483,15 @@ public enum ChordInterpreter {
 
     private static func strings(_ chord: [String: JSONValue], _ key: String) -> [String] {
         chord[key]?.arrayValue?.compactMap(\.stringValue) ?? []
+    }
+
+    private static func floorMod(_ value: Int, _ divisor: Int) -> Int {
+        let remainder = value % divisor
+        return remainder >= 0 ? remainder : remainder + divisor
+    }
+
+    private static func floorDiv(_ value: Int, _ divisor: Int) -> Int {
+        let quotient = value / divisor
+        return value < 0 && value % divisor != 0 ? quotient - 1 : quotient
     }
 }

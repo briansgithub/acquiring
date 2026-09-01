@@ -75,7 +75,7 @@ Once foundation interfaces are stable, catalog/Library, theory/rendering, and th
 
 ## Current implementation checkpoint
 
-The reference lock, package boundaries, exact dependencies, schema-v3 bootstrap, GRDB repository, staged installer/validator, visible harvest service, core theory corpus, pure waveform/preview/loop renderers, SwiftData user schema, history, explicit route graph, initial Library/All Songs/detail/Quiz views, app-scoped audio session, remote commands, and the mono-16-kHz YIN input path now exist. Package and selected simulator tests provide early evidence, but the parity checklist intentionally leaves most capabilities Partial until their full UI semantics and device gates pass.
+The reference lock, package boundaries, exact dependencies, schema-v3 bootstrap, GRDB repository, staged installer/validator, visible harvest service, core theory corpus, relative-Ionian fixed-context rules and Quiz toggle, pure waveform/preview/loop renderers, SwiftData user schema, history, explicit route graph, initial Library/All Songs/detail/Quiz views, app-scoped audio session, remote commands, and the mono-16-kHz YIN input path now exist. The package passes 25 tests and the full Swift 6 app builds, but the parity checklist intentionally leaves most capabilities Partial until their full UI semantics and device gates pass.
 
 ## Five highest risks
 
