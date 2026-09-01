@@ -267,6 +267,37 @@ final class AcquiringTests: XCTestCase {
     }
 
     @MainActor
+    func testAppScopedGateRejectsAnOverlappingOperationFromAnotherStore() async throws {
+        let underlying = ScriptedCatalogMaintenanceService(downloads: [
+            {
+                AsyncThrowingStream { continuation in
+                    continuation.yield(.downloading(fraction: 0.25))
+                }
+            }
+        ])
+        let maintenance = ExclusiveCatalogMaintenanceService(base: underlying)
+        let first = try makeLibraryStore(maintenance: maintenance, catalogCount: 1)
+        defer { first.cleanup() }
+        let second = try makeLibraryStore(maintenance: maintenance, catalogCount: 1)
+        defer { second.cleanup() }
+
+        first.store.installCatalog()
+        second.store.installCatalog()
+        await second.store.waitForMaintenance()
+
+        XCTAssertEqual(underlying.downloadCallCount, 1)
+        XCTAssertEqual(
+            second.store.maintenanceState,
+            .failed(
+                operation: .downloadAndInstall,
+                message: "Another catalog operation is already running in a different window."
+            )
+        )
+        first.store.cancelMaintenance()
+        await first.store.waitForMaintenance()
+    }
+
+    @MainActor
     func testCatalogMaintenanceCannotStartBeforeCatalogPreparationFinishes() throws {
         let maintenance = ScriptedCatalogMaintenanceService()
         let fixture = try makeLibraryStore(maintenance: maintenance)

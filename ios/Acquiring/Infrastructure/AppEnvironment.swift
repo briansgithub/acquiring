@@ -38,6 +38,74 @@ struct UITestSession {
     }
 }
 
+final class ExclusiveCatalogMaintenanceService: CatalogMaintenanceService, @unchecked Sendable {
+    typealias Stream = AsyncThrowingStream<CatalogProgress, any Error>
+
+    private let base: any CatalogMaintenanceService
+    private let lock = NSLock()
+    private var isBusy = false
+
+    init(base: any CatalogMaintenanceService) {
+        self.base = base
+    }
+
+    func downloadAndInstall() -> Stream {
+        exclusiveStream { base.downloadAndInstall() }
+    }
+
+    func harvest(url: URL) -> Stream {
+        exclusiveStream { base.harvest(url: url) }
+    }
+
+    private func exclusiveStream(_ makeSource: () -> Stream) -> Stream {
+        // This gates app callers; the base service still owns cancellation-safe staging cleanup.
+        guard acquire() else {
+            return AsyncThrowingStream { continuation in
+                continuation.finish(throwing: CatalogMaintenanceGateError.operationInProgress)
+            }
+        }
+        let source = makeSource()
+        return AsyncThrowingStream { continuation in
+            let task = Task {
+                defer { self.release() }
+                do {
+                    for try await progress in source {
+                        continuation.yield(progress)
+                    }
+                    continuation.finish()
+                } catch is CancellationError {
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+            continuation.onTermination = { _ in task.cancel() }
+        }
+    }
+
+    private func acquire() -> Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        guard !isBusy else { return false }
+        isBusy = true
+        return true
+    }
+
+    private func release() {
+        lock.lock()
+        isBusy = false
+        lock.unlock()
+    }
+}
+
+private enum CatalogMaintenanceGateError: LocalizedError, Sendable {
+    case operationInProgress
+
+    var errorDescription: String? {
+        "Another catalog operation is already running in a different window."
+    }
+}
+
 @MainActor
 @Observable
 final class AppEnvironment {
@@ -70,17 +138,25 @@ final class AppEnvironment {
         let coordinator = CatalogCoordinator(configuration: configuration)
         catalog = coordinator
 #if DEBUG
+        let selectedMaintenance: any CatalogMaintenanceService
         if isUITesting, let scenario = CatalogMaintenanceUITestScenario(arguments: arguments) {
-            maintenance = CatalogMaintenanceUITestService(
+            selectedMaintenance = CatalogMaintenanceUITestService(
                 scenario: scenario,
                 installFixture: { try await Self.installUITestCatalog(into: coordinator) }
             )
         } else {
-            maintenance = DefaultCatalogMaintenanceService(coordinator: coordinator, configuration: configuration)
+            selectedMaintenance = DefaultCatalogMaintenanceService(
+                coordinator: coordinator,
+                configuration: configuration
+            )
         }
 #else
-        maintenance = DefaultCatalogMaintenanceService(coordinator: coordinator, configuration: configuration)
+        let selectedMaintenance: any CatalogMaintenanceService = DefaultCatalogMaintenanceService(
+            coordinator: coordinator,
+            configuration: configuration
+        )
 #endif
+        maintenance = ExclusiveCatalogMaintenanceService(base: selectedMaintenance)
         history = HistoryStore(suiteName: uiTestSession?.historySuiteName)
         userLibrary = try UserLibraryStore(context: modelContext)
         audio = AppAudioSystem()
