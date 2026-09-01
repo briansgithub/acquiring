@@ -201,6 +201,32 @@ final class AcquiringTests: XCTestCase {
     }
 
     @MainActor
+    func testCatalogReplacementPreservesFavoritesAndCustomPlaylistMembership() async throws {
+        let maintenance = ScriptedCatalogMaintenanceService(downloads: [
+            { progressStream([.completed(songCount: 1)]) }
+        ])
+        let fixture = try makeLibraryStore(maintenance: maintenance, catalogCount: 1)
+        defer { fixture.cleanup() }
+        let slug = "artist__saved-song"
+        let customPlaylist = PlaylistRecord(id: "custom", name: "Custom")
+        fixture.modelContext.insert(customPlaylist)
+        try fixture.modelContext.save()
+        XCTAssertTrue(try fixture.userLibrary.toggle(slug: slug))
+        XCTAssertTrue(try fixture.userLibrary.toggle(slug: slug, playlistID: customPlaylist.id))
+
+        fixture.store.installCatalog()
+        await fixture.store.waitForMaintenance()
+
+        XCTAssertTrue(try fixture.userLibrary.contains(slug: slug))
+        XCTAssertTrue(try fixture.userLibrary.contains(slug: slug, playlistID: customPlaylist.id))
+        let summaries = Dictionary(uniqueKeysWithValues: try fixture.userLibrary.summaries().map {
+            ($0.id, $0.count)
+        })
+        XCTAssertEqual(summaries[UserLibraryStore.favoritesID], 1)
+        XCTAssertEqual(summaries[customPlaylist.id], 1)
+    }
+
+    @MainActor
     func testCancellingCatalogMaintenancePreservesTheUsableCatalog() async throws {
         let cancellationProbe = CancellationProbe()
         let maintenance = ScriptedCatalogMaintenanceService(downloads: [
@@ -538,7 +564,12 @@ final class AcquiringTests: XCTestCase {
         catalogCount: Int = 0,
         catalogCountThrows: Bool = false,
         prepareCatalog: @escaping @MainActor () async throws -> Void = {}
-    ) throws -> (store: LibraryStore, cleanup: () -> Void) {
+    ) throws -> (
+        store: LibraryStore,
+        userLibrary: UserLibraryStore,
+        modelContext: ModelContext,
+        cleanup: () -> Void
+    ) {
         let catalog = StubCatalogRepository(
             songCount: catalogCount,
             failsSongCount: catalogCountThrows
@@ -550,16 +581,19 @@ final class AcquiringTests: XCTestCase {
         )
         let historySuite = "AcquiringTests.\(UUID().uuidString)"
         let history = HistoryStore(suiteName: historySuite)
+        let userLibrary = try UserLibraryStore(context: container.mainContext)
         let store = LibraryStore(
             catalog: catalog,
             maintenance: maintenance,
             history: history,
-            userLibrary: try UserLibraryStore(context: container.mainContext),
+            userLibrary: userLibrary,
             prepareCatalog: prepareCatalog
         )
         store.catalogState = catalogCount == 0 ? .empty : .content(catalogCount)
         return (
             store,
+            userLibrary,
+            container.mainContext,
             {
                 UserDefaults(suiteName: historySuite)?.removePersistentDomain(forName: historySuite)
                 _ = container
