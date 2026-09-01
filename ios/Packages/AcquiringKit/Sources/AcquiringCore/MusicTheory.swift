@@ -135,6 +135,24 @@ public enum MusicTheory {
         return "\(prefix)\(best + 1)\u{0302}"
     }
 
+    public static func degreeLabel(for pitch: SpelledPitch, key: KeyInfo) -> String {
+        guard let tonic = SpelledPitch.parse(noteName: key.tonic, octave: pitch.octave) else { return "" }
+        let degree = floorMod(pitch.letter.rawValue - tonic.letter.rawValue, 7) + 1
+        guard let expected = spelledPitch(
+            scaleDegree: String(degree),
+            relativeOctave: 0,
+            key: key,
+            baseOctave: pitch.octave
+        ) else { return "" }
+        let alteration = pitch.accidental - expected.accidental
+        let prefix = alteration > 0
+            ? String(repeating: "♯", count: alteration)
+            : alteration < 0
+                ? String(repeating: "♭", count: -alteration)
+                : ""
+        return "\(prefix)\(degree)\u{0302}"
+    }
+
     public static func relativeMajorDegreeLabel(midi: Int, rootMIDI: Int) -> String {
         let relative = floorMod(midi - rootMIDI, 12)
         let intervals = scaleIntervals["major"]!

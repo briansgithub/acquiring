@@ -307,8 +307,9 @@ struct QuizView: View {
     @State private var isSeeking = false
     @State private var error: String?
     @State private var practiceMode: VocalPracticeMode?
-    @State private var tessituraAnchor: Double?
+    @State private var tessituraSession = TessituraSession()
     @State private var usesRelativeIonianContext = false
+    @State private var intervalPreviewTask: Task<Void, Never>?
 
     var body: some View {
         Group {
@@ -333,9 +334,19 @@ struct QuizView: View {
                 VocalPracticeSheet(
                     mode: mode,
                     targetMIDI: targetMIDI(section),
-                    tessituraAnchor: $tessituraAnchor
+                    tessituraAnchor: Binding(
+                        get: { tessituraSession.comfortablePitchMIDI },
+                        set: { value in
+                            if let value { tessituraSession.updateComfortablePitch(value) }
+                            else { tessituraSession.clearAdjustment() }
+                        }
+                    )
                 )
             }
+        }
+        .onDisappear {
+            intervalPreviewTask?.cancel()
+            intervalPreviewTask = nil
         }
     }
 
@@ -351,13 +362,17 @@ struct QuizView: View {
                     )) {
                         ForEach(sections, id: \.key) { Text($0.section.safeSectionName).tag($0.key) }
                     }
-                    .onChange(of: selectedSectionKey) { _, _ in Task { await loadSelectedTimeline(document) } }
+                    .onChange(of: selectedSectionKey) { _, key in
+                        if let key { tessituraSession.enter("\(songID):\(key)") }
+                        Task { await loadSelectedTimeline(document) }
+                    }
                 }
                 if let section = selected?.section {
                     QuizTimelineView(section: section, progress: progress)
                         .frame(height: 150)
                         .accessibilityLabel("Chord and melody timeline, \(Int(progress * 100)) percent")
                     theoryCard(section)
+                    activePitchCards(section)
                     Slider(value: $progress, in: 0...1) { editing in
                         isSeeking = editing
                         if !editing { Task { await environment.audio.seek(to: progress) } }
@@ -454,20 +469,202 @@ struct QuizView: View {
         }
     }
 
+    @ViewBuilder
+    private func activePitchCards(_ section: ExtractedSection) -> some View {
+        let beat = currentBeat(in: section)
+        if simpleMode {
+            let state = QuizIntervals.resolveChordRootState(section: section, currentBeat: beat)
+            GroupBox("Root interval") {
+                HStack(spacing: 12) {
+                    Button {
+                        if let previous = state?.previousIntervalPitch,
+                           let current = state?.currentIntervalPitch {
+                            startIntervalPreview(previous: previous, current: current)
+                        }
+                    } label: {
+                        VStack(spacing: 4) {
+                            Text(state?.interval?.shorthand ?? "—")
+                                .font(.title.bold())
+                            Text("Previous → current")
+                                .font(.caption)
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 76)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(state?.interval == nil)
+                    .accessibilityLabel(state?.interval.map { "Play root interval \($0.spokenName)" } ?? "Root interval unavailable")
+
+                    pitchCard(
+                        label: state?.currentDegreeLabel ?? "—",
+                        midi: state?.currentIntervalPitch.midiNote,
+                        accessibilityLabel: "Play current root scale degree"
+                    )
+                }
+            }
+        } else {
+            let melody = section.melodyNotes
+            let activeNote = QuizIntervals.activeMelodyNote(melody, at: beat)
+            let currentPitch: SpelledPitch? = activeNote.flatMap { note -> SpelledPitch? in
+                guard !note.isRest, note.duration > 0 else { return nil }
+                return MusicTheory.spelledPitch(
+                    scaleDegree: note.sd,
+                    relativeOctave: note.octave,
+                    key: section.key(at: PlaybackTiming.normalize(beat: note.beat))
+                )
+            }
+            let melodyState = QuizIntervals.resolveMelodyState(
+                melody: melody,
+                currentBeat: beat,
+                keyAtBeat: section.key(at:)
+            )
+            let chord = QuizIntervals.activeChord(section: section, at: beat)
+            let chordKey = section.key(at: beat)
+
+            GroupBox("Active pitch cards") {
+                VStack(spacing: 12) {
+                    if let melodyState {
+                        HStack(spacing: 8) {
+                            pitchCard(
+                                label: melodyState.previousDegreeLabel,
+                                midi: melodyState.previous.midiNote,
+                                accessibilityLabel: "Play previous melody note"
+                            )
+                            Button {
+                                startIntervalPreview(previous: melodyState.previous, current: melodyState.current)
+                            } label: {
+                                Text(melodyState.interval.shorthand)
+                                    .font(.headline.bold())
+                                    .frame(maxWidth: .infinity, minHeight: 52)
+                            }
+                            .buttonStyle(.bordered)
+                            .accessibilityLabel(melodyState.accessibilityLabel)
+                            pitchCard(
+                                label: melodyState.currentDegreeLabel,
+                                midi: melodyState.current.midiNote,
+                                accessibilityLabel: "Play current melody note"
+                            )
+                        }
+                    } else if let currentPitch {
+                        HStack {
+                            Text("Melody").foregroundStyle(.secondary)
+                            pitchCard(
+                                label: MusicTheory.degreeLabel(for: currentPitch, key: chordKey),
+                                midi: currentPitch.midiNote,
+                                accessibilityLabel: "Play current melody note"
+                            )
+                        }
+                    } else {
+                        LabeledContent("Melody", value: "No active note")
+                            .foregroundStyle(.secondary)
+                    }
+
+                    if let chord,
+                       let root = ChordInterpreter.rootPositionChordNotes(for: chord, key: chordKey).first {
+                        let tones = ChordInterpreter.chordNotes(for: chord, key: chordKey)
+                        ScrollView(.horizontal) {
+                            HStack(spacing: 8) {
+                                Text("Chord tones").foregroundStyle(.secondary)
+                                ForEach(Array(tones.enumerated()), id: \.offset) { _, midi in
+                                    pitchCard(
+                                        label: MusicTheory.relativeMajorDegreeLabel(midi: midi, rootMIDI: root),
+                                        midi: midi,
+                                        accessibilityLabel: "Play chord tone"
+                                    )
+                                    .frame(width: 88)
+                                }
+                            }
+                        }
+                        .scrollIndicators(.hidden)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+    }
+
+    private func pitchCard(label: String, midi: Int?, accessibilityLabel: String) -> some View {
+        Button {
+            if let midi { startPitchPreview(midi: midi) }
+        } label: {
+            FittedScaleDegree(label, maximumFontSize: 32, minimumFontSize: 12)
+                .frame(maxWidth: .infinity, minHeight: 52)
+                .padding(.horizontal, 4)
+        }
+        .buttonStyle(.borderedProminent)
+        .disabled(midi == nil)
+        .accessibilityLabel("\(accessibilityLabel) \(label)")
+    }
+
+    private func startPitchPreview(midi: Int) {
+        intervalPreviewTask?.cancel()
+        intervalPreviewTask = Task {
+            do {
+                await environment.audio.stop(channel: .preview)
+                try await environment.audio.play(PreviewRequest(
+                    frequenciesHz: [MusicTheory.frequency(midi: Double(midi))],
+                    waveform: waveform
+                ))
+            } catch is CancellationError {
+                await environment.audio.stop(channel: .preview)
+            } catch {
+                self.error = error.localizedDescription
+            }
+        }
+    }
+
+    private func startIntervalPreview(previous: SpelledPitch, current: SpelledPitch) {
+        intervalPreviewTask?.cancel()
+        intervalPreviewTask = Task {
+            do {
+                await environment.audio.stop(channel: .preview)
+                let anchor = tessituraSession.comfortablePitchMIDI
+                let shift = anchor.map {
+                    TessituraResolver.resolveInterval(
+                        first: previous.midiNote,
+                        second: current.midiNote,
+                        anchorMIDI: $0
+                    ).0 - previous.midiNote
+                } ?? 0
+                for step in RootIntervalPreview.steps(
+                    previousMIDI: previous.midiNote,
+                    currentMIDI: current.midiNote,
+                    octaveShiftSemitones: shift,
+                    durationMilliseconds: 450
+                ) {
+                    try Task.checkCancellation()
+                    try await environment.audio.play(PreviewRequest(
+                        frequenciesHz: step.midiNotes.map { MusicTheory.frequency(midi: Double($0)) },
+                        duration: .milliseconds(step.durationMilliseconds),
+                        waveform: waveform
+                    ))
+                    if step.delayAfterMilliseconds > 0 {
+                        try await Task.sleep(for: .milliseconds(step.delayAfterMilliseconds))
+                    }
+                }
+            } catch is CancellationError {
+                await environment.audio.stop(channel: .preview)
+            } catch {
+                self.error = error.localizedDescription
+            }
+        }
+    }
+
     private func activeChord(in section: ExtractedSection) -> (chord: [String: JSONValue], beat: Double)? {
-        let sorted = section.chords.sorted { ($0["beat"]?.doubleValue ?? 1) < ($1["beat"]?.doubleValue ?? 1) }
-        guard let first = sorted.first else { return nil }
+        let beat = currentBeat(in: section)
+        guard let chord = QuizIntervals.activeChord(section: section, at: beat) else { return nil }
+        return (chord, chord["beat"]?.doubleValue ?? 1)
+    }
+
+    private func currentBeat(in section: ExtractedSection) -> Double {
         let metadataEnd = section.endBeat ?? 1
-        let chordEnd = sorted.map { chord -> Double in
+        let chordEnd = section.chords.map { chord -> Double in
             let onset = chord["beat"]?.doubleValue ?? 1
             let duration = chord["duration"]?.doubleValue ?? 1
             return onset + duration
         }.max() ?? 1
         let melodyEnd = section.melodyNotes.map { $0.beat + $0.duration }.max() ?? 1
         let audibleEnd = max(metadataEnd, max(chordEnd, melodyEnd))
-        let beat = 1 + min(max(progress, 0), 1) * max(audibleEnd - 1, 0)
-        let chord = sorted.last(where: { ($0["beat"]?.doubleValue ?? 1) <= beat }) ?? first
-        return (chord, chord["beat"]?.doubleValue ?? 1)
+        return 1 + min(max(progress, 0), 1) * max(audibleEnd - 1, 0)
     }
 
     private func vocalPracticeActions(_ section: ExtractedSection) -> some View {
@@ -481,8 +678,12 @@ struct QuizView: View {
                     .accessibilityHint("Continuously scores the sung pitch against the active target")
                 Button("Calibrate tessitura", systemImage: "tuningfork") { practiceMode = .tessitura }
                     .accessibilityHint("Uses a comfortable hummed note as the vocal anchor")
-                if let tessituraAnchor {
-                    LabeledContent("Tessitura anchor", value: midiName(tessituraAnchor))
+                if let tessituraAnchor = tessituraSession.comfortablePitchMIDI {
+                    HStack {
+                        LabeledContent("Tessitura anchor", value: midiName(tessituraAnchor))
+                        Button("Clear") { tessituraSession.clearAdjustment() }
+                            .accessibilityLabel("Clear tessitura adjustment")
+                    }
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -506,12 +707,20 @@ struct QuizView: View {
     }
 
     private func targetMIDI(_ section: ExtractedSection) -> Int {
-        let chord = section.chords.first ?? [:]
+        let beat = currentBeat(in: section)
+        let chord = QuizIntervals.activeChord(section: section, at: beat) ?? section.chords.first ?? [:]
         let degree = chord["root"]?.intValue ?? 1
-        let key = section.key(at: chord["beat"]?.doubleValue ?? 1)
-        let source = MusicTheory.midiNote(scaleDegree: String(degree), octave: 0, key: key) + transpose
-        guard let tessituraAnchor else { return source }
-        return TessituraResolver.resolveTarget(sourceMIDI: source, anchorMIDI: tessituraAnchor)
+        let key = section.key(at: chord["beat"]?.doubleValue ?? beat)
+        let target = SingingTargetNote(
+            sourceMIDI: MusicTheory.midiNote(scaleDegree: String(degree), octave: 0, key: key),
+            scaleDegreeLabel: ""
+        )
+        return target.effectiveTargetMIDI(
+            transpose: transpose,
+            comfortablePitchMIDI: tessituraSession.comfortablePitchMIDI,
+            lastSourceMIDI: tessituraSession.lastSourceMIDI,
+            lastTargetMIDI: tessituraSession.lastTargetMIDI
+        )
     }
 
     private func midiName(_ midi: Double) -> String {
@@ -530,6 +739,7 @@ struct QuizView: View {
             let document = try await environment.catalog.songDocument(id: songID)
             state = document.sections.isEmpty ? .empty : .content(document)
             selectedSectionKey = document.orderedSections.first?.key
+            if let selectedSectionKey { tessituraSession.enter("\(songID):\(selectedSectionKey)") }
             await loadSelectedTimeline(document)
         } catch { state = .failure(error.localizedDescription) }
     }

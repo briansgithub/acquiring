@@ -5,7 +5,7 @@ public enum TessituraResolver {
     public static let windowAboveAnchor = 12
 
     public static func closestOctave(sourceMIDI: Int, anchorMIDI: Double) -> Int {
-        sourceMIDI + Int(((anchorMIDI - Double(sourceMIDI)) / 12).rounded()) * 12
+        sourceMIDI + roundedOctaveShift((anchorMIDI - Double(sourceMIDI)) / 12) * 12
     }
 
     public static func isInsideWindow(midi: Int, anchorMIDI: Double) -> Bool {
@@ -30,7 +30,12 @@ public enum TessituraResolver {
 
     public static func resolveInterval(first: Int, second: Int, anchorMIDI: Double) -> (Int, Int) {
         let midpoint = Double(first + second) / 2
-        let shift = Int(((anchorMIDI - midpoint) / 12).rounded()) * 12
+        let shift = roundedOctaveShift((anchorMIDI - midpoint) / 12) * 12
         return (first + shift, second + shift)
+    }
+
+    // Kotlin's roundToInt resolves an exact half toward positive infinity.
+    private static func roundedOctaveShift(_ value: Double) -> Int {
+        Int(floor(value + 0.5))
     }
 }
