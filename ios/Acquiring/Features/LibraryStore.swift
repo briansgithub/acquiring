@@ -112,16 +112,16 @@ final class LibraryStore {
     var canInstallCatalog: Bool {
         guard !maintenanceState.isRunning else { return false }
         switch catalogState {
-        case .empty, .content, .failure: true
-        case .idle, .loading: false
+        case .empty, .content, .failure: return true
+        case .idle, .loading: return false
         }
     }
 
     var canHarvest: Bool {
         guard !maintenanceState.isRunning else { return false }
         switch catalogState {
-        case .empty, .content: true
-        case .idle, .loading, .failure: false
+        case .empty, .content: return true
+        case .idle, .loading, .failure: return false
         }
     }
 

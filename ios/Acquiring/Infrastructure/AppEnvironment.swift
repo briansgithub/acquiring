@@ -229,6 +229,7 @@ private enum CatalogMaintenanceUITestScenario: Equatable, Sendable {
 
 private final class CatalogMaintenanceUITestService: CatalogMaintenanceService, @unchecked Sendable {
     typealias InstallFixture = @Sendable () async throws -> Int
+    typealias Stream = AsyncThrowingStream<CatalogProgress, any Error>
 
     let scenario: CatalogMaintenanceUITestScenario
     let installFixture: InstallFixture
@@ -242,7 +243,7 @@ private final class CatalogMaintenanceUITestService: CatalogMaintenanceService, 
         self.installFixture = installFixture
     }
 
-    func downloadAndInstall() -> AsyncThrowingStream<CatalogProgress, any Error> {
+    func downloadAndInstall() -> Stream {
         lock.lock()
         downloadAttempts += 1
         let attempt = downloadAttempts
@@ -250,13 +251,13 @@ private final class CatalogMaintenanceUITestService: CatalogMaintenanceService, 
 
         switch scenario {
         case .failure where attempt == 1:
-            AsyncThrowingStream { continuation in
+            return Stream { continuation in
                 continuation.yield(.connecting)
                 continuation.yield(.downloading(fraction: 0.25))
                 continuation.finish(throwing: CatalogMaintenanceUITestError.downloadFailed)
             }
         case .cancellable:
-            AsyncThrowingStream { continuation in
+            return Stream { continuation in
                 let task = Task {
                     continuation.yield(.connecting)
                     continuation.yield(.downloading(fraction: 0.25))
@@ -267,7 +268,7 @@ private final class CatalogMaintenanceUITestService: CatalogMaintenanceService, 
                 continuation.onTermination = { _ in task.cancel() }
             }
         case .failure, .success:
-            AsyncThrowingStream { continuation in
+            return Stream { continuation in
                 let task = Task {
                     do {
                         continuation.yield(.connecting)
@@ -286,13 +287,13 @@ private final class CatalogMaintenanceUITestService: CatalogMaintenanceService, 
                 continuation.onTermination = { _ in task.cancel() }
             }
         case .harvestFailure:
-            AsyncThrowingStream { continuation in
+            return Stream { continuation in
                 continuation.finish(throwing: CatalogMaintenanceUITestError.downloadFailed)
             }
         }
     }
 
-    func harvest(url: URL) -> AsyncThrowingStream<CatalogProgress, any Error> {
+    func harvest(url: URL) -> Stream {
         lock.lock()
         harvestAttempts += 1
         let attempt = harvestAttempts
@@ -302,17 +303,17 @@ private final class CatalogMaintenanceUITestService: CatalogMaintenanceService, 
         lock.unlock()
 
         guard usesOriginalURL else {
-            return AsyncThrowingStream { continuation in
+            return Stream { continuation in
                 continuation.finish(throwing: CatalogMaintenanceUITestError.unexpectedHarvestURL)
             }
         }
         if scenario == .harvestFailure, attempt == 1 {
-            return AsyncThrowingStream { continuation in
+            return Stream { continuation in
                 continuation.yield(.connecting)
                 continuation.finish(throwing: CatalogMaintenanceUITestError.harvestFailed)
             }
         }
-        return AsyncThrowingStream { continuation in
+        return Stream { continuation in
             let task = Task {
                 do {
                     continuation.yield(.connecting)

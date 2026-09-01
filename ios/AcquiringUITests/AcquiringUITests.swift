@@ -31,18 +31,18 @@ final class AcquiringUITests: XCTestCase {
     func testCatalogUpdateFailurePreservesReadyCatalogAndRetryCompletes() {
         let app = launchApp(arguments: ["--ui-testing-catalog-install-failure"])
 
-        let readyStatus = app.descendants(matching: .any)["catalog.status.ready"]
+        let readyStatus = app.staticTexts["catalog.status.ready"]
         XCTAssertTrue(readyStatus.waitForExistence(timeout: 5))
 
         let downloadButton = app.buttons["catalog.download"]
         scrollToHittable(downloadButton, in: app)
         downloadButton.tap()
 
-        let maintenanceStatus = app.descendants(matching: .any)["catalog.maintenance.failed"]
+        let maintenanceStatus = app.staticTexts["catalog.maintenance.failed"]
         XCTAssertTrue(maintenanceStatus.waitForExistence(timeout: 5))
         XCTAssertTrue(maintenanceStatus.label.contains("test catalog update failed"))
         XCTAssertTrue(
-            app.descendants(matching: .any)["catalog.maintenance.catalog-ready"]
+            app.staticTexts["catalog.maintenance.catalog-ready"]
                 .waitForExistence(timeout: 5)
         )
 
@@ -50,7 +50,7 @@ final class AcquiringUITests: XCTestCase {
         scrollToHittable(retryButton, in: app)
         retryButton.tap()
 
-        let completedStatus = app.descendants(matching: .any)["catalog.maintenance.completed"]
+        let completedStatus = app.staticTexts["catalog.maintenance.completed"]
         XCTAssertTrue(completedStatus.waitForExistence(timeout: 5))
         XCTAssertTrue(completedStatus.label.contains("2 songs ready"))
         XCTAssertFalse(app.buttons["catalog.cancel"].exists)
@@ -59,7 +59,7 @@ final class AcquiringUITests: XCTestCase {
     func testCatalogUpdateCanBeCancelledWithoutHidingReadyCatalog() {
         let app = launchApp(arguments: ["--ui-testing-catalog-install-cancellable"])
 
-        let readyStatus = app.descendants(matching: .any)["catalog.status.ready"]
+        let readyStatus = app.staticTexts["catalog.status.ready"]
         XCTAssertTrue(readyStatus.waitForExistence(timeout: 5))
 
         let downloadButton = app.buttons["catalog.download"]
@@ -71,11 +71,11 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertFalse(downloadButton.isEnabled)
         cancelButton.tap()
 
-        let maintenanceStatus = app.descendants(matching: .any)["catalog.maintenance.cancelled"]
+        let maintenanceStatus = app.staticTexts["catalog.maintenance.cancelled"]
         XCTAssertTrue(maintenanceStatus.waitForExistence(timeout: 5))
         XCTAssertTrue(maintenanceStatus.label.contains("cancelled"))
         XCTAssertTrue(
-            app.descendants(matching: .any)["catalog.maintenance.catalog-ready"]
+            app.staticTexts["catalog.maintenance.catalog-ready"]
                 .waitForExistence(timeout: 5)
         )
         XCTAssertTrue(app.buttons["catalog.retry"].exists)
@@ -95,9 +95,9 @@ final class AcquiringUITests: XCTestCase {
         downloadButton.tap()
 
         XCTAssertTrue(
-            app.descendants(matching: .any)["catalog.status.ready"].waitForExistence(timeout: 5)
+            app.staticTexts["catalog.status.ready"].waitForExistence(timeout: 5)
         )
-        let completedStatus = app.descendants(matching: .any)["catalog.maintenance.completed"]
+        let completedStatus = app.staticTexts["catalog.maintenance.completed"]
         scrollToHittable(completedStatus, in: app)
         XCTAssertTrue(completedStatus.label.contains("2 songs ready"))
         XCTAssertFalse(app.buttons["catalog.cancel"].exists)
@@ -106,7 +106,7 @@ final class AcquiringUITests: XCTestCase {
     func testSongHarvestFailureCanRetryToCompletion() {
         let app = launchApp(arguments: ["--ui-testing-catalog-harvest-failure"])
         XCTAssertTrue(
-            app.descendants(matching: .any)["catalog.status.ready"].waitForExistence(timeout: 5)
+            app.staticTexts["catalog.status.ready"].waitForExistence(timeout: 5)
         )
 
         let urlField = app.textFields["catalog.harvest.url"]
@@ -117,11 +117,11 @@ final class AcquiringUITests: XCTestCase {
         scrollToHittable(harvestButton, in: app)
         harvestButton.tap()
 
-        let failedStatus = app.descendants(matching: .any)["catalog.maintenance.failed"]
+        let failedStatus = app.staticTexts["catalog.maintenance.failed"]
         XCTAssertTrue(failedStatus.waitForExistence(timeout: 5))
         XCTAssertTrue(failedStatus.label.contains("test song harvest failed"))
         XCTAssertTrue(
-            app.descendants(matching: .any)["catalog.maintenance.catalog-ready"]
+            app.staticTexts["catalog.maintenance.catalog-ready"]
                 .waitForExistence(timeout: 5)
         )
 
@@ -132,7 +132,7 @@ final class AcquiringUITests: XCTestCase {
         scrollToHittable(retryButton, in: app)
         retryButton.tap()
 
-        let completedStatus = app.descendants(matching: .any)["catalog.maintenance.completed"]
+        let completedStatus = app.staticTexts["catalog.maintenance.completed"]
         XCTAssertTrue(completedStatus.waitForExistence(timeout: 5))
         XCTAssertTrue(completedStatus.label.contains("Song harvest complete"))
         XCTAssertTrue(completedStatus.label.contains("2 songs ready"))
