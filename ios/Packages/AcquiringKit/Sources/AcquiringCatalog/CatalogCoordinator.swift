@@ -35,6 +35,11 @@ public actor CatalogCoordinator: CatalogRepository {
     }
 
     public func prepare() throws {
+        // Multiple LibraryStore instances can share this coordinator. Once the
+        // pool is serving, another store's load must not sweep staging files
+        // that belong to an update already in flight.
+        guard databasePool == nil else { return }
+
         try fileSystem.createDirectory(at: configuration.directoryURL)
         var resourceValues = URLResourceValues()
         resourceValues.isExcludedFromBackup = true
@@ -307,6 +312,7 @@ public actor CatalogCoordinator: CatalogRepository {
             installedNewLive = true
             databasePool = try poolOpener(databaseURL)
         } catch {
+            let replacementError = error
             // Only clear the live path when this operation actually put
             // something there. If moving the old catalog aside is what failed,
             // it is still sitting at databaseURL, intact and wanted.
@@ -314,10 +320,40 @@ public actor CatalogCoordinator: CatalogRepository {
                 CatalogArtifacts.removeDatabase(at: databaseURL, using: fileSystem)
             }
             if hasBackup {
-                try? fileSystem.moveItem(at: backupURL, to: databaseURL)
+                do {
+                    try fileSystem.moveItem(at: backupURL, to: databaseURL)
+                } catch {
+                    let rollbackMoveError = error
+                    // Keep the closed backup until its copy has been opened.
+                    // This handles a failed rename without risking the only
+                    // usable copy of the previous catalog.
+                    do {
+                        CatalogArtifacts.removeDatabase(at: databaseURL, using: fileSystem)
+                        try fileSystem.copyItem(at: backupURL, to: databaseURL)
+                        databasePool = try poolOpener(databaseURL)
+                        CatalogArtifacts.removeDatabase(at: backupURL, using: fileSystem)
+                    } catch {
+                        databasePool = nil
+                        throw CatalogError.install(
+                            "\(replacementError.localizedDescription); restoring the previous catalog by move failed: \(rollbackMoveError.localizedDescription); fallback recovery failed: \(error.localizedDescription)"
+                        )
+                    }
+                    throw CatalogError.install(
+                        "\(replacementError.localizedDescription); restoring the previous catalog by move failed: \(rollbackMoveError.localizedDescription); the previous catalog was recovered by copying the backup"
+                    )
+                }
             }
-            databasePool = try? poolOpener(databaseURL)
-            throw CatalogError.install(error.localizedDescription)
+            if fileSystem.fileExists(at: databaseURL) {
+                do {
+                    databasePool = try poolOpener(databaseURL)
+                } catch {
+                    databasePool = nil
+                    throw CatalogError.install(
+                        "\(replacementError.localizedDescription); reopening the previous catalog failed: \(error.localizedDescription)"
+                    )
+                }
+            }
+            throw CatalogError.install(replacementError.localizedDescription)
         }
 
         // The new pool is open, so the backup is finally redundant. Deleting it

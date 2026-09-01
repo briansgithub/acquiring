@@ -168,7 +168,33 @@ public protocol CatalogRepository: Sendable {
     func browseSongs(group: BrowseGroup, filter: String) async throws -> [CatalogSong]
 }
 
+public enum CatalogCancellationDisposition: Equatable, Sendable {
+    /// The producer accepted cancellation before its commit boundary.
+    case accepted
+    /// The catalog swap has already crossed its commit boundary and must finish.
+    case commitInProgress
+    /// The service has no operation available to cancel.
+    case noOperation
+}
+
+public struct CatalogMaintenanceRun: Sendable {
+    public let events: AsyncThrowingStream<CatalogProgress, any Error>
+    private let cancellation: @Sendable () -> CatalogCancellationDisposition
+
+    public init(
+        events: AsyncThrowingStream<CatalogProgress, any Error>,
+        requestCancellation: @escaping @Sendable () -> CatalogCancellationDisposition
+    ) {
+        self.events = events
+        cancellation = requestCancellation
+    }
+
+    public func requestCancellation() -> CatalogCancellationDisposition {
+        cancellation()
+    }
+}
+
 public protocol CatalogMaintenanceService: Sendable {
-    func downloadAndInstall() -> AsyncThrowingStream<CatalogProgress, any Error>
-    func harvest(url: URL) -> AsyncThrowingStream<CatalogProgress, any Error>
+    func downloadAndInstall() -> CatalogMaintenanceRun
+    func harvest(url: URL) -> CatalogMaintenanceRun
 }

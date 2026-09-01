@@ -84,7 +84,17 @@ final class LibraryDiscoveryTests: XCTestCase {
         XCTAssertEqual(BrowseGrouping.alphabeticalGroup(for: "99 Luftballons"), "9")
     }
 
-    func testAlphabeticalClassificationSendsSymbolsBlanksAndNonASCIIToTheSymbolGroup() {
+    func testAlphabeticalClassificationUsesAndroidsFirstUTF16CodeUnit() {
+        XCTAssertEqual(BrowseGrouping.alphabeticalGroup(for: "a\u{301} decomposed"), "A")
+        XCTAssertEqual(BrowseGrouping.alphabeticalGroup(for: "1\u{FE0F}\u{20E3} keycap"), "1")
+        XCTAssertEqual(BrowseGrouping.alphabeticalGroup(for: " \u{FE0F}A"), "#")
+        XCTAssertEqual(BrowseGrouping.alphabeticalGroup(for: " \u{301}A"), "#")
+        XCTAssertEqual(BrowseGrouping.alphabeticalGroup(for: "\u{001C}A"), "A")
+        XCTAssertEqual(BrowseGrouping.alphabeticalGroup(for: "\u{0085}A"), "#")
+        XCTAssertEqual(BrowseGrouping.alphabeticalGroup(for: "ſong"), "S")
+    }
+
+    func testAlphabeticalClassificationSendsSymbolsBlanksAndUnmappedNonASCIIToTheSymbolGroup() {
         XCTAssertEqual(BrowseGrouping.alphabeticalGroup(for: "!Song"), "#")
         XCTAssertEqual(BrowseGrouping.alphabeticalGroup(for: "  "), "#")
         XCTAssertEqual(BrowseGrouping.alphabeticalGroup(for: ""), "#")
@@ -130,6 +140,7 @@ final class LibraryDiscoveryTests: XCTestCase {
 
     func testNormalizedSearchTextLowercasesAndDropsSeparators() {
         XCTAssertEqual(BrowseGrouping.normalizedSearchText("The White-Stripes"), "thewhitestripes")
+        XCTAssertEqual(BrowseGrouping.normalizedSearchText(" \u{301}"), "\u{301}")
         XCTAssertEqual(BrowseGrouping.normalizedSearchText(nil), "")
         XCTAssertEqual(BrowseGrouping.normalizedSearchText("  "), "")
     }
@@ -191,6 +202,7 @@ final class LibraryDiscoveryTests: XCTestCase {
         XCTAssertEqual(BrowseGrouping.canonicalMode("Natural Minor"), .aeolian)
         XCTAssertEqual(BrowseGrouping.canonicalMode("natural-minor"), .aeolian)
         XCTAssertEqual(BrowseGrouping.canonicalMode("  locrian  "), .locrian)
+        XCTAssertEqual(BrowseGrouping.canonicalMode("\u{001C}major"), .ionian)
     }
 
     func testCanonicalModeRejectsNonDiatonicUnknownAndEmptyScales() {
@@ -199,6 +211,8 @@ final class LibraryDiscoveryTests: XCTestCase {
         XCTAssertNil(BrowseGrouping.canonicalMode("phrygianDominant"))
         XCTAssertNil(BrowseGrouping.canonicalMode("melodic_minor"))
         XCTAssertNil(BrowseGrouping.canonicalMode("blues"))
+        XCTAssertNil(BrowseGrouping.canonicalMode(" \u{301}major"))
+        XCTAssertNil(BrowseGrouping.canonicalMode("\u{0085}major"))
         XCTAssertNil(BrowseGrouping.canonicalMode(""))
         XCTAssertNil(BrowseGrouping.canonicalMode("   "))
         XCTAssertNil(BrowseGrouping.canonicalMode(nil))
@@ -217,10 +231,14 @@ final class LibraryDiscoveryTests: XCTestCase {
     func testCanonicalModesDeduplicatesAndDropsUnknownScales() {
         let scales: [String?] = ["major", "MAJOR", "ionian", "dorian", "harmonicMinor", nil, ""]
         XCTAssertEqual(
-            BrowseGrouping.canonicalModes(scales),
+            BrowseGrouping.canonicalModes(nullable: scales),
             Set([DiatonicMode.ionian, .dorian])
         )
-        XCTAssertEqual(BrowseGrouping.canonicalModes([String?]()), Set<DiatonicMode>())
+        XCTAssertEqual(BrowseGrouping.canonicalModes([]), Set<DiatonicMode>())
+        XCTAssertEqual(
+            BrowseGrouping.canonicalModes(["major", "dorian"]),
+            Set([DiatonicMode.ionian, .dorian])
+        )
     }
 
     func testModesInSectionsReadEveryKeyEventAcrossEverySection() {
@@ -262,7 +280,15 @@ final class LibraryDiscoveryTests: XCTestCase {
     }
 
     func testModesInSectionsAcceptNonStringScalePrimitivesWithoutClassifyingThem() {
-        let sections = [ExtractedSection(metadata: ["keys": .array([.object(["scale": .number(5)])])])]
+        let sections = [
+            ExtractedSection(metadata: [
+                "keys": .array([
+                    .object(["scale": .number(5)]),
+                    .object(["scale": .number(Double.greatestFiniteMagnitude)]),
+                    .object(["scale": .bool(true)])
+                ])
+            ])
+        ]
         XCTAssertEqual(BrowseGrouping.modes(inSections: sections), Set<DiatonicMode>())
     }
 

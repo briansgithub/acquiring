@@ -66,17 +66,25 @@ public enum BrowseGrouping {
     // MARK: Alphabetical classification
 
     public static func alphabeticalGroup(for title: String?) -> String {
-        guard let first = title?.drop(while: \.isWhitespace).first else { return "#" }
+        guard let firstCodeUnit = title?.utf16.drop(while: isUTF16Whitespace).first,
+              let firstScalar = UnicodeScalar(Int(firstCodeUnit))
+        else { return "#" }
         // Mirrors Kotlin's `uppercaseChar()`, which is a single-character
         // mapping: where uppercasing would produce more than one character
         // (for example "ß" becoming "SS") the original is kept, and so lands
-        // in the symbol group along with every other non-ASCII value.
-        let uppercased = String(first).uppercased()
-        let candidate = uppercased.count == 1 ? Character(uppercased) : first
-        guard let ascii = candidate.asciiValue else { return "#" }
+        // in the symbol group. A few non-ASCII characters do have one-to-one
+        // ASCII mappings, such as `ſ` to `S`. Reading and trimming UTF-16 code
+        // units preserves Android `Char` behavior for decomposed text, keycap
+        // digits and leading combining marks instead of treating an extended
+        // Swift grapheme cluster as one character.
+        let uppercased = String(firstScalar).uppercased()
+        guard uppercased.utf16.count == 1,
+              let candidate = uppercased.utf16.first,
+              let ascii = UInt8(exactly: candidate)
+        else { return "#" }
         switch ascii {
         case UInt8(ascii: "A")...UInt8(ascii: "Z"), UInt8(ascii: "0")...UInt8(ascii: "9"):
-            return String(candidate)
+            return String(UnicodeScalar(Int(ascii))!)
         default:
             return "#"
         }
@@ -89,7 +97,15 @@ public enum BrowseGrouping {
     /// other whitespace survives and therefore still has to match.
     public static func normalizedSearchText(_ value: String?) -> String {
         guard let value else { return "" }
-        return value.lowercased().filter { $0 != " " && $0 != "-" && $0 != "_" }
+        let lowered = value.lowercased()
+        return String(
+            decoding: lowered.utf16.filter {
+                $0 != 0x0020
+                    && $0 != 0x002D
+                    && $0 != 0x005F
+            },
+            as: UTF16.self
+        )
     }
 
     /// Case-insensitive substring matching against title or artist. A query
@@ -118,9 +134,15 @@ public enum BrowseGrouping {
     /// harmonic minor deliberately resolve to nil.
     public static func canonicalMode(_ rawScale: String?) -> DiatonicMode? {
         guard let rawScale else { return nil }
-        let normalized = trimmingWhitespace(rawScale)
-            .lowercased()
-            .filter { $0 != "-" && $0 != "_" && $0 != " " }
+        let lowered = trimmingWhitespace(rawScale).lowercased()
+        let normalized = String(
+            decoding: lowered.utf16.filter {
+                $0 != 0x002D
+                    && $0 != 0x005F
+                    && $0 != 0x0020
+            },
+            as: UTF16.self
+        )
         switch normalized {
         case "major", "ionian": return .ionian
         case "dorian": return .dorian
@@ -134,6 +156,11 @@ public enum BrowseGrouping {
     }
 
     public static func canonicalModes<S: Sequence>(_ rawScales: S) -> Set<DiatonicMode>
+    where S.Element == String {
+        Set(rawScales.compactMap(canonicalMode))
+    }
+
+    public static func canonicalModes<S: Sequence>(nullable rawScales: S) -> Set<DiatonicMode>
     where S.Element == String? {
         Set(rawScales.compactMap(canonicalMode))
     }
@@ -148,12 +175,17 @@ public enum BrowseGrouping {
     /// grants. Sections with missing or malformed metadata contribute nothing.
     public static func modes<S: Sequence>(inSections sections: S) -> Set<DiatonicMode>
     where S.Element == ExtractedSection {
-        canonicalModes(sections.flatMap(scaleNames(in:)))
+        canonicalModes(nullable: sections.flatMap(scaleNames(in:)))
     }
 
     private static func scaleNames(in section: ExtractedSection) -> [String?] {
         guard let keys = section.metadata?["keys"]?.arrayValue else { return [] }
-        return keys.map { $0.objectValue?["scale"]?.stringValue }
+        return keys.map { key in
+            guard let scaleValue = key.objectValue?["scale"],
+                  case let .string(scale) = scaleValue
+            else { return nil }
+            return scale
+        }
     }
 
     // MARK: Helpers
@@ -161,9 +193,31 @@ public enum BrowseGrouping {
     /// Trims both ends only, matching Kotlin's `trim()`. Interior whitespace is
     /// left for the caller's own filtering to deal with.
     private static func trimmingWhitespace(_ value: String) -> String {
-        guard let start = value.firstIndex(where: { !$0.isWhitespace }),
-              let end = value.lastIndex(where: { !$0.isWhitespace })
+        let codeUnits = Array(value.utf16)
+        guard let start = codeUnits.firstIndex(where: { !isUTF16Whitespace($0) }),
+              let end = codeUnits.lastIndex(where: { !isUTF16Whitespace($0) })
         else { return "" }
-        return String(value[start...end])
+        return String(decoding: codeUnits[start...end], as: UTF16.self)
+    }
+
+    /// Kotlin/JVM defines `Char.isWhitespace()` as the union of Java's
+    /// `Character.isWhitespace` and `Character.isSpaceChar`. Spell that union
+    /// out over UTF-16 code units so Swift's different whitespace set and
+    /// grapheme segmentation cannot change Android parity.
+    private static func isUTF16Whitespace(_ codeUnit: UInt16) -> Bool {
+        switch codeUnit {
+        case 0x0009...0x000D,
+             0x001C...0x0020,
+             0x00A0,
+             0x1680,
+             0x2000...0x200A,
+             0x2028...0x2029,
+             0x202F,
+             0x205F,
+             0x3000:
+            return true
+        default:
+            return false
+        }
     }
 }

@@ -25,9 +25,69 @@ private struct FaultyFileSystem: CatalogFileSystem {
         try base.moveItem(at: source, to: destination)
     }
 
+    func copyItem(at source: URL, to destination: URL) throws {
+        try base.copyItem(at: source, to: destination)
+    }
+
     func removeItem(at url: URL) throws { try base.removeItem(at: url) }
 
     func contentsOfDirectory(at url: URL) -> [URL] { base.contentsOfDirectory(at: url) }
+}
+
+/// Parks the live-to-backup move after the service has atomically entered its
+/// commit phase. The test can then race cancellation against a known boundary
+/// without relying on scheduler timing.
+private final class BlockingCommitFileSystem: CatalogFileSystem, @unchecked Sendable {
+    private let liveURL: URL
+    private let backupURL: URL
+    private let lock = NSLock()
+    private let releaseGate = DispatchSemaphore(value: 0)
+    private var entered = false
+
+    init(liveURL: URL, backupURL: URL) {
+        self.liveURL = liveURL
+        self.backupURL = backupURL
+    }
+
+    var hasEnteredCommitMove: Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        return entered
+    }
+
+    func release() {
+        releaseGate.signal()
+    }
+
+    func fileExists(at url: URL) -> Bool {
+        LiveCatalogFileSystem().fileExists(at: url)
+    }
+
+    func createDirectory(at url: URL) throws {
+        try LiveCatalogFileSystem().createDirectory(at: url)
+    }
+
+    func moveItem(at source: URL, to destination: URL) throws {
+        if source == liveURL, destination == backupURL {
+            lock.lock()
+            entered = true
+            lock.unlock()
+            releaseGate.wait()
+        }
+        try LiveCatalogFileSystem().moveItem(at: source, to: destination)
+    }
+
+    func copyItem(at source: URL, to destination: URL) throws {
+        try LiveCatalogFileSystem().copyItem(at: source, to: destination)
+    }
+
+    func removeItem(at url: URL) throws {
+        try LiveCatalogFileSystem().removeItem(at: url)
+    }
+
+    func contentsOfDirectory(at url: URL) -> [URL] {
+        LiveCatalogFileSystem().contentsOfDirectory(at: url)
+    }
 }
 
 /// A pool opener that can be armed to fail a bounded number of opens, and that
@@ -172,6 +232,11 @@ private struct RecordingFileSystem: CatalogFileSystem {
         try base.moveItem(at: source, to: destination)
     }
 
+    func copyItem(at source: URL, to destination: URL) throws {
+        log.append("copy:" + source.path + "->" + destination.path)
+        try base.copyItem(at: source, to: destination)
+    }
+
     func removeItem(at url: URL) throws {
         log.append("remove:" + url.path)
         try base.removeItem(at: url)
@@ -306,6 +371,36 @@ final class CatalogRecoveryTests: XCTestCase {
         XCTAssertEqual(installedCount5, 1)
     }
 
+    func testRepeatedPrepareDoesNotSweepAnActiveOperationsStagingArtifacts() async throws {
+        let directory = try makeDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try seedCatalog(at: directory.appending(path: "catalog.db"), slugs: ["kept"])
+
+        let coordinator = makeCoordinator(directory: directory)
+        try await coordinator.prepare()
+
+        let staged = CatalogArtifacts.stagedURL(
+            in: directory,
+            filename: "catalog.db",
+            operationID: "active-run"
+        )
+        let archive = CatalogArtifacts.archiveURL(
+            in: directory,
+            filename: "catalog.db.gz",
+            operationID: "active-run"
+        )
+        try seedCatalog(at: staged, slugs: ["candidate"])
+        try Data("active download".utf8).write(to: archive)
+
+        // A second LibraryStore can prepare the shared coordinator while the
+        // first store owns these files. Once open, prepare must be a no-op.
+        try await coordinator.prepare()
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: staged.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: archive.path))
+        try await assertCatalogIntact(coordinator, expectedCount: 1, knownSlug: "kept")
+    }
+
     // MARK: replacement failure paths
 
     func testStagedMoveFailureRestoresAndReopensOldCatalog() async throws {
@@ -382,6 +477,50 @@ final class CatalogRecoveryTests: XCTestCase {
             "the backup must still exist when the new pool is opened, or the failure is unrecoverable"
         )
         XCTAssertFalse(FileManager.default.fileExists(atPath: backup.path))
+    }
+
+    func testRollbackMoveFailureCopiesAndReopensTheOldCatalog() async throws {
+        let directory = try makeDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let live = directory.appending(path: "catalog.db")
+        let backup = directory.appending(path: "catalog.db.backup")
+        let staged = directory.appending(path: "catalog.db.installing")
+
+        try seedCatalog(at: live, slugs: ["original-a", "original-b"])
+
+        // Only the rollback rename fails. Copying the closed backup remains
+        // available as the deterministic recovery path.
+        let livePath = live.path
+        let backupPath = backup.path
+        let fileSystem = FaultyFileSystem { source, destination in
+            source.path == backupPath && destination.path == livePath
+        }
+        let opener = ScriptedPoolOpener(backupURL: backup)
+        let coordinator = makeCoordinator(
+            directory: directory,
+            fileSystem: fileSystem,
+            poolOpener: opener.opener
+        )
+        try await coordinator.prepare()
+        try seedCatalog(at: staged, slugs: ["replacement"])
+
+        // Force the newly installed live database to fail its first open,
+        // which enters rollback and triggers the injected restore-move fault.
+        opener.arm(failures: 1)
+        do {
+            try await coordinator.replaceLiveDatabase(with: staged)
+            XCTFail("expected replacement and rollback move to report an error")
+        } catch {
+            XCTAssertTrue(
+                error.localizedDescription.contains("restoring the previous catalog by move failed"),
+                "the rollback fault must be explicit: \(error.localizedDescription)"
+            )
+        }
+
+        try await assertCatalogIntact(coordinator, expectedCount: 2, knownSlug: "original-a")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: live.path))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: backup.path))
+        XCTAssertEqual(opener.openCount, 3, "prepare, failed replacement open, recovered old-catalog open")
     }
 
     func testMissingStagedPayloadNeverReplacesLive() async throws {
@@ -564,7 +703,15 @@ final class CatalogRecoveryTests: XCTestCase {
         )
 
         var progress: [CatalogProgress] = []
-        for try await value in service.downloadAndInstall() { progress.append(value) }
+        for try await value in service.downloadAndInstall().events {
+            if case .completed = value {
+                XCTAssertTrue(
+                    stagingArtifacts(in: directory).isEmpty,
+                    "completion must not be delivered before operation cleanup"
+                )
+            }
+            progress.append(value)
+        }
 
         let installedCount = try await coordinator.songCount()
         XCTAssertEqual(installedCount, 3)
@@ -605,20 +752,115 @@ final class CatalogRecoveryTests: XCTestCase {
             fetchArchive: fileArchiveFetch(payloadURL: payloadURL, gate: gate)
         )
 
+        let run = service.downloadAndInstall()
         let installation = Task {
-            for try await _ in service.downloadAndInstall() {}
+            for try await _ in run.events {}
         }
         try await waitUntil(description: "the install has reached its fetch") { gate.wasEntered }
-        installation.cancel()
+        XCTAssertEqual(run.requestCancellation(), .accepted)
         _ = await installation.result
 
-        try await waitUntil(description: "staging artifacts are cleaned") {
-            stagingArtifacts(in: directory).isEmpty
-        }
-
+        XCTAssertTrue(
+            stagingArtifacts(in: directory).isEmpty,
+            "the terminal event must not arrive before staging cleanup finishes"
+        )
         try await assertCatalogIntact(coordinator, expectedCount: 2, knownSlug: "original-a")
         let absent = try await coordinator.song(id: "never-installed")
         XCTAssertNil(absent)
+    }
+
+    func testAcceptedCancellationNormalizesURLSessionCancellationError() async throws {
+        let directory = try makeDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try seedCatalog(at: directory.appending(path: "catalog.db"), slugs: ["original"])
+
+        let payloadDirectory = try makeDirectory()
+        defer { try? FileManager.default.removeItem(at: payloadDirectory) }
+        let payloadURL = payloadDirectory.appending(path: "payload.db")
+        try seedCatalog(at: payloadURL, slugs: ["not-installed"])
+
+        let gate = Gate()
+        let fallbackFetch = fileArchiveFetch(payloadURL: payloadURL)
+        let cancelledFetch: CatalogArchiveFetch = { url in
+            gate.markEntered()
+            do {
+                while !gate.isOpen {
+                    try await Task.sleep(nanoseconds: 2_000_000)
+                }
+                return try await fallbackFetch(url)
+            } catch is CancellationError {
+                throw URLError(.cancelled)
+            }
+        }
+
+        let configuration = makeConfiguration(directory: directory)
+        let coordinator = CatalogCoordinator(configuration: configuration)
+        try await coordinator.prepare()
+        let service = DefaultCatalogMaintenanceService(
+            coordinator: coordinator,
+            configuration: configuration,
+            fetchArchive: cancelledFetch
+        )
+
+        let run = service.downloadAndInstall()
+        let installation = Task {
+            for try await _ in run.events {}
+        }
+        try await waitUntil(description: "the cancellable URL fetch") { gate.wasEntered }
+        XCTAssertEqual(run.requestCancellation(), .accepted)
+        try await installation.value
+
+        try await assertCatalogIntact(coordinator, expectedCount: 1, knownSlug: "original")
+        let notInstalled = try await coordinator.song(id: "not-installed")
+        XCTAssertNil(notInstalled)
+        assertNoStagingArtifacts(in: directory)
+    }
+
+    func testCancellationAfterCommitBoundaryWaitsForSuccessfulCompletion() async throws {
+        let directory = try makeDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let liveURL = directory.appending(path: "catalog.db")
+        let backupURL = liveURL.appendingPathExtension("backup")
+        try seedCatalog(at: liveURL, slugs: ["original"])
+
+        let payloadDirectory = try makeDirectory()
+        defer { try? FileManager.default.removeItem(at: payloadDirectory) }
+        let payloadURL = payloadDirectory.appending(path: "payload.db")
+        try seedCatalog(at: payloadURL, slugs: ["replacement-a", "replacement-b"])
+
+        let fileSystem = BlockingCommitFileSystem(liveURL: liveURL, backupURL: backupURL)
+        defer { fileSystem.release() }
+        let configuration = makeConfiguration(directory: directory)
+        let coordinator = makeCoordinator(directory: directory, fileSystem: fileSystem)
+        try await coordinator.prepare()
+        let service = DefaultCatalogMaintenanceService(
+            coordinator: coordinator,
+            configuration: configuration,
+            fetchArchive: fileArchiveFetch(payloadURL: payloadURL)
+        )
+
+        let run = service.downloadAndInstall()
+        let installation = Task {
+            var progress: [CatalogProgress] = []
+            for try await value in run.events { progress.append(value) }
+            return progress
+        }
+
+        try await waitUntil(description: "the live-to-backup commit move") {
+            fileSystem.hasEnteredCommitMove
+        }
+        XCTAssertEqual(run.requestCancellation(), .commitInProgress)
+        fileSystem.release()
+
+        let progress = try await installation.value
+        XCTAssertTrue(progress.contains(.installing))
+        XCTAssertTrue(progress.contains(.completed(songCount: 2)))
+        let songCount = try await coordinator.songCount()
+        let replacement = try await coordinator.song(id: "replacement-a")
+        let original = try await coordinator.song(id: "original")
+        XCTAssertEqual(songCount, 2)
+        XCTAssertNotNil(replacement)
+        XCTAssertNil(original)
         assertNoStagingArtifacts(in: directory)
     }
 
@@ -646,8 +888,9 @@ final class CatalogRecoveryTests: XCTestCase {
         )
     }
 
-    /// The required sequence: start A, cancel A, immediately start B, then let
-    /// A cleanup finish and prove it took nothing of B with it.
+    /// Integration coverage that an immediate retry after accepted cancellation
+    /// installs B. The preceding test proves late-cleanup path ownership without
+    /// relying on task-cancellation scheduling.
     func testCancelledOperationDoesNotDisturbAnImmediatelyFollowingOperation() async throws {
         let directory = try makeDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
@@ -677,20 +920,20 @@ final class CatalogRecoveryTests: XCTestCase {
         )
 
         // Start A and hold it inside the operation.
+        let runA = serviceA.downloadAndInstall()
         let installationA = Task {
-            for try await _ in serviceA.downloadAndInstall() {}
+            for try await _ in runA.events {}
         }
         try await waitUntil(description: "A is in flight") { gate.wasEntered }
 
         // Cancel A, then start B immediately without waiting for A to settle.
-        installationA.cancel()
-        for try await _ in serviceB.downloadAndInstall() {}
+        XCTAssertEqual(runA.requestCancellation(), .accepted)
+        for try await _ in serviceB.downloadAndInstall().events {}
 
-        // Only now allow A to unwind and run its cleanup, after B has finished.
-        gate.open()
+        // Wait for A's accepted cancellation to settle after B has installed.
         _ = await installationA.result
 
-        // B validated and installed, and A late cleanup took nothing of B.
+        // B validated and installed while A's cancellation settled independently.
         let count = try await coordinator.songCount()
         XCTAssertEqual(count, 3, "the catalog B installed must survive A cleanup")
         let fromB = try await coordinator.song(id: "from-b-1")
