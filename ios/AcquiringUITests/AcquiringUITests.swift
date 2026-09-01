@@ -19,13 +19,93 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(app.buttons["All Songs"].waitForExistence(timeout: 5))
         app.buttons["All Songs"].tap()
         XCTAssertTrue(app.navigationBars["All Songs"].waitForExistence(timeout: 5))
-        app.buttons["S, 2"].tap()
+        let seedGroup = groupHeading(app, mode: "alphabetical", key: "S")
+        scrollToHittable(seedGroup, in: app)
+        seedGroup.tap()
         app.buttons["Seed Song, by Sample Artist"].tap()
         XCTAssertTrue(app.navigationBars["Quiz"].waitForExistence(timeout: 5))
         app.navigationBars["Quiz"].buttons.element(boundBy: 0).tap()
         XCTAssertTrue(app.navigationBars["Seed Song"].waitForExistence(timeout: 5))
         app.navigationBars["Seed Song"].buttons.element(boundBy: 0).tap()
         XCTAssertTrue(app.navigationBars["All Songs"].waitForExistence(timeout: 5))
+    }
+
+    func testAllSongsCanonicalGroupsAndExpansion() {
+        let app = launchApp()
+
+        XCTAssertTrue(app.buttons["All Songs"].waitForExistence(timeout: 5))
+        app.buttons["All Songs"].tap()
+        XCTAssertTrue(app.navigationBars["All Songs"].waitForExistence(timeout: 5))
+
+        // A declared heading the query returned no count for is still offered,
+        // and must not be given an invented zero.
+        let emptyGroup = groupHeading(app, mode: "alphabetical", key: "A")
+        XCTAssertTrue(emptyGroup.waitForExistence(timeout: 5))
+        XCTAssertEqual(
+            emptyGroup.value as? String,
+            "collapsed",
+            "a heading with no returned count must not display a synthesized zero"
+        )
+
+        // The fixture puts both songs under S.
+        let seedGroup = groupHeading(app, mode: "alphabetical", key: "S")
+        scrollToHittable(seedGroup, in: app)
+        XCTAssertEqual(seedGroup.value as? String, "2 songs, collapsed")
+        XCTAssertTrue(seedGroup.label.hasPrefix("Expand "), "got \(seedGroup.label)")
+
+        // Expanding reveals both fixture songs.
+        seedGroup.tap()
+        XCTAssertTrue(app.buttons["Seed Song, by Sample Artist"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Second Song, by Sample Artist"].waitForExistence(timeout: 5))
+        XCTAssertEqual(seedGroup.value as? String, "2 songs, expanded")
+        XCTAssertTrue(seedGroup.label.hasPrefix("Collapse "), "got \(seedGroup.label)")
+
+        // Selecting the open heading collapses it.
+        seedGroup.tap()
+        XCTAssertTrue(waitForDisappearance(app.buttons["Seed Song, by Sample Artist"]))
+        XCTAssertEqual(seedGroup.value as? String, "2 songs, collapsed")
+
+        // Re-open, then change grouping: the open heading must not survive it.
+        seedGroup.tap()
+        XCTAssertTrue(app.buttons["Seed Song, by Sample Artist"].waitForExistence(timeout: 5))
+        selectGrouping(app, "Complexity")
+        XCTAssertTrue(
+            groupHeading(app, mode: "complexity", key: "0").waitForExistence(timeout: 5)
+        )
+        XCTAssertFalse(
+            app.buttons["Seed Song, by Sample Artist"].exists,
+            "changing the grouping must collapse the previously open heading"
+        )
+
+        // Complexity headings use the exact domain labels.
+        for (key, label) in [("0", "0-10"), ("9", "90-100"), ("unrated", "Unrated")] {
+            let heading = groupHeading(app, mode: "complexity", key: key)
+            scrollToHittable(heading, in: app)
+            XCTAssertTrue(
+                heading.label.contains(label),
+                "complexity heading \(key) should read \(label), got \(heading.label)"
+            )
+        }
+
+        // Mode headings use the exact seven domain labels, in domain order.
+        selectGrouping(app, "Mode")
+        let modeGroups = [
+            ("ionian", "Ionian (Major)"),
+            ("dorian", "Dorian"),
+            ("phrygian", "Phrygian"),
+            ("lydian", "Lydian"),
+            ("mixolydian", "Mixolydian"),
+            ("aeolian", "Aeolian (minor)"),
+            ("locrian", "Locrian")
+        ]
+        for (key, label) in modeGroups {
+            let heading = groupHeading(app, mode: "mode", key: key)
+            scrollToHittable(heading, in: app)
+            XCTAssertTrue(
+                heading.label.contains(label),
+                "mode heading \(key) should read \(label), got \(heading.label)"
+            )
+        }
     }
 
     func testCatalogUpdateFailurePreservesReadyCatalogAndRetryCompletes() {
@@ -145,6 +225,32 @@ final class AcquiringUITests: XCTestCase {
             app.descendants(matching: .any)["catalog.status.empty"].waitForExistence(timeout: 5)
         )
         XCTAssertEqual(app.buttons.matching(identifier: "catalog.download").count, 1)
+    }
+
+    private func groupHeading(
+        _ app: XCUIApplication,
+        mode: String,
+        key: String
+    ) -> XCUIElement {
+        app.descendants(matching: .any)["allSongs.group.\(mode).\(key)"]
+    }
+
+    private func selectGrouping(_ app: XCUIApplication, _ title: String) {
+        let control = app.segmentedControls["allSongs.grouping"]
+        if control.waitForExistence(timeout: 2) {
+            control.buttons[title].tap()
+        } else {
+            app.segmentedControls.buttons[title].tap()
+        }
+    }
+
+    private func waitForDisappearance(_ element: XCUIElement, timeout: TimeInterval = 5) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if !element.exists { return true }
+            _ = element.waitForExistence(timeout: 0.2)
+        }
+        return !element.exists
     }
 
     private func launchApp(arguments: [String] = []) -> XCUIApplication {
