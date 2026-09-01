@@ -25,6 +25,7 @@ public struct SpelledPitch: Equatable, Sendable {
 
     public var staffPosition: Int { octave * 7 + letter.rawValue }
     public var chromaticPosition: Int { octave * 12 + letter.naturalSemitone + accidental }
+    public var midiNote: Int { chromaticPosition + 12 }
     public var noteName: String { letter.name + (accidental > 0 ? String(repeating: "#", count: accidental) : String(repeating: "b", count: -accidental)) }
     public var displayName: String { noteName.replacingOccurrences(of: "bb", with: "♭♭").replacingOccurrences(of: "b", with: "♭").replacingOccurrences(of: "##", with: "♯♯").replacingOccurrences(of: "#", with: "♯") + String(octave) }
 

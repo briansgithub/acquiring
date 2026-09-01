@@ -128,6 +128,55 @@ public enum MusicTheory {
         return "\(prefix)\(best + 1)\u{0302}"
     }
 
+    public static func relativeMajorDegreeLabel(midi: Int, rootMIDI: Int) -> String {
+        let relative = floorMod(midi - rootMIDI, 12)
+        let intervals = scaleIntervals["major"]!
+        var best = 0
+        var bestDistance = Int.max
+        for (index, value) in intervals.enumerated() {
+            let rawDifference = relative - value
+            let difference = rawDifference > 6 ? rawDifference - 12 : (rawDifference < -6 ? rawDifference + 12 : rawDifference)
+            if abs(difference) < bestDistance || (abs(difference) == bestDistance && index > best) {
+                best = index
+                bestDistance = abs(difference)
+            }
+        }
+        let rawDifference = relative - intervals[best]
+        let difference = rawDifference > 6 ? rawDifference - 12 : (rawDifference < -6 ? rawDifference + 12 : rawDifference)
+        let prefix = difference == -2 ? "♭♭" : difference == -1 ? "♭" : difference == 1 ? "♯" : difference == 2 ? "♯♯" : ""
+        return "\(prefix)\(best + 1)\u{0302}"
+    }
+
+    public static func spelledPitch(
+        scaleDegree: String,
+        relativeOctave: Int,
+        key: KeyInfo,
+        baseOctave: Int = 4
+    ) -> SpelledPitch? {
+        let normalized = scaleDegree.trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: "𝄪", with: "x")
+            .replacingOccurrences(of: "𝄫", with: "bb")
+            .replacingOccurrences(of: "♯", with: "#")
+            .replacingOccurrences(of: "♭", with: "b")
+            .replacingOccurrences(of: "♮", with: "")
+        guard normalized.range(of: "^[#bx]*[1-9][0-9]*$", options: .regularExpression) != nil,
+              let raw = Int(normalized.drop(while: { !$0.isNumber }))
+        else { return nil }
+
+        let degreeBase = raw - 1
+        let degreeIndex = floorMod(degreeBase, 7)
+        let baseLabel = noteLabel(degree: degreeIndex + 1, tonic: key.tonic, scale: key.scale)
+        guard let basePitch = SpelledPitch.parse(noteName: baseLabel, octave: 0),
+              let tonicPitch = SpelledPitch.parse(noteName: key.tonic, octave: baseOctave)
+        else { return nil }
+        let staffPosition = tonicPitch.staffPosition + degreeBase + relativeOctave * 7
+        return SpelledPitch(
+            letter: basePitch.letter,
+            accidental: basePitch.accidental + modifierValue(normalized),
+            octave: floorDiv(staffPosition, 7)
+        )
+    }
+
     private static func floorMod(_ value: Int, _ divisor: Int) -> Int {
         let remainder = value % divisor
         return remainder >= 0 ? remainder : remainder + divisor

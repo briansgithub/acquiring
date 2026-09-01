@@ -280,6 +280,7 @@ struct QuizView: View {
     @State private var error: String?
     @State private var practiceMode: VocalPracticeMode?
     @State private var tessituraAnchor: Double?
+    @State private var usesRelativeIonianContext = false
 
     var body: some View {
         Group {
@@ -328,6 +329,7 @@ struct QuizView: View {
                     QuizTimelineView(section: section, progress: progress)
                         .frame(height: 150)
                         .accessibilityLabel("Chord and melody timeline, \(Int(progress * 100)) percent")
+                    theoryCard(section)
                     Slider(value: $progress, in: 0...1) { editing in
                         isSeeking = editing
                         if !editing { Task { await environment.audio.seek(to: progress) } }
@@ -376,6 +378,57 @@ struct QuizView: View {
             .frame(maxWidth: 760)
             .frame(maxWidth: .infinity)
         }
+    }
+
+    private func theoryCard(_ section: ExtractedSection) -> some View {
+        let active = activeChord(in: section)
+        let sourceKey = active.map { section.key(at: $0.beat) } ?? section.keys[0].key
+        let contextKey = RelativeIonianContext.key(for: section.keys[0].key)
+        let symbol = active.map {
+            usesRelativeIonianContext
+                ? ChordInterpreter.relativeIonianRomanSymbol(for: $0.chord, key: sourceKey, contextKey: contextKey)
+                : ChordInterpreter.romanSymbol(for: $0.chord, key: sourceKey)
+        } ?? "Rest"
+        let rootDegree = active
+            .flatMap { ChordInterpreter.resolvedRoot(for: $0.chord, key: sourceKey)?.pitch }
+            .map {
+                usesRelativeIonianContext
+                    ? RelativeIonianContext.degreeLabel(for: $0, contextKey: contextKey)
+                    : MusicTheory.degreeLabel(midi: $0.midiNote, key: sourceKey)
+            } ?? ""
+
+        return GroupBox("Current theory") {
+            VStack(alignment: .leading, spacing: 10) {
+                Toggle("Lock in Major", isOn: $usesRelativeIonianContext)
+                    .accessibilityHint("Keeps Roman numerals and scale degrees relative to the section's major-key context without changing playback pitches")
+                HStack(alignment: .firstTextBaseline) {
+                    Text(symbol).font(.system(.largeTitle, design: .serif).bold())
+                    if !rootDegree.isEmpty { Text(rootDegree).font(.title2.monospaced()) }
+                    Spacer()
+                    Text(usesRelativeIonianContext ? "\(contextKey.tonic) major" : "\(sourceKey.tonic) \(sourceKey.scale)")
+                        .foregroundStyle(.secondary)
+                }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Current chord \(symbol), root \(rootDegree), in \(usesRelativeIonianContext ? contextKey.tonic + " major" : sourceKey.tonic + " " + sourceKey.scale)")
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private func activeChord(in section: ExtractedSection) -> (chord: [String: JSONValue], beat: Double)? {
+        let sorted = section.chords.sorted { ($0["beat"]?.doubleValue ?? 1) < ($1["beat"]?.doubleValue ?? 1) }
+        guard let first = sorted.first else { return nil }
+        let metadataEnd = section.endBeat ?? 1
+        let chordEnd = sorted.map { chord -> Double in
+            let onset = chord["beat"]?.doubleValue ?? 1
+            let duration = chord["duration"]?.doubleValue ?? 1
+            return onset + duration
+        }.max() ?? 1
+        let melodyEnd = section.melodyNotes.map { $0.beat + $0.duration }.max() ?? 1
+        let audibleEnd = max(metadataEnd, max(chordEnd, melodyEnd))
+        let beat = 1 + min(max(progress, 0), 1) * max(audibleEnd - 1, 0)
+        let chord = sorted.last(where: { ($0["beat"]?.doubleValue ?? 1) <= beat }) ?? first
+        return (chord, chord["beat"]?.doubleValue ?? 1)
     }
 
     private func vocalPracticeActions(_ section: ExtractedSection) -> some View {
