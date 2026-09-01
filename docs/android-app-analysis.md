@@ -2,7 +2,7 @@
 
 ### Audit scope, authority, and evidence rules
 
-This document is the behavioral and technical source of truth supporting [feature-parity.md](feature-parity.md). It is a documentation-only audit: no Android or iOS runtime source, schema, manifest, build configuration, or behavior was changed.
+This document is the behavioral and technical source of truth supporting [feature-parity.md](feature-parity.md). The reference audit pinned at `android-parity-ios-v1` was documentation-only: it changed no Android or iOS runtime behavior. The later “Current iOS implementation cross-check” is an explicitly labeled checkpoint of porting work performed after that tag. Android source remains unchanged.
 
 The audit covered:
 
@@ -11,7 +11,7 @@ The audit covered:
 - All **42 local unit-test files** containing **283 `@Test` methods** and all **8 instrumented-test files** containing **26 `@Test` methods**.
 - Room entities, DAOs, migrations, raw compatibility SQL, SharedPreferences keys, network/import paths, cache/staging files, services, permissions, lifecycle hooks, gestures, accessibility semantics, hardcoded values, experimental APIs, and production logging.
 - Shared catalog contracts and parity fixtures as corroboration, plus existing architecture/documentation context.
-- The complete current iOS shell: four application Swift files, unit tests, UI tests, project settings, and local Xcode build/test behavior.
+- The complete iOS shell as it existed at the reference tag, followed by a current implementation/test cross-check.
 
 Production-source coverage is complete across these groups:
 
@@ -36,7 +36,7 @@ Unless a statement is explicitly labeled **Inference** or **Open**, it is a veri
 
 The Android app is a single-activity Jetpack Compose application whose visible surface is much larger than its modest project structure suggests. `MainActivity.kt` is both the navigation coordinator and the principal screen implementation. It directly composes Room DAOs, preferences, coroutines, network maintenance operations, preview synthesis, a process-wide quiz transport, microphone owners, and a foreground media service.
 
-The authoritative parity checklist contains **55 observable or independently meaningful capabilities**:
+The authoritative parity checklist contains **55 observable or independently meaningful capabilities**. iOS v1 targets **52**; dormant F013, backend-only F052, and unused F055 are Deferred:
 
 | Group | IDs | Count |
 | --- | --- | ---: |
@@ -57,7 +57,7 @@ The dominant architecture patterns are:
 6. **Exclusive microphone coordination.** One `MicrophonePitchCoordinator` arbitrates the quiz persistent listener, interval-singing tool, and tessitura calibration.
 7. **Pure domain kernels surrounded by platform-native edges.** Theory, interval, timing, tessitura, and much scoring logic can be ported structurally; Canvas, Room, AudioTrack, AudioRecord, MediaSession, and Android permissions cannot.
 
-The current iOS app is a source-verified shell, not a partial musical port. It has a `NavigationStack`, an intentionally empty `CatalogRepository`, and a tested SwiftData `PlaylistRecord`. It does not yet have a catalog implementation, playlist membership, Favorites, search/browse/detail screens, theory, synthesis, quiz playback, background media, microphone tracking, vocal practice, or tessitura behavior.
+At the `android-parity-ios-v1` reference tag, the iOS app was only a source-verified shell: `NavigationStack`, an intentionally empty `CatalogRepository`, and a minimal tested SwiftData `PlaylistRecord`. The post-tag implementation checkpoint in section 14 records the native catalog/domain/audio/user-data and vertical-slice work now present; remaining gaps are intentionally tracked as Partial/Not started rather than rewriting the Android baseline description.
 
 ## 2. Application purpose
 
@@ -532,20 +532,22 @@ The distinction matters because declaration or test coverage alone does not prov
 | Experimental Compose opt-ins | **Shipping implementation detail** | They are active in production screens but should not dictate iOS API choice. |
 | Debug microphone log | **Debug-only diagnostics** | Gated by `BuildConfig.DEBUG`; do not reproduce as release logging. |
 
-There is no evidence of hidden account, cloud sync, web-only analysis tools, custom playlist-management UI, or an implemented iOS musical feature. Old web documents may describe capabilities outside this list; they are not Android parity requirements unless Android code implements them.
+There is no evidence of hidden account, cloud sync, web-only analysis tools, or custom playlist-management UI. At the reference audit there was also no implemented iOS musical feature; the implementation checkpoint below records post-tag porting work. Old web documents may describe capabilities outside this list; they are not Android parity requirements unless Android code implements them.
 
 ### Current iOS implementation cross-check
 
-The iOS project targets iOS 17 and currently contains:
+The iOS project targets iOS 17+, iPhone/iPad, both orientations, Swift 6, and strict concurrency. It now contains:
 
-- `AcquiringApp.swift`: SwiftUI entry point and SwiftData model container.
-- `ContentView.swift`: Library title/icon/status inside `NavigationStack`.
-- `CatalogRepository.swift`: `songCount`/`song(id:)` protocol boundary and `EmptyCatalogRepository` returning zero/nil.
-- `PlaylistRecord.swift`: SwiftData model with id, name, and created timestamp only.
-- Unit tests for in-memory playlist-record persistence and bundled shared parity-corpus decoding.
-- UI launch tests for the shell.
+- A local `AcquiringKit` Swift package split into `AcquiringCore`, `AcquiringCatalog`, and `AcquiringAudio`, with exact GRDB.swift 7.11.1 and SwiftSoup 2.9.6 resolutions.
+- One injected `AppEnvironment`, observable feature state, and an explicit Library/Artist/All Songs/Playlist/Song Detail/Quiz route graph.
+- An actor-owned GRDB schema-v3 catalog, empty bootstrap, search/browse/document APIs, gzip/raw decoding, compatible-schema repair, staged contract validation, backup swap, visible full install, and SwiftSoup-based single-song harvest.
+- Corpus-backed theory/chord rules, section order, spelled/measured intervals, timing, YIN, pitch smoothing primitives, tessitura resolution, and three-second comfortable-pitch capture.
+- Pure finite-preview and loop PCM renderers with ten voices, native source-node output, transport polling/seeking, tempo, transposition, arpeggiation, melody/chord gains, background mode, Now Playing, remote commands, and interruption/route observers.
+- A mono-16-kHz microphone conversion pipeline with YIN and gates, one exclusive stream, just-in-time permission, accessible sing-back/interval/persistent/tessitura surfaces, and cleanup.
+- SwiftData schema v1 with built-in Favorites, deterministic unique playlist memberships, cascade behavior, newest-first slugs, and playlist browsing/removal; catalog slugs remain loose cross-store references.
+- Library search/history/browse/maintenance screens, initial Info/Chords/Quiz views, explicit practice actions, reduce-motion handling, and adaptive width constraints.
 
-The SwiftData record does not establish Favorites, built-in status, catalog-slug membership, counts, ordering, or playlist UI. The repository protocol does not establish SQLite compatibility, download, validation, search, browse, section decoding, or theory.
+This is a functioning implementation checkpoint, not parity completion. Fitted notation, complete Info/Chords semantics, active quiz cards/gestures, Flip-Flop and median scoring, several state-restoration paths, full accessibility auditing, and all physical-device gates remain open. [feature-parity.md](feature-parity.md) is the current row-level truth.
 
 ### Test inventory and validation evidence
 
@@ -557,13 +559,17 @@ The 8 instrumented files cover All Songs rendering/state, the unused audiation c
 
 Baseline command attempted through the repository wrapper:
 
-`python3 scripts/compact_check.py --name android-doc-baseline -- ./gradlew testDebugUnitTest`
+`python3 scripts/compact_check.py --name android-parity-ios-v1-baseline -- ./gradlew testDebugUnitTest`
 
 It failed before Android compilation because this machine has neither `ANDROID_HOME` nor `android/local.properties` with `sdk.dir`. This is an environment limitation; it is not evidence of a test or source failure. Instrumented tests were not run because no configured Android SDK/device was available.
 
 #### iOS tests
 
-Local `xcodebuild test` reached successful application/test compilation under Xcode 26.3. The simulator test-run phase did not launch/complete and was manually interrupted after the run stalled, so runtime test results are **inconclusive**. Current Shell/Partial statuses are therefore source-verified, with project compilation additionally verified; they are not being upgraded based on an incomplete simulator run.
+`swift test` passes **18 package tests** across Core, Catalog, and Audio. They cover YIN, tessitura, section order, theory/timing/interval primitives, melody payload forms, catalog bootstrap/repair/contract rejection/harvest parsing, all ten waveforms, finite arpeggiation, smoothing, loop onset/pause/seek/wrap, and reported transport progress.
+
+Under Xcode 26.3, a fresh compile-only Swift 6 build for the generic iOS Simulator destination succeeds for both simulator architectures with no compiler diagnostic from project code. At the navigation checkpoint, the iPhone 17 simulator passed **5 app tests** (Favorites uniqueness/order, cascade, history semantics, bundled corpus, and all 45 shared chord cases) and **2 UI tests** (launch plus All Songs → song → Quiz → Info → original parent). After the additive Info/Chords controls, the package's **18 tests** and the full app build passed again; a repeat simulator invocation did not launch after the iPad runner had destabilized the host test service, so it is not counted as fresh runtime evidence. The equivalent iPad (A16) test runner built but stalled before test launch while Xcode waited for simulator install/launch workers; a clean simulator boot completed, but a retry exhibited the same host-runner failure and was interrupted. iPad runtime evidence is therefore pending rather than failed product behavior.
+
+The released 75,836,096-byte gzip catalog was also downloaded to a disposable directory and inspected: it reports schema version 3, `PRAGMA quick_check` returns `ok`, all three contract indexes exist, it has 40,979 browse rows, and all 40,979 resolve to non-null song payloads. This validates the current distribution artifact against the declared 40,609-row floor; installer interruption/performance evidence is still required.
 
 #### Documentation cross-check
 
@@ -585,34 +591,34 @@ Additional **Medium** risks are SwiftData/SQLite membership design, VoiceOver an
 
 ### Milestones
 
-The first five milestones are the functional port. Milestones six and seven complete user-data/accessibility parity and release hardening.
+Milestones match [porting-plan.md](porting-plan.md). Completion requires the listed evidence, not merely source presence.
 
 | Milestone | Outcome | Exit evidence |
 | --- | --- | --- |
-| 1. Foundation and catalog integrity | Swift domain models, catalog/user boundaries, theory kernel, catalog open/validate/install | Shared theory fixtures pass; known catalog opens; corrupt/stale candidates cannot replace live data |
-| 2. Library and navigation | Search/history, artist, All Songs, playlists-as-read-only where available, origin-aware song routes | Deterministic repository and navigation tests cover loading/empty/error/restore paths |
-| 3. Song details and theory UI | Section selection, Info, Chords, native Roman/scale-degree rendering, previews/links | Golden/semantic renderer tests and decoded real-song fixtures pass |
-| 4. Quiz and audio | Native preview engine, process-owned loop transport, timeline/cards/controls, background system media | Timing/audio unit tests plus device interruption/remote-command matrix pass |
-| 5. Vocal practice | Microphone pipeline, sing-back, manual interval, Flip-Flop, persistent pitch, scoring, tessitura | Real-device permission/lifecycle/route/latency and DSP fixture tests pass |
-| 6. User data and accessibility | Favorites, membership/browse/remove, resilience across catalog swaps, VoiceOver gesture alternatives | SwiftData/SQLite migration tests and accessibility navigation audit pass |
-| 7. Product decisions and release hardening | Resolve dormant/unused maintenance features, performance, recovery, localization/adaptation scope | Open questions closed; parity IDs reviewed; release checklist passes |
+| 1. Reference lock and foundation | Baseline tag, local package, Swift 6, pinned dependencies, DI, typed errors, fixture harness | CI builds every target and shared fixtures execute in Swift |
+| 2. Catalog integrity and core domain | Bootstrap/query/install/harvest plus theory, chord, interval, timing, and tessitura rules | Corpus passes; damaged candidates cannot replace live data; real catalog meets contract/budgets |
+| 3. Library and navigation vertical slice | Search/history, Artist, All Songs, playlists, explicit routes, parent restoration | Every discovery route opens Quiz first and returns through Info on iPhone/iPad |
+| 4. Song details, theory UI, and previews | Sections, Info, Chords, links, native notation, finite previews | Complex chords render semantically and representative real-song metadata/voicings match |
+| 5. Quiz transport and background audio | Loop renderer, modes/cards/controls/scrub, Now Playing/remotes/interruptions/routes | DSP/timing plus signed physical background/audio-route matrix passes |
+| 6. Microphone and vocal practice | YIN, sing-back, intervals, target listening, Flip-Flop, persistent scoring, tessitura | Recorded PCM fixtures and signed physical-device/route matrix pass |
+| 7. User data, accessibility, and release hardening | Durable Favorites/playlists, Dynamic Type, VoiceOver, reduced motion, adaptive layout, recovery | All 52 in-scope IDs pass every automated, device, failure-state, and accessibility gate |
 
 ## 17. Open questions
 
-1. What iPhone/iPad and iOS-version matrix is required, and should background audio be enabled in the first release?
-2. Is the pinned v1.0.0 catalog URL and minimum count of 40,609 a permanent distribution contract or temporary bootstrap configuration?
-3. Should manual harvest and the dormant missing-payload fallback ship on iOS, or remain Android maintenance tools?
-4. Should custom-playlist UI be added on both platforms, or should iOS match only the observable Favorites/playlist-browse behavior?
-5. Should the unused audiation container and unused multi-tap helper be retired, promoted to product features, or excluded from the port?
-6. What are the required external-link semantics for Hooktheory and YouTube, including failure and region-restriction behavior?
-7. Are dark-only presentation, localization/RTL behavior, Dynamic Type, VoiceOver, and iPad layouts release gates or later hardening work?
+Resolved: iOS 17+, iPhone/iPad and both orientations; background audio; v1.0.0/schema-v3/40,609-row catalog contract; visible manual harvest; dark English presentation; Dynamic Type, VoiceOver, reduced motion, and adaptive layout release gates; F013, F052, and F055 Deferred.
+
+1. Which exact small iPhone, current iPhone, iPad, headphone, and Bluetooth models make up the signed release matrix?
+2. What exact YouTube lookup, failure, and region-restriction policy should F017 use?
+3. What quantitative launch/search/install memory and latency budgets must the real catalog meet?
+4. What perceptual listening procedure and tolerances approve the ten synthesized instruments?
+5. Who signs TestFlight evidence and owns parity triage for Android changes after `android-parity-ios-v1`?
 
 ### Recommended porting sequence
 
-1. Establish shared Swift domain models, catalog/user-store boundaries, catalog validation, and atomic installation (F010, F012, F021–F022, F053).
-2. Implement Library navigation, title/artist search, All Songs browsing, history, and origin-aware routing (F001–F009, F014–F015).
-3. Deliver Info and Chords with theory parity, native renderers, previews, and source links (F016–F024).
-4. Build the foreground audio layer, quiz transport/timeline/cards, controls, then background media integration (F025–F039).
-5. Add microphone capture, sing-back, interval practice, persistent pitch, and tessitura calibration on real devices (F040–F049).
-6. Complete Favorites, playlist membership/browsing, accessibility semantics, and user-data resilience (F050–F054).
-7. Resolve maintenance-only and unused capabilities, run cross-platform parity suites, and harden recovery, performance, and release behavior (F011, F013, F052, F055).
+1. Keep the reference lock, contracts, package boundaries, and shared fixtures green.
+2. Finish catalog integrity and pure theory/relative-Ionian behavior.
+3. Complete search/browse/navigation and exact restoration on iPhone/iPad.
+4. Complete Info, Chords, native notation, links, and finite previews.
+5. Complete quiz cards/controls/transport together with background media behavior.
+6. Complete vocal practice using prerecorded fixtures and physical hardware.
+7. Finish Favorites/playlist durability, accessibility, adaptive layout, recovery, and release evidence; retain F013, F052, and F055 as Deferred.

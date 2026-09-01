@@ -23,24 +23,41 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Select an available iPhone simulator
+      - name: Run Swift package parity tests
+        run: swift test --package-path ios/Packages/AcquiringKit
+      - name: Select available iPhone and iPad simulators
         shell: bash
         run: |
-          simulator_udid="$(xcrun simctl list devices available -j | python3 -c '
+          simulator_udids="$(xcrun simctl list devices available -j | python3 -c '
           import json, sys
           devices = json.load(sys.stdin)["devices"]
+          iphone = None
+          ipad = None
           for runtime in sorted(devices, reverse=True):
               for device in devices[runtime]:
-                  if device.get("isAvailable") and device.get("name", "").startswith("iPhone"):
-                      print(device["udid"])
-                      raise SystemExit
-          raise SystemExit("No available iPhone simulator was found")
+                  name = device.get("name", "")
+                  if device.get("isAvailable") and iphone is None and name.startswith("iPhone"):
+                      iphone = device["udid"]
+                  if device.get("isAvailable") and ipad is None and name.startswith("iPad"):
+                      ipad = device["udid"]
+          if not iphone or not ipad:
+              raise SystemExit("An available iPhone and iPad simulator are required")
+          print(iphone)
+          print(ipad)
           ')"
-          echo "SIMULATOR_UDID=${simulator_udid}" >> "$GITHUB_ENV"
-      - name: Build and run unit and UI tests
+          echo "IPHONE_UDID=$(printf '%s\n' "$simulator_udids" | sed -n '1p')" >> "$GITHUB_ENV"
+          echo "IPAD_UDID=$(printf '%s\n' "$simulator_udids" | sed -n '2p')" >> "$GITHUB_ENV"
+      - name: Build and run iPhone unit and UI tests
         run: >-
           xcodebuild test
           -project ios/Acquiring.xcodeproj
           -scheme Acquiring
-          -destination "platform=iOS Simulator,id=${SIMULATOR_UDID}"
+          -destination "platform=iOS Simulator,id=${IPHONE_UDID}"
+          CODE_SIGNING_ALLOWED=NO
+      - name: Build and run iPad unit and UI tests
+        run: >-
+          xcodebuild test
+          -project ios/Acquiring.xcodeproj
+          -scheme Acquiring
+          -destination "platform=iOS Simulator,id=${IPAD_UDID}"
           CODE_SIGNING_ALLOWED=NO
