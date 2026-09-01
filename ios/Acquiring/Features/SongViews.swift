@@ -161,8 +161,22 @@ private struct SongInfoView: View {
                             let notes = ChordInterpreter.chordNotes(for: chord, key: key)
                             Task { try? await environment.audio.play(PreviewRequest(frequenciesHz: notes.map { MusicTheory.frequency(midi: Double($0)) })) }
                         } label: {
-                            LabeledContent(ChordInterpreter.romanSymbol(for: chord, key: key), value: "Beat \(beat.formatted())")
+                            HStack {
+                                FittedRomanNumeral(
+                                    display: RomanNumeralDisplay(
+                                        symbol: ChordInterpreter.romanSymbol(for: chord, key: key),
+                                        borrowed: chord["borrowed"]
+                                    ),
+                                    maximumFontSize: 34,
+                                    minimumFontSize: 10
+                                )
+                                .frame(width: 130, height: 44)
+                                Spacer()
+                                Text("Beat \(beat.formatted())")
+                                    .foregroundStyle(.secondary)
+                            }
                         }
+                        .accessibilityLabel("\(ChordInterpreter.romanSymbol(for: chord, key: key)), beat \(beat.formatted())")
                         .accessibilityHint("Previews this chord")
                     }
                 }
@@ -225,7 +239,21 @@ private struct ChordsView: View {
                     preview(chord)
                 } label: {
                     HStack {
-                        Text(chordLabel(chord, index: index)).font(.title3.monospaced())
+                        if usesRomanNumerals {
+                            FittedRomanNumeral(
+                                display: RomanNumeralDisplay(
+                                    symbol: chordLabel(chord, index: index),
+                                    borrowed: chord["borrowed"]
+                                ),
+                                maximumFontSize: 38,
+                                minimumFontSize: 10
+                            )
+                            .frame(width: 150, height: 54)
+                        } else {
+                            Text(chordLabel(chord, index: index))
+                                .font(.title3.monospaced())
+                                .frame(width: 150, alignment: .leading)
+                        }
                         Spacer()
                         Text("Beat \((chord["beat"]?.doubleValue ?? 1).formatted())").foregroundStyle(.secondary)
                         Image(systemName: "speaker.wave.2")
@@ -401,9 +429,20 @@ struct QuizView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Toggle("Lock in Major", isOn: $usesRelativeIonianContext)
                     .accessibilityHint("Keeps Roman numerals and scale degrees relative to the section's major-key context without changing playback pitches")
-                HStack(alignment: .firstTextBaseline) {
-                    Text(symbol).font(.system(.largeTitle, design: .serif).bold())
-                    if !rootDegree.isEmpty { Text(rootDegree).font(.title2.monospaced()) }
+                HStack(alignment: .center, spacing: 12) {
+                    FittedRomanNumeral(
+                        display: RomanNumeralDisplay(
+                            symbol: symbol,
+                            borrowed: active?.chord["borrowed"]
+                        ),
+                        maximumFontSize: 64,
+                        minimumFontSize: 12
+                    )
+                    .frame(width: 210, height: 76)
+                    if !rootDegree.isEmpty {
+                        FittedScaleDegree(rootDegree, maximumFontSize: 58, minimumFontSize: 14)
+                            .frame(width: 84, height: 76)
+                    }
                     Spacer()
                     Text(usesRelativeIonianContext ? "\(contextKey.tonic) major" : "\(sourceKey.tonic) \(sourceKey.scale)")
                         .foregroundStyle(.secondary)
