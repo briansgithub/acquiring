@@ -75,7 +75,34 @@ Once foundation interfaces are stable, catalog/Library, theory/rendering, and th
 
 ## Current implementation checkpoint
 
-The reference lock, package boundaries, exact dependencies, schema-v3 bootstrap, GRDB repository, staged installer/validator, visible harvest service, core theory corpus, Android-equivalent chord inversion/applied/borrowed voicing, duration-aware Quiz active-event and interval derivation, singing-target/tessitura session rules, relative-Ionian fixed-context rules and Quiz toggle, native fitting Roman/scale-degree Canvas renderers, bounded sample-tested waveform/preview/loop renderers, progress/play-state-preserving transport reconfiguration, SwiftData user schema, history, explicit route graph, initial Library/All Songs/detail/Quiz views, app-scoped audio session, remote commands, and production-wired standard/fast mono-16-kHz YIN plus smoothing paths now exist. The package passes 95 tests and the full Swift 6 app builds, but the parity checklist intentionally leaves most capabilities Partial until their full UI semantics and device gates pass.
+The reference lock, package boundaries, exact dependencies, schema-v3 bootstrap, GRDB repository, staged installer/validator, visible harvest service, core theory corpus, Android-equivalent chord inversion/applied/borrowed voicing, duration-aware Quiz active-event and interval derivation, singing-target/tessitura session rules, relative-Ionian fixed-context rules and Quiz toggle, native fitting Roman/scale-degree Canvas renderers, bounded sample-tested waveform/preview/loop renderers, progress/play-state-preserving transport reconfiguration, SwiftData user schema, history, explicit route graph, initial Library/All Songs/detail/Quiz views, app-scoped audio session, remote commands, production-wired standard/fast mono-16-kHz YIN plus smoothing paths, and the portable persistent-melody run-scoring rules now exist. The package passes 112 tests and the full Swift 6 app builds, but the parity checklist intentionally leaves most capabilities Partial until their full UI semantics and device gates pass.
+
+## Barebones iPhone checkpoint and deferred backlog
+
+The immediate product target is now a minimal on-device smoke build, not full feature parity. Work resumes on the parity milestones only after the current app can be signed, installed, launched, and exercised on the connected test iPhone. The checkpoint is:
+
+1. Make the iPhone appear as an Xcode destination by unlocking it, accepting the computer trust prompt, enabling Developer Mode if prompted, and completing Xcode pairing.
+2. Sign into an Apple ID in Xcode and select a development Team for the app and test targets. Change `com.acquiring.ios` only if Apple rejects that bundle identifier for the selected Team.
+3. Build the Debug app for the phone, install it, launch it, and capture the exact device/iOS/toolchain evidence.
+4. Smoke-test launch, adaptive layout, Library empty state, catalog action entry points, basic navigation, background/foreground transitions, and a clean relaunch. Audio and microphone approval remain separate device gates.
+5. Keep TestFlight/App Store Connect provisioning out of this checkpoint; add it only after the local development build is stable.
+
+Deferred feature work and known gaps are intentionally retained here:
+
+- Catalog/Library (F002–F012): finish 20-row UI paging, fuzzy equivalence, focus-specific recents, legacy warnings, list restoration, v2/failed-swap fixtures, and real full-catalog performance/recovery evidence.
+- Song/theory UI (F014–F024): finish every-origin Back restoration, representative section fixtures, complete source metadata, adaptive chord grid, renderer snapshots, and device visual acceptance.
+- Quiz/transport (F025–F039): add the complete melody/key timeline, tap and inertial scrubbing, draggable/reset controls, zero-tempo policy, remaining card layout semantics, gain smoothing, and physical background/interruption/headphone/Bluetooth tests.
+- Microphone/vocal practice (F040–F049): add prerecorded capture fixtures and device permission/ownership tests; implement Flip-Flop (F045); make persistent targets follow root, melody, and chord-tone changes (F046); connect the tested melody marker/run scorer to the live timeline (F047); and finish tessitura presentation/continuity integration.
+- User data/platform (F050–F054): verify optimistic rollback, playlist restoration, survival across catalog replacement, VoiceOver custom actions, Dynamic Type, reduced motion, iPhone/iPad layouts, and the complete physical-device matrix.
+- Deferred by product decision: F013, F052, and F055 remain out of iOS v1.
+
+Known environment and integration issues at this checkpoint:
+
+- macOS sees the connected iPhone on USB, but `devicectl`, `xcdevice`, and Xcode destinations do not yet expose it; trust/pairing is incomplete.
+- This Mac currently has no valid Apple Development signing identity, so a device install cannot be produced until an Xcode Team creates or downloads one.
+- The installed CoreSimulator runtime compiles the app but its install/launch workers stall on both iPhone and iPad simulators; this is recorded as a host-service issue, not an app assertion failure.
+- The persistent melody scoring domain is tested but deliberately not connected to the Quiz UI yet.
+- A newly bootstrapped catalog is empty until download or manual harvest succeeds, so empty Library UI on first launch is expected rather than proof of catalog failure.
 
 ## Five highest risks
 
