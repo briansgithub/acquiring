@@ -136,8 +136,13 @@ public struct QuizTimeline: Equatable, Sendable {
 }
 
 public protocol PitchSource: Sendable {
-    func readings() async -> AsyncThrowingStream<PitchReading, any Error>
+    func readings(profile: PitchTrackingProfile) async -> AsyncThrowingStream<PitchReading, any Error>
     func stop() async
+}
+
+public enum PitchTrackingProfile: Sendable {
+    case standard
+    case melodyFast
 }
 
 public enum AcquiringAudioError: Error, LocalizedError, Equatable, Sendable {

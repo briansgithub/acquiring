@@ -116,7 +116,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         publish(TransportState(phase: .stopped))
     }
 
-    func readings() async -> AsyncThrowingStream<PitchReading, any Error> {
+    func readings(profile: PitchTrackingProfile) async -> AsyncThrowingStream<PitchReading, any Error> {
         guard pitchContinuation == nil else {
             return AsyncThrowingStream { $0.finish(throwing: AcquiringAudioError.microphoneInUse) }
         }
@@ -126,7 +126,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
                 Task { @MainActor in self?.stopPitchCapture() }
             }
             Task { @MainActor [weak self] in
-                do { try await self?.startPitchCapture(continuation: continuation) }
+                do { try await self?.startPitchCapture(continuation: continuation, profile: profile) }
                 catch {
                     continuation.finish(throwing: error)
                     self?.stopPitchCapture()
@@ -147,7 +147,8 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     }
 
     private func startPitchCapture(
-        continuation: AsyncThrowingStream<PitchReading, any Error>.Continuation
+        continuation: AsyncThrowingStream<PitchReading, any Error>.Continuation,
+        profile: PitchTrackingProfile
     ) async throws {
         guard await AVAudioApplication.requestRecordPermission() else {
             throw AcquiringAudioError.microphonePermissionDenied
@@ -158,13 +159,8 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         guard format.sampleRate > 0, format.channelCount > 0 else {
             throw AcquiringAudioError.engine("No microphone input format is available.")
         }
-        let pipeline = try PitchPipeline(inputFormat: format) { estimate in
-            guard estimate.frequencyHz > 0, estimate.confidence >= 0.4, estimate.rms >= 0.0005 else { return }
-            continuation.yield(PitchReading(
-                midi: AcquiringCore.MusicTheory.midi(frequency: estimate.frequencyHz),
-                confidence: estimate.confidence,
-                rms: estimate.rms
-            ))
+        let pipeline = try PitchPipeline(inputFormat: format, profile: profile) { reading in
+            continuation.yield(reading)
         }
         pitchPipeline = pipeline
         input.removeTap(onBus: 0)
@@ -306,10 +302,17 @@ private final class PitchPipeline: @unchecked Sendable {
     private let outputFormat: AVAudioFormat
     private let converter: AVAudioConverter
     private let queue = DispatchQueue(label: "com.acquiring.ios.pitch-pipeline", qos: .userInitiated)
-    private let publish: @Sendable (PitchEstimate) -> Void
+    private let publish: @Sendable (PitchReading) -> Void
+    private let analysisWindowSize: Int
+    private let hopSize: Int
+    private var smoother: PitchSmoother
     private var samples: [Int16] = []
 
-    init(inputFormat: AVAudioFormat, publish: @escaping @Sendable (PitchEstimate) -> Void) throws {
+    init(
+        inputFormat: AVAudioFormat,
+        profile: PitchTrackingProfile,
+        publish: @escaping @Sendable (PitchReading) -> Void
+    ) throws {
         self.inputFormat = inputFormat
         guard let outputFormat = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: 16_000, channels: 1, interleaved: false),
               let converter = AVAudioConverter(from: inputFormat, to: outputFormat)
@@ -317,6 +320,16 @@ private final class PitchPipeline: @unchecked Sendable {
         self.outputFormat = outputFormat
         self.converter = converter
         self.publish = publish
+        switch profile {
+        case .standard:
+            analysisWindowSize = 2_048
+            hopSize = 512
+            smoother = PitchSmoother(targetMIDI: 0, configuration: .standard)
+        case .melodyFast:
+            analysisWindowSize = 1_024
+            hopSize = 256
+            smoother = PitchSmoother(targetMIDI: 0, configuration: .melodyFast)
+        }
         samples.reserveCapacity(4_096)
     }
 
@@ -346,10 +359,23 @@ private final class PitchPipeline: @unchecked Sendable {
         for value in UnsafeBufferPointer(start: channel, count: Int(output.frameLength)) {
             samples.append(Int16(clamping: Int((min(max(value, -1), 1) * Float(Int16.max)).rounded())))
         }
-        while samples.count >= 2_048 {
-            let window = Array(samples.prefix(2_048))
-            publish(PitchDetector.estimate(samples: window, sampleRate: 16_000))
-            samples.removeFirst(min(512, samples.count))
+        while samples.count >= analysisWindowSize {
+            let window = Array(samples.prefix(analysisWindowSize))
+            let estimate = PitchDetector.estimate(samples: window, sampleRate: 16_000)
+            if estimate.frequencyHz > 0,
+               estimate.confidence >= 0.4,
+               estimate.rms >= 0.0005,
+               let smoothed = smoother.accept(
+                midi: AcquiringCore.MusicTheory.midi(frequency: estimate.frequencyHz),
+                confidence: estimate.confidence
+               ) {
+                publish(PitchReading(
+                    midi: smoothed.midi,
+                    confidence: smoothed.confidence,
+                    rms: estimate.rms
+                ))
+            }
+            samples.removeFirst(min(hopSize, samples.count))
         }
     }
 }

@@ -933,7 +933,8 @@ private struct VocalPracticeSheet: View {
                     try await environment.audio.play(PreviewRequest(frequenciesHz: [MusicTheory.frequency(midi: Double(targetMIDI))]))
                     try? await Task.sleep(for: .milliseconds(550))
                 }
-                for try await value in await environment.audio.readings() {
+                let profile: PitchTrackingProfile = mode == .persistent ? .melodyFast : .standard
+                for try await value in await environment.audio.readings(profile: profile) {
                     guard !Task.isCancelled else { break }
                     reading = value
                     if mode == .tessitura {
