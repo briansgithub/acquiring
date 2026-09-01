@@ -91,11 +91,16 @@ public protocol PreviewAudio: Sendable {
 
 public protocol QuizTransport: Sendable {
     func states() async -> AsyncStream<TransportState>
-    func load(_ timeline: QuizTimeline) async throws
+    func load(_ timeline: QuizTimeline, position: QuizLoadPosition) async throws
     func play() async throws
     func pause() async
     func seek(to progress: Double) async
     func stop() async
+}
+
+public enum QuizLoadPosition: Sendable {
+    case restart
+    case preserveProgress
 }
 
 public struct QuizEvent: Equatable, Sendable {

@@ -7,16 +7,22 @@ public enum StaticPCMRenderer {
         shouldCancel: @Sendable () -> Bool = { false }
     ) throws -> [Float] {
         let frequencies = request.frequenciesHz.filter { $0.isFinite && $0 > 0 }
-        guard !frequencies.isEmpty, sampleRate > 0 else {
+        guard !frequencies.isEmpty, sampleRate.isFinite, (1...384_000).contains(sampleRate) else {
             throw AcquiringAudioError.invalidRequest("At least one valid frequency and sample rate are required.")
         }
         let durationSeconds = request.duration.secondsValue
-        let stepSeconds = max(request.arpeggioStep.secondsValue, 0.001)
         let maximumSamples = Int(sampleRate * 30)
-        let stepSamples = max(Int(sampleRate * stepSeconds), 200)
-        let requested = request.arpeggiates && frequencies.count > 1
-            ? frequencies.count * stepSamples
-            : Int(sampleRate * max(durationSeconds, 0.001))
+        let boundedStepSeconds = min(max(request.arpeggioStep.secondsValue, 0.001), 30)
+        let stepSamples = min(max(Int(sampleRate * boundedStepSeconds), 200), maximumSamples)
+        let requested: Int
+        if request.arpeggiates && frequencies.count > 1 {
+            requested = frequencies.count > maximumSamples / stepSamples
+                ? maximumSamples
+                : frequencies.count * stepSamples
+        } else {
+            let boundedDuration = min(max(durationSeconds, 0.001), 30)
+            requested = Int(sampleRate * boundedDuration)
+        }
         let sampleCount: Int
         if request.arpeggiates && frequencies.count > 1 {
             sampleCount = max(min(requested, maximumSamples) / stepSamples, 1) * stepSamples

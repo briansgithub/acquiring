@@ -70,10 +70,19 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         }
     }
 
-    func load(_ timeline: QuizTimeline) async throws {
+    func load(_ timeline: QuizTimeline, position: QuizLoadPosition) async throws {
         transportPollTask?.cancel()
-        quizRenderer.configure(timeline)
-        publish(TransportState(phase: .paused, duration: .seconds(timeline.durationSeconds)))
+        let shouldContinuePlaying = transportState.phase == .playing || transportState.phase == .buffering
+        let snapshot = quizRenderer.configure(
+            timeline,
+            preserveProgress: position == .preserveProgress
+        )
+        publish(TransportState(
+            phase: .paused,
+            elapsed: .seconds(snapshot.elapsed),
+            duration: .seconds(snapshot.duration)
+        ))
+        if shouldContinuePlaying { try await play() }
     }
 
     func play() async throws {
@@ -255,8 +264,13 @@ private final class LockedQuizRenderer: @unchecked Sendable {
         renderer = QuizPCMRenderer(sampleRate: sampleRate)
     }
 
-    func configure(_ timeline: QuizTimeline) {
-        lock.withLock { renderer.configure(timeline) }
+    func configure(_ timeline: QuizTimeline, preserveProgress: Bool) -> (elapsed: Double, duration: Double) {
+        lock.withLock {
+            let progress = renderer.progress
+            renderer.configure(timeline)
+            if preserveProgress { renderer.seek(progress: progress) }
+            return (renderer.progress * renderer.durationSeconds, renderer.durationSeconds)
+        }
     }
 
     func play() { lock.withLock { renderer.play() } }
