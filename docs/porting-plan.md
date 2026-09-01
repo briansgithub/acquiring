@@ -79,13 +79,13 @@ The reference lock, package boundaries, exact dependencies, schema-v3 bootstrap,
 
 ## Barebones iPhone checkpoint and deferred backlog
 
-The immediate product target is now a minimal on-device smoke build, not full feature parity. Because the test iPhone is electrically visible over USB but is not available to Xcode's device services, TestFlight is the selected internet-delivery path. Work resumes on the parity milestones after the current app can be signed, uploaded, installed, launched, and exercised on that iPhone. The checkpoint is:
+The immediate product target is now a minimal on-device smoke build, not full feature parity. Because the test iPhone is electrically visible over USB but is not available to Xcode's device services, TestFlight is the selected internet-delivery path. Work resumes on the parity milestones after the current app can be signed, uploaded, installed, launched, and exercised on that iPhone. The remaining checkpoint is:
 
-1. Make the paid Apple Developer Program Team appear under the signed-in Xcode account, then select it for automatic signing. Xcode currently exposes only the free Personal Team, which cannot distribute through TestFlight.
+1. The account holder reviews and accepts the first-use App Store Connect agreement. This legal acceptance cannot be delegated to build automation.
 2. Create or confirm the App Store Connect app record and final bundle ID. Keep `com.acquiring.ios` unless registration rejects it; do not create an App Store record with a temporary identifier.
-3. Create a signed Release archive, validate it, upload build 1 with the checked-in TestFlight export options, wait for Apple processing, and add the owner as an internal tester.
-4. Smoke-test launch, adaptive layout, Library empty state, catalog action entry points, basic navigation, background/foreground transitions, and a clean relaunch. Audio and microphone approval remain separate device gates.
-5. If USB pairing becomes available later, add direct Debug installation and debugger evidence without making it a prerequisite for the first internet-delivered smoke build.
+3. Let Xcode create the App Store distribution assets, produce and validate a signed Release archive, upload build 1 with the checked-in TestFlight export options, wait for Apple processing, and add the owner as an internal tester.
+4. Install through TestFlight and smoke-test launch, adaptive layout, Library empty state, catalog action entry points, basic navigation, background/foreground transitions, and a clean relaunch. Audio and microphone approval remain separate device gates.
+5. If USB pairing becomes available later, register the device and add direct Debug installation and debugger evidence without making it a prerequisite for the first internet-delivered smoke build.
 
 Deferred feature work and known gaps are intentionally retained here:
 
@@ -99,11 +99,11 @@ Deferred feature work and known gaps are intentionally retained here:
 Known environment and integration issues at this checkpoint:
 
 - macOS sees the connected iPhone on USB, but `devicectl`, `xcdevice`, and Xcode destinations do not expose it. Wi-Fi debugging also requires an initial device pairing, so TestFlight—not remote Xcode debugging—is the viable internet path.
-- The Apple portal confirms an active Individual Apple Developer Program membership through September 2027, and the project is bound to its Team ID. Xcode's cached account UI still labels it as a Personal Team.
-- Apple has an existing Apple Development certificate for this Team, and its public certificate is installed locally, but the matching private key is absent. Automatic signing therefore requires either importing the original private key or explicitly revoking/replacing that certificate; revocation is not authorized implicitly because it may affect another machine.
+- The Apple portal confirms an active Individual Apple Developer Program membership through September 2027, and the project is bound to its Team ID. The local keychain now contains two valid Apple Development signing identities, so the earlier missing-private-key blocker is resolved.
+- The Team has no registered devices. Automatic development signing therefore cannot create an iOS App Development profile, but that does not prevent the intended App Store/TestFlight distribution path once the App Store agreement and record exist.
 - App Store Connect is reachable but its first-use Terms of Service have not been accepted, so the app record cannot be created yet. The account holder must review and accept that legal agreement.
-- A 1024×1024 opaque App Store icon, explicit background-audio plist entry, microphone purpose text, export-compliance declaration, local-only required-reason privacy manifest, and automatic TestFlight export options are configured. An unsigned arm64 Release archive with dSYM builds successfully; signed validation/upload remains gated on the certificate private key and App Store Connect agreement.
-- The installed CoreSimulator runtime compiles the app but its install/launch workers stall on both iPhone and iPad simulators; this is recorded as a host-service issue, not an app assertion failure.
+- A 1024×1024 opaque App Store icon, explicit background-audio plist entry, microphone purpose text, export-compliance declaration, local-only required-reason privacy manifest, and automatic TestFlight export options are configured. An unsigned arm64 Release archive with dSYM builds successfully. A distribution-only export probe reached Apple's service and stopped at `Error Downloading App Information`, consistent with the missing agreement/app record.
+- After terminating two stale hour-old `simctl` operations and rebooting the runtime, the app installs and launches on an iPhone 17 simulator. The first-launch Library empty state was visually verified. The standalone package passes all 112 tests, while Xcode-hosted unit/UI test sessions still stall waiting for simulator test workers to materialize; that remaining runner issue is environmental rather than an app test failure.
 - The persistent melody scoring domain is tested but deliberately not connected to the Quiz UI yet.
 - A newly bootstrapped catalog is empty until download or manual harvest succeeds, so empty Library UI on first launch is expected rather than proof of catalog failure.
 
