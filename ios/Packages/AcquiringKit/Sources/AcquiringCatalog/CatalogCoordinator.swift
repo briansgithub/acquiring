@@ -5,26 +5,98 @@ import GRDB
 public actor CatalogCoordinator: CatalogRepository {
     public let configuration: CatalogConfiguration
     private var databasePool: DatabasePool?
+    private let fileSystem: any CatalogFileSystem
+    private let poolOpener: CatalogPoolOpener
 
     public init(configuration: CatalogConfiguration) {
+        self.init(
+            configuration: configuration,
+            fileSystem: LiveCatalogFileSystem(),
+            poolOpener: { try CatalogCoordinator.openPool(at: $0) }
+        )
+    }
+
+    init(
+        configuration: CatalogConfiguration,
+        fileSystem: any CatalogFileSystem,
+        poolOpener: @escaping CatalogPoolOpener
+    ) {
         self.configuration = configuration
+        self.fileSystem = fileSystem
+        self.poolOpener = poolOpener
     }
 
     public var databaseURL: URL {
         configuration.directoryURL.appending(path: configuration.contract.databaseFilename)
     }
 
+    var backupURL: URL {
+        databaseURL.appendingPathExtension("backup")
+    }
+
     public func prepare() throws {
-        try FileManager.default.createDirectory(at: configuration.directoryURL, withIntermediateDirectories: true)
+        try fileSystem.createDirectory(at: configuration.directoryURL)
         var resourceValues = URLResourceValues()
         resourceValues.isExcludedFromBackup = true
         var directory = configuration.directoryURL
         try? directory.setResourceValues(resourceValues)
-        if !FileManager.default.fileExists(atPath: databaseURL.path) {
-            let queue = try DatabaseQueue(path: databaseURL.path)
-            try queue.write { db in try Self.createSchema(in: db) }
+        removeStagingArtifacts()
+
+        if !fileSystem.fileExists(at: databaseURL) {
+            // A backup here means a previous swap died between moving the old
+            // catalog aside and opening the new one. Recover it rather than
+            // bootstrapping an empty catalog on top of a usable one.
+            if hasRestorableBackup() {
+                CatalogArtifacts.removeSidecars(for: databaseURL, using: fileSystem)
+                try fileSystem.moveItem(at: backupURL, to: databaseURL)
+            } else {
+                CatalogArtifacts.removeDatabase(at: backupURL, using: fileSystem)
+                let queue = try DatabaseQueue(path: databaseURL.path)
+                try queue.write { db in try Self.createSchema(in: db) }
+            }
         }
-        databasePool = try Self.openPool(at: databaseURL)
+
+        do {
+            databasePool = try poolOpener(databaseURL)
+        } catch {
+            // Live exists but will not open. Prefer a usable backup over
+            // leaving the app with no queryable catalog.
+            guard hasRestorableBackup() else { throw error }
+            CatalogArtifacts.removeDatabase(at: databaseURL, using: fileSystem)
+            try fileSystem.moveItem(at: backupURL, to: databaseURL)
+            databasePool = try poolOpener(databaseURL)
+        }
+
+        // Only now is the backup provably redundant: live is open and serving.
+        CatalogArtifacts.removeDatabase(at: backupURL, using: fileSystem)
+    }
+
+    /// A backup is restorable when it still satisfies the contract's structural
+    /// rules. The row floor is deliberately not enforced: it gates admission of
+    /// a freshly downloaded catalog, not recovery of one already installed.
+    private func hasRestorableBackup() -> Bool {
+        guard fileSystem.fileExists(at: backupURL) else { return false }
+        do {
+            _ = try CatalogCandidate.validate(
+                at: backupURL,
+                contract: configuration.contract,
+                enforcesRowFloor: false
+            )
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    /// Startup sweep. Staging names are operation-unique, so this cannot be a
+    /// fixed list of paths; anything still marked as staging when prepare()
+    /// runs belongs to a run that did not survive, because no install can be in
+    /// flight before the catalog has been opened.
+    private func removeStagingArtifacts() {
+        for entry in fileSystem.contentsOfDirectory(at: configuration.directoryURL)
+        where CatalogArtifacts.isStagingArtifact(entry) {
+            try? fileSystem.removeItem(at: entry)
+        }
     }
 
     public func status() throws -> CatalogStatus {
@@ -208,25 +280,50 @@ public actor CatalogCoordinator: CatalogRepository {
     }
 
     public func replaceLiveDatabase(with stagedURL: URL) throws {
+        // Refused before the commit boundary: a missing payload must never
+        // cost the caller the catalog it already has.
+        guard fileSystem.fileExists(at: stagedURL) else {
+            throw CatalogError.install("staged catalog is missing")
+        }
+
+        // ---- commit boundary ----
+        // Past this point the operation must end with either the new catalog
+        // open or the old one restored. It may never end with neither.
         try databasePool?.close()
         databasePool = nil
-        let fileManager = FileManager.default
-        let backupURL = databaseURL.appendingPathExtension("backup")
-        try? fileManager.removeItem(at: backupURL)
+        CatalogArtifacts.removeDatabase(at: backupURL, using: fileSystem)
+
+        var hasBackup = false
+        var installedNewLive = false
         do {
-            if fileManager.fileExists(atPath: databaseURL.path) {
-                try fileManager.moveItem(at: databaseURL, to: backupURL)
+            // Sidecars belong to the outgoing database. Left behind, they are
+            // misread as belonging to the incoming one.
+            CatalogArtifacts.removeSidecars(for: databaseURL, using: fileSystem)
+            if fileSystem.fileExists(at: databaseURL) {
+                try fileSystem.moveItem(at: databaseURL, to: backupURL)
+                hasBackup = true
             }
-            try fileManager.moveItem(at: stagedURL, to: databaseURL)
-            try? fileManager.removeItem(at: backupURL)
-            databasePool = try Self.openPool(at: databaseURL)
+            try fileSystem.moveItem(at: stagedURL, to: databaseURL)
+            installedNewLive = true
+            databasePool = try poolOpener(databaseURL)
         } catch {
-            try? fileManager.removeItem(at: databaseURL)
-            if fileManager.fileExists(atPath: backupURL.path) {
-                try? fileManager.moveItem(at: backupURL, to: databaseURL)
+            // Only clear the live path when this operation actually put
+            // something there. If moving the old catalog aside is what failed,
+            // it is still sitting at databaseURL, intact and wanted.
+            if installedNewLive {
+                CatalogArtifacts.removeDatabase(at: databaseURL, using: fileSystem)
             }
-            databasePool = try? Self.openPool(at: databaseURL)
+            if hasBackup {
+                try? fileSystem.moveItem(at: backupURL, to: databaseURL)
+            }
+            databasePool = try? poolOpener(databaseURL)
             throw CatalogError.install(error.localizedDescription)
+        }
+
+        // The new pool is open, so the backup is finally redundant. Deleting it
+        // any earlier is what made a failed reopen unrecoverable.
+        if hasBackup {
+            CatalogArtifacts.removeDatabase(at: backupURL, using: fileSystem)
         }
     }
 
@@ -239,7 +336,7 @@ public actor CatalogCoordinator: CatalogRepository {
         try read { db in try Row.fetchAll(db, sql: sql, arguments: arguments).map(Self.song(from:)) }
     }
 
-    private static func openPool(at url: URL) throws -> DatabasePool {
+    static func openPool(at url: URL) throws -> DatabasePool {
         var configuration = Configuration()
         configuration.label = "AcquiringCatalog"
         configuration.prepareDatabase { db in try db.execute(sql: "PRAGMA foreign_keys = ON") }

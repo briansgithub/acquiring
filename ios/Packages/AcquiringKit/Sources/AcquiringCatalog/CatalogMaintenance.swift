@@ -5,32 +5,62 @@ public struct DefaultCatalogMaintenanceService: CatalogMaintenanceService, Senda
     private let coordinator: CatalogCoordinator
     private let configuration: CatalogConfiguration
     private let session: URLSession
+    private let fetchArchive: CatalogArchiveFetch
 
     public init(
         coordinator: CatalogCoordinator,
         configuration: CatalogConfiguration,
         session: URLSession = .shared
     ) {
+        self.init(
+            coordinator: coordinator,
+            configuration: configuration,
+            session: session,
+            fetchArchive: { url in try await session.download(from: url) }
+        )
+    }
+
+    init(
+        coordinator: CatalogCoordinator,
+        configuration: CatalogConfiguration,
+        session: URLSession = .shared,
+        fetchArchive: @escaping CatalogArchiveFetch
+    ) {
         self.coordinator = coordinator
         self.configuration = configuration
         self.session = session
+        self.fetchArchive = fetchArchive
     }
 
     public func downloadAndInstall() -> AsyncThrowingStream<CatalogProgress, any Error> {
         AsyncThrowingStream { continuation in
             let task = Task {
                 let fileManager = FileManager.default
-                let archiveURL = configuration.directoryURL.appending(path: configuration.contract.archiveFilename + ".downloading")
-                let stagedURL = configuration.directoryURL.appending(path: configuration.contract.databaseFilename + ".installing")
+                // Staging paths are unique per operation. A cancelled run's
+                // cleanup is therefore incapable of deleting a later run's
+                // artifacts, however late that cleanup happens to land.
+                let operationID = UUID().uuidString
+                let archiveURL = CatalogArtifacts.archiveURL(
+                    in: configuration.directoryURL,
+                    filename: configuration.contract.archiveFilename,
+                    operationID: operationID
+                )
+                let stagedURL = CatalogArtifacts.stagedURL(
+                    in: configuration.directoryURL,
+                    filename: configuration.contract.databaseFilename,
+                    operationID: operationID
+                )
+                let fileSystem = LiveCatalogFileSystem()
                 defer {
+                    // Idempotent, owns only this operation's files, and reached
+                    // on success, failure and cancellation alike.
                     try? fileManager.removeItem(at: archiveURL)
-                    try? fileManager.removeItem(at: stagedURL)
-                    Self.removeSidecars(for: stagedURL)
+                    CatalogArtifacts.removeDatabase(at: stagedURL, using: fileSystem)
                 }
                 do {
                     try fileManager.createDirectory(at: configuration.directoryURL, withIntermediateDirectories: true)
                     continuation.yield(.connecting)
-                    let (temporaryURL, response) = try await session.download(from: configuration.downloadURL)
+                    let (temporaryURL, response) = try await fetchArchive(configuration.downloadURL)
                     try Task.checkCancellation()
                     guard let response = response as? HTTPURLResponse else { throw CatalogError.emptyResponse }
                     guard (200..<300).contains(response.statusCode) else { throw CatalogError.http(response.statusCode) }
@@ -54,9 +84,16 @@ public struct DefaultCatalogMaintenanceService: CatalogMaintenanceService, Senda
 
                     continuation.yield(.validating)
                     let result = try CatalogCandidate.validate(at: stagedURL, contract: configuration.contract)
+                    // The last point at which cancellation is honoured.
                     try Task.checkCancellation()
+
                     continuation.yield(.installing)
-                    try await coordinator.replaceLiveDatabase(with: stagedURL)
+                    // Past this point the swap must run to completion. The
+                    // commit is handed to an unstructured task, which does not
+                    // inherit this task's cancellation, so cancelling the
+                    // stream can no longer strand the catalog between states:
+                    // it ends with the new catalog open or the old restored.
+                    try await Task { try await coordinator.replaceLiveDatabase(with: stagedURL) }.value
                     continuation.yield(.completed(songCount: result.songCount))
                     continuation.finish()
                 } catch is CancellationError {
@@ -126,12 +163,6 @@ public struct DefaultCatalogMaintenanceService: CatalogMaintenanceService, Senda
         case "minor", "aeolian", "naturalminor": return "aeolian"
         case "locrian": return "locrian"
         default: return nil
-        }
-    }
-
-    private static func removeSidecars(for url: URL) {
-        for suffix in ["-wal", "-shm", "-journal"] {
-            try? FileManager.default.removeItem(atPath: url.path + suffix)
         }
     }
 }
