@@ -59,6 +59,10 @@ private struct LibraryView: View {
                         LabeledContent(playlist.name, value: playlist.count.formatted())
                     }
                 }
+                if let message = store.userContentError {
+                    Label(message, systemImage: "exclamationmark.triangle")
+                        .foregroundStyle(.red)
+                }
             }
             maintenanceSection
         }
@@ -79,13 +83,17 @@ private struct LibraryView: View {
             case let .content(count):
                 Label("\(count.formatted()) songs available", systemImage: "checkmark.circle.fill")
                     .foregroundStyle(.green)
+                    .accessibilityIdentifier("catalog.status.ready")
             case .empty:
                 ContentUnavailableView(
                     "Catalog not installed",
                     systemImage: "arrow.down.circle",
                     description: Text("Install the shared catalog or harvest a single TheoryTab song.")
                 )
+                .accessibilityIdentifier("catalog.status.empty")
                 Button("Download full catalog", systemImage: "arrow.down.circle") { store.installCatalog() }
+                    .disabled(store.maintenanceState.isRunning)
+                    .accessibilityIdentifier("catalog.download")
             case let .failure(message):
                 Label(message, systemImage: "exclamationmark.triangle").foregroundStyle(.red)
                 Button("Try again") { Task { await store.load() } }
@@ -128,16 +136,85 @@ private struct LibraryView: View {
 
     private var maintenanceSection: some View {
         Section("Catalog maintenance") {
-            Button("Download or replace full catalog", systemImage: "arrow.triangle.2.circlepath") { store.installCatalog() }
+            if case .empty = store.catalogState {
+                EmptyView()
+            } else {
+                Button("Download or replace full catalog", systemImage: "arrow.triangle.2.circlepath") {
+                    store.installCatalog()
+                }
+                .disabled(store.maintenanceState.isRunning)
+                .accessibilityIdentifier("catalog.download")
+            }
             TextField("Hooktheory TheoryTab URL", text: $store.harvestURL)
                 .textInputAutocapitalization(.never)
                 .keyboardType(.URL)
+                .disabled(store.maintenanceState.isRunning)
             Button("Harvest this song", systemImage: "leaf") { store.harvest() }
-                .disabled(store.harvestURL.isEmpty)
-            if let message = store.maintenanceMessage {
-                Text(message).font(.footnote).foregroundStyle(.secondary)
+                .disabled(store.harvestURL.isEmpty || store.maintenanceState.isRunning)
+                .accessibilityIdentifier("catalog.harvest")
+
+            switch store.maintenanceState {
+            case .idle:
+                EmptyView()
+            case let .running(operation, progress):
+                maintenanceProgress(operation: operation, progress: progress)
+                Button("Cancel \(operation.title.lowercased())", role: .cancel) {
+                    store.cancelMaintenance()
+                }
+                .accessibilityIdentifier("catalog.cancel")
+            case let .cancelled(operation):
+                Label("\(operation.title) cancelled.", systemImage: "xmark.circle")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .accessibilityIdentifier("catalog.maintenance.status")
+                retryButton(operation: operation)
+            case let .failed(operation, message):
+                Label(message, systemImage: "exclamationmark.triangle")
+                    .font(.footnote)
+                    .foregroundStyle(.red)
+                    .accessibilityIdentifier("catalog.maintenance.status")
+                if case .content = store.catalogState {
+                    Text("The current catalog remains available.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+                retryButton(operation: operation)
+            case let .completed(operation, count):
+                Label(
+                    "\(operation.title) complete. \(count.formatted()) songs ready.",
+                    systemImage: "checkmark.circle.fill"
+                )
+                .font(.footnote)
+                .foregroundStyle(.green)
+                .accessibilityIdentifier("catalog.maintenance.status")
             }
         }
+    }
+
+    @ViewBuilder
+    private func maintenanceProgress(
+        operation: CatalogMaintenanceOperation,
+        progress: CatalogProgress
+    ) -> some View {
+        HStack {
+            if case let .downloading(fraction?) = progress {
+                ProgressView(value: min(max(fraction, 0), 1))
+            } else {
+                ProgressView()
+            }
+            Text(progress.message).font(.footnote)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(operation.title)
+        .accessibilityValue(progress.message)
+        .accessibilityIdentifier("catalog.maintenance.status")
+    }
+
+    private func retryButton(operation: CatalogMaintenanceOperation) -> some View {
+        Button("Retry \(operation.title.lowercased())", systemImage: "arrow.clockwise") {
+            store.retryMaintenance()
+        }
+        .accessibilityIdentifier("catalog.retry")
     }
 }
 
