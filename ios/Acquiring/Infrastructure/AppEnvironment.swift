@@ -9,15 +9,16 @@ import SwiftData
 @Observable
 final class AppEnvironment {
     let catalog: CatalogCoordinator
-    let maintenance: DefaultCatalogMaintenanceService
+    let maintenance: any CatalogMaintenanceService
     let history: HistoryStore
     let userLibrary: UserLibraryStore
     let audio: AppAudioSystem
     private let seedsUITestCatalog: Bool
 
     init(modelContext: ModelContext) throws {
-        let isUITesting = ProcessInfo.processInfo.arguments.contains("--ui-testing")
-        seedsUITestCatalog = isUITesting
+        let arguments = ProcessInfo.processInfo.arguments
+        let isUITesting = arguments.contains("--ui-testing")
+        seedsUITestCatalog = isUITesting && !arguments.contains("--ui-testing-catalog-empty")
         guard let contractURL = Bundle.main.url(forResource: "contract", withExtension: "json") else {
             throw CatalogError.invalidSchema("Bundled catalog contract is missing")
         }
@@ -34,7 +35,11 @@ final class AppEnvironment {
         }
         let coordinator = CatalogCoordinator(configuration: configuration)
         catalog = coordinator
-        maintenance = DefaultCatalogMaintenanceService(coordinator: coordinator, configuration: configuration)
+        if isUITesting, let scenario = CatalogMaintenanceUITestScenario(arguments: arguments) {
+            maintenance = CatalogMaintenanceUITestService(scenario: scenario)
+        } else {
+            maintenance = DefaultCatalogMaintenanceService(coordinator: coordinator, configuration: configuration)
+        }
         history = HistoryStore()
         userLibrary = try UserLibraryStore(context: modelContext)
         audio = AppAudioSystem()
@@ -75,5 +80,72 @@ final class AppEnvironment {
                 modes: [mode == "major" ? "ionian" : "aeolian"]
             )
         }
+    }
+}
+
+private enum CatalogMaintenanceUITestScenario: Sendable {
+    case failure
+    case cancellable
+    case success
+
+    init?(arguments: [String]) {
+        if arguments.contains("--ui-testing-catalog-install-failure") {
+            self = .failure
+        } else if arguments.contains("--ui-testing-catalog-install-cancellable") {
+            self = .cancellable
+        } else if arguments.contains("--ui-testing-catalog-install-success") {
+            self = .success
+        } else {
+            return nil
+        }
+    }
+}
+
+private struct CatalogMaintenanceUITestService: CatalogMaintenanceService, Sendable {
+    let scenario: CatalogMaintenanceUITestScenario
+
+    func downloadAndInstall() -> AsyncThrowingStream<CatalogProgress, any Error> {
+        switch scenario {
+        case .failure:
+            AsyncThrowingStream { continuation in
+                continuation.yield(.connecting)
+                continuation.yield(.downloading(fraction: 0.25))
+                continuation.finish(throwing: CatalogMaintenanceUITestError.failed)
+            }
+        case .cancellable:
+            AsyncThrowingStream { continuation in
+                let task = Task {
+                    continuation.yield(.connecting)
+                    continuation.yield(.downloading(fraction: 0.25))
+                    while !Task.isCancelled {
+                        try? await Task.sleep(for: .seconds(60))
+                    }
+                }
+                continuation.onTermination = { _ in task.cancel() }
+            }
+        case .success:
+            AsyncThrowingStream { continuation in
+                continuation.yield(.connecting)
+                continuation.yield(.preparing)
+                continuation.yield(.validating)
+                continuation.yield(.installing)
+                continuation.yield(.completed(songCount: 2))
+                continuation.finish()
+            }
+        }
+    }
+
+    func harvest(url: URL) -> AsyncThrowingStream<CatalogProgress, any Error> {
+        AsyncThrowingStream { continuation in
+            continuation.finish(throwing: CatalogMaintenanceUITestError.failed)
+        }
+    }
+}
+
+private enum CatalogMaintenanceUITestError: LocalizedError, Sendable {
+    case failed
+
+    var errorDescription: String? {
+        "The test catalog update failed. The current catalog is still available."
     }
 }
