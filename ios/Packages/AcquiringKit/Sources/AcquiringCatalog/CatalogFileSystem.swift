@@ -10,6 +10,7 @@ protocol CatalogFileSystem: Sendable {
     func fileExists(at url: URL) -> Bool
     func createDirectory(at url: URL) throws
     func moveItem(at source: URL, to destination: URL) throws
+    func copyItem(at source: URL, to destination: URL) throws
     func removeItem(at url: URL) throws
     func contentsOfDirectory(at url: URL) -> [URL]
 }
@@ -25,6 +26,10 @@ struct LiveCatalogFileSystem: CatalogFileSystem {
 
     func moveItem(at source: URL, to destination: URL) throws {
         try FileManager.default.moveItem(at: source, to: destination)
+    }
+
+    func copyItem(at source: URL, to destination: URL) throws {
+        try FileManager.default.copyItem(at: source, to: destination)
     }
 
     func removeItem(at url: URL) throws {

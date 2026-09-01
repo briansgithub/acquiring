@@ -106,6 +106,7 @@ final class LibraryStore {
     private let prepareCatalog: @MainActor () async throws -> Void
     @ObservationIgnored private var searchTask: Task<Void, Never>?
     @ObservationIgnored private var maintenanceTask: Task<Void, Never>?
+    @ObservationIgnored private var maintenanceCancellation: (@Sendable () -> CatalogCancellationDisposition)?
     @ObservationIgnored private var maintenanceGeneration = 0
     @ObservationIgnored private var retryHarvestURL: URL?
 
@@ -186,7 +187,7 @@ final class LibraryStore {
         guard canInstallCatalog else { return }
         begin(
             operation: .downloadAndInstall,
-            stream: maintenance.downloadAndInstall()
+            run: maintenance.downloadAndInstall()
         )
     }
 
@@ -201,26 +202,30 @@ final class LibraryStore {
             return
         }
         retryHarvestURL = url
-        begin(operation: .harvest, stream: maintenance.harvest(url: url))
+        begin(operation: .harvest, run: maintenance.harvest(url: url))
     }
 
     func cancelMaintenance() {
         guard maintenanceState.canCancel,
               case let .running(operation, _) = maintenanceState
         else { return }
-        maintenanceGeneration += 1
-        let generation = maintenanceGeneration
-        let taskToCancel = maintenanceTask
-        maintenanceState = .cancelling(operation: operation)
-        // The service must serialize producer cleanup before allowing a retry to touch staging files.
-        maintenanceTask = Task { [weak self] in
-            taskToCancel?.cancel()
-            await taskToCancel?.value
-            guard let self,
-                  generation == self.maintenanceGeneration,
-                  self.maintenanceState == .cancelling(operation: operation)
-            else { return }
-            self.maintenanceState = .cancelled(operation: operation)
+
+        guard let maintenanceCancellation else { return }
+        switch maintenanceCancellation() {
+        case .accepted:
+            // Keep consuming the producer-owned stream so its terminal state
+            // remains authoritative and the app-scoped gate stays held until
+            // cleanup has actually finished.
+            maintenanceState = .cancelling(operation: operation)
+            return
+        case .commitInProgress:
+            // The swap/write crossed its commit boundary before this MainActor
+            // observed the installing progress. It must finish, so reconcile
+            // the UI immediately and keep the completion consumer alive.
+            maintenanceState = .running(operation: operation, progress: .installing)
+            return
+        case .noOperation:
+            return
         }
     }
 
@@ -238,7 +243,7 @@ final class LibraryStore {
                 harvest()
                 return
             }
-            begin(operation: .harvest, stream: maintenance.harvest(url: url))
+            begin(operation: .harvest, run: maintenance.harvest(url: url))
         }
     }
 
@@ -248,14 +253,15 @@ final class LibraryStore {
 
     private func begin(
         operation: CatalogMaintenanceOperation,
-        stream: AsyncThrowingStream<CatalogProgress, any Error>
+        run: CatalogMaintenanceRun
     ) {
         maintenanceTask?.cancel()
         maintenanceGeneration += 1
         let generation = maintenanceGeneration
         maintenanceState = .running(operation: operation, progress: .connecting)
+        maintenanceCancellation = { run.requestCancellation() }
         maintenanceTask = Task { [weak self] in
-            await self?.consume(stream, operation: operation, generation: generation)
+            await self?.consume(run.events, operation: operation, generation: generation)
         }
     }
 
@@ -264,6 +270,11 @@ final class LibraryStore {
         operation: CatalogMaintenanceOperation,
         generation: Int
     ) async {
+        defer {
+            if generation == maintenanceGeneration {
+                maintenanceCancellation = nil
+            }
+        }
         do {
             for try await progress in stream {
                 guard generation == maintenanceGeneration, !Task.isCancelled else { return }
@@ -277,11 +288,17 @@ final class LibraryStore {
                     maintenanceState = .completed(operation: operation, songCount: count)
                     return
                 } else {
+                    if maintenanceState == .cancelling(operation: operation) {
+                        continue
+                    }
+                    if case .running(_, .installing) = maintenanceState {
+                        continue
+                    }
                     maintenanceState = .running(operation: operation, progress: progress)
                 }
             }
             guard generation == maintenanceGeneration else { return }
-            if Task.isCancelled {
+            if maintenanceState == .cancelling(operation: operation) || Task.isCancelled {
                 maintenanceState = .cancelled(operation: operation)
             } else {
                 maintenanceState = .failed(
@@ -294,7 +311,11 @@ final class LibraryStore {
             maintenanceState = .cancelled(operation: operation)
         } catch {
             guard generation == maintenanceGeneration else { return }
-            maintenanceState = .failed(operation: operation, message: error.localizedDescription)
+            if maintenanceState == .cancelling(operation: operation) {
+                maintenanceState = .cancelled(operation: operation)
+            } else {
+                maintenanceState = .failed(operation: operation, message: error.localizedDescription)
+            }
         }
     }
 

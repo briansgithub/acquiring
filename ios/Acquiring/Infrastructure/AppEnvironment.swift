@@ -42,45 +42,61 @@ final class ExclusiveCatalogMaintenanceService: CatalogMaintenanceService, @unch
     typealias Stream = AsyncThrowingStream<CatalogProgress, any Error>
 
     private let base: any CatalogMaintenanceService
+    private let didRelease: (@Sendable () -> Void)?
     private let lock = NSLock()
     private var isBusy = false
 
-    init(base: any CatalogMaintenanceService) {
+    init(
+        base: any CatalogMaintenanceService,
+        didRelease: (@Sendable () -> Void)? = nil
+    ) {
         self.base = base
+        self.didRelease = didRelease
     }
 
-    func downloadAndInstall() -> Stream {
-        exclusiveStream { base.downloadAndInstall() }
+    func downloadAndInstall() -> CatalogMaintenanceRun {
+        exclusiveRun { base.downloadAndInstall() }
     }
 
-    func harvest(url: URL) -> Stream {
-        exclusiveStream { base.harvest(url: url) }
+    func harvest(url: URL) -> CatalogMaintenanceRun {
+        exclusiveRun { base.harvest(url: url) }
     }
 
-    private func exclusiveStream(_ makeSource: () -> Stream) -> Stream {
+    private func exclusiveRun(_ makeSource: () -> CatalogMaintenanceRun) -> CatalogMaintenanceRun {
         // This gates app callers; the base service still owns cancellation-safe staging cleanup.
         guard acquire() else {
-            return AsyncThrowingStream { continuation in
+            let events = Stream { continuation in
                 continuation.finish(throwing: CatalogMaintenanceGateError.operationInProgress)
             }
+            return CatalogMaintenanceRun(events: events, requestCancellation: { .noOperation })
         }
         let source = makeSource()
-        return AsyncThrowingStream { continuation in
-            let task = Task {
-                defer { self.release() }
+        let events = Stream { continuation in
+            Task {
+                var released = false
                 do {
-                    for try await progress in source {
+                    for try await progress in source.events {
+                        if case .completed = progress, !released {
+                            self.release()
+                            released = true
+                        }
                         continuation.yield(progress)
                     }
+                    if !released { self.release() }
                     continuation.finish()
                 } catch is CancellationError {
+                    if !released { self.release() }
                     continuation.finish()
                 } catch {
+                    if !released { self.release() }
                     continuation.finish(throwing: error)
                 }
             }
-            continuation.onTermination = { _ in task.cancel() }
+            continuation.onTermination = { _ in
+                _ = source.requestCancellation()
+            }
         }
+        return CatalogMaintenanceRun(events: events) { source.requestCancellation() }
     }
 
     private func acquire() -> Bool {
@@ -95,6 +111,7 @@ final class ExclusiveCatalogMaintenanceService: CatalogMaintenanceService, @unch
         lock.lock()
         isBusy = false
         lock.unlock()
+        didRelease?()
     }
 }
 
@@ -227,6 +244,64 @@ private enum CatalogMaintenanceUITestScenario: Equatable, Sendable {
     }
 }
 
+private final class UITestMaintenanceRunController: @unchecked Sendable {
+    private enum Phase {
+        case starting
+        case cancellable(Task<Void, Never>)
+        case committing
+        case finished
+    }
+
+    private let lock = NSLock()
+    private var phase: Phase = .starting
+
+    func attach(_ task: Task<Void, Never>) {
+        lock.lock()
+        if case .starting = phase { phase = .cancellable(task) }
+        lock.unlock()
+    }
+
+    func beginCommit() -> Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        switch phase {
+        case .starting, .cancellable:
+            phase = .committing
+            return true
+        case .committing:
+            return true
+        case .finished:
+            return false
+        }
+    }
+
+    func finish() {
+        lock.lock()
+        phase = .finished
+        lock.unlock()
+    }
+
+    @discardableResult
+    func requestCancellation() -> CatalogCancellationDisposition {
+        var task: Task<Void, Never>?
+        let disposition: CatalogCancellationDisposition
+        lock.lock()
+        switch phase {
+        case .cancellable(let value):
+            task = value
+            phase = .finished
+            disposition = .accepted
+        case .committing:
+            disposition = .commitInProgress
+        case .starting, .finished:
+            disposition = .noOperation
+        }
+        lock.unlock()
+        task?.cancel()
+        return disposition
+    }
+}
+
 private final class CatalogMaintenanceUITestService: CatalogMaintenanceService, @unchecked Sendable {
     typealias InstallFixture = @Sendable () async throws -> Int
     typealias Stream = AsyncThrowingStream<CatalogProgress, any Error>
@@ -243,7 +318,7 @@ private final class CatalogMaintenanceUITestService: CatalogMaintenanceService, 
         self.installFixture = installFixture
     }
 
-    func downloadAndInstall() -> Stream {
+    func downloadAndInstall() -> CatalogMaintenanceRun {
         lock.lock()
         downloadAttempts += 1
         let attempt = downloadAttempts
@@ -251,49 +326,64 @@ private final class CatalogMaintenanceUITestService: CatalogMaintenanceService, 
 
         switch scenario {
         case .failure where attempt == 1:
-            return Stream { continuation in
+            let events = Stream { continuation in
                 continuation.yield(.connecting)
                 continuation.yield(.downloading(fraction: 0.25))
                 continuation.finish(throwing: CatalogMaintenanceUITestError.downloadFailed)
             }
+            return CatalogMaintenanceRun(events: events, requestCancellation: { .noOperation })
         case .cancellable:
-            return Stream { continuation in
+            let controller = UITestMaintenanceRunController()
+            let events = Stream { continuation in
                 let task = Task {
                     continuation.yield(.connecting)
                     continuation.yield(.downloading(fraction: 0.25))
                     while !Task.isCancelled {
                         try? await Task.sleep(for: .seconds(60))
                     }
+                    controller.finish()
+                    continuation.finish()
                 }
-                continuation.onTermination = { _ in task.cancel() }
+                controller.attach(task)
+                continuation.onTermination = { _ in controller.requestCancellation() }
             }
+            return CatalogMaintenanceRun(events: events) { controller.requestCancellation() }
         case .failure, .success:
-            return Stream { continuation in
+            let controller = UITestMaintenanceRunController()
+            let events = Stream { continuation in
                 let task = Task {
                     do {
                         continuation.yield(.connecting)
                         continuation.yield(.preparing)
                         continuation.yield(.validating)
+                        try Task.checkCancellation()
+                        guard controller.beginCommit() else { throw CancellationError() }
                         continuation.yield(.installing)
                         let count = try await self.installFixture()
+                        controller.finish()
                         continuation.yield(.completed(songCount: count))
                         continuation.finish()
                     } catch is CancellationError {
+                        controller.finish()
                         continuation.finish()
                     } catch {
+                        controller.finish()
                         continuation.finish(throwing: error)
                     }
                 }
-                continuation.onTermination = { _ in task.cancel() }
+                controller.attach(task)
+                continuation.onTermination = { _ in controller.requestCancellation() }
             }
+            return CatalogMaintenanceRun(events: events) { controller.requestCancellation() }
         case .harvestFailure:
-            return Stream { continuation in
+            let events = Stream { continuation in
                 continuation.finish(throwing: CatalogMaintenanceUITestError.downloadFailed)
             }
+            return CatalogMaintenanceRun(events: events, requestCancellation: { .noOperation })
         }
     }
 
-    func harvest(url: URL) -> Stream {
+    func harvest(url: URL) -> CatalogMaintenanceRun {
         lock.lock()
         harvestAttempts += 1
         let attempt = harvestAttempts
@@ -303,32 +393,43 @@ private final class CatalogMaintenanceUITestService: CatalogMaintenanceService, 
         lock.unlock()
 
         guard usesOriginalURL else {
-            return Stream { continuation in
+            let events = Stream { continuation in
                 continuation.finish(throwing: CatalogMaintenanceUITestError.unexpectedHarvestURL)
             }
+            return CatalogMaintenanceRun(events: events, requestCancellation: { .noOperation })
         }
         if scenario == .harvestFailure, attempt == 1 {
-            return Stream { continuation in
+            let events = Stream { continuation in
                 continuation.yield(.connecting)
                 continuation.finish(throwing: CatalogMaintenanceUITestError.harvestFailed)
             }
+            return CatalogMaintenanceRun(events: events, requestCancellation: { .noOperation })
         }
-        return Stream { continuation in
+        let controller = UITestMaintenanceRunController()
+        let events = Stream { continuation in
             let task = Task {
                 do {
                     continuation.yield(.connecting)
                     continuation.yield(.harvesting(current: 1, total: 1))
+                    try Task.checkCancellation()
+                    guard controller.beginCommit() else { throw CancellationError() }
+                    continuation.yield(.installing)
                     let count = try await self.installFixture()
+                    controller.finish()
                     continuation.yield(.completed(songCount: count))
                     continuation.finish()
                 } catch is CancellationError {
+                    controller.finish()
                     continuation.finish()
                 } catch {
+                    controller.finish()
                     continuation.finish(throwing: error)
                 }
             }
-            continuation.onTermination = { _ in task.cancel() }
+            controller.attach(task)
+            continuation.onTermination = { _ in controller.requestCancellation() }
         }
+        return CatalogMaintenanceRun(events: events) { controller.requestCancellation() }
     }
 }
 

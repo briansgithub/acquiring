@@ -309,9 +309,11 @@ final class AcquiringTests: XCTestCase {
 
         first.store.installCatalog()
         second.store.installCatalog()
+        second.store.cancelMaintenance()
         await second.store.waitForMaintenance()
 
         XCTAssertEqual(underlying.downloadCallCount, 1)
+        XCTAssertTrue(first.store.maintenanceState.isRunning)
         XCTAssertEqual(
             second.store.maintenanceState,
             .failed(
@@ -321,6 +323,84 @@ final class AcquiringTests: XCTestCase {
         )
         first.store.cancelMaintenance()
         await first.store.waitForMaintenance()
+    }
+
+    func testAppScopedGateReleasesBeforeForwardingCompletion() async throws {
+        let underlying = ScriptedCatalogMaintenanceService(downloads: [
+            { progressStream([.completed(songCount: 1)]) },
+            { progressStream([.completed(songCount: 2)]) }
+        ])
+        let maintenance = ExclusiveCatalogMaintenanceService(base: underlying)
+        let first = maintenance.downloadAndInstall()
+        var iterator = first.events.makeAsyncIterator()
+
+        let firstProgress = try await iterator.next()
+        XCTAssertEqual(firstProgress, .completed(songCount: 1))
+
+        let second = maintenance.downloadAndInstall()
+        var secondProgress: [CatalogProgress] = []
+        for try await progress in second.events { secondProgress.append(progress) }
+
+        XCTAssertEqual(underlying.downloadCallCount, 2)
+        XCTAssertEqual(secondProgress, [.completed(songCount: 2)])
+    }
+
+    func testDroppingObserverDuringCommitKeepsAppScopedGateUntilSourceTerminal() async throws {
+        let pair = AsyncThrowingStream<CatalogProgress, any Error>.makeStream()
+        let observerSawInstalling = expectation(description: "observer consumed installing progress")
+        let gateReleased = expectation(description: "app-scoped gate released")
+        let gateReleaseSignal = OneShotExpectation(gateReleased)
+        let underlying = ScriptedCatalogMaintenanceService(
+            downloads: [
+                { pair.stream },
+                { progressStream([.completed(songCount: 2)]) }
+            ],
+            cancellationDispositions: [.commitInProgress]
+        )
+        let maintenance = ExclusiveCatalogMaintenanceService(
+            base: underlying,
+            didRelease: { gateReleaseSignal.fulfill() }
+        )
+        let first = maintenance.downloadAndInstall()
+        let observer = Task {
+            do {
+                for try await progress in first.events {
+                    if progress == .installing {
+                        observerSawInstalling.fulfill()
+                    }
+                }
+            } catch {
+                // Cancellation of the outer observer is the behavior under test.
+            }
+        }
+
+        pair.continuation.yield(.installing)
+        await fulfillment(of: [observerSawInstalling], timeout: 2)
+        observer.cancel()
+        _ = await observer.result
+
+        let blocked = maintenance.downloadAndInstall()
+        do {
+            for try await _ in blocked.events {}
+            XCTFail("a dropped observer must not release the gate during commit")
+        } catch {
+            XCTAssertEqual(
+                error.localizedDescription,
+                "Another catalog operation is already running in a different window."
+            )
+        }
+        XCTAssertEqual(underlying.downloadCallCount, 1)
+
+        pair.continuation.yield(.completed(songCount: 1))
+        pair.continuation.finish()
+        await fulfillment(of: [gateReleased], timeout: 2)
+
+        let retry = maintenance.downloadAndInstall()
+        var acceptedProgress: [CatalogProgress] = []
+        for try await value in retry.events { acceptedProgress.append(value) }
+
+        XCTAssertEqual(underlying.downloadCallCount, 2)
+        XCTAssertEqual(acceptedProgress, [.completed(songCount: 2)])
     }
 
     @MainActor
@@ -484,6 +564,78 @@ final class AcquiringTests: XCTestCase {
         XCTAssertFalse(fixture.store.maintenanceState.canCancel)
     }
 
+    @MainActor
+    func testLateCancellationReconcilesToCommitAndConsumesCompletion() async throws {
+        let pair = AsyncThrowingStream<CatalogProgress, any Error>.makeStream()
+        let maintenance = ScriptedCatalogMaintenanceService(
+            downloads: [{ pair.stream }],
+            cancellationDispositions: [.commitInProgress]
+        )
+        let fixture = try makeLibraryStore(maintenance: maintenance, catalogCount: 42)
+        defer { fixture.cleanup() }
+
+        fixture.store.installCatalog()
+        pair.continuation.yield(.validating)
+        for _ in 0..<100 {
+            if fixture.store.maintenanceState == .running(
+                operation: .downloadAndInstall,
+                progress: .validating
+            ) { break }
+            await Task.yield()
+        }
+
+        fixture.store.cancelMaintenance()
+
+        XCTAssertEqual(
+            fixture.store.maintenanceState,
+            .running(operation: .downloadAndInstall, progress: .installing)
+        )
+        XCTAssertFalse(fixture.store.maintenanceState.canCancel)
+
+        pair.continuation.yield(.completed(songCount: 999))
+        pair.continuation.finish()
+        await fixture.store.waitForMaintenance()
+
+        XCTAssertEqual(
+            fixture.store.maintenanceState,
+            .completed(operation: .downloadAndInstall, songCount: 42)
+        )
+        XCTAssertEqual(fixture.store.catalogState, .content(42))
+    }
+
+    @MainActor
+    func testAcceptedCancellationIgnoresBufferedProgressUntilTerminalCancellation() async throws {
+        let pair = AsyncThrowingStream<CatalogProgress, any Error>.makeStream()
+        let maintenance = ScriptedCatalogMaintenanceService(
+            downloads: [{ pair.stream }],
+            cancellationDispositions: [.accepted]
+        )
+        let fixture = try makeLibraryStore(maintenance: maintenance, catalogCount: 7)
+        defer { fixture.cleanup() }
+
+        fixture.store.installCatalog()
+        fixture.store.cancelMaintenance()
+        XCTAssertEqual(
+            fixture.store.maintenanceState,
+            .cancelling(operation: .downloadAndInstall)
+        )
+
+        pair.continuation.yield(.validating)
+        for _ in 0..<20 { await Task.yield() }
+        XCTAssertEqual(
+            fixture.store.maintenanceState,
+            .cancelling(operation: .downloadAndInstall)
+        )
+
+        pair.continuation.finish(throwing: URLError(.cancelled))
+        await fixture.store.waitForMaintenance()
+        XCTAssertEqual(
+            fixture.store.maintenanceState,
+            .cancelled(operation: .downloadAndInstall)
+        )
+        XCTAssertEqual(fixture.store.catalogState, .content(7))
+    }
+
     func testCatalogAccessibilityAnnouncementsIgnorePercentageChurn() {
         let first = CatalogMaintenanceState.running(
             operation: .downloadAndInstall,
@@ -606,21 +758,59 @@ private struct TestCatalogFailure: LocalizedError, Sendable {
     var errorDescription: String? { "Test catalog failure." }
 }
 
+private final class TestMaintenanceRunController: @unchecked Sendable {
+    private let lock = NSLock()
+    private var task: Task<Void, Never>?
+    private var isFinished = false
+
+    func attach(_ task: Task<Void, Never>) {
+        lock.lock()
+        if !isFinished { self.task = task }
+        lock.unlock()
+    }
+
+    func finish() {
+        lock.lock()
+        isFinished = true
+        task = nil
+        lock.unlock()
+    }
+
+    func requestCancellation() -> CatalogCancellationDisposition {
+        let task: Task<Void, Never>?
+        lock.lock()
+        if isFinished {
+            task = nil
+        } else {
+            isFinished = true
+            task = self.task
+            self.task = nil
+        }
+        lock.unlock()
+        guard let task else { return .noOperation }
+        task.cancel()
+        return .accepted
+    }
+}
+
 private final class ScriptedCatalogMaintenanceService: CatalogMaintenanceService, @unchecked Sendable {
     typealias Stream = AsyncThrowingStream<CatalogProgress, any Error>
 
     private let lock = NSLock()
     private var downloads: [@Sendable () -> Stream]
     private var harvests: [@Sendable (URL) -> Stream]
+    private var cancellationDispositions: [CatalogCancellationDisposition]
     private var downloadCalls = 0
     private var requestedHarvestURLs: [URL] = []
 
     init(
         downloads: [@Sendable () -> Stream] = [],
-        harvests: [@Sendable (URL) -> Stream] = []
+        harvests: [@Sendable (URL) -> Stream] = [],
+        cancellationDispositions: [CatalogCancellationDisposition] = []
     ) {
         self.downloads = downloads
         self.harvests = harvests
+        self.cancellationDispositions = cancellationDispositions
     }
 
     var downloadCallCount: Int {
@@ -635,20 +825,58 @@ private final class ScriptedCatalogMaintenanceService: CatalogMaintenanceService
         return requestedHarvestURLs
     }
 
-    func downloadAndInstall() -> Stream {
+    func downloadAndInstall() -> CatalogMaintenanceRun {
         lock.lock()
         downloadCalls += 1
         let factory = downloads.isEmpty ? nil : downloads.removeFirst()
         lock.unlock()
-        return factory?() ?? failureStream(TestCatalogFailure())
+        return managedRun(factory?() ?? failureStream(TestCatalogFailure()))
     }
 
-    func harvest(url: URL) -> Stream {
+    func harvest(url: URL) -> CatalogMaintenanceRun {
         lock.lock()
         requestedHarvestURLs.append(url)
         let factory = harvests.isEmpty ? nil : harvests.removeFirst()
         lock.unlock()
-        return factory?(url) ?? failureStream(TestCatalogFailure())
+        return managedRun(factory?(url) ?? failureStream(TestCatalogFailure()))
+    }
+
+    private func managedRun(_ source: Stream) -> CatalogMaintenanceRun {
+        let controller = TestMaintenanceRunController()
+        let events = Stream { continuation in
+            let task = Task {
+                do {
+                    for try await progress in source {
+                        if case .completed = progress { controller.finish() }
+                        continuation.yield(progress)
+                    }
+                    controller.finish()
+                    continuation.finish()
+                } catch is CancellationError {
+                    controller.finish()
+                    continuation.finish()
+                } catch {
+                    controller.finish()
+                    continuation.finish(throwing: error)
+                }
+            }
+            controller.attach(task)
+            continuation.onTermination = { _ in
+                _ = controller.requestCancellation()
+            }
+        }
+        return CatalogMaintenanceRun(events: events) { [weak self] in
+            if let forced = self?.nextCancellationDisposition() {
+                return forced
+            }
+            return controller.requestCancellation()
+        }
+    }
+
+    private func nextCancellationDisposition() -> CatalogCancellationDisposition? {
+        lock.lock()
+        defer { lock.unlock() }
+        return cancellationDispositions.isEmpty ? nil : cancellationDispositions.removeFirst()
     }
 }
 
@@ -688,6 +916,27 @@ private actor CancellationProbe {
 
     func recordProducerTermination() {
         terminationCount += 1
+    }
+}
+
+private final class OneShotExpectation: @unchecked Sendable {
+    private let expectation: XCTestExpectation
+    private let lock = NSLock()
+    private var hasFulfilled = false
+
+    init(_ expectation: XCTestExpectation) {
+        self.expectation = expectation
+    }
+
+    func fulfill() {
+        lock.lock()
+        guard !hasFulfilled else {
+            lock.unlock()
+            return
+        }
+        hasFulfilled = true
+        lock.unlock()
+        expectation.fulfill()
     }
 }
 
