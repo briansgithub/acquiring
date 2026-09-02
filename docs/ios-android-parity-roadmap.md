@@ -18,6 +18,7 @@ Legend for the original categorization: **[done]** = already true on iOS, verify
    - `swift test --package-path ios/Packages/AcquiringKit` for pure logic (theory, chords, DSP, timing, tessitura) — fast, fully autonomous, and the primary safety net since most of this logic is already ported and tested.
    - Rebuild → reinstall → relaunch → screenshot in the `iPhone 17` simulator after every change (per `ios/AGENTS.md`), for visual/layout checks.
    - `xcodebuild test` (XCUITest) for anything requiring real interaction (taps, typing, navigation, state changes) — rewritten/extended incrementally as each screen's design settles. **Confirmed macOS System Events cannot drive the Simulator**: the device screen is a bitmap to the host, its UI elements aren't exposed to Accessibility, and `click at`/`keystroke` land nowhere inside the simulated app (verified empirically — clicks and typed text produced no effect). XCUITest is therefore the only reliable interactive-verification layer, not a supplementary one; the Accessibility grant helps for other host-level automation but not this.
+   - For a real screenshot of an interactive state (not just a cold launch), attach one from inside the XCUITest (`XCTAttachment(screenshot: app.screenshot())`, `.lifetime = .keepAlways`) and pull it out afterward with `xcrun xcresulttool export attachments --path <xcresult> --output-path <dir>`. This is the practical visual-confirmation technique, since System Events cannot drive the Simulator (see above).
    - Audio-perceptual correctness and full VoiceOver experience are the two things that can't be fully closed-loop verified without a human; these are implemented and structurally checked, then flagged rather than claimed as fully autonomous.
 2. **Per-feature loop:** identify the existing `AcquiringKit`/`AppEnvironment` API that already covers the logic → implement the minimal SwiftUI wiring → run the applicable testing layers → commit referencing the feature number → move on.
 3. **One flagged decision point:** Android used a custom draggable knob for arpeggio rate (items 85, 88, 91). iOS has no native equivalent. Default plan: use a native `Picker`/`Stepper` instead of a custom dial. Flagged once when we reach item 85, not re-asked per item. (An earlier draft of this plan also flagged the "audiation puck" — see Backward-pass corrections below for why that's resolved, not just deferred to a decision.)
@@ -52,8 +53,8 @@ Before starting execution, re-examined the Android history for commits that were
 12. [ ] Cancel playback on skip/reset
 13. [skip] Add compact Android agent rules
 14. [ ] Remove tonic letter from Quiz key display
-15. [ ] Fix root-relative chord degree labels
-16. [ ] Polish chord/scale-degree rendering
+15. [x] Fix root-relative chord degree labels — chord card shows the root's scale degree via `MusicTheory.degreeLabel`/`ChordInterpreter.resolvedRoot`, confirmed by a real XCUITest screenshot
+16. [x] Polish chord/scale-degree rendering — `FittedRomanNumeral` + `FittedScaleDegree` side by side in the chord card
 17. [ ] Quiz tempo as a percentage with reset
 18. [x] Match Hooktheory suspended extension voicings
 19. [ ] Fix quiz playback controls and looping
