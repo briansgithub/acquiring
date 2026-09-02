@@ -65,13 +65,23 @@ struct QuizView: View {
         let active = activeChord(in: section)
         let key = active.map { section.key(at: $0.beat) } ?? section.keys[0].key
         let symbol = active.map { ChordInterpreter.romanSymbol(for: $0.chord, key: key) } ?? "—"
+        let rootDegree = active
+            .flatMap { ChordInterpreter.resolvedRoot(for: $0.chord, key: key)?.pitch }
+            .map { MusicTheory.degreeLabel(midi: $0.midiNote, key: key) } ?? ""
         return GroupBox("Chord") {
-            FittedRomanNumeral(
-                display: RomanNumeralDisplay(symbol: symbol, borrowed: active?.chord["borrowed"]),
-                maximumFontSize: 64,
-                minimumFontSize: 14
-            )
-            .frame(maxWidth: .infinity, minHeight: 90)
+            HStack(spacing: 12) {
+                FittedRomanNumeral(
+                    display: RomanNumeralDisplay(symbol: symbol, borrowed: active?.chord["borrowed"]),
+                    maximumFontSize: 64,
+                    minimumFontSize: 14
+                )
+                .frame(width: 210, height: 90)
+                if !rootDegree.isEmpty {
+                    FittedScaleDegree(rootDegree, maximumFontSize: 48, minimumFontSize: 14)
+                        .frame(width: 70, height: 90)
+                }
+            }
+            .frame(maxWidth: .infinity)
         }
     }
 

@@ -34,6 +34,9 @@ final class AcquiringUITests: XCTestCase {
             app.descendants(matching: .any)["quiz.chordCard"].waitForExistence(timeout: 5)
         )
         XCTAssertTrue(app.buttons["quiz.play"].waitForExistence(timeout: 5))
+        let shot = XCTAttachment(screenshot: app.screenshot())
+        shot.lifetime = .keepAlways
+        add(shot)
 
         app.navigationBars["Quiz"].buttons.element(boundBy: 0).tap()
         XCTAssertTrue(app.navigationBars["Song"].waitForExistence(timeout: 5))
