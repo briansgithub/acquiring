@@ -956,7 +956,17 @@ fun LibraryView(
     Column(modifier = Modifier.fillMaxSize()) {
         Spacer(modifier = Modifier.weight(0.3f))
         // Search Section
-        Text(text = "Song Database Search", style = MaterialTheme.typography.titleMedium)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Song Database Search",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.weight(1f)
+            )
+            PrivacyPolicyLink()
+        }
         
         // Search by Title/Slug
         ExposedDropdownMenuBox(

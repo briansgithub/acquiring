@@ -33,3 +33,12 @@ __pycache__/
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Beta release credentials and local Fastlane dependencies (never commit).
+*.jks
+*.keystore
+gha-creds-*.json
+fastlane/.bundle/
+fastlane/vendor/
+fastlane/report.xml
+fastlane/README.md
