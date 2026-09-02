@@ -316,67 +316,155 @@ private struct AllSongsView: View {
     @Environment(AppEnvironment.self) private var environment
     @State private var mode: BrowseMode = .alphabetical
     @State private var filter = ""
-    @State private var counts: [BrowseGroupCount] = []
+    @State private var countsByKey: [String: Int] = [:]
     @State private var expandedKey: String?
     @State private var songs: [CatalogSong] = []
     @State private var error: String?
 
+    /// The domain owns which headings exist, what they are called and the order
+    /// they appear in. The view never derives a heading from a query result, so
+    /// a group with no rows is still offered to the reader.
+    private var groups: [BrowseGroupDescriptor] { BrowseGrouping.groups(for: mode) }
+
     var body: some View {
-        List {
+        VStack(spacing: 0) {
             Picker("Grouping", selection: $mode) {
                 Text("Alphabetical").tag(BrowseMode.alphabetical)
                 Text("Complexity").tag(BrowseMode.complexity)
                 Text("Mode").tag(BrowseMode.mode)
             }
             .pickerStyle(.segmented)
-            if let error { Label(error, systemImage: "exclamationmark.triangle").foregroundStyle(.red) }
-            ForEach(counts, id: \.key) { count in
-                Section {
-                    Button {
-                        expandedKey = expandedKey == count.key ? nil : count.key
-                        Task { await loadSongs(key: count.key) }
-                    } label: {
-                        LabeledContent(groupLabel(count.key), value: count.count.formatted())
-                    }
-                    if expandedKey == count.key {
-                        ForEach(songs) { song in SongRow(song: song) { store.openSong(song) } }
+            .padding(.horizontal)
+            .padding(.vertical, 8)
+            .accessibilityIdentifier("allSongs.grouping")
+
+            if let error {
+                Label(error, systemImage: "exclamationmark.triangle")
+                    .font(.footnote)
+                    .foregroundStyle(.red)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal)
+                    .padding(.bottom, 8)
+                    .accessibilityIdentifier("allSongs.error")
+            }
+
+            List {
+                ForEach(groups) { group in
+                    Section {
+                        if expandedKey == group.key {
+                            ForEach(songs) { song in
+                                SongRow(song: song) { store.openSong(song) }
+                            }
+                        }
+                    } header: {
+                        heading(for: group)
                     }
                 }
             }
+            // Plain style keeps each heading pinned while its own rows scroll,
+            // which is what makes the heading a usable landmark in a list this
+            // long.
+            .listStyle(.plain)
+            // Re-identifying on the grouping returns the list to its top rather
+            // than stranding the reader at a scroll offset that meant something
+            // in the previous grouping.
+            .id(mode)
         }
         .navigationTitle("All Songs")
         .searchable(text: $filter, prompt: "Filter title or artist")
-        .task(id: mode) { await loadCounts() }
+        .task(id: mode) {
+            // A grouping change invalidates the open heading, its rows and any
+            // error raised under the previous grouping.
+            expandedKey = nil
+            songs = []
+            error = nil
+            await loadCounts()
+        }
         .task(id: filter) {
             try? await Task.sleep(for: .milliseconds(250))
             await loadCounts()
         }
     }
 
+    private func heading(for group: BrowseGroupDescriptor) -> some View {
+        let count = countsByKey[group.key]
+        let isExpanded = expandedKey == group.key
+        return Button {
+            toggle(group)
+        } label: {
+            HStack {
+                Text(group.label)
+                Spacer()
+                // A count appears only where the query reported one. A heading
+                // is never hidden for want of a count, and a missing count is
+                // never shown as a zero.
+                if let count {
+                    Text(count.formatted()).foregroundStyle(.secondary)
+                }
+                Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .ignore)
+        .accessibilityIdentifier("allSongs.group.\(mode.rawValue).\(group.key)")
+        .accessibilityLabel(isExpanded ? "Collapse \(group.label)" : "Expand \(group.label)")
+        .accessibilityValue(Self.accessibilityValue(count: count, isExpanded: isExpanded))
+        .accessibilityAddTraits(.isHeader)
+    }
+
+    private static func accessibilityValue(count: Int?, isExpanded: Bool) -> String {
+        let state = isExpanded ? "expanded" : "collapsed"
+        guard let count else { return state }
+        return "\(count.formatted()) \(count == 1 ? "song" : "songs"), \(state)"
+    }
+
+    private func toggle(_ group: BrowseGroupDescriptor) {
+        expandedKey = BrowseGrouping.toggledExpandedGroup(current: expandedKey, selected: group.key)
+        // Drop the previous heading's rows immediately so they cannot appear
+        // for a moment underneath a different heading.
+        songs = []
+        guard let expandedKey else { return }
+        Task { await loadSongs(key: expandedKey) }
+    }
+
     private func loadCounts() async {
         do {
-            counts = try await environment.catalog.browseCounts(mode: mode, filter: filter)
+            let results = try await environment.catalog.browseCounts(mode: mode, filter: filter)
+            countsByKey = Dictionary(results.map { ($0.key, $0.count) }, uniquingKeysWith: +)
+            error = nil
             if let expandedKey { await loadSongs(key: expandedKey) }
-        } catch { self.error = error.localizedDescription }
+        } catch {
+            self.error = error.localizedDescription
+        }
     }
 
     private func loadSongs(key: String) async {
-        guard expandedKey == key else { songs = []; return }
+        // The second condition stops a key from a previous grouping being
+        // spent as though it belonged to this one.
+        guard expandedKey == key, groups.contains(where: { $0.key == key }) else {
+            songs = []
+            return
+        }
         do {
-            let group: BrowseGroup = switch mode {
-            case .alphabetical: .alphabetical(key)
-            case .complexity: .complexity(key == "unrated" ? nil : Int(key))
-            case .mode: .mode(key)
-            }
-            songs = try await environment.catalog.browseSongs(group: group, filter: filter)
-        } catch { self.error = error.localizedDescription }
+            songs = try await environment.catalog.browseSongs(group: browseGroup(for: key), filter: filter)
+            error = nil
+        } catch {
+            self.error = error.localizedDescription
+        }
     }
 
-    private func groupLabel(_ key: String) -> String {
-        guard mode == .complexity, let bucket = Int(key) else {
-            return key == "unrated" ? "Unrated" : key.capitalized
+    private func browseGroup(for key: String) -> BrowseGroup {
+        switch mode {
+        case .alphabetical:
+            .alphabetical(key)
+        case .complexity:
+            key == BrowseGrouping.unratedKey ? .complexity(nil) : .complexity(Int(key))
+        case .mode:
+            .mode(key)
         }
-        return "\(bucket * 10)–\(bucket * 10 + 10)"
     }
 }
 
