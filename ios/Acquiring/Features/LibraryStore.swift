@@ -3,6 +3,11 @@ import AcquiringCore
 import Foundation
 import Observation
 
+struct CatalogDownloadInfo: Equatable {
+    let formattedSize: String
+    let songCount: Int
+}
+
 enum AppRoute: Hashable {
     case artist(String)
     case allSongs
@@ -98,12 +103,16 @@ final class LibraryStore {
     var maintenanceState: CatalogMaintenanceState = .idle
     var userContentError: String?
     var harvestURL = ""
+    var downloadInfo: FeatureState<CatalogDownloadInfo> = .idle
+    var downloadPromptDismissed = false
 
     private let catalog: any CatalogRepository
     private let maintenance: any CatalogMaintenanceService
     private let history: HistoryStore
     private let userLibrary: UserLibraryStore
     private let prepareCatalog: @MainActor () async throws -> Void
+    private let downloadURL: URL
+    private let expectedSongCount: Int
     @ObservationIgnored private var searchTask: Task<Void, Never>?
     @ObservationIgnored private var maintenanceTask: Task<Void, Never>?
     @ObservationIgnored private var maintenanceCancellation: (@Sendable () -> CatalogCancellationDisposition)?
@@ -132,7 +141,9 @@ final class LibraryStore {
             maintenance: environment.maintenance,
             history: environment.history,
             userLibrary: environment.userLibrary,
-            prepareCatalog: { try await environment.prepare() }
+            prepareCatalog: { try await environment.prepare() },
+            downloadURL: environment.catalogConfiguration.downloadURL,
+            expectedSongCount: environment.catalogConfiguration.contract.minimumBrowseRows
         )
     }
 
@@ -141,13 +152,17 @@ final class LibraryStore {
         maintenance: any CatalogMaintenanceService,
         history: HistoryStore,
         userLibrary: UserLibraryStore,
-        prepareCatalog: @escaping @MainActor () async throws -> Void
+        prepareCatalog: @escaping @MainActor () async throws -> Void,
+        downloadURL: URL = URL(string: "https://example.invalid/catalog.db.gz")!,
+        expectedSongCount: Int = 0
     ) {
         self.catalog = catalog
         self.maintenance = maintenance
         self.history = history
         self.userLibrary = userLibrary
         self.prepareCatalog = prepareCatalog
+        self.downloadURL = downloadURL
+        self.expectedSongCount = expectedSongCount
     }
 
     func load() async {
@@ -171,6 +186,27 @@ final class LibraryStore {
             userContentError = nil
         } catch {
             userContentError = error.localizedDescription
+        }
+    }
+
+    func loadDownloadInfoIfNeeded() {
+        guard downloadInfo == .idle else { return }
+        downloadInfo = .loading
+        let url = downloadURL
+        let songCount = expectedSongCount
+        Task {
+            var request = URLRequest(url: url)
+            request.httpMethod = "HEAD"
+            do {
+                let (_, response) = try await URLSession.shared.data(for: request)
+                let byteCount = response.expectedContentLength
+                let formattedSize = byteCount > 0
+                    ? ByteCountFormatter.string(fromByteCount: byteCount, countStyle: .file)
+                    : "Unknown size"
+                downloadInfo = .content(CatalogDownloadInfo(formattedSize: formattedSize, songCount: songCount))
+            } catch {
+                downloadInfo = .failure(error.localizedDescription)
+            }
         }
     }
 
