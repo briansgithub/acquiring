@@ -97,8 +97,11 @@ private struct SearchCatalogView: View {
         VStack(spacing: 0) {
             HStack(spacing: 8) {
                 Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
-                TextField("Search songs or artists", text: $store.query)
-                    .textFieldStyle(.plain)
+                TextField(
+                    store.searchScope == .songs ? "Search songs" : "Search artists",
+                    text: $store.query
+                )
+                .textFieldStyle(.plain)
                 if !store.query.isEmpty {
                     Button {
                         store.query = ""
@@ -110,7 +113,15 @@ private struct SearchCatalogView: View {
             }
             .padding(10)
             .background(.quaternary, in: RoundedRectangle(cornerRadius: 10))
-            .padding()
+            .padding(.horizontal)
+            .padding(.top)
+
+            Picker("Search scope", selection: $store.searchScope) {
+                ForEach(SearchScope.allCases) { scope in Text(scope.rawValue).tag(scope) }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal)
+            .padding(.top, 8)
 
             List {
                 searchResults
@@ -125,33 +136,66 @@ private struct SearchCatalogView: View {
 
     @ViewBuilder
     private var searchResults: some View {
+        switch store.searchScope {
+        case .songs: songResults
+        case .artists: artistResults
+        }
+    }
+
+    @ViewBuilder
+    private var songResults: some View {
         switch store.suggestions {
-        case .idle:
-            if case let .content(count) = store.catalogState {
-                Text("\(count.formatted()) songs ready. Search above to find one.")
-                    .foregroundStyle(.secondary)
-            } else {
-                Text("No catalog installed yet. Search results will be empty until you download it.")
-                    .foregroundStyle(.secondary)
-            }
-        case .loading:
-            ProgressView()
+        case .idle: idlePrompt
+        case .loading: ProgressView()
         case let .content(songs):
-            ForEach(songs) { song in
-                Button {
-                    store.openSong(song)
-                } label: {
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text(song.displayTitle).foregroundStyle(.primary)
-                        Text(song.displayArtist).font(.subheadline).foregroundStyle(.secondary)
-                    }
-                }
+            ForEach(songs) { song in SongRow(song: song) { store.openSong(song) } }
+        case .empty:
+            Text("No matches").foregroundStyle(.secondary)
+        case let .failure(message):
+            Text(message).foregroundStyle(.red)
+        }
+    }
+
+    @ViewBuilder
+    private var artistResults: some View {
+        switch store.artistSuggestions {
+        case .idle: idlePrompt
+        case .loading: ProgressView()
+        case let .content(artists):
+            ForEach(artists, id: \.self) { artist in
+                Button(artist) { store.path.append(.artist(artist)) }
             }
         case .empty:
             Text("No matches").foregroundStyle(.secondary)
         case let .failure(message):
             Text(message).foregroundStyle(.red)
         }
+    }
+
+    @ViewBuilder
+    private var idlePrompt: some View {
+        if case let .content(count) = store.catalogState {
+            Text("\(count.formatted()) songs ready. Search above to find one.")
+                .foregroundStyle(.secondary)
+        } else {
+            Text("No catalog installed yet. Search results will be empty until you download it.")
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
+private struct SongRow: View {
+    let song: CatalogSong
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 3) {
+                Text(song.displayTitle).foregroundStyle(.primary)
+                Text(song.displayArtist).font(.subheadline).foregroundStyle(.secondary)
+            }
+        }
+        .accessibilityLabel("\(song.displayTitle), by \(song.displayArtist)")
     }
 }
 
@@ -218,10 +262,33 @@ private struct AllSongsView: View {
 private struct ArtistSongsView: View {
     let artist: String
     let store: LibraryStore
+    @Environment(AppEnvironment.self) private var environment
+    @State private var state: FeatureState<[CatalogSong]> = .loading
 
     var body: some View {
-        Text(artist)
-            .navigationTitle(artist)
+        List {
+            switch state {
+            case .idle, .loading:
+                ProgressView()
+            case let .content(songs):
+                ForEach(songs) { song in SongRow(song: song) { store.openSong(song) } }
+            case .empty:
+                Text("No songs found").foregroundStyle(.secondary)
+            case let .failure(message):
+                Text(message).foregroundStyle(.red)
+            }
+        }
+        .listStyle(.plain)
+        .navigationTitle(artist)
+        .task {
+            do {
+                let songs = try await environment.catalog.songs(artist: artist)
+                state = songs.isEmpty ? .empty : .content(songs)
+                await environment.history.addArtist(artist)
+            } catch {
+                state = .failure(error.localizedDescription)
+            }
+        }
     }
 }
 
