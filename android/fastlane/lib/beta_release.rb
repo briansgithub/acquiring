@@ -361,7 +361,12 @@ module BetaRelease
   def self.discover
     snapshot = Play.new.snapshot
     # Read-only observations: do not infer internal/closed roles from numeric URLs.
-    puts JSON.pretty_generate(snapshot.fetch("tracks"))
+    public_state = snapshot.fetch("tracks").map do |track|
+      { "track" => track["track"], "releases" => track.fetch("releases", []).map do |release|
+        release.slice("name", "status", "versionCodes")
+      end }
+    end
+    puts JSON.pretty_generate(public_state)
   rescue StandardError => error
     raise Stop, "Track discovery failed (#{error.class})"
   end

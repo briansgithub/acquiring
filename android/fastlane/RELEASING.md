@@ -91,17 +91,19 @@ Do not create a replacement Play app or reuse the unrelated Firebase admin accou
    Expected SHA-1: `2C:DF:87:16:0C:03:06:AD:30:4F:4F:97:E8:A1:A4:AD:6E:FC:42:72`.
    Never paste passwords in chat, commit keys, or read a local password file into
    agent logs. Do not reset the Play upload key to make an unrelated key work.
-7. With authorized short-lived Application Default Credentials, run from `android`:
-   `BUNDLE_GEMFILE=fastlane/Gemfile bundle exec fastlane android discover`.
-   This creates a temporary API edit, reads tracks/bundles/APKs, and deletes the
-   edit without changing releases. Match the returned release names/version codes
-   to the existing internal and closed Alpha tracks in Console. Pin those exact
-   API identifiers in `release-settings.json` and set `tracks_verified_from_api`
-   to true. Use a setup operator's temporary ADC or Cloud Shell; do not weaken the
-   workflow-only federation condition just for discovery. Do not commit ADC files.
-8. After local tests and isolated-branch CI pass, integrate the pipeline into `main`
+7. After local tests and isolated-branch CI pass, integrate the pipeline into `main`
    through the repository's normal integration process. Do not switch or overwrite
    another agent's active checkout. Push only authorized, validated commits.
+8. Dispatch **validate** once to bootstrap discovery using the restricted workflow
+   identity. Its discovery step prints only track IDs and release names/status/codes,
+   then preflight intentionally stops while the IDs remain unpinned. No signing or
+   upload occurs. Match those results to the existing internal and closed Alpha
+   releases in Console, pin exact API IDs in `release-settings.json`, set
+   `tracks_verified_from_api` to true, validate/commit that change and integrate it.
+   A setup operator with authorized short-lived ADC can alternatively run
+   `BUNDLE_GEMFILE=fastlane/Gemfile bundle exec fastlane android discover` from
+   `android`. Discovery only creates/reads/discards a temporary API edit, without
+   release changes. Do not weaken federation trust or commit ADC files for setup.
 9. Run `python android/scripts/android_beta.py validate`. Validation builds and
    signs one bundle, uploads it into a temporary **uncommitted** edit, validates
    both testing track updates, and discards the edit. No testers receive a release.
