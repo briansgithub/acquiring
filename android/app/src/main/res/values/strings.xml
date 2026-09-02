@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Acquiring</string>
+    <string name="privacy_policy">Privacy policy</string>
+    <string name="privacy_policy_url" translatable="false">https://bellsworth.dev/apps/acquiring/privacy/</string>
     <string name="playback_channel_name">Section playback</string>
     <string name="playback_channel_description">Transport controls for the song section you are practising.</string>
     <string name="playback_play">Play</string>

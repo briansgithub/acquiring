@@ -6,6 +6,22 @@ plugins {
     id 'org.jetbrains.kotlin.plugin.compose'
 }
 
+// Environment values take precedence over developer-machine Gradle properties.
+def releaseCredential = { String name, String injected ->
+    providers.environmentVariable(name).orNull ?:
+        providers.gradleProperty(injected).orNull ?: providers.gradleProperty(name).orNull
+}
+def releaseStore = releaseCredential('ACQUIRING_RELEASE_STORE_FILE', 'android.injected.signing.store.file')
+def releaseStorePassword = releaseCredential('ACQUIRING_RELEASE_STORE_PASSWORD', 'android.injected.signing.store.password')
+def releaseAlias = releaseCredential('ACQUIRING_RELEASE_KEY_ALIAS', 'android.injected.signing.key.alias')
+def releaseKeyPassword = releaseCredential('ACQUIRING_RELEASE_KEY_PASSWORD', 'android.injected.signing.key.password')
+def releaseVersionOverride = providers.gradleProperty('ACQUIRING_RELEASE_VERSION_CODE').orNull
+if (releaseVersionOverride != null &&
+        (!(releaseVersionOverride ==~ /[1-9][0-9]*/) ||
+         new BigInteger(releaseVersionOverride) > 2100000000)) {
+    throw new GradleException('ACQUIRING_RELEASE_VERSION_CODE must be between 1 and 2100000000')
+}
+
 android {
     namespace 'com.acquiring.android'
     compileSdk 36
@@ -18,8 +34,15 @@ android {
         applicationId "com.acquiring.android"
         minSdk 26
         targetSdk 36
-        versionCode 3
+        versionCode 4
         versionName "1.0"
+
+        if (releaseVersionOverride != null) {
+            if (releaseVersionOverride.toInteger() <= versionCode) {
+                throw new GradleException('Release version override must exceed the repository versionCode')
+            }
+            versionCode releaseVersionOverride.toInteger()
+        }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -29,22 +52,18 @@ android {
 
     signingConfigs {
         release {
-            if (project.hasProperty('ACQUIRING_RELEASE_STORE_FILE')) {
-                storeFile file(ACQUIRING_RELEASE_STORE_FILE)
-                storePassword ACQUIRING_RELEASE_STORE_PASSWORD
-                keyAlias ACQUIRING_RELEASE_KEY_ALIAS
-                keyPassword ACQUIRING_RELEASE_KEY_PASSWORD
+            if (releaseStore) {
+                storeFile file(releaseStore)
+                storePassword releaseStorePassword
+                keyAlias releaseAlias
+                keyPassword releaseKeyPassword
             }
         }
     }
 
     buildTypes {
         release {
-            if (project.hasProperty('ACQUIRING_RELEASE_STORE_FILE')) {
-                signingConfig signingConfigs.release
-            } else {
-                signingConfig signingConfigs.debug
-            }
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -72,6 +91,36 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
         unitTests.includeAndroidResources = true
+    }
+}
+
+// Task-time validation leaves IDE sync and ordinary debug builds credential-free.
+def validateUploadSigning = tasks.register('validateAcquiringReleaseSigning') {
+    doLast {
+        if (![releaseStore, releaseStorePassword, releaseAlias, releaseKeyPassword].every { it }) {
+            throw new GradleException('Release signing requires the original upload keystore, alias and both passwords')
+        }
+        try {
+            def keyStore = java.security.KeyStore.getInstance(file(releaseStore), releaseStorePassword.toCharArray())
+            if (!(keyStore.getKey(releaseAlias, releaseKeyPassword.toCharArray()) instanceof java.security.PrivateKey)) {
+                throw new IllegalArgumentException('Not a private key')
+            }
+            def digest = java.security.MessageDigest.getInstance('SHA-1')
+                .digest(keyStore.getCertificate(releaseAlias).encoded).encodeHex().toString().toUpperCase()
+            if (digest != '2CDF87160C0306AD304F4F97E8A1A4AD6EFC4272') {
+                throw new GradleException('Upload certificate does not match Google Play; do not replace or reset the key')
+            }
+        } catch (GradleException error) {
+            throw error
+        } catch (Exception ignored) {
+            // Do not expose keystore paths, aliases, passwords or exception details in CI logs.
+            throw new GradleException('Cannot unlock the upload key. Check the keystore, alias and passwords')
+        }
+    }
+}
+tasks.configureEach { task ->
+    if (task.name == 'preReleaseBuild') {
+        task.dependsOn(validateUploadSigning)
     }
 }
 
