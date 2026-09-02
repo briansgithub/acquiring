@@ -343,3 +343,39 @@ Sibling race to BUG-005, different failure mode:
 - `web/player.js` — `resolveSongIndex()`, `init()`, `loadSection()`, `handleSectionChange()`
 - `docs/BUGS.md` — BUG-005 (related library-init race)
 - `tooling/_Debug_testing/sectionSwitchRaceSim.mjs` — offline race reproduction and fix verification
+
+---
+
+## BUG-007: Android release 4 crashes while drawing a collapsed pitch hint
+
+- **Reported/resolved:** 2026-09-02. Fixed in version code 5 (version name 1.0).
+- **Evidence:** Wireless ADB on a Pixel 7a running Android 14 captured three
+  `com.acquiring.android` crashes from the Play-installed version 4, all with
+  `IllegalArgumentException: ending radius must be > 0` in `RadialGradient`.
+  A fresh launch could reach search; the failure depends on layout/state.
+- **Cause:** `PitchHintDot` used a radial-gradient background whose default radius
+  is half the shortest measured dimension. Tight parent constraints can collapse
+  its nominal 16 dp size to zero in either dimension. Android then rejects the
+  shader, even though the dot has no visible area.
+- **Fix:** Draw the existing glow with `drawBehind` only when both dimensions are
+  positive. Keep the original size, colors, semantics, and normal glow appearance.
+- **Regression:** `PitchHintDotUiTest.constrainedDotsCanCollapseAndGrowWithoutCrashing`
+  reproduced the exact exception on the Pixel before the fix. After the fix,
+  the same test passed (1 test, 0 failures/errors), covering zero width, zero
+  height, both zero, visible glow, and collapse after a positive-size draw.
+- **Release check:** A release AAB built from the fixed source with temporary ID
+  `com.acquiring.android.startupcheck` was converted to device-specific split APKs
+  using bundletool 1.18.3 and installed over wireless ADB. Three cold launches
+  survived with no new test-app crash. The original Play installation/data stayed
+  intact; the production package still needs its normal Play-track update.
+- **Signing:** Use Android Studio's saved Generate Signed App Bundle setup,
+  keystore `B:\iDrive_backup\android_keystores`, alias `acquiring-upload`.
+  Its SHA-256 certificate fingerprint is
+  `2F:15:F5:A3:B0:CD:17:83:74:6D:34:EC:E4:81:DA:A9:A7:2C:B8:CF:93:B3:6C:6D:60:19:89:54:A1:1C:EA:20`,
+  matching release 4. The workstation's global Gradle signing properties point
+  to a different key, so a plain command-line bundle is not the approved upload
+  artifact. No passwords or signing configuration were changed.
+- **Artifact:** `H:\Desktop\acquiring_app_releases\release\acquiring-1.0-beta-v5-crashfix.aab`.
+  Signature verification and bundletool validation passed. Exact commands and
+  results are in the adjacent `v5-crashfix-verification.md`; evidence is in
+  `v5-crashfix-evidence`. Upload/Play distribution was not performed.
