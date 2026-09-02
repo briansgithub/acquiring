@@ -14,6 +14,21 @@
 		A10000000000000000000005 /* AcquiringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000005 /* AcquiringTests.swift */; };
 		A10000000000000000000006 /* corpus_parity.json in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000007 /* corpus_parity.json */; };
 		A10000000000000000000007 /* AcquiringUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000006 /* AcquiringUITests.swift */; };
+		A10000000000000000000008 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000B /* AppEnvironment.swift */; };
+		A10000000000000000000009 /* UserLibraryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000C /* UserLibraryStore.swift */; };
+		A1000000000000000000000A /* HistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000D /* HistoryStore.swift */; };
+		A1000000000000000000000B /* AudioSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000E /* AudioSystem.swift */; };
+		A1000000000000000000000C /* LibraryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000F /* LibraryStore.swift */; };
+		A1000000000000000000000D /* LibraryViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000010 /* LibraryViews.swift */; };
+		A1000000000000000000000E /* SongViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000011 /* SongViews.swift */; };
+		A1000000000000000000000F /* contract.json in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000012 /* contract.json */; };
+		A10000000000000000000010 /* AcquiringCore in Frameworks */ = {isa = PBXBuildFile; productRef = A30000000000000000000001 /* AcquiringCore */; };
+		A10000000000000000000011 /* AcquiringCatalog in Frameworks */ = {isa = PBXBuildFile; productRef = A30000000000000000000002 /* AcquiringCatalog */; };
+		A10000000000000000000012 /* AcquiringAudio in Frameworks */ = {isa = PBXBuildFile; productRef = A30000000000000000000003 /* AcquiringAudio */; };
+		A10000000000000000000013 /* contract.json in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000012 /* contract.json */; };
+		A10000000000000000000014 /* NotationViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013 /* NotationViews.swift */; };
+		A10000000000000000000015 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000014 /* Assets.xcassets */; };
+		A10000000000000000000016 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000016 /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,10 +59,23 @@
 		B10000000000000000000008 /* Acquiring.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Acquiring.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B10000000000000000000009 /* AcquiringTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AcquiringTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B1000000000000000000000A /* AcquiringUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AcquiringUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B1000000000000000000000B /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
+		B1000000000000000000000C /* UserLibraryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserLibraryStore.swift; sourceTree = "<group>"; };
+		B1000000000000000000000D /* HistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryStore.swift; sourceTree = "<group>"; };
+		B1000000000000000000000E /* AudioSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSystem.swift; sourceTree = "<group>"; };
+		B1000000000000000000000F /* LibraryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryStore.swift; sourceTree = "<group>"; };
+		B10000000000000000000010 /* LibraryViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViews.swift; sourceTree = "<group>"; };
+		B10000000000000000000011 /* SongViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongViews.swift; sourceTree = "<group>"; };
+		B10000000000000000000012 /* contract.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = contract.json; path = ../contracts/catalog/contract.json; sourceTree = SOURCE_ROOT; };
+		B10000000000000000000013 /* NotationViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotationViews.swift; sourceTree = "<group>"; };
+		B10000000000000000000014 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B10000000000000000000015 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B10000000000000000000016 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		B10000000000000000000017 /* ExportOptions-TestFlight.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ExportOptions-TestFlight.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		D10000000000000000000002 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		D10000000000000000000002 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000010 /* AcquiringCore in Frameworks */, A10000000000000000000011 /* AcquiringCatalog in Frameworks */, A10000000000000000000012 /* AcquiringAudio in Frameworks */); runOnlyForDeploymentPostprocessing = 0; };
 		D10000000000000000000005 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
 		D10000000000000000000008 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXFrameworksBuildPhase section */
@@ -60,6 +88,7 @@
 				C10000000000000000000003 /* AcquiringTests */,
 				C10000000000000000000004 /* AcquiringUITests */,
 				C10000000000000000000006 /* Contracts */,
+				B10000000000000000000017 /* ExportOptions-TestFlight.plist */,
 				C10000000000000000000005 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -67,10 +96,15 @@
 		C10000000000000000000002 /* Acquiring */ = {
 			isa = PBXGroup;
 			children = (
+				B10000000000000000000014 /* Assets.xcassets */,
+				B10000000000000000000015 /* Info.plist */,
+				B10000000000000000000016 /* PrivacyInfo.xcprivacy */,
 				B10000000000000000000001 /* AcquiringApp.swift */,
 				B10000000000000000000002 /* ContentView.swift */,
 				B10000000000000000000003 /* CatalogRepository.swift */,
 				B10000000000000000000004 /* PlaylistRecord.swift */,
+				C10000000000000000000007 /* Infrastructure */,
+				C10000000000000000000008 /* Features */,
 			);
 			path = Acquiring;
 			sourceTree = "<group>";
@@ -99,8 +133,30 @@
 		};
 		C10000000000000000000006 /* Contracts */ = {
 			isa = PBXGroup;
-			children = (B10000000000000000000007 /* corpus_parity.json */);
+			children = (B10000000000000000000007 /* corpus_parity.json */, B10000000000000000000012 /* contract.json */);
 			name = Contracts;
+			sourceTree = "<group>";
+		};
+		C10000000000000000000007 /* Infrastructure */ = {
+			isa = PBXGroup;
+			children = (
+				B1000000000000000000000B /* AppEnvironment.swift */,
+				B1000000000000000000000C /* UserLibraryStore.swift */,
+				B1000000000000000000000D /* HistoryStore.swift */,
+				B1000000000000000000000E /* AudioSystem.swift */,
+			);
+			path = Infrastructure;
+			sourceTree = "<group>";
+		};
+		C10000000000000000000008 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				B1000000000000000000000F /* LibraryStore.swift */,
+				B10000000000000000000010 /* LibraryViews.swift */,
+				B10000000000000000000013 /* NotationViews.swift */,
+				B10000000000000000000011 /* SongViews.swift */,
+			);
+			path = Features;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -113,6 +169,11 @@
 			buildRules = ();
 			dependencies = ();
 			name = Acquiring;
+			packageProductDependencies = (
+				A30000000000000000000001 /* AcquiringCore */,
+				A30000000000000000000002 /* AcquiringCatalog */,
+				A30000000000000000000003 /* AcquiringAudio */,
+			);
 			productName = Acquiring;
 			productReference = B10000000000000000000008 /* Acquiring.app */;
 			productType = "com.apple.product-type.application";
@@ -161,6 +222,9 @@
 			knownRegions = (en, Base);
 			mainGroup = C10000000000000000000001;
 			productRefGroup = C10000000000000000000005 /* Products */;
+			packageReferences = (
+				A20000000000000000000001 /* XCLocalSwiftPackageReference "AcquiringKit" */,
+			);
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (E10000000000000000000001, E10000000000000000000002, E10000000000000000000003);
@@ -168,13 +232,13 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		D10000000000000000000003 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
-		D10000000000000000000006 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000006 /* corpus_parity.json in Resources */); runOnlyForDeploymentPostprocessing = 0; };
+		D10000000000000000000003 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (A1000000000000000000000F /* contract.json in Resources */, A10000000000000000000015 /* Assets.xcassets in Resources */, A10000000000000000000016 /* PrivacyInfo.xcprivacy in Resources */); runOnlyForDeploymentPostprocessing = 0; };
+		D10000000000000000000006 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000006 /* corpus_parity.json in Resources */, A10000000000000000000013 /* contract.json in Resources */); runOnlyForDeploymentPostprocessing = 0; };
 		D10000000000000000000009 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		D10000000000000000000001 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000001, A10000000000000000000002, A10000000000000000000003, A10000000000000000000004); runOnlyForDeploymentPostprocessing = 0; };
+		D10000000000000000000001 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000001, A10000000000000000000002, A10000000000000000000003, A10000000000000000000004, A10000000000000000000008, A10000000000000000000009, A1000000000000000000000A, A1000000000000000000000B, A1000000000000000000000C, A1000000000000000000000D, A1000000000000000000000E, A10000000000000000000014); runOnlyForDeploymentPostprocessing = 0; };
 		D10000000000000000000004 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000005); runOnlyForDeploymentPostprocessing = 0; };
 		D10000000000000000000007 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000007); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXSourcesBuildPhase section */
@@ -185,15 +249,28 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		710000000000000000000001 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; COPY_PHASE_STRIP = NO; DEBUG_INFORMATION_FORMAT = dwarf; ENABLE_TESTABILITY = YES; GCC_C_LANGUAGE_STANDARD = gnu17; IPHONEOS_DEPLOYMENT_TARGET = 17.0; ONLY_ACTIVE_ARCH = YES; SDKROOT = iphoneos; SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)"; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; }; name = Debug; };
-		710000000000000000000002 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; COPY_PHASE_STRIP = YES; DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym"; GCC_C_LANGUAGE_STANDARD = gnu17; IPHONEOS_DEPLOYMENT_TARGET = 17.0; SDKROOT = iphoneos; SWIFT_COMPILATION_MODE = wholemodule; VALIDATE_PRODUCT = YES; }; name = Release; };
-		710000000000000000000003 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; ENABLE_PREVIEWS = YES; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES; INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES; INFOPLIST_KEY_UILaunchScreen_Generation = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; MARKETING_VERSION = 1.0; PRODUCT_BUNDLE_IDENTIFIER = com.acquiring.ios; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_EMIT_LOC_STRINGS = YES; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; }; name = Debug; };
-		710000000000000000000004 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES; INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES; INFOPLIST_KEY_UILaunchScreen_Generation = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; MARKETING_VERSION = 1.0; PRODUCT_BUNDLE_IDENTIFIER = com.acquiring.ios; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_EMIT_LOC_STRINGS = YES; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; }; name = Release; };
-		710000000000000000000005 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {BUNDLE_LOADER = "$(TEST_HOST)"; CODE_SIGN_STYLE = Automatic; GENERATE_INFOPLIST_FILE = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; PRODUCT_BUNDLE_IDENTIFIER = com.acquiring.ios.tests; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Acquiring.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Acquiring"; }; name = Debug; };
-		710000000000000000000006 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {BUNDLE_LOADER = "$(TEST_HOST)"; CODE_SIGN_STYLE = Automatic; GENERATE_INFOPLIST_FILE = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; PRODUCT_BUNDLE_IDENTIFIER = com.acquiring.ios.tests; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Acquiring.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Acquiring"; }; name = Release; };
-		710000000000000000000007 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_STYLE = Automatic; GENERATE_INFOPLIST_FILE = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; PRODUCT_BUNDLE_IDENTIFIER = com.acquiring.ios.uitests; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; TEST_TARGET_NAME = Acquiring; }; name = Debug; };
-		710000000000000000000008 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_STYLE = Automatic; GENERATE_INFOPLIST_FILE = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; PRODUCT_BUNDLE_IDENTIFIER = com.acquiring.ios.uitests; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; TEST_TARGET_NAME = Acquiring; }; name = Release; };
+		710000000000000000000001 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; COPY_PHASE_STRIP = NO; DEBUG_INFORMATION_FORMAT = dwarf; DEVELOPMENT_TEAM = XJHRX7Q6U9; ENABLE_TESTABILITY = YES; GCC_C_LANGUAGE_STANDARD = gnu17; IPHONEOS_DEPLOYMENT_TARGET = 17.0; ONLY_ACTIVE_ARCH = YES; SDKROOT = iphoneos; SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)"; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; }; name = Debug; };
+		710000000000000000000002 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; COPY_PHASE_STRIP = YES; DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym"; DEVELOPMENT_TEAM = XJHRX7Q6U9; GCC_C_LANGUAGE_STANDARD = gnu17; IPHONEOS_DEPLOYMENT_TARGET = 17.0; SDKROOT = iphoneos; SWIFT_COMPILATION_MODE = wholemodule; VALIDATE_PRODUCT = YES; }; name = Release; };
+		710000000000000000000003 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; ENABLE_PREVIEWS = YES; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_FILE = Acquiring/Info.plist; INFOPLIST_KEY_CFBundleDisplayName = Acquiring; INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO; INFOPLIST_KEY_NSMicrophoneUsageDescription = "Acquiring listens to your pitch for singing and tessitura practice."; INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES; INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES; INFOPLIST_KEY_UILaunchScreen_Generation = YES; INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"; INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"; IPHONEOS_DEPLOYMENT_TARGET = 17.0; MARKETING_VERSION = 1.0; PRODUCT_BUNDLE_IDENTIFIER = com.acquiring.ios; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_EMIT_LOC_STRINGS = YES; SWIFT_STRICT_CONCURRENCY = complete; SWIFT_VERSION = 6.0; TARGETED_DEVICE_FAMILY = "1,2"; }; name = Debug; };
+		710000000000000000000004 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_FILE = Acquiring/Info.plist; INFOPLIST_KEY_CFBundleDisplayName = Acquiring; INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO; INFOPLIST_KEY_NSMicrophoneUsageDescription = "Acquiring listens to your pitch for singing and tessitura practice."; INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES; INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES; INFOPLIST_KEY_UILaunchScreen_Generation = YES; INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"; INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"; IPHONEOS_DEPLOYMENT_TARGET = 17.0; MARKETING_VERSION = 1.0; PRODUCT_BUNDLE_IDENTIFIER = com.acquiring.ios; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_EMIT_LOC_STRINGS = YES; SWIFT_STRICT_CONCURRENCY = complete; SWIFT_VERSION = 6.0; TARGETED_DEVICE_FAMILY = "1,2"; }; name = Release; };
+		710000000000000000000005 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {BUNDLE_LOADER = "$(TEST_HOST)"; CODE_SIGN_STYLE = Automatic; GENERATE_INFOPLIST_FILE = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; PRODUCT_BUNDLE_IDENTIFIER = com.acquiring.ios.tests; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_STRICT_CONCURRENCY = complete; SWIFT_VERSION = 6.0; TARGETED_DEVICE_FAMILY = "1,2"; TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Acquiring.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Acquiring"; }; name = Debug; };
+		710000000000000000000006 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {BUNDLE_LOADER = "$(TEST_HOST)"; CODE_SIGN_STYLE = Automatic; GENERATE_INFOPLIST_FILE = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; PRODUCT_BUNDLE_IDENTIFIER = com.acquiring.ios.tests; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_STRICT_CONCURRENCY = complete; SWIFT_VERSION = 6.0; TARGETED_DEVICE_FAMILY = "1,2"; TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Acquiring.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Acquiring"; }; name = Release; };
+		710000000000000000000007 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_STYLE = Automatic; GENERATE_INFOPLIST_FILE = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; PRODUCT_BUNDLE_IDENTIFIER = com.acquiring.ios.uitests; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_STRICT_CONCURRENCY = complete; SWIFT_VERSION = 6.0; TARGETED_DEVICE_FAMILY = "1,2"; TEST_TARGET_NAME = Acquiring; }; name = Debug; };
+		710000000000000000000008 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_STYLE = Automatic; GENERATE_INFOPLIST_FILE = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; PRODUCT_BUNDLE_IDENTIFIER = com.acquiring.ios.uitests; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_STRICT_CONCURRENCY = complete; SWIFT_VERSION = 6.0; TARGETED_DEVICE_FAMILY = "1,2"; TEST_TARGET_NAME = Acquiring; }; name = Release; };
 /* End XCBuildConfiguration section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		A20000000000000000000001 /* XCLocalSwiftPackageReference "AcquiringKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/AcquiringKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A30000000000000000000001 /* AcquiringCore */ = {isa = XCSwiftPackageProductDependency; package = A20000000000000000000001 /* XCLocalSwiftPackageReference "AcquiringKit" */; productName = AcquiringCore; };
+		A30000000000000000000002 /* AcquiringCatalog */ = {isa = XCSwiftPackageProductDependency; package = A20000000000000000000001 /* XCLocalSwiftPackageReference "AcquiringKit" */; productName = AcquiringCatalog; };
+		A30000000000000000000003 /* AcquiringAudio */ = {isa = XCSwiftPackageProductDependency; package = A20000000000000000000001 /* XCLocalSwiftPackageReference "AcquiringKit" */; productName = AcquiringAudio; };
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCConfigurationList section */
 		810000000000000000000001 /* Build configuration list for PBXProject "Acquiring" */ = {isa = XCConfigurationList; buildConfigurations = (710000000000000000000001, 710000000000000000000002); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
