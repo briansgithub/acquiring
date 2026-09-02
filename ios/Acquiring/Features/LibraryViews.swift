@@ -166,14 +166,18 @@ struct DownloadCatalogButton: View {
                 store.installCatalog()
             } label: {
                 VStack(spacing: 4) {
-                    Label("Download Full Catalog", systemImage: "arrow.down.circle.fill")
-                        .font(.headline)
+                    Label(
+                        isAlreadyInstalled ? "Resync Catalog" : "Download Full Catalog",
+                        systemImage: isAlreadyInstalled ? "arrow.triangle.2.circlepath" : "arrow.down.circle.fill"
+                    )
+                    .font(.headline)
                     Text(subtitle).font(.caption)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 6)
             }
             .buttonStyle(.borderedProminent)
+            .tint(isAlreadyInstalled ? .gray : .accentColor)
             .disabled(!store.canInstallCatalog)
             .task { store.loadDownloadInfoIfNeeded() }
 
@@ -186,6 +190,11 @@ struct DownloadCatalogButton: View {
                 Text(message).font(.footnote).foregroundStyle(.red)
             }
         }
+    }
+
+    private var isAlreadyInstalled: Bool {
+        if case .content = store.catalogState { return true }
+        return false
     }
 
     private var subtitle: String {
