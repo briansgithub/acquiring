@@ -22,7 +22,9 @@ final class AcquiringUITests: XCTestCase {
         let seedGroup = groupHeading(app, mode: "alphabetical", key: "S")
         scrollToHittable(seedGroup, in: app)
         seedGroup.tap()
-        app.buttons["Seed Song, by Sample Artist"].tap()
+        let seedSong = app.buttons["Seed Song, by Sample Artist"]
+        scrollToHittable(seedSong, in: app)
+        seedSong.tap()
         XCTAssertTrue(app.navigationBars["Quiz"].waitForExistence(timeout: 5))
         app.navigationBars["Quiz"].buttons.element(boundBy: 0).tap()
         XCTAssertTrue(app.navigationBars["Seed Song"].waitForExistence(timeout: 5))
@@ -55,19 +57,22 @@ final class AcquiringUITests: XCTestCase {
 
         // Expanding reveals both fixture songs.
         seedGroup.tap()
-        XCTAssertTrue(app.buttons["Seed Song, by Sample Artist"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.buttons["Second Song, by Sample Artist"].waitForExistence(timeout: 5))
         XCTAssertEqual(seedGroup.value as? String, "2 songs, expanded")
         XCTAssertTrue(seedGroup.label.hasPrefix("Collapse "), "got \(seedGroup.label)")
+        let seedSong = app.buttons["Seed Song, by Sample Artist"]
+        let secondSong = app.buttons["Second Song, by Sample Artist"]
+        scrollToHittable(seedSong, in: app)
+        scrollToHittable(secondSong, in: app)
 
         // Selecting the open heading collapses it.
+        scrollBackToHittable(seedGroup, in: app)
         seedGroup.tap()
-        XCTAssertTrue(waitForDisappearance(app.buttons["Seed Song, by Sample Artist"]))
+        XCTAssertTrue(waitForDisappearance(seedSong))
         XCTAssertEqual(seedGroup.value as? String, "2 songs, collapsed")
 
         // Re-open, then change grouping: the open heading must not survive it.
         seedGroup.tap()
-        XCTAssertTrue(app.buttons["Seed Song, by Sample Artist"].waitForExistence(timeout: 5))
+        scrollToHittable(seedSong, in: app)
         selectGrouping(app, "Complexity")
         XCTAssertTrue(
             groupHeading(app, mode: "complexity", key: "0").waitForExistence(timeout: 5)
@@ -274,5 +279,19 @@ final class AcquiringUITests: XCTestCase {
         }
         XCTAssertTrue(element.exists, "Element did not appear after scrolling", file: file, line: line)
         XCTAssertTrue(element.isHittable, "Element is not hittable after scrolling", file: file, line: line)
+    }
+
+    private func scrollBackToHittable(
+        _ element: XCUIElement,
+        in app: XCUIApplication,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        for _ in 0..<8 {
+            if element.waitForExistence(timeout: 0.5), element.isHittable { return }
+            app.swipeDown()
+        }
+        XCTAssertTrue(element.exists, "Element did not reappear after scrolling back", file: file, line: line)
+        XCTAssertTrue(element.isHittable, "Element is not hittable after scrolling back", file: file, line: line)
     }
 }
