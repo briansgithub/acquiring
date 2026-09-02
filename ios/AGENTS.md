@@ -7,6 +7,7 @@ Follow the least-context, risk-proportional procedure below when working in `ios
 - Default to Xcode Previews (`#Preview`) for any SwiftUI/theory-rendering/layout change. Inject a stub `AppEnvironment` with small fixture data rather than the real catalog — previews only recompile the view's dependency slice and stay warm between edits, which is the fastest possible loop on this machine's CPU (2014 quad-core, no Apple Silicon).
 - For anything needing a live app process (navigation, catalog queries, Quiz/library state), boot one simulator and leave it running for the session. Use `Cmd+R` / incremental `xcodebuild build`; do not Clean Build Folder or wipe DerivedData unless something is actually stale — Debug already builds incrementally (only Release uses whole-module optimization; keep it that way).
 - Only escalate to the physical iPhone when the simulator genuinely cannot validate the behavior: real microphone/YIN pitch detection, background audio, lock-screen/interruption/route-change handling, or Bluetooth. Everything else belongs in Previews or the simulator.
+- After implementing each feature or UI change (not just at the end of a batch), rebuild, reinstall, and relaunch the app in the simulator and check it visually (screenshot) before moving on or reporting the change as done. Terminate any previously running instance first — a stale process (especially one launched with `--ui-testing`, which points at a fake catalog URL) can otherwise be mistaken for the new build.
 
 ## Real device delivery: TestFlight only
 
