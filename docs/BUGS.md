@@ -343,3 +343,66 @@ Sibling race to BUG-005, different failure mode:
 - `web/player.js` — `resolveSongIndex()`, `init()`, `loadSection()`, `handleSectionChange()`
 - `docs/BUGS.md` — BUG-005 (related library-init race)
 - `tooling/_Debug_testing/sectionSwitchRaceSim.mjs` — offline race reproduction and fix verification
+
+---
+
+## BUG-007: Android release 4 crashes while drawing a collapsed pitch hint
+
+- **Reported/resolved:** 2026-09-02. Fixed in version code 5 (version name 1.0).
+- **Evidence:** Wireless ADB on a Pixel 7a running Android 14 captured three
+  `com.acquiring.android` crashes from the Play-installed version 4, all with
+  `IllegalArgumentException: ending radius must be > 0` in `RadialGradient`.
+  A fresh launch could reach search; the failure depends on layout/state.
+- **Cause:** `PitchHintDot` used a radial-gradient background whose default radius
+  is half the shortest measured dimension. Tight parent constraints can collapse
+  its nominal 16 dp size to zero in either dimension. Android then rejects the
+  shader, even though the dot has no visible area.
+- **Fix:** Draw the existing glow with `drawBehind` only when both dimensions are
+  positive. Keep the original size, colors, semantics, and normal glow appearance.
+- **Regression:** `PitchHintDotUiTest.constrainedDotsCanCollapseAndGrowWithoutCrashing`
+  reproduced the exact exception on the Pixel before the fix. After the fix,
+  the same test passed (1 test, 0 failures/errors), covering zero width, zero
+  height, both zero, visible glow, and collapse after a positive-size draw.
+- **Release check:** A release AAB built from the fixed source with temporary ID
+  `com.acquiring.android.startupcheck` was converted to device-specific split APKs
+  using bundletool 1.18.3 and installed over wireless ADB. Three cold launches
+  survived with no new test-app crash. The original Play installation/data stayed
+  intact; the production package still needs its normal Play-track update.
+- **Release handling:** The Play upload key is configured only through the protected
+  release pipeline. Local signing paths, aliases and release artifacts are not
+  recorded in this public repository. Upload/Play distribution was not performed
+  as part of the local reproduction; it is covered by the testing-track release.
+
+---
+
+## BUG-008: Artist search rejects partial/case-varied names and keyboard hides results
+
+- **Reported/resolved:** 2026-09-02; version code 6, version name 1.0.
+- **Reproduction on Pixel 7a / Android 14:** typing `Smash` offered `smash mouth`
+  and `the smashing pumpkins`, but the Search Artist button returned
+  `No artists matching 'Smash'`. With the keyboard open the fixed search controls
+  consumed the available height and the result list had no visible song rows.
+- **Cause:** the artist button used the exact, case-sensitive artist-selection
+  query instead of a partial search. Neither search button cleared text focus.
+  Autocomplete effects also omitted the active database from their keys, leaving
+  stale suggestions after replacing an initially empty catalog.
+- **Fix:** add a lightweight, case-insensitive partial artist query; both search
+  buttons show matching songs and clear focus. Trim surrounding search spaces,
+  retain catalog hyphen/space matching, and refresh autocomplete when the active
+  database changes. Selecting a specific artist still uses its exact artist list.
+- **Crash finding:** the user's latest two crashes (13:35 and 13:36) were from
+  Play-installed `com.acquiring.android` version 4, with the same zero-radius
+  gradient exception recorded in BUG-007. That fix is included in version 6.
+- **Verification:** 4 `AllSongsDaoTest` tests and 2 `SongSearchUiTest` device tests
+  passed. With the actual downloaded catalog, ` sMaSh ` returned 25 matches and
+  ` ALL-STAR ` returned 9. Both buttons hid the keyboard (`mInputShown=false`).
+  Selecting `1979` and `All Star` opened their quiz pages, and the release crash
+  buffer had no entries after the test APK was installed.
+- **Phone state:** the fixed copy is now visibly named **Acquiring Test**, package
+  `com.acquiring.android.startupcheck`, version 6. Its downloaded catalog was
+  preserved during the update. Original Play version 4/data remain installed.
+  Use Acquiring Test for local validation; updating the original package requires
+  the normal signed production AAB and Play-track update (not performed here).
+- **Artifacts:** The local test APK and diagnostic evidence remain outside the
+  repository. The test APK uses a debug certificate only; Play uploads use the
+  protected release pipeline described in BUG-007.

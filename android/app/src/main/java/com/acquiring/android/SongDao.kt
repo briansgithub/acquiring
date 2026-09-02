@@ -47,7 +47,7 @@ interface SongDao {
         SELECT slug, artist, title
         FROM songs
         WHERE """ + LOADABLE_SQL + """
-          AND REPLACE(title, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%'
+          AND REPLACE(title, '-', ' ') LIKE '%' || REPLACE(TRIM(:query), '-', ' ') || '%'
         ORDER BY
             CASE WHEN title IS NULL OR TRIM(title) = '' THEN 1 ELSE 0 END,
             title COLLATE NOCASE,
@@ -56,6 +56,21 @@ interface SongDao {
         """
     )
     suspend fun searchBrowseSongsByTitle(query: String): List<SongBrowseRow>
+
+    @Query(
+        """
+        SELECT slug, artist, title
+        FROM songs
+        WHERE """ + LOADABLE_SQL + """
+          AND REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(TRIM(:query), '-', ' ') || '%'
+        ORDER BY
+            CASE WHEN title IS NULL OR TRIM(title) = '' THEN 1 ELSE 0 END,
+            title COLLATE NOCASE,
+            artist COLLATE NOCASE,
+            slug COLLATE NOCASE
+        """
+    )
+    suspend fun searchBrowseSongsByArtist(query: String): List<SongBrowseRow>
 
     @Query(
         """
@@ -77,8 +92,8 @@ interface SongDao {
         FROM songs
         WHERE """ + LOADABLE_SQL + """
           AND (
-                REPLACE(title, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%'
-             OR REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%'
+                REPLACE(title, '-', ' ') LIKE '%' || REPLACE(TRIM(:query), '-', ' ') || '%'
+             OR REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(TRIM(:query), '-', ' ') || '%'
               )
         ORDER BY
             CASE WHEN title IS NULL OR TRIM(title) = '' THEN 1 ELSE 0 END,
@@ -100,7 +115,7 @@ interface SongDao {
         FROM songs
         WHERE """ + LOADABLE_SQL + """
           AND artist IS NOT NULL
-          AND REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(:query, '-', ' ') || '%'
+          AND REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(TRIM(:query), '-', ' ') || '%'
         LIMIT :limit OFFSET :offset
         """
     )

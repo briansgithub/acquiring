@@ -52,12 +52,14 @@ class AllSongsDaoTest {
         observedQueries.clear()
         val browseRows = dao.getSongsInAlphabeticalGroup("A")
         val titleSearchRows = dao.searchBrowseSongsByTitle("alp")
+        val artistSearchRows = dao.searchBrowseSongsByArtist("artist")
         val artistRows = dao.getBrowseSongsByArtist("Artist Z")
         val suggestionRows = dao.getSearchSuggestions("alp")
         val recentRows = dao.getBrowseSongsBySlugs(listOf("alpha"))
 
         assertEquals(listOf("alpha"), browseRows.map(SongBrowseRow::slug))
         assertEquals(listOf("alpha"), titleSearchRows.map(SongBrowseRow::slug))
+        assertEquals(listOf("alpha"), artistSearchRows.map(SongBrowseRow::slug))
         assertEquals(listOf("alpha"), artistRows.map(SongBrowseRow::slug))
         assertEquals(listOf("alpha"), suggestionRows.map(SongBrowseRow::slug))
         assertEquals(listOf("alpha"), recentRows.map(SongBrowseRow::slug))
@@ -81,6 +83,24 @@ class AllSongsDaoTest {
 
         val selectedSong = dao.getSongBySlug(browseRows.single().slug)
         assertArrayEquals(heavyBlob, selectedSong?.dataBlob)
+    }
+
+    @Test
+    fun searchMatchesPartialNamesRegardlessOfCaseSpacingAndCatalogHyphens() = runBlocking {
+        addSong("all-star", "All Star", "smash-mouth", null, byteArrayOf(1))
+        addSong("tonight", "Tonight Tonight", "the-smashing-pumpkins", null, byteArrayOf(2))
+        dao.insertSong(Song("missing", "smash-mouth", "Missing", "https://example.test/missing"))
+
+        assertEquals(listOf("all-star", "tonight"), dao.searchBrowseSongsByArtist(" sMaSh ").map { it.slug })
+        assertEquals(listOf("all-star"), dao.searchBrowseSongsByArtist(" Smash Mouth ").map { it.slug })
+        assertEquals(listOf("all-star"), dao.searchBrowseSongsByTitle(" ALL-STAR ").map { it.slug })
+        assertEquals(listOf("all-star"), dao.getSearchSuggestions(" ALL-STAR ").map { it.slug })
+        assertEquals(
+            setOf("smash mouth", "the smashing pumpkins"),
+            dao.getArtistSuggestions(" sMaSh ").toSet()
+        )
+        // Selecting one artist still opens that artist, not similarly named artists.
+        assertEquals(listOf("all-star"), dao.getBrowseSongsByArtist("smash mouth").map { it.slug })
     }
 
     @Test
