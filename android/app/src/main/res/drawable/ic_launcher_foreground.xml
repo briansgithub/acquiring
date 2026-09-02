@@ -1,141 +1,338 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Degree 1: (54, 36.5) -->
-    <!-- 1. Drop Shadow -->
-    <path
-        android:fillColor="#33000000"
-        android:pathData="M 53.5, 32.8 a 4.2,4.2 0 1,0 0,8.4 a 4.2,4.2 0 1,0 0,-8.4" />
-    <!-- 2. Base Gem -->
-    <path
-        android:fillColor="@color/degree_1"
-        android:pathData="M 54, 32.5 a 4,4 0 1,0 0,8 a 4,4 0 1,0 0,-8" />
-    <!-- 4. Outer Rim -->
-    <path
-        android:strokeColor="#20FFFFFF"
-        android:strokeWidth="0.2"
-        android:pathData="M 54, 32.6 a 3.9,3.9 0 1,0 0,7.8 a 3.9,3.9 0 1,0 0,-7.8" />
-    <!-- 5. Bright Glint (Large Crescent) -->
-    <path
-        android:fillColor="#D0FFFFFF"
-        android:pathData="M 53.0, 33.0 a 3.9,3.9 0 0,1 4.8,4.8 a 6.0,6.0 0 0,0 -4.8,-4.8 z" />
+    <!--
+        The light source sits at roughly two o'clock. Each stone keeps its
+        original saturated color through the center, with same-hue depth on
+        the lower-left and a restrained, color-tinted reflection on the
+        upper-right surface.
+    -->
 
-    <!-- Degree 2: (67.7, 43.2) -->
-    <!-- 1. Drop Shadow -->
+    <!-- Degree 1: red, centered at (54, 36.5) -->
     <path
-        android:fillColor="#33000000"
-        android:pathData="M 67.2, 39.5 a 4.2,4.2 0 1,0 0,8.4 a 4.2,4.2 0 1,0 0,-8.4" />
-    <!-- 2. Base Gem -->
+        android:fillColor="#28000000"
+        android:pathData="M 53.65,32.7 a 4.25,4.25 0 1,0 0,8.5 a 4.25,4.25 0 1,0 0,-8.5" />
     <path
-        android:fillColor="@color/degree_2"
-        android:pathData="M 67.7, 39.2 a 4,4 0 1,0 0,8 a 4,4 0 1,0 0,-8" />
-    <!-- 4. Outer Rim -->
+        android:pathData="M 54,32.5 a 4,4 0 1,0 0,8 a 4,4 0 1,0 0,-8"
+        android:strokeColor="#A0780000"
+        android:strokeWidth="0.3">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="55.3"
+                android:centerY="35.3"
+                android:gradientRadius="5.6"
+                android:type="radial">
+                <item android:color="#FFFF0000" android:offset="0" />
+                <item android:color="#FFFF0000" android:offset="0.48" />
+                <item android:color="#FFE00000" android:offset="0.82" />
+                <item android:color="#FF9A0000" android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
     <path
-        android:strokeColor="#20FFFFFF"
-        android:strokeWidth="0.2"
-        android:pathData="M 67.7, 39.3 a 3.9,3.9 0 1,0 0,7.8 a 3.9,3.9 0 1,0 0,-7.8" />
-    <!-- 5. Bright Glint (Large Crescent) -->
-    <path
-        android:fillColor="#D0FFFFFF"
-        android:pathData="M 66.7, 39.7 a 3.9,3.9 0 0,1 4.8,4.8 a 6.0,6.0 0 0,0 -4.8,-4.8 z" />
+        android:fillColor="@android:color/transparent"
+        android:pathData="M 55.37,33.55 C 56.07,33.88 56.62,34.43 56.95,35.13"
+        android:strokeColor="#E6FF7070"
+        android:strokeLineCap="round"
+        android:strokeWidth="1" />
+    <path android:pathData="M 55.1,32.9 a 2.1,2.1 0 1,0 0,4.2 a 2.1,2.1 0 1,0 0,-4.2">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="55.1"
+                android:centerY="35"
+                android:gradientRadius="2.1"
+                android:type="radial">
+                <item android:color="#C0FFCACA" android:offset="0" />
+                <item android:color="#AAFFC4C4" android:offset="0.14" />
+                <item android:color="#94FFBEBE" android:offset="0.28" />
+                <item android:color="#7CFFB8B8" android:offset="0.42" />
+                <item android:color="#5CFFB1B1" android:offset="0.56" />
+                <item android:color="#38FFA9A9" android:offset="0.7" />
+                <item android:color="#18FFA0A0" android:offset="0.84" />
+                <item android:color="#00FFA0A0" android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
 
-    <!-- Degree 3: (71.1, 57.9) -->
-    <!-- 1. Drop Shadow -->
+    <!-- Degree 2: orange, centered at (67.7, 43.2) -->
     <path
-        android:fillColor="#33000000"
-        android:pathData="M 70.6, 54.2 a 4.2,4.2 0 1,0 0,8.4 a 4.2,4.2 0 1,0 0,-8.4" />
-    <!-- 2. Base Gem -->
+        android:fillColor="#28000000"
+        android:pathData="M 67.35,39.4 a 4.25,4.25 0 1,0 0,8.5 a 4.25,4.25 0 1,0 0,-8.5" />
     <path
-        android:fillColor="@color/degree_3"
-        android:pathData="M 71.1, 53.9 a 4,4 0 1,0 0,8 a 4,4 0 1,0 0,-8" />
-    <!-- 4. Outer Rim -->
+        android:pathData="M 67.7,39.2 a 4,4 0 1,0 0,8 a 4,4 0 1,0 0,-8"
+        android:strokeColor="#A08A5100"
+        android:strokeWidth="0.3">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="69"
+                android:centerY="42"
+                android:gradientRadius="5.6"
+                android:type="radial">
+                <item android:color="#FFFFB014" android:offset="0" />
+                <item android:color="#FFFFB014" android:offset="0.48" />
+                <item android:color="#FFD67F0A" android:offset="0.82" />
+                <item android:color="#FFA85B06" android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
     <path
-        android:strokeColor="#20FFFFFF"
-        android:strokeWidth="0.2"
-        android:pathData="M 71.1, 54.0 a 3.9,3.9 0 1,0 0,7.8 a 3.9,3.9 0 1,0 0,-7.8" />
-    <!-- 5. Bright Glint (Large Crescent) -->
-    <path
-        android:fillColor="#D0FFFFFF"
-        android:pathData="M 70.1, 54.4 a 3.9,3.9 0 0,1 4.8,4.8 a 6.0,6.0 0 0,0 -4.8,-4.8 z" />
+        android:fillColor="@android:color/transparent"
+        android:pathData="M 69.07,40.25 C 69.77,40.58 70.32,41.13 70.65,41.83"
+        android:strokeColor="#E6FFD06A"
+        android:strokeLineCap="round"
+        android:strokeWidth="1" />
+    <path android:pathData="M 68.8,39.6 a 2.1,2.1 0 1,0 0,4.2 a 2.1,2.1 0 1,0 0,-4.2">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="68.8"
+                android:centerY="41.7"
+                android:gradientRadius="2.1"
+                android:type="radial">
+                <item android:color="#C0FFE8C8" android:offset="0" />
+                <item android:color="#AAFFE6C2" android:offset="0.14" />
+                <item android:color="#94FFE5BB" android:offset="0.28" />
+                <item android:color="#7CFFE3B4" android:offset="0.42" />
+                <item android:color="#5CFFE1AD" android:offset="0.56" />
+                <item android:color="#38FFDFA6" android:offset="0.7" />
+                <item android:color="#18FFDEA0" android:offset="0.84" />
+                <item android:color="#00FFDEA0" android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
 
-    <!-- Degree 4: (61.6, 69.8) -->
-    <!-- 1. Drop Shadow -->
+    <!-- Degree 3: yellow, centered at (71.1, 57.9) -->
     <path
-        android:fillColor="#33000000"
-        android:pathData="M 61.1, 66.1 a 4.2,4.2 0 1,0 0,8.4 a 4.2,4.2 0 1,0 0,-8.4" />
-    <!-- 2. Base Gem -->
+        android:fillColor="#28000000"
+        android:pathData="M 70.75,54.1 a 4.25,4.25 0 1,0 0,8.5 a 4.25,4.25 0 1,0 0,-8.5" />
     <path
-        android:fillColor="@color/degree_4"
-        android:pathData="M 61.6, 65.8 a 4,4 0 1,0 0,8 a 4,4 0 1,0 0,-8" />
-    <!-- 4. Outer Rim -->
+        android:pathData="M 71.1,53.9 a 4,4 0 1,0 0,8 a 4,4 0 1,0 0,-8"
+        android:strokeColor="#A07C7500"
+        android:strokeWidth="0.3">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="72.4"
+                android:centerY="56.7"
+                android:gradientRadius="5.6"
+                android:type="radial">
+                <item android:color="#FFEFE600" android:offset="0" />
+                <item android:color="#FFEFE600" android:offset="0.48" />
+                <item android:color="#FFC8B900" android:offset="0.82" />
+                <item android:color="#FF999100" android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
     <path
-        android:strokeColor="#20FFFFFF"
-        android:strokeWidth="0.2"
-        android:pathData="M 61.6, 65.9 a 3.9,3.9 0 1,0 0,7.8 a 3.9,3.9 0 1,0 0,-7.8" />
-    <!-- 5. Bright Glint (Large Crescent) -->
-    <path
-        android:fillColor="#D0FFFFFF"
-        android:pathData="M 60.6, 66.3 a 3.9,3.9 0 0,1 4.8,4.8 a 6.0,6.0 0 0,0 -4.8,-4.8 z" />
+        android:fillColor="@android:color/transparent"
+        android:pathData="M 72.47,54.95 C 73.17,55.28 73.72,55.83 74.05,56.53"
+        android:strokeColor="#E6FFF66A"
+        android:strokeLineCap="round"
+        android:strokeWidth="1" />
+    <path android:pathData="M 72.2,54.3 a 2.1,2.1 0 1,0 0,4.2 a 2.1,2.1 0 1,0 0,-4.2">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="72.2"
+                android:centerY="56.4"
+                android:gradientRadius="2.1"
+                android:type="radial">
+                <item android:color="#C0FFFFC4" android:offset="0" />
+                <item android:color="#AAFFFDBE" android:offset="0.14" />
+                <item android:color="#94FFFBB8" android:offset="0.28" />
+                <item android:color="#7CFFFAB2" android:offset="0.42" />
+                <item android:color="#5CFFF9AC" android:offset="0.56" />
+                <item android:color="#38FFF8A6" android:offset="0.7" />
+                <item android:color="#18FFF7A0" android:offset="0.84" />
+                <item android:color="#00FFF7A0" android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
 
-    <!-- Degree 5: (46.5, 69.8) -->
-    <!-- 1. Drop Shadow -->
+    <!-- Degree 4: green, centered at (61.6, 69.8) -->
     <path
-        android:fillColor="#33000000"
-        android:pathData="M 46.0, 66.1 a 4.2,4.2 0 1,0 0,8.4 a 4.2,4.2 0 1,0 0,-8.4" />
-    <!-- 2. Base Gem -->
+        android:fillColor="#28000000"
+        android:pathData="M 61.25,66 a 4.25,4.25 0 1,0 0,8.5 a 4.25,4.25 0 1,0 0,-8.5" />
     <path
-        android:fillColor="@color/degree_5"
-        android:pathData="M 46.5, 65.8 a 4,4 0 1,0 0,8 a 4,4 0 1,0 0,-8" />
-    <!-- 4. Outer Rim -->
+        android:pathData="M 61.6,65.8 a 4,4 0 1,0 0,8 a 4,4 0 1,0 0,-8"
+        android:strokeColor="#A0006300"
+        android:strokeWidth="0.3">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="62.9"
+                android:centerY="68.6"
+                android:gradientRadius="5.6"
+                android:type="radial">
+                <item android:color="#FF00D300" android:offset="0" />
+                <item android:color="#FF00D300" android:offset="0.48" />
+                <item android:color="#FF00A900" android:offset="0.82" />
+                <item android:color="#FF007A00" android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
     <path
-        android:strokeColor="#20FFFFFF"
-        android:strokeWidth="0.2"
-        android:pathData="M 46.5, 65.9 a 3.9,3.9 0 1,0 0,7.8 a 3.9,3.9 0 1,0 0,-7.8" />
-    <!-- 5. Bright Glint (Large Crescent) -->
-    <path
-        android:fillColor="#D0FFFFFF"
-        android:pathData="M 45.5, 66.3 a 3.9,3.9 0 0,1 4.8,4.8 a 6.0,6.0 0 0,0 -4.8,-4.8 z" />
+        android:fillColor="@android:color/transparent"
+        android:pathData="M 62.97,66.85 C 63.67,67.18 64.22,67.73 64.55,68.43"
+        android:strokeColor="#E663FF63"
+        android:strokeLineCap="round"
+        android:strokeWidth="1" />
+    <path android:pathData="M 62.7,66.2 a 2.1,2.1 0 1,0 0,4.2 a 2.1,2.1 0 1,0 0,-4.2">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="62.7"
+                android:centerY="68.3"
+                android:gradientRadius="2.1"
+                android:type="radial">
+                <item android:color="#C0C8FFC8" android:offset="0" />
+                <item android:color="#AAC1FFC1" android:offset="0.14" />
+                <item android:color="#94B9FFB9" android:offset="0.28" />
+                <item android:color="#7CB2FFB2" android:offset="0.42" />
+                <item android:color="#5CAAFFAA" android:offset="0.56" />
+                <item android:color="#38A2FFA2" android:offset="0.7" />
+                <item android:color="#189AFF9A" android:offset="0.84" />
+                <item android:color="#009AFF9A" android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
 
-    <!-- Degree 6: (37, 57.9) -->
-    <!-- 1. Drop Shadow -->
+    <!-- Degree 5: blue, centered at (46.5, 69.8) -->
     <path
-        android:fillColor="#33000000"
-        android:pathData="M 36.5, 54.2 a 4.2,4.2 0 1,0 0,8.4 a 4.2,4.2 0 1,0 0,-8.4" />
-    <!-- 2. Base Gem -->
+        android:fillColor="#28000000"
+        android:pathData="M 46.15,66 a 4.25,4.25 0 1,0 0,8.5 a 4.25,4.25 0 1,0 0,-8.5" />
     <path
-        android:fillColor="@color/degree_6"
-        android:pathData="M 37, 53.9 a 4,4 0 1,0 0,8 a 4,4 0 1,0 0,-8" />
-    <!-- 4. Outer Rim -->
+        android:pathData="M 46.5,65.8 a 4,4 0 1,0 0,8 a 4,4 0 1,0 0,-8"
+        android:strokeColor="#A0210078"
+        android:strokeWidth="0.3">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="47.8"
+                android:centerY="68.6"
+                android:gradientRadius="5.6"
+                android:type="radial">
+                <item android:color="#FF4800FF" android:offset="0" />
+                <item android:color="#FF4800FF" android:offset="0.48" />
+                <item android:color="#FF3500CE" android:offset="0.82" />
+                <item android:color="#FF2700A8" android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
     <path
-        android:strokeColor="#20FFFFFF"
-        android:strokeWidth="0.2"
-        android:pathData="M 37, 54.0 a 3.9,3.9 0 1,0 0,7.8 a 3.9,3.9 0 1,0 0,-7.8" />
-    <!-- 5. Bright Glint (Large Crescent) -->
-    <path
-        android:fillColor="#D0FFFFFF"
-        android:pathData="M 36.0, 54.4 a 3.9,3.9 0 0,1 4.8,4.8 a 6.0,6.0 0 0,0 -4.8,-4.8 z" />
+        android:fillColor="@android:color/transparent"
+        android:pathData="M 47.87,66.85 C 48.57,67.18 49.12,67.73 49.45,68.43"
+        android:strokeColor="#E68B73FF"
+        android:strokeLineCap="round"
+        android:strokeWidth="1" />
+    <path android:pathData="M 47.6,66.2 a 2.1,2.1 0 1,0 0,4.2 a 2.1,2.1 0 1,0 0,-4.2">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="47.6"
+                android:centerY="68.3"
+                android:gradientRadius="2.1"
+                android:type="radial">
+                <item android:color="#C0D4CEFF" android:offset="0" />
+                <item android:color="#AAD0C9FF" android:offset="0.14" />
+                <item android:color="#94CAC2FF" android:offset="0.28" />
+                <item android:color="#7CC5BCFF" android:offset="0.42" />
+                <item android:color="#5CBFB5FF" android:offset="0.56" />
+                <item android:color="#38BAAFFF" android:offset="0.7" />
+                <item android:color="#18B4A8FF" android:offset="0.84" />
+                <item android:color="#00B4A8FF" android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
 
-    <!-- Degree 7: (40.4, 43.2) -->
-    <!-- 1. Drop Shadow -->
+    <!-- Degree 6: violet, centered at (37, 57.9) -->
     <path
-        android:fillColor="#33000000"
-        android:pathData="M 39.9, 39.5 a 4.2,4.2 0 1,0 0,8.4 a 4.2,4.2 0 1,0 0,-8.4" />
-    <!-- 2. Base Gem -->
+        android:fillColor="#28000000"
+        android:pathData="M 36.65,54.1 a 4.25,4.25 0 1,0 0,8.5 a 4.25,4.25 0 1,0 0,-8.5" />
     <path
-        android:fillColor="@color/degree_7"
-        android:pathData="M 40.4, 39.2 a 4,4 0 1,0 0,8 a 4,4 0 1,0 0,-8" />
-    <!-- 4. Outer Rim -->
+        android:pathData="M 37,53.9 a 4,4 0 1,0 0,8 a 4,4 0 1,0 0,-8"
+        android:strokeColor="#A058006D"
+        android:strokeWidth="0.3">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="38.3"
+                android:centerY="56.7"
+                android:gradientRadius="5.6"
+                android:type="radial">
+                <item android:color="#FFB800E5" android:offset="0" />
+                <item android:color="#FFB800E5" android:offset="0.48" />
+                <item android:color="#FF8B00B8" android:offset="0.82" />
+                <item android:color="#FF690083" android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
     <path
-        android:strokeColor="#20FFFFFF"
-        android:strokeWidth="0.2"
-        android:pathData="M 40.4, 39.3 a 3.9,3.9 0 1,0 0,7.8 a 3.9,3.9 0 1,0 0,-7.8" />
-    <!-- 5. Bright Glint (Large Crescent) -->
+        android:fillColor="@android:color/transparent"
+        android:pathData="M 38.37,54.95 C 39.07,55.28 39.62,55.83 39.95,56.53"
+        android:strokeColor="#E6DC70F7"
+        android:strokeLineCap="round"
+        android:strokeWidth="1" />
+    <path android:pathData="M 38.1,54.3 a 2.1,2.1 0 1,0 0,4.2 a 2.1,2.1 0 1,0 0,-4.2">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="38.1"
+                android:centerY="56.4"
+                android:gradientRadius="2.1"
+                android:type="radial">
+                <item android:color="#C0F0C8FF" android:offset="0" />
+                <item android:color="#AAEFC1FF" android:offset="0.14" />
+                <item android:color="#94EEB9FF" android:offset="0.28" />
+                <item android:color="#7CEDB2FF" android:offset="0.42" />
+                <item android:color="#5CECAAFF" android:offset="0.56" />
+                <item android:color="#38EBA3FF" android:offset="0.7" />
+                <item android:color="#18EAA0FF" android:offset="0.84" />
+                <item android:color="#00EAA0FF" android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Degree 7: magenta, centered at (40.4, 43.2) -->
     <path
-        android:fillColor="#D0FFFFFF"
-        android:pathData="M 39.4, 39.7 a 3.9,3.9 0 0,1 4.8,4.8 a 6.0,6.0 0 0,0 -4.8,-4.8 z" />
+        android:fillColor="#28000000"
+        android:pathData="M 40.05,39.4 a 4.25,4.25 0 1,0 0,8.5 a 4.25,4.25 0 1,0 0,-8.5" />
+    <path
+        android:pathData="M 40.4,39.2 a 4,4 0 1,0 0,8 a 4,4 0 1,0 0,-8"
+        android:strokeColor="#A0800066"
+        android:strokeWidth="0.3">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="41.7"
+                android:centerY="42"
+                android:gradientRadius="5.6"
+                android:type="radial">
+                <item android:color="#FFFF00CB" android:offset="0" />
+                <item android:color="#FFFF00CB" android:offset="0.48" />
+                <item android:color="#FFD000A4" android:offset="0.82" />
+                <item android:color="#FFA60083" android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M 41.77,40.25 C 42.47,40.58 43.02,41.13 43.35,41.83"
+        android:strokeColor="#E6FF6FE3"
+        android:strokeLineCap="round"
+        android:strokeWidth="1" />
+    <path android:pathData="M 41.5,39.6 a 2.1,2.1 0 1,0 0,4.2 a 2.1,2.1 0 1,0 0,-4.2">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="41.5"
+                android:centerY="41.7"
+                android:gradientRadius="2.1"
+                android:type="radial">
+                <item android:color="#C0FFC8F2" android:offset="0" />
+                <item android:color="#AAFFC1F1" android:offset="0.14" />
+                <item android:color="#94FFB9EF" android:offset="0.28" />
+                <item android:color="#7CFFB2EE" android:offset="0.42" />
+                <item android:color="#5CFFAAED" android:offset="0.56" />
+                <item android:color="#38FFA3EC" android:offset="0.7" />
+                <item android:color="#18FFA0ED" android:offset="0.84" />
+                <item android:color="#00FFA0ED" android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
 
 </vector>
