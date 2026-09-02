@@ -85,6 +85,10 @@ class BetaReleaseTest < Minitest::Test
     %w[internal alpha].each { |id| assert BetaRelease.matches?(@play.snapshot, id, @plan) }
   end
 
+  def test_repository_settings_pin_only_the_observed_music_peeps_tracks
+    assert_equal %w[internal alpha], BetaRelease.tracks!(BetaRelease.settings)
+  end
+
   def test_validation_discards_edit_without_publishing
     result = @publisher.run("bundle.aab", "validate")
     assert_equal 0, @play.commits

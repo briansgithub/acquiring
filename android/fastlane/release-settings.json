@@ -1,9 +1,9 @@
 {
   "package_name": "com.acquiring.android",
   "upload_sha1": "2CDF87160C0306AD304F4F97E8A1A4AD6EFC4272",
-  "internal_track": null,
-  "closed_track": null,
-  "tracks_verified_from_api": false,
+  "internal_track": "internal",
+  "closed_track": "alpha",
+  "tracks_verified_from_api": true,
   "internal_tester_url": "https://play.google.com/apps/internaltest/4701349853457881712",
   "closed_tester_url": "https://play.google.com/apps/testing/com.acquiring.android",
   "bundletool_version": "1.18.3",
