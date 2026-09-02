@@ -23,7 +23,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         let format = AVAudioFormat(standardFormatWithSampleRate: 48_000, channels: 1)!
         let renderer = LockedQuizRenderer(sampleRate: format.sampleRate)
         quizRenderer = renderer
-        sourceNode = AVAudioSourceNode(format: format) { _, _, frameCount, audioBufferList in
+        sourceNode = AVAudioSourceNode(format: format) { @Sendable _, _, frameCount, audioBufferList in
             renderer.render(frameCount: frameCount, audioBufferList: audioBufferList)
         }
         engine.attach(player)

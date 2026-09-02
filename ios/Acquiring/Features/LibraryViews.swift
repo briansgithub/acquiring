@@ -102,6 +102,7 @@ private struct SearchCatalogView: View {
                     text: $store.query
                 )
                 .textFieldStyle(.plain)
+                .accessibilityIdentifier("library.search.field")
                 if !store.query.isEmpty {
                     Button {
                         store.query = ""
