@@ -62,6 +62,7 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.Role
@@ -288,6 +289,7 @@ internal fun MainScreen(
     tessituraSessionViewModel: TessituraSessionViewModel
 ) {
     var activeDb by remember { mutableStateOf(db) }
+    val searchFocusManager = LocalFocusManager.current
     // Not swapped when the catalog is: playlists outlive a catalog download.
     val playlistDao = remember(userDb) { userDb.playlistDao() }
     var urlToHarvest by remember { mutableStateOf("") }
@@ -463,7 +465,7 @@ internal fun MainScreen(
         returnToParent()
     }
 
-    LaunchedEffect(searchQuery, selectedSong, selectedArtistSongs, hasSearchTitleFocus) {
+    LaunchedEffect(activeDb, searchQuery, selectedSong, selectedArtistSongs, hasSearchTitleFocus) {
         if (searchQuery.isNotEmpty() && hasSearchTitleFocus) {
             delay(300) // Debounce
             titleOffset = 0
@@ -492,7 +494,7 @@ internal fun MainScreen(
         }
     }
 
-    LaunchedEffect(searchArtistQuery, selectedSong, selectedArtistSongs, hasSearchArtistFocus) {
+    LaunchedEffect(activeDb, searchArtistQuery, selectedSong, selectedArtistSongs, hasSearchArtistFocus) {
         if (searchArtistQuery.isNotEmpty() && hasSearchArtistFocus) {
             isShowingRecentArtists = false
             delay(300) // Debounce
@@ -680,15 +682,19 @@ internal fun MainScreen(
                     suggestions = suggestions,
                     isShowingRecent = isShowingRecent,
                     onSearchTitle = {
-                        if (searchQuery.isBlank()) {
+                        val query = searchQuery.trim()
+                        searchFocusManager.clearFocus(force = true)
+                        isExpanded = false
+                        isArtistExpanded = false
+                        if (query.isBlank()) {
                             allSongs = emptyList()
                             searchResult = "Enter a title to search"
                             isExpanded = false
                         } else {
                             scope.launch {
-                                val results = activeDb.songDao().searchBrowseSongsByTitle(searchQuery)
+                                val results = activeDb.songDao().searchBrowseSongsByTitle(query)
                                 allSongs = results
-                                searchResult = if (results.isNotEmpty()) "Found ${results.size} matches" else "No titles matching '$searchQuery'"
+                                searchResult = if (results.isNotEmpty()) "Found ${results.size} matches" else "No titles matching '$query'"
                                 isExpanded = false
                             }
                         }
@@ -761,19 +767,19 @@ internal fun MainScreen(
                         }
                     },
                     onSearchArtist = {
-                        scope.launch {
-                            val results = activeDb.songDao().getBrowseSongsByArtist(searchArtistQuery)
-                            if (results.isNotEmpty()) {
-                                val canonicalArtist = results.first().artist
-                                    ?.let(::canonicalArtistName)
-                                    ?: canonicalArtistName(searchArtistQuery)
-                                HistoryManager.addArtist(context, canonicalArtist)
-                                selectedArtistName = canonicalArtist
-                                selectedArtistSongs = results
-                            } else {
-                                searchResult = "No artists matching '$searchArtistQuery'"
+                        val query = searchArtistQuery.trim()
+                        searchFocusManager.clearFocus(force = true)
+                        isExpanded = false
+                        isArtistExpanded = false
+                        if (query.isBlank()) {
+                            allSongs = emptyList()
+                            searchResult = "Enter an artist to search"
+                        } else {
+                            scope.launch {
+                                val results = activeDb.songDao().searchBrowseSongsByArtist(query)
+                                allSongs = results
+                                searchResult = if (results.isNotEmpty()) "Found ${results.size} matches" else "No artists matching '$query'"
                             }
-                            isArtistExpanded = false
                         }
                     },
                     onSuggestionClick = openBrowseSong,
