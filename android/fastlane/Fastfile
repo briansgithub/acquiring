@@ -1,0 +1,25 @@
+require_relative "lib/beta_release"
+
+default_platform(:android)
+
+platform :android do
+  desc "List actual Play API track identifiers for one-time setup; no release changes"
+  lane :discover do
+    BetaRelease.discover
+  end
+
+  desc "Check Play state and allocate a unique version (no upload)"
+  lane :prepare do
+    BetaRelease.prepare
+  end
+
+  desc "Build once and verify the signed bundle locally"
+  lane :build do
+    BetaRelease.build
+  end
+
+  desc "Validate an edit without committing, or publish only the two pinned testing tracks"
+  lane :submit do
+    BetaRelease.submit
+  end
+end
