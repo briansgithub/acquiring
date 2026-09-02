@@ -19,6 +19,7 @@ struct QuizView: View {
     @State private var progress = 0.0
     @State private var playing = false
     @State private var error: String?
+    @State private var usesRelativeIonianContext = false
 
     var body: some View {
         Group {
@@ -54,6 +55,10 @@ struct QuizView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .accessibilityIdentifier("quiz.play")
+                if let url = document.song.url {
+                    Link("Open on Hooktheory", destination: url)
+                        .accessibilityIdentifier("quiz.hooktheoryLink")
+                }
             }
         }
         .padding()
@@ -64,11 +69,23 @@ struct QuizView: View {
     private func chordCard(_ section: ExtractedSection) -> some View {
         let active = activeChord(in: section)
         let key = active.map { section.key(at: $0.beat) } ?? section.keys[0].key
-        let symbol = active.map { ChordInterpreter.romanSymbol(for: $0.chord, key: key) } ?? "—"
+        let contextKey = RelativeIonianContext.key(for: section.keys[0].key)
+        let symbol = active.map {
+            usesRelativeIonianContext
+                ? ChordInterpreter.relativeIonianRomanSymbol(for: $0.chord, key: key, contextKey: contextKey)
+                : ChordInterpreter.romanSymbol(for: $0.chord, key: key)
+        } ?? "—"
         let rootDegree = active
             .flatMap { ChordInterpreter.resolvedRoot(for: $0.chord, key: key)?.pitch }
-            .map { MusicTheory.degreeLabel(midi: $0.midiNote, key: key) } ?? ""
+            .map {
+                usesRelativeIonianContext
+                    ? RelativeIonianContext.degreeLabel(for: $0, contextKey: contextKey)
+                    : MusicTheory.degreeLabel(midi: $0.midiNote, key: key)
+            } ?? ""
         return GroupBox("Chord") {
+            Toggle("Lock in Major", isOn: $usesRelativeIonianContext)
+                .accessibilityIdentifier("quiz.lockInMajor")
+                .accessibilityHint("Keeps Roman numerals and scale degrees relative to the section's major-key context without changing playback pitches")
             HStack(spacing: 12) {
                 FittedRomanNumeral(
                     display: RomanNumeralDisplay(symbol: symbol, borrowed: active?.chord["borrowed"]),

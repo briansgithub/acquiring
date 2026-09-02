@@ -59,7 +59,7 @@ Before starting execution, re-examined the Android history for commits that were
 18. [x] Match Hooktheory suspended extension voicings
 19. [ ] Fix quiz playback controls and looping
 20. [x] Fix hierarchical back navigation
-21. [ ] Add Hooktheory URL button to Quiz page
+21. [x] Add Hooktheory URL button to Quiz page — `Link` to `document.song.url`, verified via XCUITest
 22. [skip] Add audiation aural-practice and pitch calibration — dead code on Android (F055, unused container)
 23. [x] Custom borrowed scales + web-parity applied chord voicing
 24. [x] Artist search, refine UI layout, sawtooth default
@@ -77,8 +77,8 @@ Before starting execution, re-examined the Android history for commits that were
 36. [ ] Fix seamless song loop playback
 37. [x] Add spelling-aware interval analysis (`SpelledInterval.swift`)
 38. [ ] Integrate interval playback into quiz UI
-39. [ ] Add relative Ionian label context (`RelativeIonianContext.swift`)
-40. [ ] Keep Ionian context fixed across modulations
+39. [x] Add relative Ionian label context (`RelativeIonianContext.swift`) — "Lock in Major" toggle in the chord card
+40. [x] Keep Ionian context fixed across modulations — context key derives from the section's first key, not the active chord's
 
 ## Phase 3 — Interval & audiation deepening
 
