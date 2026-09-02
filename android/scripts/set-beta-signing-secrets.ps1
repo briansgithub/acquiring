@@ -1,7 +1,8 @@
 # Run interactively in your own PowerShell window. Never paste passwords in chat.
 [CmdletBinding()]
-param()
+param([string]$KeystorePath)
 $ErrorActionPreference = 'Stop'
+$Host.UI.RawUI.WindowTitle = 'Acquiring - secure Android signing setup'
 $taskRepository = 'briansgithub/acquiring'
 $expectedSha1 = '2CDF87160C0306AD304F4F97E8A1A4AD6EFC4272'
 
@@ -49,12 +50,16 @@ if (-not $environmentState.deployment_branch_policy.custom_branch_policies -or
 }
 Write-Host 'This saves the ORIGINAL upload key to the android-beta GitHub environment only.'
 Write-Host 'Passwords are masked, remain in process memory, and are not written to local files.'
-$keyPath = (Resolve-Path -LiteralPath (Read-Host 'Original upload keystore full path')).Path
+if ([string]::IsNullOrWhiteSpace($KeystorePath)) {
+    $KeystorePath = Read-Host 'Original upload keystore full path'
+}
+$keyPath = (Resolve-Path -LiteralPath $KeystorePath).Path
 if ($keyPath.Contains('"')) { throw 'Invalid file path' }
-$alias = Read-Host 'Upload key alias'
+Write-Host "Selected keystore: $keyPath"
+$alias = Read-Host 'Step 1 of 3 - Key alias (the name you selected in Android Studio, NOT a password)'
 if ($alias.Contains('"') -or $alias.Contains("`n") -or [string]::IsNullOrWhiteSpace($alias)) { throw 'Invalid key alias' }
-$storeSecret = Read-Host 'Keystore password' -AsSecureString
-$keySecret = Read-Host 'Key password (enter it even if identical)' -AsSecureString
+$storeSecret = Read-Host 'Step 2 of 3 - KEYSTORE PASSWORD: unlocks the entire keystore file' -AsSecureString
+$keySecret = Read-Host 'Step 3 of 3 - KEY PASSWORD: unlocks the signing key for that alias (re-enter if the same)' -AsSecureString
 try {
     $env:ACQ_SETUP_STORE_PASSWORD = Convert-SecretForChild $storeSecret
     $env:ACQ_SETUP_KEY_PASSWORD = Convert-SecretForChild $keySecret
