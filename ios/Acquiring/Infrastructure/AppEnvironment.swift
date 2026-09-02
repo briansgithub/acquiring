@@ -131,6 +131,7 @@ final class AppEnvironment {
     let history: HistoryStore
     let userLibrary: UserLibraryStore
     let audio: AppAudioSystem
+    let catalogConfiguration: CatalogConfiguration
     private let seedsUITestCatalog: Bool
 
     init(modelContext: ModelContext, uiTestSession: UITestSession? = UITestSession.current()) throws {
@@ -154,6 +155,7 @@ final class AppEnvironment {
         }
         let coordinator = CatalogCoordinator(configuration: configuration)
         catalog = coordinator
+        catalogConfiguration = configuration
 #if DEBUG
         let selectedMaintenance: any CatalogMaintenanceService
         if isUITesting, let scenario = CatalogMaintenanceUITestScenario(arguments: arguments) {
