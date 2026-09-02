@@ -14,15 +14,24 @@ Legend for the original categorization: **[done]** = already true on iOS, verify
 
 ## Methodology
 
-1. **Four testing layers, most autonomous first:**
+1. **Three testing layers, most autonomous first:**
    - `swift test --package-path ios/Packages/AcquiringKit` for pure logic (theory, chords, DSP, timing, tessitura) — fast, fully autonomous, and the primary safety net since most of this logic is already ported and tested.
-   - Rebuild → reinstall → relaunch → screenshot in the `iPhone 17` simulator after every change (per `ios/AGENTS.md`).
-   - Coordinate-based interactive verification via macOS System Events, now that Accessibility access is granted — tap points are computed from a fresh screenshot each time, never hardcoded, since the Simulator's screen is a bitmap to macOS (no accessibility-label introspection from the host side).
-   - `xcodebuild test` (XCUITest), rewritten incrementally as each screen's design settles, for durable regression coverage.
+   - Rebuild → reinstall → relaunch → screenshot in the `iPhone 17` simulator after every change (per `ios/AGENTS.md`), for visual/layout checks.
+   - `xcodebuild test` (XCUITest) for anything requiring real interaction (taps, typing, navigation, state changes) — rewritten/extended incrementally as each screen's design settles. **Confirmed macOS System Events cannot drive the Simulator**: the device screen is a bitmap to the host, its UI elements aren't exposed to Accessibility, and `click at`/`keystroke` land nowhere inside the simulated app (verified empirically — clicks and typed text produced no effect). XCUITest is therefore the only reliable interactive-verification layer, not a supplementary one; the Accessibility grant helps for other host-level automation but not this.
    - Audio-perceptual correctness and full VoiceOver experience are the two things that can't be fully closed-loop verified without a human; these are implemented and structurally checked, then flagged rather than claimed as fully autonomous.
 2. **Per-feature loop:** identify the existing `AcquiringKit`/`AppEnvironment` API that already covers the logic → implement the minimal SwiftUI wiring → run the applicable testing layers → commit referencing the feature number → move on.
-3. **One flagged decision point:** Android used a custom draggable "puck"/dial widget for several controls (audiation target puck, arpeggio rate knob). iOS has no native equivalent. Default plan: use native SwiftUI controls (`Picker`/`Stepper`/`Slider`) instead of a custom dial. Flagged once at item 22, not re-asked at each of the six items it touches (22, 25, 27, 85, 88, 91).
+3. **One flagged decision point:** Android used a custom draggable knob for arpeggio rate (items 85, 88, 91). iOS has no native equivalent. Default plan: use a native `Picker`/`Stepper` instead of a custom dial. Flagged once when we reach item 85, not re-asked per item. (An earlier draft of this plan also flagged the "audiation puck" — see Backward-pass corrections below for why that's resolved, not just deferred to a decision.)
 4. Items marked **[skip]** are noted for completeness but require no iOS work.
+
+## Backward-pass corrections
+
+Before starting execution, re-examined the Android history for commits that were later superseded rather than cumulative, to avoid building something Android itself abandoned:
+
+- **Items 22, 25, 27, 33, 41 (the "audiation puck"/pitch-calibration gauge) are reclassified from wire/decision to [skip].** `git show --stat` on each confirms they all touch one file, `AudiationPitchPractice.kt` — and `docs/feature-parity.md` already records that capability as **F055, Android status "Unused," iOS "Deferred," "explicitly deferred because Android has no production caller."** Android built this container, iterated its control widget (puck → magnifying glass), then never wired it into the shipping app. There is nothing to port. This also fully resolves the control-widget decision for these five items — not by picking an iOS equivalent, but because the feature line was dead code even on Android.
+- **Item 38 ("integrate interval playback into quiz UI") was checked against the same concern and is genuinely live** — its commit touches only `MainActivity.kt` (347 insertions), matching the shipped F035/F036 interval-card behavior already substantially ported. No change.
+- **Items 69–70 (tessitura button rename/octave stepper/repair) have their exact visual styling superseded by item 92** ("match gemini branch"), which reworks `TessituraControl.kt` substantially (154 insertions, 85 deletions). The *capabilities* from 69–70 (octave stepper, clear control, rename) are real and persist; their *visual treatment* should be implemented once, at 92's end state, not twice.
+- **Item 84 ("Redesign quiz controls and pitch practice") touches audio/pitch files beyond layout** (`AudioEngine.kt`, `PitchSmoother.kt`, `MicrophonePitchTracker.kt`, `PersistentQuizPitchPractice.kt`), so earlier granular quiz-control-layout items (17, 19, 29, 33's non-audiation parts, 44, 45, 49) shouldn't be over-finalized visually before 84 — implement their functional behavior but expect the exact control arrangement to move again at 84.
+- Renames (77, 89) and icon iterations (7, 8, 79, 80, 112) were already [skip] regardless of which intermediate name/icon "won," since iOS's name and icon were decided independently — no change needed there.
 
 ## Phase 1 — Foundation
 
@@ -39,7 +48,7 @@ Legend for the original categorization: **[done]** = already true on iOS, verify
 
 ## Phase 2 — Quiz engine emerges
 
-11. [ ] Dynamic key modulation, polyphonic audio engine, ChordInterpreter parity
+11. [wip] Dynamic key modulation, polyphonic audio engine, ChordInterpreter parity — bare-bones melody timeline + chord card land on Quiz (`QuizView`); fixed a real crash in it (`AudioSystem.swift`'s render closure inherited `@MainActor` isolation, illegal on the real-time audio thread); Play now hangs ~60-90s before toggling, cause unconfirmed (possibly host-specific `engine.start()` latency) — deferred, tracked in `testQuizPlayTogglesToPause`
 12. [ ] Cancel playback on skip/reset
 13. [skip] Add compact Android agent rules
 14. [ ] Remove tonic letter from Quiz key display
@@ -50,18 +59,18 @@ Legend for the original categorization: **[done]** = already true on iOS, verify
 19. [ ] Fix quiz playback controls and looping
 20. [x] Fix hierarchical back navigation
 21. [ ] Add Hooktheory URL button to Quiz page
-22. [ ] Add audiation aural-practice and pitch calibration (control-widget decision)
+22. [skip] Add audiation aural-practice and pitch calibration — dead code on Android (F055, unused container)
 23. [x] Custom borrowed scales + web-parity applied chord voicing
 24. [x] Artist search, refine UI layout, sawtooth default
-25. [ ] Optimize QuizTab layout, puck positioning (control-widget decision)
+25. [skip] Optimize QuizTab layout, puck positioning — same unused audiation container
 26. [ ] Reorganize search UI, remove suggestion limits
-27. [ ] Audiation puck → magnifying glass, reorganize search layout (control-widget decision)
+27. [skip] Audiation puck → magnifying glass, reorganize search layout — same unused audiation container
 28. [ ] Improve playback looping (endBeat estimation)
 29. [ ] Adjust default volume balance to 55%
 30. [x] Unique page per artist when searching by artist
 31. [ ] Improve artist normalization, quiz navigation (`LibraryDiscovery.swift`)
 32. [ ] Refresh recent selections after navigation
-33. [ ] Fix quiz audiation and chord previews
+33. [skip] Fix quiz audiation and chord previews — same unused audiation container
 34. [ ] Improve quiz UI and artist history
 35. [x] Make quiz playback controls update in real time
 36. [ ] Fix seamless song loop playback
@@ -72,7 +81,7 @@ Legend for the original categorization: **[done]** = already true on iOS, verify
 
 ## Phase 3 — Interval & audiation deepening
 
-41. [ ] Color-coded pitch deviation, root interval consistency
+41. [skip] Color-coded pitch deviation, root interval consistency — same unused audiation container (Audiation Pitch Gauge)
 42. [ ] Persistent Humming Interval Tool (`ComfortablePitchCapture.swift`)
 43. [ ] Restore complex UI chord objects, unify scrub bar, remove skip button
 44. [ ] Refine quiz playback controls
