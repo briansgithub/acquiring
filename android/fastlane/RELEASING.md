@@ -164,18 +164,45 @@ the original upload key and is covered by the first validation workflow.
 ## Activation status (2026-09-02)
 
 - GitHub `android-beta` environment exists and has exactly one deployment branch
-  policy: branch `main`. No signing secrets or Google connection variables have
-  been provisioned by this implementation yet.
-- Existing Cloud project and existing Play app were verified (see above). Only the
-  Firebase admin service account was present; it must not be reused for publishing.
-- Owner confirmation is pending for the dedicated beta service account, federation,
-  and app-scoped Play permissions. No Google permission changes have been made.
-- Original upload keystore location and secure password entry are pending. The
-  previously configured developer keystore is not the Play upload key.
-- API track discovery/pinning, integration into `main`, and the signed validation
-  trial are still pending. The null track settings intentionally prevent publishing.
-- No live pipeline release has been attempted. Do not call setup operational until
-  the validation-only workflow has passed; add its URL when it does.
+  policy: branch `main`. All four signing secrets and both Google connection
+  variables were saved. The owner entered passwords locally; the original upload
+  certificate and private-key unlock checks passed. No passwords or keys are in Git.
+- With owner approval, the dedicated service account
+  `acquiring-android-beta@acquiring-testing.iam.gserviceaccount.com` was created
+  without general project roles. It has Acquiring-only app-information read access
+  and testing-release access in Play. Play also automatically includes read-only
+  app-quality access. No production, tester-management, store, policy, or financial
+  permissions were granted. The existing Firebase admin account was not changed.
+- `ANDROID_WIF_PROVIDER` is
+  `projects/279056118455/locations/global/workloadIdentityPools/acquiring-android-beta/providers/github-android-beta`.
+  Its condition is the exact conjunction above, and impersonation is restricted
+  to repository ID `1291259695` on the dedicated service account. Publisher, IAM
+  Credentials and Security Token Service APIs are enabled. Workflow authentication
+  and actual Play reads/uploads succeeded using this short-lived identity.
+- [Bootstrap discovery](https://github.com/briansgithub/acquiring/actions/runs/33662425971)
+  returned `internal` / `Friends Beta 4 - Privacy policy` and `alpha` /
+  `Friends Closed Beta 4`, both completed at version 4. Those names and versions
+  matched Console. The exact API IDs are pinned with a regression test; production
+  and open beta remain blocked. The bootstrap's preflight failure was intentional,
+  before signing/upload, while track IDs were still null.
+- Pipeline integration and track pinning landed on `main` through PRs #41 and #42,
+  without merging the separate startup-fix branch or modifying its working files.
+- The [full validation-only trial](https://github.com/briansgithub/acquiring/actions/runs/33663401464)
+  **passed** for commit `59387866deed497c84b03634a4a0935fd0c1b602`:
+  Android unit tests and instrumentation compilation, missing/wrong signing and
+  version guards, 22 Ruby tests / 93 assertions, and dispatcher tests passed.
+  One signed version `1.0 (5)` was built, verified and uploaded into an uncommitted
+  edit; both testing-track updates validated, then the edit was discarded.
+  AAB SHA-256: `226e2950cc56be9d45b7a308c5044e910c42bd84f302ecb7b49223ee309e3a4d`.
+  Live Console verification afterward still showed version 4 available on both
+  testing tracks, with no version 5 in App versions. Do not reuse this trial's
+  bundle or assume its code is free: each future run must inspect Play again.
+- Setup is operational. **No live pipeline release has been attempted.** The next
+  explicit "release Android beta" command authorizes the first live release;
+  continue to verify both track outcomes and Google's review state afterward.
+- GitHub reported non-blocking Node 20 deprecation warnings for some pinned setup
+  actions (executed successfully under Node 24). Dependency upgrades are separate
+  maintenance work, not a reason to change the validated release here.
 
 The release state machine uses Fastlane with its locked Google Publisher client
 directly for explicit edits; it deliberately avoids Supply defaults such as the
