@@ -343,3 +343,32 @@ Sibling race to BUG-005, different failure mode:
 - `web/player.js` — `resolveSongIndex()`, `init()`, `loadSection()`, `handleSectionChange()`
 - `docs/BUGS.md` — BUG-005 (related library-init race)
 - `tooling/_Debug_testing/sectionSwitchRaceSim.mjs` — offline race reproduction and fix verification
+
+---
+
+## BUG-007: Android release 4 crashes while drawing a collapsed pitch hint
+
+- **Reported/resolved:** 2026-09-02. Fixed in version code 5 (version name 1.0).
+- **Evidence:** Wireless ADB on a Pixel 7a running Android 14 captured three
+  `com.acquiring.android` crashes from the Play-installed version 4, all with
+  `IllegalArgumentException: ending radius must be > 0` in `RadialGradient`.
+  A fresh launch could reach search; the failure depends on layout/state.
+- **Cause:** `PitchHintDot` used a radial-gradient background whose default radius
+  is half the shortest measured dimension. Tight parent constraints can collapse
+  its nominal 16 dp size to zero in either dimension. Android then rejects the
+  shader, even though the dot has no visible area.
+- **Fix:** Draw the existing glow with `drawBehind` only when both dimensions are
+  positive. Keep the original size, colors, semantics, and normal glow appearance.
+- **Regression:** `PitchHintDotUiTest.constrainedDotsCanCollapseAndGrowWithoutCrashing`
+  reproduced the exact exception on the Pixel before the fix. After the fix,
+  the same test passed (1 test, 0 failures/errors), covering zero width, zero
+  height, both zero, visible glow, and collapse after a positive-size draw.
+- **Release check:** A release AAB built from the fixed source with temporary ID
+  `com.acquiring.android.startupcheck` was converted to device-specific split APKs
+  using bundletool 1.18.3 and installed over wireless ADB. Three cold launches
+  survived with no new test-app crash. The original Play installation/data stayed
+  intact; the production package still needs its normal Play-track update.
+- **Release handling:** The Play upload key is configured only through the protected
+  release pipeline. Local signing paths, aliases and release artifacts are not
+  recorded in this public repository. Upload/Play distribution was not performed
+  as part of the local reproduction; it is covered by the testing-track release.

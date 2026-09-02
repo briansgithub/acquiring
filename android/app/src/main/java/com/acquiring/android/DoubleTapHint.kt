@@ -1,6 +1,5 @@
 package com.acquiring.android
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.size
@@ -8,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
@@ -46,7 +46,14 @@ internal fun PitchHintDot(
             )
         )
     }
-    Box(modifier = modifier.size(size).background(glowBrush))
+    Box(modifier = modifier.size(size).drawBehind {
+        // Tight parent constraints can collapse either dimension to zero.
+        // The gradient's default radius is half the shortest dimension, and
+        // Android rejects a zero radius even when there is nothing to paint.
+        if (this.size.minDimension > 0f) {
+            drawRect(glowBrush)
+        }
+    })
 }
 
 /**
