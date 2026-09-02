@@ -11,3 +11,14 @@ Follow the least-context, risk-proportional procedure below.
 
 Concurrent agents require separate Git worktrees. Use sibling folders beside the primary checkout, one normal branch per worktree; pushes publish that branch, while an authorized merge/PR from the primary checkout lands it in the default branch. Never overwrite unrelated user work.
 - After an authorized merge, verify the feature tip is reachable from the default branch, then remove the sibling worktree and delete its local branch with `git branch -d`; delete remote branches only after authorization. Preserve dirty or unmerged work and never force-delete another agent's checkout.
+
+## Android beta release commands
+
+When the owner explicitly says "release Android beta", follow `fastlane/RELEASING.md`.
+That command authorizes one main-only testing release and automatically generated
+release notes, without a second routine approval. First verify one-time setup and
+the validation-only trial are complete. Never infer release approval from a request
+to implement features, test, commit, or push. Do not merge or push unfinished work
+as part of the release command. Security-sensitive access changes still require
+owner confirmation. Report internal and closed outcomes separately; API acceptance
+is not Google review approval. Never upload signed bundles to public artifacts.
