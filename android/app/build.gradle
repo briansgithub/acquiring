@@ -18,7 +18,7 @@ android {
         applicationId "com.acquiring.android"
         minSdk 26
         targetSdk 36
-        versionCode 1
+        versionCode 3
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -27,8 +27,24 @@ android {
         }
     }
 
+    signingConfigs {
+        release {
+            if (project.hasProperty('ACQUIRING_RELEASE_STORE_FILE')) {
+                storeFile file(ACQUIRING_RELEASE_STORE_FILE)
+                storePassword ACQUIRING_RELEASE_STORE_PASSWORD
+                keyAlias ACQUIRING_RELEASE_KEY_ALIAS
+                keyPassword ACQUIRING_RELEASE_KEY_PASSWORD
+            }
+        }
+    }
+
     buildTypes {
         release {
+            if (project.hasProperty('ACQUIRING_RELEASE_STORE_FILE')) {
+                signingConfig signingConfigs.release
+            } else {
+                signingConfig signingConfigs.debug
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -99,4 +115,3 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
 }
-
