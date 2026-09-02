@@ -379,3 +379,39 @@ Sibling race to BUG-005, different failure mode:
   Signature verification and bundletool validation passed. Exact commands and
   results are in the adjacent `v5-crashfix-verification.md`; evidence is in
   `v5-crashfix-evidence`. Upload/Play distribution was not performed.
+
+---
+
+## BUG-008: Artist search rejects partial/case-varied names and keyboard hides results
+
+- **Reported/resolved:** 2026-09-02; version code 6, version name 1.0.
+- **Reproduction on Pixel 7a / Android 14:** typing `Smash` offered `smash mouth`
+  and `the smashing pumpkins`, but the Search Artist button returned
+  `No artists matching 'Smash'`. With the keyboard open the fixed search controls
+  consumed the available height and the result list had no visible song rows.
+- **Cause:** the artist button used the exact, case-sensitive artist-selection
+  query instead of a partial search. Neither search button cleared text focus.
+  Autocomplete effects also omitted the active database from their keys, leaving
+  stale suggestions after replacing an initially empty catalog.
+- **Fix:** add a lightweight, case-insensitive partial artist query; both search
+  buttons show matching songs and clear focus. Trim surrounding search spaces,
+  retain catalog hyphen/space matching, and refresh autocomplete when the active
+  database changes. Selecting a specific artist still uses its exact artist list.
+- **Crash finding:** the user's latest two crashes (13:35 and 13:36) were from
+  Play-installed `com.acquiring.android` version 4, with the same zero-radius
+  gradient exception recorded in BUG-007. That fix is included in version 6.
+- **Verification:** 4 `AllSongsDaoTest` tests and 2 `SongSearchUiTest` device tests
+  passed. With the actual downloaded catalog, ` sMaSh ` returned 25 matches and
+  ` ALL-STAR ` returned 9. Both buttons hid the keyboard (`mInputShown=false`).
+  Selecting `1979` and `All Star` opened their quiz pages, and the release crash
+  buffer had no entries after the test APK was installed.
+- **Phone state:** the fixed copy is now visibly named **Acquiring Test**, package
+  `com.acquiring.android.startupcheck`, version 6. Its downloaded catalog was
+  preserved during the update. Original Play version 4/data remain installed.
+  Use Acquiring Test for local validation; updating the original package requires
+  the normal signed production AAB and Play-track update (not performed here).
+- **Artifacts:** `H:\Desktop\acquiring_app_releases\test-v6\Acquiring-Test-v6.apk`
+  and adjacent `verification.md` contain the test build, exact validation commands,
+  and UI-element/log evidence. The APK uses the local debug certificate solely for
+  the separate test package; it is not a Play upload artifact. See BUG-007 for the
+  saved production upload-key setup.
