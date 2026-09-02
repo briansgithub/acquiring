@@ -129,6 +129,10 @@ jobs:
           service_account: ${{ vars.ANDROID_PLAY_SERVICE_ACCOUNT }}
           create_credentials_file: true
           export_environment_variables: true
+      - name: Discover API track identifiers for validation/setup
+        if: inputs.mode == 'validate'
+        working-directory: android
+        run: bundle exec fastlane android discover
       - name: Inspect Play and allocate version
         working-directory: android
         run: bundle exec fastlane android prepare

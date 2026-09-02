@@ -251,4 +251,15 @@ class BetaReleaseTest < Minitest::Test
       assert_raises(BetaRelease::Stop) { BetaRelease.check_manifest!(manifest.sub(from, to), plan) }
     end
   end
+
+  def test_discovery_reports_identifiers_without_notes_or_bundle_data
+    snapshot = @play.snapshot
+    snapshot["tracks"][0]["releases"] = [{ "name" => "Friends beta", "status" => "completed", "versionCodes" => ["4"], "releaseNotes" => [{ "text" => "not for logs" }] }]
+    @play.seed(snapshot)
+    output, = capture_io { BetaRelease::Play.stub(:new, @play) { BetaRelease.discover } }
+    assert_equal "internal", JSON.parse(output)[0]["track"]
+    assert_includes output, "Friends beta"
+    refute_includes output, "not for logs"
+    refute_includes output, "bundles"
+  end
 end
