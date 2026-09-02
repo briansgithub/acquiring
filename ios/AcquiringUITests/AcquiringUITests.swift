@@ -34,6 +34,12 @@ final class AcquiringUITests: XCTestCase {
             app.descendants(matching: .any)["quiz.chordCard"].waitForExistence(timeout: 5)
         )
         XCTAssertTrue(app.buttons["quiz.play"].waitForExistence(timeout: 5))
+        let lockInMajor = app.switches["quiz.lockInMajor"]
+        XCTAssertTrue(lockInMajor.waitForExistence(timeout: 5))
+        lockInMajor.tap()
+        XCTAssertTrue(
+            app.descendants(matching: .any)["quiz.hooktheoryLink"].waitForExistence(timeout: 5)
+        )
         let shot = XCTAttachment(screenshot: app.screenshot())
         shot.lifetime = .keepAlways
         add(shot)
