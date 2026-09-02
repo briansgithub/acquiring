@@ -45,7 +45,7 @@ Before starting execution, re-examined the Android history for commits that were
 7. [skip] 7-circle diatonic app icon assets
 8. [skip] Icon solid black background / 3D nodes
 9. [x] Search history + tests
-10. [ ] Fix song section labeling via Hooktheory API (`SectionOrdering.swift`, verify)
+10. [x] Fix song section labeling via Hooktheory API — `SectionOrdering.ordered(_:)` already backs `SongDocument.orderedSections`, exercised by 164 passing package tests
 
 ## Phase 2 — Quiz engine emerges
 
