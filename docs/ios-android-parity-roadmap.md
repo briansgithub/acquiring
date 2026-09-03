@@ -55,7 +55,7 @@ Before starting execution, re-examined the Android history for commits that were
 14. [ ] Remove tonic letter from Quiz key display
 15. [x] Fix root-relative chord degree labels — chord card shows the root's scale degree via `MusicTheory.degreeLabel`/`ChordInterpreter.resolvedRoot`, confirmed by a real XCUITest screenshot
 16. [x] Polish chord/scale-degree rendering — `FittedRomanNumeral` + `FittedScaleDegree` side by side in the chord card
-17. [ ] Quiz tempo as a percentage with reset
+17. [x] Quiz tempo as a percentage with reset — 0-200% slider reconfigures the timeline via `environment.audio.load(..., position: .preserveProgress)`, Reset button disabled at 100%, verified via XCUITest
 18. [x] Match Hooktheory suspended extension voicings
 19. [ ] Fix quiz playback controls and looping
 20. [x] Fix hierarchical back navigation
