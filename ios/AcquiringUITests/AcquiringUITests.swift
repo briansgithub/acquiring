@@ -40,6 +40,18 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(
             app.descendants(matching: .any)["quiz.hooktheoryLink"].waitForExistence(timeout: 5)
         )
+
+        let tempoSlider = app.sliders["quiz.tempo"]
+        XCTAssertTrue(tempoSlider.waitForExistence(timeout: 5))
+        let tempoReset = app.buttons["quiz.tempoReset"]
+        XCTAssertFalse(tempoReset.isEnabled)
+        tempoSlider.adjust(toNormalizedSliderPosition: 0.25)
+        XCTAssertTrue(tempoReset.isEnabled)
+        tempoReset.tap()
+        let deadline = Date().addingTimeInterval(5)
+        while tempoReset.isEnabled, Date() < deadline { usleep(100_000) }
+        XCTAssertFalse(tempoReset.isEnabled)
+
         let shot = XCTAttachment(screenshot: app.screenshot())
         shot.lifetime = .keepAlways
         add(shot)

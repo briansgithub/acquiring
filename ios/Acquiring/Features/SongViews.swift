@@ -20,6 +20,7 @@ struct QuizView: View {
     @State private var playing = false
     @State private var error: String?
     @State private var usesRelativeIonianContext = false
+    @State private var tempoPercent = 100.0
 
     var body: some View {
         Group {
@@ -55,6 +56,21 @@ struct QuizView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .accessibilityIdentifier("quiz.play")
+                VStack(spacing: 6) {
+                    HStack {
+                        LabeledContent("Tempo", value: "\(Int(tempoPercent))%")
+                        Spacer()
+                        Button("Reset") { tempoPercent = 100 }
+                            .accessibilityIdentifier("quiz.tempoReset")
+                            .disabled(tempoPercent == 100)
+                    }
+                    Slider(value: $tempoPercent, in: 0...200, step: 1)
+                        .accessibilityIdentifier("quiz.tempo")
+                        .accessibilityLabel("Quiz tempo")
+                        .onChange(of: tempoPercent) { _, _ in
+                            Task { await reloadTimeline(section) }
+                        }
+                }
                 if let url = document.song.url {
                     Link("Open on Hooktheory", destination: url)
                         .accessibilityIdentifier("quiz.hooktheoryLink")
@@ -136,6 +152,11 @@ struct QuizView: View {
         } catch { state = .failure(error.localizedDescription) }
     }
 
+    private func reloadTimeline(_ section: ExtractedSection) async {
+        do { try await environment.audio.load(timeline(for: section), position: .preserveProgress) }
+        catch { self.error = error.localizedDescription }
+    }
+
     private func observeTransport() async {
         for await value in await environment.audio.states() {
             playing = value.phase == .playing || value.phase == .buffering
@@ -145,7 +166,7 @@ struct QuizView: View {
     }
 
     private func timeline(for section: ExtractedSection) -> AcquiringAudio.QuizTimeline {
-        let beatsPerSecond = max(section.bpm, 1) / 60
+        let beatsPerSecond = max(section.bpm * tempoPercent / 100, 1) / 60
         let events = section.melodyNotes.compactMap { note -> QuizEvent? in
             guard !note.isRest else { return nil }
             let key = section.key(at: note.beat)
