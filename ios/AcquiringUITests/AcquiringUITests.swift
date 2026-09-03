@@ -23,6 +23,7 @@ final class AcquiringUITests: XCTestCase {
 
         let seedSong = app.buttons["Seed Song, by Sample Artist"]
         XCTAssertTrue(seedSong.waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["library.search.loadMore"].exists)
         seedSong.tap()
 
         XCTAssertTrue(app.navigationBars["Quiz"].waitForExistence(timeout: 5))
