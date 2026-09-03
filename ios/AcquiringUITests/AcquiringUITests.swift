@@ -48,6 +48,10 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Song"].waitForExistence(timeout: 5))
         app.navigationBars["Song"].buttons.element(boundBy: 0).tap()
         XCTAssertTrue(app.textFields["library.search.field"].waitForExistence(timeout: 5))
+
+        app.buttons["library.search.clear"].tap()
+        XCTAssertTrue(app.staticTexts["Recent Songs"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Seed Song, by Sample Artist"].waitForExistence(timeout: 5))
     }
 
     // KNOWN ISSUE: tapping Play can block the app for 60-90s on this dev machine before the

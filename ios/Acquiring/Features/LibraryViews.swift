@@ -33,6 +33,12 @@ private struct LibraryView: View {
     @Bindable var store: LibraryStore
 
     var body: some View {
+        content
+            .onAppear { Task { await store.refreshUserContent() } }
+    }
+
+    @ViewBuilder
+    private var content: some View {
         switch store.catalogState {
         case .idle, .loading:
             ProgressView()
@@ -110,6 +116,8 @@ private struct SearchCatalogView: View {
                         Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityIdentifier("library.search.clear")
+                    .accessibilityLabel("Clear search")
                 }
             }
             .padding(10)
@@ -146,7 +154,14 @@ private struct SearchCatalogView: View {
     @ViewBuilder
     private var songResults: some View {
         switch store.suggestions {
-        case .idle: idlePrompt
+        case .idle:
+            if store.recentSongs.isEmpty {
+                idlePrompt
+            } else {
+                Section("Recent Songs") {
+                    ForEach(store.recentSongs) { song in SongRow(song: song) { store.openSong(song) } }
+                }
+            }
         case .loading: ProgressView()
         case let .content(songs):
             ForEach(songs) { song in SongRow(song: song) { store.openSong(song) } }
@@ -160,7 +175,16 @@ private struct SearchCatalogView: View {
     @ViewBuilder
     private var artistResults: some View {
         switch store.artistSuggestions {
-        case .idle: idlePrompt
+        case .idle:
+            if store.recentArtists.isEmpty {
+                idlePrompt
+            } else {
+                Section("Recent Artists") {
+                    ForEach(store.recentArtists, id: \.self) { artist in
+                        Button(artist) { store.path.append(.artist(artist)) }
+                    }
+                }
+            }
         case .loading: ProgressView()
         case let .content(artists):
             ForEach(artists, id: \.self) { artist in

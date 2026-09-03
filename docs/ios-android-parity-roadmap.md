@@ -40,11 +40,11 @@ Before starting execution, re-examined the Android history for commits that were
 2. [skip] Fix Room coroutines / Kotlin+AGP upgrade
 3. [x] Song search by title + real-time suggestions
 4. [x] Port chord/roman-numeral logic from web player (`ChordInterpreter.swift`)
-5. [x] Recent Songs + Dark Mode theme
+5. [x] Recent Songs + Dark Mode theme — Recent Songs section now actually built (was previously marked done in error, only dark mode existed)
 6. [skip] Clean up scratch scripts
 7. [skip] 7-circle diatonic app icon assets
 8. [skip] Icon solid black background / 3D nodes
-9. [x] Search history + tests
+9. [x] Search history + tests — Recent Artists section added alongside Recent Songs
 10. [x] Fix song section labeling via Hooktheory API — `SectionOrdering.ordered(_:)` already backs `SongDocument.orderedSections`, exercised by 164 passing package tests
 
 ## Phase 2 — Quiz engine emerges
@@ -70,7 +70,7 @@ Before starting execution, re-examined the Android history for commits that were
 29. [ ] Adjust default volume balance to 55%
 30. [x] Unique page per artist when searching by artist
 31. [ ] Improve artist normalization, quiz navigation (`LibraryDiscovery.swift`)
-32. [ ] Refresh recent selections after navigation
+32. [x] Refresh recent selections after navigation — `LibraryView.onAppear` re-runs `refreshUserContent()` each time the search screen becomes visible again
 33. [skip] Fix quiz audiation and chord previews — same unused audiation container
 34. [ ] Improve quiz UI and artist history
 35. [x] Make quiz playback controls update in real time
