@@ -66,15 +66,15 @@ Before starting execution, re-examined the Android history for commits that were
 25. [skip] Optimize QuizTab layout, puck positioning — same unused audiation container
 26. [ ] Reorganize search UI, remove suggestion limits
 27. [skip] Audiation puck → magnifying glass, reorganize search layout — same unused audiation container
-28. [ ] Improve playback looping (endBeat estimation)
+28. [x] Improve playback looping (endBeat estimation) — `QuizView.timeline(for:)` computes duration from max event end, falling back to metadata endBeat, same as before
 29. [ ] Adjust default volume balance to 55%
 30. [x] Unique page per artist when searching by artist
-31. [ ] Improve artist normalization, quiz navigation (`LibraryDiscovery.swift`)
+31. [x] Improve artist normalization, quiz navigation — `HistoryStore` canonicalization already covered by `testHistoryUsesAndroidOrderingLimitAndArtistCanonicalization`
 32. [x] Refresh recent selections after navigation — `LibraryView.onAppear` re-runs `refreshUserContent()` each time the search screen becomes visible again
 33. [skip] Fix quiz audiation and chord previews — same unused audiation container
 34. [ ] Improve quiz UI and artist history
 35. [x] Make quiz playback controls update in real time
-36. [ ] Fix seamless song loop playback
+36. [x] Fix seamless song loop playback — `QuizPCMRenderer` loop-seam already covered by `testLoopSeamAndBalanceHaveHeadroom`
 37. [x] Add spelling-aware interval analysis (`SpelledInterval.swift`)
 38. [ ] Integrate interval playback into quiz UI
 39. [x] Add relative Ionian label context (`RelativeIonianContext.swift`) — "Lock in Major" toggle in the chord card
