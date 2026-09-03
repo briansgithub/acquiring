@@ -95,6 +95,9 @@ final class LibraryStore {
     var catalogState: FeatureState<Int> = .idle
     var suggestions: FeatureState<[CatalogSong]> = .idle
     var artistSuggestions: FeatureState<[String]> = .idle
+    var hasMoreSongSuggestions = false
+    var hasMoreArtistSuggestions = false
+    var isLoadingMoreSuggestions = false
     var recentSongs: [CatalogSong] = []
     var recentArtists: [String] = []
     var playlists: [PlaylistSummary] = []
@@ -355,12 +358,16 @@ final class LibraryStore {
         }
     }
 
+    private static let suggestionPageSize = 20
+
     private func scheduleSearch() {
         searchTask?.cancel()
         let term = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !term.isEmpty else {
             suggestions = .idle
             artistSuggestions = .idle
+            hasMoreSongSuggestions = false
+            hasMoreArtistSuggestions = false
             return
         }
         searchTask = Task {
@@ -370,17 +377,46 @@ final class LibraryStore {
                 switch searchScope {
                 case .songs:
                     suggestions = .loading
-                    let values = try await catalog.songSuggestions(query: term, limit: 20, offset: 0)
+                    let values = try await catalog.songSuggestions(query: term, limit: Self.suggestionPageSize, offset: 0)
                     suggestions = values.isEmpty ? .empty : .content(values)
+                    hasMoreSongSuggestions = values.count == Self.suggestionPageSize
                 case .artists:
                     artistSuggestions = .loading
-                    let values = try await catalog.artistSuggestions(query: term, limit: 20, offset: 0)
+                    let values = try await catalog.artistSuggestions(query: term, limit: Self.suggestionPageSize, offset: 0)
                     artistSuggestions = values.isEmpty ? .empty : .content(values)
+                    hasMoreArtistSuggestions = values.count == Self.suggestionPageSize
                 }
             } catch is CancellationError {
             } catch {
                 if searchScope == .songs { suggestions = .failure(error.localizedDescription) }
                 else { artistSuggestions = .failure(error.localizedDescription) }
+            }
+        }
+    }
+
+    func loadMoreSuggestions() {
+        guard !isLoadingMoreSuggestions else { return }
+        let term = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !term.isEmpty else { return }
+        isLoadingMoreSuggestions = true
+        Task {
+            defer { isLoadingMoreSuggestions = false }
+            do {
+                switch searchScope {
+                case .songs:
+                    guard case let .content(existing) = suggestions, hasMoreSongSuggestions else { return }
+                    let values = try await catalog.songSuggestions(query: term, limit: Self.suggestionPageSize, offset: existing.count)
+                    suggestions = .content(existing + values)
+                    hasMoreSongSuggestions = values.count == Self.suggestionPageSize
+                case .artists:
+                    guard case let .content(existing) = artistSuggestions, hasMoreArtistSuggestions else { return }
+                    let values = try await catalog.artistSuggestions(query: term, limit: Self.suggestionPageSize, offset: existing.count)
+                    artistSuggestions = .content(existing + values)
+                    hasMoreArtistSuggestions = values.count == Self.suggestionPageSize
+                }
+            } catch {
+                // Keep the existing page visible; a failed "load more" isn't worth
+                // discarding results the reader already has.
             }
         }
     }

@@ -165,11 +165,28 @@ private struct SearchCatalogView: View {
         case .loading: ProgressView()
         case let .content(songs):
             ForEach(songs) { song in SongRow(song: song) { store.openSong(song) } }
+            if store.hasMoreSongSuggestions {
+                loadMoreRow
+            }
         case .empty:
             Text("No matches").foregroundStyle(.secondary)
         case let .failure(message):
             Text(message).foregroundStyle(.red)
         }
+    }
+
+    private var loadMoreRow: some View {
+        Button {
+            store.loadMoreSuggestions()
+        } label: {
+            if store.isLoadingMoreSuggestions {
+                ProgressView()
+            } else {
+                Text("Load more")
+            }
+        }
+        .disabled(store.isLoadingMoreSuggestions)
+        .accessibilityIdentifier("library.search.loadMore")
     }
 
     @ViewBuilder
@@ -189,6 +206,9 @@ private struct SearchCatalogView: View {
         case let .content(artists):
             ForEach(artists, id: \.self) { artist in
                 Button(artist) { store.path.append(.artist(artist)) }
+            }
+            if store.hasMoreArtistSuggestions {
+                loadMoreRow
             }
         case .empty:
             Text("No matches").foregroundStyle(.secondary)

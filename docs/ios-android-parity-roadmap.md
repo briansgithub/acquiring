@@ -64,7 +64,7 @@ Before starting execution, re-examined the Android history for commits that were
 23. [x] Custom borrowed scales + web-parity applied chord voicing
 24. [x] Artist search, refine UI layout, sawtooth default
 25. [skip] Optimize QuizTab layout, puck positioning — same unused audiation container
-26. [ ] Reorganize search UI, remove suggestion limits
+26. [x] Reorganize search UI, remove suggestion limits — `CatalogRepository.songSuggestions`/`artistSuggestions` already supported SQL `LIMIT`/`OFFSET`; `LibraryStore` just never requested page 2. Added `loadMoreSuggestions()` + a "Load more" row so results past the first 20 are reachable
 27. [skip] Audiation puck → magnifying glass, reorganize search layout — same unused audiation container
 28. [x] Improve playback looping (endBeat estimation) — `QuizView.timeline(for:)` computes duration from max event end, falling back to metadata endBeat, same as before
 29. [ ] Adjust default volume balance to 55%
