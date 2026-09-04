@@ -126,12 +126,12 @@ Android chronology: `0b7abac8` through `2f891ebe`'s Library/catalog work.
 
 1. `[review]` **1.1 Library launch shell (F001).** **Luna/medium.** Show native dark
    loading, empty, ready, and failure states with stable identifiers.
-2. `[ ]` **1.2 Manual harvest (F011).** **Terra/high.** Validate Hooktheory URL;
+2. `[review]` **1.2 Manual harvest (F011).** **Terra/high.** Validate Hooktheory URL;
    show progress, retry/cancel, completion, and retained-catalog messaging.
-3. `[ ]` **1.3 First catalog install (F010, F012).** **Terra/high.** Install a
+3. `[review]` **1.3 First catalog install (F010, F012).** **Terra/high.** Install a
    valid artifact with visible progress, cancellation, failure/retry, refreshed
    count, and an empty-catalog prompt.
-4. `[ ]` **1.4 Resync, recovery, and durability (F010, F012, F053).**
+4. `[review]` **1.4 Resync, recovery, and durability (F010, F012, F053).**
    **Sol/high** (escalate to **Sol/xhigh** only for actual core recovery or
    durability work). Validate contract/schema/row floor/payloads, atomically swap,
    preserve a backup, recover failed/cancelled replacements, and retain user
@@ -145,37 +145,41 @@ the fast-track authorization; do not mark it approved without human review.
 
 Android chronology: remaining `0b7abac8` through `2f891ebe` feature work.
 
-1. `[ ]` **2.1 Title search input (F002).** **Terra/medium.** No autofocus,
+1. `[review]` **2.1 Title search input (F002).** **Terra/medium.** No autofocus,
    300 ms debounce, clear action, and loading/empty/error states.
-2. `[ ]` **2.2 Title suggestions and paging (F002).** **Terra/high.** Render
+2. `[review]` **2.2 Title suggestions and paging (F002).** **Terra/high.** Render
    complete cards, 20-row pages, Load More, and retain prior results on paging
    failure.
-3. `[ ]` **2.3 Song selection (F002, F010, F014).** **Terra/medium.** Exclude
+3. `[review]` **2.3 Song selection (F002, F010, F014).** **Terra/medium.** Exclude
    missing-payload rows, expose malformed-payload errors, record history, and
    enter Quiz first.
-4. `[ ]` **2.4 Recent songs (F003).** **Terra/medium.** Blank-query view shows
+4. `[review]` **2.4 Recent songs (F003).** **Terra/medium.** Blank-query view shows
    ten MRU items resolved against the current catalog and refreshes on return.
-5. `[ ]` **2.5 Header and section selector (F014-F015).** **Terra/high.**
-   Preserve artist/favorite actions, canonical ordering, and section changes.
-   Normalize section types, de-duplicate by normalized type, and keep the
-   earliest explicit index for each type.
-6. `[ ]` **2.6 Info overview (F016).** **Terra/medium.** Show key, tempo, meter,
+5. `[review]` **2.5 Artist search, recent artists, and artist result page (F004).**
+   **Terra/high.** Support artist queries, recent artists, paged suggestions,
+   result-page navigation, and restoration across paging/search state.
+6. `[review]` **2.6 Header and section selector (F014-F015).** **Terra/high.**
+   Preserve artist navigation, canonical ordering, and section changes; defer
+   favorite UI to 8.1. Normalize section types, de-duplicate by normalized
+   type, and keep the earliest explicit index for each type.
+7. `[review]` **2.7 Info overview (F016).** **Terra/medium.** Show key, tempo, meter,
    duration, beats/bars, chord counts, and sounded/total melody counts,
    including chord-only songs.
-7. `[ ]` **2.7 Info detail and links (F017).** **Terra/medium.** Show progression
+8. `[review]` **2.8 Info detail and links (F017).** **Terra/medium.** Show progression
    and change lists, source metadata, slug, system-browser links, and
    progression-pill preview.
-8. `[ ]` **2.8 Chords inventory (F018).** **Terra/high.** Remove rests, dedupe,
+9. `[review]` **2.9 Chords inventory (F018).** **Terra/high.** Remove rests, dedupe,
    adapt the grid, handle empty/failure states, and use key-at-chord-onset.
-9. `[ ]` **2.9 Semantic chord display (F019, F021-F024).** **Terra/high.**
-   Support Roman/letter selection and fitted inversion, accidental, applied,
-   and borrowed-harmony notation.
-10. `[ ]` **2.10 Chord preview (F020).** **Sol/high.** Support block/arpeggiated
+10. `[review]` **2.10 Semantic chord display (F019, F021-F024).** **Terra/high.**
+   Keep the Roman numeral always present with an optional additive letter label;
+   support fitted inversion, accidental, applied, and borrowed-harmony notation.
+11. `[review]` **2.11 Chord preview (F020).** **Sol/high.** Support block/arpeggiated
     modes, 30-1000 ms step, cancellation, fades, and replacement.
 
 Human gate 2 — **Search/Detail/Chords packet** — **Terra/high** for navigation,
-state, and notation; **Sol/high** for preview cancellation/replacement. Batch
-with gate 1; no human approval is implied by `[ ]` status.
+state, and notation; **Sol/high** for deterministic latest-tap cancellation/
+replacement without perceptual hardware validation. Batch
+with gate 1; no human approval is implied by `[review]` status.
 
 ### Phase 3 — Quiz
 

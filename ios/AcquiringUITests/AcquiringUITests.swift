@@ -76,6 +76,84 @@ final class AcquiringUITests: XCTestCase {
         attachScreenshot(of: app, named: "checkpoint-1.1-library-failure-recovered")
     }
 
+    func testPhase2SongDetailReviewFlow() {
+        let app = launchApp(scenario: .ready)
+
+        let searchField = app.textFields["library.search.field"]
+        XCTAssertTrue(searchField.waitForExistence(timeout: 5))
+        searchField.tap()
+        searchField.typeText("Seed")
+
+        // The title store debounces before publishing suggestions; waiting on
+        // the result avoids timing the test to a particular device speed.
+        let seedSong = app.buttons["Seed Song, by Sample Artist"]
+        XCTAssertTrue(seedSong.waitForExistence(timeout: 5))
+        attachScreenshot(of: app, named: "phase-2-search-results")
+
+        seedSong.tap()
+        XCTAssertTrue(app.navigationBars["Quiz"].waitForExistence(timeout: 5))
+
+        app.navigationBars["Quiz"].buttons.element(boundBy: 0).tap()
+        XCTAssertTrue(app.navigationBars["Song"].waitForExistence(timeout: 5))
+        XCTAssertTrue(
+            app.descendants(matching: .any)["songDetail.info"].waitForExistence(timeout: 5)
+        )
+        attachScreenshot(of: app, named: "phase-2-song-detail-info")
+
+        let detailTabs = app.segmentedControls["songDetail.tab"]
+        XCTAssertTrue(detailTabs.waitForExistence(timeout: 5))
+        detailTabs.buttons["Chords"].tap()
+
+        XCTAssertTrue(
+            app.descendants(matching: .any)["songDetail.chords"].waitForExistence(timeout: 5)
+        )
+        XCTAssertTrue(
+            app.descendants(matching: .any)["songDetail.chords.key"].waitForExistence(timeout: 5)
+        )
+        let letters = app.switches["songDetail.chords.letters"]
+        XCTAssertTrue(letters.waitForExistence(timeout: 5))
+        letters.tap()
+        XCTAssertEqual(letters.value as? String, "1")
+
+        let arpeggiate = app.switches["songDetail.chords.arpeggiate"]
+        XCTAssertTrue(arpeggiate.waitForExistence(timeout: 5))
+        let arpeggioSpeed = app.sliders["songDetail.chords.arpeggioSpeed"]
+        XCTAssertFalse(arpeggioSpeed.exists)
+        arpeggiate.tap()
+        XCTAssertTrue(arpeggioSpeed.waitForExistence(timeout: 5))
+        attachScreenshot(of: app, named: "phase-2-song-detail-chords")
+
+        app.navigationBars["Song"].buttons.element(boundBy: 0).tap()
+        XCTAssertTrue(searchField.waitForExistence(timeout: 5))
+        let clear = app.buttons["library.search.clear"]
+        XCTAssertTrue(clear.waitForExistence(timeout: 5))
+        clear.tap()
+        searchField.tap()
+        XCTAssertTrue(app.staticTexts["Recent Songs"].waitForExistence(timeout: 5))
+        XCTAssertTrue(seedSong.waitForExistence(timeout: 5))
+    }
+
+    func testArtistSearchOpensArtistResults() {
+        let app = launchApp(scenario: .ready)
+        let searchField = app.textFields["library.search.field"]
+        XCTAssertTrue(searchField.waitForExistence(timeout: 5))
+        searchField.tap()
+        searchField.typeText("Sample")
+
+        let scope = app.segmentedControls["library.search.scope"]
+        XCTAssertTrue(scope.waitForExistence(timeout: 5))
+        scope.buttons["Artists"].tap()
+
+        let artist = app.buttons["Sample Artist"]
+        XCTAssertTrue(artist.waitForExistence(timeout: 5))
+        artist.tap()
+
+        XCTAssertTrue(app.navigationBars["Sample Artist"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Seed Song, by Sample Artist"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Second Song, by Sample Artist"].waitForExistence(timeout: 5))
+        attachScreenshot(of: app, named: "phase-2-artist-results")
+    }
+
     func testSearchSongOpensQuizWithMelodyTimelineAndRestoresNavigation() throws {
         try XCTSkipIf(
             true,
@@ -246,10 +324,6 @@ final class AcquiringUITests: XCTestCase {
     }
 
     func testCatalogUpdateFailurePreservesReadyCatalogAndRetryCompletes() throws {
-        try XCTSkipIf(
-            true,
-            "Pending checkpoint 1.4: catalog resync failure and retry UI has not been rebuilt."
-        )
         let app = launchApp(
             scenario: .ready,
             arguments: ["--ui-testing-catalog-install-failure"]
@@ -269,6 +343,7 @@ final class AcquiringUITests: XCTestCase {
             app.staticTexts["catalog.maintenance.catalog-ready"]
                 .waitForExistence(timeout: 5)
         )
+        attachScreenshot(of: app, named: "checkpoint-1.3-resync-failure")
 
         let retryButton = app.buttons["catalog.retry"]
         scrollToHittable(retryButton, in: app)
@@ -278,13 +353,10 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(completedStatus.waitForExistence(timeout: 5))
         XCTAssertTrue(completedStatus.label.contains("2 songs ready"))
         XCTAssertFalse(app.buttons["catalog.cancel"].exists)
+        attachScreenshot(of: app, named: "checkpoint-1.3-resync-retry-complete")
     }
 
     func testCatalogUpdateCanBeCancelledWithoutHidingReadyCatalog() throws {
-        try XCTSkipIf(
-            true,
-            "Pending checkpoint 1.4: catalog cancellation and retry UI has not been rebuilt."
-        )
         let app = launchApp(
             scenario: .ready,
             arguments: ["--ui-testing-catalog-install-cancellable"]
@@ -310,13 +382,10 @@ final class AcquiringUITests: XCTestCase {
                 .waitForExistence(timeout: 5)
         )
         XCTAssertTrue(app.buttons["catalog.retry"].exists)
+        attachScreenshot(of: app, named: "checkpoint-1.3-resync-cancelled")
     }
 
     func testEmptyCatalogUpdateBecomesReadyWithoutLeavingCancellationAvailable() throws {
-        try XCTSkipIf(
-            true,
-            "Pending checkpoint 1.3: successful full-catalog installation UI has not been rebuilt."
-        )
         let app = launchApp(scenario: .empty, arguments: [
             "--ui-testing-catalog-empty",
             "--ui-testing-catalog-install-success"
@@ -336,13 +405,10 @@ final class AcquiringUITests: XCTestCase {
         scrollToHittable(completedStatus, in: app)
         XCTAssertTrue(completedStatus.label.contains("2 songs ready"))
         XCTAssertFalse(app.buttons["catalog.cancel"].exists)
+        attachScreenshot(of: app, named: "checkpoint-1.3-empty-install-complete")
     }
 
     func testSongHarvestFailureCanRetryToCompletion() throws {
-        try XCTSkipIf(
-            true,
-            "Pending checkpoint 1.2: manual harvest failure and retry UI has not been rebuilt."
-        )
         let app = launchApp(
             scenario: .ready,
             arguments: ["--ui-testing-catalog-harvest-failure"]
@@ -366,6 +432,7 @@ final class AcquiringUITests: XCTestCase {
             app.staticTexts["catalog.maintenance.catalog-ready"]
                 .waitForExistence(timeout: 5)
         )
+        attachScreenshot(of: app, named: "checkpoint-1.2-harvest-failure")
 
         urlField.tap()
         urlField.typeText("-edited")
@@ -378,13 +445,10 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(completedStatus.waitForExistence(timeout: 5))
         XCTAssertTrue(completedStatus.label.contains("Song harvest complete"))
         XCTAssertTrue(completedStatus.label.contains("2 songs ready"))
+        attachScreenshot(of: app, named: "checkpoint-1.2-harvest-retry-complete")
     }
 
     func testEmptyCatalogOffersOnePrimaryDownloadAction() throws {
-        try XCTSkipIf(
-            true,
-            "Pending checkpoint 1.3: the full-catalog install action awaits its focused review."
-        )
         let app = launchApp(
             scenario: .empty,
             arguments: ["--ui-testing-catalog-empty"]
