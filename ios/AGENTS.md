@@ -4,10 +4,17 @@ Follow the least-context, risk-proportional procedure below when working in `ios
 
 ## Dev loop: Previews first, one warm simulator second, device last
 
-- Default to Xcode Previews (`#Preview`) for any SwiftUI/theory-rendering/layout change. Inject a stub `AppEnvironment` with small fixture data rather than the real catalog — previews only recompile the view's dependency slice and stay warm between edits, which is the fastest possible loop on this machine's CPU (2014 quad-core, no Apple Silicon).
+- Give every new or materially changed visual component a `#Preview`. Inject a stub `AppEnvironment` with small fixture data rather than the real catalog — previews only recompile the view's dependency slice and stay warm between edits, which is the fastest possible loop on this machine's CPU (2014 quad-core, no Apple Silicon).
 - For anything needing a live app process (navigation, catalog queries, Quiz/library state), boot one simulator and leave it running for the session. Use `Cmd+R` / incremental `xcodebuild build`; do not Clean Build Folder or wipe DerivedData unless something is actually stale — Debug already builds incrementally (only Release uses whole-module optimization; keep it that way).
 - Only escalate to the physical iPhone when the simulator genuinely cannot validate the behavior: real microphone/YIN pitch detection, background audio, lock-screen/interruption/route-change handling, or Bluetooth. Everything else belongs in Previews or the simulator.
 - After implementing each feature or UI change (not just at the end of a batch), rebuild, reinstall, and relaunch the app in the simulator and check it visually (screenshot) before moving on or reporting the change as done. Terminate any previously running instance first — a stale process (especially one launched with `--ui-testing`, which points at a fake catalog URL) can otherwise be mistaken for the new build.
+
+## Atomic parity workflow
+
+- Work on exactly one numbered checkpoint from `../docs/porting-plan.md` at a time. Before editing, inspect both the feature's first Android commit and its final production caller at `android-parity-ios-v1`; tests or declarations without a production caller do not establish parity.
+- Reuse the existing package, catalog, audio, and state infrastructure. Add the narrowest focused unit/store test and one focused XCUITest for the checkpoint; do not grow a multi-feature navigation test.
+- Close the simulator loop autonomously: build, reinstall, terminate the stale app, relaunch, exercise the interaction, and save the review state with an `XCTAttachment` screenshot.
+- Present the checkpoint's final Android behavior, interaction script, screenshots, exact checks/results, and deliberate native-iOS adaptations for human review. Stay on the same checkpoint for critique and do not start the next one until approval. Commit only the approved checkpoint and its focused evidence.
 
 ## Real device delivery: TestFlight only
 
@@ -17,8 +24,8 @@ Follow the least-context, risk-proportional procedure below when working in `ios
 
 ## Simulator inventory
 
-- Keep exactly two simulators: **iPhone 17** and **iPhone 14 Pro**, both on the single installed runtime (iOS 26.3). Disk headroom on this machine is tight (~46GB free) — do not create additional device types or install additional runtimes without deleting something first, and do not boot more than one simulator at a time during iteration.
+- Keep exactly two simulators: **iPhone 17** and **iPhone 14 Pro**, both on the single installed runtime (iOS 26.3). Disk headroom on this machine is limited and changes over time — check it before creating devices or installing runtimes, and do not boot more than one simulator at a time during iteration.
 
 ## Context
 
-- `../docs/porting-plan.md` and `../docs/feature-parity.md` are the authoritative parity/status references — check them before assuming a capability is unimplemented or before re-deriving the release/testing strategy.
+- `../docs/porting-plan.md` is the sole active execution order and review contract. `../docs/feature-parity.md` is the stable capability/status inventory, and `../docs/android-app-analysis.md` is the audited final-Android behavior reference. The historical roadmap is not an execution checklist.

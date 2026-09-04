@@ -672,6 +672,33 @@ final class AcquiringTests: XCTestCase {
     }
 
     @MainActor
+    func testLibraryLoadPublishesLoadingUntilPreparationCompletes() async throws {
+        let preparationStarted = AsyncStream<Void>.makeStream()
+        let preparationRelease = AsyncStream<Void>.makeStream()
+        let fixture = try makeLibraryStore(
+            maintenance: ScriptedCatalogMaintenanceService(),
+            catalogCount: 7,
+            prepareCatalog: {
+                preparationStarted.continuation.yield(())
+                preparationStarted.continuation.finish()
+                for await _ in preparationRelease.stream { break }
+            }
+        )
+        defer { fixture.cleanup() }
+        var startedIterator = preparationStarted.stream.makeAsyncIterator()
+
+        let loadTask = Task { await fixture.store.load() }
+        _ = await startedIterator.next()
+
+        XCTAssertEqual(fixture.store.catalogState, .loading)
+
+        preparationRelease.continuation.yield(())
+        preparationRelease.continuation.finish()
+        await loadTask.value
+        XCTAssertEqual(fixture.store.catalogState, .content(7))
+    }
+
+    @MainActor
     func testLibraryLoadReportsPreparationFailure() async throws {
         let fixture = try makeLibraryStore(
             maintenance: ScriptedCatalogMaintenanceService(),
@@ -682,6 +709,27 @@ final class AcquiringTests: XCTestCase {
         await fixture.store.load()
 
         XCTAssertEqual(fixture.store.catalogState, .failure("Test catalog failure."))
+    }
+
+    @MainActor
+    func testLibraryLoadCanRetryPreparationFailureAndBecomeReady() async throws {
+        var preparationAttempts = 0
+        let fixture = try makeLibraryStore(
+            maintenance: ScriptedCatalogMaintenanceService(),
+            catalogCount: 9,
+            prepareCatalog: {
+                preparationAttempts += 1
+                if preparationAttempts == 1 { throw TestCatalogFailure() }
+            }
+        )
+        defer { fixture.cleanup() }
+
+        await fixture.store.load()
+        XCTAssertEqual(fixture.store.catalogState, .failure("Test catalog failure."))
+
+        await fixture.store.load()
+        XCTAssertEqual(fixture.store.catalogState, .content(9))
+        XCTAssertEqual(preparationAttempts, 2)
     }
 
     @MainActor
