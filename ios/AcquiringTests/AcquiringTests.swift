@@ -717,6 +717,29 @@ final class AcquiringTests: XCTestCase {
     }
 
     @MainActor
+    func testSubmittingSongSearchRunsWithoutWaitingForTheDebounce() async throws {
+        let expected = CatalogSong(
+            id: "the-proclaimers__500-miles",
+            artist: "The Proclaimers",
+            title: "500 Miles"
+        )
+        let fixture = try makeLibraryStore(
+            maintenance: ScriptedCatalogMaintenanceService(),
+            songSuggestions: [expected]
+        )
+        defer { fixture.cleanup() }
+
+        fixture.store.query = "500 Miles"
+        fixture.store.submitSearch()
+
+        for _ in 0..<20 where fixture.store.suggestions != .content([expected]) {
+            try await Task.sleep(for: .milliseconds(10))
+        }
+
+        XCTAssertEqual(fixture.store.suggestions, .content([expected]))
+    }
+
+    @MainActor
     func testFailedSecondSuggestionPageRetainsFirstPageAndPublishesPagingError() async throws {
         let fixture = try makeLibraryStore(
             maintenance: ScriptedCatalogMaintenanceService(),
@@ -857,6 +880,7 @@ final class AcquiringTests: XCTestCase {
         catalogCount: Int = 0,
         catalogCountThrows: Bool = false,
         failingSongSuggestionOffset: Int? = nil,
+        songSuggestions: [CatalogSong] = [],
         prepareCatalog: @escaping @MainActor () async throws -> Void = {}
     ) throws -> (
         store: LibraryStore,
@@ -867,7 +891,8 @@ final class AcquiringTests: XCTestCase {
         let catalog = StubCatalogRepository(
             songCount: catalogCount,
             failsSongCount: catalogCountThrows,
-            failingSongSuggestionOffset: failingSongSuggestionOffset
+            failingSongSuggestionOffset: failingSongSuggestionOffset,
+            songSuggestions: songSuggestions
         )
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(
@@ -1027,15 +1052,18 @@ private actor StubCatalogRepository: CatalogRepository {
     let count: Int
     let failsSongCount: Bool
     let failingSongSuggestionOffset: Int?
+    let songSuggestions: [CatalogSong]
 
     init(
         songCount: Int,
         failsSongCount: Bool = false,
-        failingSongSuggestionOffset: Int? = nil
+        failingSongSuggestionOffset: Int? = nil,
+        songSuggestions: [CatalogSong] = []
     ) {
         count = songCount
         self.failsSongCount = failsSongCount
         self.failingSongSuggestionOffset = failingSongSuggestionOffset
+        self.songSuggestions = songSuggestions
     }
 
     func status() -> CatalogStatus {
@@ -1051,7 +1079,8 @@ private actor StubCatalogRepository: CatalogRepository {
     func searchSongs(title query: String) -> [CatalogSong] { [] }
     func songSuggestions(query: String, limit: Int, offset: Int) throws -> [CatalogSong] {
         if offset == failingSongSuggestionOffset { throw TestCatalogFailure() }
-        return []
+        guard offset == 0 else { return [] }
+        return Array(songSuggestions.prefix(limit))
     }
     func artistSuggestions(query: String, limit: Int, offset: Int) -> [String] { [] }
     func songs(artist: String) -> [CatalogSong] { [] }

@@ -403,7 +403,14 @@ final class LibraryStore {
         }
     }
 
-    private func scheduleSearch() {
+    /// Runs the current search without waiting for the type-ahead debounce.
+    /// This is used by the keyboard's Search action so hardware and software
+    /// Return both produce an observable result immediately.
+    func submitSearch() {
+        scheduleSearch(debounced: false)
+    }
+
+    private func scheduleSearch(debounced: Bool = true) {
         searchGeneration &+= 1
         searchTask?.cancel()
         loadMoreTask?.cancel()
@@ -425,7 +432,9 @@ final class LibraryStore {
         let generation = searchGeneration
         searchTask = Task { [weak self] in
             do {
-                try await Task.sleep(for: .milliseconds(300))
+                if debounced {
+                    try await Task.sleep(for: .milliseconds(300))
+                }
                 guard let self, !Task.isCancelled,
                       self.isCurrentSearch(generation: generation, query: term, scope: scope)
                 else { return }

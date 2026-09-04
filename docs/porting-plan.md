@@ -124,18 +124,29 @@ it is not human-approved yet.
 
 Android chronology: `0b7abac8` through `2f891ebe`'s Library/catalog work.
 
+Final UI rule: the upper-right text **Settings** entry opens a standard grouped
+settings Form. Only full-catalog download/resync and their download-specific
+status, cancel, and retry controls live there. **Add a TheoryTab Song** and all
+harvest-specific progress, cancel, retry, completion, and failure states remain
+on the main Library in both empty and ready catalog states.
+
 1. `[review]` **1.1 Library launch shell (F001).** **Luna/medium.** Show native dark
    loading, empty, ready, and failure states with stable identifiers.
-2. `[review]` **1.2 Manual harvest (F011).** **Terra/high.** Validate Hooktheory URL;
-   show progress, retry/cancel, completion, and retained-catalog messaging.
-3. `[review]` **1.3 First catalog install (F010, F012).** **Terra/high.** Install a
-   valid artifact with visible progress, cancellation, failure/retry, refreshed
-   count, and an empty-catalog prompt.
+2. `[review]` **1.2 Manual harvest (F011).** **Terra/high.** From the main Library,
+   expose **Add a TheoryTab Song**, validate the Hooktheory URL, and show
+   harvest-specific progress, retry/cancel, completion, failure, and
+   retained-catalog messaging in both empty and ready catalog states.
+3. `[review]` **1.3 First catalog install (F010, F012).** **Terra/high.** From
+   the upper-right Settings Form, install a valid artifact with visible
+   download-specific progress, cancellation, failure/retry, refreshed count, and
+   an empty-catalog prompt; keep these full-catalog controls out of the main
+   Library surface.
 4. `[review]` **1.4 Resync, recovery, and durability (F010, F012, F053).**
    **Sol/high** (escalate to **Sol/xhigh** only for actual core recovery or
-   durability work). Validate contract/schema/row floor/payloads, atomically swap,
-   preserve a backup, recover failed/cancelled replacements, and retain user
-   entries. No search or detail UI is included in Phase 1.
+   durability work). From the upper-right Settings Form, validate
+   contract/schema/row floor/payloads, atomically swap, preserve a backup, recover
+   failed/cancelled replacements, and retain user entries. No search or detail UI
+   is included in Phase 1.
 
 Human gate 1 — **Library/catalog packet** — **Terra/medium** for visible states;
 **Sol/high** for install/recovery evidence. Batch this gate with gate 2 under
@@ -183,9 +194,10 @@ with gate 1; no human approval is implied by `[review]` status.
 
 ### Phase 3 — Quiz
 
-1. `[ ]` **3.1 Quiz shell and navigation (F014, F026).** **Terra/high.** Final
-   header, Full/Root-only selector, Hooktheory action, and exact-origin
-   Quiz → Info → Back behavior.
+1. `[approved]` **3.1 Quiz shell and navigation (F014, F026).** **Terra/high.** Final
+   header, Full/Root-only selector, and exact-origin Quiz → Info → Back behavior;
+   reach the Hooktheory source through the Quiz Info transition, matching the
+   final Android behavior rather than adding a direct Quiz action.
 2. `[ ]` **3.2 Chord timeline (F025).** **Terra/high.** Render durations, gaps,
    key-at-onset notation, fixed playhead, and reduced-motion behavior.
 3. `[ ]` **3.3 Melody timeline (F025).** **Terra/high.** Render pitch, duration,
@@ -211,6 +223,12 @@ with gate 1; no human approval is implied by `[review]` status.
 Human gate 3 — **First coherent Quiz UI** — **Terra/high**, escalating to
 **Sol/high** for transport and loop behavior. This is the first product review
 after the Phase 0-2 fast track.
+
+Review evidence (2026-09-04): focused Quiz shell test passed 1/1 on iPhone 17;
+result bundle: `/tmp/acquiring-phase31-quiz-9F3ADA87-596F-4BB0-BD4D-50FBB750980C.xcresult`.
+Human approval recorded 2026-09-04 after the first-launch/catalog-settings
+revisions, based on focused text/element evidence; screenshot review was not claimed.
+iPhone 14 Pro and broader device/accessibility coverage remain deferred.
 
 ### Phase 4 — Interval tool and timeline seeking
 
