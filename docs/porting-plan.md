@@ -1,152 +1,359 @@
-# Android-to-iOS parity migration plan
+# Android-to-iOS feature-by-feature port
 
-This is the execution plan for the native iOS port. Android behavior at the annotated `android-parity-ios-v1` tag is the product baseline; stable capability IDs and current implementation status live in [feature-parity.md](feature-parity.md), and the audited Android behavior lives in [android-app-analysis.md](android-app-analysis.md).
+This is the only active execution plan for the native iOS port. Android
+behavior at annotated tag `android-parity-ios-v1` is authoritative. Stable
+capability IDs and release status live in [feature-parity.md](feature-parity.md),
+while [android-app-analysis.md](android-app-analysis.md) records the audited
+behavior. The old commit-by-commit checklist is retained only as a historical
+pointer in [ios-android-parity-roadmap.md](ios-android-parity-roadmap.md).
 
-## Scope and release contract
+## Goal and baseline
 
-- iOS v1 targets the **52 observable shipping capabilities** among F001–F055. F013 (dormant missing-payload fallback), F052 (backend-only custom-playlist management), and F055 (unused audiation container) are explicitly **Deferred**.
-- The deployment target is iOS 17 or later on iPhone and iPad, in portrait and landscape.
-- The first release remains English-only and dark. Dynamic Type, VoiceOver actions, reduced-motion behavior, adaptive layouts, and background audio are release requirements.
-- Runtime source is native to each platform. The shared catalog contract, parity corpus, fixtures, and observable Android behavior—not line-by-line Kotlin translation—define parity.
-- Audio parity is behavioral and perceptual: pitch, onset, duration, envelopes, controls, cancellation, scoring utility, and state transitions must match. PCM bytes need not be identical.
+- Continue from `claude/ui-reset`; retain the tested `AcquiringKit`, catalog,
+  audio/DSP, persistence, and `AppEnvironment` work.
+- Rebuild the UI in the order surviving product features first appeared on
+  Android, but implement each feature once in its final shipping form.
+- Treat a later Android fix or redesign as acceptance criteria for the feature
+  it refined. Give it a new checkpoint only when it added a new observable
+  capability.
+- Use native SwiftUI presentation while matching final behavior, information
+  hierarchy, state transitions, and accessibility.
+- Stop after every checkpoint for human UI/function review unless the active
+  user-authorized fast track explicitly batches review through Phases 0-2.
+  Automated evidence is necessary but never sufficient for approval.
 
-## Reference lock and change control
+Baseline verified September 4, 2026:
 
-The audited Android/docs state is committed at `d7620518` and pinned by the annotated tag `android-parity-ios-v1`. Android remains authoritative for this port. Every later Android change must be classified against an existing parity ID, assigned a new appended ID, or explicitly rejected from iOS v1 scope; it must not silently enlarge the target.
+- `swift test --package-path ios/Packages/AcquiringKit --quiet` passed 164 tests.
+- The `Acquiring` scheme built for the available iPhone 17 simulator.
+- `AllSongsView`, `PlaylistSongsView`, and `SongDetailView` are intentional blank
+  placeholders after the UI reset. Several UI tests still describe the removed
+  screens and must not be treated as current passing evidence.
 
-## Architecture decisions
+Do not copy the numeric test total into other status prose. Evidence rows record
+the actual command, date, pass/fail/skip counts, and result bundle for each run.
 
-| Concern | iOS decision |
-| --- | --- |
-| Runtime organization | Local package `AcquiringKit` with `AcquiringCore`, `AcquiringCatalog`, and `AcquiringAudio`; SwiftUI features, SwiftData, navigation, and composition remain in the app target. |
-| Language/concurrency | Swift 6 language mode, strict concurrency, `@MainActor @Observable` feature stores, actors for mutable subsystem ownership, and `Sendable` domain values. |
-| Dependency ownership | One injected `AppEnvironment`; SwiftUI views do not open GRDB, SwiftData, URLSession, or AVAudioEngine directly. |
-| Navigation | Explicit Library, Artist, All Songs, Playlist, Song Detail, and Quiz routes. Opening a song pushes detail then Quiz so Back is Quiz → Info → original parent. |
-| Catalog | GRDB.swift over the replaceable schema-v3 SQLite artifact in Application Support, excluded from backup. The 40,609 rows are not imported into SwiftData. |
-| Catalog replacement | Stream download to a temporary archive, inflate gzip with zlib when needed, repair compatible v1/v2 staging candidates, validate contract/quick-check/row floor/payloads, close the live pool only for swap, preserve a backup, and reopen or recover. |
-| Maintenance | Read-oriented repository plus a separate service for full install and visible single-song harvest. Accept gzip and raw JSON payloads. |
-| User data | SwiftData schema v1 with string playlist IDs, built-in `favorites`, cascade entries, deterministic membership keys, and loose catalog-slug references. No custom playlist management UI in v1. |
-| Theory/rendering | Port and test pure music rules first. Render notation with SwiftUI Canvas/Core Graphics/Core Text and preserve parsed meaning, fitting, and accessibility rather than Android font pixels. |
-| Audio | One app-scoped owner of AVAudioSession and AVAudioEngine. Pure PCM renderers feed source nodes; render callbacks allocate nothing and never await. Preview and looping transport remain isolated. |
-| Microphone | Input-node tap converted to mono 16 kHz; retain YIN, RMS/confidence gates, smoothing, scoring, tessitura rules, and exclusive ownership. FFT substitution is not parity. |
-| Platform media | Audio background mode, Now Playing, remote commands, interruptions, and route-change handling. iOS has no Android notification-permission equivalent. |
-| Observability | Privacy-safe Logger categories and signposts for catalog installation, audio underruns, routes/interruptions, and microphone initialization. No analytics or third-party crash SDK. |
+## Status and traceability
 
-Package versions are exact and recorded in `Package.resolved`: GRDB.swift 7.11.1 and SwiftSoup 2.9.6.
+Each checkpoint uses one status:
 
-## Interfaces and data contracts
+- `[ ]` not started
+- `[review]` implemented and autonomously verified; awaiting human critique
+- `[approved]` human accepted the checkpoint
+- `[blocked-external]` requires unavailable hardware, service, or authority
+- `[excluded]` absent from the final Android product or explicitly out of scope
 
-`CatalogRepository` returns `Sendable` values and covers status/count, song lookup, paged title and artist suggestions, title search, artist results, browse metadata/counts/rows, recent-slug resolution, and decoded song sections. `CatalogMaintenanceService` exposes install and harvest as `AsyncThrowingStream<CatalogProgress, Error>` with connecting, downloading, preparing, validating, installing, and completed stages.
+Each approved row records its Android introduction commit, final Android source,
+parity IDs, iOS commit, automated checks, screenshot/result bundle, and human
+approval date. Source or test presence without a production caller is not
+evidence of an Android feature.
 
-`CatalogCoordinator` owns the GRDB pool and catalog lifecycle. Reads continue during download and validation and pause only for close/swap/reopen. `CatalogConfiguration` injects the distribution URL and bundled `contracts/catalog/contract.json`. Downloaded candidates must satisfy schema 3, required tables/columns/indexes, `PRAGMA quick_check`, at least 40,609 browse rows, and non-null payloads for every browse row. A local empty schema-v3 database is valid only as a pre-install/manual-harvest bootstrap and is exempt from the distribution row floor.
+## Per-checkpoint execution loop
 
-SwiftData schema v1 contains:
+1. Inspect the feature's first Android commit and its final production call site
+   at `android-parity-ios-v1`.
+2. Reuse existing Swift domain and service APIs. Add only the smallest store,
+   view wiring, fixture, or interface required for the observable slice.
+3. Add a deterministic `#Preview`, focused unit/store coverage, and one focused
+   XCUITest. Never grow a multi-feature end-to-end test for convenience.
+4. Run the narrowest relevant checks, rebuild, terminate any stale app process,
+   reinstall/relaunch on the one warm simulator, exercise the behavior, and
+   capture the review state with `XCTAttachment`.
+5. Repair failures autonomously. Stop early only for new external authority,
+   unavailable hardware, or a reproducible environment blocker after two
+   diagnose/fix cycles.
+6. Present a review packet: checkpoint ID, final Android behavior, screenshot,
+   short interaction script, commands/results, and deliberate iOS adaptations.
+7. Stop for human review after each checkpoint unless the active user-authorized
+   fast track is batching review through Phases 0-2. If critiqued, remain on the
+   same checkpoint. After approval—or, during the fast track, after the batched
+   review packet is assembled—commit the implementation, tests, evidence, and
+   status together, then advance.
 
-- `PlaylistRecord(id: String, name: String, isBuiltIn: Bool, createdAt: Date)`
-- `PlaylistEntryRecord(uniqueKey: String, playlistID: String, slug: String, addedAt: Date)`
+For existing iOS code, verify and repair rather than rewrite it. Existing code
+starts unapproved regardless of earlier roadmap checkmarks.
 
-`UserLibraryStore` ensures Favorites, queries membership and summaries, toggles membership with recoverable UI state, returns newest-first slugs, and removes entries. Entries cascade when a non-built-in playlist is deleted. There is no object relationship to catalog rows. `HistoryStore` uses namespaced UserDefaults arrays with ten-item, most-recent-first semantics and Android-equivalent artist canonicalization.
+## Implementation boundaries
 
-`PreviewAudio`, `QuizTransport`, and `PitchSource` are app-scoped protocols. Transport and pitch observations use AsyncStream, and the subsystem owner serializes commands. All feature stores use explicit idle, loading, content, empty, and failure states and typed subsystem errors.
+- Preserve `CatalogRepository`, `CatalogMaintenanceService`, `PreviewAudio`,
+  `QuizTransport`, `PitchSource`, `AppEnvironment`, and the current package
+  boundaries.
+- Keep `LibraryStore`. Add focused `@MainActor @Observable` stores for Song
+  Detail, All Songs, Quiz, interval practice, and tessitura as their checkpoints
+  require them; do not reproduce Android's monolithic `MainActivity` state.
+- Views never open GRDB, SwiftData, URLSession, AVAudioEngine, or microphone
+  input directly.
+- Add UI-test-only review scenarios through launch arguments and injected
+  repositories/audio/pitch sources. Review configuration must not alter
+  production behavior.
+- Prefer standard SwiftUI controls. Custom drawing is limited to notation,
+  timelines, pitch/scoring markers, and the product-required draggable
+  transport.
+- Centralize quiz-card gestures in one native interaction layer that arbitrates
+  single tap, double tap, and long press so exactly one action fires, and expose
+  equivalent named VoiceOver actions.
 
-## Seven implementation milestones
+## Ordered atomic roadmap
 
-| Milestone | Outcome | Exit evidence |
-| --- | --- | --- |
-| 1. Reference lock and foundation | Baseline tag, local package, Swift 6, pinned dependencies, DI, typed errors, shared fixture loaders | CI builds every target and the shared fixtures execute in Swift |
-| 2. Catalog integrity and core domain | Bootstrap/query/install/harvest plus theory, chord, interval, timing, and tessitura rules | Corpus passes; damaged candidates never replace live data; real catalog meets contract and performance budgets |
-| 3. Library and navigation vertical slice | Library, search, recents, Artist, All Songs, playlists, explicit routes, state restoration | Every discovery path opens Quiz first and returns through Info to its exact parent on iPhone and iPad |
-| 4. Song details, theory UI, and previews | Sections, Info, Chords, links, notation, and finite preview synthesis | Complex chords render semantically; cancellation/fades and representative real-song metadata match |
-| 5. Quiz transport and background audio | Pure loop renderer, Full/Simple modes, controls/cards/scrub, Now Playing/remotes/interruptions/routes | DSP/timing tests pass and physical-device background, lock-screen, interruption, and headphone scenarios pass |
-| 6. Microphone and vocal practice | YIN pipeline, sing-back, intervals, target listening, Flip-Flop, persistent scoring, tessitura | Recorded PCM fixtures and the physical device/route matrix pass; simulator-only evidence is insufficient |
-| 7. User data, accessibility, and release hardening | Favorites/playlist browse/remove, durability, Dynamic Type, VoiceOver, reduced motion, adaptive layouts | All 52 in-scope IDs meet implementation, automated test, device, failure-state, and accessibility gates |
+Every numbered row is an agent checkpoint with status, capability IDs, model,
+reasoning level, and concise acceptance. Agent work may include invisible
+hardening, but only the phase-level human gates are review stops. Route the
+least-cost capable model: Luna for bounded UI/documentation, Terra for stateful
+integration, and Sol for audio/DSP, persistence replacement, timing,
+concurrency, and release work.
 
-Once foundation interfaces are stable, catalog/Library, theory/rendering, and the pure audio renderer can be developed independently. A single integrator owns `AppEnvironment`, navigation, audio-session policy, and parity status so the app does not acquire competing lifecycle models.
+### Phase 0 — Truth and review harness
 
-## Testing, acceptance, and rollout
+1. `[review]` **0.1 Canonical plan (F001-F055).** **Luna/low.** Consolidate this
+   plan, archive the deployment diary, and leave the old roadmap as a pointer.
+2. `[review]` **0.2 Baseline reconciliation (F002, F004, F006-F012, F054).**
+   **Luna/low.** Correct debounce claims, volatile test totals, blank-screen
+   status, and over-broad Android-history skips.
+3. `[review]` **0.3 Focused UI test inventory (F001-F054).** **Terra/medium.** Split
+   stale post-reset tests by feature and mark pending parity tests with reasoned
+   `XCTSkip`; release still requires zero skips.
+4. `[review]` **0.4 Deterministic review fixtures (F001-F054).** **Terra/medium.**
+   Add only the launch arguments, injected services, and small-data previews
+   needed to reproduce each visual state without changing production behavior.
 
-- Port platform-neutral Android tests before or with implementation: theory corpus, enharmonics, voicing, section order, timing, intervals, scoring, tessitura, deterministic audio pitch/onset/fades/clipping/loop seams/cancellation/gain, and prerecorded microphone pitch/silence/noise/octave/dropout fixtures.
-- Use miniature catalogs for ordering, 20-row pagination, fuzzy matching, v1/v2 repair, missing payloads, malformed JSON, corrupt gzip, missing indexes, quick-check failure, insufficient row count, interrupted swap, and backup recovery.
-- Test SwiftData uniqueness, rollback, cascade, missing slugs, and persistence across catalog replacement.
-- Use XCUITest for discovery → Quiz → Info → parent, state restoration, maintenance errors, permission denial, microphone cancellation, and explicit accessibility actions on an iPhone and iPad simulator.
-- Require signed physical checks on a small iPhone, current standard iPhone, and iPad, including speaker/mic, available headphones and Bluetooth, screen lock, backgrounding, interruptions, and remote commands.
-- A feature becomes **Complete** only after implementation, automated tests, required physical evidence, empty/error paths, and accessibility behavior pass. Ship milestone builds via TestFlight; public parity waits for all 52 in-scope IDs.
-- Before release, run clean-install/full-catalog, prior-TestFlight upgrade, airplane-mode launch, interrupted-download recovery, background transport soak, and microphone privacy review. Monitor Organizer crashes/hangs and privacy-safe OSLog diagnostics after release.
+Human gate 0 — **Harness packet** — **Luna/low**, then **Terra/medium** for
+fixture integration. Review baseline truth and the deterministic review method;
+it is not human-approved yet.
 
-## Current implementation checkpoint
+### Phase 1 — Library and catalog acquisition
 
-The reference lock, package boundaries, exact dependencies, schema-v3 bootstrap, GRDB repository, staged installer/validator, visible harvest service, core theory corpus, Android-equivalent chord inversion/applied/borrowed voicing, duration-aware Quiz active-event and interval derivation, singing-target/tessitura session rules, relative-Ionian fixed-context rules and Quiz toggle, native fitting Roman/scale-degree Canvas renderers, bounded sample-tested waveform/preview/loop renderers, progress/play-state-preserving transport reconfiguration, SwiftData user schema, history, explicit route graph, initial Library/All Songs/detail/Quiz views, app-scoped audio session, remote commands, production-wired standard/fast mono-16-kHz YIN plus smoothing paths, and the portable persistent-melody run-scoring rules now exist. The package passes 112 tests and the full Swift 6 app builds, but the parity checklist intentionally leaves most capabilities Partial until their full UI semantics and device gates pass.
+Android chronology: `0b7abac8` through `2f891ebe`'s Library/catalog work.
 
-## Barebones iPhone checkpoint and deferred backlog
+1. `[review]` **1.1 Library launch shell (F001).** **Luna/medium.** Show native dark
+   loading, empty, ready, and failure states with stable identifiers.
+2. `[ ]` **1.2 Manual harvest (F011).** **Terra/high.** Validate Hooktheory URL;
+   show progress, retry/cancel, completion, and retained-catalog messaging.
+3. `[ ]` **1.3 First catalog install (F010, F012).** **Terra/high.** Install a
+   valid artifact with visible progress, cancellation, failure/retry, refreshed
+   count, and an empty-catalog prompt.
+4. `[ ]` **1.4 Resync, recovery, and durability (F010, F012, F053).**
+   **Sol/high** (escalate to **Sol/xhigh** only for actual core recovery or
+   durability work). Validate contract/schema/row floor/payloads, atomically swap,
+   preserve a backup, recover failed/cancelled replacements, and retain user
+   entries. No search or detail UI is included in Phase 1.
 
-The immediate product target is now a minimal on-device smoke build, not full feature parity. Because the test iPhone is electrically visible over USB but is not available to Xcode's device services, TestFlight is the selected internet-delivery path. Work resumes on the parity milestones after the current app is installed, launched, and exercised on that iPhone. The checkpoint status is:
+Human gate 1 — **Library/catalog packet** — **Terra/medium** for visible states;
+**Sol/high** for install/recovery evidence. Batch this gate with gate 2 under
+the fast-track authorization; do not mark it approved without human review.
 
-1. **Complete:** the account holder accepted the first-use App Store Connect agreement.
-2. **Complete:** the explicit App ID and private App Store Connect record use bundle ID `com.acquiring.ios`; the App Store Connect app ID is `6807512572`.
-3. **Complete:** Xcode created cloud-managed Apple Distribution assets and the App Store profile, build 1 was archived and validated, and the signed package was uploaded successfully. Apple finished processing version 1.0 build 1 on September 1, 2026. The automatically distributed `Acquiring Internal Testers` group has one build, tester-facing smoke instructions are saved, and the account holder installed it on an iPhone 14 Pro.
-4. **In progress:** TestFlight launch and the full-catalog action entry point have been exercised on the iPhone. Confirm the catalog result, then smoke-test adaptive layout, search/browse/navigation, background/foreground transitions, and a clean relaunch. Audio and microphone approval remain separate device gates.
-5. **Optional later:** if USB pairing becomes available, register the device and add direct Debug installation and debugger evidence without making it a prerequisite for the internet-delivered smoke build.
+### Phase 2 — Search, selection, Song Detail, and Chords
 
-Previous synchronized TestFlight checkpoint (September 1, 2026):
+Android chronology: remaining `0b7abac8` through `2f891ebe` feature work.
 
-- Version **1.0 (2)** was archived from `c38b074a`, including Claude's All Songs grouping changes and the iPad UI-test scrolling correction. Those iOS sources are also included unchanged in the `main` merge `ac699387`. The combined Swift package, iPhone unit/UI, and iPad unit/UI CI run [33573904460](https://github.com/briansgithub/acquiring/actions/runs/33573904460) passed before deployment.
-- The Release archive and App Store export succeeded. The 6.1 MB IPA passed `codesign --verify --deep --strict`, has an Apple Distribution signature and TestFlight entitlement, contains both privacy manifests, and has matching arm64 executable/dSYM UUIDs. Apple processed the upload, attached it to the existing internal group, and App Store Connect confirmed **Installed 1.0 (2)** on the iPhone 14 Pro running iOS 26.4.2. No public release or external-testing submission was made.
-- Build-specific TestFlight notes cover upgrade/data retention, All Songs grouping/filtering, song/Quiz/back navigation, catalog maintenance, and background/relaunch behavior. Installation is confirmed; the functional physical-device smoke test remains a user verification gate.
+1. `[ ]` **2.1 Title search input (F002).** **Terra/medium.** No autofocus,
+   300 ms debounce, clear action, and loading/empty/error states.
+2. `[ ]` **2.2 Title suggestions and paging (F002).** **Terra/high.** Render
+   complete cards, 20-row pages, Load More, and retain prior results on paging
+   failure.
+3. `[ ]` **2.3 Song selection (F002, F010, F014).** **Terra/medium.** Exclude
+   missing-payload rows, expose malformed-payload errors, record history, and
+   enter Quiz first.
+4. `[ ]` **2.4 Recent songs (F003).** **Terra/medium.** Blank-query view shows
+   ten MRU items resolved against the current catalog and refreshes on return.
+5. `[ ]` **2.5 Header and section selector (F014-F015).** **Terra/high.**
+   Preserve artist/favorite actions, canonical ordering, and section changes.
+   Normalize section types, de-duplicate by normalized type, and keep the
+   earliest explicit index for each type.
+6. `[ ]` **2.6 Info overview (F016).** **Terra/medium.** Show key, tempo, meter,
+   duration, beats/bars, chord counts, and sounded/total melody counts,
+   including chord-only songs.
+7. `[ ]` **2.7 Info detail and links (F017).** **Terra/medium.** Show progression
+   and change lists, source metadata, slug, system-browser links, and
+   progression-pill preview.
+8. `[ ]` **2.8 Chords inventory (F018).** **Terra/high.** Remove rests, dedupe,
+   adapt the grid, handle empty/failure states, and use key-at-chord-onset.
+9. `[ ]` **2.9 Semantic chord display (F019, F021-F024).** **Terra/high.**
+   Support Roman/letter selection and fitted inversion, accidental, applied,
+   and borrowed-harmony notation.
+10. `[ ]` **2.10 Chord preview (F020).** **Sol/high.** Support block/arpeggiated
+    modes, 30-1000 ms step, cancellation, fades, and replacement.
 
-Latest synchronized TestFlight update (September 2, 2026):
+Human gate 2 — **Search/Detail/Chords packet** — **Terra/high** for navigation,
+state, and notation; **Sol/high** for preview cancellation/replacement. Batch
+with gate 1; no human approval is implied by `[ ]` status.
 
-- Version **1.0 (3)** was archived from `38d4dbfe`, merging `main` through `3b844da3` (the accepted seven-colored-spheres app icon) with the build 2 signing configuration. Claude's latest integrated commit `c47b635f` is an ancestor. A final pre-upload fetch confirmed no newer `main` or active Claude branch changes to incorporate.
-- The icon PNG is the only iOS change since build 2: opaque 1024×1024 artwork, visually checked both as source and as the compiled iPhone icon. The exported IPA contains the identical compiled icon. App code and dependencies are unchanged, so the previously passing combined iPhone/iPad/package CI was not rerun.
-- `xcodebuild archive` with `CURRENT_PROJECT_VERSION=3` and both local/upload `xcodebuild -exportArchive` operations succeeded. The 5.1 MB distribution IPA passed strict `codesign` verification, has the expected Apple Distribution identity and TestFlight entitlement, includes both valid privacy manifests, and has matching arm64 executable/dSYM UUIDs.
-- Apple finished processing build 3 and attached it to `Acquiring Internal Testers` (one tester). Saved TestFlight notes request an in-place update, Home Screen/App Library icon verification, retained-data checks, and normal navigation/relaunch smoke tests. App Store Connect then confirmed **Installed 1.0 (3)** on the iPhone 14 Pro. Installation is confirmed; physical-device icon appearance and functional smoke checks remain user verification gates. No public release or external-testing submission was made.
+### Phase 3 — Quiz
 
-Deferred feature work and known gaps are intentionally retained here:
+1. `[ ]` **3.1 Quiz shell and navigation (F014, F026).** **Terra/high.** Final
+   header, Full/Root-only selector, Hooktheory action, and exact-origin
+   Quiz → Info → Back behavior.
+2. `[ ]` **3.2 Chord timeline (F025).** **Terra/high.** Render durations, gaps,
+   key-at-onset notation, fixed playhead, and reduced-motion behavior.
+3. `[ ]` **3.3 Melody timeline (F025).** **Terra/high.** Render pitch, duration,
+   rests, overlap, key regions, and live playhead.
+4. `[ ]` **3.4 Play/pause transport (F027, F038).** **Sol/high.** Publish live
+   state from app-scoped synthesized melody/chord audio.
+5. `[ ]` **3.5 Loop/reset/section continuity (F027, F029, F038).** **Sol/xhigh.**
+   Seamlessly wrap, cancel reset, and preserve requested play state.
+6. `[ ]` **3.6 Active chord/root card (F035).** **Terra/high.** Bind notation to
+   events, roots, rests, and modulation.
+7. `[ ]` **3.7 Tempo/timbres/balance (F030, F032, F034).** **Terra/medium.**
+   Provide 0-200% tempo with reset/zero pause, ten instruments with sawtooth
+   default, labeled 0.5 balance, headroom, and progress preservation.
+8. `[ ]` **3.8 Card previews (F035-F036).** **Sol/high.** Root, melody, interval,
+   chord, and chord-tone previews cancel exclusively without click-through.
+9. `[ ]` **3.9 Root interval and melody cards (F026, F035-F036).** **Terra/high.**
+   Derive previous/current intervals, spell them, handle rests, and implement
+   collapse/repeat and chord-tone rows.
+10. `[ ]` **3.10 Root-only and Lock in Major (F026, F028, F037).** **Terra/high.**
+    Hide full-only surfaces, provide native seek, preserve playback, and use
+    fixed relative-Ionian/major spelling.
 
-- Catalog/Library (F002–F012): finish 20-row UI paging, fuzzy equivalence, focus-specific recents, legacy warnings, list restoration, v2/failed-swap fixtures, and real full-catalog performance/recovery evidence.
-- Song/theory UI (F014–F024): finish every-origin Back restoration, representative section fixtures, complete source metadata, adaptive chord grid, renderer snapshots, and device visual acceptance.
-- Quiz/transport (F025–F039): add the complete melody/key timeline, tap and inertial scrubbing, draggable/reset controls, zero-tempo policy, remaining card layout semantics, gain smoothing, and physical background/interruption/headphone/Bluetooth tests.
-- Microphone/vocal practice (F040–F049): add prerecorded capture fixtures and device permission/ownership tests; implement Flip-Flop (F045); make persistent targets follow root, melody, and chord-tone changes (F046); connect the tested melody marker/run scorer to the live timeline (F047); and finish tessitura presentation/continuity integration.
-- User data/platform (F050–F054): verify optimistic rollback, playlist restoration, survival across catalog replacement, VoiceOver custom actions, Dynamic Type, reduced motion, iPhone/iPad layouts, and the complete physical-device matrix.
-- Deferred by product decision: F013, F052, and F055 remain out of iOS v1.
+Human gate 3 — **First coherent Quiz UI** — **Terra/high**, escalating to
+**Sol/high** for transport and loop behavior. This is the first product review
+after the Phase 0-2 fast track.
 
-Known environment and integration issues at this checkpoint:
+### Phase 4 — Interval tool and timeline seeking
 
-- macOS sees the connected iPhone on USB, but `devicectl`, `xcdevice`, and Xcode destinations do not expose it. Wi-Fi debugging also requires an initial device pairing, so TestFlight—not remote Xcode debugging—is the viable internet path.
-- The Apple portal confirms an active Individual Apple Developer Program membership through September 2027, and the project is bound to Team `XJHRX7Q6U9`. The local keychain has valid Apple Development identities, while Xcode successfully uses a cloud-managed Apple Distribution certificate and the App Store profile `iOS Team Store Provisioning Profile: com.acquiring.ios` for TestFlight exports.
-- The Team has no registered devices. Automatic development signing therefore cannot create an iOS App Development profile, but TestFlight distribution succeeds without a registered device. The current no-device archive path builds arm64 unsigned, stages an ad-hoc archive, and lets Xcode apply the cloud-managed App Store signature during export; exports must use the system tool path to avoid the incompatible Homebrew `rsync` option handling found on this host. Export options must explicitly set `teamID` to `XJHRX7Q6U9`: build 2's initial upload export could not infer it from the ad-hoc archive, while the retry with the explicit team succeeded. Assign a fresh build number at archive time (`CURRENT_PROJECT_VERSION=3` for the latest delivery); version-number management remains disabled during export.
-- App Store Connect Terms are accepted. The private Acquiring app record and explicit App ID exist for `com.acquiring.ios`, and build 1 uploaded and processed successfully on September 1, 2026. It is attached to the automatically distributed internal group and App Store Connect confirms installation on an iPhone 14 Pro running iOS 26.4.2; no public submission or release has occurred.
-- A 1024×1024 opaque App Store icon, explicit background-audio plist entry, microphone purpose text, export-compliance declaration, local-only required-reason privacy manifest, and automatic TestFlight export options are configured. The exported 6 MB IPA passes strict signature verification, contains an Apple Distribution signature and TestFlight entitlement, includes both app and GRDB privacy manifests, and targets iPhone/iPad arm64 on iOS 17 or later.
-- The shipping 72.3 MB catalog archive is reachable from its configured GitHub release URL. A clean local fetch passes gzip validation and SQLite `PRAGMA quick_check`, declares `user_version` 3, contains every required index, and has 40,979 songs, browse rows, and non-null payloads; the physical-device install outcome is still being observed.
-- After terminating two stale hour-old `simctl` operations and rebooting the runtime, the app installs and launches on an iPhone 17 simulator. The first-launch Library empty state was visually verified. The standalone package passes all 112 tests, while Xcode-hosted unit/UI test sessions still stall waiting for simulator test workers to materialize; that remaining runner issue is environmental rather than an app test failure. A later `MobileCal` watchdog crash was isolated to Apple Calendar in a dedicated simulator and not to Acquiring or the physical iPhone; that simulator was shut down.
-- The persistent melody scoring domain is tested but deliberately not connected to the Quiz UI yet.
-- A newly bootstrapped catalog is empty until download or manual harvest succeeds, so empty Library UI on first launch is expected rather than proof of catalog failure.
+1. `[ ]` **4.1 Interval shell (F043-F044).** **Terra/high.** Collapsed/expanded
+   manual and target modes, cancellation, and deterministic fake-pitch state.
+2. `[ ]` **4.2 Microphone ownership (F040-F041).** **Sol/xhigh.** Just-in-time
+   permission, exclusive lease, denial/error states, stale-owner safety, cleanup.
+3. `[ ]` **4.3 Two-slot capture (F043).** **Sol/high.** Three-second capture,
+   stable window, silence/dropout handling, and independent slot state.
+4. `[ ]` **4.4 Live feedback and gestures (F043-F044).** **Sol/high.** Measured
+   pitch/spelling/cents, interval direction/name, exact replay, and rerecord
+   arbitration.
+5. `[ ]` **4.5 Pair playback, Flip-Flop, seeking (F043, F045, F028).**
+   **Sol/xhigh.** Support pair/alternating playback, final pause, bounded drag,
+   and pause/resume arbitration.
 
-## Five highest risks
+Human gate 4 — **Interval/seeking packet** — **Sol/xhigh** for ownership,
+capture, and seek arbitration; **Terra/high** for presentation.
 
-1. Real-time synthesis and background continuity across interruptions, route changes, view lifetimes, and remote commands (F027, F038–F039).
-2. YIN/DSP and vocal-practice behavior across physical devices, latency profiles, and audio routes (F040–F049).
-3. Failure-safe replacement of the large compressed SQLite catalog without affecting durable user data (F010, F012, F053).
-4. Enharmonic, chord-voicing, relative-Ionian, and fitted notation equivalence on edge cases (F021–F024, F037).
-5. Converting implicit navigation, gesture, saved-state, and lifecycle contracts from the Compose entry point into explicit Swift ownership (F014, F025, F035, F041, F054).
+### Phase 5 — All Songs and sing-back/actions
 
-## Resolved assumptions and remaining questions
+1. `[ ]` **5.1 All Songs shell and alphabetical browse (F006).**
+   **Terra/medium.** Provide entry, states, A-Z/0-9/# groups, counts, one
+   expanded group, indexed navigation, and sorted rows.
+2. `[ ]` **5.2 Complexity and mode browse (F007-F008).** **Terra/medium.**
+   Provide ten complexity buckets, Unrated, seven canonical modes, counts, and
+   cross-mode membership.
+3. `[ ]` **5.3 Fuzzy filter and restoration (F009).** **Terra/high.** Normalize
+   title/artist matching, filter locally at 250 ms, show no-match/legacy
+   warning, and restore grouping/filter/expansion/scroll without payload loads.
+4. `[ ]` **5.4 External search (F005).** **Luna/low.** Open Hooktheory in the
+   system browser with unavailable/failure and return continuity.
+5. `[ ]` **5.5 Sing-back (F042).** **Sol/high.** Double tap root, melody,
+   interval, or chord tone into target-guided listening after preview settles.
+6. `[ ]` **5.6 Shared gestures and transpose (F031, F035-F036, F042, F046, F054).**
+   **Sol/xhigh.** Arbitrate exactly one single/double/long action, expose named
+   VoiceOver actions, and apply -12...+12 transpose once everywhere.
+7. `[ ]` **5.7 Melody interval actions (F035-F036, F042).** **Sol/high.**
+   Separate previous, current, together, and sing-back operations.
 
-Resolved for iOS v1: iOS 17+, iPhone/iPad and both orientations; background audio; the pinned catalog URL/schema-v3/40,609-row distribution contract; visible manual harvest; deferred F013/F052/F055; dark English UI; Dynamic Type, VoiceOver, reduced motion, and adaptive layout release gates; no authentication, analytics, crash SDK, cloud sync, billing, import/export, or Bluetooth-specific product feature.
+Human gate 5 — **Discovery/card-actions packet** — **Terra/high** for browse and
+gestures; **Sol/high** for sing-back/audio coordination.
 
-Remaining questions requiring product or release evidence:
+### Phase 6 — Tessitura and persistent practice
 
-1. Which exact small iPhone, current iPhone, iPad, headphone, and Bluetooth models comprise the signed physical-device matrix?
-2. What are the exact YouTube lookup/failure/region semantics for F017? Hooktheory links are defined, but Android’s external-video behavior still needs an iOS policy.
-3. What quantitative launch/search/install memory and latency budgets must the real 40,609-row catalog meet?
-4. What perceptual listening procedure and tolerance determines waveform parity for the ten instruments?
-5. Who signs the TestFlight evidence for each feature and owns post-baseline Android parity triage?
+1. `[ ]` **6.1 Tessitura modal and calibration (F048).** **Sol/high.** Permission,
+   cancel/error/retry, three voiced seconds, final-two-second average, silence
+   pause, and dropout grace/restart.
+2. `[ ]` **6.2 Target placement/presentation (F048-F049).** **Terra/high.**
+   Comfortable window, interval unit, contour/tritone rules, anchor, octave
+   stepper, and clear-adjustment/session distinction.
+3. `[ ]` **6.3 Timeline targets and transport (F029, F042, F046, F049).**
+   **Sol/high.** Follow root/melody/interval/chord tones, save normalized drag,
+   reset, continue sections, and offer accessible non-drag control.
+4. `[ ]` **6.4 Persistent practice modes (F046).** **Sol/high.** Long-press root,
+   low-latency melody/rest, chord-tone clamping, and index restoration.
+5. `[ ]` **6.5 Pitch gauge and run scoring (F046-F047).** **Sol/xhigh.** Show
+   bounded live marker/no-signal state; score contiguous settled runs with
+   median, unscored result, marker, and badges.
+6. `[ ]` **6.6 Final header/navigation (F014, F025).** **Terra/medium.** Compact
+   native arrangement without changing state ownership.
 
-## Recommended porting sequence
+Human gate 6 — **Practice packet** — **Sol/high** for DSP/timing/scoring;
+**Terra/high** for presentation and accessibility.
 
-1. Lock reference/contracts and keep package/domain fixtures green.
-2. Finish catalog integrity and pure theory semantics.
-3. Complete Library/search/browse/navigation restoration.
-4. Complete song details, notation, and finite previews.
-5. Complete quiz transport together with background media behavior.
-6. Complete hardware microphone/vocal practice.
-7. Finish durable user data, accessibility, adaptive layout, recovery, and release evidence; keep F013, F052, and F055 Deferred.
+### Phase 7 — Platform audio and media
+
+1. `[ ]` **7.1 Arpeggiation/settings (F029-F034, F049).** **Terra/medium.**
+   Support the full picker, off default, four-cycle maximum, and exact setting
+   continuity/reset semantics.
+2. `[ ]` **7.2 Audio hardening (F036, F038).** **Sol/high.** One audio session,
+   off-main synthesis, native output rate, and no click-through.
+3. `[ ]` **7.3 Now Playing/remotes (F039).** **Sol/high.** Publish section,
+   elapsed state and remote play/pause/stop/seek events.
+4. `[ ]` **7.4 Interruptions/routes/cleanup (F027, F038-F039, F041-F049).**
+   **Sol/xhigh.** Recover background/lock/route changes and release microphone
+   ownership while rejecting stale results.
+
+Human gate 7 — **Platform-media packet** — **Sol/high**, escalating to
+**Sol/xhigh** for background, routes, and concurrency.
+
+### Phase 8 — Favorites and playlists
+
+1. `[ ]` **8.1 Favorites (F050).** **Terra/medium.** Built-in Favorites,
+   optimistic rollback, hollow star, uniqueness, and errors.
+2. `[ ]` **8.2 Playlist Library section (F051).** **Terra/medium.** Accordion
+   summaries/counts, states, expansion persistence.
+3. `[ ]` **8.3 Playlist page and durability (F051, F053).** **Terra/high.**
+   Newest-first songs, Quiz navigation, swipe removal, unresolved-slug hiding,
+   and survival across successful/failed/cancelled catalog replacement.
+
+Human gate 8 — **User-library packet** — **Terra/medium** for persistence,
+restoration, and errors. F052 custom-playlist management UI remains excluded.
+
+### Phase 9 — Accessibility and release
+
+1. `[ ]` **9.1 Accessibility/adaptive audit (F054).** **Terra/high.** Verify
+   VoiceOver, Dynamic Type, reduced motion, focus, orientations, small phone,
+   and iPad evidence.
+2. `[ ]` **9.2 Clean install and recovery release checks (F010, F012, F039, F053).**
+   **Sol/high.** Verify full catalog, upgrade/offline, interrupted download,
+   background soak, privacy, and durable user data.
+3. `[ ]` **9.3 Archive and release gate (F001-F054).** **Sol/xhigh.** Verify
+   archive/signature/manifests, zero pending/skipped parity tests, and required
+   release evidence. TestFlight remains explicit-only.
+
+Human gate 9 — **Release sign-off** — **Terra/high** for accessibility/adaptive
+review; **Sol/xhigh** for release integration and hardware/background diagnosis.
+
+### Fast-track review policy
+
+The user authorized batching human review and accepting checkpoint commits
+through Phases 0-2, even at the expense of broad testing, provided focused
+tests, deterministic previews, and screenshots are retained. After those
+commits, stop at Human gate 3 with the first coherent Quiz UI. Broad matrices,
+full parity-test cleanup, and TestFlight remain deferred until explicitly
+requested or until Phase 9.
+
+## Verification matrix
+
+- Static visual changes: deterministic `#Preview`, focused view/store test,
+  simulator build, relaunch, screenshot.
+- Interactive changes: targeted XCUITest with stable accessibility identifiers
+  and an attached post-interaction screenshot.
+- Shared theory/catalog/audio changes: targeted tests during iteration and the
+  entire Swift package suite at the phase boundary.
+- Phase boundary: iPhone 17 and iPhone 14 Pro simulators in portrait and
+  landscape, one booted simulator at a time.
+- Hardware-only behavior: user-authorized TestFlight on the available iPhone;
+  perceptual audio, microphone, interruptions, lock screen, headphones, and
+  Bluetooth remain incomplete until signed by the human reviewer.
+- Release: zero pending/skipped parity tests and complete required iPad evidence.
+
+## Explicit exclusions and defaults
+
+- `[excluded]` F013 missing-payload auto-harvest, F052 custom-playlist management
+  UI, and F055 unused audiation container.
+- `[excluded]` the puck/magnifying-glass UI, unused `TripleClickable` helper,
+  obsolete Quiz skip button, database verification/search-by-slug controls,
+  transient layouts, 55% balance intermediate, renames/icons, Android build work,
+  and monorepo/release-only commits.
+- Preserve the final gestures that replaced the magnifying glass: single tap
+  preview, double tap sing-back, and long press persistent practice.
+- Target iOS 17+, English, dark presentation, iPhone/iPad, both orientations,
+  background audio, Dynamic Type, VoiceOver, and reduced motion.
+- Open Hooktheory and YouTube in the system browser; do not add an in-app browser
+  or region-specific policy.
+- Normal review uses the iPhone 17 simulator; phase review adds iPhone 14 Pro.
+  Do not claim iPad or hardware completion without corresponding evidence.
+- TestFlight is an external action and runs only after explicit user direction.

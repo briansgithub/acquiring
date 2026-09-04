@@ -35,24 +35,99 @@ private struct LibraryView: View {
     var body: some View {
         content
             .onAppear { Task { await store.refreshUserContent() } }
+            .navigationTitle("Library")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Library")
+                        .font(.headline)
+                }
+            }
     }
 
     @ViewBuilder
     private var content: some View {
         switch store.catalogState {
         case .idle, .loading:
-            ProgressView()
+            LibraryLoadingView()
         case .empty where !store.downloadPromptDismissed:
             CatalogDownloadPromptView(store: store)
-        case .empty, .content:
-            SearchCatalogView(store: store)
+        case .empty:
+            SearchCatalogView(store: store, catalogCount: nil)
+        case let .content(count):
+            SearchCatalogView(store: store, catalogCount: count)
         case let .failure(message):
+            CatalogFailureView(message: message) {
+                Task { await store.load() }
+            }
+        }
+    }
+}
+
+private struct LibraryLoadingView: View {
+    var body: some View {
+        VStack(spacing: 12) {
+            ProgressView()
+            Text("Opening catalog…")
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Opening catalog")
+        .accessibilityIdentifier("catalog.status.loading")
+    }
+}
+
+private struct CatalogFailureView: View {
+    let message: String
+    let retry: () -> Void
+
+    var body: some View {
+        VStack(spacing: 20) {
             ContentUnavailableView(
                 "Unable to load catalog",
                 systemImage: "exclamationmark.triangle",
                 description: Text(message)
             )
+            Button("Try Again", systemImage: "arrow.clockwise", action: retry)
+                .buttonStyle(.borderedProminent)
+                .accessibilityIdentifier("catalog.retry")
         }
+        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("catalog.status.failure")
+    }
+}
+
+private struct CatalogReadyBanner: View {
+    let count: Int
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "checkmark.circle.fill")
+                .accessibilityHidden(true)
+            Text("\(count.formatted()) songs ready")
+        }
+        .font(.subheadline.weight(.semibold))
+        .foregroundStyle(.green)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("catalog.status.ready")
+    }
+}
+
+private struct CatalogEmptyBanner: View {
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "arrow.down.circle")
+                .accessibilityHidden(true)
+            Text("No catalog installed")
+                .accessibilityIdentifier("catalog.status.empty")
+        }
+        .font(.subheadline.weight(.semibold))
+        .foregroundStyle(.secondary)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -61,6 +136,19 @@ private struct LibraryView: View {
 /// screen underneath with an empty (or partial) catalog.
 private struct CatalogDownloadPromptView: View {
     @Bindable var store: LibraryStore
+
+    var body: some View {
+        CatalogDownloadPromptContent {
+            store.downloadPromptDismissed = true
+        } downloadButton: {
+            DownloadCatalogButton(store: store)
+        }
+    }
+}
+
+private struct CatalogDownloadPromptContent<DownloadButton: View>: View {
+    let onDismiss: () -> Void
+    @ViewBuilder let downloadButton: () -> DownloadButton
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
@@ -77,14 +165,12 @@ private struct CatalogDownloadPromptView: View {
                     .padding(.horizontal, 32)
                 Spacer()
                 Spacer()
-                DownloadCatalogButton(store: store)
+                downloadButton()
                     .padding(.horizontal, 32)
                     .padding(.bottom, 40)
             }
 
-            Button {
-                store.downloadPromptDismissed = true
-            } label: {
+            Button(action: onDismiss) {
                 Image(systemName: "xmark.circle.fill")
                     .font(.title2)
                     .foregroundStyle(.secondary)
@@ -92,15 +178,27 @@ private struct CatalogDownloadPromptView: View {
             }
             .accessibilityLabel("Skip downloading the catalog for now")
         }
-        .toolbar(.hidden, for: .navigationBar)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("catalog.status.empty")
     }
 }
 
 private struct SearchCatalogView: View {
     @Bindable var store: LibraryStore
+    let catalogCount: Int?
 
     var body: some View {
         VStack(spacing: 0) {
+            Group {
+                if let catalogCount {
+                    CatalogReadyBanner(count: catalogCount)
+                } else {
+                    CatalogEmptyBanner()
+                }
+            }
+            .padding(.horizontal)
+            .padding(.top)
+
             HStack(spacing: 8) {
                 Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
                 TextField(
@@ -140,7 +238,6 @@ private struct SearchCatalogView: View {
             DownloadCatalogButton(store: store)
                 .padding()
         }
-        .navigationTitle("Library")
     }
 
     @ViewBuilder
@@ -219,8 +316,8 @@ private struct SearchCatalogView: View {
 
     @ViewBuilder
     private var idlePrompt: some View {
-        if case let .content(count) = store.catalogState {
-            Text("\(count.formatted()) songs ready. Search above to find one.")
+        if case .content = store.catalogState {
+            Text("Search above to find a song.")
                 .foregroundStyle(.secondary)
         } else {
             Text("No catalog installed yet. Search results will be empty until you download it.")
@@ -254,21 +351,20 @@ struct DownloadCatalogButton: View {
             Button {
                 store.installCatalog()
             } label: {
-                VStack(spacing: 4) {
-                    Label(
-                        isAlreadyInstalled ? "Resync Catalog" : "Download Full Catalog",
-                        systemImage: isAlreadyInstalled ? "arrow.triangle.2.circlepath" : "arrow.down.circle.fill"
-                    )
+                Label(buttonTitle, systemImage: buttonSymbol)
                     .font(.headline)
-                    Text(subtitle).font(.caption)
-                }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 6)
             }
             .buttonStyle(.borderedProminent)
             .tint(isAlreadyInstalled ? .gray : .accentColor)
             .disabled(!store.canInstallCatalog)
+            .accessibilityIdentifier("catalog.download")
             .task { store.loadDownloadInfoIfNeeded() }
+
+            Text(subtitle)
+                .font(.caption)
+                .foregroundStyle(.secondary)
 
             if case let .running(_, progress) = store.maintenanceState {
                 HStack {
@@ -284,6 +380,14 @@ struct DownloadCatalogButton: View {
     private var isAlreadyInstalled: Bool {
         if case .content = store.catalogState { return true }
         return false
+    }
+
+    private var buttonTitle: String {
+        isAlreadyInstalled ? "Resync Catalog" : "Download Full Catalog"
+    }
+
+    private var buttonSymbol: String {
+        isAlreadyInstalled ? "arrow.triangle.2.circlepath" : "arrow.down.circle.fill"
     }
 
     private var subtitle: String {
@@ -345,4 +449,47 @@ private struct PlaylistSongsView: View {
         Text(playlistID)
             .navigationTitle(playlistID)
     }
+}
+
+#Preview("Library — Loading") {
+    NavigationStack {
+        LibraryLoadingView()
+            .navigationTitle("Library")
+    }
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Library — Empty") {
+    NavigationStack {
+        CatalogDownloadPromptContent(onDismiss: {}) {
+            Button("Download Full Catalog", systemImage: "arrow.down.circle.fill") {}
+                .buttonStyle(.borderedProminent)
+        }
+        .navigationTitle("Library")
+    }
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Library — Ready") {
+    NavigationStack {
+        VStack(spacing: 20) {
+            CatalogReadyBanner(count: 40_979)
+            ContentUnavailableView(
+                "Find a song",
+                systemImage: "magnifyingglass",
+                description: Text("Search the installed catalog to begin.")
+            )
+        }
+        .padding()
+        .navigationTitle("Library")
+    }
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Library — Failure") {
+    NavigationStack {
+        CatalogFailureView(message: "The catalog could not be opened.", retry: {})
+            .navigationTitle("Library")
+    }
+    .preferredColorScheme(.dark)
 }

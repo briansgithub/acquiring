@@ -133,11 +133,25 @@ final class AppEnvironment {
     let audio: AppAudioSystem
     let catalogConfiguration: CatalogConfiguration
     private let seedsUITestCatalog: Bool
+#if DEBUG
+    private let catalogLaunchUITestScenario: CatalogLaunchUITestScenario?
+    private var hasPresentedCatalogLaunchFailure = false
+#endif
 
     init(modelContext: ModelContext, uiTestSession: UITestSession? = UITestSession.current()) throws {
         let arguments = ProcessInfo.processInfo.arguments
         let isUITesting = uiTestSession != nil
+#if DEBUG
+        let launchScenario = isUITesting
+            ? CatalogLaunchUITestScenario(arguments: arguments)
+            : nil
+        catalogLaunchUITestScenario = launchScenario
+        seedsUITestCatalog = isUITesting
+            && launchScenario != .empty
+            && !arguments.contains("--ui-testing-catalog-empty")
+#else
         seedsUITestCatalog = isUITesting && !arguments.contains("--ui-testing-catalog-empty")
+#endif
         guard let contractURL = Bundle.main.url(forResource: "contract", withExtension: "json") else {
             throw CatalogError.invalidSchema("Bundled catalog contract is missing")
         }
@@ -182,6 +196,17 @@ final class AppEnvironment {
     }
 
     func prepare() async throws {
+#if DEBUG
+        switch catalogLaunchUITestScenario {
+        case .loading:
+            try await Task.sleep(for: .seconds(3_600))
+        case .failureThenReady where !hasPresentedCatalogLaunchFailure:
+            hasPresentedCatalogLaunchFailure = true
+            throw CatalogLaunchUITestError.preparationFailed
+        case .ready, .empty, .failureThenReady, nil:
+            break
+        }
+#endif
         try await catalog.prepare()
         if seedsUITestCatalog, try await catalog.songCount() == 0 {
             try await seedUITestCatalog()
@@ -225,6 +250,44 @@ final class AppEnvironment {
 }
 
 #if DEBUG
+private enum CatalogLaunchUITestScenario: Equatable, Sendable {
+    case ready
+    case empty
+    case loading
+    case failureThenReady
+
+    init?(arguments: [String]) {
+        let value = arguments
+            .first { $0.hasPrefix("--ui-testing-scenario=") }?
+            .dropFirst("--ui-testing-scenario=".count)
+            .description
+
+        if value == "library.ready" {
+            self = .ready
+        } else if value == "library.empty" {
+            self = .empty
+        } else if value == "library.loading" {
+            self = .loading
+        } else if value == "library.failureThenReady" {
+            self = .failureThenReady
+        } else if arguments.contains("--ui-testing-catalog-launch-loading") {
+            self = .loading
+        } else if arguments.contains("--ui-testing-catalog-launch-failure") {
+            self = .failureThenReady
+        } else {
+            return nil
+        }
+    }
+}
+
+private enum CatalogLaunchUITestError: LocalizedError, Sendable {
+    case preparationFailed
+
+    var errorDescription: String? {
+        "The test catalog could not be opened."
+    }
+}
+
 private enum CatalogMaintenanceUITestScenario: Equatable, Sendable {
     case failure
     case cancellable
