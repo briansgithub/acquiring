@@ -18,6 +18,8 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     private var pitchPipeline: PitchPipeline?
     private var notificationTasks: [Task<Void, Never>] = []
     private var transportPollTask: Task<Void, Never>?
+    private let previewGeneration = PreviewPlaybackGeneration()
+    private var previewRender: (token: UInt64, task: Task<[Float], any Error>)?
 
     init() {
         let format = AVAudioFormat(standardFormatWithSampleRate: 48_000, channels: 1)!
@@ -34,12 +36,48 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     }
 
     func play(_ request: PreviewRequest) async throws {
+        let token = previewGeneration.begin()
+        previewRender?.task.cancel()
+        previewRender = nil
+        // A replacement is a deterministic stop/schedule handoff. The rendered
+        // buffer keeps its attack/release envelopes; a mixer crossfade needs a
+        // separate output-lifecycle design and is intentionally not improvised here.
+        player.stop()
         let sampleRate = AVAudioSession.sharedInstance().sampleRate > 0
             ? AVAudioSession.sharedInstance().sampleRate
             : 48_000
-        let samples = try await Task.detached(priority: .userInitiated) {
-            try StaticPCMRenderer.render(request: request, sampleRate: sampleRate)
-        }.value
+        let generation = previewGeneration
+        let renderTask = Task.detached(priority: .userInitiated) {
+            try StaticPCMRenderer.render(
+                request: request,
+                sampleRate: sampleRate,
+                shouldCancel: { Task.isCancelled || !generation.isCurrent(token) }
+            )
+        }
+        previewRender = (token, renderTask)
+        let samples: [Float]
+        do {
+            samples = try await withTaskCancellationHandler {
+                try await renderTask.value
+            } onCancel: {
+                renderTask.cancel()
+                generation.invalidate(ifCurrent: token)
+            }
+        } catch is CancellationError {
+            clearPreviewRender(ifToken: token)
+            generation.invalidate(ifCurrent: token)
+            return
+        } catch {
+            clearPreviewRender(ifToken: token)
+            guard generation.isCurrent(token), !Task.isCancelled else { return }
+            generation.invalidate(ifCurrent: token)
+            throw error
+        }
+        clearPreviewRender(ifToken: token)
+        guard generation.isCurrent(token), !Task.isCancelled else {
+            generation.invalidate(ifCurrent: token)
+            return
+        }
         try configureSession(category: .playback)
         let format = AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1)!
         guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: AVAudioFrameCount(samples.count)),
@@ -49,14 +87,14 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         samples.withUnsafeBufferPointer { source in
             channel.update(from: source.baseAddress!, count: samples.count)
         }
-        player.stop()
-        Task { @MainActor in await player.scheduleBuffer(buffer) }
+        guard generation.isCurrent(token) else { return }
+        player.scheduleBuffer(buffer, completionHandler: nil)
         if !engine.isRunning { try engine.start() }
         player.play()
     }
 
     func stop(channel: AudioPlaybackChannel) async {
-        player.stop()
+        invalidatePreviewPlayback()
     }
 
     func states() async -> AsyncStream<TransportState> {
@@ -110,7 +148,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
 
     func stop() async {
         transportPollTask?.cancel()
-        player.stop()
+        invalidatePreviewPlayback()
         quizRenderer.stop()
         stopPitchCapture()
         publish(TransportState(phase: .stopped))
@@ -144,6 +182,17 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
             logger.error("Audio session setup failed: \(error.localizedDescription, privacy: .public)")
             throw AcquiringAudioError.session(error.localizedDescription)
         }
+    }
+
+    private func clearPreviewRender(ifToken token: UInt64) {
+        if previewRender?.token == token { previewRender = nil }
+    }
+
+    private func invalidatePreviewPlayback() {
+        previewGeneration.invalidate()
+        previewRender?.task.cancel()
+        previewRender = nil
+        player.stop()
     }
 
     private func startPitchCapture(
@@ -234,7 +283,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
                     else { continue }
                     if type == .began {
                         self?.transportPollTask?.cancel()
-                        self?.player.pause()
+                        self?.invalidatePreviewPlayback()
                         self?.quizRenderer.pause()
                         self?.publish(TransportState(phase: .paused))
                         self?.logger.info("Audio interruption began")
@@ -249,6 +298,35 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
                 }
             }
         ]
+    }
+}
+
+final class PreviewPlaybackGeneration: @unchecked Sendable {
+    private let lock = NSLock()
+    private var value: UInt64 = 0
+
+    func begin() -> UInt64 {
+        lock.withLock {
+            value &+= 1
+            return value
+        }
+    }
+
+    func isCurrent(_ candidate: UInt64) -> Bool {
+        lock.withLock { value == candidate }
+    }
+
+    func invalidate() {
+        lock.withLock { value &+= 1 }
+    }
+
+    @discardableResult
+    func invalidate(ifCurrent candidate: UInt64) -> Bool {
+        lock.withLock {
+            guard value == candidate else { return false }
+            value &+= 1
+            return true
+        }
     }
 }
 

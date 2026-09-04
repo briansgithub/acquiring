@@ -98,6 +98,9 @@ final class LibraryStore {
     var hasMoreSongSuggestions = false
     var hasMoreArtistSuggestions = false
     var isLoadingMoreSuggestions = false
+    var pagingError: String?
+    private(set) var isSongSearchFocused = false
+    private(set) var isArtistSearchFocused = false
     var recentSongs: [CatalogSong] = []
     var recentArtists: [String] = []
     var playlists: [PlaylistSummary] = []
@@ -117,6 +120,8 @@ final class LibraryStore {
     private let downloadURL: URL
     private let expectedSongCount: Int
     @ObservationIgnored private var searchTask: Task<Void, Never>?
+    @ObservationIgnored private var loadMoreTask: Task<Void, Never>?
+    @ObservationIgnored private var searchGeneration = 0
     @ObservationIgnored private var maintenanceTask: Task<Void, Never>?
     @ObservationIgnored private var maintenanceCancellation: (@Sendable () -> CatalogCancellationDisposition)?
     @ObservationIgnored private var maintenanceGeneration = 0
@@ -135,6 +140,14 @@ final class LibraryStore {
         switch catalogState {
         case .empty, .content: return true
         case .idle, .loading, .failure: return false
+        }
+    }
+
+    var shouldShowRecentContent: Bool {
+        guard query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return false }
+        switch searchScope {
+        case .songs: return isSongSearchFocused
+        case .artists: return isArtistSearchFocused
         }
     }
 
@@ -220,6 +233,29 @@ final class LibraryStore {
         }
         path.append(.songDetail(song.id))
         path.append(.quiz(song.id))
+    }
+
+    func openArtist(from song: CatalogSong) async {
+        let artist = Self.canonicalArtistName(song.artist)
+        guard !artist.isEmpty else { return }
+
+        await history.addArtist(artist)
+
+        trimTrailingSongRoutes: while let route = path.last {
+            switch route {
+            case .quiz, .songDetail:
+                path.removeLast()
+            default:
+                break trimTrailingSongRoutes
+            }
+        }
+
+        if case let .artist(currentArtist)? = path.last,
+           Self.canonicalArtistName(currentArtist)
+               .caseInsensitiveCompare(artist) == .orderedSame {
+            return
+        }
+        path.append(.artist(artist))
     }
 
     func installCatalog() {
@@ -360,9 +396,23 @@ final class LibraryStore {
 
     private static let suggestionPageSize = 20
 
+    func setSearchFocused(_ isFocused: Bool, for scope: SearchScope) {
+        switch scope {
+        case .songs: isSongSearchFocused = isFocused
+        case .artists: isArtistSearchFocused = isFocused
+        }
+    }
+
     private func scheduleSearch() {
+        searchGeneration &+= 1
         searchTask?.cancel()
-        let term = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        loadMoreTask?.cancel()
+        searchTask = nil
+        loadMoreTask = nil
+        isLoadingMoreSuggestions = false
+        pagingError = nil
+
+        let term = normalizedQuery
         guard !term.isEmpty else {
             suggestions = .idle
             artistSuggestions = .idle
@@ -370,55 +420,138 @@ final class LibraryStore {
             hasMoreArtistSuggestions = false
             return
         }
-        searchTask = Task {
-            try? await Task.sleep(for: .milliseconds(250))
-            guard !Task.isCancelled else { return }
+
+        let scope = searchScope
+        let generation = searchGeneration
+        searchTask = Task { [weak self] in
             do {
-                switch searchScope {
+                try await Task.sleep(for: .milliseconds(300))
+                guard let self, !Task.isCancelled,
+                      self.isCurrentSearch(generation: generation, query: term, scope: scope)
+                else { return }
+
+                switch scope {
                 case .songs:
-                    suggestions = .loading
-                    let values = try await catalog.songSuggestions(query: term, limit: Self.suggestionPageSize, offset: 0)
-                    suggestions = values.isEmpty ? .empty : .content(values)
-                    hasMoreSongSuggestions = values.count == Self.suggestionPageSize
+                    self.suggestions = .loading
+                    self.hasMoreSongSuggestions = false
+                    let values = try await self.catalog.songSuggestions(
+                        query: term,
+                        limit: Self.suggestionPageSize,
+                        offset: 0
+                    )
+                    guard !Task.isCancelled,
+                          self.isCurrentSearch(generation: generation, query: term, scope: scope)
+                    else { return }
+                    self.suggestions = values.isEmpty ? .empty : .content(values)
+                    self.hasMoreSongSuggestions = values.count == Self.suggestionPageSize
                 case .artists:
-                    artistSuggestions = .loading
-                    let values = try await catalog.artistSuggestions(query: term, limit: Self.suggestionPageSize, offset: 0)
-                    artistSuggestions = values.isEmpty ? .empty : .content(values)
-                    hasMoreArtistSuggestions = values.count == Self.suggestionPageSize
+                    self.artistSuggestions = .loading
+                    self.hasMoreArtistSuggestions = false
+                    let values = try await self.catalog.artistSuggestions(
+                        query: term,
+                        limit: Self.suggestionPageSize,
+                        offset: 0
+                    )
+                    guard !Task.isCancelled,
+                          self.isCurrentSearch(generation: generation, query: term, scope: scope)
+                    else { return }
+                    self.artistSuggestions = values.isEmpty ? .empty : .content(values)
+                    self.hasMoreArtistSuggestions = values.count == Self.suggestionPageSize
                 }
             } catch is CancellationError {
+                return
             } catch {
-                if searchScope == .songs { suggestions = .failure(error.localizedDescription) }
-                else { artistSuggestions = .failure(error.localizedDescription) }
+                guard let self,
+                      self.isCurrentSearch(generation: generation, query: term, scope: scope)
+                else { return }
+                switch scope {
+                case .songs: self.suggestions = .failure(error.localizedDescription)
+                case .artists: self.artistSuggestions = .failure(error.localizedDescription)
+                }
             }
         }
     }
 
     func loadMoreSuggestions() {
         guard !isLoadingMoreSuggestions else { return }
-        let term = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        let term = normalizedQuery
         guard !term.isEmpty else { return }
+
+        let scope = searchScope
+        let generation = searchGeneration
+        let offset: Int
+        switch scope {
+        case .songs:
+            guard case let .content(existing) = suggestions, hasMoreSongSuggestions else { return }
+            offset = existing.count
+        case .artists:
+            guard case let .content(existing) = artistSuggestions, hasMoreArtistSuggestions else { return }
+            offset = existing.count
+        }
+
         isLoadingMoreSuggestions = true
-        Task {
-            defer { isLoadingMoreSuggestions = false }
-            do {
-                switch searchScope {
-                case .songs:
-                    guard case let .content(existing) = suggestions, hasMoreSongSuggestions else { return }
-                    let values = try await catalog.songSuggestions(query: term, limit: Self.suggestionPageSize, offset: existing.count)
-                    suggestions = .content(existing + values)
-                    hasMoreSongSuggestions = values.count == Self.suggestionPageSize
-                case .artists:
-                    guard case let .content(existing) = artistSuggestions, hasMoreArtistSuggestions else { return }
-                    let values = try await catalog.artistSuggestions(query: term, limit: Self.suggestionPageSize, offset: existing.count)
-                    artistSuggestions = .content(existing + values)
-                    hasMoreArtistSuggestions = values.count == Self.suggestionPageSize
+        pagingError = nil
+        loadMoreTask = Task { [weak self] in
+            defer {
+                if let self,
+                   self.isCurrentSearch(generation: generation, query: term, scope: scope) {
+                    self.isLoadingMoreSuggestions = false
+                    self.loadMoreTask = nil
                 }
+            }
+            do {
+                guard let self else { return }
+                switch scope {
+                case .songs:
+                    let values = try await self.catalog.songSuggestions(
+                        query: term,
+                        limit: Self.suggestionPageSize,
+                        offset: offset
+                    )
+                    guard !Task.isCancelled,
+                          self.isCurrentSearch(generation: generation, query: term, scope: scope),
+                          case let .content(existing) = self.suggestions,
+                          existing.count == offset
+                    else { return }
+                    self.suggestions = .content(existing + values)
+                    self.hasMoreSongSuggestions = values.count == Self.suggestionPageSize
+                case .artists:
+                    let values = try await self.catalog.artistSuggestions(
+                        query: term,
+                        limit: Self.suggestionPageSize,
+                        offset: offset
+                    )
+                    guard !Task.isCancelled,
+                          self.isCurrentSearch(generation: generation, query: term, scope: scope),
+                          case let .content(existing) = self.artistSuggestions,
+                          existing.count == offset
+                    else { return }
+                    self.artistSuggestions = .content(existing + values)
+                    self.hasMoreArtistSuggestions = values.count == Self.suggestionPageSize
+                }
+            } catch is CancellationError {
+                return
             } catch {
-                // Keep the existing page visible; a failed "load more" isn't worth
-                // discarding results the reader already has.
+                guard let self,
+                      self.isCurrentSearch(generation: generation, query: term, scope: scope)
+                else { return }
+                // The first page stays visible. This message is only for the
+                // active query/scope, so a later search cannot inherit it.
+                self.pagingError = error.localizedDescription
             }
         }
+    }
+
+    private var normalizedQuery: String {
+        query.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private func isCurrentSearch(
+        generation: Int,
+        query: String,
+        scope: SearchScope
+    ) -> Bool {
+        generation == searchGeneration && query == normalizedQuery && scope == searchScope
     }
 
     private static func validHarvestURL(from input: String) -> URL? {
@@ -436,5 +569,11 @@ final class LibraryStore {
               !pathComponents[3].isEmpty
         else { return nil }
         return url
+    }
+
+    private static func canonicalArtistName(_ artist: String?) -> String {
+        artist?
+            .replacingOccurrences(of: "-", with: " ")
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
     }
 }

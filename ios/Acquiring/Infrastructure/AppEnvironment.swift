@@ -222,7 +222,24 @@ final class AppEnvironment {
             ("sample-artist__seed-song", "Sample Artist", "Seed Song", "major"),
             ("sample-artist__second-song", "Sample Artist", "Second Song", "minor")
         ] {
-            let section = ExtractedSection(
+            let sections = uiTestSections(slug: slug, title: title, mode: mode)
+            try await catalog.writeHarvested(
+                song: CatalogSong(id: slug, artist: artist, title: title, url: URL(string: "https://www.hooktheory.com/theorytab/view/sample-artist/seed-song")),
+                payload: JSONEncoder().encode(sections),
+                alphaGroup: String(title.prefix(1)),
+                modes: [mode == "major" ? "ionian" : "aeolian"]
+            )
+        }
+        return try await catalog.songCount()
+    }
+
+    private static func uiTestSections(
+        slug: String,
+        title: String,
+        mode: String
+    ) -> [String: ExtractedSection] {
+        guard slug == "sample-artist__seed-song" else {
+            return ["verse": ExtractedSection(
                 songId: .string(slug),
                 numericId: .string("42"),
                 sectionName: "Verse",
@@ -237,15 +254,61 @@ final class AppEnvironment {
                     "tempos": .array([.object(["bpm": .number(120)])]),
                     "endBeat": .number(5)
                 ]
-            )
-            try await catalog.writeHarvested(
-                song: CatalogSong(id: slug, artist: artist, title: title, url: URL(string: "https://www.hooktheory.com/theorytab/view/sample-artist/seed-song")),
-                payload: JSONEncoder().encode(["verse": section]),
-                alphaGroup: String(title.prefix(1)),
-                modes: [mode == "major" ? "ionian" : "aeolian"]
-            )
+            )]
         }
-        return try await catalog.songCount()
+
+        let verse = ExtractedSection(
+            songId: .string(slug),
+            numericId: .string("42"),
+            sectionName: "Verse",
+            sectionIndex: 0,
+            songInfo: "Seed Song by Sample Artist",
+            chords: [
+                ["root": .number(1), "type": .number(5), "beat": .number(1), "duration": .number(2)],
+                ["root": .number(5), "type": .number(7), "beat": .number(3), "duration": .number(2)],
+                ["rest": .bool(true), "beat": .number(5), "duration": .number(1)],
+                ["root": .number(1), "type": .number(5), "beat": .number(6), "duration": .number(2)]
+            ],
+            notes: .array([
+                .object(["sd": .string("1"), "beat": .number(1), "duration": .number(1), "octave": .number(0)]),
+                .object(["rest": .bool(true), "beat": .number(2), "duration": .number(1), "octave": .number(0)]),
+                .object(["sd": .string("5"), "beat": .number(3), "duration": .number(2), "octave": .number(0)])
+            ]),
+            metadata: [
+                "keys": .array([
+                    .object(["tonic": .string("C"), "scale": .string("major"), "beat": .number(1)]),
+                    .object(["tonic": .string("D"), "scale": .string("major"), "beat": .number(6)])
+                ]),
+                "tempos": .array([
+                    .object(["bpm": .number(120), "beat": .number(1)]),
+                    .object(["bpm": .number(92), "beat": .number(6)])
+                ]),
+                "meters": .array([
+                    .object(["numBeats": .number(4), "beat": .number(1)]),
+                    .object(["numBeats": .number(3), "beat": .number(6)])
+                ]),
+                "endBeat": .number(9),
+                "youtube": .object(["id": .string("dQw4w9WgXcQ")])
+            ]
+        )
+        let chorus = ExtractedSection(
+            songId: .string(slug),
+            numericId: .string("43"),
+            sectionName: "Chorus",
+            sectionIndex: 1,
+            songInfo: "Seed Song by Sample Artist",
+            chords: [
+                ["root": .number(4), "type": .number(5), "beat": .number(1), "duration": .number(2)],
+                ["root": .number(5), "type": .number(5), "beat": .number(3), "duration": .number(2)]
+            ],
+            metadata: [
+                "keys": .array([.object(["tonic": .string("C"), "scale": .string("major"), "beat": .number(1)])]),
+                "tempos": .array([.object(["bpm": .number(120), "beat": .number(1)])]),
+                "meters": .array([.object(["numBeats": .number(4), "beat": .number(1)])]),
+                "endBeat": .number(5)
+            ]
+        )
+        return ["verse": verse, "chorus": chorus]
     }
 }
 
@@ -442,7 +505,7 @@ private final class CatalogMaintenanceUITestService: CatalogMaintenanceService, 
             return CatalogMaintenanceRun(events: events) { controller.requestCancellation() }
         case .harvestFailure:
             let events = Stream { continuation in
-                continuation.finish(throwing: CatalogMaintenanceUITestError.downloadFailed)
+                continuation.finish(throwing: CatalogMaintenanceUITestError.harvestFailed)
             }
             return CatalogMaintenanceRun(events: events, requestCancellation: { .noOperation })
         }

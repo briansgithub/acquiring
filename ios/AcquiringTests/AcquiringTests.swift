@@ -89,6 +89,30 @@ final class AcquiringTests: XCTestCase {
         }
     }
 
+    func testPreviewPlaybackGenerationKeepsLatestRequestCurrent() {
+        let generation = PreviewPlaybackGeneration()
+        let first = generation.begin()
+        XCTAssertTrue(generation.isCurrent(first))
+
+        let second = generation.begin()
+        XCTAssertFalse(generation.isCurrent(first))
+        XCTAssertTrue(generation.isCurrent(second))
+        XCTAssertFalse(generation.invalidate(ifCurrent: first))
+        XCTAssertTrue(generation.isCurrent(second))
+
+        XCTAssertTrue(generation.invalidate(ifCurrent: second))
+        XCTAssertFalse(generation.isCurrent(second))
+    }
+
+    func testPreviewPlaybackGenerationStopInvalidatesPendingRequest() {
+        let generation = PreviewPlaybackGeneration()
+        let request = generation.begin()
+
+        generation.invalidate()
+
+        XCTAssertFalse(generation.isCurrent(request))
+    }
+
     @MainActor
     func testCatalogMaintenanceCompletionRefreshesTheVisibleCount() async throws {
         let maintenance = ScriptedCatalogMaintenanceService(downloads: [
@@ -672,6 +696,75 @@ final class AcquiringTests: XCTestCase {
     }
 
     @MainActor
+    func testBlankSearchShowsRecentsOnlyAfterTheCurrentScopeReceivesFocus() throws {
+        let fixture = try makeLibraryStore(maintenance: ScriptedCatalogMaintenanceService())
+        defer { fixture.cleanup() }
+
+        XCTAssertFalse(fixture.store.shouldShowRecentContent)
+
+        fixture.store.setSearchFocused(true, for: .songs)
+        XCTAssertTrue(fixture.store.shouldShowRecentContent)
+
+        fixture.store.searchScope = .artists
+        XCTAssertFalse(fixture.store.shouldShowRecentContent)
+        fixture.store.setSearchFocused(true, for: .artists)
+        XCTAssertTrue(fixture.store.shouldShowRecentContent)
+
+        fixture.store.query = "Miles"
+        XCTAssertFalse(fixture.store.shouldShowRecentContent)
+        fixture.store.query = ""
+        XCTAssertTrue(fixture.store.shouldShowRecentContent)
+    }
+
+    @MainActor
+    func testFailedSecondSuggestionPageRetainsFirstPageAndPublishesPagingError() async throws {
+        let fixture = try makeLibraryStore(
+            maintenance: ScriptedCatalogMaintenanceService(),
+            failingSongSuggestionOffset: 20
+        )
+        defer { fixture.cleanup() }
+        let firstPage = (0..<20).map {
+            CatalogSong(id: "artist__song-\($0)", artist: "Artist", title: "Song \($0)")
+        }
+        fixture.store.query = "Song"
+        fixture.store.suggestions = .content(firstPage)
+        fixture.store.hasMoreSongSuggestions = true
+
+        fixture.store.loadMoreSuggestions()
+        for _ in 0..<20 where fixture.store.pagingError == nil {
+            try await Task.sleep(for: .milliseconds(10))
+        }
+
+        XCTAssertEqual(fixture.store.suggestions, .content(firstPage))
+        XCTAssertEqual(fixture.store.pagingError, "Test catalog failure.")
+        XCTAssertFalse(fixture.store.isLoadingMoreSuggestions)
+        XCTAssertTrue(fixture.store.hasMoreSongSuggestions)
+        fixture.store.query = ""
+    }
+
+    @MainActor
+    func testOpeningSongArtistPreservesOriginAndAvoidsDuplicateArtistRoute() async throws {
+        let fixture = try makeLibraryStore(maintenance: ScriptedCatalogMaintenanceService())
+        defer { fixture.cleanup() }
+        let song = CatalogSong(
+            id: "the-beatles__help",
+            artist: "The-Beatles",
+            title: "Help"
+        )
+
+        fixture.store.path = [.songDetail(song.id), .quiz(song.id)]
+        await fixture.store.openArtist(from: song)
+        XCTAssertEqual(fixture.store.path, [.artist("The Beatles")])
+
+        fixture.store.path += [.songDetail(song.id), .quiz(song.id)]
+        await fixture.store.openArtist(from: song)
+        XCTAssertEqual(fixture.store.path, [.artist("The Beatles")])
+
+        await fixture.store.refreshUserContent()
+        XCTAssertEqual(fixture.store.recentArtists, ["The Beatles"])
+    }
+
+    @MainActor
     func testLibraryLoadPublishesLoadingUntilPreparationCompletes() async throws {
         let preparationStarted = AsyncStream<Void>.makeStream()
         let preparationRelease = AsyncStream<Void>.makeStream()
@@ -763,6 +856,7 @@ final class AcquiringTests: XCTestCase {
         maintenance: any CatalogMaintenanceService,
         catalogCount: Int = 0,
         catalogCountThrows: Bool = false,
+        failingSongSuggestionOffset: Int? = nil,
         prepareCatalog: @escaping @MainActor () async throws -> Void = {}
     ) throws -> (
         store: LibraryStore,
@@ -772,7 +866,8 @@ final class AcquiringTests: XCTestCase {
     ) {
         let catalog = StubCatalogRepository(
             songCount: catalogCount,
-            failsSongCount: catalogCountThrows
+            failsSongCount: catalogCountThrows,
+            failingSongSuggestionOffset: failingSongSuggestionOffset
         )
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(
@@ -931,10 +1026,16 @@ private final class ScriptedCatalogMaintenanceService: CatalogMaintenanceService
 private actor StubCatalogRepository: CatalogRepository {
     let count: Int
     let failsSongCount: Bool
+    let failingSongSuggestionOffset: Int?
 
-    init(songCount: Int, failsSongCount: Bool = false) {
+    init(
+        songCount: Int,
+        failsSongCount: Bool = false,
+        failingSongSuggestionOffset: Int? = nil
+    ) {
         count = songCount
         self.failsSongCount = failsSongCount
+        self.failingSongSuggestionOffset = failingSongSuggestionOffset
     }
 
     func status() -> CatalogStatus {
@@ -948,7 +1049,10 @@ private actor StubCatalogRepository: CatalogRepository {
     func song(id: String) -> CatalogSong? { nil }
     func songDocument(id: String) throws -> SongDocument { throw CatalogError.missingSong(id) }
     func searchSongs(title query: String) -> [CatalogSong] { [] }
-    func songSuggestions(query: String, limit: Int, offset: Int) -> [CatalogSong] { [] }
+    func songSuggestions(query: String, limit: Int, offset: Int) throws -> [CatalogSong] {
+        if offset == failingSongSuggestionOffset { throw TestCatalogFailure() }
+        return []
+    }
     func artistSuggestions(query: String, limit: Int, offset: Int) -> [String] { [] }
     func songs(artist: String) -> [CatalogSong] { [] }
     func songs(ids: [String]) -> [CatalogSong] { [] }
