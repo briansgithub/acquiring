@@ -301,6 +301,12 @@ final class AppEnvironment {
                 ["root": .number(4), "type": .number(5), "beat": .number(1), "duration": .number(2)],
                 ["root": .number(5), "type": .number(5), "beat": .number(3), "duration": .number(2)]
             ],
+            notes: .array([
+                .object(["sd": .string("1"), "beat": .number(1), "duration": .number(1), "octave": .number(0)]),
+                .object(["sd": .string("3"), "beat": .number(2), "duration": .number(1), "octave": .number(0)]),
+                .object(["rest": .bool(true), "beat": .number(3), "duration": .number(0.5), "octave": .number(0)]),
+                .object(["sd": .string("5"), "beat": .number(3.5), "duration": .number(1), "octave": .number(1)])
+            ]),
             metadata: [
                 "keys": .array([.object(["tonic": .string("C"), "scale": .string("major"), "beat": .number(1)])]),
                 "tempos": .array([.object(["bpm": .number(120), "beat": .number(1)])]),

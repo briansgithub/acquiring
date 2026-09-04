@@ -24,7 +24,10 @@ struct LibraryScene: View {
                         SongDetailView(songID: id) { song in
                             Task { await store.openArtist(from: song) }
                         }
-                    case let .quiz(id): QuizView(songID: id)
+                    case let .quiz(id):
+                        QuizView(songID: id) { song in
+                            Task { await store.openArtist(from: song) }
+                        }
                     }
                 }
         }
@@ -45,6 +48,14 @@ private struct LibraryView: View {
                     Text("Library")
                         .font(.headline)
                 }
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        CatalogSettingsView(store: store)
+                    } label: {
+                        Text("Settings")
+                    }
+                    .accessibilityIdentifier("catalog.settings")
+                }
             }
     }
 
@@ -53,16 +64,14 @@ private struct LibraryView: View {
         switch store.catalogState {
         case .idle, .loading:
             LibraryLoadingView()
-        case .empty where !store.downloadPromptDismissed:
-            CatalogDownloadPromptView(store: store)
         case .empty:
-            SearchCatalogView(store: store, catalogCount: nil)
+            CatalogEmptyView {
+                ManualHarvestView(store: store)
+            }
         case let .content(count):
             SearchCatalogView(store: store, catalogCount: count)
         case let .failure(message):
-            CatalogFailureView(message: message) {
-                Task { await store.load() }
-            }
+            CatalogFailureView(message: message)
         }
     }
 }
@@ -83,23 +92,48 @@ private struct LibraryLoadingView: View {
 
 private struct CatalogFailureView: View {
     let message: String
-    let retry: () -> Void
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 12) {
             ContentUnavailableView(
                 "Unable to load catalog",
                 systemImage: "exclamationmark.triangle",
                 description: Text(message)
             )
-            Button("Try Again", systemImage: "arrow.clockwise", action: retry)
-                .buttonStyle(.borderedProminent)
-                .accessibilityIdentifier("catalog.retry")
+            Text("Open Settings to try again or install a new catalog.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("catalog.status.failure")
+    }
+}
+
+private struct CatalogEmptyView<HarvestContent: View>: View {
+    private let harvestContent: HarvestContent
+
+    init(@ViewBuilder harvestContent: () -> HarvestContent) {
+        self.harvestContent = harvestContent()
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 28) {
+                ContentUnavailableView(
+                    "No catalog installed",
+                    systemImage: "music.note.list",
+                    description: Text("Install the song catalog from Settings when you’re ready.")
+                )
+                .accessibilityElement(children: .contain)
+                .accessibilityIdentifier("catalog.status.empty")
+
+                harvestContent
+            }
+            .padding()
+        }
     }
 }
 
@@ -120,87 +154,15 @@ private struct CatalogReadyBanner: View {
     }
 }
 
-private struct CatalogEmptyBanner: View {
-    var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "arrow.down.circle")
-                .accessibilityHidden(true)
-            Text("No catalog installed")
-                .accessibilityIdentifier("catalog.status.empty")
-        }
-        .font(.subheadline.weight(.semibold))
-        .foregroundStyle(.secondary)
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-}
-
-/// The app's opening page when no catalog is installed yet. Downloading is
-/// recommended but skippable via the close button, which reveals the search
-/// screen underneath with an empty (or partial) catalog.
-private struct CatalogDownloadPromptView: View {
-    @Bindable var store: LibraryStore
-
-    var body: some View {
-        CatalogDownloadPromptContent {
-            store.downloadPromptDismissed = true
-        } downloadButton: {
-            CatalogDownloadSurface(store: store)
-        }
-    }
-}
-
-private struct CatalogDownloadPromptContent<DownloadButton: View>: View {
-    let onDismiss: () -> Void
-    @ViewBuilder let downloadButton: () -> DownloadButton
-
-    var body: some View {
-        ZStack(alignment: .topTrailing) {
-            VStack(spacing: 20) {
-                Spacer()
-                Image(systemName: "music.note.list")
-                    .font(.system(size: 56))
-                    .foregroundStyle(.secondary)
-                Text("Acquiring")
-                    .font(.largeTitle.bold())
-                Text("Download the full song catalog to search, browse, and quiz yourself on every song. This is highly recommended.")
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 32)
-                Spacer()
-                Spacer()
-                downloadButton()
-                    .padding(.horizontal, 32)
-                    .padding(.bottom, 40)
-            }
-
-            Button(action: onDismiss) {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.title2)
-                    .foregroundStyle(.secondary)
-                    .padding()
-            }
-            .accessibilityLabel("Skip downloading the catalog for now")
-        }
-        .accessibilityElement(children: .contain)
-        .accessibilityIdentifier("catalog.status.empty")
-    }
-}
-
 private struct SearchCatalogView: View {
     @Bindable var store: LibraryStore
-    let catalogCount: Int?
+    let catalogCount: Int
     @FocusState private var isSearchFieldFocused: Bool
     @State private var focusedSearchScope: SearchScope?
 
     var body: some View {
         VStack(spacing: 0) {
-            Group {
-                if let catalogCount {
-                    CatalogReadyBanner(count: catalogCount)
-                } else {
-                    CatalogEmptyBanner()
-                }
-            }
+            CatalogReadyBanner(count: catalogCount)
             .padding(.horizontal)
             .padding(.top)
 
@@ -212,6 +174,8 @@ private struct SearchCatalogView: View {
                 )
                 .textFieldStyle(.plain)
                 .focused($isSearchFieldFocused)
+                .submitLabel(.search)
+                .onSubmit { store.submitSearch() }
                 .accessibilityIdentifier("library.search.field")
                 if !store.query.isEmpty {
                     Button {
@@ -253,8 +217,9 @@ private struct SearchCatalogView: View {
 
             List {
                 searchResults
-                Section("Catalog Maintenance") {
-                    CatalogMaintenanceSurface(store: store)
+
+                Section {
+                    ManualHarvestView(store: store)
                 }
             }
             .listStyle(.plain)
@@ -349,13 +314,8 @@ private struct SearchCatalogView: View {
 
     @ViewBuilder
     private var idlePrompt: some View {
-        if case .content = store.catalogState {
-            Text("Search above to find a song.")
-                .foregroundStyle(.secondary)
-        } else {
-            Text("No catalog installed yet. Search results will be empty until you download it.")
-                .foregroundStyle(.secondary)
-        }
+        Text("Search above to find a song.")
+            .foregroundStyle(.secondary)
     }
 }
 
@@ -374,46 +334,56 @@ private struct SongRow: View {
     }
 }
 
-/// Shared between the opening prompt and the Library so catalog replacement
-/// always exposes the same status, cancellation, and recovery affordances.
-private struct CatalogMaintenanceSurface: View {
+private struct CatalogSettingsView: View {
     @Bindable var store: LibraryStore
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            DownloadCatalogButton(store: store)
-            Divider()
-            ManualHarvestView(store: store)
-            CatalogMaintenanceStatusView(
-                state: store.maintenanceState,
-                catalogIsReady: hasInstalledCatalog,
-                cancel: store.cancelMaintenance,
-                retry: store.retryMaintenance
-            )
+        Form {
+            Section("Catalog") {
+                CatalogSettingsStatusView(store: store)
+                DownloadCatalogButton(store: store)
+                DownloadMaintenanceStatusView(store: store)
+            }
         }
-        .padding(.vertical, 4)
-    }
-
-    private var hasInstalledCatalog: Bool {
-        if case .content = store.catalogState { return true }
-        return false
+        .navigationTitle("Settings")
+        .navigationBarTitleDisplayMode(.inline)
+        .accessibilityIdentifier("catalog.settings.screen")
     }
 }
 
-/// Used by the opening prompt, which does not offer song-level maintenance
-/// until the person chooses to continue into Library.
-private struct CatalogDownloadSurface: View {
+private struct CatalogSettingsStatusView: View {
     @Bindable var store: LibraryStore
 
+    @ViewBuilder
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            DownloadCatalogButton(store: store)
-            CatalogMaintenanceStatusView(
-                state: store.maintenanceState,
-                catalogIsReady: false,
-                cancel: store.cancelMaintenance,
-                retry: store.retryMaintenance
-            )
+        switch store.catalogState {
+        case .idle, .loading:
+            HStack(spacing: 8) {
+                ProgressView()
+                Text("Opening catalog…")
+                    .foregroundStyle(.secondary)
+            }
+            .accessibilityIdentifier("catalog.settings.status.loading")
+        case .empty:
+            Label("No catalog installed", systemImage: "music.note.list")
+                .accessibilityIdentifier("catalog.settings.status.empty")
+        case let .content(count):
+            Label("\(count.formatted()) songs installed", systemImage: "checkmark.circle.fill")
+                .foregroundStyle(.green)
+                .accessibilityIdentifier("catalog.settings.status.ready")
+        case let .failure(message):
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Catalog unavailable", systemImage: "exclamationmark.triangle")
+                    .foregroundStyle(.red)
+                Text(message)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                Button("Try Again", systemImage: "arrow.clockwise") {
+                    Task { await store.load() }
+                }
+                .accessibilityIdentifier("catalog.retry")
+            }
+            .accessibilityIdentifier("catalog.settings.status.failure")
         }
     }
 }
@@ -445,7 +415,75 @@ private struct ManualHarvestView: View {
             Text("Paste a Hooktheory TheoryTab URL to add its sections to this catalog.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
+
+            HarvestMaintenanceStatusView(store: store)
         }
+    }
+}
+
+private struct HarvestMaintenanceStatusView: View {
+    @Bindable var store: LibraryStore
+
+    @ViewBuilder
+    var body: some View {
+        switch store.maintenanceState {
+        case .running(operation: .harvest, progress: _),
+             .cancelling(operation: .harvest),
+             .cancelled(operation: .harvest),
+             .failed(operation: .harvest, _),
+             .completed(operation: .harvest, _):
+            CatalogMaintenanceStatusView(
+                state: store.maintenanceState,
+                catalogIsReady: hasInstalledCatalog,
+                cancel: store.cancelMaintenance,
+                retry: store.retryMaintenance
+            )
+        case .idle,
+             .running(operation: .downloadAndInstall, progress: _),
+             .cancelling(operation: .downloadAndInstall),
+             .cancelled(operation: .downloadAndInstall),
+             .failed(operation: .downloadAndInstall, _),
+             .completed(operation: .downloadAndInstall, _):
+            EmptyView()
+        }
+    }
+
+    private var hasInstalledCatalog: Bool {
+        if case .content = store.catalogState { return true }
+        return false
+    }
+}
+
+private struct DownloadMaintenanceStatusView: View {
+    @Bindable var store: LibraryStore
+
+    @ViewBuilder
+    var body: some View {
+        switch store.maintenanceState {
+        case .running(operation: .downloadAndInstall, progress: _),
+             .cancelling(operation: .downloadAndInstall),
+             .cancelled(operation: .downloadAndInstall),
+             .failed(operation: .downloadAndInstall, _),
+             .completed(operation: .downloadAndInstall, _):
+            CatalogMaintenanceStatusView(
+                state: store.maintenanceState,
+                catalogIsReady: hasInstalledCatalog,
+                cancel: store.cancelMaintenance,
+                retry: store.retryMaintenance
+            )
+        case .idle,
+             .running(operation: .harvest, progress: _),
+             .cancelling(operation: .harvest),
+             .cancelled(operation: .harvest),
+             .failed(operation: .harvest, _),
+             .completed(operation: .harvest, _):
+            EmptyView()
+        }
+    }
+
+    private var hasInstalledCatalog: Bool {
+        if case .content = store.catalogState { return true }
+        return false
     }
 }
 
@@ -547,22 +585,14 @@ private struct CatalogMaintenanceStatusContent: View {
     }
 }
 
-/// The focused catalog action is shared between the opening page and Library.
 private struct DownloadCatalogButton: View {
     @Bindable var store: LibraryStore
 
     var body: some View {
-        VStack(spacing: 10) {
-            Button {
+        VStack(alignment: .leading, spacing: 4) {
+            Button(buttonTitle) {
                 store.installCatalog()
-            } label: {
-                Label(buttonTitle, systemImage: buttonSymbol)
-                    .font(.headline)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 6)
             }
-            .buttonStyle(.borderedProminent)
-            .tint(isAlreadyInstalled ? .gray : .accentColor)
             .disabled(!store.canInstallCatalog)
             .accessibilityIdentifier("catalog.download")
             .task { store.loadDownloadInfoIfNeeded() }
@@ -581,10 +611,6 @@ private struct DownloadCatalogButton: View {
 
     private var buttonTitle: String {
         isAlreadyInstalled ? "Resync Catalog" : "Download Full Catalog"
-    }
-
-    private var buttonSymbol: String {
-        isAlreadyInstalled ? "arrow.triangle.2.circlepath" : "arrow.down.circle.fill"
     }
 
     private var subtitle: String {
@@ -658,11 +684,8 @@ private struct PlaylistSongsView: View {
 
 #Preview("Library — Empty") {
     NavigationStack {
-        CatalogDownloadPromptContent(onDismiss: {}) {
-            Button("Download Full Catalog", systemImage: "arrow.down.circle.fill") {}
-                .buttonStyle(.borderedProminent)
-        }
-        .navigationTitle("Library")
+        CatalogEmptyView { EmptyView() }
+            .navigationTitle("Library")
     }
     .preferredColorScheme(.dark)
 }
@@ -685,7 +708,7 @@ private struct PlaylistSongsView: View {
 
 #Preview("Library — Failure") {
     NavigationStack {
-        CatalogFailureView(message: "The catalog could not be opened.", retry: {})
+        CatalogFailureView(message: "The catalog could not be opened.")
             .navigationTitle("Library")
     }
     .preferredColorScheme(.dark)

@@ -317,6 +317,7 @@ private struct SongInfoView: View {
                     HStack(spacing: 16) {
                         if let url = song.url {
                             Link("Open on Hooktheory ↗", destination: url)
+                                .accessibilityIdentifier("songDetail.hooktheoryLink")
                         }
                         if let url = SongDetailPresentation.youtubeURL(section: section) {
                             Link("YouTube ↗", destination: url)
@@ -714,8 +715,15 @@ private struct SongDetailInfoPreview: View {
 
 struct QuizView: View {
     let songID: String
+    let onOpenArtist: (CatalogSong) -> Void
     @Environment(AppEnvironment.self) private var environment
+    @Environment(\.dismiss) private var dismiss
     @State private var state: FeatureState<SongDocument> = .loading
+    @State private var selectedSectionID: String?
+    @State private var sectionLoadTask: Task<Void, Never>?
+    @State private var sectionLoadGeneration = 0
+    @State private var sectionLoadStatus: QuizSectionLoadStatus = .idle
+    @State private var mode: QuizDisplayMode = .full
     @State private var progress = 0.0
     @State private var playing = false
     @State private var error: String?
@@ -725,61 +733,146 @@ struct QuizView: View {
     var body: some View {
         Group {
             switch state {
-            case .idle, .loading: ProgressView("Preparing quiz…")
-            case .empty: ContentUnavailableView("No quiz data", systemImage: "questionmark.music.note")
-            case let .failure(message): ContentUnavailableView("Unable to open quiz", systemImage: "exclamationmark.triangle", description: Text(message))
-            case let .content(document): quiz(document)
+            case .idle, .loading:
+                ProgressView("Preparing quiz…")
+                    .accessibilityIdentifier("quiz.status.loading")
+            case .empty:
+                ContentUnavailableView("No quiz data", systemImage: "questionmark.music.note")
+                    .accessibilityIdentifier("quiz.status.empty")
+            case let .failure(message):
+                ContentUnavailableView {
+                    Label("Unable to open quiz", systemImage: "exclamationmark.triangle")
+                } description: {
+                    Text(message)
+                } actions: {
+                    Button("Try Again") { Task { await load() } }
+                        .buttonStyle(.borderedProminent)
+                        .accessibilityIdentifier("quiz.retry")
+                }
+                .accessibilityIdentifier("quiz.status.failure")
+            case let .content(document):
+                quiz(document)
             }
         }
         .navigationTitle("Quiz")
         .navigationBarTitleDisplayMode(.inline)
-        .task { await load() }
+        .task(id: songID) { await load() }
         .task { await observeTransport() }
-        .alert("Audio", isPresented: .constant(error != nil)) {
+        .onDisappear { cancelSectionLoad() }
+        .alert("Audio", isPresented: errorAlertBinding) {
             Button("OK") { error = nil }
         } message: { Text(error ?? "") }
     }
 
+    private var errorAlertBinding: Binding<Bool> {
+        Binding(
+            get: { error != nil },
+            set: { if !$0 { error = nil } }
+        )
+    }
+
     private func quiz(_ document: SongDocument) -> some View {
-        let section = document.orderedSections.first?.section
-        return VStack(spacing: 20) {
-            Text(document.song.displayTitle).font(.title2.bold()).multilineTextAlignment(.center)
-            if let section {
-                MelodyTimelineView(section: section, progress: progress)
-                    .frame(height: 120)
-                    .accessibilityIdentifier("quiz.timeline")
-                    .accessibilityLabel("Melody timeline, \(Int(progress * 100)) percent")
-                chordCard(section)
-                    .accessibilityIdentifier("quiz.chordCard")
-                Button(playing ? "Pause" : "Play", systemImage: playing ? "pause.fill" : "play.fill") {
-                    Task { await togglePlayback() }
-                }
-                .buttonStyle(.borderedProminent)
-                .accessibilityIdentifier("quiz.play")
-                VStack(spacing: 6) {
-                    HStack {
-                        LabeledContent("Tempo", value: "\(Int(tempoPercent))%")
-                        Spacer()
-                        Button("Reset") { tempoPercent = 100 }
-                            .accessibilityIdentifier("quiz.tempoReset")
-                            .disabled(tempoPercent == 100)
-                    }
-                    Slider(value: $tempoPercent, in: 0...200, step: 1)
-                        .accessibilityIdentifier("quiz.tempo")
-                        .accessibilityLabel("Quiz tempo")
-                        .onChange(of: tempoPercent) { _, _ in
-                            Task { await reloadTimeline(section) }
+        let sections = document.orderedSections.map { QuizSection(id: $0.key, section: $0.section) }
+        let selected = sections.first(where: { $0.id == selectedSectionID }) ?? sections.first
+
+        return VStack(spacing: 12) {
+            if let selected {
+                QuizHeader(
+                    song: document.song,
+                    initialKey: selected.section.keys.first?.key ?? KeyInfo(tonic: "C", scale: "major"),
+                    currentKey: selected.section.key(at: currentBeat(in: selected.section)),
+                    mode: mode,
+                    usesRelativeIonianContext: $usesRelativeIonianContext,
+                    onOpenArtist: onOpenArtist,
+                    onInfo: { dismiss() }
+                )
+
+                if sections.count > 1 {
+                    Picker("Quiz section", selection: sectionBinding(sections: sections)) {
+                        ForEach(sections) { entry in
+                            Text(entry.section.safeSectionName).tag(entry.id)
                         }
+                    }
+                    .pickerStyle(.menu)
+                    .accessibilityIdentifier("quiz.section")
+                    .accessibilityValue(selected.section.safeSectionName)
                 }
-                if let url = document.song.url {
-                    Link("Open on Hooktheory", destination: url)
-                        .accessibilityIdentifier("quiz.hooktheoryLink")
+
+                Text(sectionLoadStatus.label)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .accessibilityIdentifier("quiz.section.status")
+
+                Picker("Quiz mode", selection: $mode) {
+                    ForEach(QuizDisplayMode.allCases) { mode in
+                        Text(mode.title).tag(mode)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .accessibilityIdentifier("quiz.mode")
+
+                switch mode {
+                case .full:
+                    fullQuiz(selected.section, sectionID: selected.id)
+                case .rootOnly:
+                    RootOnlyQuizSurface(
+                        key: selected.section.key(at: currentBeat(in: selected.section))
+                    )
                 }
             }
         }
         .padding()
         .frame(maxWidth: 760)
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+    }
+
+    private func sectionBinding(sections: [QuizSection]) -> Binding<String> {
+        Binding(
+            get: { selectedSectionID ?? sections.first?.id ?? "" },
+            set: { selectSection($0, sections: sections) }
+        )
+    }
+
+    private func selectSection(
+        _ id: String,
+        sections: [QuizSection]
+    ) {
+        guard let selected = sections.first(where: { $0.id == id }) else { return }
+        selectedSectionID = id
+        progress = 0
+        scheduleSectionLoad(selected.section, id: selected.id, position: .restart)
+    }
+
+    private func fullQuiz(_ section: ExtractedSection, sectionID: String) -> some View {
+        VStack(spacing: 20) {
+            MelodyTimelineView(section: section, progress: progress)
+                .frame(height: 120)
+                .accessibilityIdentifier("quiz.timeline")
+                .accessibilityLabel("Melody timeline, \(Int(progress * 100)) percent")
+            chordCard(section)
+                .accessibilityIdentifier("quiz.chordCard")
+            Button(playing ? "Pause" : "Play", systemImage: playing ? "pause.fill" : "play.fill") {
+                Task { await togglePlayback() }
+            }
+            .buttonStyle(.borderedProminent)
+            .accessibilityIdentifier("quiz.play")
+            VStack(spacing: 6) {
+                HStack {
+                    LabeledContent("Tempo", value: "\(Int(tempoPercent))%")
+                    Spacer()
+                    Button("Reset") { tempoPercent = 100 }
+                        .accessibilityIdentifier("quiz.tempoReset")
+                        .disabled(tempoPercent == 100)
+                }
+                Slider(value: $tempoPercent, in: 0...200, step: 1)
+                    .accessibilityIdentifier("quiz.tempo")
+                    .accessibilityLabel("Quiz tempo")
+                    .onChange(of: tempoPercent) { _, _ in
+                        scheduleSectionLoad(section, id: sectionID, position: .preserveProgress)
+                    }
+            }
+        }
     }
 
     private func chordCard(_ section: ExtractedSection) -> some View {
@@ -799,9 +892,6 @@ struct QuizView: View {
                     : MusicTheory.degreeLabel(midi: $0.midiNote, key: key)
             } ?? ""
         return GroupBox("Chord") {
-            Toggle("Lock in Major", isOn: $usesRelativeIonianContext)
-                .accessibilityIdentifier("quiz.lockInMajor")
-                .accessibilityHint("Keeps Roman numerals and scale degrees relative to the section's major-key context without changing playback pitches")
             HStack(spacing: 12) {
                 FittedRomanNumeral(
                     display: RomanNumeralDisplay(symbol: symbol, borrowed: active?.chord["borrowed"]),
@@ -843,18 +933,60 @@ struct QuizView: View {
     }
 
     private func load() async {
+        cancelSectionLoad()
         do {
             let document = try await environment.catalog.songDocument(id: songID)
-            state = document.sections.isEmpty ? .empty : .content(document)
-            if let section = document.orderedSections.first?.section {
-                try await environment.audio.load(timeline(for: section), position: .restart)
+            guard !Task.isCancelled else { return }
+            guard let selected = document.orderedSections.first else {
+                state = .empty
+                selectedSectionID = nil
+                return
             }
+            selectedSectionID = selected.key
+            state = .content(document)
+            scheduleSectionLoad(selected.section, id: selected.key, position: .restart)
         } catch { state = .failure(error.localizedDescription) }
     }
 
-    private func reloadTimeline(_ section: ExtractedSection) async {
-        do { try await environment.audio.load(timeline(for: section), position: .preserveProgress) }
-        catch { self.error = error.localizedDescription }
+    private func scheduleSectionLoad(
+        _ section: ExtractedSection,
+        id: String,
+        position: QuizLoadPosition
+    ) {
+        sectionLoadTask?.cancel()
+        sectionLoadGeneration &+= 1
+        let generation = sectionLoadGeneration
+        let timeline = timeline(for: section)
+        sectionLoadStatus = .loading(section.safeSectionName)
+
+        sectionLoadTask = Task { @MainActor [environment] in
+            do {
+                try Task.checkCancellation()
+                try await environment.audio.load(timeline, position: position)
+                try Task.checkCancellation()
+                guard isCurrentSectionLoad(generation, id: id) else { return }
+                sectionLoadStatus = .ready(section.safeSectionName)
+                sectionLoadTask = nil
+            } catch is CancellationError {
+                // A newer section superseded this load.
+            } catch {
+                guard isCurrentSectionLoad(generation, id: id) else { return }
+                sectionLoadStatus = .failed(section.safeSectionName)
+                self.error = error.localizedDescription
+                sectionLoadTask = nil
+            }
+        }
+    }
+
+    private func isCurrentSectionLoad(_ generation: Int, id: String) -> Bool {
+        sectionLoadGeneration == generation && selectedSectionID == id
+    }
+
+    private func cancelSectionLoad() {
+        sectionLoadTask?.cancel()
+        sectionLoadTask = nil
+        sectionLoadGeneration &+= 1
+        sectionLoadStatus = .idle
     }
 
     private func observeTransport() async {
@@ -884,6 +1016,142 @@ struct QuizView: View {
             ?? (metadataDuration > 0 ? metadataDuration : 1)
         return AcquiringAudio.QuizTimeline(durationSeconds: max(duration, 0.1), events: events)
     }
+}
+
+private enum QuizDisplayMode: String, CaseIterable, Hashable, Identifiable {
+    case full
+    case rootOnly
+
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .full: "Full"
+        case .rootOnly: "Root-only"
+        }
+    }
+}
+
+private enum QuizSectionLoadStatus: Equatable {
+    case idle
+    case loading(String)
+    case ready(String)
+    case failed(String)
+
+    var label: String {
+        switch self {
+        case .idle: "Preparing section"
+        case let .loading(name): "Loading \(name)"
+        case let .ready(name): "\(name) ready"
+        case let .failed(name): "Couldn't load \(name)"
+        }
+    }
+}
+
+private struct QuizSection: Identifiable {
+    let id: String
+    let section: ExtractedSection
+}
+
+private struct QuizHeader: View {
+    let song: CatalogSong
+    let initialKey: KeyInfo
+    let currentKey: KeyInfo
+    let mode: QuizDisplayMode
+    @Binding var usesRelativeIonianContext: Bool
+    let onOpenArtist: (CatalogSong) -> Void
+    let onInfo: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .firstTextBaseline, spacing: 0) {
+                Text(mode == .full ? song.displayTitle : "Root focus")
+                    .font(.headline)
+                    .lineLimit(1)
+
+                if mode == .full,
+                   let artist = song.artist?.trimmingCharacters(in: .whitespacesAndNewlines),
+                   !artist.isEmpty {
+                    Text(" by ")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Button(song.displayArtist) { onOpenArtist(song) }
+                        .buttonStyle(.plain)
+                        .font(.subheadline.weight(.medium))
+                        .lineLimit(1)
+                        .accessibilityIdentifier("quiz.artist")
+                }
+
+                Spacer(minLength: 12)
+                Button("Info", action: onInfo)
+                    .buttonStyle(.bordered)
+                    .accessibilityIdentifier("quiz.info")
+            }
+
+            HStack(alignment: .center, spacing: 12) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Initial: \(SongDetailPresentation.keyLabel(initialKey))")
+                    Text("Current: \(SongDetailPresentation.keyLabel(currentKey))")
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+                Spacer(minLength: 8)
+
+                Toggle("Lock in Major", isOn: $usesRelativeIonianContext)
+                    .toggleStyle(.switch)
+                    .font(.caption)
+                    .accessibilityHint("Shows chord degrees against the relative major key")
+                    .accessibilityIdentifier("quiz.lockInMajor")
+            }
+        }
+        .padding(12)
+        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))
+    }
+}
+
+private struct RootOnlyQuizSurface: View {
+    let key: KeyInfo
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("Root-only", systemImage: "music.note")
+                .font(.headline)
+            Text("Focus on the current tonic while keeping the selected section and key context.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            Text("Current root: \(key.tonic)")
+                .font(.title3.weight(.semibold))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(.quaternary, in: RoundedRectangle(cornerRadius: 12))
+        .accessibilityIdentifier("quiz.rootOnly.content")
+    }
+}
+
+private struct QuizShellPreview: View {
+    @State private var usesRelativeIonianContext = false
+
+    var body: some View {
+        VStack(spacing: 16) {
+            QuizHeader(
+                song: CatalogSong(id: "preview", artist: "Sample Artist", title: "Seed Song"),
+                initialKey: KeyInfo(tonic: "C", scale: "major"),
+                currentKey: KeyInfo(tonic: "D", scale: "major"),
+                mode: .full,
+                usesRelativeIonianContext: $usesRelativeIonianContext,
+                onOpenArtist: { _ in },
+                onInfo: {}
+            )
+            RootOnlyQuizSurface(key: KeyInfo(tonic: "D", scale: "major"))
+        }
+        .padding()
+    }
+}
+
+#Preview("Quiz Shell") {
+    QuizShellPreview()
 }
 
 private extension Duration {

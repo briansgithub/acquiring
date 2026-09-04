@@ -23,6 +23,7 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertEqual(loadingStatus.label, "Opening catalog")
         XCTAssertFalse(app.buttons["catalog.download"].exists)
         XCTAssertFalse(app.textFields["library.search.field"].exists)
+        XCTAssertTrue(app.buttons["catalog.settings"].exists)
         attachScreenshot(of: app, named: "checkpoint-1.1-library-loading")
     }
 
@@ -34,9 +35,13 @@ final class AcquiringUITests: XCTestCase {
             app.descendants(matching: .any)["catalog.status.empty"]
                 .waitForExistence(timeout: 5)
         )
-        XCTAssertTrue(app.buttons["catalog.download"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.buttons.matching(identifier: "catalog.download").count, 1)
+        XCTAssertFalse(app.buttons["catalog.download"].exists)
         XCTAssertFalse(app.textFields["library.search.field"].exists)
+        XCTAssertTrue(app.textFields["catalog.harvest.url"].waitForExistence(timeout: 5))
+        openCatalogSettings(app)
+        XCTAssertTrue(app.descendants(matching: .any)["catalog.settings.status.empty"].exists)
+        XCTAssertEqual(app.buttons.matching(identifier: "catalog.download").count, 1)
+        XCTAssertFalse(app.textFields["catalog.harvest.url"].exists)
         attachScreenshot(of: app, named: "checkpoint-1.1-library-empty")
     }
 
@@ -48,6 +53,11 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(readyStatus.waitForExistence(timeout: 5))
         XCTAssertEqual(readyStatus.label, "2 songs ready")
         XCTAssertTrue(app.textFields["library.search.field"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["catalog.settings"].exists)
+        XCTAssertFalse(app.buttons["catalog.download"].exists)
+        let harvestField = app.textFields["catalog.harvest.url"]
+        scrollToHittable(harvestField, in: app)
+        XCTAssertTrue(harvestField.isHittable)
         attachScreenshot(of: app, named: "checkpoint-1.1-library-ready")
     }
 
@@ -63,16 +73,17 @@ final class AcquiringUITests: XCTestCase {
             app.staticTexts["The test catalog could not be opened."]
                 .waitForExistence(timeout: 5)
         )
+        XCTAssertFalse(app.buttons["catalog.retry"].exists)
+        openCatalogSettings(app)
         let retryButton = app.buttons["catalog.retry"]
         XCTAssertTrue(retryButton.waitForExistence(timeout: 5))
         attachScreenshot(of: app, named: "checkpoint-1.1-library-failure")
 
         retryButton.tap()
 
-        let readyStatus = app.descendants(matching: .any)["catalog.status.ready"]
+        let readyStatus = app.descendants(matching: .any)["catalog.settings.status.ready"]
         XCTAssertTrue(readyStatus.waitForExistence(timeout: 5))
-        XCTAssertEqual(readyStatus.label, "2 songs ready")
-        XCTAssertTrue(app.textFields["library.search.field"].waitForExistence(timeout: 5))
+        XCTAssertEqual(readyStatus.label, "2 songs installed")
         attachScreenshot(of: app, named: "checkpoint-1.1-library-failure-recovered")
     }
 
@@ -131,6 +142,66 @@ final class AcquiringUITests: XCTestCase {
         searchField.tap()
         XCTAssertTrue(app.staticTexts["Recent Songs"].waitForExistence(timeout: 5))
         XCTAssertTrue(seedSong.waitForExistence(timeout: 5))
+    }
+
+    func testQuizShellSwitchesModesAndReturnsThroughInfoToOrigin() {
+        let app = launchApp(scenario: .ready)
+        let searchField = app.textFields["library.search.field"]
+        XCTAssertTrue(searchField.waitForExistence(timeout: 5))
+        searchField.tap()
+        searchField.typeText("Seed")
+
+        let seedSong = app.buttons["Seed Song, by Sample Artist"]
+        XCTAssertTrue(seedSong.waitForExistence(timeout: 5))
+        seedSong.tap()
+
+        XCTAssertTrue(app.navigationBars["Quiz"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Seed Song"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["quiz.artist"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.switches["quiz.lockInMajor"].waitForExistence(timeout: 5))
+
+        let sectionPicker = app.descendants(matching: .any)["quiz.section"]
+        XCTAssertTrue(sectionPicker.waitForExistence(timeout: 5))
+        let modePicker = app.segmentedControls["quiz.mode"]
+        XCTAssertTrue(modePicker.waitForExistence(timeout: 5))
+        XCTAssertTrue(modePicker.buttons["Full"].exists)
+        XCTAssertTrue(modePicker.buttons["Root-only"].exists)
+
+        sectionPicker.tap()
+        let chorus = app.buttons["Chorus"]
+        XCTAssertTrue(chorus.waitForExistence(timeout: 5))
+        chorus.tap()
+        XCTAssertEqual(sectionPicker.value as? String, "Chorus")
+        let sectionStatus = app.descendants(matching: .any)["quiz.section.status"]
+        XCTAssertTrue(sectionStatus.waitForExistence(timeout: 5))
+        let chorusReady = expectation(
+            for: NSPredicate(format: "label == %@", "Chorus ready"),
+            evaluatedWith: sectionStatus
+        )
+        wait(for: [chorusReady], timeout: 5)
+        XCTAssertEqual(sectionStatus.label, "Chorus ready")
+        attachScreenshot(of: app, named: "phase-3-quiz-full-chorus")
+
+        modePicker.buttons["Root-only"].tap()
+        XCTAssertTrue(
+            app.descendants(matching: .any)["quiz.rootOnly.content"]
+                .waitForExistence(timeout: 5)
+        )
+        attachScreenshot(of: app, named: "phase-3-quiz-root-only")
+
+        let info = app.buttons["quiz.info"]
+        XCTAssertTrue(info.waitForExistence(timeout: 5))
+        info.tap()
+        XCTAssertTrue(app.navigationBars["Song"].waitForExistence(timeout: 5))
+        XCTAssertTrue(
+            app.descendants(matching: .any)["songDetail.info"].waitForExistence(timeout: 5)
+        )
+        let hooktheory = app.descendants(matching: .any)["songDetail.hooktheoryLink"]
+        scrollToHittable(hooktheory, in: app)
+        XCTAssertTrue(hooktheory.exists)
+
+        app.navigationBars["Song"].buttons.element(boundBy: 0).tap()
+        XCTAssertTrue(searchField.waitForExistence(timeout: 5))
     }
 
     func testArtistSearchOpensArtistResults() {
@@ -332,6 +403,7 @@ final class AcquiringUITests: XCTestCase {
         let readyStatus = app.descendants(matching: .any)["catalog.status.ready"]
         XCTAssertTrue(readyStatus.waitForExistence(timeout: 5))
 
+        openCatalogSettings(app)
         let downloadButton = app.buttons["catalog.download"]
         scrollToHittable(downloadButton, in: app)
         downloadButton.tap()
@@ -365,6 +437,7 @@ final class AcquiringUITests: XCTestCase {
         let readyStatus = app.descendants(matching: .any)["catalog.status.ready"]
         XCTAssertTrue(readyStatus.waitForExistence(timeout: 5))
 
+        openCatalogSettings(app)
         let downloadButton = app.buttons["catalog.download"]
         scrollToHittable(downloadButton, in: app)
         downloadButton.tap()
@@ -393,13 +466,15 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(
             app.descendants(matching: .any)["catalog.status.empty"].waitForExistence(timeout: 5)
         )
+        openCatalogSettings(app)
         let downloadButton = app.buttons["catalog.download"]
         scrollToHittable(downloadButton, in: app)
 
         downloadButton.tap()
 
         XCTAssertTrue(
-            app.descendants(matching: .any)["catalog.status.ready"].waitForExistence(timeout: 5)
+            app.descendants(matching: .any)["catalog.settings.status.ready"]
+                .waitForExistence(timeout: 5)
         )
         let completedStatus = app.staticTexts["catalog.maintenance.completed"]
         scrollToHittable(completedStatus, in: app)
@@ -448,7 +523,7 @@ final class AcquiringUITests: XCTestCase {
         attachScreenshot(of: app, named: "checkpoint-1.2-harvest-retry-complete")
     }
 
-    func testEmptyCatalogOffersOnePrimaryDownloadAction() throws {
+    func testCatalogSettingsOffersOneDownloadActionForAnEmptyCatalog() throws {
         let app = launchApp(
             scenario: .empty,
             arguments: ["--ui-testing-catalog-empty"]
@@ -457,7 +532,10 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(
             app.descendants(matching: .any)["catalog.status.empty"].waitForExistence(timeout: 5)
         )
+        XCTAssertFalse(app.buttons["catalog.download"].exists)
+        openCatalogSettings(app)
         XCTAssertEqual(app.buttons.matching(identifier: "catalog.download").count, 1)
+        XCTAssertFalse(app.textFields["catalog.harvest.url"].exists)
     }
 
     private func groupHeading(
@@ -498,6 +576,21 @@ final class AcquiringUITests: XCTestCase {
         app.launchEnvironment["ACQUIRING_UI_TEST_SESSION_ID"] = UUID().uuidString
         app.launch()
         return app
+    }
+
+    private func openCatalogSettings(
+        _ app: XCUIApplication,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let settingsButton = app.buttons["catalog.settings"]
+        XCTAssertTrue(settingsButton.waitForExistence(timeout: 5), file: file, line: line)
+        settingsButton.tap()
+        XCTAssertTrue(
+            app.descendants(matching: .any)["catalog.settings.screen"].waitForExistence(timeout: 5),
+            file: file,
+            line: line
+        )
     }
 
     private func attachScreenshot(of app: XCUIApplication, named name: String) {
