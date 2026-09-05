@@ -153,6 +153,57 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(fiveHundredMiles.waitForExistence(timeout: 5))
     }
 
+    func testQuizCardPreviewsDoNotCrashAndMelodyCardsUseCompactHeights() {
+        let app = launchApp(scenario: .ready)
+        let searchField = app.textFields["library.search.field"]
+        XCTAssertTrue(searchField.waitForExistence(timeout: 5))
+        searchField.tap()
+        searchField.typeText("500 Miles")
+        let song = app.buttons[Fixture.fiveHundredMiles]
+        XCTAssertTrue(song.waitForExistence(timeout: 5))
+        song.tap()
+        XCTAssertTrue(app.navigationBars[Fixture.fiveHundredMilesQuizTitle].waitForExistence(timeout: 5))
+
+        // SwiftUI propagates the cards container ID to descendants on this OS;
+        // use their distinct spoken actions to locate the native buttons.
+        let chord = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Play chord ")).firstMatch
+        scrollToHittable(chord, in: app)
+        chord.tap() // Exercises the native player/buffer format boundary that crashed.
+        XCTAssertEqual(app.state, .runningForeground)
+        XCTAssertFalse(app.alerts["Audio"].exists)
+
+        // Verse beat 5 has distinct previous/current melody notes in the real fixture.
+        let seekForward = app.buttons["quiz.seekForward"]
+        scrollBackToHittable(seekForward, in: app)
+        for _ in 0..<4 { seekForward.tap() }
+        let previous = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Play Previous melody note ")).firstMatch
+        let current = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Play Current melody note ")).firstMatch
+        let interval = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Play Melody interval ")).firstMatch
+        scrollToHittable(interval, in: app)
+        XCTAssertTrue(previous.exists)
+        XCTAssertTrue(current.exists)
+        XCTAssertEqual(previous.frame.height, 44, accuracy: 1)
+        XCTAssertEqual(current.frame.height, 44, accuracy: 1)
+        XCTAssertEqual(interval.frame.height, 88, accuracy: 1)
+
+        previous.tap()
+        current.tap()
+        interval.tap()
+        // Allow all three sequence buffers to reach AVAudioPlayerNode.
+        let remainsAlive = expectation(for: NSPredicate { _, _ in
+            app.state != .runningForeground || app.alerts["Audio"].exists
+        }, evaluatedWith: app)
+        remainsAlive.isInverted = true
+        wait(for: [remainsAlive], timeout: 1.5)
+        interval.tap()
+        current.tap() // Replacement must also safely retire an in-flight sequence.
+        let chordTone = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Play chord tone ")).firstMatch
+        scrollToHittable(chordTone, in: app)
+        chordTone.tap()
+        XCTAssertEqual(app.state, .runningForeground)
+        XCTAssertFalse(app.alerts["Audio"].exists)
+    }
+
     func testQuizShellSwitchesModesAndReturnsThroughInfoToOrigin() {
         let app = launchApp(scenario: .ready)
         let searchField = app.textFields["library.search.field"]
@@ -193,7 +244,7 @@ final class AcquiringUITests: XCTestCase {
 
         modePicker.buttons["Root-only"].tap()
         XCTAssertTrue(
-            app.descendants(matching: .any)["quiz.rootOnly.content"]
+            app.descendants(matching: .any)["quiz.rootCards"]
                 .waitForExistence(timeout: 5)
         )
         attachScreenshot(of: app, named: "phase-3-quiz-root-only")

@@ -7,6 +7,7 @@ final class AcquiringAudioTests: XCTestCase {
         XCTAssertEqual(QuizSoundConfiguration().melodyGain, 0.5)
         XCTAssertEqual(QuizSoundConfiguration().chordGain, 0.5)
         XCTAssertEqual(QuizSoundConfiguration().arpeggioOption, .off)
+        XCTAssertEqual(QuizSoundConfiguration().chordMode, .full)
 
         let high = QuizSoundConfiguration(melodyChordBalance: 2, transposeSemitones: 99)
         XCTAssertEqual(high.melodyChordBalance, 1)
@@ -509,6 +510,146 @@ final class AcquiringAudioTests: XCTestCase {
         for (actual, expected) in zip(changedSamples, referenceSamples) {
             XCTAssertEqual(actual, expected, accuracy: 1e-7)
         }
+    }
+
+    func testQuizRendererRootOnlyUsesResolvedRootAndLeavesMelodyAndArpeggioAlone() {
+        let timeline = QuizTimeline(
+            durationSeconds: 1,
+            events: [
+                QuizEvent(
+                    onsetSeconds: 0,
+                    durationSeconds: 1,
+                    frequenciesHz: [90],
+                    waveform: .sine,
+                    channel: .melody
+                ),
+                QuizEvent(
+                    onsetSeconds: 0,
+                    durationSeconds: 1,
+                    frequenciesHz: [200, 250, 300],
+                    waveform: .sine,
+                    channel: .chord,
+                    rootFrequencyHz: 125
+                )
+            ]
+        )
+        let rootOnly = QuizPCMRenderer(sampleRate: 1_000)
+        rootOnly.setSoundConfiguration(QuizSoundConfiguration(
+            waveform: .sine,
+            melodyChordBalance: 0.5,
+            arpeggioOption: .four,
+            chordMode: .rootOnly
+        ))
+        rootOnly.configure(timeline)
+
+        XCTAssertEqual(rootOnly.preparedVoiceFrequenciesForTesting, [[90], [125]])
+
+        rootOnly.play()
+        var samples = [Float](repeating: 0, count: 80)
+        samples.withUnsafeMutableBufferPointer { rootOnly.render(into: $0) }
+        XCTAssertTrue(samples.contains { abs($0) > 0.01 })
+    }
+
+    func testQuizRendererLiveRootModeCrossfadePreservesTransportAgeAndRestoresFullInversion() {
+        let timeline = QuizTimeline(
+            durationSeconds: 2,
+            events: [QuizEvent(
+                onsetSeconds: 0,
+                durationSeconds: 2,
+                frequenciesHz: [200, 250, 300],
+                waveform: .sine,
+                channel: .chord,
+                rootFrequencyHz: 125
+            )]
+        )
+        let full = QuizSoundConfiguration(
+            waveform: .sine,
+            melodyChordBalance: 0,
+            transposeSemitones: 12,
+            arpeggioOption: .one,
+            chordMode: .full
+        )
+        let renderer = QuizPCMRenderer(sampleRate: 1_000)
+        let uninterruptedFull = QuizPCMRenderer(sampleRate: 1_000)
+        for candidate in [renderer, uninterruptedFull] {
+            candidate.setSoundConfiguration(full)
+            candidate.configure(timeline)
+            candidate.setPlaybackRate(0.75)
+            candidate.play()
+        }
+        var leadIn = [Float](repeating: 0, count: 137)
+        leadIn.withUnsafeMutableBufferPointer { renderer.render(into: $0) }
+        leadIn.withUnsafeMutableBufferPointer { uninterruptedFull.render(into: $0) }
+
+        let frameBeforeChange = renderer.currentFrame
+        let progressBeforeChange = renderer.progress
+        let ageBeforeChange = renderer.preparedEventAgesForTesting
+        renderer.setSoundConfiguration(QuizSoundConfiguration(
+            waveform: .sine,
+            melodyChordBalance: 0,
+            transposeSemitones: 12,
+            arpeggioOption: .one,
+            chordMode: .rootOnly
+        ))
+        XCTAssertEqual(renderer.currentFrame, frameBeforeChange)
+        XCTAssertEqual(renderer.progress, progressBeforeChange, accuracy: 1e-12)
+        XCTAssertEqual(renderer.playbackRate, 0.75)
+        XCTAssertEqual(renderer.phase, .playing)
+        XCTAssertEqual(renderer.preparedEventAgesForTesting, ageBeforeChange)
+        XCTAssertEqual(renderer.preparedVoiceFrequenciesForTesting, [[250]])
+
+        var firstRootTransition = [Float](repeating: 0, count: 1)
+        var firstFullReference = [Float](repeating: 0, count: 1)
+        firstRootTransition.withUnsafeMutableBufferPointer { renderer.render(into: $0) }
+        firstFullReference.withUnsafeMutableBufferPointer { uninterruptedFull.render(into: $0) }
+        XCTAssertEqual(firstRootTransition[0], firstFullReference[0], accuracy: 1e-7)
+
+        var rootTail = [Float](repeating: 0, count: 47)
+        rootTail.withUnsafeMutableBufferPointer { renderer.render(into: $0) }
+        let frameBeforeRestore = renderer.currentFrame
+        let ageBeforeRestore = renderer.preparedEventAgesForTesting
+        renderer.setSoundConfiguration(full)
+        XCTAssertEqual(renderer.currentFrame, frameBeforeRestore)
+        XCTAssertEqual(renderer.preparedEventAgesForTesting, ageBeforeRestore)
+        XCTAssertEqual(renderer.preparedVoiceFrequenciesForTesting, [[400, 500, 600]])
+    }
+
+    func testQuizRendererRootOnlyWithoutResolvedRootFadesOutInsteadOfCutting() {
+        let timeline = QuizTimeline(
+            durationSeconds: 1,
+            events: [QuizEvent(
+                onsetSeconds: 0,
+                durationSeconds: 1,
+                frequenciesHz: [100, 150],
+                waveform: .sine,
+                channel: .chord
+            )]
+        )
+        let full = QuizSoundConfiguration(waveform: .sine, melodyChordBalance: 0)
+        let changed = QuizPCMRenderer(sampleRate: 1_000)
+        let reference = QuizPCMRenderer(sampleRate: 1_000)
+        for renderer in [changed, reference] {
+            renderer.setSoundConfiguration(full)
+            renderer.configure(timeline)
+            renderer.play()
+        }
+        var leadIn = [Float](repeating: 0, count: 137)
+        leadIn.withUnsafeMutableBufferPointer { changed.render(into: $0) }
+        leadIn.withUnsafeMutableBufferPointer { reference.render(into: $0) }
+
+        changed.setSoundConfiguration(QuizSoundConfiguration(
+            waveform: .sine,
+            melodyChordBalance: 0,
+            chordMode: .rootOnly
+        ))
+        XCTAssertEqual(changed.preparedVoiceFrequenciesForTesting, [[]])
+
+        var faded = [Float](repeating: 0, count: 48)
+        var uninterrupted = [Float](repeating: 0, count: 1)
+        faded.withUnsafeMutableBufferPointer { changed.render(into: $0) }
+        uninterrupted.withUnsafeMutableBufferPointer { reference.render(into: $0) }
+        XCTAssertEqual(faded[0], uninterrupted[0], accuracy: 1e-7)
+        XCTAssertTrue(faded.suffix(16).allSatisfy { $0 == 0 })
     }
 
     private func zeroCrossings(in samples: ArraySlice<Float>) -> Int {

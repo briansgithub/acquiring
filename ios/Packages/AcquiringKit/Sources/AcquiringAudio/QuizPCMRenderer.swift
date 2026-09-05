@@ -10,6 +10,7 @@ public final class QuizPCMRenderer: @unchecked Sendable {
         let gain: Double
         let channel: AudioPlaybackChannel
         let frequenciesHz: [Double]
+        let rootFrequencyHz: Double?
         let waveform: SynthWaveform
         var voices: [SynthVoice]
         var arpeggioOption: QuizArpeggioOption
@@ -52,8 +53,17 @@ public final class QuizPCMRenderer: @unchecked Sendable {
         nativeBeatsPerSecond = timeline.nativeBeatsPerSecond
         events = timeline.events.map { event in
             let frequencies = event.frequenciesHz.filter { $0.isFinite && $0 > 0 }
+            let rootFrequency = event.rootFrequencyHz.flatMap { frequency in
+                frequency.isFinite && frequency > 0 ? frequency : nil
+            }
             let waveform = soundConfiguration?.waveform ?? event.waveform
             let pitchMultiplier = Self.pitchMultiplier(for: soundConfiguration?.transposeSemitones ?? 0)
+            let selectedFrequencies = Self.selectedFrequencies(
+                channel: event.channel,
+                frequenciesHz: frequencies,
+                rootFrequencyHz: rootFrequency,
+                chordMode: soundConfiguration?.chordMode ?? .full
+            )
             return PreparedEvent(
                 onsetFrame: max(Int64((event.onsetSeconds * sampleRate).rounded()), 0),
                 onsetSeconds: max(event.onsetSeconds, 0),
@@ -61,8 +71,9 @@ public final class QuizPCMRenderer: @unchecked Sendable {
                 gain: Double(min(max(event.gain, 0), 1)),
                 channel: event.channel,
                 frequenciesHz: frequencies,
+                rootFrequencyHz: rootFrequency,
                 waveform: event.waveform,
-                voices: frequencies.map {
+                voices: selectedFrequencies.map {
                     SynthVoice(frequencyHz: $0 * pitchMultiplier, waveform: waveform, sampleRate: sampleRate)
                 },
                 arpeggioOption: soundConfiguration?.arpeggioOption ?? .off
@@ -102,13 +113,22 @@ public final class QuizPCMRenderer: @unchecked Sendable {
                 previousTranspose != configuration.transposeSemitones
             let arpeggioChanged = events[index].channel == .chord &&
                 events[index].arpeggioOption != configuration.arpeggioOption
-            guard waveformOrPitchChanged || arpeggioChanged else { continue }
+            let chordModeChanged = events[index].channel == .chord &&
+                previousConfiguration?.chordMode != configuration.chordMode
+            guard waveformOrPitchChanged || arpeggioChanged || chordModeChanged else { continue }
 
             let multiplier = Self.pitchMultiplier(for: configuration.transposeSemitones)
-            let frequencies = events[index].frequenciesHz.map { $0 * multiplier }
-            let replacementVoices = zip(events[index].voices, frequencies).map { voice, frequency in
-                voice.replacing(frequencyHz: frequency, waveform: configuration.waveform)
-            }
+            let frequencies = Self.selectedFrequencies(
+                channel: events[index].channel,
+                frequenciesHz: events[index].frequenciesHz,
+                rootFrequencyHz: events[index].rootFrequencyHz,
+                chordMode: configuration.chordMode
+            ).map { $0 * multiplier }
+            let replacementVoices = replacementVoices(
+                for: frequencies,
+                waveform: configuration.waveform,
+                preserving: events[index].voices
+            )
             if events[index].isActive {
                 events[index].outgoingVoices = events[index].voices
                 events[index].outgoingArpeggioOption = events[index].arpeggioOption
@@ -142,6 +162,14 @@ public final class QuizPCMRenderer: @unchecked Sendable {
     public var progress: Double { timelineFrame / Double(loopFrames) }
     public var durationSeconds: Double {
         Double(loopFrames) / sampleRate / (playbackRate > 0 ? playbackRate : 1)
+    }
+
+    var preparedVoiceFrequenciesForTesting: [[Double]] {
+        events.map { $0.voices.map(\.frequencyHz) }
+    }
+
+    var preparedEventAgesForTesting: [Int64] {
+        events.map(\.ageFrames)
     }
 
     public func render(into output: UnsafeMutableBufferPointer<Float>) {
@@ -178,7 +206,9 @@ public final class QuizPCMRenderer: @unchecked Sendable {
                     1
                 )
                 let elapsed = Double(events[eventIndex].ageFrames) / sampleRate
-                let voiceScale = events[eventIndex].voices.isEmpty ? 0 : 0.15
+                // Keep the outgoing side audible when a live mode change has no
+                // replacement voice (for example, root-only with no resolved root).
+                let voiceScale = 0.15
                 let elapsedBeats = max(
                     (self.timelineFrame / sampleRate - events[eventIndex].onsetSeconds) * nativeBeatsPerSecond,
                     0
@@ -302,5 +332,33 @@ public final class QuizPCMRenderer: @unchecked Sendable {
 
     private static func pitchMultiplier(for transposeSemitones: Int) -> Double {
         pow(2, Double(transposeSemitones) / 12)
+    }
+
+    private static func selectedFrequencies(
+        channel: AudioPlaybackChannel,
+        frequenciesHz: [Double],
+        rootFrequencyHz: Double?,
+        chordMode: QuizChordMode
+    ) -> [Double] {
+        if channel == .chord, chordMode == .rootOnly {
+            return rootFrequencyHz.map { [$0] } ?? []
+        }
+        return frequenciesHz
+    }
+
+    private func replacementVoices(
+        for frequenciesHz: [Double],
+        waveform: SynthWaveform,
+        preserving previousVoices: [SynthVoice]
+    ) -> [SynthVoice] {
+        frequenciesHz.enumerated().map { index, frequency in
+            let matchingVoice = previousVoices.first { voice in
+                abs(voice.frequencyHz - frequency) < 1e-9
+            }
+            let source = matchingVoice
+                ?? (previousVoices.indices.contains(index) ? previousVoices[index] : previousVoices.first)
+            return source?.replacing(frequencyHz: frequency, waveform: waveform)
+                ?? SynthVoice(frequencyHz: frequency, waveform: waveform, sampleRate: sampleRate)
+        }
     }
 }

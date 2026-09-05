@@ -9,6 +9,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     private let logger = Logger(subsystem: "com.acquiring.ios", category: "audio")
     private let engine = AVAudioEngine()
     private let player = AVAudioPlayerNode()
+    private let playbackFormat: AVAudioFormat
     private let quizRenderer: LockedQuizRenderer
     private let sourceNode: AVAudioSourceNode
     private var transportState = TransportState(phase: .stopped)
@@ -30,6 +31,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
 
     init() {
         let format = AVAudioFormat(standardFormatWithSampleRate: 48_000, channels: 1)!
+        playbackFormat = format
         let renderer = LockedQuizRenderer(sampleRate: format.sampleRate)
         quizRenderer = renderer
         sourceNode = AVAudioSourceNode(format: format) { @Sendable _, _, frameCount, audioBufferList in
@@ -37,25 +39,76 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         }
         engine.attach(player)
         engine.attach(sourceNode)
-        engine.connect(player, to: engine.mainMixerNode, format: nil)
+        engine.connect(player, to: engine.mainMixerNode, format: format)
         engine.connect(sourceNode, to: engine.mainMixerNode, format: format)
         observeAudioSession()
     }
 
     func play(_ request: PreviewRequest) async throws {
-        // Musical callers supply source pitches. Apply the shared instrument
-        // and absolute transpose once here; measured microphone pitches opt out.
-        let request = configuredPreview(request)
+        try Task.checkCancellation()
+        let token = await beginPreviewPlayback()
+        _ = try await schedulePreview(request, token: token)
+    }
+
+    func playQuizCardPreview(
+        midiNotes: [Int],
+        asInterval: Bool = false,
+        duration: Duration = .milliseconds(450)
+    ) async throws {
+        try Task.checkCancellation()
+        guard !midiNotes.isEmpty, midiNotes.allSatisfy({ (0...127).contains($0) }) else {
+            throw AcquiringAudioError.invalidRequest("Quiz card previews require valid MIDI notes.")
+        }
+        let noteGroups: [[Int]]
+        if asInterval, midiNotes.count >= 2 {
+            let previous = midiNotes[0]
+            let current = midiNotes[1]
+            let together = previous == current ? [previous] : [previous, current]
+            noteGroups = [[previous], [current], together]
+        } else {
+            noteGroups = [midiNotes]
+        }
+
+        let token = await beginPreviewPlayback()
+        do {
+            for (index, notes) in noteGroups.enumerated() {
+                try Task.checkCancellation()
+                guard previewGeneration.isCurrent(token) else { return }
+                let frequencies = notes.map(Self.frequency(forMIDINote:))
+                let didSchedule = try await schedulePreview(
+                    PreviewRequest(frequenciesHz: frequencies, duration: duration),
+                    token: token
+                )
+                guard didSchedule else { return }
+                if index < noteGroups.count - 1 {
+                    try await Task.sleep(for: max(duration, .milliseconds(1)))
+                }
+            }
+        } catch is CancellationError {
+            await stopPreviewPlayback(ifCurrent: token)
+        }
+    }
+
+    func cancelQuizCardPreview() {
+        invalidatePreviewPlayback()
+    }
+
+    private func beginPreviewPlayback() async -> UInt64 {
         let token = previewGeneration.begin()
         previewRender?.task.cancel()
         previewRender = nil
-        // A replacement is a deterministic stop/schedule handoff. The rendered
-        // buffer keeps its attack/release envelopes; a mixer crossfade needs a
-        // separate output-lifecycle design and is intentionally not improvised here.
-        player.stop()
-        let sampleRate = AVAudioSession.sharedInstance().sampleRate > 0
-            ? AVAudioSession.sharedInstance().sampleRate
-            : 48_000
+        await retirePreviewPlayback(ifCurrent: token)
+        return token
+    }
+
+    private func schedulePreview(_ sourceRequest: PreviewRequest, token: UInt64) async throws -> Bool {
+        // Musical callers supply source pitches. Apply the shared instrument
+        // and absolute transpose once here; measured microphone pitches opt out.
+        let request = configuredPreview(sourceRequest)
+        guard previewGeneration.isCurrent(token), !Task.isCancelled else { return false }
+        previewRender?.task.cancel()
+        previewRender = nil
+        let sampleRate = playbackFormat.sampleRate
         let generation = previewGeneration
         let renderTask = Task.detached(priority: .userInitiated) {
             try StaticPCMRenderer.render(
@@ -75,32 +128,33 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
             }
         } catch is CancellationError {
             clearPreviewRender(ifToken: token)
-            generation.invalidate(ifCurrent: token)
-            return
+            return false
         } catch {
             clearPreviewRender(ifToken: token)
-            guard generation.isCurrent(token), !Task.isCancelled else { return }
+            guard generation.isCurrent(token), !Task.isCancelled else { return false }
             generation.invalidate(ifCurrent: token)
             throw error
         }
         clearPreviewRender(ifToken: token)
         guard generation.isCurrent(token), !Task.isCancelled else {
-            generation.invalidate(ifCurrent: token)
-            return
+            return false
         }
         try configureSession(category: .playback)
-        let format = AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1)!
-        guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: AVAudioFrameCount(samples.count)),
+        guard let buffer = AVAudioPCMBuffer(
+            pcmFormat: playbackFormat,
+            frameCapacity: AVAudioFrameCount(samples.count)
+        ),
               let channel = buffer.floatChannelData?[0]
         else { throw AcquiringAudioError.engine("Could not allocate a preview buffer.") }
         buffer.frameLength = buffer.frameCapacity
         samples.withUnsafeBufferPointer { source in
             channel.update(from: source.baseAddress!, count: samples.count)
         }
-        guard generation.isCurrent(token) else { return }
+        guard generation.isCurrent(token), !Task.isCancelled else { return false }
         player.scheduleBuffer(buffer, completionHandler: nil)
         if !engine.isRunning { try engine.start() }
         player.play()
+        return true
     }
 
     func stop(channel: AudioPlaybackChannel) async {
@@ -613,10 +667,44 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     }
 
     private func invalidatePreviewPlayback() {
-        previewGeneration.invalidate()
+        let token = previewGeneration.begin()
         previewRender?.task.cancel()
         previewRender = nil
+        Task { @MainActor [weak self] in
+            await self?.retirePreviewPlayback(ifCurrent: token)
+        }
+    }
+
+    private func stopPreviewPlayback(ifCurrent token: UInt64) async {
+        guard previewGeneration.isCurrent(token) else { return }
+        previewRender?.task.cancel()
+        previewRender = nil
+        await retirePreviewPlayback(ifCurrent: token)
+        previewGeneration.invalidate(ifCurrent: token)
+    }
+
+    private func retirePreviewPlayback(ifCurrent token: UInt64) async {
+        guard previewGeneration.isCurrent(token) else { return }
+        guard player.isPlaying, player.volume > 0 else {
+            player.stop()
+            player.volume = 1
+            return
+        }
+
+        let startingVolume = player.volume
+        let stepCount = 6
+        for step in 1...stepCount {
+            try? await Task.sleep(for: .milliseconds(4))
+            guard previewGeneration.isCurrent(token) else { return }
+            player.volume = startingVolume * (1 - Float(step) / Float(stepCount))
+        }
+        guard previewGeneration.isCurrent(token) else { return }
         player.stop()
+        player.volume = 1
+    }
+
+    private static func frequency(forMIDINote midiNote: Int) -> Double {
+        440 * pow(2, Double(midiNote - 69) / 12)
     }
 
     private func startPitchCapture(

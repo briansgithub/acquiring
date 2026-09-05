@@ -780,6 +780,8 @@ struct QuizView: View {
     @State private var tempoPercent = 100.0
     @State private var soundConfiguration = QuizSoundConfiguration()
     @State private var soundControlsExpanded = true
+    @State private var quizCardPreviewTask: Task<Void, Never>?
+    @State private var quizCardPreviewGeneration = 0
 
     private var playing: Bool {
         transportPhase == .playing || transportPhase == .buffering
@@ -817,11 +819,10 @@ struct QuizView: View {
             finishTimelineScrub(resumingIfNeeded: true)
             cancelSectionLoad()
             cancelPlaybackCommand()
-        }
-        .onChange(of: mode) { _, mode in
-            environment.rememberQuizSettings(songID: songID, mode: mode)
+            cancelQuizCardPreview()
         }
         .onChange(of: usesRelativeIonianContext) { _, enabled in
+            cancelQuizCardPreview()
             environment.rememberQuizSettings(
                 songID: songID,
                 usesRelativeIonianContext: enabled
@@ -852,21 +853,10 @@ struct QuizView: View {
         return VStack(spacing: 12) {
             if let selected {
                 QuizHeader(
-                    initialKey: selected.section.keys.first?.key ?? KeyInfo(tonic: "C", scale: "major"),
+                    initialKey: selected.section.key(at: PlaybackTiming.firstBeat),
                     currentKey: selected.section.key(at: currentBeat(in: selected.section)),
                     usesRelativeIonianContext: $usesRelativeIonianContext
                 )
-
-                if mode == .rootOnly, sections.count > 1 {
-                    Picker("Quiz section", selection: sectionBinding(sections: sections)) {
-                        ForEach(sections) { entry in
-                            Text(entry.section.safeSectionName).tag(entry.id)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .accessibilityIdentifier("quiz.section")
-                    .accessibilityValue(selected.section.safeSectionName)
-                }
 
                 Text(sectionLoadStatus.label)
                     .font(.caption)
@@ -874,22 +864,22 @@ struct QuizView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityIdentifier("quiz.section.status")
 
-                Picker("Quiz mode", selection: $mode) {
+                Picker("Quiz mode", selection: modeBinding(sectionID: selected.id)) {
                     ForEach(QuizDisplayMode.allCases) { mode in
                         Text(mode.title).tag(mode)
                     }
                 }
                 .pickerStyle(.segmented)
                 .accessibilityIdentifier("quiz.mode")
+                .accessibilityLabel("Quiz mode")
+                .disabled(
+                    !sectionLoadStatus.isReady
+                        || sectionLoadTask != nil
+                        || playbackCommandPending
+                        || transportPhase == .buffering
+                )
 
-                switch mode {
-                case .full:
-                    fullQuiz(selected.section, sectionID: selected.id, sections: sections)
-                case .rootOnly:
-                    RootOnlyQuizSurface(
-                        key: selected.section.key(at: currentBeat(in: selected.section))
-                    )
-                }
+                quizSurface(selected.section, sectionID: selected.id, sections: sections)
             }
         }
         .padding()
@@ -904,12 +894,41 @@ struct QuizView: View {
         )
     }
 
+    private func modeBinding(sectionID: String) -> Binding<QuizDisplayMode> {
+        Binding(
+            get: { mode },
+            set: { setMode($0, sectionID: sectionID) }
+        )
+    }
+
+    private func setMode(_ newMode: QuizDisplayMode, sectionID: String) {
+        guard mode != newMode,
+              sectionLoadStatus.isReady,
+              sectionLoadTask == nil,
+              !playbackCommandPending,
+              transportPhase != .buffering,
+              selectedSectionID == sectionID
+        else { return }
+        cancelQuizCardPreview()
+        let configuration = QuizSoundConfiguration(
+            waveform: soundConfiguration.waveform,
+            melodyChordBalance: soundConfiguration.melodyChordBalance,
+            transposeSemitones: soundConfiguration.transposeSemitones,
+            arpeggioOption: soundConfiguration.arpeggioOption,
+            chordMode: newMode == .full ? .full : .rootOnly
+        )
+        guard setSoundConfiguration(configuration, sectionID: sectionID) else { return }
+        mode = newMode
+        environment.rememberQuizSettings(songID: songID, mode: newMode)
+    }
+
     private func selectSection(
         _ id: String,
         sections: [QuizSection]
     ) {
         guard let selected = sections.first(where: { $0.id == id }) else { return }
         guard selectedSectionID != id else { return }
+        cancelQuizCardPreview()
         finishTimelineScrub(resumingIfNeeded: false)
         cancelPlaybackCommand()
         selectedSectionID = id
@@ -918,7 +937,7 @@ struct QuizView: View {
         scheduleSectionLoad(selected.section, id: selected.id, position: .restart)
     }
 
-    private func fullQuiz(
+    private func quizSurface(
         _ section: ExtractedSection,
         sectionID: String,
         sections: [QuizSection]
@@ -927,7 +946,8 @@ struct QuizView: View {
         return ZStack(alignment: .topLeading) {
             ScrollView {
                 VStack(spacing: 20) {
-                QuizTimelinePairView(
+                if mode == .full {
+                    QuizTimelinePairView(
                     section: section,
                     sectionID: sectionID,
                     currentBeat: beat,
@@ -943,8 +963,8 @@ struct QuizView: View {
                     onDragChange: updateTimelineDrag,
                     onDragEnd: endTimelineDrag,
                     onDragCancel: cancelTimelineDrag
-                )
-                HStack(spacing: 12) {
+                    )
+                    HStack(spacing: 12) {
                     Button("Back 1 beat") {
                         requestDiscreteSeek(to: beat - 1, in: section)
                     }
@@ -964,9 +984,27 @@ struct QuizView: View {
                     .disabled(!canSeek || beat >= playbackEndBeat(in: section))
                     .accessibilityIdentifier("quiz.seekForward")
                     .accessibilityHint("Moves the playhead forward one beat")
+                    }
+                } else {
+                    rootOnlySeekControl(section: section, sectionID: sectionID)
                 }
-                chordCard(section)
-                    .accessibilityIdentifier("quiz.chordCard")
+                QuizCardsView(
+                    section: section,
+                    beat: beat,
+                    rootOnly: mode == .rootOnly,
+                    usesRelativeIonianContext: usesRelativeIonianContext,
+                    isPreviewEnabled: sectionLoadStatus.isReady && timelineScrub == nil,
+                    onPreview: { midiNotes, duration in
+                        requestQuizCardPreview(midiNotes: midiNotes, duration: duration)
+                    },
+                    onIntervalPreview: { midiNotes in
+                        requestQuizCardPreview(
+                            midiNotes: midiNotes,
+                            asInterval: true,
+                            duration: .milliseconds(450)
+                        )
+                    }
+                )
                 HStack {
                     Button(action: requestPlaybackReset) {
                         Label("Reset", systemImage: "arrow.counterclockwise")
@@ -1058,12 +1096,104 @@ struct QuizView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
+    private func rootOnlySeekControl(section: ExtractedSection, sectionID: String) -> some View {
+        let endBeat = playbackEndBeat(in: section)
+        return VStack(alignment: .leading, spacing: 6) {
+            LabeledContent(
+                "Position",
+                value: "Beat \(currentBeat(in: section).formatted(.number.precision(.fractionLength(0...2))))"
+            )
+            Slider(
+                value: Binding(
+                    get: { currentBeat(in: section) },
+                    set: { updateRootOnlySeek(to: $0, in: section, sectionID: sectionID) }
+                ),
+                in: PlaybackTiming.firstBeat...endBeat,
+                onEditingChanged: { isEditing in
+                    if isEditing {
+                        cancelQuizCardPreview()
+                        beginTimelineDrag(in: section, sectionID: sectionID)
+                    } else {
+                        finishTimelineScrub(resumingIfNeeded: true)
+                    }
+                }
+            )
+            .disabled(!canSeek || endBeat <= PlaybackTiming.firstBeat)
+            .accessibilityIdentifier("quiz.rootSeek")
+            .accessibilityLabel("Quiz position")
+            .accessibilityValue("Beat \(currentBeat(in: section).formatted(.number.precision(.fractionLength(0...2))))")
+            .accessibilityHint("Adjusts the current beat")
+        }
+    }
+
+    private func updateRootOnlySeek(
+        to targetBeat: Double,
+        in section: ExtractedSection,
+        sectionID: String
+    ) {
+        guard selectedSectionID == sectionID, canSeek else { return }
+        cancelQuizCardPreview()
+        if var scrub = timelineScrub,
+           scrub.revision == activeQuizRevision,
+           scrub.sectionID == sectionID {
+            scrub.beat = seekTimelineScrub(to: targetBeat, scrub: scrub)
+            timelineScrub = scrub
+        } else {
+            // VoiceOver can adjust a Slider without a begin/end editing pair.
+            requestSeek(to: targetBeat, in: section)
+        }
+    }
+
+    private func requestQuizCardPreview(
+        midiNotes: [Int],
+        asInterval: Bool = false,
+        duration: Duration
+    ) {
+        guard !midiNotes.isEmpty,
+              midiNotes.allSatisfy({ (0...127).contains($0) }),
+              sectionLoadStatus.isReady,
+              activeQuizRevision != nil,
+              timelineScrub == nil
+        else { return }
+        cancelQuizCardPreview()
+        quizCardPreviewGeneration &+= 1
+        let generation = quizCardPreviewGeneration
+        quizCardPreviewTask = Task { @MainActor [environment] in
+            defer {
+                if quizCardPreviewGeneration == generation {
+                    quizCardPreviewTask = nil
+                }
+            }
+            do {
+                try Task.checkCancellation()
+                guard quizCardPreviewGeneration == generation else { return }
+                try await environment.audio.playQuizCardPreview(
+                    midiNotes: midiNotes,
+                    asInterval: asInterval,
+                    duration: duration
+                )
+            } catch is CancellationError {
+            } catch {
+                guard quizCardPreviewGeneration == generation else { return }
+                self.error = error.localizedDescription
+            }
+        }
+    }
+
+    private func cancelQuizCardPreview() {
+        quizCardPreviewGeneration &+= 1
+        quizCardPreviewTask?.cancel()
+        quizCardPreviewTask = nil
+        environment.audio.cancelQuizCardPreview()
+    }
+
     private func setTempo(
         _ newValue: Double,
         sectionID: String
     ) {
         let normalizedTempo = QuizPlaybackConfiguration.normalizedTempoPercent(newValue)
         guard tempoPercent != normalizedTempo else { return }
+        cancelQuizCardPreview()
         finishTimelineScrub(resumingIfNeeded: true)
         guard sectionLoadStatus.isReady,
               selectedSectionID == sectionID,
@@ -1094,7 +1224,8 @@ struct QuizView: View {
                                         waveform: waveform,
                                         melodyChordBalance: soundConfiguration.melodyChordBalance,
                                         transposeSemitones: soundConfiguration.transposeSemitones,
-                                        arpeggioOption: soundConfiguration.arpeggioOption
+                                        arpeggioOption: soundConfiguration.arpeggioOption,
+                                        chordMode: soundConfiguration.chordMode
                                     ),
                                     sectionID: sectionID
                                 )
@@ -1118,7 +1249,8 @@ struct QuizView: View {
                                 waveform: .sawtooth,
                                 melodyChordBalance: soundConfiguration.melodyChordBalance,
                                 transposeSemitones: soundConfiguration.transposeSemitones,
-                                arpeggioOption: soundConfiguration.arpeggioOption
+                                arpeggioOption: soundConfiguration.arpeggioOption,
+                                chordMode: soundConfiguration.chordMode
                             ),
                             sectionID: sectionID
                         )
@@ -1143,7 +1275,8 @@ struct QuizView: View {
                                     waveform: soundConfiguration.waveform,
                                     melodyChordBalance: 0.5,
                                     transposeSemitones: soundConfiguration.transposeSemitones,
-                                    arpeggioOption: soundConfiguration.arpeggioOption
+                                    arpeggioOption: soundConfiguration.arpeggioOption,
+                                    chordMode: soundConfiguration.chordMode
                                 ),
                                 sectionID: sectionID
                             )
@@ -1161,7 +1294,8 @@ struct QuizView: View {
                                         waveform: soundConfiguration.waveform,
                                         melodyChordBalance: balance,
                                         transposeSemitones: soundConfiguration.transposeSemitones,
-                                        arpeggioOption: soundConfiguration.arpeggioOption
+                                        arpeggioOption: soundConfiguration.arpeggioOption,
+                                        chordMode: soundConfiguration.chordMode
                                     ),
                                     sectionID: sectionID
                                 )
@@ -1194,7 +1328,8 @@ struct QuizView: View {
                                         waveform: soundConfiguration.waveform,
                                         melodyChordBalance: soundConfiguration.melodyChordBalance,
                                         transposeSemitones: semitones,
-                                        arpeggioOption: soundConfiguration.arpeggioOption
+                                        arpeggioOption: soundConfiguration.arpeggioOption,
+                                        chordMode: soundConfiguration.chordMode
                                     ),
                                     sectionID: sectionID
                                 )
@@ -1218,7 +1353,8 @@ struct QuizView: View {
                                 waveform: soundConfiguration.waveform,
                                 melodyChordBalance: soundConfiguration.melodyChordBalance,
                                 transposeSemitones: 0,
-                                arpeggioOption: soundConfiguration.arpeggioOption
+                                arpeggioOption: soundConfiguration.arpeggioOption,
+                                chordMode: soundConfiguration.chordMode
                             ),
                             sectionID: sectionID
                         )
@@ -1247,7 +1383,8 @@ struct QuizView: View {
                                     waveform: soundConfiguration.waveform,
                                     melodyChordBalance: soundConfiguration.melodyChordBalance,
                                     transposeSemitones: soundConfiguration.transposeSemitones,
-                                    arpeggioOption: arpeggioOption
+                                    arpeggioOption: arpeggioOption,
+                                    chordMode: soundConfiguration.chordMode
                                 ),
                                 sectionID: sectionID
                             )
@@ -1271,7 +1408,8 @@ struct QuizView: View {
                             waveform: soundConfiguration.waveform,
                             melodyChordBalance: soundConfiguration.melodyChordBalance,
                             transposeSemitones: soundConfiguration.transposeSemitones,
-                            arpeggioOption: .off
+                            arpeggioOption: .off,
+                            chordMode: soundConfiguration.chordMode
                         ),
                         sectionID: sectionID
                     )
@@ -1294,8 +1432,9 @@ struct QuizView: View {
     private func setSoundConfiguration(
         _ configuration: QuizSoundConfiguration,
         sectionID: String
-    ) {
-        guard soundConfiguration != configuration else { return }
+    ) -> Bool {
+        guard soundConfiguration != configuration else { return true }
+        cancelQuizCardPreview()
         finishTimelineScrub(resumingIfNeeded: true)
         guard sectionLoadStatus.isReady,
               selectedSectionID == sectionID,
@@ -1306,10 +1445,11 @@ struct QuizView: View {
                   soundConfiguration: configuration,
                   revision: revision
               )
-        else { return }
+        else { return false }
         soundConfiguration = configuration
         activeQuizRevision = updatedRevision
         environment.rememberQuizSettings(songID: songID, soundConfiguration: configuration)
+        return true
     }
 
     private func balanceLabel(_ melodyBalance: Double) -> String {
@@ -1326,45 +1466,6 @@ struct QuizView: View {
         semitones > 0 ? "+\(semitones) semitones" : "\(semitones) semitones"
     }
 
-    private func chordCard(_ section: ExtractedSection) -> some View {
-        let active = activeChord(in: section)
-        let key = active.map { section.key(at: $0.beat) } ?? section.keys[0].key
-        let contextKey = RelativeIonianContext.key(for: section.keys[0].key)
-        let symbol = active.map {
-            usesRelativeIonianContext
-                ? ChordInterpreter.relativeIonianRomanSymbol(for: $0.chord, key: key, contextKey: contextKey)
-                : ChordInterpreter.romanSymbol(for: $0.chord, key: key)
-        } ?? "—"
-        let rootDegree = active
-            .flatMap { ChordInterpreter.resolvedRoot(for: $0.chord, key: key)?.pitch }
-            .map {
-                usesRelativeIonianContext
-                    ? RelativeIonianContext.degreeLabel(for: $0, contextKey: contextKey)
-                    : MusicTheory.degreeLabel(midi: $0.midiNote, key: key)
-            } ?? ""
-        return GroupBox("Chord") {
-            HStack(spacing: 12) {
-                FittedRomanNumeral(
-                    display: RomanNumeralDisplay(symbol: symbol, borrowed: active?.chord["borrowed"]),
-                    maximumFontSize: 44,
-                    minimumFontSize: 14
-                )
-                .frame(width: 210, height: 52)
-                if !rootDegree.isEmpty {
-                    FittedScaleDegree(rootDegree, maximumFontSize: 36, minimumFontSize: 14)
-                        .frame(width: 70, height: 52)
-                }
-            }
-            .frame(maxWidth: .infinity)
-        }
-    }
-
-    private func activeChord(in section: ExtractedSection) -> (chord: [String: JSONValue], beat: Double)? {
-        let beat = currentBeat(in: section)
-        guard let chord = QuizIntervals.activeChord(section: section, at: beat) else { return nil }
-        return (chord, chord["beat"]?.doubleValue ?? 1)
-    }
-
     private func currentBeat(in section: ExtractedSection) -> Double {
         PlaybackTiming.firstBeat + min(max(progress, 0), 1)
             * (playbackEndBeat(in: section) - PlaybackTiming.firstBeat)
@@ -1379,6 +1480,7 @@ struct QuizView: View {
 
     private func requestSeek(to targetBeat: Double, in section: ExtractedSection) {
         guard canSeek, let revision = activeQuizRevision else { return }
+        cancelQuizCardPreview()
         let endBeat = playbackEndBeat(in: section)
         let boundedBeat = min(max(targetBeat, PlaybackTiming.firstBeat), endBeat)
         let span = endBeat - PlaybackTiming.firstBeat
@@ -1415,6 +1517,7 @@ struct QuizView: View {
         guard canSeek, let revision = activeQuizRevision,
               selectedSectionID == sectionID else { return }
 
+        cancelQuizCardPreview()
         cancelTimelineInertia()
         let beat = currentBeat(in: section)
         if var scrub = timelineScrub {
@@ -1652,6 +1755,7 @@ struct QuizView: View {
         guard sectionLoadStatus.isReady, !playbackCommandPending,
               transportPhase != .buffering,
               let revision = activeQuizRevision else { return }
+        cancelQuizCardPreview()
         finishTimelineScrub(resumingIfNeeded: false)
         playbackCommandPending = true
         playbackCommandTask = Task { @MainActor in
@@ -1690,7 +1794,20 @@ struct QuizView: View {
             selectedSectionID = restored.key
             mode = continuity.mode
             tempoPercent = continuity.tempoPercent
-            soundConfiguration = continuity.playbackConfiguration.soundConfiguration
+            let restoredSoundConfiguration = continuity.playbackConfiguration.soundConfiguration
+            soundConfiguration = QuizSoundConfiguration(
+                waveform: restoredSoundConfiguration.waveform,
+                melodyChordBalance: restoredSoundConfiguration.melodyChordBalance,
+                transposeSemitones: restoredSoundConfiguration.transposeSemitones,
+                arpeggioOption: restoredSoundConfiguration.arpeggioOption,
+                chordMode: continuity.mode == .full ? .full : .rootOnly
+            )
+            if soundConfiguration != restoredSoundConfiguration {
+                environment.rememberQuizSettings(
+                    songID: songID,
+                    soundConfiguration: soundConfiguration
+                )
+            }
             usesRelativeIonianContext = continuity.usesRelativeIonianContext
             state = .content(document)
             if let revision = environment.audio.restorableQuizRevision(
@@ -1712,6 +1829,7 @@ struct QuizView: View {
         id: String,
         position: QuizLoadPosition
     ) {
+        cancelQuizCardPreview()
         switch position {
         case .restart:
             finishTimelineScrub(resumingIfNeeded: false)
@@ -1861,14 +1979,18 @@ struct QuizView: View {
             ) != nil else { return nil }
             let key = section.key(at: onset)
             let notes = ChordInterpreter.chordNotes(for: chord, key: key).filter { $0 > 0 }
-            guard !notes.isEmpty else { return nil }
+            let resolvedRoot = ChordInterpreter.resolvedRoot(for: chord, key: key)?.simpleModePitch
+            guard !notes.isEmpty || resolvedRoot != nil else { return nil }
             return QuizEvent(
                 onsetSeconds: max((onset - PlaybackTiming.firstBeat) / beatsPerSecond, 0),
                 durationSeconds: duration / beatsPerSecond,
                 frequenciesHz: notes.map { MusicTheory.frequency(midi: Double($0)) },
                 waveform: .sawtooth,
                 gain: 1,
-                channel: .chord
+                channel: .chord,
+                rootFrequencyHz: resolvedRoot.map {
+                    MusicTheory.frequency(midi: Double($0.midiNote))
+                }
             )
         }
         let duration = (playbackEndBeat(in: section) - PlaybackTiming.firstBeat) / beatsPerSecond
@@ -2006,46 +2128,6 @@ private struct QuizHeader: View {
     }
 }
 
-private struct RootOnlyQuizSurface: View {
-    let key: KeyInfo
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Label("Root-only", systemImage: "music.note")
-                .font(.headline)
-            Text("Focus on the current tonic while keeping the selected section and key context.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-            Text("Current root: \(key.tonic)")
-                .font(.title3.weight(.semibold))
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-        .background(.quaternary, in: RoundedRectangle(cornerRadius: 12))
-        .accessibilityIdentifier("quiz.rootOnly.content")
-    }
-}
-
-private struct QuizShellPreview: View {
-    @State private var usesRelativeIonianContext = false
-
-    var body: some View {
-        VStack(spacing: 16) {
-            QuizHeader(
-                initialKey: KeyInfo(tonic: "C", scale: "major"),
-                currentKey: KeyInfo(tonic: "D", scale: "major"),
-                usesRelativeIonianContext: $usesRelativeIonianContext
-            )
-            RootOnlyQuizSurface(key: KeyInfo(tonic: "D", scale: "major"))
-        }
-        .padding()
-    }
-}
-
-#Preview("Quiz Shell") {
-    QuizShellPreview()
-}
-
 private extension Duration {
     var secondsValue: Double {
         let parts = components
@@ -2080,6 +2162,12 @@ struct MelodyTimelinePresentation: Equatable {
         visuals = section.melodyNotes.enumerated().compactMap { sourceIndex, note in
             guard !note.isRest else { return nil }
             let onset = PlaybackTiming.normalize(beat: note.beat)
+            let onsetKey = section.key(at: onset)
+            let onsetPitch = MusicTheory.spelledPitch(
+                scaleDegree: note.sd,
+                relativeOctave: note.octave,
+                key: onsetKey
+            )
             let rawStaffDegree = MusicTheory.rawDegree(note.sd) + note.octave * 7
             return MelodyTimelineVisual(
                 sourceIndex: sourceIndex,
@@ -2089,11 +2177,15 @@ struct MelodyTimelinePresentation: Equatable {
                     ? RelativeIonianContext.staffDegree(
                         scaleDegree: note.sd,
                         relativeOctave: note.octave,
-                        sourceKey: section.key(at: onset),
+                        sourceKey: onsetKey,
                         contextKey: contextKey
                     ) ?? rawStaffDegree
                     : rawStaffDegree,
-                accessibilityPitch: note.octave == 0 ? note.sd : "\(note.sd), octave \(note.octave)"
+                accessibilityPitch: usesRelativeIonianContext
+                    ? (onsetPitch.map {
+                        RelativeIonianContext.degreeLabel(for: $0, contextKey: contextKey)
+                    } ?? note.sd)
+                    : note.octave == 0 ? note.sd : "\(note.sd), octave \(note.octave)"
             )
         }
         // Preserve payload order. SwiftUI paints later source events over earlier
@@ -2361,7 +2453,10 @@ private final class QuizTimelineDisplayModel: ObservableObject {
             section: section,
             usesRelativeIonianContext: usesRelativeIonianContext
         )
-        chordPresentation = ChordTimelinePresentation(section: section)
+        chordPresentation = ChordTimelinePresentation(
+            section: section,
+            usesRelativeIonianContext: usesRelativeIonianContext
+        )
         displayedBeat = initialBeat
         sourceBeat = initialBeat
         let now = CACurrentMediaTime()
@@ -2383,10 +2478,17 @@ private final class QuizTimelineDisplayModel: ObservableObject {
                 section: section,
                 usesRelativeIonianContext: usesRelativeIonianContext
             )
-            chordPresentation = ChordTimelinePresentation(section: section)
+            chordPresentation = ChordTimelinePresentation(
+                section: section,
+                usesRelativeIonianContext: usesRelativeIonianContext
+            )
         } else if presentationUsesRelativeIonianContext != usesRelativeIonianContext {
             presentationUsesRelativeIonianContext = usesRelativeIonianContext
             melodyPresentation = MelodyTimelinePresentation(
+                section: section,
+                usesRelativeIonianContext: usesRelativeIonianContext
+            )
+            chordPresentation = ChordTimelinePresentation(
                 section: section,
                 usesRelativeIonianContext: usesRelativeIonianContext
             )
@@ -2718,7 +2820,8 @@ struct ChordTimelinePresentation: Equatable {
 
     let visuals: [ChordTimelineVisual]
 
-    init(section: ExtractedSection) {
+    init(section: ExtractedSection, usesRelativeIonianContext: Bool = false) {
+        let contextKey = RelativeIonianContext.key(for: section.key(at: PlaybackTiming.firstBeat))
         visuals = section.chords.enumerated().map { sourceIndex, chord in
             let onset = PlaybackTiming.normalize(beat: chord["beat"]?.doubleValue ?? 1)
             let duration = chord["duration"]?.doubleValue ?? 1
@@ -2728,7 +2831,13 @@ struct ChordTimelinePresentation: Equatable {
                 display = nil
             } else {
                 let onsetKey = section.key(at: onset)
-                let symbol = ChordInterpreter.romanSymbol(for: chord, key: onsetKey)
+                let symbol = usesRelativeIonianContext
+                    ? ChordInterpreter.relativeIonianRomanSymbol(
+                        for: chord,
+                        key: onsetKey,
+                        contextKey: contextKey
+                    )
+                    : ChordInterpreter.romanSymbol(for: chord, key: onsetKey)
                 display = RomanNumeralDisplay(symbol: symbol, borrowed: chord["borrowed"])
             }
             return ChordTimelineVisual(
