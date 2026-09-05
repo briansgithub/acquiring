@@ -2,7 +2,7 @@
 
 ### Audit scope, authority, and evidence rules
 
-This document is the behavioral and technical source of truth supporting [feature-parity.md](feature-parity.md). The reference audit pinned at `android-parity-ios-v1` was documentation-only: it changed no Android or iOS runtime behavior. The later “Current iOS implementation cross-check” is an explicitly labeled checkpoint of porting work performed after that tag. Android source remains unchanged.
+This document is the behavioral and technical source of truth supporting [feature-parity.md](feature-parity.md). The reference audit pinned at `android-parity-ios-v1` was documentation-only: it changed no Android or iOS runtime behavior. The later “Current iOS implementation cross-check” distinguishes reusable post-tag code from production UI at the post-reset baseline; execution order and review status live only in [porting-plan.md](porting-plan.md). Android source remains unchanged.
 
 The audit covered:
 
@@ -536,19 +536,19 @@ There is no evidence of hidden account, cloud sync, web-only analysis tools, or 
 
 ### Current iOS implementation cross-check
 
-The iOS project targets iOS 17+, iPhone/iPad, both orientations, Swift 6, and strict concurrency. It now contains:
+The iOS project targets iOS 17+, iPhone/iPad, both orientations, Swift 6, and strict concurrency. At the post-reset baseline it retains:
 
 - A local `AcquiringKit` Swift package split into `AcquiringCore`, `AcquiringCatalog`, and `AcquiringAudio`, with exact GRDB.swift 7.11.1 and SwiftSoup 2.9.6 resolutions.
-- One injected `AppEnvironment`, observable feature state, and an explicit Library/Artist/All Songs/Playlist/Song Detail/Quiz route graph.
-- An actor-owned GRDB schema-v3 catalog, empty bootstrap, search/browse/document APIs, gzip/raw decoding, compatible-schema repair, staged contract validation, backup swap, visible full install, and SwiftSoup-based single-song harvest.
+- One injected `AppEnvironment`, observable feature state, and an explicit Library/Artist/All Songs/Playlist/Song Detail/Quiz route graph. Route existence does not imply that its destination UI is implemented.
+- An actor-owned GRDB schema-v3 catalog, empty bootstrap, search/browse/document APIs, gzip/raw decoding, compatible-schema repair, staged contract validation, backup swap, full-install service, and SwiftSoup-based single-song harvest service.
 - Corpus-backed theory/chord rules, section order, spelled/measured intervals, timing, YIN, pitch smoothing primitives, tessitura resolution, and three-second comfortable-pitch capture.
-- Native fitting SwiftUI Canvas notation for Roman symbols and scale degrees, including applied-chord slashes, figured-bass stacks, quality/suspension/suffix tokens, borrowed-mode rows, independent accidentals, vector hats, Dynamic Type scaling, and VoiceOver labels.
-- Pure finite-preview and loop PCM renderers with ten voices, native source-node output, transport polling/seeking, tempo, transposition, arpeggiation, melody/chord gains, background mode, Now Playing, remote commands, and interruption/route observers.
-- A mono-16-kHz microphone conversion pipeline with YIN and gates, one exclusive stream, just-in-time permission, accessible sing-back/interval/persistent/tessitura surfaces, and cleanup.
-- SwiftData schema v1 with built-in Favorites, deterministic unique playlist memberships, cascade behavior, newest-first slugs, and playlist browsing/removal; catalog slugs remain loose cross-store references.
-- Library search/history/browse/maintenance screens, initial Info/Chords/Quiz views, explicit practice actions, reduce-motion handling, and adaptive width constraints.
+- Native fitting SwiftUI Canvas notation for Roman symbols and scale degrees, including applied-chord slashes, figured-bass stacks, quality/suspension/suffix tokens, borrowed-mode rows, independent accidentals, vector hats, Dynamic Type scaling, and VoiceOver labels. The bare Quiz chord card is their only current production caller; Info and Chords are absent.
+- Pure finite-preview and loop PCM renderers with ten voices, native source-node output, transport seeking/reconfiguration, transposition, arpeggiation, melody/chord gains, background mode, Now Playing, remote commands, and interruption/route observers. Most controls and card-preview actions are not currently wired into production UI.
+- A mono-16-kHz microphone conversion pipeline with YIN and gates, one exclusive stream, just-in-time permission infrastructure, cleanup, and tested singing/tessitura domain rules. No post-reset interval, sing-back, persistent-practice, or tessitura surface currently calls them.
+- SwiftData schema v1 with built-in Favorites, deterministic unique playlist memberships, cascade behavior, newest-first slugs, and removal operations; catalog slugs remain loose cross-store references. The visible Playlist destination is a placeholder.
+- A functioning Library search/recents/Artist surface, full-catalog action, and a bare Quiz containing a melody Canvas, chord card, tempo control, Hooktheory link, and Lock in Major toggle. All Songs, Playlist, and Song Detail are text placeholders; the manual-harvest URL UI, Info/Chords, full Quiz cards/controls, and practice UI are absent.
 
-This is a functioning implementation checkpoint, not parity completion. Fitted notation and the first duration-aware Quiz pitch-card slice are implemented but still need visual/device acceptance; complete Info/Chords semantics, Android-equivalent card layout/persistent gestures, Flip-Flop and median scoring, several state-restoration paths, full accessibility auditing, and all physical-device gates remain open. [feature-parity.md](feature-parity.md) is the current row-level truth.
+This is a reusable implementation foundation with limited post-reset UI, not parity completion. Existing code begins at review rather than approval. [feature-parity.md](feature-parity.md) is the stable row-level inventory; [porting-plan.md](porting-plan.md) is the only active checkpoint order and acceptance contract.
 
 ### Test inventory and validation evidence
 
@@ -566,11 +566,9 @@ It failed before Android compilation because this machine has neither `ANDROID_H
 
 #### iOS tests
 
-`swift test` passes **112 package tests** across Core, Catalog, and Audio. They cover low/high and swept vocal-range YIN, 1,024-sample fast windows, harmonic-rich tones, phase variation, deterministic noise/silence rejection, RMS gates, standard/fast smoothing, octave rejection/reseed, full tessitura register/window/contour/session/capture-dropout rules, singing targets and interval preview sequencing, persistent target selection and melody run grouping/settle-gated median scoring, duration/overlap-aware Quiz active events and pitch cards, spelled/measured intervals, exact audible-end/wrap/tempo/key-change timing, section order, theory primitives, melody payload forms, catalog bootstrap/repair/contract rejection/harvest parsing, all ten waveforms, finite arpeggiation, dense onsets, exact-end seek, attack/release and slot/loop seams, gain/headroom/cancellation/duration bounds, reported transport progress, relative-Ionian context, all 45 shared chord fixtures, Android-equivalent inversion/applied/borrowed/custom voicing regressions, and Roman/scale-degree token and accessibility semantics.
+`swift test --package-path ios/Packages/AcquiringKit` passes **164 package tests** across Core, Catalog, and Audio. The suite covers catalog integrity/recovery, theory and notation semantics, timing and PCM rendering, pitch detection/smoothing, interval and singing targets, tessitura, persistent-practice rules, and the shared chord corpus. Passing domain tests do not establish production UI parity.
 
-Under Xcode 26.3, a fresh compile-only Swift 6 build for the generic iOS Simulator destination succeeds for both simulator architectures with no compiler diagnostic from project code. At the navigation checkpoint, the iPhone 17 simulator passed **5 app tests** (Favorites uniqueness/order, cascade, history semantics, bundled corpus, and all 45 shared chord cases) and **2 UI tests** (launch plus All Songs → song → Quiz → Info → original parent). The current package passes **112 tests**, including Android's YIN/noise/octave/smoothing/dropout, playback timing/sample-boundary, active-event/interval-card, singing-target/tessitura, persistent melody run grouping/settle-gated median scoring, chord inversion/applied/borrowed/custom voicing, relative-Ionian, and notation-token semantics; the full app build-for-testing passes with production-wired standard/fast microphone profiles, audible-content loop bounds, progress/play-state-preserving control changes, duration-aware Quiz pitch cards, interval previews, section-scoped tessitura, the functional Quiz context toggle, and native fitted renderers. The persistent scoring domain is not yet connected to the live Quiz timeline. A repeat XCTest invocation stalled waiting for install/launch workers. A direct `simctl` install/launch/screenshot attempt against the already-booted iPhone 17 also produced no launched process or screenshot artifact, corroborating a local CoreSimulator host-service problem rather than a test assertion or app build failure. The equivalent iPad (A16) attempt previously showed the same host-runner failure after a clean boot. Fresh simulator runtime evidence remains pending rather than failed product behavior.
-
-The latest physical-device probe still reports no device through `devicectl`, and the keychain contains zero valid code-signing identities. A signed install therefore requires the test iPhone to be unlocked, trusted, and visible to Xcode plus an Apple developer Team/signing identity; no product failure is inferred from this host configuration.
+The Swift 6 app builds for the iPhone 17 simulator. Several existing XCUITests still target All Songs, Song Detail, maintenance, or navigation UI removed by the reset; they are stale specifications to split, skip explicitly while pending, or replace checkpoint by checkpoint rather than evidence of current completion. Physical audio, microphone, background, interruption, headphone, and Bluetooth evidence remains a user-authorized TestFlight gate.
 
 The released 75,836,096-byte gzip catalog was also downloaded to a disposable directory and inspected: it reports schema version 3, `PRAGMA quick_check` returns `ok`, all three contract indexes exist, it has 40,979 browse rows, and all 40,979 resolve to non-null song payloads. This validates the current distribution artifact against the declared 40,609-row floor; installer interruption/performance evidence is still required.
 
@@ -578,50 +576,6 @@ The released 75,836,096-byte gzip catalog was also downloaded to a disposable di
 
 The parity table was reconciled against every manifest component/permission, all production files, screen/overlay paths, both Room schemas and migrations, both preference keys, network endpoints/files/validation, process and lifecycle behavior, external links, accessibility gestures, and the test inventory. IDs are sequential and unique from F001 through F055. Shared contracts/fixtures corroborate catalog and theory behavior only; no web-only feature was added.
 
-## 15. Porting risks
+## 15. Execution-plan boundary
 
-### Five highest risks
-
-1. **High — real-time audio and background continuity:** preserve loop timing, live configuration, preview exclusivity, interruptions, route changes, remote commands, and view-independent ownership (F027, F038–F039).
-2. **High — microphone/DSP behavior on hardware:** YIN tuning, latency, leakage, Bluetooth/route behavior, confidence gates, exclusive ownership, scoring, and tessitura timing require a real-device matrix (F040–F049).
-3. **High — catalog integrity:** the large compressed SQLite artifact must remain compatible and recoverable through validation, migration/backfill, stage, close, swap, backup, and failure paths (F010, F012, F053).
-4. **High — theory and custom rendering parity:** enharmonic spelling, applied/borrowed chords, voicing, relative-Ionian context, and fitted glyph layout contain edge cases that ordinary happy-path UI tests will miss (F021–F024, F037).
-5. **High — implicit state contracts in `MainActivity.kt`:** navigation origin, Back behavior, gesture arbitration, saved state, transport state, and lifecycle cleanup are coupled and must become explicit without changing observable behavior (F014, F025, F035, F041, F054).
-
-Additional **Medium** risks are SwiftData/SQLite membership design, VoiceOver and Dynamic Type adaptation, and HTML harvesting policy. External browser handoffs and recency preferences are **Low** technical risk, though their product scope remains open.
-
-## 16. Recommended porting order
-
-### Milestones
-
-Milestones match [porting-plan.md](porting-plan.md). Completion requires the listed evidence, not merely source presence.
-
-| Milestone | Outcome | Exit evidence |
-| --- | --- | --- |
-| 1. Reference lock and foundation | Baseline tag, local package, Swift 6, pinned dependencies, DI, typed errors, fixture harness | CI builds every target and shared fixtures execute in Swift |
-| 2. Catalog integrity and core domain | Bootstrap/query/install/harvest plus theory, chord, interval, timing, and tessitura rules | Corpus passes; damaged candidates cannot replace live data; real catalog meets contract/budgets |
-| 3. Library and navigation vertical slice | Search/history, Artist, All Songs, playlists, explicit routes, parent restoration | Every discovery route opens Quiz first and returns through Info on iPhone/iPad |
-| 4. Song details, theory UI, and previews | Sections, Info, Chords, links, native notation, finite previews | Complex chords render semantically and representative real-song metadata/voicings match |
-| 5. Quiz transport and background audio | Loop renderer, modes/cards/controls/scrub, Now Playing/remotes/interruptions/routes | DSP/timing plus signed physical background/audio-route matrix passes |
-| 6. Microphone and vocal practice | YIN, sing-back, intervals, target listening, Flip-Flop, persistent scoring, tessitura | Recorded PCM fixtures and signed physical-device/route matrix pass |
-| 7. User data, accessibility, and release hardening | Durable Favorites/playlists, Dynamic Type, VoiceOver, reduced motion, adaptive layout, recovery | All 52 in-scope IDs pass every automated, device, failure-state, and accessibility gate |
-
-## 17. Open questions
-
-Resolved: iOS 17+, iPhone/iPad and both orientations; background audio; v1.0.0/schema-v3/40,609-row catalog contract; visible manual harvest; dark English presentation; Dynamic Type, VoiceOver, reduced motion, and adaptive layout release gates; F013, F052, and F055 Deferred.
-
-1. Which exact small iPhone, current iPhone, iPad, headphone, and Bluetooth models make up the signed release matrix?
-2. What exact YouTube lookup, failure, and region-restriction policy should F017 use?
-3. What quantitative launch/search/install memory and latency budgets must the real catalog meet?
-4. What perceptual listening procedure and tolerances approve the ten synthesized instruments?
-5. Who signs TestFlight evidence and owns parity triage for Android changes after `android-parity-ios-v1`?
-
-### Recommended porting sequence
-
-1. Keep the reference lock, contracts, package boundaries, and shared fixtures green.
-2. Finish catalog integrity and pure theory/relative-Ionian behavior.
-3. Complete search/browse/navigation and exact restoration on iPhone/iPad.
-4. Complete Info, Chords, native notation, links, and finite previews.
-5. Complete quiz cards/controls/transport together with background media behavior.
-6. Complete vocal practice using prerecorded fixtures and physical hardware.
-7. Finish Favorites/playlist durability, accessibility, adaptive layout, recovery, and release evidence; retain F013, F052, and F055 as Deferred.
+This document ends with audited behavior and implementation evidence. Porting order, risk handling, resolved product defaults, checkpoint status, and human-review gates are maintained only in [porting-plan.md](porting-plan.md); stable capability IDs and platform status remain in [feature-parity.md](feature-parity.md). Do not execute the historical chronological roadmap as a second plan.

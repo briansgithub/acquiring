@@ -44,6 +44,7 @@ acquiring_data.zip
 # IDE and build artifacts
 .idea/
 .artifacts/
+/ios/build/
 
 # Python cache
 __pycache__/

@@ -41,8 +41,9 @@ Bulky catalog, playback, and harvest data lives outside Git in `acquiring_data/`
 - `docs/architecture.md` — product and platform boundaries
 - `docs/data-root.md` — runtime-data location and compatibility rules
 - `docs/web-architecture.md` — web engine and oracle internals
-- `docs/feature-parity.md` — feature status across platforms
-- `docs/porting-plan.md` — Android-to-iOS implementation roadmap
+- `docs/porting-plan.md` — sole active Android-to-iOS execution plan and review contract
+- `docs/feature-parity.md` — stable F001–F055 capability inventory and platform status
+- `docs/android-app-analysis.md` — audited final Android behavior behind the parity inventory
 - `contracts/catalog/` — downloadable SQLite catalog contract
 - `contracts/fixtures/` — shared behavioral fixtures
 - `tooling/` — development, validation, catalog, and operational utilities

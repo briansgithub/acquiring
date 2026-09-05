@@ -29,6 +29,19 @@
 		A10000000000000000000014 /* NotationViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013 /* NotationViews.swift */; };
 		A10000000000000000000015 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000014 /* Assets.xcassets */; };
 		A10000000000000000000016 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000016 /* PrivacyInfo.xcprivacy */; };
+		A10000000000000000000017 /* ios_ui_test_catalog.json in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000018 /* ios_ui_test_catalog.json */; };
+		A10000000000000000000018 /* ios_ui_test_catalog.json in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000018 /* ios_ui_test_catalog.json */; };
+		A10000000000000000000019 /* DraggableQuizTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000019 /* DraggableQuizTransport.swift */; };
+		A1000000000000000000001A /* QuizCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001A /* QuizCards.swift */; };
+		A1000000000000000000001B /* AllSongsBrowseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001B /* AllSongsBrowseStore.swift */; };
+		A1000000000000000000001C /* AllSongsBrowseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001C /* AllSongsBrowseView.swift */; };
+		A1000000000000000000001D /* UserLibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001D /* UserLibraryViewModel.swift */; };
+		A1000000000000000000001E /* UserLibraryViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001E /* UserLibraryViews.swift */; };
+		A1000000000000000000001F /* HooktheorySearchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001F /* HooktheorySearchButton.swift */; };
+		A10000000000000000000020 /* MicrophoneSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000020 /* MicrophoneSession.swift */; };
+		A10000000000000000000021 /* VocalPracticeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000021 /* VocalPracticeModel.swift */; };
+		A10000000000000000000022 /* VocalPracticeViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000022 /* VocalPracticeViews.swift */; };
+		A10000000000000000000023 /* PlaybackKnob.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000023 /* PlaybackKnob.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,7 +84,19 @@
 		B10000000000000000000014 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B10000000000000000000015 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B10000000000000000000016 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		B10000000000000000000019 /* DraggableQuizTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggableQuizTransport.swift; sourceTree = "<group>"; };
+		B1000000000000000000001A /* QuizCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizCards.swift; sourceTree = "<group>"; };
 		B10000000000000000000017 /* ExportOptions-TestFlight.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ExportOptions-TestFlight.plist"; sourceTree = "<group>"; };
+		B10000000000000000000018 /* ios_ui_test_catalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = ios_ui_test_catalog.json; path = ../contracts/fixtures/ios_ui_test_catalog.json; sourceTree = SOURCE_ROOT; };
+		B1000000000000000000001B /* AllSongsBrowseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllSongsBrowseStore.swift; sourceTree = "<group>"; };
+		B1000000000000000000001C /* AllSongsBrowseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllSongsBrowseView.swift; sourceTree = "<group>"; };
+		B1000000000000000000001D /* UserLibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserLibraryViewModel.swift; sourceTree = "<group>"; };
+		B1000000000000000000001E /* UserLibraryViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserLibraryViews.swift; sourceTree = "<group>"; };
+		B1000000000000000000001F /* HooktheorySearchButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HooktheorySearchButton.swift; sourceTree = "<group>"; };
+		B10000000000000000000020 /* MicrophoneSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicrophoneSession.swift; sourceTree = "<group>"; };
+		B10000000000000000000021 /* VocalPracticeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocalPracticeModel.swift; sourceTree = "<group>"; };
+		B10000000000000000000022 /* VocalPracticeViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocalPracticeViews.swift; sourceTree = "<group>"; };
+		B10000000000000000000023 /* PlaybackKnob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackKnob.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,7 +158,7 @@
 		};
 		C10000000000000000000006 /* Contracts */ = {
 			isa = PBXGroup;
-			children = (B10000000000000000000007 /* corpus_parity.json */, B10000000000000000000012 /* contract.json */);
+			children = (B10000000000000000000007 /* corpus_parity.json */, B10000000000000000000018 /* ios_ui_test_catalog.json */, B10000000000000000000012 /* contract.json */);
 			name = Contracts;
 			sourceTree = "<group>";
 		};
@@ -144,6 +169,7 @@
 				B1000000000000000000000C /* UserLibraryStore.swift */,
 				B1000000000000000000000D /* HistoryStore.swift */,
 				B1000000000000000000000E /* AudioSystem.swift */,
+				B10000000000000000000020 /* MicrophoneSession.swift */,
 			);
 			path = Infrastructure;
 			sourceTree = "<group>";
@@ -154,6 +180,16 @@
 				B1000000000000000000000F /* LibraryStore.swift */,
 				B10000000000000000000010 /* LibraryViews.swift */,
 				B10000000000000000000013 /* NotationViews.swift */,
+				B10000000000000000000019 /* DraggableQuizTransport.swift */,
+				B1000000000000000000001A /* QuizCards.swift */,
+				B1000000000000000000001B /* AllSongsBrowseStore.swift */,
+				B1000000000000000000001C /* AllSongsBrowseView.swift */,
+				B1000000000000000000001D /* UserLibraryViewModel.swift */,
+				B1000000000000000000001E /* UserLibraryViews.swift */,
+				B1000000000000000000001F /* HooktheorySearchButton.swift */,
+				B10000000000000000000021 /* VocalPracticeModel.swift */,
+				B10000000000000000000022 /* VocalPracticeViews.swift */,
+				B10000000000000000000023 /* PlaybackKnob.swift */,
 				B10000000000000000000011 /* SongViews.swift */,
 			);
 			path = Features;
@@ -232,13 +268,13 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		D10000000000000000000003 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (A1000000000000000000000F /* contract.json in Resources */, A10000000000000000000015 /* Assets.xcassets in Resources */, A10000000000000000000016 /* PrivacyInfo.xcprivacy in Resources */); runOnlyForDeploymentPostprocessing = 0; };
-		D10000000000000000000006 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000006 /* corpus_parity.json in Resources */, A10000000000000000000013 /* contract.json in Resources */); runOnlyForDeploymentPostprocessing = 0; };
+		D10000000000000000000003 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (A1000000000000000000000F /* contract.json in Resources */, A10000000000000000000015 /* Assets.xcassets in Resources */, A10000000000000000000016 /* PrivacyInfo.xcprivacy in Resources */, A10000000000000000000017 /* ios_ui_test_catalog.json in Resources */); runOnlyForDeploymentPostprocessing = 0; };
+		D10000000000000000000006 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000006 /* corpus_parity.json in Resources */, A10000000000000000000013 /* contract.json in Resources */, A10000000000000000000018 /* ios_ui_test_catalog.json in Resources */); runOnlyForDeploymentPostprocessing = 0; };
 		D10000000000000000000009 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		D10000000000000000000001 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000001, A10000000000000000000002, A10000000000000000000003, A10000000000000000000004, A10000000000000000000008, A10000000000000000000009, A1000000000000000000000A, A1000000000000000000000B, A1000000000000000000000C, A1000000000000000000000D, A1000000000000000000000E, A10000000000000000000014); runOnlyForDeploymentPostprocessing = 0; };
+		D10000000000000000000001 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000001, A10000000000000000000002, A10000000000000000000003, A10000000000000000000004, A10000000000000000000008, A10000000000000000000009, A1000000000000000000000A, A1000000000000000000000B, A1000000000000000000000C, A1000000000000000000000D, A1000000000000000000000E, A10000000000000000000014, A10000000000000000000019, A1000000000000000000001A, A1000000000000000000001B, A1000000000000000000001C, A1000000000000000000001D, A1000000000000000000001E, A1000000000000000000001F, A10000000000000000000020, A10000000000000000000021, A10000000000000000000022, A10000000000000000000023); runOnlyForDeploymentPostprocessing = 0; };
 		D10000000000000000000004 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000005); runOnlyForDeploymentPostprocessing = 0; };
 		D10000000000000000000007 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000007); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXSourcesBuildPhase section */

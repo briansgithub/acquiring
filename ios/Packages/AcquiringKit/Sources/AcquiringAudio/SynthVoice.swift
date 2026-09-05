@@ -6,6 +6,7 @@ final class SynthVoice {
     private let sampleRate: Double
     private var phase = 0.0
     private var modulationPhase = 0.0
+    private var filterState = 0.0
     private var delayLine: [Double]
     private var delayPointer = 0
 
@@ -27,6 +28,14 @@ final class SynthVoice {
         default:
             delayLine = []
         }
+    }
+
+    func replacing(frequencyHz: Double, waveform: SynthWaveform) -> SynthVoice {
+        let replacement = SynthVoice(frequencyHz: frequencyHz, waveform: waveform, sampleRate: sampleRate)
+        replacement.phase = phase
+        replacement.modulationPhase = modulationPhase
+        replacement.filterState = filterState
+        return replacement
     }
 
     func nextSample(envelope: Double, elapsedSeconds: Double, arpeggiated: Bool = false) -> Double {
@@ -62,6 +71,34 @@ final class SynthVoice {
             modulationPhase = wrap(modulationPhase + frequencyHz * 4 / sampleRate)
         case .nylonGuitar:
             wave = pluckedSample(attenuation: 0.497)
+        case .flute:
+            let vibratoPhase = phase + 0.0025 * sin(2 * .pi * modulationPhase)
+            let radians = 2 * Double.pi * vibratoPhase
+            wave = 0.91 * sin(radians) + 0.07 * sin(radians * 2) + 0.02 * sin(radians * 4)
+            modulationPhase = wrap(modulationPhase + 5.2 / sampleRate)
+        case .clarinet:
+            let radians = 2 * Double.pi * phase
+            wave = 0.74 * sin(radians) + 0.19 * sin(radians * 3) + 0.07 * sin(radians * 5)
+        case .oboe:
+            let radians = 2 * Double.pi * phase
+            wave = 0.54 * sin(radians) + 0.25 * sin(radians * 2)
+                + 0.14 * sin(radians * 3) + 0.07 * sin(radians * 4)
+        case .brass:
+            let radians = 2 * Double.pi * phase
+            let brightness = 0.55 + 0.45 * envelope
+            wave = 0.62 * sin(radians) + brightness * (
+                0.22 * sin(radians * 2) + 0.11 * sin(radians * 3) + 0.05 * sin(radians * 4)
+            )
+        case .bell:
+            let ring = exp(-0.42 * elapsedSeconds)
+            let index = 2.1 * exp(-1.1 * elapsedSeconds)
+            wave = sin(2 * .pi * phase + sin(2 * .pi * modulationPhase) * index) * ring
+            modulationPhase = wrap(modulationPhase + frequencyHz * 2.71 / sampleRate)
+        case .synthBass:
+            let raw = 0.68 * (phase * 2 - 1) + 0.32 * (phase < 0.5 ? 1.0 : -1.0)
+            let cutoff = min(max(frequencyHz * 5 / sampleRate, 0.02), 0.35)
+            filterState += (raw - filterState) * cutoff
+            wave = filterState
         }
         phase = wrap(phase + frequencyHz / sampleRate)
         return wave

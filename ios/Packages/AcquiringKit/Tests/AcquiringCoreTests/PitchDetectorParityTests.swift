@@ -43,6 +43,7 @@ final class PitchDetectorParityTests: XCTestCase {
     func testSilenceAndDeterministicWhiteNoiseFailConfidenceGate() {
         let silence = PitchDetector.estimate(samples: [Int16](repeating: 0, count: length), sampleRate: sampleRate)
         XCTAssertEqual(silence.rms, 0, accuracy: 1e-9)
+        XCTAssertEqual(silence.frequencyHz, 0)
         XCTAssertLessThan(silence.confidence, 0.4)
 
         var generator = DeterministicNoise(seed: 20_240_811)
