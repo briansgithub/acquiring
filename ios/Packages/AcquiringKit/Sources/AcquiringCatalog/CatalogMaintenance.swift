@@ -135,6 +135,7 @@ public struct DefaultCatalogMaintenanceService: CatalogMaintenanceService, Senda
     private let configuration: CatalogConfiguration
     private let session: URLSession
     private let fetchArchive: CatalogArchiveFetch
+    private let assetMetadata: any CatalogAssetMetadataService
 
     public init(
         coordinator: CatalogCoordinator,
@@ -145,6 +146,7 @@ public struct DefaultCatalogMaintenanceService: CatalogMaintenanceService, Senda
             coordinator: coordinator,
             configuration: configuration,
             session: session,
+            assetMetadata: CatalogAssetMetadataTracker(configuration: configuration, session: session),
             fetchArchive: { url in try await session.download(from: url) }
         )
     }
@@ -153,11 +155,16 @@ public struct DefaultCatalogMaintenanceService: CatalogMaintenanceService, Senda
         coordinator: CatalogCoordinator,
         configuration: CatalogConfiguration,
         session: URLSession = .shared,
+        assetMetadata: (any CatalogAssetMetadataService)? = nil,
         fetchArchive: @escaping CatalogArchiveFetch
     ) {
         self.coordinator = coordinator
         self.configuration = configuration
         self.session = session
+        self.assetMetadata = assetMetadata ?? CatalogAssetMetadataTracker(
+            configuration: configuration,
+            session: session
+        )
         self.fetchArchive = fetchArchive
     }
 
@@ -219,6 +226,14 @@ public struct DefaultCatalogMaintenanceService: CatalogMaintenanceService, Senda
                     // Past this point requestCancellation() reports
                     // commitInProgress instead of cancelling this producer.
                     try await coordinator.replaceLiveDatabase(with: stagedURL)
+                    // The database is already committed. Replace the advisory
+                    // receipt even when this response has no comparable headers,
+                    // so an older release identity cannot survive a new install.
+                    // A sidecar write failure must not turn a usable catalog into
+                    // a failed operation; the tracker clears the old receipt first.
+                    try? await assetMetadata.recordInstalledAsset(
+                        CatalogAssetIdentity(response: response)
+                    )
                     outcome = .completed(songCount: result.songCount)
                 } catch is CancellationError {
                     outcome = .cancelled

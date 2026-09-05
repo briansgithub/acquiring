@@ -8,6 +8,15 @@ struct CatalogDownloadInfo: Equatable {
     let songCount: Int
 }
 
+enum CatalogUpdateState: Equatable {
+    case idle
+    case checking
+    case current
+    case updateAvailable
+    case unknown
+    case failed(String)
+}
+
 enum AppRoute: Hashable {
     case artist(String)
     case allSongs
@@ -112,10 +121,12 @@ final class LibraryStore {
     var userContentError: String?
     var harvestURL = ""
     var downloadInfo: FeatureState<CatalogDownloadInfo> = .idle
+    private(set) var catalogUpdateState: CatalogUpdateState = .idle
     var downloadPromptDismissed = false
 
     private let catalog: any CatalogRepository
     private let maintenance: any CatalogMaintenanceService
+    private let assetMetadata: any CatalogAssetMetadataService
     private let history: HistoryStore
     private let prepareCatalog: @MainActor () async throws -> Void
     private let downloadURL: URL
@@ -126,7 +137,40 @@ final class LibraryStore {
     @ObservationIgnored private var maintenanceTask: Task<Void, Never>?
     @ObservationIgnored private var maintenanceCancellation: (@Sendable () -> CatalogCancellationDisposition)?
     @ObservationIgnored private var maintenanceGeneration = 0
+    @ObservationIgnored private var catalogUpdateGeneration = 0
     @ObservationIgnored private var retryHarvestURL: URL?
+    @ObservationIgnored private var didAttemptAutomaticCatalogInstall = false
+    private var catalogInstallWasAutomatic = false
+
+    var hasInstalledCatalog: Bool {
+        guard case let .content(count) = catalogState else { return false }
+        return count > 0
+    }
+
+    var isAutomaticCatalogInstall: Bool {
+        catalogInstallWasAutomatic
+    }
+
+    var isAutomaticCatalogInstallRunning: Bool {
+        isAutomaticCatalogInstall && maintenanceState.isRunning
+    }
+
+    var shouldShowMissingCatalogNotice: Bool {
+        guard !hasInstalledCatalog else { return false }
+        guard !maintenanceState.isRunning else { return false }
+        if case .failure = catalogState { return true }
+        guard case .empty = catalogState else { return false }
+
+        switch maintenanceState {
+        case .cancelled(operation: .downloadAndInstall),
+             .failed(operation: .downloadAndInstall, message: _):
+            return true
+        case let .completed(operation: .downloadAndInstall, songCount):
+            return songCount == 0
+        case .idle, .running, .cancelling, .completed, .cancelled, .failed:
+            return false
+        }
+    }
 
     var canInstallCatalog: Bool {
         guard !maintenanceState.isRunning else { return false }
@@ -156,6 +200,7 @@ final class LibraryStore {
         self.init(
             catalog: environment.catalog,
             maintenance: environment.maintenance,
+            assetMetadata: environment.catalogAssetMetadata,
             history: environment.history,
             userLibrary: environment.userLibrary,
             prepareCatalog: { try await environment.prepare() },
@@ -167,6 +212,7 @@ final class LibraryStore {
     init(
         catalog: any CatalogRepository,
         maintenance: any CatalogMaintenanceService,
+        assetMetadata: any CatalogAssetMetadataService,
         history: HistoryStore,
         userLibrary: UserLibraryStore,
         prepareCatalog: @escaping @MainActor () async throws -> Void,
@@ -175,6 +221,7 @@ final class LibraryStore {
     ) {
         self.catalog = catalog
         self.maintenance = maintenance
+        self.assetMetadata = assetMetadata
         self.history = history
         self.browse = AllSongsBrowseStore(catalog: catalog)
         self.userContent = UserLibraryViewModel(catalog: catalog, userLibrary: userLibrary)
@@ -185,11 +232,18 @@ final class LibraryStore {
 
     func load() async {
         catalogState = .loading
+        scheduleSearch(debounced: false)
         do {
             try await prepareCatalog()
             let count = try await catalog.songCount()
             catalogState = count == 0 ? .empty : .content(count)
             catalogRevision &+= 1
+            if count == 0, !didAttemptAutomaticCatalogInstall {
+                didAttemptAutomaticCatalogInstall = true
+                startCatalogInstall(automatically: true)
+            } else if count > 0 {
+                scheduleSearch(debounced: false)
+            }
             await refreshUserContent()
         } catch {
             catalogState = .failure(error.localizedDescription)
@@ -211,21 +265,48 @@ final class LibraryStore {
     func loadDownloadInfoIfNeeded() {
         guard downloadInfo == .idle else { return }
         downloadInfo = .loading
-        let url = downloadURL
         let songCount = expectedSongCount
         Task {
-            var request = URLRequest(url: url)
-            request.httpMethod = "HEAD"
             do {
-                let (_, response) = try await URLSession.shared.data(for: request)
-                let byteCount = response.expectedContentLength
-                let formattedSize = byteCount > 0
-                    ? ByteCountFormatter.string(fromByteCount: byteCount, countStyle: .file)
-                    : "Unknown size"
+                let metadata = try await assetMetadata.remoteAsset()
+                let formattedSize = metadata.byteCount.map {
+                    ByteCountFormatter.string(fromByteCount: $0, countStyle: .file)
+                } ?? "Unknown size"
                 downloadInfo = .content(CatalogDownloadInfo(formattedSize: formattedSize, songCount: songCount))
             } catch {
                 downloadInfo = .failure(error.localizedDescription)
             }
+        }
+    }
+
+    func checkForCatalogUpdate() async {
+        guard !maintenanceState.isRunning else { return }
+        guard catalogUpdateState != .checking else { return }
+        guard case .content = catalogState else {
+            catalogUpdateState = .idle
+            return
+        }
+
+        catalogUpdateGeneration &+= 1
+        let generation = catalogUpdateGeneration
+        catalogUpdateState = .checking
+        do {
+            async let remote = assetMetadata.remoteAsset()
+            async let installed = assetMetadata.installedAssetIdentity()
+            let (remoteAsset, installedIdentity) = try await (remote, installed)
+            guard generation == catalogUpdateGeneration else { return }
+            guard let installedIdentity, let remoteIdentity = remoteAsset.identity else {
+                catalogUpdateState = .unknown
+                return
+            }
+            switch installedIdentity.matches(remoteIdentity) {
+            case true: catalogUpdateState = .current
+            case false: catalogUpdateState = .updateAvailable
+            case nil: catalogUpdateState = .unknown
+            }
+        } catch {
+            guard generation == catalogUpdateGeneration else { return }
+            catalogUpdateState = .failed(error.localizedDescription)
         }
     }
 
@@ -262,7 +343,12 @@ final class LibraryStore {
     }
 
     func installCatalog() {
+        startCatalogInstall(automatically: false)
+    }
+
+    private func startCatalogInstall(automatically: Bool) {
         guard canInstallCatalog else { return }
+        catalogInstallWasAutomatic = automatically
         begin(
             operation: .downloadAndInstall,
             run: maintenance.downloadAndInstall()
@@ -271,6 +357,7 @@ final class LibraryStore {
 
     func harvest() {
         guard canHarvest else { return }
+        catalogInstallWasAutomatic = false
         guard let url = Self.validHarvestURL(from: harvestURL) else {
             retryHarvestURL = nil
             maintenanceState = .failed(
@@ -333,6 +420,12 @@ final class LibraryStore {
         operation: CatalogMaintenanceOperation,
         run: CatalogMaintenanceRun
     ) {
+        if operation == .downloadAndInstall {
+            catalogUpdateGeneration &+= 1
+            catalogUpdateState = .idle
+        } else {
+            catalogInstallWasAutomatic = false
+        }
         maintenanceTask?.cancel()
         maintenanceGeneration += 1
         let generation = maintenanceGeneration
@@ -362,9 +455,15 @@ final class LibraryStore {
                     guard generation == maintenanceGeneration, !Task.isCancelled else { return }
                     catalogState = count == 0 ? .empty : .content(count)
                     catalogRevision &+= 1
+                    if count > 0 {
+                        scheduleSearch(debounced: false)
+                    }
                     await refreshUserContent()
                     guard generation == maintenanceGeneration, !Task.isCancelled else { return }
                     maintenanceState = .completed(operation: operation, songCount: count)
+                    if operation == .downloadAndInstall {
+                        catalogUpdateState = .current
+                    }
                     return
                 } else {
                     if maintenanceState == .cancelling(operation: operation) {
@@ -425,6 +524,13 @@ final class LibraryStore {
 
         let term = normalizedQuery
         guard !term.isEmpty else {
+            suggestions = .idle
+            artistSuggestions = .idle
+            hasMoreSongSuggestions = false
+            hasMoreArtistSuggestions = false
+            return
+        }
+        guard hasInstalledCatalog else {
             suggestions = .idle
             artistSuggestions = .idle
             hasMoreSongSuggestions = false
