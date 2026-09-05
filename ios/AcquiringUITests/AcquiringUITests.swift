@@ -202,7 +202,7 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertEqual(instrument.value as? String, "Sine")
         XCTAssertTrue(app.buttons["quiz.lockInMajor"].isHittable)
         XCTAssertTrue(app.buttons["vocal.practice.expand"].isHittable)
-        XCTAssertTrue(app.scrollViews.firstMatch.exists, "Quiz content stays reachable above the practice dock")
+        XCTAssertFalse(app.scrollViews.firstMatch.exists, "Quiz must not have a page-level scroll view")
         let key = app.staticTexts["quiz.key"]
         XCTAssertTrue(key.exists)
         XCTAssertEqual(key.frame.midX, app.frame.midX, accuracy: 2)
@@ -227,6 +227,14 @@ final class AcquiringUITests: XCTestCase {
 
         let sectionPicker = app.descendants(matching: .any)["quiz.section"]
         XCTAssertTrue(sectionPicker.waitForExistence(timeout: 5))
+
+        sectionPicker.tap()
+        let verse = app.buttons["Verse"]
+        let chorus = app.buttons["Chorus"]
+        XCTAssertTrue(verse.waitForExistence(timeout: 5))
+        XCTAssertTrue(chorus.exists)
+        XCTAssertLessThan(verse.frame.minY, chorus.frame.minY, "Earlier sections belong above later sections")
+        verse.tap()
 
         func selectSection(_ name: String) {
             sectionPicker.tap()
@@ -293,6 +301,8 @@ final class AcquiringUITests: XCTestCase {
 
         let mode = app.descendants(matching: .any)["quiz.mode"]
         XCTAssertTrue(mode.waitForExistence(timeout: 5))
+        XCTAssertEqual(mode.frame.midY, app.buttons["quiz.reset"].frame.midY, accuracy: 2,
+                       "Full/Root-only belongs in the transport row")
         mode.tap()
         let roots = app.buttons["Root-only"]
         XCTAssertTrue(roots.waitForExistence(timeout: 5))

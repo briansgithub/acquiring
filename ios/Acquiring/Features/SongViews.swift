@@ -63,7 +63,6 @@ struct SongDetailView: View {
             }
         }
         .task(id: songID) { await load() }
-        .vocalPracticePresentation(model: environment.vocalPractice)
         .onAppear { synchronizeRememberedSection() }
         .onChange(of: environment.quizContinuity) { _, _ in
             synchronizeRememberedSection()
@@ -145,20 +144,9 @@ struct SongDetailView: View {
             }
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            Group {
-                if environment.vocalPractice.isExpanded {
-                    ScrollView {
-                        VocalPracticePanel(model: environment.vocalPractice)
-                            .padding(.horizontal)
-                            .padding(.vertical, 8)
-                    }
-                    .frame(maxHeight: 260)
-                } else {
-                VocalPracticePanel(model: environment.vocalPractice)
-                    .padding(.horizontal)
-                    .padding(.vertical, 8)
-                }
-            }
+            IntervalSingingTool(model: environment.vocalPractice)
+                .padding(.horizontal)
+                .padding(.vertical, 8)
             .background(.bar)
         }
     }
@@ -868,7 +856,6 @@ struct QuizView: View {
         }
         .task(id: songID) { await load() }
         .task(id: transportObservationGeneration) { await observeTransport() }
-        .vocalPracticePresentation(model: environment.vocalPractice, includesManualPractice: true)
         .onDisappear {
             environment.vocalPractice.cancelActivity()
             finishTimelineScrub(resumingIfNeeded: true)
@@ -910,19 +897,15 @@ struct QuizView: View {
 
         return GeometryReader { viewport in
             // The dense Quiz dashboard fits its text to the available viewport.
-            // Keep all targets >=44pt; scrolling keeps content reachable above the practice dock.
+            // Keep all targets >=44pt without a page-level pan recognizer competing with controls.
             let maximumControlType: DynamicTypeSize = viewport.size.height >= 760 ? .xxxLarge : .large
-            ScrollView {
+            Group {
                 VStack(spacing: 4) {
                     if let selected {
                         QuizHeader(
-                            songID: songID,
-                            sectionID: selected.id,
                             initialKey: selected.section.key(at: PlaybackTiming.firstBeat),
                             currentKey: selected.section.key(at: currentBeat(in: selected.section)),
-                            usesRelativeIonianContext: $usesRelativeIonianContext,
-                            mode: modeBinding(sectionID: selected.id),
-                            isReady: sectionLoadStatus.isReady && !playbackCommandPending
+                            usesRelativeIonianContext: $usesRelativeIonianContext
                         )
 
                         quizSurface(selected.section, sectionID: selected.id)
@@ -940,7 +923,7 @@ struct QuizView: View {
                             Spacer(minLength: 0)
                             transportControls(sectionID: selected.id, sections: sections)
                         }
-                        VocalPracticeDock(model: environment.vocalPractice)
+                        IntervalSingingTool(model: environment.vocalPractice)
                     }
                     .padding(.horizontal, 12)
                     .padding(.bottom, 4)
@@ -957,13 +940,6 @@ struct QuizView: View {
         Binding(
             get: { selectedSectionID ?? sections.first?.id ?? "" },
             set: { selectSection($0, sections: sections) }
-        )
-    }
-
-    private func modeBinding(sectionID: String) -> Binding<QuizDisplayMode> {
-        Binding(
-            get: { mode },
-            set: { setMode($0, sectionID: sectionID) }
         )
     }
 
@@ -1124,6 +1100,28 @@ struct QuizView: View {
 
     private func transportControls(sectionID: String, sections: [QuizSection]) -> some View {
                 HStack(spacing: 4) {
+                    QuizSelectorMenu(
+                        identityContext: "\(songID):\(sectionID):mode",
+                        options: QuizDisplayMode.allCases.map {
+                            QuizSelectorOption(id: $0.rawValue, title: $0.title)
+                        },
+                        selectedID: mode.rawValue,
+                        caption: nil,
+                        selectedDisplayTitle: mode == .full ? "Full" : "Roots",
+                        selectedAccessibilityValue: mode.title,
+                        usesSubheadline: false,
+                        width: 64,
+                        expandsToAvailableWidth: false,
+                        accessibilityIdentifier: "quiz.mode",
+                        accessibilityLabel: "Quiz mode",
+                        isEnabled: sectionLoadStatus.isReady && !playbackCommandPending,
+                        onSelect: { id in
+                            guard let selectedMode = QuizDisplayMode(rawValue: id) else { return }
+                            setMode(selectedMode, sectionID: sectionID)
+                        }
+                    )
+                    .equatable()
+
                     Button(action: requestPlaybackReset) {
                         Image(systemName: "arrow.counterclockwise").frame(width: 44, height: 44)
                             .contentShape(Rectangle())
@@ -1151,6 +1149,8 @@ struct QuizView: View {
                         onSelect: { id in selectSection(id, sections: sections) }
                     )
                     .equatable()
+                    // Bottom-anchored menus otherwise place the first section nearest the trigger.
+                    .menuOrder(.fixed)
 
                     QuizTransportButton(
                         phase: transportPhase,
@@ -2341,13 +2341,9 @@ private struct QuizTimelineScrub {
 }
 
 private struct QuizHeader: View {
-    let songID: String
-    let sectionID: String
     let initialKey: KeyInfo
     let currentKey: KeyInfo
     @Binding var usesRelativeIonianContext: Bool
-    @Binding var mode: QuizDisplayMode
-    let isReady: Bool
 
     private var displayedKey: KeyInfo {
         usesRelativeIonianContext ? RelativeIonianContext.key(for: initialKey) : currentKey
@@ -2368,27 +2364,6 @@ private struct QuizHeader: View {
             HStack(spacing: 0) {
                 majorToggle
                 Spacer(minLength: 0)
-                QuizSelectorMenu(
-                    identityContext: "\(songID):\(sectionID):mode",
-                    options: QuizDisplayMode.allCases.map {
-                        QuizSelectorOption(id: $0.rawValue, title: $0.title)
-                    },
-                    selectedID: mode.rawValue,
-                    caption: nil,
-                    selectedDisplayTitle: mode == .full ? "Full" : "Roots",
-                    selectedAccessibilityValue: mode.title,
-                    usesSubheadline: false,
-                    width: 52,
-                    expandsToAvailableWidth: false,
-                    accessibilityIdentifier: "quiz.mode",
-                    accessibilityLabel: "Quiz mode",
-                    isEnabled: isReady,
-                    onSelect: { id in
-                        guard let selectedMode = QuizDisplayMode(rawValue: id) else { return }
-                        mode = selectedMode
-                    }
-                )
-                .equatable()
             }
         }
         .frame(height: 44)

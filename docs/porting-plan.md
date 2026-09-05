@@ -916,3 +916,40 @@ actual-shift distinction. (4) Switch Root-only/Full and inspect unavailable
 states. No runtime accessibility inspection, screenshots, or tests were run;
 visual, gesture, and microphone behavior await human review. Earlier pending
 reviews stay pending. First-pass commit authorized; no release.
+
+### Unified Interval Singing Tool and iPhone microphone startup — 2026-09-05
+
+`[commit/release authorized; device review pending]` Runtime model: unknown. Removed the legacy VocalPracticePanel,
+manual/guided practice sheets, and their Song Detail/Quiz presenters. Both screens
+now use IntervalSingingTool; calibration has one presenter on the navigation root.
+Moved comfortable-pitch semitone/octave adjustments, clearing, and detailed persistent
+feedback into the tool's options. Target-pair playback is available before recording.
+The expanded tool has a visible Collapse action in the same row as Flip-Flop, Stop,
+and options. Collapse stops manual capture/previews while retaining targets/results;
+Reset retains its separate clearing behavior. Pitch cards are 100 pt high, with errors
+inside the result-card area so the dock does not push Stop below the screen.
+
+The iPhone 14 Pro report uses the built-in speaker/microphone. Input acquisition now
+keeps the session in play-and-record while pending, checks real hardware and tap
+formats, allows three 150 ms settling intervals, and rebuilds the engine once if
+input remains unavailable. It chooses the available built-in input only when the
+active route has no input. Cancellation remains lease-scoped, pending failure restores
+the session, and quiz renderer state survives rebuilding. Audio conversion, pitch
+detection, permissions, and capture timing are reused. Stale input/route startup is a
+working diagnosis, not a confirmed physical-device root cause. The physical iPhone
+still requires TestFlight verification; simulator success does not establish that fix.
+
+Focused validation (iPhone 17, existing simulator):
+- `xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug build CODE_SIGNING_ALLOWED=NO`: passed; existing scheduleBuffer async-alternative warning remains.
+- `xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -only-testing:AcquiringUITests/QuizCoverageTests/testDoubleTapOpensOnlyIntervalToolAndCollapseRetainsTarget -only-testing:AcquiringUITests/QuizCoverageTests/testMicrophoneCaptureAndFlipFlopDoNotCrash -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 120 test CODE_SIGNING_ALLOWED=NO`: first run failed (Stop below screen; target test timed out). After compacting the dock, microphone/Flip-Flop passed; target test still timed out. A one-second process sample found the simulator waiting in Metal shader compilation. Replaced the pitch tape Canvas with standard SwiftUI text/rectangles, retaining animated labels and the fixed reference line.
+- `xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -only-testing:AcquiringUITests/QuizCoverageTests/testDoubleTapOpensOnlyIntervalToolAndCollapseRetainsTarget -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 120 test CODE_SIGNING_ALLOWED=NO`: passed, 1 test, 0 failures, compiling final sources. Confirms one tool, no legacy sheet, section reachability, collapse/reopen target retention, and Song Detail collapse.
+- `git diff --check -- ios/Acquiring ios/AcquiringUITests`: passed.
+- `xcrun simctl install 55373408-99CC-4EB3-A771-6ACF29E2D96A /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa/Build/Products/Debug-iphonesimulator/Acquiring.app`, `xcrun simctl launch 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios`, and `open -a Simulator --args -CurrentDeviceUDID 55373408-99CC-4EB3-A771-6ACF29E2D96A`: passed. The test app had already terminated; normal app is open for review.
+
+Review: (1) Open 500 Miles → Quiz and double-tap a note; inspect the single dock's
+gauge/card proportions while using the selectors. (2) Collapse, reopen, and confirm
+targets remain; record both slots and exercise Flip-Flop/Stop. (3) Check comfortable
+pitch and persistent-feedback options. Physical iPhone mic startup after playback is
+the next device check when a new TestFlight build is authorized. No screenshots,
+full suite, commit, push, or new upload. Pre-existing Quiz layout/test changes and
+the build-9 counter remain intact. Earlier review statuses remain unchanged.
