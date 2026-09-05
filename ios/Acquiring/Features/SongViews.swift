@@ -1054,6 +1054,7 @@ struct QuizView: View {
                 usesRelativeIonianContext: usesRelativeIonianContext,
                 isPreviewEnabled: sectionLoadStatus.isReady && timelineScrub == nil,
                 compact: true,
+                isTessituraEnabled: environment.vocalPractice.comfortablePitchMIDI != nil,
                 onPreview: { midiNotes, duration in
                     requestQuizCardPreview(midiNotes: midiNotes, duration: duration)
                 },

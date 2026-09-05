@@ -23,6 +23,7 @@ struct QuizCardsView: View {
     let rootOnly: Bool
     let usesRelativeIonianContext: Bool
     let isPreviewEnabled: Bool
+    let isTessituraEnabled: Bool
     /// Removes visual section labels and uses the fixed-height card rows needed by the single-screen quiz.
     let compact: Bool
     let onPreview: ([Int], Duration) -> Void
@@ -41,6 +42,7 @@ struct QuizCardsView: View {
         usesRelativeIonianContext: Bool,
         isPreviewEnabled: Bool,
         compact: Bool = false,
+        isTessituraEnabled: Bool = false,
         onPreview: @escaping ([Int], Duration) -> Void,
         onIntervalPreview: @escaping ([Int]) -> Void,
         onSingBack: ((SingingTargetRequest) -> Void)? = nil,
@@ -53,6 +55,7 @@ struct QuizCardsView: View {
         self.usesRelativeIonianContext = usesRelativeIonianContext
         self.isPreviewEnabled = isPreviewEnabled
         self.compact = compact
+        self.isTessituraEnabled = isTessituraEnabled
         self.onPreview = onPreview
         self.onIntervalPreview = onIntervalPreview
         self.onSingBack = onSingBack
@@ -231,6 +234,8 @@ struct QuizCardsView: View {
                     doubleTapAction: root.flatMap { singBackAction([previewMIDI(for: $0)]) },
                     longPressAction: persistentAction(.simpleRoot),
                     doubleTapActionName: "Sing Back",
+                    isTessituraEnabled: isTessituraEnabled,
+                    showsSingBackHint: false,
                     fixedHeight: compact ? 44 : nil
                 ) {
                     FittedRomanNumeral(
@@ -323,6 +328,7 @@ struct QuizCardsView: View {
             doubleTapAction: singBackAction([preview], labels: [label]),
             longPressAction: persistentAction(.chordTone(requestedIndex: index)),
             doubleTapActionName: "Sing Back",
+            isTessituraEnabled: isTessituraEnabled,
             fixedHeight: compact ? 44 : nil
         ) {
             FittedScaleDegree(label, maximumFontSize: 28, minimumFontSize: 11, color: .white)
@@ -350,6 +356,7 @@ struct QuizCardsView: View {
                 doubleTapAction: singBackAction([previewMIDI(for: pitch)], labels: [label]),
                 longPressAction: persistentAction(.simpleRoot),
                 doubleTapActionName: "Sing Back",
+                isTessituraEnabled: isTessituraEnabled,
                 fixedHeight: fixedHeight
             ) {
                 if label.isEmpty {
@@ -381,6 +388,7 @@ struct QuizCardsView: View {
             doubleTapAction: singBackAction([previewMIDI(for: pitch)], labels: [degree]),
             longPressAction: persistentAction(.melody),
             doubleTapActionName: "Sing Back",
+            isTessituraEnabled: isTessituraEnabled,
             fixedHeight: fixedHeight
         ) {
             FittedScaleDegree(degree, maximumFontSize: 32, minimumFontSize: 11, color: .white)
@@ -424,8 +432,10 @@ struct QuizCardsView: View {
                 enabled: isPreviewEnabled,
                 action: { onIntervalPreview(intervalPreviewPair(previous: previous, current: current)) },
                 doubleTapAction: singBackAction(intervalPreviewPair(previous: previous, current: current)),
+                longPressAction: persistentAction(identifier.hasPrefix("quiz.root") ? .simpleRoot : .melody),
                 previewActionName: "Preview sequence and together",
                 doubleTapActionName: "Sing Back Interval",
+                isTessituraEnabled: isTessituraEnabled,
                 fixedHeight: fixedHeight
             ) {
                 VStack(spacing: 3) {
@@ -658,6 +668,8 @@ private struct QuizCardButton<Content: View>: View {
     let previewActionName: String
     let doubleTapActionName: String
     let longPressActionName: String
+    let isTessituraEnabled: Bool
+    let showsSingBackHint: Bool
     let fixedHeight: CGFloat?
     @ViewBuilder let content: () -> Content
 
@@ -671,6 +683,8 @@ private struct QuizCardButton<Content: View>: View {
         previewActionName: String = "Preview",
         doubleTapActionName: String = "Practice",
         longPressActionName: String = "Persistent pitch practice",
+        isTessituraEnabled: Bool = false,
+        showsSingBackHint: Bool = true,
         fixedHeight: CGFloat? = nil,
         @ViewBuilder content: @escaping () -> Content
     ) {
@@ -683,8 +697,14 @@ private struct QuizCardButton<Content: View>: View {
         self.previewActionName = previewActionName
         self.doubleTapActionName = doubleTapActionName
         self.longPressActionName = longPressActionName
+        self.isTessituraEnabled = isTessituraEnabled
+        self.showsSingBackHint = showsSingBackHint
         self.fixedHeight = fixedHeight
         self.content = content
+    }
+
+    private var hasSingBackHint: Bool {
+        enabled && showsSingBackHint && doubleTapAction != nil
     }
 
     var body: some View {
@@ -706,8 +726,44 @@ private struct QuizCardButton<Content: View>: View {
         }
         .foregroundStyle(.white)
         .background(.tint, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay(alignment: .topTrailing) {
+            if hasSingBackHint {
+                PitchHintDot(isAdjusted: isTessituraEnabled)
+                    .padding(fixedHeight.map { $0 <= 44 } == true ? 3 : 5)
+            }
+        }
+        .accessibilityValue(hasSingBackHint ? (isTessituraEnabled ? "Tessitura enabled" : "Original target octave") : "")
+        .accessibilityHint(enabled
+            ? (doubleTapAction != nil ? "Tap to preview. Double tap to sing back." : "Tap to preview.")
+                + (longPressAction != nil ? " Long press to toggle persistent pitch practice." : "")
+            : "Preview unavailable")
         .opacity(enabled ? 1 : 0.45)
         .accessibilityIdentifier(identifier)
+    }
+}
+
+/// Shared decorative singing affordance. Color describes register handling, not microphone activity.
+struct PitchHintDot: View {
+    let isAdjusted: Bool
+
+    var body: some View {
+        let color = isAdjusted ? Color(red: 158.0 / 255, green: 158.0 / 255, blue: 158.0 / 255) : .white
+        RadialGradient(
+            stops: [
+                .init(color: color, location: 0),
+                .init(color: color.opacity(0.95), location: 0.10),
+                .init(color: color.opacity(0.80), location: 0.22),
+                .init(color: color.opacity(0.58), location: 0.36),
+                .init(color: color.opacity(0.36), location: 0.52),
+                .init(color: color.opacity(0.18), location: 0.68),
+                .init(color: color.opacity(0.07), location: 0.84),
+                .init(color: color.opacity(0), location: 1)
+            ],
+            center: .center, startRadius: 0, endRadius: 8
+        )
+        .frame(width: 16, height: 16)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
     }
 }
 
