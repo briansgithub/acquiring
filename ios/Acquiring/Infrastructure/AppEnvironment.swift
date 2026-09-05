@@ -276,6 +276,7 @@ final class AppEnvironment {
     let history: HistoryStore
     let userLibrary: UserLibraryStore
     let audio: AppAudioSystem
+    let vocalPractice: VocalPracticeModel
     let catalogConfiguration: CatalogConfiguration
     private(set) var quizContinuity: QuizContinuityState?
     private let seedsUITestCatalog: Bool
@@ -339,6 +340,7 @@ final class AppEnvironment {
         history = HistoryStore(suiteName: uiTestSession?.historySuiteName)
         userLibrary = try UserLibraryStore(context: modelContext)
         audio = AppAudioSystem()
+        vocalPractice = VocalPracticeModel(audio: audio)
     }
 
     func quizContinuity(for songID: String) -> QuizContinuityState? {

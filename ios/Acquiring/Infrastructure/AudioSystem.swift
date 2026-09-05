@@ -3,20 +3,22 @@ import AcquiringAudio
 import AcquiringCore
 import MediaPlayer
 import OSLog
+import UIKit
 
 @MainActor
 final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     private let logger = Logger(subsystem: "com.acquiring.ios", category: "audio")
-    private let engine = AVAudioEngine()
-    private let player = AVAudioPlayerNode()
+    private var engine: AVAudioEngine
+    private var player: AVAudioPlayerNode
     private let playbackFormat: AVAudioFormat
     private let quizRenderer: LockedQuizRenderer
-    private let sourceNode: AVAudioSourceNode
+    private var sourceNode: AVAudioSourceNode
     private var transportState = TransportState(phase: .stopped)
     private var stateContinuations: [UUID: AsyncStream<TransportState>.Continuation] = [:]
     private var remoteCommandsInstalled = false
-    private var pitchContinuation: AsyncThrowingStream<PitchReading, any Error>.Continuation?
-    private var pitchPipeline: PitchPipeline?
+    private var remoteCommandTargets: [(command: MPRemoteCommand, target: Any)] = []
+    private var pendingMicrophone: PendingMicrophone?
+    private var activeMicrophone: ActiveMicrophone?
     private var notificationTasks: [Task<Void, Never>] = []
     private var transportPollTask: Task<Void, Never>?
     private var quizTimelineLoaded = false
@@ -28,19 +30,23 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     private var quizLoadPendingRevision: UInt64?
     private let previewGeneration = PreviewPlaybackGeneration()
     private var previewRender: (token: UInt64, task: Task<[Float], any Error>)?
+    private var nowPlayingSong: CatalogSong?
+    private var nowPlayingSectionName = ""
+    private var shouldResumeAfterInterruption = false
 
     init() {
         let format = AVAudioFormat(standardFormatWithSampleRate: 48_000, channels: 1)!
         playbackFormat = format
         let renderer = LockedQuizRenderer(sampleRate: format.sampleRate)
         quizRenderer = renderer
-        sourceNode = AVAudioSourceNode(format: format) { @Sendable _, _, frameCount, audioBufferList in
-            renderer.render(frameCount: frameCount, audioBufferList: audioBufferList)
-        }
+        engine = AVAudioEngine()
+        player = AVAudioPlayerNode()
+        sourceNode = Self.makeSourceNode(format: format, renderer: renderer)
         engine.attach(player)
         engine.attach(sourceNode)
         engine.connect(player, to: engine.mainMixerNode, format: format)
         engine.connect(sourceNode, to: engine.mainMixerNode, format: format)
+        installRemoteCommandsIfNeeded()
         observeAudioSession()
     }
 
@@ -139,7 +145,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         guard generation.isCurrent(token), !Task.isCancelled else {
             return false
         }
-        try configureSession(category: .playback)
+        try configureSessionForCurrentNeeds()
         guard let buffer = AVAudioPCMBuffer(
             pcmFormat: playbackFormat,
             frameCapacity: AVAudioFrameCount(samples.count)
@@ -510,8 +516,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         ))
 
         do {
-            try configureSession(category: .playback)
-            installRemoteCommandsIfNeeded()
+            try configureSessionForCurrentNeeds()
             if !engine.isRunning { try engine.start() }
             if let expectedRevision, expectedRevision != quizRevision {
                 throw CancellationError()
@@ -539,6 +544,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
 
     func pause() async {
         quizPlaybackRequested = false
+        shouldResumeAfterInterruption = false
         transportPollTask?.cancel()
         quizRenderer.pause()
         let snapshot = quizRenderer.snapshot()
@@ -547,6 +553,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
 
     func reset() async {
         quizPlaybackRequested = false
+        shouldResumeAfterInterruption = false
         transportPollTask?.cancel()
         invalidatePreviewPlayback()
         quizRenderer.stop()
@@ -564,45 +571,152 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
 
     func stop() async {
         quizPlaybackRequested = false
+        shouldResumeAfterInterruption = false
         transportPollTask?.cancel()
         invalidatePreviewPlayback()
         quizRenderer.stop()
-        stopPitchCapture()
-        publish(TransportState(phase: .stopped))
+        stopAllMicrophoneCapture()
+        let snapshot = quizRenderer.snapshot()
+        publish(TransportState(
+            phase: .stopped,
+            elapsed: .zero,
+            duration: .seconds(snapshot.duration)
+        ))
     }
 
     func readings(profile: PitchTrackingProfile) async -> AsyncThrowingStream<PitchReading, any Error> {
-        guard pitchContinuation == nil else {
-            return AsyncThrowingStream { $0.finish(throwing: AcquiringAudioError.microphoneInUse) }
-        }
-        return AsyncThrowingStream { continuation in
-            pitchContinuation = continuation
-            continuation.onTermination = { [weak self] _ in
-                Task { @MainActor in self?.stopPitchCapture() }
-            }
-            Task { @MainActor [weak self] in
-                do { try await self?.startPitchCapture(continuation: continuation, profile: profile) }
-                catch {
-                    continuation.finish(throwing: error)
-                    self?.stopPitchCapture()
-                }
-            }
+        do {
+            return try await acquireMicrophone(owner: .singingTool, profile: profile).readings
+        } catch {
+            return AsyncThrowingStream { $0.finish(throwing: error) }
         }
     }
 
-    private func configureSession(category: AVAudioSession.Category) throws {
-        let session = AVAudioSession.sharedInstance()
-        let options: AVAudioSession.CategoryOptions = category == .playAndRecord
-            ? [.allowAirPlay, .allowBluetoothA2DP]
-            : []
+    /// Transfers the single microphone to a new interaction. Transfer happens
+    /// before the permission request so an older owner cannot keep publishing
+    /// while a replacement is waiting on the system prompt.
+    func acquireMicrophone(
+        owner: MicrophoneOwner,
+        profile: PitchTrackingProfile
+    ) async throws -> MicrophoneLease {
+        try Task.checkCancellation()
+        let id = UUID()
+        let (stream, continuation) = AsyncThrowingStream<PitchReading, any Error>.makeStream()
+        let lease = MicrophoneLease(id: id, readings: stream)
+
+        supersedeMicrophone(with: id)
+        pendingMicrophone = PendingMicrophone(id: id, owner: owner, continuation: continuation)
+        continuation.onTermination = { [weak self] _ in
+            Task { @MainActor in self?.releaseMicrophone(id: id) }
+        }
 
         do {
-            try session.setCategory(category, mode: .default, options: options)
-        } catch {
-            logger.error(
-                "Audio session category setup failed for \(category.rawValue, privacy: .public): \(error.localizedDescription, privacy: .public)"
+            guard await AVAudioApplication.requestRecordPermission() else {
+                throw AcquiringAudioError.microphonePermissionDenied
+            }
+            try Task.checkCancellation()
+            guard pendingMicrophone?.id == id else { throw CancellationError() }
+
+            try configureSession(category: .playAndRecord, captureProfile: profile)
+            guard pendingMicrophone?.id == id else { throw CancellationError() }
+
+            let input = engine.inputNode
+            let format = input.outputFormat(forBus: 0)
+            guard format.sampleRate.isFinite,
+                  format.sampleRate > 0,
+                  format.channelCount > 0
+            else {
+                throw AcquiringAudioError.engine("No microphone input format is available.")
+            }
+
+            let pipeline = try PitchPipeline(inputFormat: format, profile: profile) { [weak self] reading, capturedAt in
+                Task { @MainActor in
+                    guard let self,
+                          self.activeMicrophone?.id == id,
+                          profile.acceptsDelivery(capturedAt: capturedAt)
+                    else { return }
+                    self.activeMicrophone?.continuation.yield(reading)
+                }
+            }
+            input.removeTap(onBus: 0)
+            let requestedTapFrames = AVAudioFrameCount(max(
+                Int(ceil(Double(profile.analysisHopSize) * format.sampleRate / 16_000)),
+                1
+            ))
+            input.installTap(onBus: 0, bufferSize: requestedTapFrames, format: format) { buffer, _ in
+                pipeline.consume(buffer)
+            }
+            guard pendingMicrophone?.id == id else {
+                input.removeTap(onBus: 0)
+                pipeline.deactivate()
+                throw CancellationError()
+            }
+
+            pendingMicrophone = nil
+            activeMicrophone = ActiveMicrophone(
+                id: id,
+                owner: owner,
+                continuation: continuation,
+                pipeline: pipeline,
+                profile: profile,
+                sampleRate: format.sampleRate,
+                channelCount: format.channelCount
             )
-            throw AcquiringAudioError.session(error.localizedDescription)
+            if !engine.isRunning { try engine.start() }
+            guard activeMicrophone?.id == id else { throw CancellationError() }
+            logger.info("Microphone pitch capture started at \(format.sampleRate, privacy: .public) Hz")
+            return lease
+        } catch {
+            failMicrophone(id: id, error: error)
+            throw error
+        }
+    }
+
+    /// Releases only the capture represented by this capability. This is the
+    /// cleanup path practice features should use; `stop()` intentionally remains
+    /// the global transport stop required by the shared protocol surface.
+    func releaseMicrophone(_ lease: MicrophoneLease) {
+        releaseMicrophone(id: lease.id)
+    }
+
+    private func configureSession(
+        category: AVAudioSession.Category,
+        captureProfile: PitchTrackingProfile? = nil
+    ) throws {
+        let session = AVAudioSession.sharedInstance()
+        let options: AVAudioSession.CategoryOptions = category == .playAndRecord
+            ? [.defaultToSpeaker, .allowAirPlay, .allowBluetoothA2DP, .allowBluetoothHFP]
+            : []
+        let mode: AVAudioSession.Mode = category == .playAndRecord ? .measurement : .default
+
+        if session.category != category || session.mode != mode || session.categoryOptions != options {
+            do {
+                try session.setCategory(category, mode: mode, options: options)
+            } catch {
+                logger.error(
+                    "Audio session category setup failed for \(category.rawValue, privacy: .public): \(error.localizedDescription, privacy: .public)"
+                )
+                throw AcquiringAudioError.session(error.localizedDescription)
+            }
+        }
+
+        if category == .playAndRecord {
+            let profile = captureProfile ?? activeMicrophone?.profile ?? .standard
+            do {
+                // These are preferences, not assumptions. The tap's resolved format
+                // is always converted to the Android-equivalent 16 kHz analysis stream.
+                if abs(session.preferredSampleRate - 16_000) > 0.5 {
+                    try session.setPreferredSampleRate(16_000)
+                }
+                let preferredDuration = Double(profile.analysisHopSize) / 16_000
+                if abs(session.preferredIOBufferDuration - preferredDuration) > 0.000_001 {
+                    try session.setPreferredIOBufferDuration(preferredDuration)
+                }
+            } catch {
+                logger.info(
+                    "Audio capture preference was unavailable; using resolved hardware format: \(error.localizedDescription, privacy: .public)"
+                )
+            }
         }
 
         do {
@@ -612,6 +726,128 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
                 "Audio session activation failed for \(category.rawValue, privacy: .public): \(error.localizedDescription, privacy: .public)"
             )
             throw AcquiringAudioError.session(error.localizedDescription)
+        }
+    }
+
+    private func configureSessionForCurrentNeeds() throws {
+        if let activeMicrophone {
+            try configureSession(category: .playAndRecord, captureProfile: activeMicrophone.profile)
+        } else {
+            try configureSession(category: .playback)
+        }
+    }
+
+    private static func makeSourceNode(
+        format: AVAudioFormat,
+        renderer: LockedQuizRenderer
+    ) -> AVAudioSourceNode {
+        AVAudioSourceNode(format: format) { @Sendable _, _, frameCount, audioBufferList in
+            renderer.render(frameCount: frameCount, audioBufferList: audioBufferList)
+        }
+    }
+
+    private func rebuildAudioEngine() {
+        engine.stop()
+        player.stop()
+        let replacementEngine = AVAudioEngine()
+        let replacementPlayer = AVAudioPlayerNode()
+        let replacementSource = Self.makeSourceNode(format: playbackFormat, renderer: quizRenderer)
+        replacementEngine.attach(replacementPlayer)
+        replacementEngine.attach(replacementSource)
+        replacementEngine.connect(replacementPlayer, to: replacementEngine.mainMixerNode, format: playbackFormat)
+        replacementEngine.connect(replacementSource, to: replacementEngine.mainMixerNode, format: playbackFormat)
+        engine = replacementEngine
+        player = replacementPlayer
+        sourceNode = replacementSource
+    }
+
+    private func supersedeMicrophone(with id: UUID) {
+        if let pending = pendingMicrophone, pending.id != id {
+            pendingMicrophone = nil
+            pending.continuation.finish(throwing: CancellationError())
+        }
+        guard let active = activeMicrophone, active.id != id else { return }
+        activeMicrophone = nil
+        engine.inputNode.removeTap(onBus: 0)
+        active.pipeline.deactivate()
+        active.continuation.finish()
+        transitionSessionAfterMicrophoneRelease()
+        logger.info("Microphone ownership transferred")
+    }
+
+    private func releaseMicrophone(id: UUID) {
+        if let pending = pendingMicrophone, pending.id == id {
+            pendingMicrophone = nil
+            pending.continuation.finish()
+            return
+        }
+        guard let active = activeMicrophone, active.id == id else { return }
+        activeMicrophone = nil
+        engine.inputNode.removeTap(onBus: 0)
+        active.pipeline.deactivate()
+        active.continuation.finish()
+        transitionSessionAfterMicrophoneRelease()
+        logger.info("Microphone pitch capture stopped")
+    }
+
+    private func failMicrophone(id: UUID, error: any Error) {
+        if let pending = pendingMicrophone, pending.id == id {
+            pendingMicrophone = nil
+            pending.continuation.finish(throwing: error)
+            return
+        }
+        guard let active = activeMicrophone, active.id == id else { return }
+        activeMicrophone = nil
+        engine.inputNode.removeTap(onBus: 0)
+        active.pipeline.deactivate()
+        active.continuation.finish(throwing: error)
+        transitionSessionAfterMicrophoneRelease()
+        logger.error("Microphone pitch capture failed: \(error.localizedDescription, privacy: .public)")
+    }
+
+    private func stopAllMicrophoneCapture() {
+        if let pending = pendingMicrophone {
+            pendingMicrophone = nil
+            pending.continuation.finish()
+        }
+        if let active = activeMicrophone {
+            activeMicrophone = nil
+            engine.inputNode.removeTap(onBus: 0)
+            active.pipeline.deactivate()
+            active.continuation.finish()
+            logger.info("Microphone pitch capture stopped")
+        }
+        transitionSessionAfterMicrophoneRelease()
+    }
+
+    private func failAllMicrophoneCapture(
+        _ error: any Error,
+        transitionSession: Bool = true
+    ) {
+        if let pending = pendingMicrophone {
+            pendingMicrophone = nil
+            pending.continuation.finish(throwing: error)
+        }
+        if let active = activeMicrophone {
+            activeMicrophone = nil
+            engine.inputNode.removeTap(onBus: 0)
+            active.pipeline.deactivate()
+            active.continuation.finish(throwing: error)
+            logger.error("Microphone pitch capture ended: \(error.localizedDescription, privacy: .public)")
+        }
+        if transitionSession { transitionSessionAfterMicrophoneRelease() }
+    }
+
+    private func transitionSessionAfterMicrophoneRelease() {
+        do {
+            if quizPlaybackRequested || player.isPlaying {
+                try configureSession(category: .playback)
+            } else {
+                engine.stop()
+                try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+            }
+        } catch {
+            logger.error("Audio session transition after capture failed: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -707,49 +943,48 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         440 * pow(2, Double(midiNote - 69) / 12)
     }
 
-    private func startPitchCapture(
-        continuation: AsyncThrowingStream<PitchReading, any Error>.Continuation,
-        profile: PitchTrackingProfile
-    ) async throws {
-        guard await AVAudioApplication.requestRecordPermission() else {
-            throw AcquiringAudioError.microphonePermissionDenied
-        }
-        try configureSession(category: .playAndRecord)
-        let input = engine.inputNode
-        let format = input.outputFormat(forBus: 0)
-        guard format.sampleRate > 0, format.channelCount > 0 else {
-            throw AcquiringAudioError.engine("No microphone input format is available.")
-        }
-        let pipeline = try PitchPipeline(inputFormat: format, profile: profile) { reading in
-            continuation.yield(reading)
-        }
-        pitchPipeline = pipeline
-        input.removeTap(onBus: 0)
-        input.installTap(onBus: 0, bufferSize: 1_024, format: format) { buffer, _ in
-            pipeline.consume(buffer)
-        }
-        if !engine.isRunning { try engine.start() }
-        logger.info("Microphone pitch capture started at \(format.sampleRate, privacy: .public) Hz")
-    }
-
-    private func stopPitchCapture() {
-        guard pitchContinuation != nil || pitchPipeline != nil else { return }
-        engine.inputNode.removeTap(onBus: 0)
-        pitchPipeline = nil
-        pitchContinuation?.finish()
-        pitchContinuation = nil
-        logger.info("Microphone pitch capture stopped")
-    }
-
     private func publish(_ state: TransportState) {
         transportState = state
         for continuation in stateContinuations.values { continuation.yield(state) }
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = [
-            MPMediaItemPropertyTitle: "Acquiring Quiz",
-            MPNowPlayingInfoPropertyElapsedPlaybackTime: state.elapsed.secondsValue,
-            MPMediaItemPropertyPlaybackDuration: state.duration.secondsValue,
-            MPNowPlayingInfoPropertyPlaybackRate: state.phase == .playing ? 1 : 0
+        publishNowPlaying(state)
+    }
+
+    func updateNowPlaying(song: CatalogSong, sectionName: String) {
+        nowPlayingSong = song
+        nowPlayingSectionName = sectionName.trimmingCharacters(in: .whitespacesAndNewlines)
+        publishNowPlaying(transportState)
+    }
+
+    private func publishNowPlaying(_ state: TransportState) {
+        let song = nowPlayingSong
+        let duration = state.duration.secondsValue
+        let elapsed = state.elapsed.secondsValue
+        let rate = state.phase == .playing
+            ? max((quizContext?.tempoPercent ?? 100) / 100, 0)
+            : 0
+        var info: [String: Any] = [
+            MPMediaItemPropertyTitle: song?.displayTitle ?? "Acquiring Quiz",
+            MPMediaItemPropertyArtist: song?.displayArtist ?? "",
+            MPMediaItemPropertyPlaybackDuration: duration.isFinite ? max(duration, 0) : 0,
+            MPNowPlayingInfoPropertyElapsedPlaybackTime: elapsed.isFinite ? max(elapsed, 0) : 0,
+            MPNowPlayingInfoPropertyPlaybackRate: rate.isFinite ? rate : 0,
+            MPNowPlayingInfoPropertyDefaultPlaybackRate: 1,
+            MPNowPlayingInfoPropertyMediaType: MPNowPlayingInfoMediaType.audio.rawValue,
+            MPNowPlayingInfoPropertyIsLiveStream: false
         ]
+        if !nowPlayingSectionName.isEmpty {
+            info[MPMediaItemPropertyAlbumTitle] = nowPlayingSectionName
+        }
+        if let song {
+            info[MPNowPlayingInfoPropertyExternalContentIdentifier] = song.id
+        }
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = info
+    }
+
+    private func seek(toElapsedSeconds seconds: Double) {
+        let duration = quizRenderer.snapshot().duration
+        guard duration.isFinite, duration > 0, seconds.isFinite else { return }
+        _ = seekQuiz(to: min(max(seconds / duration, 0), 1), revision: quizRevision)
     }
 
     private func beginTransportPolling() {
@@ -772,18 +1007,53 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         guard !remoteCommandsInstalled else { return }
         remoteCommandsInstalled = true
         let center = MPRemoteCommandCenter.shared()
-        center.playCommand.addTarget { [weak self] _ in
+        center.playCommand.isEnabled = true
+        center.pauseCommand.isEnabled = true
+        center.stopCommand.isEnabled = true
+        center.togglePlayPauseCommand.isEnabled = true
+        center.changePlaybackPositionCommand.isEnabled = true
+        center.previousTrackCommand.isEnabled = true
+
+        let playTarget = center.playCommand.addTarget { [weak self] _ in
             Task { try? await self?.play() }
             return .success
         }
-        center.pauseCommand.addTarget { [weak self] _ in
+        remoteCommandTargets.append((center.playCommand, playTarget))
+        let pauseTarget = center.pauseCommand.addTarget { [weak self] _ in
             Task { await self?.pause() }
             return .success
         }
-        center.stopCommand.addTarget { [weak self] _ in
+        remoteCommandTargets.append((center.pauseCommand, pauseTarget))
+        let stopTarget = center.stopCommand.addTarget { [weak self] _ in
             Task { await self?.stop() }
             return .success
         }
+        remoteCommandTargets.append((center.stopCommand, stopTarget))
+        let toggleTarget = center.togglePlayPauseCommand.addTarget { [weak self] _ in
+            Task { @MainActor in
+                guard let self else { return }
+                if self.transportState.phase == .playing || self.quizPlaybackRequested {
+                    await self.pause()
+                } else {
+                    try? await self.play()
+                }
+            }
+            return .success
+        }
+        remoteCommandTargets.append((center.togglePlayPauseCommand, toggleTarget))
+        let positionTarget = center.changePlaybackPositionCommand.addTarget { [weak self] event in
+            guard let position = event as? MPChangePlaybackPositionCommandEvent,
+                  position.positionTime.isFinite
+            else { return .commandFailed }
+            Task { @MainActor in self?.seek(toElapsedSeconds: position.positionTime) }
+            return .success
+        }
+        remoteCommandTargets.append((center.changePlaybackPositionCommand, positionTarget))
+        let beginningTarget = center.previousTrackCommand.addTarget { [weak self] _ in
+            Task { @MainActor in self?.seek(toElapsedSeconds: 0) }
+            return .success
+        }
+        remoteCommandTargets.append((center.previousTrackCommand, beginningTarget))
     }
 
     private func observeAudioSession() {
@@ -794,23 +1064,178 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
                           let type = AVAudioSession.InterruptionType(rawValue: raw)
                     else { continue }
                     if type == .began {
-                        self?.transportPollTask?.cancel()
-                        self?.invalidatePreviewPlayback()
-                        self?.quizRenderer.pause()
-                        self?.publish(TransportState(phase: .paused))
-                        self?.logger.info("Audio interruption began")
+                        self?.handleInterruptionBegan()
                     } else {
-                        self?.logger.info("Audio interruption ended")
+                        let rawOptions = notification.userInfo?[AVAudioSessionInterruptionOptionKey] as? UInt ?? 0
+                        let options = AVAudioSession.InterruptionOptions(rawValue: rawOptions)
+                        self?.handleInterruptionEnded(systemAllowsResume: options.contains(.shouldResume))
                     }
                 }
             },
             Task { @MainActor [weak self] in
-                for await _ in NotificationCenter.default.notifications(named: AVAudioSession.routeChangeNotification) {
-                    self?.logger.info("Audio route changed")
+                for await notification in NotificationCenter.default.notifications(named: AVAudioSession.routeChangeNotification) {
+                    let rawReason = notification.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt ?? 0
+                    self?.handleRouteChange(AVAudioSession.RouteChangeReason(rawValue: rawReason) ?? .unknown)
+                }
+            },
+            Task { @MainActor [weak self] in
+                for await notification in NotificationCenter.default.notifications(named: .AVAudioEngineConfigurationChange) {
+                    guard let self, notification.object as? AVAudioEngine === self.engine else { continue }
+                    self.handleEngineConfigurationChange()
+                }
+            },
+            Task { @MainActor [weak self] in
+                for await _ in NotificationCenter.default.notifications(named: AVAudioSession.mediaServicesWereResetNotification) {
+                    self?.handleMediaServicesReset()
+                }
+            },
+            Task { @MainActor [weak self] in
+                for await _ in NotificationCenter.default.notifications(named: UIApplication.didEnterBackgroundNotification) {
+                    guard let self, self.pendingMicrophone != nil || self.activeMicrophone != nil else { continue }
+                    self.stopAllMicrophoneCapture()
+                    self.logger.info("Microphone capture stopped in the background")
                 }
             }
         ]
     }
+
+    private func handleInterruptionBegan() {
+        shouldResumeAfterInterruption = quizPlaybackRequested
+            && (transportState.phase == .playing || transportState.phase == .buffering)
+        transportPollTask?.cancel()
+        invalidatePreviewPlayback()
+        failAllMicrophoneCapture(
+            AcquiringAudioError.session("Microphone capture was interrupted."),
+            transitionSession: false
+        )
+        quizRenderer.pause()
+        let snapshot = quizRenderer.snapshot()
+        publish(TransportState(
+            phase: .paused,
+            elapsed: .seconds(snapshot.elapsed),
+            duration: .seconds(snapshot.duration)
+        ))
+        logger.info("Audio interruption began")
+    }
+
+    private func handleInterruptionEnded(systemAllowsResume: Bool) {
+        let playbackWasAwaitingResume = shouldResumeAfterInterruption
+        let shouldResume = systemAllowsResume
+            && playbackWasAwaitingResume
+            && quizPlaybackRequested
+            && quizTimelineLoaded
+            && !isQuizTempoPaused
+        shouldResumeAfterInterruption = false
+        if playbackWasAwaitingResume, !systemAllowsResume {
+            quizPlaybackRequested = false
+        }
+        logger.info("Audio interruption ended; resume allowed: \(shouldResume, privacy: .public)")
+        guard shouldResume else { return }
+        do {
+            try startQuizPlayback(expectedRevision: quizRevision)
+        } catch {
+            publishPlaybackFailure(error)
+        }
+    }
+
+    private func handleRouteChange(_ reason: AVAudioSession.RouteChangeReason) {
+        logger.info("Audio route changed: \(reason.rawValue, privacy: .public)")
+        guard reason == .oldDeviceUnavailable else { return }
+        shouldResumeAfterInterruption = false
+        quizPlaybackRequested = false
+        transportPollTask?.cancel()
+        invalidatePreviewPlayback()
+        failAllMicrophoneCapture(AcquiringAudioError.session("The audio input route was disconnected."))
+        quizRenderer.pause()
+        let snapshot = quizRenderer.snapshot()
+        publish(TransportState(
+            phase: .paused,
+            elapsed: .seconds(snapshot.elapsed),
+            duration: .seconds(snapshot.duration)
+        ))
+    }
+
+    private func handleEngineConfigurationChange() {
+        invalidatePreviewPlayback()
+        if let activeMicrophone {
+            let inputFormat = engine.inputNode.outputFormat(forBus: 0)
+            if abs(inputFormat.sampleRate - activeMicrophone.sampleRate) > 0.5
+                || inputFormat.channelCount != activeMicrophone.channelCount {
+                failAllMicrophoneCapture(
+                    AcquiringAudioError.engine("The audio input format changed. Start listening again."),
+                    transitionSession: false
+                )
+            }
+        }
+        guard quizPlaybackRequested, quizTimelineLoaded, !isQuizTempoPaused else { return }
+        do {
+            try configureSessionForCurrentNeeds()
+            if !engine.isRunning { try engine.start() }
+            quizRenderer.play()
+            let snapshot = quizRenderer.snapshot()
+            publish(TransportState(
+                phase: .playing,
+                elapsed: .seconds(snapshot.elapsed),
+                duration: .seconds(snapshot.duration)
+            ))
+            beginTransportPolling()
+        } catch {
+            publishPlaybackFailure(error)
+        }
+    }
+
+    private func handleMediaServicesReset() {
+        transportPollTask?.cancel()
+        invalidatePreviewPlayback()
+        failAllMicrophoneCapture(
+            AcquiringAudioError.session("Audio services restarted. Start listening again."),
+            transitionSession: false
+        )
+        quizRenderer.pause()
+        rebuildAudioEngine()
+        guard quizPlaybackRequested, quizTimelineLoaded, !isQuizTempoPaused else {
+            let snapshot = quizRenderer.snapshot()
+            publish(TransportState(
+                phase: transportState.phase == .stopped ? .stopped : .paused,
+                elapsed: .seconds(snapshot.elapsed),
+                duration: .seconds(snapshot.duration)
+            ))
+            return
+        }
+        do {
+            try startQuizPlayback(expectedRevision: quizRevision)
+        } catch {
+            publishPlaybackFailure(error)
+        }
+    }
+
+    private func publishPlaybackFailure(_ error: any Error) {
+        quizRenderer.pause()
+        let snapshot = quizRenderer.snapshot()
+        publish(TransportState(
+            phase: .failed,
+            elapsed: .seconds(snapshot.elapsed),
+            duration: .seconds(snapshot.duration),
+            errorDescription: error.localizedDescription
+        ))
+        logger.error("Audio output recovery failed: \(error.localizedDescription, privacy: .public)")
+    }
+}
+
+private struct PendingMicrophone {
+    let id: UUID
+    let owner: MicrophoneOwner
+    let continuation: AsyncThrowingStream<PitchReading, any Error>.Continuation
+}
+
+private struct ActiveMicrophone {
+    let id: UUID
+    let owner: MicrophoneOwner
+    let continuation: AsyncThrowingStream<PitchReading, any Error>.Continuation
+    let pipeline: PitchPipeline
+    let profile: PitchTrackingProfile
+    let sampleRate: Double
+    let channelCount: AVAudioChannelCount
 }
 
 private struct QuizAudioContext: Equatable {
@@ -907,24 +1332,44 @@ private final class LockedQuizRenderer: @unchecked Sendable {
 
 private final class PitchPipeline: @unchecked Sendable {
     private let inputFormat: AVAudioFormat
+    private let inputChannelCount: Int
     private let outputFormat: AVAudioFormat
     private let converter: AVAudioConverter
     private let queue = DispatchQueue(label: "com.acquiring.ios.pitch-pipeline", qos: .userInitiated)
-    private let publish: @Sendable (PitchReading) -> Void
+    private let lifecycleLock = NSLock()
+    private var active = true
+    private let publish: @Sendable (PitchReading, ContinuousClock.Instant) -> Void
     private let analysisWindowSize: Int
     private let hopSize: Int
     private var smoother: PitchSmoother
     private var samples: [Int16] = []
+    private var sampleCaptureTimes: [ContinuousClock.Instant] = []
+    private var samplesSinceValidEstimate = 0
 
     init(
         inputFormat: AVAudioFormat,
         profile: PitchTrackingProfile,
-        publish: @escaping @Sendable (PitchReading) -> Void
+        publish: @escaping @Sendable (PitchReading, ContinuousClock.Instant) -> Void
     ) throws {
-        self.inputFormat = inputFormat
-        guard let outputFormat = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: 16_000, channels: 1, interleaved: false),
-              let converter = AVAudioConverter(from: inputFormat, to: outputFormat)
+        guard inputFormat.sampleRate.isFinite,
+              inputFormat.sampleRate > 0,
+              inputFormat.channelCount > 0,
+              let monoInputFormat = AVAudioFormat(
+                commonFormat: .pcmFormatFloat32,
+                sampleRate: inputFormat.sampleRate,
+                channels: 1,
+                interleaved: false
+              ),
+              let outputFormat = AVAudioFormat(
+                commonFormat: .pcmFormatFloat32,
+                sampleRate: 16_000,
+                channels: 1,
+                interleaved: false
+              ),
+              let converter = AVAudioConverter(from: monoInputFormat, to: outputFormat)
         else { throw AcquiringAudioError.engine("Could not initialize the 16 kHz microphone converter.") }
+        self.inputFormat = monoInputFormat
+        inputChannelCount = Int(inputFormat.channelCount)
         self.outputFormat = outputFormat
         self.converter = converter
         self.publish = publish
@@ -939,15 +1384,43 @@ private final class PitchPipeline: @unchecked Sendable {
             smoother = PitchSmoother(targetMIDI: 0, configuration: .melodyFast)
         }
         samples.reserveCapacity(4_096)
+        sampleCaptureTimes.reserveCapacity(4_096)
     }
 
     func consume(_ buffer: AVAudioPCMBuffer) {
-        guard let source = buffer.floatChannelData?[0] else { return }
-        let values = Array(UnsafeBufferPointer(start: source, count: Int(buffer.frameLength)))
-        queue.async { [self] in convert(values) }
+        guard isActive else { return }
+        // Timestamp the end of this captured block before it enters the worker
+        // queue. Fast tracking can then reject queued audio rather than treating
+        // an old detection as fresh merely because it was delivered recently.
+        let capturedAt = ContinuousClock.now
+        guard let channels = buffer.floatChannelData else { return }
+        let frameCount = Int(buffer.frameLength)
+        let availableChannels = min(Int(buffer.format.channelCount), inputChannelCount)
+        guard frameCount > 0, availableChannels > 0 else { return }
+        var values = [Float](repeating: 0, count: frameCount)
+        // Android requests CHANNEL_IN_MONO. The equivalent boundary on iOS is
+        // an equal-power-neutral average when a route exposes multiple channels.
+        for channelIndex in 0..<availableChannels {
+            let channel = channels[channelIndex]
+            for frame in 0..<frameCount { values[frame] += channel[frame] }
+        }
+        if availableChannels > 1 {
+            let divisor = Float(availableChannels)
+            for frame in values.indices { values[frame] /= divisor }
+        }
+        let monoValues = values
+        queue.async { [self] in
+            guard isActive else { return }
+            convert(monoValues, capturedAt: capturedAt)
+        }
     }
 
-    private func convert(_ values: [Float]) {
+    func deactivate() {
+        lifecycleLock.withLock { active = false }
+    }
+
+    private func convert(_ values: [Float], capturedAt: ContinuousClock.Instant) {
+        guard isActive else { return }
         guard let input = AVAudioPCMBuffer(pcmFormat: inputFormat, frameCapacity: AVAudioFrameCount(values.count)),
               let inputChannel = input.floatChannelData?[0]
         else { return }
@@ -965,26 +1438,70 @@ private final class PitchPipeline: @unchecked Sendable {
         }
         guard conversionError == nil, let channel = output.floatChannelData?[0] else { return }
         for value in UnsafeBufferPointer(start: channel, count: Int(output.frameLength)) {
-            samples.append(Int16(clamping: Int((min(max(value, -1), 1) * Float(Int16.max)).rounded())))
+            // A malformed route/converter sample must behave like silence; converting
+            // NaN or infinity directly to Int would trap before the detector gates it.
+            let bounded = value.isFinite ? min(max(value, -1), 1) : 0
+            let pcm16: Int16
+            if bounded <= -1 {
+                pcm16 = .min
+            } else if bounded >= 1 {
+                pcm16 = .max
+            } else {
+                pcm16 = Int16(clamping: Int((bounded * 32_768).rounded()))
+            }
+            samples.append(pcm16)
+            sampleCaptureTimes.append(capturedAt)
         }
-        while samples.count >= analysisWindowSize {
+        while isActive, samples.count >= analysisWindowSize {
             let window = Array(samples.prefix(analysisWindowSize))
+            let windowCapturedAt = sampleCaptureTimes[analysisWindowSize - 1]
             let estimate = PitchDetector.estimate(samples: window, sampleRate: 16_000)
-            if estimate.frequencyHz > 0,
-               estimate.confidence >= 0.4,
-               estimate.rms >= 0.0005,
+            let rawMIDI = AcquiringCore.MusicTheory.midi(frequency: estimate.frequencyHz)
+            let isAcceptedEstimate = estimate.frequencyHz > 0
+                && estimate.frequencyHz.isFinite
+                && estimate.confidence >= 0.4
+                && estimate.confidence.isFinite
+                && estimate.rms >= 0.0005
+                && estimate.rms.isFinite
+                && rawMIDI.isFinite
+            if isAcceptedEstimate {
+                samplesSinceValidEstimate = 0
+            } else {
+                samplesSinceValidEstimate += hopSize
+                if Double(samplesSinceValidEstimate) / 16_000 > 0.2 {
+                    // Android discards smoothing history after 200 ms without an
+                    // accepted YIN frame. Silence remains absence on this stream.
+                    smoother.reset()
+                }
+            }
+            if isAcceptedEstimate,
+               estimate.frequencyHz.isFinite,
                let smoothed = smoother.accept(
-                midi: AcquiringCore.MusicTheory.midi(frequency: estimate.frequencyHz),
+                midi: rawMIDI,
                 confidence: estimate.confidence
-               ) {
-                publish(PitchReading(
+               ),
+               smoothed.midi.isFinite,
+               smoothed.confidence.isFinite,
+               isActive {
+                let reading = PitchReading(
                     midi: smoothed.midi,
                     confidence: smoothed.confidence,
                     rms: estimate.rms
-                ))
+                )
+                if reading.midi.isFinite,
+                   reading.confidence.isFinite,
+                   reading.rms.isFinite,
+                   isActive {
+                    publish(reading, windowCapturedAt)
+                }
             }
             samples.removeFirst(min(hopSize, samples.count))
+            sampleCaptureTimes.removeFirst(min(hopSize, sampleCaptureTimes.count))
         }
+    }
+
+    private var isActive: Bool {
+        lifecycleLock.withLock { active }
     }
 }
 
@@ -1014,5 +1531,23 @@ private extension Duration {
     var secondsValue: Double {
         let parts = components
         return Double(parts.seconds) + Double(parts.attoseconds) / 1e18
+    }
+}
+
+private extension PitchTrackingProfile {
+    var analysisHopSize: Int {
+        switch self {
+        case .standard: 512
+        case .melodyFast: 256
+        }
+    }
+
+    func acceptsDelivery(capturedAt: ContinuousClock.Instant) -> Bool {
+        switch self {
+        case .standard:
+            true
+        case .melodyFast:
+            capturedAt.duration(to: ContinuousClock.now) <= .milliseconds(48)
+        }
     }
 }

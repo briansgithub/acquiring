@@ -15,9 +15,10 @@ IDs: 52 in-scope capabilities; F013, F052, and F055 remain deferred.
 - Library/settings/harvest/search, Song Detail/Chords, Quiz transport/cards, All
   Songs, Favorites, and Playlists are implemented to varying review states.
   Do not rebuild completed surfaces.
-- Phase D implementation is complete through D8 in the user-authorized combined
-  batch; prior pending reviews are preserved. Stop for feedback before E1;
-  full testing is still separately gated. TestFlight remains at build 6 (Phase B).
+- Phase E/F implementation is complete in the user-authorized combined batch,
+  including Android recording/DSP property alignment; human review is pending.
+  Prior pending reviews are preserved. Stop at the separate full-testing approval
+  gate. TestFlight remains at build 6 (Phase B); C–F have not been released.
 - Use one implementer per feature. Established routes: Terra/medium for ordinary
   UI/integration, Terra/high for complex state/notation, Sol/high for audio,
   timing, microphone ownership and concurrency, Luna/low for simple isolated
@@ -343,20 +344,96 @@ available. Never add the retired magnifier or expose inactive practice controls.
 
 ### E — Add vocal practice
 
-1. `[ ]` **E1 Microphone/session ownership (F040–F041; old 4.2, ownership parts of 7.2/7.4). Sol/high.** Just-in-time permission, exclusive lease, denial/error handling, native capture/YIN/gates/smoothing reuse, stale-owner rejection, and cleanup. Include a minimal usable capture state for review.
-2. `[ ]` **E2 Two-note capture and feedback (F043–F044; old 4.1, 4.3, 4.4). Sol/high.** Manual collapsed/expanded tool, independent three-second slots, stable capture, silence/dropout handling, pitch/spelling/cents, interval name/direction, exact replay and rerecord/cancel.
-3. `[ ]` **E3 Pair playback and Flip-Flop (F043, F045; non-seek part of old 4.5). Sol/high.** Pair/alternating playback/capture, independent slot state, cancellation and final pause.
-4. `[ ]` **E4 Card sing-back (F042, F044; old 5.5, sing-back parts of 4.1/5.6/5.7). Sol/high.** Root, melody, interval, and chord-tone double taps open target-guided listening after preview settles; use shared ownership/arbitration, target-mode sheet and named accessible actions.
-5. `[ ]` **E5 Tessitura calibration (F048; old 6.1). Sol/high.** Permission/cancel/error/retry, three voiced seconds, final-two-second averaging, silence pause and dropout grace/restart.
-6. `[ ]` **E6 Target placement and adjustment (F048–F049; old 6.2, target part of 6.3). Terra/high.** Comfortable window, interval-unit placement, contour/tritone rules, anchor/octave stepper, transpose-once, and clear-adjustment/session distinction.
-7. `[ ]` **E7 Persistent practice (F046, F049; old 6.4, target-following parts of 6.3/5.6). Sol/high.** Long-press root/melody/chord-tone targets, fast melody tracking with rest/no-signal handling, chord-tone clamping, index restoration, and transport-following placement.
-8. `[ ]` **E8 Live markers and scoring (F046–F047; old 6.5). Sol/high.** Bounded live marker, settled contiguous-run scoring using median, explicit unscored result, badges, and stale-sample rejection.
+1. `[review]` **E1 Microphone/session ownership (F040–F041; old 4.2, ownership parts of 7.2/7.4). Sol/high.** Just-in-time permission, exclusive lease, denial/error handling, native capture/YIN/gates/smoothing reuse, stale-owner rejection, and cleanup. Capture is connected to the visible practice controls.
+2. `[review]` **E2 Two-note capture and feedback (F043–F044; old 4.1, 4.3, 4.4). Sol/high.** Manual collapsed/expanded tool, independent three-second wall-time slots, last accepted estimate, silence/dropout handling, pitch/spelling/cents, interval name/direction, exact replay and rerecord/cancel.
+3. `[review]` **E3 Pair playback and Flip-Flop (F043, F045; non-seek part of old 4.5). Sol/high.** Pair playback and repeated three-second first capture, three-second second capture, two-second pause; independent slot state and cancellation.
+4. `[review]` **E4 Card sing-back (F042, F044; old 5.5, sing-back parts of 4.1/5.6/5.7). Sol/high.** Root, melody, interval, and chord-tone double taps open target-guided listening after preview settles; shared ownership/arbitration, target-mode sheet and named accessible actions.
+5. `[review]` **E5 Tessitura calibration (F048; old 6.1). Sol/high.** Permission/cancel/error/retry, three voiced seconds, final-two-second averaging, silence pause and one-second dropout grace/restart.
+6. `[review]` **E6 Target placement and adjustment (F048–F049; old 6.2, target part of 6.3). Terra/high.** Comfortable window, interval-unit placement, contour/tritone rules, anchor/octave stepper, transpose-once, and clear-adjustment/session distinction.
+7. `[review]` **E7 Persistent practice (F046, F049; old 6.4, target-following parts of 6.3/5.6). Sol/high.** Long-press root/melody/chord-tone targets, fast melody tracking with rest/no-signal handling, chord-tone clamping, index restoration, and transport-following placement.
+8. `[review]` **E8 Live markers and scoring (F046–F047; old 6.5). Sol/high.** Bounded live marker, settled contiguous-run scoring using median, explicit unscored result, badges, and stale-sample rejection.
 
 ### F — Complete platform behavior
 
-1. `[ ]` **F1 Now Playing and remotes (F039; old 7.3). Sol/high.** Publish song/section and elapsed state; route remote play/pause/stop/seek through the shared transport.
-2. `[ ]` **F2 Background/interruption/route recovery (F027, F036, F038–F039, F041–F049; old 7.2/7.4). Sol/high.** Complete output recovery, session transitions, cleanup and stale-result rejection. Device-specific verification follows explicit approval; do not claim hardware behavior verified from a simulator.
-3. `[ ]` **F3 Remaining layout/accessibility implementation (F014, F025, F054; old 6.6, implementation part of 9.1). Terra/high.** Compact final native layout, focus, VoiceOver alternatives, Dynamic Type, reduced motion, rotation and iPad adaptation. Add semantics with each earlier feature; reserve broad audit/matrix for the gate.
+1. `[review]` **F1 Now Playing and remotes (F039; old 7.3). Sol/high.** Publish song/section and elapsed state; route remote play/pause/stop/toggle/seek through the shared transport.
+2. `[review]` **F2 Background/interruption/route recovery (F027, F036, F038–F039, F041–F049; old 7.2/7.4). Sol/high.** Output recovery, session transitions, cleanup and stale-result rejection are implemented. Device-specific verification follows explicit approval; hardware behavior is not verified by the simulator.
+3. `[review]` **F3 Remaining layout/accessibility implementation (F014, F025, F054; old 6.6, implementation part of 9.1). Terra/high.** Adaptive practice controls/sheets, named VoiceOver alternatives, Dynamic Type and reduced-motion behavior, compact seek controls and adaptive key/Lock-in-Major header. Broad focus/orientation/iPad/VoiceOver audit remains gated.
+
+#### E/F implementation handoff — 2026-09-05
+
+Routes: Sol/high for microphone ownership, platform audio and practice orchestration;
+Terra/high for practice UI and timeline feedback; root integration/runtime identity
+unknown. One combined handoff was explicitly requested. Existing cards now expose
+double-tap Sing Back and long-press persistent practice. Song Detail and Quiz share
+the practice controller and song-scoped tessitura anchor. Leaving a song or
+backgrounding cleans up capture; section changes clear run-ID scores but retain
+the comfortable anchor. Seeking/pausing discards partial scores, and natural run
+transitions finalize them. Native sheets own cancellation and named actions.
+
+Recording/DSP parity was checked against final Android `MicrophonePitchTracker.kt`,
+`PitchDetector.kt`, and `PitchSmoother.kt`, not against historical prototypes:
+
+| Property | Both analysis paths |
+|---|---|
+| PCM analysis | Mono, signed PCM16, 16,000 Hz |
+| Standard window / hop | 2,048 / 512 samples (128 / 32 ms) |
+| Fast melody window / hop | 1,024 / 256 samples (64 / 16 ms) |
+| YIN / frequency limits | Threshold 0.15; 65–1,000 Hz |
+| Accepted frame gates | RMS ≥ 0.0005; confidence ≥ 0.4; positive finite frequency |
+| Standard smoother | Median 3; publish after 2 valid median outputs; EMA 0.3 new / 0.7 retained |
+| Fast smoother | Median 1; publish after 1; EMA 1 |
+| Octave rejection | Jump > 6 semitones; reseed after 3 standard / 1 fast rejection(s) |
+| Invalid detection gap | Clear smoothing after > 200 ms |
+| Capture timing | Manual 3 s wall time, latest valid pitch; tessitura 3 voiced s, final 2 s mean, 1 s dropout grace |
+
+iOS requests `.measurement`, 16 kHz and hop-sized I/O, averages resolved channels,
+resamples with AVAudioConverter, and scales to PCM16. Android uses AudioRecord's
+UNPROCESSED → VOICE_RECOGNITION → MIC fallback. These are platform-specific input
+paths, not a guarantee of identical physical preprocessing or latency. Tap frame
+requests scale to the resolved hardware rate; Apple may coalesce callbacks. Fast
+readings delayed beyond 48 ms are discarded, and scoring consumes fresh samples
+on a 16 ms monotonic timer. Real iPhone microphone/route evidence is still pending.
+
+Focused checks justified by the explicit DSP requirement:
+`swift test --package-path ios/Packages/AcquiringKit --filter PitchDetectorParityTests`
+passed (7 tests, 0 failures); `swift test --package-path ios/Packages/AcquiringKit --filter PitchSmootherParityTests`
+passed (6 tests, 0 failures). `plutil -lint ios/Acquiring.xcodeproj/project.pbxproj`
+passed. The initial combined build caught unsupported SwiftUI accessibility calls
+and a plain-String format interpolation in the new practice view; these were
+corrected. The rebuild passed; a final incremental build also passed after the
+last calibration-access and score-reset changes. Exact build command:
+`xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug build CODE_SIGNING_ALLOWED=NO`
+(exit 0; existing unused sound-configuration return warnings remain).
+
+Normal-app handoff (no `--ui-testing`; catalog and durable user data retained):
+`xcrun simctl terminate 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios`,
+`xcrun simctl install 55373408-99CC-4EB3-A771-6ACF29E2D96A /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa/Build/Products/Debug-iphonesimulator/Acquiring.app`,
+`xcrun simctl launch --terminate-running-process 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios`,
+and `open -a Simulator --args -CurrentDeviceUDID 55373408-99CC-4EB3-A771-6ACF29E2D96A`
+passed (exit 0). Scoped source/whitespace checks passed. No screenshots or full
+suites were run. No commit, physical-device install, or TestFlight upload.
+
+Human review: (1) Open `500 Miles` and expand Vocal practice; inspect two slots,
+record/replay/interval/Flip-Flop controls and calibration access. (2) Double-tap a
+pitched melody/root/chord-tone card or interval; inspect the guided sheet, target
+labels and Done/cancel behavior. (3) Long-press an active root/melody/chord-tone
+card; inspect persistent feedback, start playback and review timeline markers and
+scores if microphone input is available. (4) Adjust the comfortable anchor,
+switch section, then leave the song; check expected continuity and cleanup.
+Real-phone singing, latency, Bluetooth, lock screen, interruptions and background
+recovery remain unverified. All E/F review statuses remain pending; stop here.
+The full-app test proposal is T1–T3 below and requires explicit approval. Release
+is separately authorized, including any TestFlight build needed for phone review.
+
+During this handoff the user reproduced a long-press crash. The concrete simulator
+trace (`Acquiring-2026-09-05-012617.ips`, PID 12234) identified the practice status
+label force-unwrapping a cleared selection while SwiftUI was still rendering the
+child. The label now handles nil/idle, and score badges snapshot dictionary values
+instead of force-unwrapping mutable lookups. The same incremental build command
+passed again (exit 0), install and normal launch passed (exit 0, PID 12525).
+Termination reported no process because the previous app had already crashed.
+Press-and-hold → microphone permission/error/cancel → idle is now an explicit
+human-review and eventual targeted regression case. No full suite was started.
 
 ## Full-app testing approval gate
 
