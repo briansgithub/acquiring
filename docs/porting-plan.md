@@ -962,3 +962,233 @@ export, `codesign --verify --deep --strict`, and App Store Connect upload. Versi
 The script recorded build 10. Tester availability/review and iPhone 14 Pro microphone
 behavior remain unverified. Notification/group changes and an in-app update button
 were discussed as recommendations only; none were implemented in this release.
+
+### First-launch Library and automatic catalog setup — 2026-09-05, review pending
+
+User requested no keyboard on iOS launch, automatic first-launch GitHub catalog
+installation, download/update interaction in Settings, and recommendations for
+further home-page cleanup. This supersedes Phase 1's manual first-install rule.
+Implementation routes: Terra/high for Library/Settings UI, Sol/high for catalog
+startup and metadata; coordinator runtime model ID unknown. Prior review statuses
+and pre-existing edits in this file are preserved. No commit or TestFlight upload.
+
+Implemented:
+
+- Library gives default focus to the existing All Songs control, removes the
+  songs-ready banner, and shows passive first-install progress/failure. The song
+  count stays in Settings. Search works when tapped.
+- After catalog preparation, an empty catalog automatically starts one install
+  attempt per store lifetime. Existing populated catalogs do not redownload at
+  launch. A failed/cancelled initial install has its retry/cancel controls only
+  in Settings; corrupt local catalogs retain a Settings repair action.
+- Successful downloads record the actual GET response's asset identity. Settings
+  uses an uncached HEAD request and compares ETag, falling back to Last-Modified
+  plus size. Failed/cancelled installs retain the old receipt; an install without
+  metadata clears it. Update checks cannot start during maintenance or overwrite
+  an install with an older in-flight result. Legacy catalogs without a receipt
+  show Version Unknown and offer Download Latest Catalog.
+- Broader cleanup is recommendations only: move the import form behind Add Song,
+  make external search contextual to a typed query, consolidate song/artist
+  search, and use recent songs plus clear All Songs/Favorites/Playlists entries.
+  The loaded-catalog import and external-search placements remain unchanged.
+
+Known unresolved behavior: the keyboard is hidden at initial launch and appears
+when search is tapped, but reappears when navigating Quiz → Song → Library. The
+focused UI test repeatedly passed the launch and tap assertions and failed only
+at the return-navigation assertion in `testLaunchKeepsKeyboardClosedUntilSearchIsTapped`
+(current line 798). An onDisappear reset and then a navigation-path reset both
+failed to resolve restoration. The current path reset remains in the review diff;
+do not claim it fixes return navigation. Investigation stopped at the supplied
+AGENTS.md limit of two diagnose/fix/retest cycles for one failure. Ask before
+expanding the focus investigation. No screenshots were inspected.
+
+Validation (17 distinct tests passed across runs; 1 UI test remains failing):
+
+```sh
+swift test --package-path ios/Packages/AcquiringKit --filter 'CatalogRecoveryTests/(testInstallPipelineValidatesBeforeClosingTheLivePool|testFailedInstallPreservesPriorAssetIdentity|testCancelledInstallLeavesLiveQueryableAndCleansArtifacts)'
+```
+
+Passed, exit 0: 3 tests, 0 failures. Covers successful receipt persistence across
+tracker recreation, clearing missing identity, and failed/cancelled preservation.
+Output: `/tmp/acquiring-ios-launch-package.log`.
+
+```sh
+xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -parallel-testing-enabled NO -maximum-concurrent-test-simulator-destinations 1 -only-testing:AcquiringTests/AcquiringTests/testEmptyCatalogAutomaticallyInstallsOnlyOncePerStore -only-testing:AcquiringTests/AcquiringTests/testReadyCatalogDoesNotDownloadOnLaunch -only-testing:AcquiringTests/AcquiringTests/testCatalogUpdateCheckDistinguishesCurrentAvailableAndUnknownInstalls -only-testing:AcquiringTests/AcquiringTests/testCatalogInstallSupersedesAnInFlightUpdateCheck -only-testing:AcquiringTests/AcquiringTests/testLibraryLoadDistinguishesEmptyAndReadyCatalogs -only-testing:AcquiringTests/AcquiringTests/testFullCatalogInstallCanRepairAPreparationFailure -only-testing:AcquiringTests/AcquiringTests/testCatalogMaintenanceFailurePreservesCatalogAndCanRetry -only-testing:AcquiringTests/AcquiringTests/testCatalogReplacementPreservesFavoritesAndCustomPlaylistMembership -only-testing:AcquiringUITests/AcquiringUITests/testLaunchKeepsKeyboardClosedUntilSearchIsTapped -only-testing:AcquiringUITests/AcquiringUITests/testFirstLaunchDownloadsCatalogAutomatically -only-testing:AcquiringUITests/AcquiringUITests/testFirstLaunchDownloadFailureRetriesOnlyInSettings -only-testing:AcquiringUITests/AcquiringUITests/testFirstLaunchShowsPassiveSetupAndSettingsOwnsCancellation -only-testing:AcquiringUITests/AcquiringUITests/testCurrentCatalogShowsNoDownloadActionInSettings -only-testing:AcquiringUITests/AcquiringUITests/testCatalogUpdateFailurePreservesReadyCatalogAndRetryCompletes -only-testing:AcquiringUITests/AcquiringUITests/testCatalogUpdateCanBeCancelledWithoutHidingReadyCatalog build test CODE_SIGNING_ALLOWED=NO
+```
+
+The first build failed on a missing return in the conditional Settings button;
+that was corrected. The same command then built successfully and ran 15 tests:
+12 passed, 3 failed (exit 65). All 8 selected app unit tests passed. The UI failures
+were two ambiguous status-label queries and the return-navigation keyboard issue.
+Logs: `/tmp/acquiring-ios-launch-xcode.log`, `/tmp/acquiring-ios-launch-xcode-retest.log`.
+
+```sh
+xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -parallel-testing-enabled NO -maximum-concurrent-test-simulator-destinations 1 -only-testing:AcquiringUITests/AcquiringUITests/testLaunchKeepsKeyboardClosedUntilSearchIsTapped -only-testing:AcquiringUITests/AcquiringUITests/testFirstLaunchDownloadsCatalogAutomatically -only-testing:AcquiringUITests/AcquiringUITests/testCurrentCatalogShowsNoDownloadActionInSettings build test CODE_SIGNING_ALLOWED=NO
+```
+
+Built successfully. After correcting queries to select static text, automatic
+first install and current-catalog Settings passed; return-navigation keyboard
+still failed (2 passed, 1 failed, exit 65). Log: `/tmp/acquiring-ios-launch-ui-retest.log`.
+
+```sh
+xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -parallel-testing-enabled NO -maximum-concurrent-test-simulator-destinations 1 -only-testing:AcquiringUITests/AcquiringUITests/testLaunchKeepsKeyboardClosedUntilSearchIsTapped test CODE_SIGNING_ALLOWED=NO
+```
+
+Built successfully with the path-based focus reset. The one test again passed
+initial launch/tap-to-search and failed only after returning to Library (exit 65).
+Log: `/tmp/acquiring-ios-launch-focus-retest.log`. Final result bundle:
+`/Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa/Logs/Test/Test-Acquiring-2026.09.05_17-00-39--0400.xcresult`.
+No passing package/unit/other-UI checks were repeated after this isolated focus edit.
+No full-app suite, real full-asset download, physical-device test, or release ran.
+
+```sh
+curl -sIL --max-time 30 'https://github.com/briansgithub/acquiring/releases/download/v1.0.0-data/catalog.db.gz' | rg -i '^(HTTP/|etag:|last-modified:|content-length:|content-type:)'
+xcrun simctl terminate 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios
+xcrun simctl install 55373408-99CC-4EB3-A771-6ACF29E2D96A /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa/Build/Products/Debug-iphonesimulator/Acquiring.app
+xcrun simctl launch --terminate-running-process 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios
+open -a Simulator --args -CurrentDeviceUDID 55373408-99CC-4EB3-A771-6ACF29E2D96A
+```
+
+HEAD check passed (exit 0): GitHub redirects to HTTP 200 with ETag, Last-Modified,
+and Content-Length. Terminate returned 3 because the test app had already exited.
+Install, normal launch (PID 31642), and Simulator-open passed (exit 0). Normal
+catalog and user data were retained. Review: (1) relaunch and confirm the keyboard
+stays hidden; (2) tap search and open 500 Miles; (3) inspect Settings → Catalog's
+version/update status. Broader layout changes await user preference.
+
+Implementation worktrees were retained without commits or deletion:
+`/Users/brian/Desktop/acquiring-ios-launch-ui` and
+`/Users/brian/Desktop/acquiring-ios-catalog-startup`. The integrated primary checkout
+is authoritative; it also contains the coordinator's compile, query, and focus fixes.
+
+### Compact Library controls — 2026-09-05, review pending
+
+User requested compact recent suggestions, playlists above search styled like
+Quiz selectors, and revised URL-import copy. Implemented locally with the current
+runtime (exact model ID unknown); no delegation for this localized visual pass.
+Library now uses one scrolling list with the playlist section before search,
+so expanding playlists can scroll instead of squeezing the search/results area.
+Playlist controls use Quiz's 8-point rounded outline at secondary opacity 0.45.
+Recent songs use a single title/artist line with tighter row insets and 44-point
+minimum tap targets; accessibility text sizes retain the two-line layout.
+Recent artists also use tighter insets. Import reads “Add from HookTheory URL:”
+and “Download”; its explicit URL placeholder uses blue at 0.35 opacity.
+The previous return-navigation keyboard issue remains unresolved; this pass did
+not resume that investigation or change catalog installation logic.
+
+Checks (all exit 0):
+
+```sh
+xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug build CODE_SIGNING_ALLOWED=NO
+xcrun simctl terminate 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios
+xcrun simctl install 55373408-99CC-4EB3-A771-6ACF29E2D96A /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa/Build/Products/Debug-iphonesimulator/Acquiring.app
+xcrun simctl launch --terminate-running-process 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios
+open -a Simulator --args -CurrentDeviceUDID 55373408-99CC-4EB3-A771-6ACF29E2D96A
+```
+
+Build log: `/tmp/acquiring-library-compact-build.log` (no diagnostics). Normal
+launch PID 34098, catalog/user data retained. Only indentation cleanup followed
+the passing build. No tests or screenshots ran; live accessibility inspection
+was unavailable with the enabled tools. Existing accessibility labels/identifiers
+were retained in source. No commit or TestFlight upload.
+Review: (1) expand Playlists above search and compare outlines with Quiz selectors;
+(2) tap search and inspect recent-row density; (3) inspect the import placeholder
+and revised labels. Prior edits and pending reviews are preserved.
+
+### Inline All Songs browser — 2026-09-05, review pending
+
+All Songs is now an expandable card at the bottom of Library, following the URL
+import control. A rounded accent outline, music icon, concise grouping caption,
+and stateful chevron replace the navigation row. Expanding scrolls its header
+into view and mounts the existing browser in a bounded 560-point area with its
+own lazy scrolling song/group list. Alphabetical/Complexity/Mode, index, filtering,
+errors, and store-backed expansion/scroll state are reused. Collapse/reopen retains
+the filter. Song selection still uses the existing Song/Quiz route. The standalone
+route remains supported, but the home control no longer pushes it; its navigation
+title was moved out of the reusable browser. Legacy metadata hints now direct to
+Settings. Initial non-text focus targets the search-scope picker near the top of
+Library so the relocated All Songs card is not the launch focus target.
+
+Implemented locally with current runtime (exact model ID unknown). Prior
+uncommitted changes and review statuses remain. The earlier return-navigation
+keyboard failure was not reinvestigated or marked fixed.
+
+```sh
+xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -parallel-testing-enabled NO -maximum-concurrent-test-simulator-destinations 1 -only-testing:AcquiringUITests/AcquiringUITests/testAllSongsExpandsInlineAndRetainsItsFilterWhenReopened test CODE_SIGNING_ALLOWED=NO
+```
+
+Passed (exit 0): build and 1 focused UI test, 0 failures/skips. This check covers
+the changed navigation/embedded-scroll presentation and collapse/remount filter
+state, without broad catalog or app testing. Log:
+`/tmp/acquiring-inline-all-songs-check.log`. Result bundle:
+`/Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa/Logs/Test/Test-Acquiring-2026.09.05_17-25-15--0400.xcresult`.
+
+The same simulator terminate/install/launch/open commands recorded above were
+run: terminate returned 3 because the test app had exited; install, normal launch
+(PID 40585), and Simulator-open passed (exit 0). Normal catalog/user data retained.
+Accessibility text was inspected through the focused test, with no screenshots.
+No commit, physical-device test, or TestFlight upload.
+Review: (1) scroll to the bottom of Library and expand All Songs; (2) browse groups
+and scroll inside the panel; (3) filter, collapse, and reopen to check retained state.
+
+### Library section styling and separate HookTheory tools — 2026-09-05, review pending
+
+Playlists and All Songs now share a rounded card label with an accent icon,
+subtitle, and disclosure chevron. Playlist children have subtler outlines and
+compact count badges. Larger insets separate Playlists, the softly outlined
+Search Database panel, the discreet web-tools disclosure, and All Songs.
+
+Search Hooktheory.com starts collapsed. Expanding reveals an independently
+stored web-search field, a Search button, and “Add song from hooktheory.com URL:”
+with the existing Download/progress/retry controls. The download field's faint
+placeholder is now just “URL”; the separate web-search field has a visible label
+and no placeholder. Collapse/reopen preserves web-query and URL-entry state.
+The database query and All Songs filter no longer feed a web-search button;
+all web-search entry is through the separate field in the disclosure. Full
+catalog maintenance remains in Settings. Existing import behavior is preserved.
+
+Implemented locally with current runtime (exact model ID unknown). Concurrent
+Android/audio edits and previous pending UI reviews were preserved. The existing
+return-navigation keyboard issue was not reinvestigated or marked resolved.
+
+```sh
+xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -parallel-testing-enabled NO -maximum-concurrent-test-simulator-destinations 1 -only-testing:AcquiringUITests/AcquiringUITests/testHooktheoryToolsStayCollapsedAndUseTheirOwnSearchQuery -only-testing:AcquiringUITests/AcquiringUITests/testSongHarvestFailureCanRetryToCompletion test CODE_SIGNING_ALLOWED=NO
+```
+
+Passed, exit 0: incremental build plus 2 focused UI tests, 0 failures/skips.
+Verified initially hidden tools, independent local/web queries, the URL placeholder,
+collapse/reopen state, and import failure/retry after relocating the controls.
+No external browser search was sent. Log: `/tmp/acquiring-library-sections-check.log`.
+Result: `/Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa/Logs/Test/Test-Acquiring-2026.09.05_17-39-42--0400.xcresult`.
+The previously recorded simulator terminate/install/launch/open commands were
+run again: terminate returned 3 (test app already stopped), then install, normal
+launch (PID 47064), and Simulator-open passed (exit 0). Existing catalog/user data
+retained. Accessibility text was checked through the focused UI tests; no
+screenshots, broad suites, physical-device delivery, commits, or TestFlight upload.
+Review: (1) compare the collapsed primary cards and section spacing; (2) expand
+HookTheory and try a web query independently of Search Database; (3) inspect the
+URL entry and collapse/reopen the tools.
+
+### Matching library search cards and modern web search button — 2026-09-05
+
+`[review]` Search Database and Search Hooktheory.com now share the Playlists/All
+Songs accent tint, icon badge, heading typography, and rounded-card treatment.
+Database search stays directly available; HookTheory retains its disclosure and
+harvest progress indicator. The download label is now exactly
+“Add song from hooktheory.com URL to database:”. The web Search button has a
+full-width rounded layout, icon badge, pressed feedback, and muted disabled state;
+Reduce Motion disables its scale animation. Existing search/browser behavior is
+preserved. Button implementation: explicitly requested parallel agent,
+`gpt-5.6-terra/xhigh`; primary runtime identity unknown.
+
+Checks:
+
+- `swiftc -frontend -parse ios/Acquiring/Features/LibraryViews.swift ios/Acquiring/Features/UserLibraryViews.swift` passed.
+- `git diff --check -- ios/Acquiring/Features/LibraryViews.swift ios/Acquiring/Features/UserLibraryViews.swift ios/Acquiring/Features/HooktheorySearchButton.swift` passed.
+- `xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug build CODE_SIGNING_ALLOWED=NO` passed after waiting for another task's build to release the build database lock. Successful log: `/tmp/acquiring-search-style-build-retry.log`.
+- Installed and relaunched on the warm iPhone 17 using the same simulator commands
+  recorded above. No screenshots or test suites run for this cosmetic change.
+
+Review: (1) Compare the four home section headers. (2) Expand HookTheory and
+inspect the full URL label and Search button in empty and populated states.
+Earlier pending reviews and unrelated work remain intact; changes uncommitted.

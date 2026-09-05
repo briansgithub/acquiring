@@ -19,7 +19,10 @@ struct LibraryScene: View {
                 .navigationDestination(for: AppRoute.self) { route in
                     switch route {
                     case let .artist(name): ArtistSongsView(artist: name, store: store)
-                    case .allSongs: AllSongsBrowseView(store: store)
+                    case .allSongs:
+                        AllSongsBrowseView(store: store)
+                            .navigationTitle("All Songs")
+                            .navigationBarTitleDisplayMode(.inline)
                     case let .playlist(id): PlaylistSongsView(playlistID: id, store: store)
                     case let .songDetail(id):
                         SongDetailView(songID: id) { song in
@@ -81,13 +84,33 @@ private struct LibraryView: View {
         case .idle, .loading:
             LibraryLoadingView()
         case .empty:
-            CatalogEmptyView {
-                ManualHarvestView(store: store)
-            }
-        case let .content(count):
-            SearchCatalogView(store: store, catalogCount: count)
+            setupContent
+        case .content:
+            SearchCatalogView(store: store)
         case let .failure(message):
             CatalogFailureView(message: message)
+        }
+    }
+
+    @ViewBuilder
+    private var setupContent: some View {
+        switch store.maintenanceState {
+        case let .running(operation: .downloadAndInstall, progress):
+            CatalogSetupProgressView(message: progress.message)
+        case .cancelling(operation: .downloadAndInstall):
+            CatalogSetupProgressView(message: "Cancelling catalog setup…")
+        case let .failed(operation: .downloadAndInstall, message):
+            CatalogFailureView(message: "The full catalog download failed. \(message)")
+        case .cancelled(operation: .downloadAndInstall):
+            CatalogFailureView(message: "The full catalog download was cancelled.")
+        case .idle,
+             .running(operation: .harvest, progress: _),
+             .cancelling(operation: .harvest),
+             .cancelled(operation: .harvest),
+             .failed(operation: .harvest, _),
+             .completed(operation: .downloadAndInstall, songCount: _),
+             .completed(operation: .harvest, songCount: _):
+            CatalogEmptyView()
         }
     }
 }
@@ -128,60 +151,199 @@ private struct CatalogFailureView: View {
     }
 }
 
-private struct CatalogEmptyView<HarvestContent: View>: View {
-    private let harvestContent: HarvestContent
-
-    init(@ViewBuilder harvestContent: () -> HarvestContent) {
-        self.harvestContent = harvestContent()
-    }
-
+private struct CatalogEmptyView: View {
     var body: some View {
-        ScrollView {
-            VStack(spacing: 28) {
-                ContentUnavailableView(
-                    "No catalog installed",
-                    systemImage: "music.note.list",
-                    description: Text("Install the song catalog from Settings when you’re ready.")
-                )
-                .accessibilityElement(children: .contain)
-                .accessibilityIdentifier("catalog.status.empty")
-
-                harvestContent
-            }
-            .padding()
-        }
+        ContentUnavailableView(
+            "Preparing your song catalog",
+            systemImage: "music.note.list",
+            description: Text("Acquiring downloads the full catalog automatically the first time you open it. Check Settings for progress or help.")
+        )
+        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("catalog.status.empty")
     }
 }
 
-private struct CatalogReadyBanner: View {
-    let count: Int
+private struct CatalogSetupProgressView: View {
+    let message: String
 
     var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "checkmark.circle.fill")
-                .accessibilityHidden(true)
-            Text("\(count.formatted()) songs ready")
+        VStack(spacing: 12) {
+            ProgressView()
+            Text(message)
+                .foregroundStyle(.secondary)
         }
-        .font(.subheadline.weight(.semibold))
-        .foregroundStyle(.green)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .accessibilityElement(children: .combine)
-        .accessibilityIdentifier("catalog.status.ready")
+        .accessibilityIdentifier("catalog.status.loading")
     }
 }
 
 private struct SearchCatalogView: View {
+    private enum FocusTarget: Hashable {
+        case searchScope
+        case search
+        case hooktheorySearch
+    }
+
     @Bindable var store: LibraryStore
-    let catalogCount: Int
-    @FocusState private var isSearchFieldFocused: Bool
+    @FocusState private var focusedElement: FocusTarget?
     @State private var focusedSearchScope: SearchScope?
+    @State private var isAllSongsExpanded = false
+    @State private var isHooktheoryExpanded = false
+    @State private var hooktheoryQuery = ""
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        VStack(spacing: 0) {
-            CatalogReadyBanner(count: catalogCount)
-            .padding(.horizontal)
-            .padding(.top)
+        ScrollViewReader { proxy in
+            libraryList
+                .onChange(of: isAllSongsExpanded) { _, expanded in
+                    guard expanded else { return }
+                    withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.2)) {
+                        proxy.scrollTo("library.allSongs.section", anchor: .top)
+                    }
+                }
+        }
+    }
 
+    private var libraryList: some View {
+        List {
+            Section {
+                PlaylistsSectionView(store: store)
+            }
+            Section {
+                searchControls
+                    .padding(14)
+                    .background(Color.accentColor.opacity(0.05), in: RoundedRectangle(cornerRadius: 14))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 14)
+                            .stroke(Color.accentColor.opacity(0.25), lineWidth: 1)
+                    }
+                    .listRowInsets(EdgeInsets(top: 20, leading: 16, bottom: 12, trailing: 16))
+                    .listRowSeparator(.hidden)
+            }
+            searchResults
+
+            Section {
+                hooktheoryDisclosure
+                    .listRowInsets(EdgeInsets(top: 20, leading: 16, bottom: 8, trailing: 16))
+                    .listRowSeparator(.hidden)
+                if isHooktheoryExpanded {
+                    hooktheoryTools
+                        .padding(14)
+                        .background(Color.accentColor.opacity(0.05), in: RoundedRectangle(cornerRadius: 14))
+                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 12, trailing: 16))
+                        .listRowSeparator(.hidden)
+                }
+            }
+
+            Section {
+                allSongsDisclosure
+                    .id("library.allSongs.section")
+                    .listRowInsets(EdgeInsets(top: 20, leading: 16, bottom: 8, trailing: 16))
+                    .listRowSeparator(.hidden)
+
+                if isAllSongsExpanded {
+                    AllSongsBrowseView(store: store)
+                        .frame(height: 560)
+                        .background(.background, in: RoundedRectangle(cornerRadius: 14))
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 14)
+                                .stroke(.secondary.opacity(0.25), lineWidth: 1)
+                        }
+                        .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 12, trailing: 16))
+                        .listRowSeparator(.hidden)
+                }
+            }
+        }
+        .listStyle(.plain)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("catalog.status.ready")
+        // Keep initial focus on a non-text control near the top of Library.
+        // All Songs is now below the other home controls.
+        .defaultFocus($focusedElement, .searchScope)
+        .onChange(of: store.path) { oldPath, newPath in
+            // The search view remains alive below song destinations. Explicitly
+            // choose a non-text control when the final destination is popped.
+            guard !oldPath.isEmpty, newPath.isEmpty else { return }
+            focusedElement = .searchScope
+        }
+    }
+
+    private var allSongsDisclosure: some View {
+        Button {
+            focusedElement = nil
+            isAllSongsExpanded.toggle()
+        } label: {
+            LibrarySectionLabel(
+                title: "All Songs",
+                subtitle: "Alphabetical · Complexity · Mode",
+                systemImage: "music.note.list",
+                isExpanded: isAllSongsExpanded
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("All Songs")
+        .accessibilityValue(isAllSongsExpanded ? "Expanded" : "Collapsed")
+        .accessibilityHint(isAllSongsExpanded ? "Hide the song browser" : "Browse songs here by title, complexity, or mode")
+        .accessibilityIdentifier("library.allSongs")
+    }
+
+    private var hooktheoryDisclosure: some View {
+        Button {
+            focusedElement = nil
+            isHooktheoryExpanded.toggle()
+        } label: {
+            LibrarySectionLabel(
+                title: "Search Hooktheory.com",
+                subtitle: "Web search and song downloads",
+                systemImage: "globe",
+                isExpanded: isHooktheoryExpanded,
+                isLoading: isHarvesting
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Search Hooktheory.com")
+        .accessibilityValue(isHooktheoryExpanded ? "Expanded" : "Collapsed")
+        .accessibilityHint("Show or hide web search and song downloads")
+        .accessibilityIdentifier("library.hooktheory.toggle")
+    }
+
+    private var isHarvesting: Bool {
+        if case .running(operation: .harvest, progress: _) = store.maintenanceState {
+            return true
+        }
+        return false
+    }
+
+    private var hooktheoryTools: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Search HookTheory:")
+                    .font(.subheadline.weight(.semibold))
+                TextField("", text: $hooktheoryQuery)
+                    .textFieldStyle(.roundedBorder)
+                    .focused($focusedElement, equals: .hooktheorySearch)
+                    .submitLabel(.done)
+                    .onSubmit { focusedElement = nil }
+                    .accessibilityLabel("Search HookTheory")
+                    .accessibilityIdentifier("library.hooktheory.search")
+                HooktheorySearchButton(query: hooktheoryQuery)
+            }
+            Divider()
+            ManualHarvestView(store: store)
+        }
+    }
+
+    private var searchControls: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            LibrarySectionHeading(
+                title: "Search Database:",
+                subtitle: "Songs and artists in your library",
+                systemImage: "magnifyingglass"
+            )
+            .padding(.bottom, 12)
             HStack(spacing: 8) {
                 Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
                 TextField(
@@ -189,7 +351,7 @@ private struct SearchCatalogView: View {
                     text: $store.query
                 )
                 .textFieldStyle(.plain)
-                .focused($isSearchFieldFocused)
+                .focused($focusedElement, equals: .search)
                 .submitLabel(.search)
                 .onSubmit { store.submitSearch() }
                 .accessibilityIdentifier("library.search.field")
@@ -206,9 +368,8 @@ private struct SearchCatalogView: View {
             }
             .padding(10)
             .background(.quaternary, in: RoundedRectangle(cornerRadius: 10))
-            .padding(.horizontal)
-            .padding(.top)
-            .onChange(of: isSearchFieldFocused) { _, isFocused in
+            .onChange(of: focusedElement) { _, focusedElement in
+                let isFocused = focusedElement == .search
                 let scope = isFocused ? store.searchScope : focusedSearchScope
                 guard let scope else { return }
                 store.setSearchFocused(isFocused, for: scope)
@@ -219,7 +380,7 @@ private struct SearchCatalogView: View {
                     store.setSearchFocused(false, for: focusedSearchScope)
                 }
                 focusedSearchScope = nil
-                isSearchFieldFocused = false
+                focusedElement = nil
                 store.setSearchFocused(false, for: store.searchScope)
             }
 
@@ -227,31 +388,10 @@ private struct SearchCatalogView: View {
                 ForEach(SearchScope.allCases) { scope in Text(scope.rawValue).tag(scope) }
             }
             .pickerStyle(.segmented)
-            .padding(.horizontal)
+            .focused($focusedElement, equals: .searchScope)
             .padding(.top, 8)
             .accessibilityIdentifier("library.search.scope")
 
-            List {
-                Section {
-                    NavigationLink(value: AppRoute.allSongs) {
-                        Label("All Songs", systemImage: "music.note.list")
-                    }
-                    .accessibilityIdentifier("library.allSongs")
-                    .accessibilityHint("Browse songs alphabetically, by complexity, or by mode")
-                    PlaylistsSectionView(store: store)
-                }
-
-                searchResults
-
-                Section {
-                    HooktheorySearchButton(query: store.query)
-                }
-
-                Section {
-                    ManualHarvestView(store: store)
-                }
-            }
-            .listStyle(.plain)
         }
     }
 
@@ -269,10 +409,11 @@ private struct SearchCatalogView: View {
         case .idle:
             if store.shouldShowRecentContent, !store.recentSongs.isEmpty {
                 Section("Recent Songs") {
-                    ForEach(store.recentSongs) { song in SongRow(song: song) { store.openSong(song) } }
+                    ForEach(store.recentSongs) { song in
+                        SongRow(song: song, isCompact: true) { store.openSong(song) }
+                            .listRowInsets(EdgeInsets(top: 2, leading: 16, bottom: 2, trailing: 16))
+                    }
                 }
-            } else {
-                idlePrompt
             }
         case .loading: ProgressView()
         case let .content(songs):
@@ -319,11 +460,15 @@ private struct SearchCatalogView: View {
             if store.shouldShowRecentContent, !store.recentArtists.isEmpty {
                 Section("Recent Artists") {
                     ForEach(store.recentArtists, id: \.self) { artist in
-                        Button(artist) { store.path.append(.artist(artist)) }
+                        Button { store.path.append(.artist(artist)) } label: {
+                            Text(artist)
+                                .font(.subheadline)
+                                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                                .contentShape(Rectangle())
+                        }
+                        .listRowInsets(EdgeInsets(top: 2, leading: 16, bottom: 2, trailing: 16))
                     }
                 }
-            } else {
-                idlePrompt
             }
         case .loading: ProgressView()
         case let .content(artists):
@@ -341,22 +486,35 @@ private struct SearchCatalogView: View {
         }
     }
 
-    @ViewBuilder
-    private var idlePrompt: some View {
-        Text("Search above to find a song.")
-            .foregroundStyle(.secondary)
-    }
 }
 
 struct SongRow: View {
     let song: CatalogSong
+    var isCompact = false
     let action: () -> Void
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         Button(action: action) {
-            VStack(alignment: .leading, spacing: 3) {
-                Text(song.displayTitle).foregroundStyle(.primary)
-                Text(song.displayArtist).font(.subheadline).foregroundStyle(.secondary)
+            Group {
+                if isCompact && !dynamicTypeSize.isAccessibilitySize {
+                    HStack(spacing: 8) {
+                        Text(song.displayTitle)
+                            .font(.subheadline)
+                            .foregroundStyle(.primary)
+                            .lineLimit(1)
+                            .layoutPriority(1)
+                        Text(song.displayArtist)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
+                } else {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(song.displayTitle).foregroundStyle(.primary)
+                        Text(song.displayArtist).font(.subheadline).foregroundStyle(.secondary)
+                    }
+                }
             }
             .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
             .contentShape(Rectangle())
@@ -375,12 +533,22 @@ private struct CatalogSettingsView: View {
 
             Section("Catalog") {
                 CatalogSettingsStatusView(store: store)
-                DownloadCatalogButton(store: store)
+                CatalogUpdateStatusView(store: store)
+                CatalogUpdateButton(store: store)
                 DownloadMaintenanceStatusView(store: store)
             }
         }
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
+        .task(id: hasInstalledCatalog) {
+            guard hasInstalledCatalog else { return }
+            await store.checkForCatalogUpdate()
+        }
+    }
+
+    private var hasInstalledCatalog: Bool {
+        if case .content = store.catalogState { return true }
+        return false
     }
 }
 
@@ -486,16 +654,66 @@ private struct CatalogSettingsStatusView: View {
     }
 }
 
+private struct CatalogUpdateStatusView: View {
+    @Bindable var store: LibraryStore
+
+    var body: some View {
+        status
+    }
+
+    @ViewBuilder
+    private var status: some View {
+        switch store.catalogUpdateState {
+        case .idle:
+            EmptyView()
+        case .checking:
+            HStack(spacing: 8) {
+                ProgressView()
+                Text("Checking for catalog updates…")
+                    .foregroundStyle(.secondary)
+            }
+            .accessibilityIdentifier("catalog.update.checking")
+        case .current:
+            Label("Catalog is up to date", systemImage: "checkmark.circle.fill")
+                .foregroundStyle(.green)
+                .accessibilityIdentifier("catalog.update.current")
+        case .updateAvailable:
+            Label("Catalog update available", systemImage: "arrow.down.circle.fill")
+                .foregroundStyle(.orange)
+                .accessibilityIdentifier("catalog.update.available")
+        case .unknown:
+            Label("Catalog version unknown", systemImage: "questionmark.circle")
+                .foregroundStyle(.secondary)
+                .accessibilityIdentifier("catalog.update.unknown")
+        case let .failed(message):
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Couldn’t check for catalog updates", systemImage: "exclamationmark.triangle")
+                    .foregroundStyle(.red)
+                    .accessibilityIdentifier("catalog.update.failed")
+                Text(message)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                Button("Check Again", systemImage: "arrow.clockwise") {
+                    Task { await store.checkForCatalogUpdate() }
+                }
+                .accessibilityIdentifier("catalog.update.retry")
+            }
+        }
+    }
+}
+
 private struct ManualHarvestView: View {
     @Bindable var store: LibraryStore
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Add a TheoryTab song")
+            Text("Add song from hooktheory.com URL to database:")
                 .font(.subheadline.weight(.semibold))
             TextField(
-                "https://www.hooktheory.com/theorytab/view/artist/song",
-                text: $store.harvestURL
+                "HookTheory URL",
+                text: $store.harvestURL,
+                prompt: Text("URL")
+                    .foregroundStyle(Color.blue.opacity(0.35))
             )
             .textInputAutocapitalization(.never)
             .keyboardType(.URL)
@@ -503,16 +721,12 @@ private struct ManualHarvestView: View {
             .textFieldStyle(.roundedBorder)
             .accessibilityIdentifier("catalog.harvest.url")
 
-            Button("Harvest & Save", systemImage: "square.and.arrow.down") {
+            Button("Download", systemImage: "square.and.arrow.down") {
                 store.harvest()
             }
             .buttonStyle(.bordered)
             .disabled(!store.canHarvest)
             .accessibilityIdentifier("catalog.harvest")
-
-            Text("Paste a Hooktheory TheoryTab URL to add its sections to this catalog.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
 
             HarvestMaintenanceStatusView(store: store)
         }
@@ -683,32 +897,43 @@ private struct CatalogMaintenanceStatusContent: View {
     }
 }
 
-private struct DownloadCatalogButton: View {
+private struct CatalogUpdateButton: View {
     @Bindable var store: LibraryStore
 
+    @ViewBuilder
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Button(buttonTitle) {
-                store.installCatalog()
+        if offersCatalogDownload {
+            VStack(alignment: .leading, spacing: 4) {
+                Button(buttonTitle, systemImage: "arrow.down.circle") {
+                    store.installCatalog()
+                }
+                .disabled(!store.canInstallCatalog)
+                .accessibilityIdentifier("catalog.download")
+                .task { store.loadDownloadInfoIfNeeded() }
+
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
-            .disabled(!store.canInstallCatalog)
-            .accessibilityIdentifier("catalog.download")
-            .task { store.loadDownloadInfoIfNeeded() }
-
-            Text(subtitle)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
         }
     }
 
-    private var isAlreadyInstalled: Bool {
-        if case .content = store.catalogState { return true }
-        return false
+    private var offersCatalogDownload: Bool {
+        if case .failure = store.catalogState { return true }
+        switch store.catalogUpdateState {
+        case .updateAvailable, .unknown: return true
+        case .idle, .checking, .current, .failed: return false
+        }
     }
 
     private var buttonTitle: String {
-        isAlreadyInstalled ? "Resync Catalog" : "Download Full Catalog"
+        if case .failure = store.catalogState {
+            return "Repair Catalog"
+        }
+        if case .unknown = store.catalogUpdateState {
+            return "Download Latest Catalog"
+        }
+        return "Update Catalog"
     }
 
     private var subtitle: String {
@@ -763,7 +988,7 @@ private struct ArtistSongsView: View {
 
 #Preview("Library — Empty") {
     NavigationStack {
-        CatalogEmptyView { EmptyView() }
+        CatalogEmptyView()
             .navigationTitle("Library")
     }
     .preferredColorScheme(.dark)
@@ -771,15 +996,11 @@ private struct ArtistSongsView: View {
 
 #Preview("Library — Ready") {
     NavigationStack {
-        VStack(spacing: 20) {
-            CatalogReadyBanner(count: 40_979)
-            ContentUnavailableView(
-                "Find a song",
-                systemImage: "magnifyingglass",
-                description: Text("Search the installed catalog to begin.")
-            )
-        }
-        .padding()
+        ContentUnavailableView(
+            "Find a song",
+            systemImage: "magnifyingglass",
+            description: Text("Search the installed catalog to begin.")
+        )
         .navigationTitle("Library")
     }
     .preferredColorScheme(.dark)
