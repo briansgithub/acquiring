@@ -58,6 +58,19 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     func setSessionInstrument(_ waveform: SynthWaveform) {
         guard sessionInstrument != waveform else { return }
         sessionInstrument = waveform
+        if let context = quizContext,
+           context.soundConfiguration.waveform != waveform {
+            let soundConfiguration = context.soundConfiguration.replacing(waveform: waveform)
+            quizContext = QuizAudioContext(
+                songID: context.songID,
+                sectionID: context.sectionID,
+                tempoPercent: context.tempoPercent,
+                soundConfiguration: soundConfiguration
+            )
+            if quizTimelineLoaded {
+                quizRenderer.setSoundConfiguration(soundConfiguration)
+            }
+        }
         invalidatePreviewPlayback()
     }
 
