@@ -45,6 +45,7 @@ struct LibraryScene: View {
             if !remainsInSong { environment.vocalPractice.leaveSong() }
         }
         .onChange(of: scenePhase) { _, phase in
+            if phase != .active { environment.audio.pauseForAppInactivity() }
             if phase == .background { environment.vocalPractice.handleSceneBackgrounded() }
         }
         .task { await store.load() }

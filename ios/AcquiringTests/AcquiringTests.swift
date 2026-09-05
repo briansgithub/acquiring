@@ -1,4 +1,5 @@
 import AcquiringCatalog
+import AcquiringAudio
 import AcquiringCore
 import Foundation
 import SwiftData
@@ -7,6 +8,111 @@ import UIKit
 @testable import Acquiring
 
 final class AcquiringTests: XCTestCase {
+    @MainActor
+    func testQuizInstrumentSessionSeparatesCurrentSelectionFromSavedDefault() throws {
+        let suiteName = "AcquiringTests.QuizInstrument.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let preferences = QuizInstrumentPreferences(defaults: defaults)
+
+        XCTAssertEqual(preferences.savedDefault, .sawtooth)
+        defaults.set("removed-instrument", forKey: QuizInstrumentPreferences.defaultsKey)
+        XCTAssertEqual(preferences.savedDefault, .sawtooth)
+        preferences.savedDefault = .flute
+
+        var applied: [SynthWaveform] = []
+        let session = QuizInstrumentSession(preferences: preferences) { applied.append($0) }
+        XCTAssertEqual(session.selection, .flute)
+        XCTAssertEqual(session.savedDefault, .flute)
+        XCTAssertEqual(applied, [.flute])
+
+        session.select(.bell)
+        XCTAssertEqual(session.selection, .bell)
+        XCTAssertEqual(session.savedDefault, .flute)
+        XCTAssertEqual(preferences.savedDefault, .flute)
+
+        session.saveDefault(.bell)
+        XCTAssertEqual(session.selection, .bell)
+        XCTAssertEqual(session.savedDefault, .bell)
+        XCTAssertEqual(preferences.savedDefault, .bell)
+        XCTAssertEqual(applied.last, .bell)
+
+        session.saveDefault(.clarinet)
+        XCTAssertEqual(session.selection, .clarinet)
+        XCTAssertEqual(session.savedDefault, .clarinet)
+        XCTAssertEqual(preferences.savedDefault, .clarinet)
+
+        let restarted = QuizInstrumentSession(preferences: preferences)
+        XCTAssertEqual(restarted.selection, .clarinet)
+        XCTAssertEqual(restarted.savedDefault, .clarinet)
+    }
+
+    @MainActor
+    func testLifecycleInvalidatesQueuedQuizOwnerAndRetainsPositionForReentry() async throws {
+        let audio = AppAudioSystem()
+        let configuration = QuizSoundConfiguration(waveform: .triangle)
+        let timeline = QuizTimeline(
+            durationSeconds: 4,
+            events: [QuizEvent(
+                onsetSeconds: 0,
+                durationSeconds: 4,
+                frequenciesHz: [440],
+                waveform: .triangle
+            )]
+        )
+        let revision = audio.beginQuizReplacement(
+            songID: "song",
+            sectionID: "verse",
+            tempoPercent: 100,
+            soundConfiguration: configuration
+        )
+        try await audio.loadQuiz(
+            timeline,
+            songID: "song",
+            sectionID: "verse",
+            tempoPercent: 100,
+            position: .restart,
+            revision: revision,
+            soundConfiguration: configuration
+        )
+        let firstOwner = try XCTUnwrap(audio.activateQuizPlaybackOwner(revision: revision))
+        XCTAssertTrue(audio.seekQuiz(to: 0.5, revision: revision, owner: firstOwner))
+
+        audio.pauseForAppInactivity()
+        do {
+            try await audio.playQuiz(revision: revision, owner: firstOwner)
+            XCTFail("A play queued by the inactive Quiz must be rejected")
+        } catch is CancellationError {
+        }
+
+        XCTAssertEqual(
+            audio.restorableQuizRevision(
+                songID: "song",
+                sectionID: "verse",
+                tempoPercent: 100,
+                soundConfiguration: configuration
+            ),
+            revision
+        )
+        let reenteredOwner = try XCTUnwrap(audio.activateQuizPlaybackOwner(revision: revision))
+        try await audio.playQuiz(revision: revision, owner: reenteredOwner)
+        var states = (await audio.states()).makeAsyncIterator()
+        let nextState = await states.next()
+        let resumed = try XCTUnwrap(nextState)
+        XCTAssertEqual(resumed.phase, .playing)
+        let elapsed = resumed.elapsed.components
+        let elapsedSeconds = Double(elapsed.seconds) + Double(elapsed.attoseconds) / 1e18
+        XCTAssertGreaterThan(elapsedSeconds, 1.9)
+
+        let replacementOwner = try XCTUnwrap(audio.activateQuizPlaybackOwner(revision: revision))
+        XCTAssertFalse(audio.pauseQuizForLifecycle(revision: revision, owner: reenteredOwner))
+        var replacementStates = (await audio.states()).makeAsyncIterator()
+        let nextReplacementState = await replacementStates.next()
+        let replacementState = try XCTUnwrap(nextReplacementState)
+        XCTAssertEqual(replacementState.phase, .playing)
+        XCTAssertTrue(audio.pauseQuizForLifecycle(revision: revision, owner: replacementOwner))
+    }
+
     @MainActor
     func testMelodyIntervalRobotoBoldIsBundledAndRegistered() throws {
         let font = try XCTUnwrap(UIFont(name: "Roboto-Bold", size: 32))

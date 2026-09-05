@@ -286,9 +286,12 @@ final class AcquiringUITests: XCTestCase {
         play.tap()
         let playing = expectation(for: NSPredicate(format: "label == %@", "Pause"), evaluatedWith: play)
         wait(for: [playing], timeout: 90)
+        let timeline = app.descendants(matching: .any)["quiz.timeline"]
+        XCTAssertTrue(timeline.waitForExistence(timeout: 5))
 
         let instrument = app.descendants(matching: .any)["quiz.instrument"]
         XCTAssertTrue(instrument.waitForExistence(timeout: 5))
+        let beatBeforeInstrument = timeline.value as? String
         instrument.tap()
         let sine = app.buttons["Sine"]
         XCTAssertTrue(sine.waitForExistence(timeout: 5))
@@ -298,11 +301,20 @@ final class AcquiringUITests: XCTestCase {
             evaluatedWith: instrument
         )
         wait(for: [instrumentApplied], timeout: 5)
+        XCTAssertTrue(
+            waitForValueChange(timeline, from: beatBeforeInstrument, timeout: 5),
+            "The playback clock must keep advancing while the instrument menu commits"
+        )
+
+        let tempo = app.sliders["quiz.tempo"]
+        XCTAssertTrue(tempo.waitForExistence(timeout: 5))
+        tempo.adjust(toNormalizedSliderPosition: 0.85)
 
         let mode = app.descendants(matching: .any)["quiz.mode"]
         XCTAssertTrue(mode.waitForExistence(timeout: 5))
         XCTAssertEqual(mode.frame.midY, app.buttons["quiz.reset"].frame.midY, accuracy: 2,
                        "Full/Root-only belongs in the transport row")
+        let beatBeforeMode = timeline.value as? String
         mode.tap()
         let roots = app.buttons["Root-only"]
         XCTAssertTrue(roots.waitForExistence(timeout: 5))
@@ -312,6 +324,20 @@ final class AcquiringUITests: XCTestCase {
             evaluatedWith: mode
         )
         wait(for: [modeApplied], timeout: 5)
+        XCTAssertTrue(
+            waitForValueChange(timeline, from: beatBeforeMode, timeout: 5),
+            "The faster playback clock must keep advancing while the mode menu commits"
+        )
+
+        let beatBeforeSecondInstrument = timeline.value as? String
+        instrument.tap()
+        let square = app.buttons["Square"]
+        XCTAssertTrue(square.waitForExistence(timeout: 5))
+        square.tap()
+        XCTAssertTrue(
+            waitForValueChange(timeline, from: beatBeforeSecondInstrument, timeout: 5),
+            "The menu must remain responsive across repeated playback selections"
+        )
     }
 
     func testQuizCardPreviewsDoNotCrashAndMelodyCardsUseCompactHeights() {
@@ -856,6 +882,19 @@ final class AcquiringUITests: XCTestCase {
             _ = element.waitForExistence(timeout: 0.2)
         }
         return !element.exists
+    }
+
+    private func waitForValueChange(
+        _ element: XCUIElement,
+        from originalValue: String?,
+        timeout: TimeInterval
+    ) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if element.value as? String != originalValue { return true }
+            usleep(100_000)
+        }
+        return element.value as? String != originalValue
     }
 
     private func launchApp(
