@@ -1192,3 +1192,28 @@ Checks:
 Review: (1) Compare the four home section headers. (2) Expand HookTheory and
 inspect the full URL label and Search button in empty and populated states.
 Earlier pending reviews and unrelated work remain intact; changes uncommitted.
+
+
+### Library UI TestFlight build 11 — 2026-09-05
+
+User authorized commit, push, and TestFlight release. Isolated task changes on
+`codex/library-ui-testflight` in `/Users/brian/Desktop/acquiring-library-ui-testflight`;
+source commit `d512ff88` is pushed to origin. Excluded concurrent Android/audio,
+instrument-selector, and singing-dock edits; the primary dirty checkout is intact.
+
+`git diff --check` passed. `bash ios/scripts/deploy-testflight.sh` completed with
+exit 0: Release archive, local IPA export, `codesign --verify --deep --strict`, and
+App Store Connect upload all succeeded. Log: `/tmp/acquiring-library-testflight-11.log`.
+Apple accepted version 1.0 build 11 with “Uploaded package is processing.” Browser
+also showed build 11 Processing. Recorded build number 11 in the release checkout
+and primary checkout to avoid reusing it. Existing build 3 remains In Review for
+external testing; its review and group assignments were preserved. Known return-to-
+Library keyboard restoration issue remains unresolved; initial-launch checks passed
+as recorded above. No full suites or screenshots were run for this release.
+
+Apple processing completed during this session. Build 11 is assigned to Acquiring
+Internal Testers (one tester). Saved English (U.S.) What to Test notes describing
+home layout, inline All Songs, independent HookTheory search, automatic catalog
+setup, an optional 500 Miles check, and the known keyboard limitation. App Store
+Connect showed Saved. External submission remains blocked by the existing version
+1.0 review, which was preserved. No extra invitations or Notify Testers action sent.
