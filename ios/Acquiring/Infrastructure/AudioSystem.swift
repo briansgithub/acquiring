@@ -605,7 +605,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         let lease = MicrophoneLease(id: id, readings: stream)
 
         supersedeMicrophone(with: id)
-        pendingMicrophone = PendingMicrophone(id: id, owner: owner, continuation: continuation)
+        pendingMicrophone = PendingMicrophone(id: id, owner: owner, profile: profile, continuation: continuation)
         continuation.onTermination = { [weak self] _ in
             Task { @MainActor in self?.releaseMicrophone(id: id) }
         }
@@ -617,17 +617,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
             try Task.checkCancellation()
             guard pendingMicrophone?.id == id else { throw CancellationError() }
 
-            try configureSession(category: .playAndRecord, captureProfile: profile)
-            guard pendingMicrophone?.id == id else { throw CancellationError() }
-
-            let input = engine.inputNode
-            let format = input.outputFormat(forBus: 0)
-            guard format.sampleRate.isFinite,
-                  format.sampleRate > 0,
-                  format.channelCount > 0
-            else {
-                throw AcquiringAudioError.engine("No microphone input format is available.")
-            }
+            let (input, format) = try await prepareMicrophoneInput(id: id, profile: profile)
 
             let pipeline = try PitchPipeline(inputFormat: format, profile: profile) { [weak self] reading, capturedAt in
                 Task { @MainActor in
@@ -679,6 +669,43 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     /// the global transport stop required by the shared protocol surface.
     func releaseMicrophone(_ lease: MicrophoneLease) {
         releaseMicrophone(id: lease.id)
+    }
+
+    /// Hardware input can remain disabled on an engine first used for playback.
+    /// Re-query the real route, then rebuild that engine once if its cached input
+    /// still has no format. Never invent a sample rate for an unavailable device.
+    private func prepareMicrophoneInput(
+        id: UUID,
+        profile: PitchTrackingProfile
+    ) async throws -> (AVAudioInputNode, AVAudioFormat) {
+        let session = AVAudioSession.sharedInstance()
+        for attempt in 0..<4 {
+            try Task.checkCancellation()
+            guard pendingMicrophone?.id == id else { throw CancellationError() }
+            try configureSession(category: .playAndRecord, captureProfile: profile)
+
+            if session.currentRoute.inputs.isEmpty,
+               let builtIn = session.availableInputs?.first(where: { $0.portType == .builtInMic }) {
+                try session.setPreferredInput(builtIn)
+            }
+            let input = engine.inputNode
+            let hardware = input.inputFormat(forBus: 0)
+            let format = input.outputFormat(forBus: 0)
+            if hardware.sampleRate.isFinite, hardware.sampleRate > 0, hardware.channelCount > 0,
+               format.sampleRate.isFinite, format.sampleRate > 0, format.channelCount > 0 {
+                return (input, format)
+            }
+            let routes = session.currentRoute.inputs.map { $0.portType.rawValue }.joined(separator: ",")
+            logger.warning("Microphone input not ready (attempt \(attempt + 1)): hardware \(hardware.sampleRate) Hz / \(hardware.channelCount) ch; tap \(format.sampleRate) Hz / \(format.channelCount) ch; routes \(routes, privacy: .public)")
+            if attempt == 1 {
+                // Keeps the renderer's quiz position/settings, replacing only the
+                // device graph that may have cached a playback-only input node.
+                invalidatePreviewPlayback()
+                rebuildAudioEngine()
+            }
+            if attempt < 3 { try await Task.sleep(for: .milliseconds(150)) }
+        }
+        throw AcquiringAudioError.engine("The iPhone microphone could not start. Try recording again; if it persists, close and reopen the app.")
     }
 
     private func configureSession(
@@ -734,6 +761,9 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     private func configureSessionForCurrentNeeds() throws {
         if let activeMicrophone {
             try configureSession(category: .playAndRecord, captureProfile: activeMicrophone.profile)
+        } else if let pendingMicrophone {
+            // Playback/previews must not turn input off while acquisition is settling.
+            try configureSession(category: .playAndRecord, captureProfile: pendingMicrophone.profile)
         } else {
             try configureSession(category: .playback)
         }
@@ -781,6 +811,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         if let pending = pendingMicrophone, pending.id == id {
             pendingMicrophone = nil
             pending.continuation.finish()
+            transitionSessionAfterMicrophoneRelease()
             return
         }
         guard let active = activeMicrophone, active.id == id else { return }
@@ -796,6 +827,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         if let pending = pendingMicrophone, pending.id == id {
             pendingMicrophone = nil
             pending.continuation.finish(throwing: error)
+            transitionSessionAfterMicrophoneRelease()
             return
         }
         guard let active = activeMicrophone, active.id == id else { return }
@@ -842,8 +874,13 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
 
     private func transitionSessionAfterMicrophoneRelease() {
         do {
+            if let pendingMicrophone {
+                try configureSession(category: .playAndRecord, captureProfile: pendingMicrophone.profile)
+                return
+            }
             if quizPlaybackRequested || player.isPlaying {
                 try configureSession(category: .playback)
+                if quizPlaybackRequested, !engine.isRunning { try engine.start() }
             } else {
                 engine.stop()
                 try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
@@ -1227,6 +1264,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
 private struct PendingMicrophone {
     let id: UUID
     let owner: MicrophoneOwner
+    let profile: PitchTrackingProfile
     let continuation: AsyncThrowingStream<PitchReading, any Error>.Continuation
 }
 

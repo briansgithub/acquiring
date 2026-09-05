@@ -34,6 +34,7 @@ struct LibraryScene: View {
         }
         .environment(store.userContent)
         .environment(environment.vocalPractice)
+        .tessituraCalibrationPresentation(model: environment.vocalPractice)
         .onChange(of: store.path) { _, path in
             let remainsInSong = path.last.map { route in
                 switch route {

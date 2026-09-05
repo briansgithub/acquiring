@@ -336,6 +336,14 @@ final class QuizCoverageTests: XCTestCase {
         XCTAssertTrue(app.buttons["quiz.section"].isHittable)
         XCTAssertTrue(app.buttons["quiz.play"].isHittable)
         XCTAssertFalse(app.alerts.element.exists, "Expanding must not request microphone access")
+        XCTAssertFalse(app.scrollViews.firstMatch.exists, "Expanding practice must not enable page scrolling")
+        let footerTop = app.buttons["quiz.reset"].frame.minY
+        for identifier in ["quiz.tempo", "quiz.arpeggio", "quiz.instrument", "quiz.transpose"] {
+            let control = app.descendants(matching: .any)[identifier].firstMatch
+            XCTAssertTrue(control.isHittable, "\(identifier) must stay reachable with practice expanded")
+            XCTAssertLessThanOrEqual(control.frame.maxY, footerTop + 0.5,
+                                     "\(identifier) must not overlap the transport row")
+        }
         app.buttons["quiz.section"].tap()
         let chorus = app.buttons["Chorus"]
         XCTAssertTrue(chorus.waitForExistence(timeout: 5))
@@ -352,6 +360,11 @@ final class QuizCoverageTests: XCTestCase {
     /// Uses the real simulator input callback; silence is valid and no pitch is required.
     func testMicrophoneCaptureAndFlipFlopDoNotCrash() {
         let app = launchReadyQuiz()
+        // Reproduce the phone's playback-to-input transition, not only cold capture.
+        let rootPreview = app.buttons["quiz.root.preview"]
+        XCTAssertTrue(rootPreview.waitForExistence(timeout: 10))
+        XCTAssertTrue(waitForEnabled(rootPreview, timeout: 30))
+        rootPreview.tap()
         app.buttons["vocal.practice.expand"].tap()
         let first = app.descendants(matching: .any)["vocal.practice.slot.1"].firstMatch
         XCTAssertTrue(first.waitForExistence(timeout: 5))
@@ -381,6 +394,39 @@ final class QuizCoverageTests: XCTestCase {
         XCTAssertEqual(app.state, .runningForeground)
     }
 
+    func testDoubleTapOpensOnlyIntervalToolAndCollapseRetainsTarget() {
+        let app = launchReadyQuiz()
+        let root = app.buttons["quiz.root.preview"]
+        XCTAssertTrue(root.waitForExistence(timeout: 10))
+        XCTAssertTrue(waitForEnabled(root, timeout: 30))
+        root.doubleTap()
+        let toggle = app.buttons["vocal.practice.expand"]
+        let first = app.buttons["vocal.practice.slot.1"]
+        XCTAssertTrue(first.waitForExistence(timeout: 10))
+        XCTAssertTrue(waitForValue(toggle, "Expanded", timeout: 5))
+        XCTAssertEqual(app.buttons.matching(identifier: "vocal.practice.expand").count, 1)
+        XCTAssertFalse(app.navigationBars["Sing back"].exists)
+        XCTAssertFalse(app.navigationBars["Vocal practice"].exists)
+        XCTAssertFalse(app.descendants(matching: .any)["vocal.practice.panel"].exists)
+        XCTAssertTrue(app.buttons["quiz.section"].isHittable)
+
+        toggle.tap()
+        XCTAssertTrue(waitForValue(toggle, "Collapsed", timeout: 5))
+        XCTAssertFalse(first.exists)
+        XCTAssertFalse(app.buttons["vocal.practice.stop"].exists)
+        toggle.tap()
+        XCTAssertTrue(first.waitForExistence(timeout: 5))
+        XCTAssertFalse((first.value as? String ?? "No pitch").hasPrefix("No pitch"),
+                       "Reopening must retain the assigned target")
+        // The underlying Song Detail must use the same tool, with no hidden sheet presenter.
+        app.navigationBars.buttons["BackButton"].firstMatch.tap()
+        XCTAssertTrue(toggle.waitForExistence(timeout: 10))
+        XCTAssertEqual(app.buttons.matching(identifier: "vocal.practice.expand").count, 1)
+        XCTAssertFalse(app.navigationBars["Sing back"].exists)
+        if toggle.value as? String == "Expanded" { toggle.tap() }
+        XCTAssertTrue(waitForValue(toggle, "Collapsed", timeout: 5))
+    }
+
     // MARK: - F054 layout under the device's current Dynamic Type setting
 
     /// Quiz must stay one screen: every primary control on screen, nothing
@@ -400,6 +446,7 @@ final class QuizCoverageTests: XCTestCase {
             "quiz.arpeggio",
             "quiz.instrument",
             "quiz.transpose",
+            "quiz.mode",
             "quiz.section",
             "quiz.play",
             "vocal.practice.dock"
