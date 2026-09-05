@@ -67,6 +67,29 @@ codesign --verify --deep --strict /Users/brian/Desktop/acquiring/ios/build/verif
 env PATH=/usr/bin:/bin:/usr/sbin:/sbin xcodebuild -exportArchive -archivePath /Users/brian/Desktop/acquiring/ios/build/Acquiring.xcarchive -exportPath /Users/brian/Desktop/acquiring/ios/build/export-upload -exportOptionsPlist /Users/brian/Desktop/acquiring/ios/ExportOptions-TestFlight.plist -allowProvisioningUpdates
 ```
 
+## Build 5 — September 4
+
+- User explicitly authorized uploading **1.0 (5)** with the iPhone audio-session
+  fix (Sol/high) and the Settings update shortcut. Built from `3fa3bb55` plus
+  the uncommitted changes in `AudioSystem.swift` and `LibraryViews.swift`; the
+  exact app-source diff is retained in `ios/build/build5-source-changes.patch`.
+- `ios/scripts/deploy-testflight.sh --build 5` passed end-to-end (exit 0): Release
+  archive, local export, strict signature verification of the extracted app,
+  and App Store Connect upload. The 5.1 MB package has bundle ID
+  `com.acquiring.ios`, version 1.0, build 5, and Apple Distribution team
+  `XJHRX7Q6U9`. No app test suite or screenshot inspection ran.
+- Apple completed processing (build ID
+  `e536c4ed-3639-4404-a154-f7cea0536c06`) and attached it to **Acquiring Internal
+  Testers**, one tester. Saved What to Test notes request an in-place update,
+  `500 Miles` playback without the OSStatus -50 alert, chord preview, live
+  tempo/zero-pause review, and the Settings → TestFlight shortcut. Physical
+  installation/audio confirmation remains the user's review; the full-testing
+  gate and pending feature approvals are unchanged.
+- No external-testing submission, public release, Git commit, or push was
+  performed. The recorded build number is 5; the next default deployment uses
+  6. Existing Android changes remain untouched. Build 4 artifacts were
+  preserved at `/Users/brian/Desktop/acquiring-testflight-build4.XYLsM2/build`.
+
 ## Delivery constraints recorded at the checkpoint
 
 - Direct USB installation was unavailable because the development Mac could

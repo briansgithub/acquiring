@@ -1,5 +1,8 @@
 package com.acquiring.android
 
+import android.content.Context
+import android.content.Intent
+import android.content.ActivityNotFoundException
 import android.content.pm.PackageManager
 import android.graphics.Paint
 import android.graphics.Typeface
@@ -107,6 +110,36 @@ private enum class SongParentPage {
 
 private const val ROOT_INTERVAL_PREVIEW_DURATION_MS = 450
 private const val ALL_SONGS_STATE_KEY = "all-songs"
+// This is an external handoff, not an in-app update check. Keep the destination
+// isolated until the app adopts the Play In-App Updates API.
+private const val UPDATE_DISTRIBUTION_URL =
+    "https://play.google.com/store/apps/details?id=com.acquiring.android"
+
+private fun openUpdateDistribution(context: Context): String? {
+    val playStoreIntent = Intent(Intent.ACTION_VIEW, Uri.parse(UPDATE_DISTRIBUTION_URL))
+        .setPackage("com.android.vending")
+
+    return try {
+        context.startActivity(playStoreIntent)
+        null
+    } catch (_: ActivityNotFoundException) {
+        openUpdateDistributionInBrowser(context)
+    } catch (_: SecurityException) {
+        openUpdateDistributionInBrowser(context)
+    }
+}
+
+private fun openUpdateDistributionInBrowser(context: Context): String? {
+    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(UPDATE_DISTRIBUTION_URL))
+    return try {
+        context.startActivity(browserIntent)
+        null
+    } catch (_: ActivityNotFoundException) {
+        "No compatible app is available to open Google Play for updates."
+    } catch (_: SecurityException) {
+        "This device does not allow opening Google Play for updates."
+    }
+}
 
 private class InertiaBoundaryReachedException : Exception()
 
@@ -296,6 +329,7 @@ internal fun MainScreen(
     var searchArtistQuery by remember { mutableStateOf("") }
     var searchResult by remember { mutableStateOf<String?>(null) }
     var catalogStatus by remember { mutableStateOf("") }
+    var updateStatus by remember { mutableStateOf("") }
     var allSongs by remember { mutableStateOf(listOf<SongBrowseRow>()) }
     var suggestions by remember { mutableStateOf(listOf<SongBrowseRow>()) }
     var artistSuggestions by remember { mutableStateOf(listOf<String>()) }
@@ -340,6 +374,40 @@ internal fun MainScreen(
     
     val scope = rememberCoroutineScope()
     val context = androidx.compose.ui.platform.LocalContext.current
+    val downloadCatalog: () -> Unit = {
+        scope.launch {
+            catalogStatus = "Starting download..."
+            val result = DatabaseDownloader.downloadAndInstallCatalog(
+                context = context,
+                currentDb = activeDb
+            ) { catalogStatus = it }
+
+            if (result.isSuccess) {
+                // Re-open the replacement catalog after its atomic install.
+                activeDb = Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDatabase::class.java, AppDatabase.DB_NAME
+                ).addMigrations(
+                    AppDatabase.MIGRATION_1_2,
+                    AppDatabase.MIGRATION_2_3
+                ).build()
+                catalogStatus = "Database Refreshed!"
+            } else {
+                // A validated install closes Room only immediately before the
+                // atomic swap. Reopen the preserved catalog if needed.
+                if (!activeDb.isOpen) {
+                    activeDb = Room.databaseBuilder(
+                        context.applicationContext,
+                        AppDatabase::class.java, AppDatabase.DB_NAME
+                    ).addMigrations(
+                        AppDatabase.MIGRATION_1_2,
+                        AppDatabase.MIGRATION_2_3
+                    ).build()
+                }
+                catalogStatus = "Error: ${result.exceptionOrNull()?.message}"
+            }
+        }
+    }
     val microphonePitchCoordinator = remember(context.applicationContext) {
         MicrophonePitchCoordinator(MicrophonePitchTracker(context.applicationContext))
     }
@@ -622,6 +690,22 @@ internal fun MainScreen(
                 .padding(16.dp)
                 .padding(bottom = 32.dp) // Room for collapsed popup handle
         ) {
+            if (selectedSongSections == null && selectedArtistSongs == null && !isShowingAllSongs) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    AppSettingsMenu(
+                        catalogStatus = catalogStatus,
+                        updateStatus = updateStatus,
+                        onDownloadCatalog = downloadCatalog,
+                        onCheckForUpdates = {
+                            updateStatus = openUpdateDistribution(context)
+                                ?: "Opening Google Play. Enrolled beta testers can see an available Update there."
+                        }
+                    )
+                }
+            }
             if (selectedSongSections == null) {
                 if (selectedArtistSongs != null) {
                     ArtistSongsView(
@@ -787,44 +871,7 @@ internal fun MainScreen(
                     },
                     searchResult = searchResult,
                     allSongs = allSongs,
-                    onSongClick = openBrowseSong,
-
-                    catalogStatus = catalogStatus,
-                    onDownloadCatalog = {
-                        scope.launch {
-                            catalogStatus = "Starting download..."
-                            val result = DatabaseDownloader.downloadAndInstallCatalog(
-                                context = context,
-                                currentDb = activeDb
-                            ) { catalogStatus = it }
-                            
-                            if (result.isSuccess) {
-                                // Re-open DB
-                                activeDb = Room.databaseBuilder(
-                                    context.applicationContext,
-                                    AppDatabase::class.java, AppDatabase.DB_NAME
-                                ).addMigrations(
-                                    AppDatabase.MIGRATION_1_2,
-                                    AppDatabase.MIGRATION_2_3
-                                ).build()
-                                catalogStatus = "Database Refreshed!"
-                            } else {
-                                // A validated install closes Room only immediately
-                                // before the atomic swap. If that final swap fails,
-                                // reopen the preserved catalog before reporting it.
-                                if (!activeDb.isOpen) {
-                                    activeDb = Room.databaseBuilder(
-                                        context.applicationContext,
-                                        AppDatabase::class.java, AppDatabase.DB_NAME
-                                    ).addMigrations(
-                                        AppDatabase.MIGRATION_1_2,
-                                        AppDatabase.MIGRATION_2_3
-                                    ).build()
-                                }
-                                catalogStatus = "Error: ${result.exceptionOrNull()?.message}"
-                            }
-                        }
-                    }
+                    onSongClick = openBrowseSong
                 )
                 }
             } else {
@@ -910,6 +957,87 @@ internal fun MainScreen(
     }
 }
 
+@Composable
+private fun AppSettingsMenu(
+    catalogStatus: String,
+    updateStatus: String,
+    onDownloadCatalog: () -> Unit,
+    onCheckForUpdates: () -> Unit
+) {
+    var isExpanded by rememberSaveable { mutableStateOf(false) }
+
+    Box {
+        TextButton(
+            onClick = { isExpanded = true },
+            modifier = Modifier.semantics { contentDescription = "Open settings menu" }
+        ) {
+            Text("Settings")
+        }
+        DropdownMenu(
+            expanded = isExpanded,
+            onDismissRequest = { isExpanded = false },
+            modifier = Modifier.semantics { contentDescription = "Settings menu" }
+        ) {
+            DropdownMenuItem(
+                text = { Text("Check for Updates") },
+                onClick = onCheckForUpdates,
+                modifier = Modifier.semantics { contentDescription = "Check for app updates" }
+            )
+            if (updateStatus.isNotEmpty()) {
+                Text(
+                    text = updateStatus,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (updateStatus.startsWith("No compatible") || updateStatus.startsWith("This device")) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                )
+            }
+
+            Divider(modifier = Modifier.padding(vertical = 4.dp))
+            Text(
+                text = "Library",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+            )
+            DropdownMenuItem(
+                text = { Text("Download Full Library") },
+                onClick = onDownloadCatalog,
+                modifier = Modifier.semantics { contentDescription = "Download the full song library" }
+            )
+            if (catalogStatus.isNotEmpty()) {
+                Text(
+                    text = catalogStatus,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (catalogStatus.startsWith("Error:")) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                )
+            }
+
+            Divider(modifier = Modifier.padding(vertical = 4.dp))
+            Text(
+                text = "Opens Google Play. Enrolled beta testers can see an available Update there.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+            )
+            Text(
+                text = "Version ${BuildConfig.VERSION_NAME} (build ${BuildConfig.VERSION_CODE})",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LibraryView(
@@ -942,12 +1070,9 @@ fun LibraryView(
     onAllSongs: () -> Unit,
     searchResult: String?,
     allSongs: List<SongBrowseRow>,
-    onSongClick: (SongBrowseRow) -> Unit,
-    catalogStatus: String,
-    onDownloadCatalog: () -> Unit
+    onSongClick: (SongBrowseRow) -> Unit
 ) {
     var isHarvestExpanded by remember { mutableStateOf(false) }
-    var isDownloadCatalogExpanded by remember { mutableStateOf(false) }
     // Sends the title search out to Hooktheory's own catalog in the browser instead of
     // querying the downloaded database.
     var searchOnHooktheory by rememberSaveable { mutableStateOf(false) }
@@ -1136,8 +1261,8 @@ fun LibraryView(
             Text("All Songs")
         }
 
-        // Above the two catalog-maintenance sections, which belong together at
-        // the bottom.
+        // Keep the playlist controls on the main library screen. Catalog
+        // download controls are available from the app Settings menu instead.
         PlaylistsSection(
             playlistDao = playlistDao,
             songDao = activeDb.songDao(),
@@ -1184,48 +1309,6 @@ fun LibraryView(
             }
         }
 
-        // Download Catalog Section
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Surface(
-                onClick = { isDownloadCatalogExpanded = !isDownloadCatalogExpanded },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier.padding(vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Download Full Library",
-                        style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Icon(
-                        imageVector = if (isDownloadCatalogExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                        contentDescription = if (isDownloadCatalogExpanded) "Collapse" else "Expand"
-                    )
-                }
-            }
-
-            if (isDownloadCatalogExpanded) {
-                Column(modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
-                    Button(
-                        onClick = onDownloadCatalog,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text("Download Full Library")
-                    }
-                    
-                    if (catalogStatus.isNotEmpty()) {
-                        Text(
-                            text = catalogStatus,
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(top = 8.dp),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
-            }
-        }
     }
 }
 

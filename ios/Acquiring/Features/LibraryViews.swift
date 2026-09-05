@@ -339,6 +339,9 @@ private struct CatalogSettingsView: View {
 
     var body: some View {
         Form {
+            AppUpdateSettingsSection()
+            TimelineRenderingSettingsSection()
+
             Section("Catalog") {
                 CatalogSettingsStatusView(store: store)
                 DownloadCatalogButton(store: store)
@@ -348,6 +351,69 @@ private struct CatalogSettingsView: View {
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
         .accessibilityIdentifier("catalog.settings.screen")
+    }
+}
+
+private struct TimelineRenderingSettingsSection: View {
+    @AppStorage(TimelineFrameRatePreference.defaultsKey)
+    private var frameRate: TimelineFrameRatePreference = .standard
+
+    var body: some View {
+        Section {
+            Picker("Timeline frame rate", selection: $frameRate) {
+                ForEach(TimelineFrameRatePreference.allCases) { preference in
+                    Text(preference.title).tag(preference)
+                }
+            }
+            .pickerStyle(.menu)
+            .accessibilityIdentifier("settings.timelineFrameRate")
+            .accessibilityValue(frameRate.title)
+            .accessibilityHint("Controls visual smoothness, not song tempo")
+        } header: {
+            Text("Display")
+        } footer: {
+            Text("Both tracks refresh together, synchronized with the display. 60 fps is the default; Maximum requests your display’s highest supported rate and may use more battery. iOS may reduce the rate to save power or manage temperature. Reduce Motion disables smooth interpolation. Audio speed is unchanged.")
+        }
+    }
+}
+
+private struct AppUpdateSettingsSection: View {
+    @Environment(\.openURL) private var openURL
+    @State private var cannotOpenTestFlight = false
+
+    var body: some View {
+        Section {
+            LabeledContent("Installed Version", value: installedVersion)
+                .accessibilityIdentifier("app.installedVersion")
+
+            Button("Check for Updates", systemImage: "arrow.triangle.2.circlepath") {
+                // Beta builds are updated by TestFlight, not the catalog downloader.
+                guard let url = URL(string: "itms-beta://testflight.apple.com/v1/app/6807512572") else {
+                    cannotOpenTestFlight = true
+                    return
+                }
+                openURL(url) { accepted in
+                    cannotOpenTestFlight = !accepted
+                }
+            }
+            .accessibilityIdentifier("app.checkForUpdates")
+            .accessibilityHint("Opens Acquiring in TestFlight to check for a newer beta build")
+        } header: {
+            Text("App Updates")
+        } footer: {
+            Text("Updates are delivered through TestFlight. Select Acquiring there and tap Update if a newer build is available.")
+        }
+        .alert("Unable to Open TestFlight", isPresented: $cannotOpenTestFlight) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("Open TestFlight manually and select Acquiring to check for updates. If TestFlight is not installed, get it from the App Store and sign in with your tester account.")
+        }
+    }
+
+    private var installedVersion: String {
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Unknown"
+        let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
+        return build.map { "\(version) (\($0))" } ?? version
     }
 }
 

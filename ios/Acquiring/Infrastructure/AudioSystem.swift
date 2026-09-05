@@ -43,6 +43,9 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     }
 
     func play(_ request: PreviewRequest) async throws {
+        // Musical callers supply source pitches. Apply the shared instrument
+        // and absolute transpose once here; measured microphone pitches opt out.
+        let request = configuredPreview(request)
         let token = previewGeneration.begin()
         previewRender?.task.cancel()
         previewRender = nil
@@ -135,7 +138,12 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     /// Invalidates every queued command for the previous quiz and silences it
     /// before the replacement timeline is built. The replacement intentionally
     /// starts paused even when the old section was playing.
-    func beginQuizReplacement(songID: String, sectionID: String, tempoPercent: Double) -> UInt64 {
+    func beginQuizReplacement(
+        songID: String,
+        sectionID: String,
+        tempoPercent: Double,
+        soundConfiguration: QuizSoundConfiguration = .init()
+    ) -> UInt64 {
         quizRevision &+= 1
         quizLoadPendingRevision = quizRevision
         transportPollTask?.cancel()
@@ -146,7 +154,8 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         quizContext = QuizAudioContext(
             songID: songID,
             sectionID: sectionID,
-            tempoPercent: tempoPercent
+            tempoPercent: tempoPercent,
+            soundConfiguration: soundConfiguration
         )
         let snapshot = quizRenderer.snapshot()
         publish(TransportState(
@@ -159,7 +168,12 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
 
     /// A same-section settings change keeps its progress and requested playback
     /// state, while still superseding an older queued rebuild.
-    func beginQuizReload(songID: String, sectionID: String, tempoPercent: Double) -> UInt64 {
+    func beginQuizReload(
+        songID: String,
+        sectionID: String,
+        tempoPercent: Double,
+        soundConfiguration: QuizSoundConfiguration = .init()
+    ) -> UInt64 {
         guard quizContext?.songID == songID,
               quizContext?.sectionID == sectionID,
               quizTimelineLoaded
@@ -167,7 +181,8 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
             return beginQuizReplacement(
                 songID: songID,
                 sectionID: sectionID,
-                tempoPercent: tempoPercent
+                tempoPercent: tempoPercent,
+                soundConfiguration: soundConfiguration
             )
         }
         quizRevision &+= 1
@@ -175,7 +190,8 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         quizContext = QuizAudioContext(
             songID: songID,
             sectionID: sectionID,
-            tempoPercent: tempoPercent
+            tempoPercent: tempoPercent,
+            soundConfiguration: soundConfiguration
         )
         if isQuizTempoPaused { pauseQuizForZeroTempo() }
         return quizRevision
@@ -187,14 +203,16 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         sectionID: String,
         tempoPercent: Double,
         position: QuizLoadPosition,
-        revision: UInt64
+        revision: UInt64,
+        soundConfiguration: QuizSoundConfiguration = .init()
     ) async throws {
         try Task.checkCancellation()
         guard isCurrentQuiz(
             songID: songID,
             sectionID: sectionID,
             tempoPercent: tempoPercent,
-            revision: revision
+            revision: revision,
+            soundConfiguration: soundConfiguration
         ) else {
             throw CancellationError()
         }
@@ -205,13 +223,15 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         let snapshot = quizRenderer.configure(
             timeline,
             playbackRate: tempoPercent / 100,
-            preserveProgress: position == .preserveProgress
+            preserveProgress: position == .preserveProgress,
+            soundConfiguration: soundConfiguration
         )
         guard isCurrentQuiz(
             songID: songID,
             sectionID: sectionID,
             tempoPercent: tempoPercent,
-            revision: revision
+            revision: revision,
+            soundConfiguration: soundConfiguration
         ) else {
             throw CancellationError()
         }
@@ -239,8 +259,9 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         guard revision == quizRevision,
               quizTimelineLoaded,
               quizLoadPendingRevision == nil,
-              quizContext?.songID == songID,
-              quizContext?.sectionID == sectionID
+              let context = quizContext,
+              context.songID == songID,
+              context.sectionID == sectionID
         else { return nil }
 
         let previousState = transportState
@@ -252,7 +273,8 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         quizContext = QuizAudioContext(
             songID: songID,
             sectionID: sectionID,
-            tempoPercent: normalizedTempo
+            tempoPercent: normalizedTempo,
+            soundConfiguration: context.soundConfiguration
         )
         quizRenderer.setPlaybackRate(normalizedTempo / 100)
 
@@ -289,16 +311,45 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     func restorableQuizRevision(
         songID: String,
         sectionID: String,
-        tempoPercent: Double
+        tempoPercent: Double,
+        soundConfiguration: QuizSoundConfiguration = .init()
     ) -> UInt64? {
         guard quizTimelineLoaded,
               quizLoadPendingRevision == nil,
               quizContext == QuizAudioContext(
                 songID: songID,
                 sectionID: sectionID,
-                tempoPercent: tempoPercent
+                tempoPercent: tempoPercent,
+                soundConfiguration: soundConfiguration
               )
         else { return nil }
+        return quizRevision
+    }
+
+    /// Sound changes are renderer commands, not timeline reloads. They retain
+    /// the requested play state (including a tempo-zero pause) and playhead.
+    func updateQuizSoundConfiguration(
+        songID: String,
+        sectionID: String,
+        soundConfiguration: QuizSoundConfiguration,
+        revision: UInt64
+    ) -> UInt64? {
+        guard revision == quizRevision,
+              quizTimelineLoaded,
+              quizLoadPendingRevision == nil,
+              let context = quizContext,
+              context.songID == songID,
+              context.sectionID == sectionID
+        else { return nil }
+        quizRevision &+= 1
+        quizContext = QuizAudioContext(
+            songID: songID,
+            sectionID: sectionID,
+            tempoPercent: context.tempoPercent,
+            soundConfiguration: soundConfiguration
+        )
+        invalidatePreviewPlayback()
+        quizRenderer.setSoundConfiguration(soundConfiguration)
         return quizRevision
     }
 
@@ -486,12 +537,26 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     }
 
     private func configureSession(category: AVAudioSession.Category) throws {
+        let session = AVAudioSession.sharedInstance()
+        let options: AVAudioSession.CategoryOptions = category == .playAndRecord
+            ? [.allowAirPlay, .allowBluetoothA2DP]
+            : []
+
         do {
-            let session = AVAudioSession.sharedInstance()
-            try session.setCategory(category, mode: .default, options: [.allowAirPlay, .allowBluetoothA2DP])
+            try session.setCategory(category, mode: .default, options: options)
+        } catch {
+            logger.error(
+                "Audio session category setup failed for \(category.rawValue, privacy: .public): \(error.localizedDescription, privacy: .public)"
+            )
+            throw AcquiringAudioError.session(error.localizedDescription)
+        }
+
+        do {
             try session.setActive(true)
         } catch {
-            logger.error("Audio session setup failed: \(error.localizedDescription, privacy: .public)")
+            logger.error(
+                "Audio session activation failed for \(category.rawValue, privacy: .public): \(error.localizedDescription, privacy: .public)"
+            )
             throw AcquiringAudioError.session(error.localizedDescription)
         }
     }
@@ -500,14 +565,32 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         songID: String,
         sectionID: String,
         tempoPercent: Double,
-        revision: UInt64
+        revision: UInt64,
+        soundConfiguration: QuizSoundConfiguration
     ) -> Bool {
         revision == quizRevision
             && quizContext == QuizAudioContext(
                 songID: songID,
                 sectionID: sectionID,
-                tempoPercent: tempoPercent
+                tempoPercent: tempoPercent,
+                soundConfiguration: soundConfiguration
             )
+    }
+
+    private func configuredPreview(_ request: PreviewRequest) -> PreviewRequest {
+        guard request.usesMusicalConfiguration,
+              let sound = quizContext?.soundConfiguration
+        else { return request }
+        let pitchRatio = pow(2, Double(sound.transposeSemitones) / 12)
+        return PreviewRequest(
+            frequenciesHz: request.frequenciesHz.map { $0 * pitchRatio },
+            duration: request.duration,
+            arpeggiates: request.arpeggiates,
+            arpeggioStep: request.arpeggioStep,
+            waveform: sound.waveform,
+            gain: request.gain,
+            usesMusicalConfiguration: false
+        )
     }
 
     private var isQuizTempoPaused: Bool {
@@ -646,6 +729,7 @@ private struct QuizAudioContext: Equatable {
     let songID: String
     let sectionID: String
     let tempoPercent: Double
+    let soundConfiguration: QuizSoundConfiguration
 }
 
 final class PreviewPlaybackGeneration: @unchecked Sendable {
@@ -688,11 +772,13 @@ private final class LockedQuizRenderer: @unchecked Sendable {
     func configure(
         _ timeline: QuizTimeline,
         playbackRate: Double,
-        preserveProgress: Bool
+        preserveProgress: Bool,
+        soundConfiguration: QuizSoundConfiguration? = nil
     ) -> (elapsed: Double, duration: Double) {
         lock.withLock {
             let progress = renderer.progress
             renderer.configure(timeline)
+            if let soundConfiguration { renderer.setSoundConfiguration(soundConfiguration) }
             renderer.setPlaybackRate(playbackRate)
             if preserveProgress { renderer.seek(progress: progress) }
             return (renderer.progress * renderer.durationSeconds, renderer.durationSeconds)
@@ -704,6 +790,9 @@ private final class LockedQuizRenderer: @unchecked Sendable {
     func stop() { lock.withLock { renderer.stop() } }
     func seek(progress: Double) { lock.withLock { renderer.seek(progress: progress) } }
     func setPlaybackRate(_ rate: Double) { lock.withLock { renderer.setPlaybackRate(rate) } }
+    func setSoundConfiguration(_ configuration: QuizSoundConfiguration) {
+        lock.withLock { renderer.setSoundConfiguration(configuration) }
+    }
 
     func snapshot() -> (elapsed: Double, duration: Double) {
         lock.withLock { (renderer.progress * renderer.durationSeconds, renderer.durationSeconds) }
