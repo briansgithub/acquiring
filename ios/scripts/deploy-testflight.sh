@@ -9,6 +9,9 @@
 # this script and Apple's TestFlight processing.
 set -euo pipefail
 
+# Xcode's export uses rsync options unsupported by this Mac's Homebrew rsync.
+export PATH="/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+
 IOS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROJECT="$IOS_DIR/Acquiring.xcodeproj"
 SCHEME="Acquiring"
@@ -74,12 +77,16 @@ rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 
 echo "==> Archiving (Release, generic iOS device)"
+# No development devices are registered. Ad-hoc sign only this local archive;
+# the exports below apply Apple's cloud-managed App Store distribution signature.
 xcodebuild archive \
   -project "$PROJECT" \
   -scheme "$SCHEME" \
   -configuration Release \
   -destination "generic/platform=iOS" \
   -archivePath "$ARCHIVE_PATH" \
+  CODE_SIGN_IDENTITY=- \
+  AD_HOC_CODE_SIGNING_ALLOWED=YES \
   CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
   DEVELOPMENT_TEAM="$TEAM_ID"
 
@@ -97,7 +104,10 @@ if [[ -z "$IPA_PATH" ]]; then
 fi
 
 echo "==> Verifying code signature"
-codesign --verify --deep --strict "$IPA_PATH"
+# An IPA is a ZIP container; verify its signed app bundle, not the ZIP itself.
+VERIFICATION_DIR="$(mktemp -d "$BUILD_DIR/verify.XXXXXX")"
+ditto -x -k "$IPA_PATH" "$VERIFICATION_DIR"
+codesign --verify --deep --strict "$VERIFICATION_DIR/Payload/Acquiring.app"
 echo "    OK ($(du -h "$IPA_PATH" | cut -f1)): $IPA_PATH"
 
 if [[ "$SKIP_UPLOAD" == true ]]; then
