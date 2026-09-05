@@ -435,6 +435,90 @@ Termination reported no process because the previous app had already crashed.
 Press-and-hold → microphone permission/error/cancel → idle is now an explicit
 human-review and eventual targeted regression case. No full suite was started.
 
+### Tempo/arpeggiation knob refinement — human review pending
+
+Implemented after E/F at the user's request. Terra/high built `PlaybackKnob`;
+the coordinating runtime (exact identity unavailable) wired the existing setters.
+The initial handoff placed Tempo and Arpeggiate below the cards with a vertical
+fallback; the single-screen refinement below supersedes that layout. Tempo uses 0–200%
+in 1% steps; arpeggiation snaps through Android's `1/4, 1/3, 1/2, Off, 1, 2, 3, 4`
+order. The 270° controls follow `QuizDial.kt`: drag to turn, tap to reset (100%
+or Off). Readouts, VoiceOver adjustable/reset actions and long-press menus for
+single-step Increase/Decrease/Reset support precise changes. Chords preview speed
+also uses a knob (30–1,000 ms, reset 80 ms). Existing playback timing/configuration
+and persistence setters are reused; this supersedes B1's slider and B5's Sound
+menu placement, without changing their audio acceptance criteria.
+
+Checks: `plutil -lint ios/Acquiring.xcodeproj/project.pbxproj`,
+`xcrun swiftc -parse ios/Acquiring/Features/PlaybackKnob.swift`, and
+`git diff --check` passed. One incremental build:
+`xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug build CODE_SIGNING_ALLOWED=NO`
+passed (exit 0; existing unused-return and preview async-alternative warnings).
+`xcrun simctl terminate 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios`,
+`xcrun simctl install 55373408-99CC-4EB3-A771-6ACF29E2D96A /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa/Build/Products/Debug-iphonesimulator/Acquiring.app`,
+`xcrun simctl launch --terminate-running-process 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios`,
+and `open -a Simulator --args -CurrentDeviceUDID 55373408-99CC-4EB3-A771-6ACF29E2D96A`
+passed (normal app, PID 13750; existing data retained). No additional test suites
+or screenshot inspection. Human review: (1) open `500 Miles`, turn Tempo while
+playing, check zero/pause and tap-reset; (2) turn Arpeggiate through its positions
+and tap Off, then try the long-press precision menu; (3) optionally open Chords,
+enable Arpeggiate and adjust/reset its step-time knob. Await feedback.
+
+### Single-screen Quiz and sound-selector refinement — human review pending
+
+User-directed UI override after the knob handoff: Quiz no longer has a page
+ScrollView or floating transport. Play/Pause, section, beat-step and Reset controls
+have a dedicated row. This supersedes A5's floating-placement acceptance for the
+current UI; its implementation/preferences remain intact but unused. Timeline
+seeking and knob adjustment remain available; Quiz disables both edge and
+content swipe-back recognition and restores it on leaving (native Back remains).
+Apple documents the separate [content-pop recognizer](https://developer.apple.com/documentation/uikit/uinavigationcontroller/interactivecontentpopgesturerecognizer).
+
+The centered 24pt key/scale under the navigation title follows Android's exact
+mode colors, including retaining the current source mode color while the locked
+label shows the initial relative major with a red outline. Lock-in-Major is a
+44pt icon button; Full/Roots uses a compact menu. Compact cards retain degree-only
+melody labels and 44/88pt paired/single heights. Two 96pt knobs share a row with
+instrument, transpose and balance. Vocal practice is a 44pt bottom dock opening
+a manual sheet; guided/calibration flows share its existing ownership. Main Quiz
+does not scroll; deliberately opened practice sheets may scroll.
+
+Terra/high implemented compact cards/knobs and vocal-dock/presentation subfeatures;
+the coordinator (exact runtime identity unavailable) integrated Quiz/header and
+selectors. Sol/high traced sound/revision ownership and ran the focused Release
+renderer regression; no audio-engine changes were needed in this refinement.
+
+**Open failure:** instrument selection now uses a direct-button chooser with all
+16 instruments; its Sine selection was confirmed by the targeted UI check during
+playback. Transpose uses minus/plus and tap-value-to-zero, but the same check still
+reports zero after tapping plus, even after waiting for chooser dismissal and
+button hittability. Do not claim transpose fixed or ship this as a verified fix.
+No revision/configuration overwrite was found by the bounded Sol code trace.
+Pause automated retries for human confirmation of the actual touch behavior.
+
+Validation: `git diff --check` and Swift parse passed. The incremental test/build
+compiled the app successfully. The final focused command was
+`xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -only-testing:AcquiringUITests/AcquiringUITests/testQuizInstrumentAndTransposeMenusApplySelections -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 180 -maximum-test-execution-time-allowance 180 test CODE_SIGNING_ALLOWED=NO`:
+exit 65, one failed test at the transpose-value expectation. Later assertions
+(key centering, no scrolling/swipe navigation) were not reached. The instrument
+menu attempt previously failed hit testing; the direct-button chooser passed
+that step. `swift test -c release --filter AcquiringAudioTests.testQuizRendererLiveTransposeIsAbsoluteAndPreservesTransportAndPhase`
+from `ios/Packages/AcquiringKit` passed (one test). Full suites, screenshots,
+physical-device verification and TestFlight upload were not performed.
+
+Final normal handoff: `xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug build CODE_SIGNING_ALLOWED=NO`
+passed (exit 0). The same `simctl install`, normal `simctl launch
+--terminate-running-process`, and Simulator-open commands recorded in the knob
+handoff passed again (exit 0; PID 17782). No UI-testing launch arguments were
+used for the handoff, and the existing user catalog/data were retained.
+
+Human review with `500 Miles`: (1) check all main controls fit, centered colored
+key and compact lock toggle; (2) play, choose an instrument, tap Shift +/−/value
+and report whether the number changes; (3) drag a timeline/knob and swipe elsewhere
+without moving the page; (4) open/close the bottom Practice tool. Portrait fit,
+actual touch behavior and visual usability still need review; broader layout and
+accessibility coverage remain at the full-testing gate.
+
 ## Full-app testing approval gate
 
 **Not authorized by this roadmap or by individual feature approvals.** After A–F
