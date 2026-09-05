@@ -31,7 +31,7 @@ final class AcquiringAudioTests: XCTestCase {
             [.quarter, .third, .half, .off, .one, .two, .three, .four]
         )
         XCTAssertEqual(QuizArpeggioOption.allCases.map(\.displayName), [
-            "1/4", "1/3", "1/2", "off", "1", "2", "3", "4"
+            "¼", "⅓", "½", "Off", "1", "2", "3", "4"
         ])
         XCTAssertEqual(QuizArpeggioOption.allCases.map(\.cyclesPerBeat), [
             0.25, 1.0 / 3.0, 0.5, 0, 1, 2, 3, 4

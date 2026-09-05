@@ -57,7 +57,18 @@ public enum QuizArpeggioOption: String, CaseIterable, Sendable {
     case three = "3"
     case four = "4"
 
-    public var displayName: String { rawValue }
+    public var displayName: String {
+        switch self {
+        case .quarter: "¼"
+        case .third: "⅓"
+        case .half: "½"
+        case .off: "Off"
+        case .one: "1"
+        case .two: "2"
+        case .three: "3"
+        case .four: "4"
+        }
+    }
 
     public var cyclesPerBeat: Double {
         switch self {
