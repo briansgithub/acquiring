@@ -4,6 +4,7 @@ import SwiftUI
 
 struct LibraryScene: View {
     @State private var store: LibraryStore
+    @Environment(\.scenePhase) private var scenePhase
     private let environment: AppEnvironment
 
     init(environment: AppEnvironment) {
@@ -32,6 +33,19 @@ struct LibraryScene: View {
                 }
         }
         .environment(store.userContent)
+        .environment(environment.vocalPractice)
+        .onChange(of: store.path) { _, path in
+            let remainsInSong = path.last.map { route in
+                switch route {
+                case .songDetail, .quiz: true
+                default: false
+                }
+            } ?? false
+            if !remainsInSong { environment.vocalPractice.leaveSong() }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .background { environment.vocalPractice.handleSceneBackgrounded() }
+        }
         .task { await store.load() }
     }
 }

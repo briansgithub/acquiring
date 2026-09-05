@@ -63,11 +63,13 @@ struct SongDetailView: View {
             }
         }
         .task(id: songID) { await load() }
+        .vocalPracticePresentation(model: environment.vocalPractice)
         .onAppear { synchronizeRememberedSection() }
         .onChange(of: environment.quizContinuity) { _, _ in
             synchronizeRememberedSection()
         }
         .onDisappear {
+            environment.vocalPractice.cancelActivity()
             Task { await environment.audio.stop(channel: .preview) }
         }
         .alert("Audio", isPresented: audioAlertBinding) {
@@ -142,6 +144,23 @@ struct SongDetailView: View {
                 }
             }
         }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            Group {
+                if environment.vocalPractice.isExpanded {
+                    ScrollView {
+                        VocalPracticePanel(model: environment.vocalPractice)
+                            .padding(.horizontal)
+                            .padding(.vertical, 8)
+                    }
+                    .frame(maxHeight: 260)
+                } else {
+                VocalPracticePanel(model: environment.vocalPractice)
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+                }
+            }
+            .background(.bar)
+        }
     }
 
     private func selectedSectionBinding(
@@ -151,6 +170,8 @@ struct SongDetailView: View {
             get: { selectedSectionID ?? sections.first?.id ?? "" },
             set: {
                 guard selectedSectionID != $0 else { return }
+                environment.vocalPractice.cancelActivity()
+                environment.vocalPractice.enterSong(songID: songID, sectionID: $0)
                 selectedSectionID = $0
                 let continuity = environment.rememberQuizSection(songID: songID, sectionID: $0)
                 _ = environment.audio.beginQuizReplacement(
@@ -179,6 +200,7 @@ struct SongDetailView: View {
                     ? rememberedID
                     : nil
             } ?? firstSectionID
+            environment.vocalPractice.enterSong(songID: songID, sectionID: selectedSectionID ?? firstSectionID)
             state = .content(document)
         } catch {
             state = .failure(error.localizedDescription)
@@ -199,6 +221,7 @@ struct SongDetailView: View {
         arpeggioStepMilliseconds: Int = 80
     ) {
         guard !chord.isRest, !chord.notes.isEmpty else { return }
+        environment.vocalPractice.cancelActivity()
         Task {
             do {
                 try await environment.audio.play(
@@ -787,6 +810,7 @@ struct QuizView: View {
     @State private var soundControlsExpanded = true
     @State private var quizCardPreviewTask: Task<Void, Never>?
     @State private var quizCardPreviewGeneration = 0
+    @State private var practiceTargets: QuizPracticeTargets?
 
     private var playing: Bool {
         transportPhase == .playing || transportPhase == .buffering
@@ -827,7 +851,9 @@ struct QuizView: View {
         }
         .task(id: songID) { await load() }
         .task(id: transportObservationGeneration) { await observeTransport() }
+        .vocalPracticePresentation(model: environment.vocalPractice)
         .onDisappear {
+            environment.vocalPractice.cancelActivity()
             finishTimelineScrub(resumingIfNeeded: true)
             cancelSectionLoad()
             cancelPlaybackCommand()
@@ -835,11 +861,14 @@ struct QuizView: View {
         }
         .onChange(of: usesRelativeIonianContext) { _, enabled in
             cancelQuizCardPreview()
+            environment.vocalPractice.handleTransportDiscontinuity()
             environment.rememberQuizSettings(
                 songID: songID,
                 usesRelativeIonianContext: enabled
             )
         }
+        .onChange(of: soundConfiguration) { _, _ in updatePracticeContext() }
+        .onChange(of: transportPhase) { _, _ in updatePracticeContext() }
         .alert("Audio", isPresented: errorAlertBinding) {
             Button("OK") { error = nil }
         } message: { Text(error ?? "") }
@@ -922,6 +951,7 @@ struct QuizView: View {
               selectedSectionID == sectionID
         else { return }
         cancelQuizCardPreview()
+        environment.vocalPractice.handleTransportDiscontinuity()
         let configuration = QuizSoundConfiguration(
             waveform: soundConfiguration.waveform,
             melodyChordBalance: soundConfiguration.melodyChordBalance,
@@ -943,6 +973,9 @@ struct QuizView: View {
         cancelQuizCardPreview()
         finishTimelineScrub(resumingIfNeeded: false)
         cancelPlaybackCommand()
+        environment.vocalPractice.cancelActivity()
+        environment.vocalPractice.enterSong(songID: songID, sectionID: id)
+        practiceTargets = nil
         selectedSectionID = id
         environment.rememberQuizSection(songID: songID, sectionID: id)
         progress = 0
@@ -976,10 +1009,14 @@ struct QuizView: View {
                     onDragEnd: endTimelineDrag,
                     onDragCancel: cancelTimelineDrag
                     )
-                    HStack(spacing: 12) {
-                    Button("Back 1 beat") {
+                    HStack(spacing: 8) {
+                    Button {
                         requestDiscreteSeek(to: beat - 1, in: section)
+                    } label: {
+                        Image(systemName: "backward.end.fill")
+                            .frame(minWidth: 44, minHeight: 44)
                     }
+                    .accessibilityLabel("Back 1 beat")
                     .disabled(!canSeek || beat <= PlaybackTiming.firstBeat)
                     .accessibilityIdentifier("quiz.seekBack")
                     .accessibilityHint("Moves the playhead back one beat")
@@ -990,9 +1027,13 @@ struct QuizView: View {
                         .accessibilityLabel("Current position")
                         .accessibilityValue("Beat \(beat.formatted(.number.precision(.fractionLength(0...2))))")
 
-                    Button("Forward 1 beat") {
+                    Button {
                         requestDiscreteSeek(to: beat + 1, in: section)
+                    } label: {
+                        Image(systemName: "forward.end.fill")
+                            .frame(minWidth: 44, minHeight: 44)
                     }
+                    .accessibilityLabel("Forward 1 beat")
                     .disabled(!canSeek || beat >= playbackEndBeat(in: section))
                     .accessibilityIdentifier("quiz.seekForward")
                     .accessibilityHint("Moves the playhead forward one beat")
@@ -1015,8 +1056,23 @@ struct QuizView: View {
                             asInterval: true,
                             duration: .milliseconds(450)
                         )
+                    },
+                    onSingBack: { request in
+                        cancelQuizCardPreview()
+                        cancelPlaybackCommand()
+                        finishTimelineScrub(resumingIfNeeded: false)
+                        environment.vocalPractice.requestSingBack(request)
+                    },
+                    onPersistentPractice: { selection in
+                        cancelQuizCardPreview()
+                        environment.vocalPractice.togglePersistent(selection)
+                    },
+                    onPracticeContext: { targets in
+                        practiceTargets = targets
+                        updatePracticeContext()
                     }
                 )
+                VocalPracticePanel(model: environment.vocalPractice)
                 HStack {
                     Button(action: requestPlaybackReset) {
                         Label("Reset", systemImage: "arrow.counterclockwise")
@@ -1167,6 +1223,7 @@ struct QuizView: View {
               activeQuizRevision != nil,
               timelineScrub == nil
         else { return }
+        environment.vocalPractice.cancelActivity()
         cancelQuizCardPreview()
         quizCardPreviewGeneration &+= 1
         let generation = quizCardPreviewGeneration
@@ -1197,6 +1254,25 @@ struct QuizView: View {
         quizCardPreviewTask?.cancel()
         quizCardPreviewTask = nil
         environment.audio.cancelQuizCardPreview()
+    }
+
+    private func updatePracticeContext() {
+        guard let targets = practiceTargets,
+              let sectionID = selectedSectionID,
+              case let .content(document) = state,
+              let section = document.orderedSections.first(where: { $0.key == sectionID })?.section
+        else { return }
+        environment.vocalPractice.updateContext(
+            songID: songID,
+            sectionID: sectionID,
+            transpose: soundConfiguration.transposeSemitones,
+            root: targets.root,
+            melody: targets.melody,
+            chordTones: targets.chordTones,
+            melodyRun: targets.melodyRun,
+            isPlaying: transportPhase == .playing && timelineScrub == nil,
+            beat: currentBeat(in: section)
+        )
     }
 
     private func setTempo(
@@ -1491,6 +1567,7 @@ struct QuizView: View {
     }
 
     private func requestSeek(to targetBeat: Double, in section: ExtractedSection) {
+        environment.vocalPractice.handleTransportDiscontinuity()
         guard canSeek, let revision = activeQuizRevision else { return }
         cancelQuizCardPreview()
         let endBeat = playbackEndBeat(in: section)
@@ -1530,6 +1607,7 @@ struct QuizView: View {
               selectedSectionID == sectionID else { return }
 
         cancelQuizCardPreview()
+        environment.vocalPractice.handleTransportDiscontinuity()
         cancelTimelineInertia()
         let beat = currentBeat(in: section)
         if var scrub = timelineScrub {
@@ -1768,6 +1846,7 @@ struct QuizView: View {
               transportPhase != .buffering,
               let revision = activeQuizRevision else { return }
         cancelQuizCardPreview()
+        environment.vocalPractice.handleTransportDiscontinuity()
         finishTimelineScrub(resumingIfNeeded: false)
         playbackCommandPending = true
         playbackCommandTask = Task { @MainActor in
@@ -1804,6 +1883,8 @@ struct QuizView: View {
                 sectionID: restored.key
             )
             selectedSectionID = restored.key
+            environment.vocalPractice.enterSong(songID: songID, sectionID: restored.key)
+            environment.audio.updateNowPlaying(song: document.song, sectionName: restored.section.safeSectionName)
             mode = continuity.mode
             tempoPercent = continuity.tempoPercent
             let restoredSoundConfiguration = continuity.playbackConfiguration.soundConfiguration
@@ -1842,6 +1923,9 @@ struct QuizView: View {
         position: QuizLoadPosition
     ) {
         cancelQuizCardPreview()
+        if case let .content(document) = state {
+            environment.audio.updateNowPlaying(song: document.song, sectionName: section.safeSectionName)
+        }
         switch position {
         case .restart:
             finishTimelineScrub(resumingIfNeeded: false)
@@ -2121,22 +2205,34 @@ private struct QuizHeader: View {
     }
 
     var body: some View {
-        HStack(alignment: .center, spacing: 12) {
-            Text("(\(displayedKeyLabel))")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .accessibilityLabel("Key \(displayedKeyLabel)")
-
-            Spacer(minLength: 8)
-
-            Toggle("Lock in Major", isOn: $usesRelativeIonianContext)
-                .toggleStyle(.switch)
-                .font(.caption)
-                .accessibilityHint("Updates the key label and chord degrees to the relative major key")
-                .accessibilityIdentifier("quiz.lockInMajor")
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 12) {
+                keyLabel
+                Spacer(minLength: 8)
+                majorToggle.fixedSize()
+            }
+            VStack(alignment: .leading, spacing: 8) {
+                keyLabel
+                majorToggle
+            }
         }
         .padding(12)
         .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))
+    }
+
+    private var keyLabel: some View {
+        Text("(\(displayedKeyLabel))")
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .accessibilityLabel("Key \(displayedKeyLabel)")
+    }
+
+    private var majorToggle: some View {
+        Toggle("Lock in Major", isOn: $usesRelativeIonianContext)
+            .toggleStyle(.switch)
+            .font(.caption)
+            .accessibilityHint("Updates key, card degrees, and practice targets to the relative major key")
+            .accessibilityIdentifier("quiz.lockInMajor")
     }
 }
 
@@ -2165,13 +2261,16 @@ struct MelodyTimelinePresentation: Equatable {
     static let laneHeight: CGFloat = 88
 
     let visuals: [MelodyTimelineVisual]
+    /// Consecutive equal-pitch melody events, in the same ID space used by the
+    /// persistent-practice scorer and card practice context.
+    let pitchRuns: [MelodyTimelinePitchRun]
     let restCount: Int
 
     init(section: ExtractedSection, usesRelativeIonianContext: Bool = false) {
         let initialKey = section.key(at: PlaybackTiming.firstBeat)
         let contextKey = RelativeIonianContext.key(for: initialKey)
         restCount = section.melodyNotes.filter(\.isRest).count
-        visuals = section.melodyNotes.enumerated().compactMap { sourceIndex, note in
+        let builtVisuals: [MelodyTimelineVisual] = section.melodyNotes.enumerated().compactMap { sourceIndex, note in
             guard !note.isRest else { return nil }
             let onset = PlaybackTiming.normalize(beat: note.beat)
             let onsetKey = section.key(at: onset)
@@ -2202,6 +2301,26 @@ struct MelodyTimelinePresentation: Equatable {
         }
         // Preserve payload order. SwiftUI paints later source events over earlier
         // ones, matching Android's deterministic overlap behavior.
+        visuals = builtVisuals
+        pitchRuns = MelodyTimelinePitchRuns.build(from: builtVisuals.map { visual in
+            let note = section.melodyNotes[visual.sourceIndex]
+            let pitch = MusicTheory.spelledPitch(
+                scaleDegree: note.sd,
+                relativeOctave: note.octave,
+                key: section.key(at: visual.onset)
+            )
+            let sourceMIDI = pitch.map { pitch in
+                usesRelativeIonianContext
+                    ? (RelativeIonianContext.previewMIDI(for: pitch, contextKey: contextKey) ?? pitch.midiNote)
+                    : pitch.midiNote
+            }
+            return MelodyTimelinePitchVisual(
+                beat: visual.onset,
+                duration: visual.duration,
+                staffDegree: visual.staffDegree,
+                sourceMIDI: sourceMIDI
+            )
+        })
     }
 
     var noteHeight: CGFloat {
@@ -2226,6 +2345,10 @@ struct MelodyTimelinePresentation: Equatable {
 
     func x(for visual: MelodyTimelineVisual, containerWidth: CGFloat, currentBeat: Double) -> CGFloat {
         translation(containerWidth: containerWidth, currentBeat: currentBeat) + localX(for: visual)
+    }
+
+    func activeVisual(at beat: Double) -> MelodyTimelineVisual? {
+        visuals.last(where: { $0.isActive(at: beat) })
     }
 }
 
@@ -2647,6 +2770,7 @@ private struct MelodyTimelineView: View {
     let onDragChange: (CGFloat, Date) -> Void
     let onDragEnd: () -> Void
     let onDragCancel: () -> Void
+    @Environment(VocalPracticeModel.self) private var vocalPractice: VocalPracticeModel?
     @State private var dragIsActive = false
     @GestureState private var dragGestureIsRecognized = false
 
@@ -2714,6 +2838,12 @@ private struct MelodyTimelineView: View {
                     .frame(width: 2, height: MelodyTimelinePresentation.laneHeight)
                     .offset(x: proxy.size.width / 2 - 1)
                     .accessibilityHidden(true)
+
+                persistentPracticeOverlays(
+                    containerWidth: proxy.size.width,
+                    currentBeat: visualBeat,
+                    translation: translation
+                )
             }
             .frame(
                 width: proxy.size.width,
@@ -2796,13 +2926,112 @@ private struct MelodyTimelineView: View {
         let activeText = activePitches.isEmpty
             ? "No active note"
             : "Active pitches \(activePitches.joined(separator: ", "))"
-        return "Melody timeline. \(eventText); \(restText). \(activeText). Current beat \(beatText)"
+        return "Melody timeline. \(eventText); \(restText). \(activeText). \(practiceAccessibilitySummary) Current beat \(beatText)"
+    }
+
+    @ViewBuilder
+    private func persistentPracticeOverlays(
+        containerWidth: CGFloat,
+        currentBeat: Double,
+        translation: CGFloat
+    ) -> some View {
+        if let vocalPractice,
+           vocalPractice.persistentSelection == .melody {
+            ForEach(presentation.pitchRuns) { run in
+                if let outcome = vocalPractice.score(forRunID: run.id) {
+                    MelodyRunScoreBadge(outcome: outcome)
+                        .offset(
+                            x: scoreBadgeX(for: run, translation: translation),
+                            y: scoreBadgeY(for: run)
+                        )
+                        .accessibilityHidden(true)
+                }
+            }
+
+            if let active = presentation.activeVisual(at: currentBeat),
+               let steps = vocalPractice.liveMarkerStaffSteps,
+               steps.isFinite,
+               abs(steps) <= 7 {
+                Circle()
+                    .fill(.orange)
+                    .overlay(Circle().stroke(.white.opacity(0.8), lineWidth: 1))
+                    .frame(width: 11, height: 11)
+                    .offset(
+                        x: containerWidth / 2 - 5.5,
+                        y: liveMarkerY(for: active, staffSteps: steps)
+                    )
+                    .accessibilityHidden(true)
+            }
+        }
+    }
+
+    private func scoreBadgeX(for run: MelodyTimelinePitchRun, translation: CGFloat) -> CGFloat {
+        let localX = CGFloat(run.beat - PlaybackTiming.firstBeat) * ChordTimelinePresentation.pointsPerBeat
+        return localX + translation + 3
+    }
+
+    private func scoreBadgeY(for run: MelodyTimelinePitchRun) -> CGFloat {
+        min(max(
+            MelodyTimelinePresentation.laneHeight / 2 - CGFloat(run.staffDegree) * presentation.noteHeight - 19,
+            2
+        ), MelodyTimelinePresentation.laneHeight - 19)
+    }
+
+    private func liveMarkerY(for active: MelodyTimelineVisual, staffSteps: Double) -> CGFloat {
+        min(max(
+            presentation.y(for: active) - CGFloat(staffSteps) * presentation.noteHeight - 1,
+            1
+        ), MelodyTimelinePresentation.laneHeight - 12)
+    }
+
+    private var practiceAccessibilitySummary: String {
+        guard let vocalPractice,
+              vocalPractice.persistentSelection == .melody
+        else { return "" }
+        let scored = presentation.pitchRuns.compactMap { vocalPractice.score(forRunID: $0.id) }.count
+        if let live = vocalPractice.persistentLivePercentageText {
+            return "Persistent melody practice is on, live pitch \(live), \(scored) completed run scores."
+        }
+        return "Persistent melody practice is on, waiting for a voiced pitch, \(scored) completed run scores."
     }
 
     private func cancelActiveDragIfNeeded() {
         guard dragIsActive else { return }
         dragIsActive = false
         onDragCancel()
+    }
+}
+
+private struct MelodyRunScoreBadge: View {
+    let outcome: MelodyRunScoreOutcome
+
+    var body: some View {
+        Text(label)
+            .font(.caption2.weight(.bold).monospacedDigit())
+            .foregroundStyle(.white)
+            .padding(.horizontal, 5)
+            .padding(.vertical, 2)
+            .background(color, in: Capsule())
+    }
+
+    private var label: String {
+        switch outcome {
+        case let .scored(_, score): score.formatted
+        case .unscored: "Unscored"
+        }
+    }
+
+    private var color: Color {
+        switch outcome {
+        case let .scored(_, score):
+            switch score.errorPercentage {
+            case ..<15: .green
+            case ..<50: .orange
+            default: .red
+            }
+        case .unscored:
+            .gray
+        }
     }
 }
 

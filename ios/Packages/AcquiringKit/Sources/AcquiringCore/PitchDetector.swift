@@ -45,7 +45,13 @@ public enum PitchDetector {
         var runningSum = 0.0
         for tau in 1...searchLimit {
             runningSum += yin[tau]
-            yin[tau] = runningSum == 0 ? 1 : yin[tau] * Double(tau) / runningSum
+            // Android's zero-energy YIN buffer never selects a lag. Return that
+            // same explicit no-detection result instead of a zero-confidence
+            // in-range frequency chosen only because every normalized value tied.
+            guard runningSum > 0 else {
+                return PitchEstimate(frequencyHz: 0, confidence: 0, rms: rms)
+            }
+            yin[tau] = yin[tau] * Double(tau) / runningSum
         }
 
         var bestTau: Int?

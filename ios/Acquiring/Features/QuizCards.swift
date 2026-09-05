@@ -2,6 +2,13 @@ import AcquiringCore
 import Foundation
 import SwiftUI
 
+struct QuizPracticeTargets: Equatable {
+    let root: QuizPitchCardTarget?
+    let melody: QuizPitchCardTarget?
+    let chordTones: [QuizPitchCardTarget]
+    let melodyRun: MelodyTimelinePitchRun?
+}
+
 /// The event-aware card stack shared by Full Quiz and Root-only Quiz.
 /// Preview closures receive source MIDI (or its fixed-Ionian register equivalent);
 /// the audio boundary owns transpose, waveform, and cancellation.
@@ -18,8 +25,12 @@ struct QuizCardsView: View {
     let isPreviewEnabled: Bool
     let onPreview: ([Int], Duration) -> Void
     let onIntervalPreview: ([Int]) -> Void
+    let onSingBack: ((SingingTargetRequest) -> Void)?
+    let onPersistentPractice: ((PersistentPitchSelection) -> Void)?
+    let onPracticeContext: ((QuizPracticeTargets) -> Void)?
 
     @State private var presentation: QuizCardsPresentation
+    @State private var singingRequestID = 0
 
     init(
         section: ExtractedSection,
@@ -28,7 +39,10 @@ struct QuizCardsView: View {
         usesRelativeIonianContext: Bool,
         isPreviewEnabled: Bool,
         onPreview: @escaping ([Int], Duration) -> Void,
-        onIntervalPreview: @escaping ([Int]) -> Void
+        onIntervalPreview: @escaping ([Int]) -> Void,
+        onSingBack: ((SingingTargetRequest) -> Void)? = nil,
+        onPersistentPractice: ((PersistentPitchSelection) -> Void)? = nil,
+        onPracticeContext: ((QuizPracticeTargets) -> Void)? = nil
     ) {
         self.section = section
         self.beat = beat
@@ -37,6 +51,9 @@ struct QuizCardsView: View {
         self.isPreviewEnabled = isPreviewEnabled
         self.onPreview = onPreview
         self.onIntervalPreview = onIntervalPreview
+        self.onSingBack = onSingBack
+        self.onPersistentPractice = onPersistentPractice
+        self.onPracticeContext = onPracticeContext
         _presentation = State(initialValue: QuizCardsPresentation(section: section))
     }
 
@@ -45,6 +62,7 @@ struct QuizCardsView: View {
         let activeMelody = presentation.activeMelody(at: beat)
         let rootState = presentation.rootState(at: beat, activeChord: activeChord)
         let melodyState = presentation.melodyState(at: beat, activeMelody: activeMelody)
+        let targets = practiceTargets(activeChord: activeChord, activeMelody: activeMelody, rootState: rootState)
 
         VStack(alignment: .leading, spacing: 12) {
             if rootOnly {
@@ -58,6 +76,8 @@ struct QuizCardsView: View {
         .onChange(of: section) { _, newSection in
             presentation = QuizCardsPresentation(section: newSection)
         }
+        .onChange(of: targets, initial: true) { _, value in onPracticeContext?(value) }
+        .onChange(of: beat) { _, _ in onPracticeContext?(targets) }
         .accessibilityIdentifier(rootOnly ? "quiz.rootCards" : "quiz.cards")
     }
 
@@ -202,7 +222,10 @@ struct QuizCardsView: View {
                     title: "Play chord \(symbol)",
                     identifier: "quiz.chord.preview",
                     enabled: isPreviewEnabled && !voicing.isEmpty,
-                    action: { onPreview(voicing, active.nativeDuration(bpm: section.bpm)) }
+                    action: { onPreview(voicing, active.nativeDuration(bpm: section.bpm)) },
+                    doubleTapAction: root.flatMap { singBackAction([previewMIDI(for: $0)]) },
+                    longPressAction: persistentAction(.simpleRoot),
+                    doubleTapActionName: "Sing Back"
                 ) {
                     FittedRomanNumeral(
                         display: RomanNumeralDisplay(symbol: symbol, borrowed: active.chord["borrowed"]),
@@ -283,7 +306,10 @@ struct QuizCardsView: View {
             title: "Play chord tone \(label)",
             identifier: "quiz.chordTone.\(index)",
             enabled: isPreviewEnabled,
-            action: { onPreview([preview], .milliseconds(450)) }
+            action: { onPreview([preview], .milliseconds(450)) },
+            doubleTapAction: singBackAction([preview], labels: [label]),
+            longPressAction: persistentAction(.chordTone(requestedIndex: index)),
+            doubleTapActionName: "Sing Back"
         ) {
             FittedScaleDegree(label, maximumFontSize: 28, minimumFontSize: 11, color: .white)
                 .frame(maxWidth: .infinity, minHeight: 44)
@@ -305,7 +331,10 @@ struct QuizCardsView: View {
                 title: "Play \(title) \(pitch.displayName), scale degree \(label)",
                 identifier: identifier,
                 enabled: isPreviewEnabled && !label.isEmpty,
-                action: { onPreview([previewMIDI(for: pitch)], .milliseconds(450)) }
+                action: { onPreview([previewMIDI(for: pitch)], .milliseconds(450)) },
+                doubleTapAction: singBackAction([previewMIDI(for: pitch)], labels: [label]),
+                longPressAction: persistentAction(.simpleRoot),
+                doubleTapActionName: "Sing Back"
             ) {
                 if label.isEmpty {
                     Text(pitch.displayName)
@@ -333,6 +362,9 @@ struct QuizCardsView: View {
             identifier: identifier,
             enabled: isPreviewEnabled && !degree.isEmpty,
             action: { onPreview([previewMIDI(for: pitch)], .milliseconds(450)) },
+            doubleTapAction: singBackAction([previewMIDI(for: pitch)], labels: [degree]),
+            longPressAction: persistentAction(.melody),
+            doubleTapActionName: "Sing Back",
             fixedHeight: fixedHeight
         ) {
             FittedScaleDegree(degree, maximumFontSize: 32, minimumFontSize: 11, color: .white)
@@ -375,7 +407,9 @@ struct QuizCardsView: View {
                 identifier: identifier,
                 enabled: isPreviewEnabled,
                 action: { onIntervalPreview(intervalPreviewPair(previous: previous, current: current)) },
+                doubleTapAction: singBackAction(intervalPreviewPair(previous: previous, current: current)),
                 previewActionName: "Preview sequence and together",
+                doubleTapActionName: "Sing Back Interval",
                 fixedHeight: fixedHeight
             ) {
                 VStack(spacing: 3) {
@@ -432,6 +466,58 @@ struct QuizCardsView: View {
         let registerShift = previewMIDI(for: previous) - previous.midiNote
         return [previous.midiNote + registerShift, current.midiNote + registerShift]
     }
+
+    private func singBackAction(_ notes: [Int], labels: [String] = []) -> (() -> Void)? {
+        guard let onSingBack, let first = notes.first else { return nil }
+        return {
+            singingRequestID &+= 1
+            onSingBack(SingingTargetRequest(
+                first: SingingTargetNote(sourceMIDI: first, scaleDegreeLabel: labels.first ?? "First note"),
+                second: notes.count > 1 ? SingingTargetNote(sourceMIDI: notes[1], scaleDegreeLabel: labels.count > 1 ? labels[1] : "Second note") : nil,
+                requestID: singingRequestID
+            ))
+        }
+    }
+
+    private func persistentAction(_ selection: PersistentPitchSelection) -> (() -> Void)? {
+        guard let onPersistentPractice else { return nil }
+        return { onPersistentPractice(selection) }
+    }
+
+    private func practiceTargets(
+        activeChord: QuizCardsPresentation.ActiveChord?,
+        activeMelody: MelodyNote?,
+        rootState: ChordRootIntervalState?
+    ) -> QuizPracticeTargets {
+        var root: QuizPitchCardTarget?
+        var tones: [QuizPitchCardTarget] = []
+        if let activeChord, !activeChord.isRest {
+            let key = section.key(at: activeChord.onset)
+            if let pitch = rootState?.currentIntervalPitch {
+                root = QuizPitchCardTarget(sourceMIDI: previewMIDI(for: pitch), label: degreeLabel(for: pitch, sourceKey: key))
+            }
+            let notes = ChordInterpreter.chordNotes(for: activeChord.chord, key: key)
+            if let chordRoot = ChordInterpreter.rootPositionChordNotes(for: activeChord.chord, key: key).first {
+                tones = notes.map { note in
+                    QuizPitchCardTarget(
+                        sourceMIDI: chordTonePreviewMIDI(note, chord: activeChord.chord, key: key),
+                        label: MusicTheory.relativeMajorDegreeLabel(midi: note, rootMIDI: chordRoot)
+                    )
+                }
+            }
+        }
+        let melody = activeMelody.flatMap { note -> QuizPitchCardTarget? in
+            guard !note.isRest, note.duration > 0, let pitch = melodyPitch(for: note) else { return nil }
+            return QuizPitchCardTarget(
+                sourceMIDI: previewMIDI(for: pitch),
+                label: degreeLabel(for: pitch, sourceKey: section.key(at: PlaybackTiming.normalize(beat: note.beat)))
+            )
+        }
+        return QuizPracticeTargets(
+            root: root, melody: melody, chordTones: tones,
+            melodyRun: MelodyTimelinePitchRuns.run(at: beat, in: presentation.practiceRuns(lockedInMajor: usesRelativeIonianContext))
+        )
+    }
 }
 
 private final class QuizCardsPresentation {
@@ -457,6 +543,7 @@ private final class QuizCardsPresentation {
     private let index: ActiveEventIndex
     private var cachedRootState: (active: ActiveChord, state: ChordRootIntervalState?)?
     private var cachedMelodyState: (active: MelodyNote, state: MelodyIntervalState?)?
+    private var cachedPracticeRuns: (locked: Bool, runs: [MelodyTimelinePitchRun])?
 
     init(section: ExtractedSection) {
         self.section = section
@@ -470,6 +557,14 @@ private final class QuizCardsPresentation {
             onset: PlaybackTiming.normalize(beat: chord["beat"]?.doubleValue ?? PlaybackTiming.firstBeat),
             duration: chord["duration"]?.doubleValue ?? 1
         )
+    }
+
+    func practiceRuns(lockedInMajor: Bool) -> [MelodyTimelinePitchRun] {
+        if let cachedPracticeRuns, cachedPracticeRuns.locked == lockedInMajor { return cachedPracticeRuns.runs }
+        let visuals = MelodyTimelinePresentation(section: section, usesRelativeIonianContext: lockedInMajor)
+        let runs = visuals.pitchRuns
+        cachedPracticeRuns = (lockedInMajor, runs)
+        return runs
     }
 
     func activeMelody(at beat: Double) -> MelodyNote? {
