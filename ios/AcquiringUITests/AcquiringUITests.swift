@@ -3,6 +3,14 @@ import XCTest
 
 @MainActor
 final class AcquiringUITests: XCTestCase {
+    private enum Fixture {
+        static let fiveHundredMiles = "500 Miles, by the-proclaimers"
+        static let badRomance = "Bad Romance, by lady-gaga"
+        static let bohemianRhapsody = "Bohemian Rhapsody, by queen"
+        static let gladiolusRag = "Gladiolus Rag, by scott-joplin"
+        static let theEntertainer = "The Entertainer, by scott-joplin"
+    }
+
     private enum LibraryScenario: String {
         case loading = "library.loading"
         case empty = "library.empty"
@@ -51,7 +59,7 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Library"].waitForExistence(timeout: 5))
         let readyStatus = app.descendants(matching: .any)["catalog.status.ready"]
         XCTAssertTrue(readyStatus.waitForExistence(timeout: 5))
-        XCTAssertEqual(readyStatus.label, "2 songs ready")
+        XCTAssertEqual(readyStatus.label, "8 songs ready")
         XCTAssertTrue(app.textFields["library.search.field"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["catalog.settings"].exists)
         XCTAssertFalse(app.buttons["catalog.download"].exists)
@@ -83,7 +91,7 @@ final class AcquiringUITests: XCTestCase {
 
         let readyStatus = app.descendants(matching: .any)["catalog.settings.status.ready"]
         XCTAssertTrue(readyStatus.waitForExistence(timeout: 5))
-        XCTAssertEqual(readyStatus.label, "2 songs installed")
+        XCTAssertEqual(readyStatus.label, "8 songs installed")
         attachScreenshot(of: app, named: "checkpoint-1.1-library-failure-recovered")
     }
 
@@ -93,15 +101,15 @@ final class AcquiringUITests: XCTestCase {
         let searchField = app.textFields["library.search.field"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 5))
         searchField.tap()
-        searchField.typeText("Seed")
+        searchField.typeText("500 Miles")
 
         // The title store debounces before publishing suggestions; waiting on
         // the result avoids timing the test to a particular device speed.
-        let seedSong = app.buttons["Seed Song, by Sample Artist"]
-        XCTAssertTrue(seedSong.waitForExistence(timeout: 5))
+        let fiveHundredMiles = app.buttons[Fixture.fiveHundredMiles]
+        XCTAssertTrue(fiveHundredMiles.waitForExistence(timeout: 5))
         attachScreenshot(of: app, named: "phase-2-search-results")
 
-        seedSong.tap()
+        fiveHundredMiles.tap()
         XCTAssertTrue(app.navigationBars["Quiz"].waitForExistence(timeout: 5))
 
         app.navigationBars["Quiz"].buttons.element(boundBy: 0).tap()
@@ -141,7 +149,7 @@ final class AcquiringUITests: XCTestCase {
         clear.tap()
         searchField.tap()
         XCTAssertTrue(app.staticTexts["Recent Songs"].waitForExistence(timeout: 5))
-        XCTAssertTrue(seedSong.waitForExistence(timeout: 5))
+        XCTAssertTrue(fiveHundredMiles.waitForExistence(timeout: 5))
     }
 
     func testQuizShellSwitchesModesAndReturnsThroughInfoToOrigin() {
@@ -149,14 +157,14 @@ final class AcquiringUITests: XCTestCase {
         let searchField = app.textFields["library.search.field"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 5))
         searchField.tap()
-        searchField.typeText("Seed")
+        searchField.typeText("500 Miles")
 
-        let seedSong = app.buttons["Seed Song, by Sample Artist"]
-        XCTAssertTrue(seedSong.waitForExistence(timeout: 5))
-        seedSong.tap()
+        let fiveHundredMiles = app.buttons[Fixture.fiveHundredMiles]
+        XCTAssertTrue(fiveHundredMiles.waitForExistence(timeout: 5))
+        fiveHundredMiles.tap()
 
         XCTAssertTrue(app.navigationBars["Quiz"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["Seed Song"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["500 Miles"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["quiz.artist"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.switches["quiz.lockInMajor"].waitForExistence(timeout: 5))
 
@@ -204,24 +212,67 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(searchField.waitForExistence(timeout: 5))
     }
 
+    func testPhase32ChordTimelineUsesAccessibleCurrentChordText() {
+        let app = launchApp(scenario: .ready)
+        let searchField = app.textFields["library.search.field"]
+        XCTAssertTrue(searchField.waitForExistence(timeout: 5))
+        searchField.tap()
+        searchField.typeText("500 Miles")
+        let fiveHundredMiles = app.buttons[Fixture.fiveHundredMiles]
+        XCTAssertTrue(fiveHundredMiles.waitForExistence(timeout: 5))
+        fiveHundredMiles.tap()
+
+        let melodyTimeline = app.descendants(matching: .any)["quiz.timeline"]
+        XCTAssertTrue(melodyTimeline.waitForExistence(timeout: 5))
+        XCTAssertTrue(melodyTimeline.label.contains("Melody timeline"))
+        XCTAssertTrue(melodyTimeline.label.contains("pitched"))
+        XCTAssertGreaterThan(melodyTimeline.frame.width, app.frame.width * 0.6)
+        XCTAssertGreaterThanOrEqual(melodyTimeline.frame.height, 84)
+        XCTAssertLessThanOrEqual(melodyTimeline.frame.height, 96)
+
+        let timeline = app.descendants(matching: .any)["quiz.chordTimeline"]
+        XCTAssertTrue(timeline.waitForExistence(timeout: 5))
+        XCTAssertTrue(timeline.label.contains("Chord timeline"))
+        XCTAssertTrue(timeline.label.contains("I"))
+        XCTAssertGreaterThan(timeline.frame.width, app.frame.width * 0.6)
+        XCTAssertGreaterThanOrEqual(timeline.frame.height, 36)
+        XCTAssertLessThanOrEqual(timeline.frame.height, 48)
+
+        let sectionPicker = app.descendants(matching: .any)["quiz.section"]
+        XCTAssertTrue(sectionPicker.waitForExistence(timeout: 5))
+        sectionPicker.tap()
+        let chorus = app.buttons["Chorus"]
+        XCTAssertTrue(chorus.waitForExistence(timeout: 5))
+        chorus.tap()
+        XCTAssertEqual(sectionPicker.value as? String, "Chorus")
+        let sectionStatus = app.descendants(matching: .any)["quiz.section.status"]
+        XCTAssertTrue(sectionStatus.waitForExistence(timeout: 5))
+        let chorusReady = expectation(
+            for: NSPredicate(format: "label == %@", "Chorus ready"),
+            evaluatedWith: sectionStatus
+        )
+        wait(for: [chorusReady], timeout: 5)
+        XCTAssertTrue(timeline.label.contains("I"))
+    }
+
     func testArtistSearchOpensArtistResults() {
         let app = launchApp(scenario: .ready)
         let searchField = app.textFields["library.search.field"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 5))
         searchField.tap()
-        searchField.typeText("Sample")
+        searchField.typeText("Joplin")
 
         let scope = app.segmentedControls["library.search.scope"]
         XCTAssertTrue(scope.waitForExistence(timeout: 5))
         scope.buttons["Artists"].tap()
 
-        let artist = app.buttons["Sample Artist"]
+        let artist = app.buttons["scott joplin"]
         XCTAssertTrue(artist.waitForExistence(timeout: 5))
         artist.tap()
 
-        XCTAssertTrue(app.navigationBars["Sample Artist"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.buttons["Seed Song, by Sample Artist"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.buttons["Second Song, by Sample Artist"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.navigationBars["scott joplin"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons[Fixture.gladiolusRag].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons[Fixture.theEntertainer].waitForExistence(timeout: 5))
         attachScreenshot(of: app, named: "phase-2-artist-results")
     }
 
@@ -235,15 +286,15 @@ final class AcquiringUITests: XCTestCase {
         let searchField = app.textFields["library.search.field"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 5))
         searchField.tap()
-        searchField.typeText("Seed")
+        searchField.typeText("500 Miles")
 
-        let seedSong = app.buttons["Seed Song, by Sample Artist"]
-        XCTAssertTrue(seedSong.waitForExistence(timeout: 5))
+        let fiveHundredMiles = app.buttons[Fixture.fiveHundredMiles]
+        XCTAssertTrue(fiveHundredMiles.waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["library.search.loadMore"].exists)
-        seedSong.tap()
+        fiveHundredMiles.tap()
 
         XCTAssertTrue(app.navigationBars["Quiz"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["Seed Song"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["500 Miles"].waitForExistence(timeout: 5))
         XCTAssertTrue(
             app.descendants(matching: .any)["quiz.timeline"].waitForExistence(timeout: 5)
         )
@@ -280,7 +331,7 @@ final class AcquiringUITests: XCTestCase {
 
         app.buttons["library.search.clear"].tap()
         XCTAssertTrue(app.staticTexts["Recent Songs"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.buttons["Seed Song, by Sample Artist"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons[Fixture.fiveHundredMiles].waitForExistence(timeout: 5))
     }
 
     // KNOWN ISSUE: tapping Play can block the app for 60-90s on this dev machine before the
@@ -299,10 +350,10 @@ final class AcquiringUITests: XCTestCase {
         let searchField = app.textFields["library.search.field"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 5))
         searchField.tap()
-        searchField.typeText("Seed")
-        let seedSong = app.buttons["Seed Song, by Sample Artist"]
-        XCTAssertTrue(seedSong.waitForExistence(timeout: 5))
-        seedSong.tap()
+        searchField.typeText("500 Miles")
+        let fiveHundredMiles = app.buttons[Fixture.fiveHundredMiles]
+        XCTAssertTrue(fiveHundredMiles.waitForExistence(timeout: 5))
+        fiveHundredMiles.tap()
         let playButton = app.buttons["quiz.play"]
         XCTAssertTrue(playButton.waitForExistence(timeout: 5))
         playButton.tap()
@@ -330,36 +381,36 @@ final class AcquiringUITests: XCTestCase {
             "a heading with no returned count must not display a synthesized zero"
         )
 
-        // The fixture puts both songs under S.
-        let seedGroup = groupHeading(app, mode: "alphabetical", key: "S")
-        scrollToHittable(seedGroup, in: app)
-        XCTAssertEqual(seedGroup.value as? String, "2 songs, collapsed")
-        XCTAssertTrue(seedGroup.label.hasPrefix("Expand "), "got \(seedGroup.label)")
+        // Bad Romance and Bohemian Rhapsody share the B group.
+        let bGroup = groupHeading(app, mode: "alphabetical", key: "B")
+        scrollToHittable(bGroup, in: app)
+        XCTAssertEqual(bGroup.value as? String, "2 songs, collapsed")
+        XCTAssertTrue(bGroup.label.hasPrefix("Expand "), "got \(bGroup.label)")
 
         // Expanding reveals both fixture songs.
-        seedGroup.tap()
-        XCTAssertEqual(seedGroup.value as? String, "2 songs, expanded")
-        XCTAssertTrue(seedGroup.label.hasPrefix("Collapse "), "got \(seedGroup.label)")
-        let seedSong = app.buttons["Seed Song, by Sample Artist"]
-        let secondSong = app.buttons["Second Song, by Sample Artist"]
-        scrollToHittable(seedSong, in: app)
-        scrollToHittable(secondSong, in: app)
+        bGroup.tap()
+        XCTAssertEqual(bGroup.value as? String, "2 songs, expanded")
+        XCTAssertTrue(bGroup.label.hasPrefix("Collapse "), "got \(bGroup.label)")
+        let badRomance = app.buttons[Fixture.badRomance]
+        let bohemianRhapsody = app.buttons[Fixture.bohemianRhapsody]
+        scrollToHittable(badRomance, in: app)
+        scrollToHittable(bohemianRhapsody, in: app)
 
         // Selecting the open heading collapses it.
-        scrollBackToHittable(seedGroup, in: app)
-        seedGroup.tap()
-        XCTAssertTrue(waitForDisappearance(seedSong))
-        XCTAssertEqual(seedGroup.value as? String, "2 songs, collapsed")
+        scrollBackToHittable(bGroup, in: app)
+        bGroup.tap()
+        XCTAssertTrue(waitForDisappearance(badRomance))
+        XCTAssertEqual(bGroup.value as? String, "2 songs, collapsed")
 
         // Re-open, then change grouping: the open heading must not survive it.
-        seedGroup.tap()
-        scrollToHittable(seedSong, in: app)
+        bGroup.tap()
+        scrollToHittable(badRomance, in: app)
         selectGrouping(app, "Complexity")
         XCTAssertTrue(
             groupHeading(app, mode: "complexity", key: "0").waitForExistence(timeout: 5)
         )
         XCTAssertFalse(
-            app.buttons["Seed Song, by Sample Artist"].exists,
+            app.buttons[Fixture.badRomance].exists,
             "changing the grouping must collapse the previously open heading"
         )
 
@@ -423,7 +474,7 @@ final class AcquiringUITests: XCTestCase {
 
         let completedStatus = app.staticTexts["catalog.maintenance.completed"]
         XCTAssertTrue(completedStatus.waitForExistence(timeout: 5))
-        XCTAssertTrue(completedStatus.label.contains("2 songs ready"))
+        XCTAssertTrue(completedStatus.label.contains("8 songs ready"))
         XCTAssertFalse(app.buttons["catalog.cancel"].exists)
         attachScreenshot(of: app, named: "checkpoint-1.3-resync-retry-complete")
     }
@@ -478,7 +529,7 @@ final class AcquiringUITests: XCTestCase {
         )
         let completedStatus = app.staticTexts["catalog.maintenance.completed"]
         scrollToHittable(completedStatus, in: app)
-        XCTAssertTrue(completedStatus.label.contains("2 songs ready"))
+        XCTAssertTrue(completedStatus.label.contains("8 songs ready"))
         XCTAssertFalse(app.buttons["catalog.cancel"].exists)
         attachScreenshot(of: app, named: "checkpoint-1.3-empty-install-complete")
     }
@@ -519,7 +570,7 @@ final class AcquiringUITests: XCTestCase {
         let completedStatus = app.staticTexts["catalog.maintenance.completed"]
         XCTAssertTrue(completedStatus.waitForExistence(timeout: 5))
         XCTAssertTrue(completedStatus.label.contains("Song harvest complete"))
-        XCTAssertTrue(completedStatus.label.contains("2 songs ready"))
+        XCTAssertTrue(completedStatus.label.contains("8 songs ready"))
         attachScreenshot(of: app, named: "checkpoint-1.2-harvest-retry-complete")
     }
 

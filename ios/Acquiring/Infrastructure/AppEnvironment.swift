@@ -1,9 +1,83 @@
 import AcquiringAudio
 import AcquiringCatalog
 import AcquiringCore
+import CryptoKit
 import Foundation
 import Observation
 import SwiftData
+
+struct UITestCatalogFixture: Decodable {
+    struct Source: Decodable {
+        let snapshot: String
+        let schemaVersion: Int
+        let songCount: Int
+        let payloadEncoding: String
+        let payloadCompression: String
+    }
+
+    struct Song: Decodable {
+        let id: String
+        let artist: String
+        let title: String
+        let url: String
+        let status: String
+        let alphaGroup: String
+        let modes: Set<String>
+        let compressedPayloadByteCount: Int
+        let compressedPayloadSHA256: String
+        let payloadBase64Chunks: [String]
+
+        func catalogSong() throws -> CatalogSong {
+            guard let url = URL(string: url), url.scheme == "https", url.host != nil else {
+                throw CatalogError.invalidSchema("UI test fixture has an invalid URL for \(id)")
+            }
+            return CatalogSong(id: id, artist: artist, title: title, url: url, status: status)
+        }
+
+        func compressedPayload() throws -> Data {
+            guard !payloadBase64Chunks.isEmpty, payloadBase64Chunks.allSatisfy({ !$0.isEmpty }) else {
+                throw CatalogError.invalidPayload("UI test fixture has no base64 payload for \(id)")
+            }
+            guard let payload = Data(base64Encoded: payloadBase64Chunks.joined()), !payload.isEmpty else {
+                throw CatalogError.invalidPayload("UI test fixture has invalid base64 for \(id)")
+            }
+            guard payload.count == compressedPayloadByteCount else {
+                throw CatalogError.invalidPayload("UI test fixture payload size does not match for \(id)")
+            }
+            guard payload.starts(with: [0x1F, 0x8B]) else {
+                throw CatalogError.invalidPayload("UI test fixture payload is not gzip for \(id)")
+            }
+            let checksum = SHA256.hash(data: payload).map { String(format: "%02x", $0) }.joined()
+            guard checksum == compressedPayloadSHA256 else {
+                throw CatalogError.invalidPayload("UI test fixture payload checksum does not match for \(id)")
+            }
+            return payload
+        }
+    }
+
+    let source: Source
+    let songs: [Song]
+
+    static func load(from bundle: Bundle = .main) throws -> Self {
+        guard let resourceURL = bundle.url(forResource: "ios_ui_test_catalog", withExtension: "json") else {
+            throw CatalogError.invalidSchema("Bundled UI test catalog fixture is missing")
+        }
+        do {
+            let fixture = try JSONDecoder().decode(Self.self, from: Data(contentsOf: resourceURL))
+            guard fixture.source.payloadEncoding == "base64-chunks", fixture.source.payloadCompression == "gzip" else {
+                throw CatalogError.invalidSchema("Bundled UI test catalog fixture has unsupported payload encoding")
+            }
+            guard !fixture.songs.isEmpty, Set(fixture.songs.map(\.id)).count == fixture.songs.count else {
+                throw CatalogError.invalidSchema("Bundled UI test catalog fixture is empty or contains duplicate song IDs")
+            }
+            return fixture
+        } catch let error as CatalogError {
+            throw error
+        } catch {
+            throw CatalogError.invalidSchema("Bundled UI test catalog fixture could not be decoded: \(error.localizedDescription)")
+        }
+    }
+}
 
 struct UITestSession {
     static let launchEnvironmentKey = "ACQUIRING_UI_TEST_SESSION_ID"
@@ -123,6 +197,53 @@ private enum CatalogMaintenanceGateError: LocalizedError, Sendable {
     }
 }
 
+enum QuizDisplayMode: String, CaseIterable, Hashable, Identifiable {
+    case full
+    case rootOnly
+
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .full: "Full"
+        case .rootOnly: "Root-only"
+        }
+    }
+}
+
+struct QuizContinuityState: Equatable {
+    let songID: String
+    var sectionID: String
+    var mode: QuizDisplayMode = .full
+    /// The shared sound-control payload for Quiz. New controls belong here so
+    /// view continuity and audio commands continue to use one configuration.
+    var playbackConfiguration = QuizPlaybackConfiguration()
+
+    /// Kept as the narrow call-site API while the remaining controls migrate
+    /// onto `playbackConfiguration`.
+    var tempoPercent: Double {
+        get { playbackConfiguration.tempoPercent }
+        set { playbackConfiguration.tempoPercent = newValue }
+    }
+    var usesRelativeIonianContext = false
+}
+
+/// App-local Quiz sound configuration. B1 deliberately owns only tempo; later
+/// controls can extend this value without adding parallel continuity state.
+struct QuizPlaybackConfiguration: Equatable {
+    static let defaultTempoPercent = 100.0
+    static let tempoRange = 0.0...200.0
+
+    var tempoPercent: Double = defaultTempoPercent {
+        didSet { tempoPercent = Self.normalizedTempoPercent(tempoPercent) }
+    }
+
+    static func normalizedTempoPercent(_ value: Double) -> Double {
+        guard value.isFinite else { return defaultTempoPercent }
+        return min(max(value, tempoRange.lowerBound), tempoRange.upperBound)
+    }
+}
+
 @MainActor
 @Observable
 final class AppEnvironment {
@@ -132,6 +253,7 @@ final class AppEnvironment {
     let userLibrary: UserLibraryStore
     let audio: AppAudioSystem
     let catalogConfiguration: CatalogConfiguration
+    private(set) var quizContinuity: QuizContinuityState?
     private let seedsUITestCatalog: Bool
 #if DEBUG
     private let catalogLaunchUITestScenario: CatalogLaunchUITestScenario?
@@ -195,6 +317,35 @@ final class AppEnvironment {
         audio = AppAudioSystem()
     }
 
+    func quizContinuity(for songID: String) -> QuizContinuityState? {
+        guard quizContinuity?.songID == songID else { return nil }
+        return quizContinuity
+    }
+
+    @discardableResult
+    func rememberQuizSection(songID: String, sectionID: String) -> QuizContinuityState {
+        if quizContinuity?.songID == songID {
+            quizContinuity?.sectionID = sectionID
+        } else {
+            quizContinuity = QuizContinuityState(songID: songID, sectionID: sectionID)
+        }
+        return quizContinuity!
+    }
+
+    func rememberQuizSettings(
+        songID: String,
+        mode: QuizDisplayMode? = nil,
+        tempoPercent: Double? = nil,
+        usesRelativeIonianContext: Bool? = nil
+    ) {
+        guard quizContinuity?.songID == songID else { return }
+        if let mode { quizContinuity?.mode = mode }
+        if let tempoPercent { quizContinuity?.tempoPercent = tempoPercent }
+        if let usesRelativeIonianContext {
+            quizContinuity?.usesRelativeIonianContext = usesRelativeIonianContext
+        }
+    }
+
     func prepare() async throws {
 #if DEBUG
         switch catalogLaunchUITestScenario {
@@ -217,104 +368,20 @@ final class AppEnvironment {
         _ = try await Self.installUITestCatalog(into: catalog)
     }
 
-    private static func installUITestCatalog(into catalog: CatalogCoordinator) async throws -> Int {
-        for (slug, artist, title, mode) in [
-            ("sample-artist__seed-song", "Sample Artist", "Seed Song", "major"),
-            ("sample-artist__second-song", "Sample Artist", "Second Song", "minor")
-        ] {
-            let sections = uiTestSections(slug: slug, title: title, mode: mode)
+    static func installUITestCatalog(
+        into catalog: CatalogCoordinator,
+        bundle: Bundle = .main
+    ) async throws -> Int {
+        let fixture = try UITestCatalogFixture.load(from: bundle)
+        for song in fixture.songs {
             try await catalog.writeHarvested(
-                song: CatalogSong(id: slug, artist: artist, title: title, url: URL(string: "https://www.hooktheory.com/theorytab/view/sample-artist/seed-song")),
-                payload: JSONEncoder().encode(sections),
-                alphaGroup: String(title.prefix(1)),
-                modes: [mode == "major" ? "ionian" : "aeolian"]
+                song: try song.catalogSong(),
+                payload: try song.compressedPayload(),
+                alphaGroup: song.alphaGroup,
+                modes: song.modes
             )
         }
         return try await catalog.songCount()
-    }
-
-    private static func uiTestSections(
-        slug: String,
-        title: String,
-        mode: String
-    ) -> [String: ExtractedSection] {
-        guard slug == "sample-artist__seed-song" else {
-            return ["verse": ExtractedSection(
-                songId: .string(slug),
-                numericId: .string("42"),
-                sectionName: "Verse",
-                sectionIndex: 0,
-                songInfo: title,
-                chords: [
-                    ["root": .number(1), "type": .number(5), "beat": .number(1), "duration": .number(2)],
-                    ["root": .number(5), "type": .number(7), "beat": .number(3), "duration": .number(2)]
-                ],
-                metadata: [
-                    "keys": .array([.object(["tonic": .string("C"), "scale": .string(mode), "beat": .number(1)])]),
-                    "tempos": .array([.object(["bpm": .number(120)])]),
-                    "endBeat": .number(5)
-                ]
-            )]
-        }
-
-        let verse = ExtractedSection(
-            songId: .string(slug),
-            numericId: .string("42"),
-            sectionName: "Verse",
-            sectionIndex: 0,
-            songInfo: "Seed Song by Sample Artist",
-            chords: [
-                ["root": .number(1), "type": .number(5), "beat": .number(1), "duration": .number(2)],
-                ["root": .number(5), "type": .number(7), "beat": .number(3), "duration": .number(2)],
-                ["rest": .bool(true), "beat": .number(5), "duration": .number(1)],
-                ["root": .number(1), "type": .number(5), "beat": .number(6), "duration": .number(2)]
-            ],
-            notes: .array([
-                .object(["sd": .string("1"), "beat": .number(1), "duration": .number(1), "octave": .number(0)]),
-                .object(["rest": .bool(true), "beat": .number(2), "duration": .number(1), "octave": .number(0)]),
-                .object(["sd": .string("5"), "beat": .number(3), "duration": .number(2), "octave": .number(0)])
-            ]),
-            metadata: [
-                "keys": .array([
-                    .object(["tonic": .string("C"), "scale": .string("major"), "beat": .number(1)]),
-                    .object(["tonic": .string("D"), "scale": .string("major"), "beat": .number(6)])
-                ]),
-                "tempos": .array([
-                    .object(["bpm": .number(120), "beat": .number(1)]),
-                    .object(["bpm": .number(92), "beat": .number(6)])
-                ]),
-                "meters": .array([
-                    .object(["numBeats": .number(4), "beat": .number(1)]),
-                    .object(["numBeats": .number(3), "beat": .number(6)])
-                ]),
-                "endBeat": .number(9),
-                "youtube": .object(["id": .string("dQw4w9WgXcQ")])
-            ]
-        )
-        let chorus = ExtractedSection(
-            songId: .string(slug),
-            numericId: .string("43"),
-            sectionName: "Chorus",
-            sectionIndex: 1,
-            songInfo: "Seed Song by Sample Artist",
-            chords: [
-                ["root": .number(4), "type": .number(5), "beat": .number(1), "duration": .number(2)],
-                ["root": .number(5), "type": .number(5), "beat": .number(3), "duration": .number(2)]
-            ],
-            notes: .array([
-                .object(["sd": .string("1"), "beat": .number(1), "duration": .number(1), "octave": .number(0)]),
-                .object(["sd": .string("3"), "beat": .number(2), "duration": .number(1), "octave": .number(0)]),
-                .object(["rest": .bool(true), "beat": .number(3), "duration": .number(0.5), "octave": .number(0)]),
-                .object(["sd": .string("5"), "beat": .number(3.5), "duration": .number(1), "octave": .number(1)])
-            ]),
-            metadata: [
-                "keys": .array([.object(["tonic": .string("C"), "scale": .string("major"), "beat": .number(1)])]),
-                "tempos": .array([.object(["bpm": .number(120), "beat": .number(1)])]),
-                "meters": .array([.object(["numBeats": .number(4), "beat": .number(1)])]),
-                "endBeat": .number(5)
-            ]
-        )
-        return ["verse": verse, "chorus": chorus]
     }
 }
 

@@ -1,106 +1,79 @@
-# Android-to-iOS feature-by-feature port
+# Streamlined Android-to-iOS parity roadmap
 
-This is the only active execution plan for the native iOS port. Android
-behavior at annotated tag `android-parity-ios-v1` is authoritative. Stable
-capability IDs and release status live in [feature-parity.md](feature-parity.md),
-while [android-app-analysis.md](android-app-analysis.md) records the audited
-behavior. The old commit-by-commit checklist is retained only as a historical
-pointer in [ios-android-parity-roadmap.md](ios-android-parity-roadmap.md).
+This is the sole active execution plan. Final Android behavior at
+`android-parity-ios-v1` and [android-app-analysis.md](android-app-analysis.md)
+define acceptance. [feature-parity.md](feature-parity.md) preserves the 55 stable
+IDs: 52 in-scope capabilities; F013, F052, and F055 remain deferred.
+[ios-android-parity-roadmap.md](ios-android-parity-roadmap.md) is historical only.
 
-## Goal and baseline
+## Current baseline and execution policy
 
-- Continue from `claude/ui-reset`; retain the tested `AcquiringKit`, catalog,
-  audio/DSP, persistence, and `AppEnvironment` work.
-- Rebuild the UI in the order surviving product features first appeared on
-  Android, but implement each feature once in its final shipping form.
-- Treat a later Android fix or redesign as acceptance criteria for the feature
-  it refined. Give it a new checkpoint only when it added a new observable
-  capability.
-- Use native SwiftUI presentation while matching final behavior, information
-  hierarchy, state transitions, and accessibility.
-- Stop after every checkpoint for human UI/function review unless the active
-  user-authorized fast track explicitly batches review through Phases 0-2.
-  Automated evidence is necessary but never sufficient for approval.
+- Preserve the existing package, catalog, audio/DSP, persistence, UI, and review
+  records. This revision neither approves pending features nor starts full testing.
+- Implement remaining features in dependency order A–F below. Existing acceptance
+  criteria survive the reorder; old checkpoint numbers are mapped on each row.
+- Library/settings/harvest/search, Song Detail/Chords, and the first Quiz timelines
+  and Play/Pause are implemented to varying review states. All Songs and Playlist
+  destinations remain placeholders. Do not rebuild completed surfaces.
+- Use one implementer per feature. Established routes: Terra/medium for ordinary
+  UI/integration, Terra/high for complex state/notation, Sol/high for audio,
+  timing, microphone ownership and concurrency, Luna/low for simple isolated
+  changes. Escalate to Sol/xhigh for a concrete unresolved concurrency/DSP issue.
+  Delegate only substantial independent work; no routine doc/reviewer subagents.
+- Use the current runtime model for coordination and report its identity as
+  unknown when unavailable. Report the actual implementation route at handoff.
+- Use one shared playback configuration before B's controls, one shared card
+  action arbiter starting at C1, and shared audio-session/microphone ownership
+  before E's capture features. Preserve existing service/package boundaries;
+  no new public API or database migration is required by this roadmap revision.
 
-Baseline verified September 4, 2026:
+## Fast feature implementation and review
 
-- `swift test --package-path ios/Packages/AcquiringKit --quiet` passed 164 tests.
-- The `Acquiring` scheme built for the available iPhone 17 simulator.
-- `AllSongsView`, `PlaylistSongsView`, and `SongDetailView` are intentional blank
-  placeholders after the UI reset. Several UI tests still describe the removed
-  screens and must not be treated as current passing evidence.
+1. Read the relevant final Android behavior and existing iOS caller. Reuse the
+   audit; inspect historical commits only when a concrete ambiguity remains.
+2. Implement the smallest complete feature, including relevant loading/empty/error
+   behavior and accessibility labels/actions. Do not split a modest feature into
+   separate shell and wiring checkpoints. Reuse previews; add a focused preview
+   only when it materially speeds iteration.
+3. Run one incremental Debug build for the warm iPhone 17 simulator, repair compile
+   failures, terminate the stale process, install, and launch. Inspect code and
+   accessibility text. Human review provides visual/perceptual feedback; agents
+   must not inspect screenshots. If visual judgment is needed, describe what the
+   human should inspect.
+4. Report the checkpoint, actual model, concise change summary, exact check/result,
+   and a two-to-four-step review script. Update status once at handoff.
+5. Stop after every feature for human critique. Fix issues in that feature; advance
+   when the user approves or explicitly directs onward. Carry pending older
+   reviews without silently promoting their status. Commit only approved,
+   separable changes; preserve unrelated and uncommitted work.
 
-Do not copy the numeric test total into other status prose. Evidence rows record
-the actual command, date, pass/fail/skip counts, and result bundle for each run.
+During iteration, build/install/launch and human review are the default checks.
+Focused diagnostics/regression tests are justified only by a concrete failure or
+material correctness risk. No routine full suites, screenshot inspection,
+multi-device matrices, broad audits, or phase-boundary test sweeps. Full testing
+starts only after A–F implementation and the explicit approval gate below.
 
-## Status and traceability
+Routine review uses the exact full-catalog `500 Miles` fixture. Other requested
+songs remain available for a specific missing case; Weird Al testing stays
+deferred until needed. Test scenarios must remain separate from normal catalog
+and user-data storage.
 
-Each checkpoint uses one status:
+## Status and retained records
 
-- `[ ]` not started
-- `[review]` implemented and autonomously verified; awaiting human critique
-- `[approved]` human accepted the checkpoint
-- `[blocked-external]` requires unavailable hardware, service, or authority
-- `[excluded]` absent from the final Android product or explicitly out of scope
+- `[ ]`: not started.
+- `[review]`: implemented with recorded limited checks; human review pending.
+- `[approved]`: accepted or explicitly advanced by the user, with recorded basis.
+- `[blocked-external]`: blocked by unavailable authority, hardware, or service.
+- `[excluded]`: absent from final Android or explicitly outside iOS v1.
 
-Each approved row records its Android introduction commit, final Android source,
-parity IDs, iOS commit, automated checks, screenshot/result bundle, and human
-approval date. Source or test presence without a production caller is not
-evidence of an Android feature.
+Record actual checks, limitations, and review disposition without claiming an
+unrun test passed. Feature approval is not complete parity verification: inventory
+rows remain Partial until required final evidence is gathered.
 
-## Per-checkpoint execution loop
+### Retained Phase 0–3.4 checkpoints
 
-1. Inspect the feature's first Android commit and its final production call site
-   at `android-parity-ios-v1`.
-2. Reuse existing Swift domain and service APIs. Add only the smallest store,
-   view wiring, fixture, or interface required for the observable slice.
-3. Add a deterministic `#Preview`, focused unit/store coverage, and one focused
-   XCUITest. Never grow a multi-feature end-to-end test for convenience.
-4. Run the narrowest relevant checks, rebuild, terminate any stale app process,
-   reinstall/relaunch on the one warm simulator, exercise the behavior, and
-   capture the review state with `XCTAttachment`.
-5. Repair failures autonomously. Stop early only for new external authority,
-   unavailable hardware, or a reproducible environment blocker after two
-   diagnose/fix cycles.
-6. Present a review packet: checkpoint ID, final Android behavior, screenshot,
-   short interaction script, commands/results, and deliberate iOS adaptations.
-7. Stop for human review after each checkpoint unless the active user-authorized
-   fast track is batching review through Phases 0-2. If critiqued, remain on the
-   same checkpoint. After approval—or, during the fast track, after the batched
-   review packet is assembled—commit the implementation, tests, evidence, and
-   status together, then advance.
-
-For existing iOS code, verify and repair rather than rewrite it. Existing code
-starts unapproved regardless of earlier roadmap checkmarks.
-
-## Implementation boundaries
-
-- Preserve `CatalogRepository`, `CatalogMaintenanceService`, `PreviewAudio`,
-  `QuizTransport`, `PitchSource`, `AppEnvironment`, and the current package
-  boundaries.
-- Keep `LibraryStore`. Add focused `@MainActor @Observable` stores for Song
-  Detail, All Songs, Quiz, interval practice, and tessitura as their checkpoints
-  require them; do not reproduce Android's monolithic `MainActivity` state.
-- Views never open GRDB, SwiftData, URLSession, AVAudioEngine, or microphone
-  input directly.
-- Add UI-test-only review scenarios through launch arguments and injected
-  repositories/audio/pitch sources. Review configuration must not alter
-  production behavior.
-- Prefer standard SwiftUI controls. Custom drawing is limited to notation,
-  timelines, pitch/scoring markers, and the product-required draggable
-  transport.
-- Centralize quiz-card gestures in one native interaction layer that arbitrates
-  single tap, double tap, and long press so exactly one action fires, and expose
-  equivalent named VoiceOver actions.
-
-## Ordered atomic roadmap
-
-Every numbered row is an agent checkpoint with status, capability IDs, model,
-reasoning level, and concise acceptance. Agent work may include invisible
-hardening, but only the phase-level human gates are review stops. Route the
-least-cost capable model: Luna for bounded UI/documentation, Terra for stateful
-integration, and Sol for audio/DSP, persistence replacement, timing,
-concurrency, and release work.
+The following are existing work/review records, not a second execution queue.
+Their statuses are preserved. Resolve critiques in place; use A–F for new work.
 
 ### Phase 0 — Truth and review harness
 
@@ -115,10 +88,6 @@ concurrency, and release work.
 4. `[review]` **0.4 Deterministic review fixtures (F001-F054).** **Terra/medium.**
    Add only the launch arguments, injected services, and small-data previews
    needed to reproduce each visual state without changing production behavior.
-
-Human gate 0 — **Harness packet** — **Luna/low**, then **Terra/medium** for
-fixture integration. Review baseline truth and the deterministic review method;
-it is not human-approved yet.
 
 ### Phase 1 — Library and catalog acquisition
 
@@ -148,10 +117,6 @@ on the main Library in both empty and ready catalog states.
    failed/cancelled replacements, and retain user entries. No search or detail UI
    is included in Phase 1.
 
-Human gate 1 — **Library/catalog packet** — **Terra/medium** for visible states;
-**Sol/high** for install/recovery evidence. Batch this gate with gate 2 under
-the fast-track authorization; do not mark it approved without human review.
-
 ### Phase 2 — Search, selection, Song Detail, and Chords
 
 Android chronology: remaining `0b7abac8` through `2f891ebe` feature work.
@@ -171,7 +136,7 @@ Android chronology: remaining `0b7abac8` through `2f891ebe` feature work.
    result-page navigation, and restoration across paging/search state.
 6. `[review]` **2.6 Header and section selector (F014-F015).** **Terra/high.**
    Preserve artist navigation, canonical ordering, and section changes; defer
-   favorite UI to 8.1. Normalize section types, de-duplicate by normalized
+   favorite UI to D6 (formerly 8.1). Normalize section types, de-duplicate by normalized
    type, and keep the earliest explicit index for each type.
 7. `[review]` **2.7 Info overview (F016).** **Terra/medium.** Show key, tempo, meter,
    duration, beats/bars, chord counts, and sounded/total melody counts,
@@ -187,195 +152,186 @@ Android chronology: remaining `0b7abac8` through `2f891ebe` feature work.
 11. `[review]` **2.11 Chord preview (F020).** **Sol/high.** Support block/arpeggiated
     modes, 30-1000 ms step, cancellation, fades, and replacement.
 
-Human gate 2 — **Search/Detail/Chords packet** — **Terra/high** for navigation,
-state, and notation; **Sol/high** for deterministic latest-tap cancellation/
-replacement without perceptual hardware validation. Batch
-with gate 1; no human approval is implied by `[review]` status.
-
 ### Phase 3 — Quiz
 
 1. `[approved]` **3.1 Quiz shell and navigation (F014, F026).** **Terra/high.** Final
    header, Full/Root-only selector, and exact-origin Quiz → Info → Back behavior;
    reach the Hooktheory source through the Quiz Info transition, matching the
    final Android behavior rather than adding a direct Quiz action.
-2. `[ ]` **3.2 Chord timeline (F025).** **Terra/high.** Render durations, gaps,
-   key-at-onset notation, fixed playhead, and reduced-motion behavior.
-3. `[ ]` **3.3 Melody timeline (F025).** **Terra/high.** Render pitch, duration,
-   rests, overlap, key regions, and live playhead.
-4. `[ ]` **3.4 Play/pause transport (F027, F038).** **Sol/high.** Publish live
-   state from app-scoped synthesized melody/chord audio.
-5. `[ ]` **3.5 Loop/reset/section continuity (F027, F029, F038).** **Sol/xhigh.**
-   Seamlessly wrap, cancel reset, and preserve requested play state.
-6. `[ ]` **3.6 Active chord/root card (F035).** **Terra/high.** Bind notation to
-   events, roots, rests, and modulation.
-7. `[ ]` **3.7 Tempo/timbres/balance (F030, F032, F034).** **Terra/medium.**
-   Provide 0-200% tempo with reset/zero pause, ten instruments with sawtooth
-   default, labeled 0.5 balance, headroom, and progress preservation.
-8. `[ ]` **3.8 Card previews (F035-F036).** **Sol/high.** Root, melody, interval,
-   chord, and chord-tone previews cancel exclusively without click-through.
-9. `[ ]` **3.9 Root interval and melody cards (F026, F035-F036).** **Terra/high.**
-   Derive previous/current intervals, spell them, handle rests, and implement
-   collapse/repeat and chord-tone rows.
-10. `[ ]` **3.10 Root-only and Lock in Major (F026, F028, F037).** **Terra/high.**
-    Hide full-only surfaces, provide native seek, preserve playback, and use
-    fixed relative-Ionian/major spelling.
-
-Human gate 3 — **First coherent Quiz UI** — **Terra/high**, escalating to
-**Sol/high** for transport and loop behavior. This is the first product review
-after the Phase 0-2 fast track.
-
-Review evidence (2026-09-04): focused Quiz shell test passed 1/1 on iPhone 17;
+2. `[review]` **3.2 Chord timeline (F025).** **Terra/high.** Render durations, gaps,
+   key-at-onset notation, fixed playhead, and reduced-motion behavior. **Review
+   evidence (2026-09-04):** Terra/high implemented the fixed-center chord lane;
+   Sol/high reviewed the Android parity rules. Focused `AcquiringTests` and
+   `testPhase32ChordTimelineUsesAccessibleCurrentChordText` passed on iPhone 17
+   against the exact full-catalog `500 Miles` payload, using text, accessibility,
+   and geometry checks only; no screenshot inspection was performed. The other
+   requested real-song fixtures remain staged for later checkpoints. iPhone 14 Pro
+   verification is deferred. Lock-in-Major timeline
+   relabeling remains deliberately deferred to C6 (formerly 3.10), as do transport and
+   seek interactions. Human approval is still required.
+3. `[approved]` **3.3a Static melody geometry (F025).** **Terra/high.** Render the
+   88pt melody lane with 60pt/beat fixed-center alignment to the chord lane,
+   pitch/duration, blank rests/gaps, source-order overlap, onset key handling,
+   and Lock-in-Major mapping, using the exact `500 Miles` fixture. Text/code
+   review only; compile smoke passed. User authorized proceeding to 3.3b on
+   2026-09-04. Android has no key-region bands, so they are not required.
+4. `[approved]` **3.3b Live melody state (F025).** **Terra/high.** Both lanes now
+   follow the existing transport stream, highlight sounded melody events
+   (including overlaps), animate forward movement, and snap on pause, reset,
+   section changes, and Reduce Motion. Audio and display share audible-event
+   end beats; this fixes `500 Miles` Chorus mapping its beat-32 melody end onto
+   the beat-33 chord end. Play state comes from the transport stream.
+   Android introduction: `3989f388`; final production caller:
+   `android-parity-ios-v1:MainActivity.kt` melody draw loop. **Evidence
+   (2026-09-04):** incremental Debug build passed; installed and launched on
+   iPhone 17. No new tests or screenshots. User authorized proceeding to 3.4
+   on 2026-09-04.
+   Check: `xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring
+   -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A'
+   -configuration Debug build CODE_SIGNING_ALLOWED=NO` — exit 0.
+5. `[review]` **3.4 Play/pause transport (F027, F038).** **Sol/high.** Full mode
+   now schedules melody and block chords together using normalized onset,
+   event duration, onset key, sawtooth, and equal 0.5 layer gains. The existing
+   app-scoped renderer publishes buffering, playing, paused, and failed states;
+   startup failures retain position and permit retry. Play requires a loaded
+   section, and a pending-command latch prevents duplicate taps. Audio service
+   work: Sol/high; timeline/button integration: primary agent.
+   Android introduction: `3989f388`; final production timeline builder:
+   `android-parity-ios-v1:QuizPlaybackEngine.kt:861` and QuizTab's config/state
+   caller. **Evidence (2026-09-04):** incremental Debug build passed (same exact
+   `xcodebuild` command as 3.3b, exit 0), then installed/launched on iPhone 17.
+   No new tests or screenshots. Human review: `500 Miles` Full mode, Play,
+   listen for melody plus chords, Pause, resume. Mixing controls/arpeggiation,
+   full continuity, and physical-device recovery stay in later checkpoints.
+Historical 3.1-only review evidence (2026-09-04): focused Quiz shell test passed 1/1 on iPhone 17;
 result bundle: `/tmp/acquiring-phase31-quiz-9F3ADA87-596F-4BB0-BD4D-50FBB750980C.xcresult`.
 Human approval recorded 2026-09-04 after the first-launch/catalog-settings
 revisions, based on focused text/element evidence; screenshot review was not claimed.
 iPhone 14 Pro and broader device/accessibility coverage remain deferred.
 
-### Phase 4 — Interval tool and timeline seeking
+## Remaining dependency-ordered features
 
-1. `[ ]` **4.1 Interval shell (F043-F044).** **Terra/high.** Collapsed/expanded
-   manual and target modes, cancellation, and deterministic fake-pitch state.
-2. `[ ]` **4.2 Microphone ownership (F040-F041).** **Sol/xhigh.** Just-in-time
-   permission, exclusive lease, denial/error states, stale-owner safety, cleanup.
-3. `[ ]` **4.3 Two-slot capture (F043).** **Sol/high.** Three-second capture,
-   stable window, silence/dropout handling, and independent slot state.
-4. `[ ]` **4.4 Live feedback and gestures (F043-F044).** **Sol/high.** Measured
-   pitch/spelling/cents, interval direction/name, exact replay, and rerecord
-   arbitration.
-5. `[ ]` **4.5 Pair playback, Flip-Flop, seeking (F043, F045, F028).**
-   **Sol/xhigh.** Support pair/alternating playback, final pause, bounded drag,
-   and pause/resume arbitration.
+Each row is one human-review checkpoint, not a group-wide approval. Reuse existing
+implementations and the final Android audit; add only the missing behavior.
 
-Human gate 4 — **Interval/seeking packet** — **Sol/xhigh** for ownership,
-capture, and seek arbitration; **Terra/high** for presentation.
+### A — Finish transport
 
-### Phase 5 — All Songs and sing-back/actions
+1. `[approved]` **A1 Reset and loop behavior (F027, F029, F038; old 3.5, reset part of 6.3). Sol/high.** Implemented final-Android Reset beside Play/Pause: stop playback, cancel interfering previews, and reset position/state together while retaining duration. Next Play starts at the beginning. Existing exact-end renderer looping is preserved. User approved A1 with “looks good; proceed”; the section-switching critique belongs to A2. Reset is separate from tempo reset and has accessibility labeling and a shared pending-command guard.
 
-1. `[ ]` **5.1 All Songs shell and alphabetical browse (F006).**
-   **Terra/medium.** Provide entry, states, A-Z/0-9/# groups, counts, one
-   expanded group, indexed navigation, and sorted rows.
-2. `[ ]` **5.2 Complexity and mode browse (F007-F008).** **Terra/medium.**
-   Provide ten complexity buckets, Unrated, seven canonical modes, counts, and
-   cross-mode membership.
-3. `[ ]` **5.3 Fuzzy filter and restoration (F009).** **Terra/high.** Normalize
-   title/artist matching, filter locally at 250 ms, show no-match/legacy
-   warning, and restore grouping/filter/expansion/scroll without payload loads.
-4. `[ ]` **5.4 External search (F005).** **Luna/low.** Open Hooktheory in the
-   system browser with unavailable/failure and return continuity.
-5. `[ ]` **5.5 Sing-back (F042).** **Sol/high.** Double tap root, melody,
-   interval, or chord tone into target-guided listening after preview settles.
-6. `[ ]` **5.6 Shared gestures and transpose (F031, F035-F036, F042, F046, F054).**
-   **Sol/xhigh.** Arbitrate exactly one single/double/long action, expose named
-   VoiceOver actions, and apply -12...+12 transpose once everywhere.
-7. `[ ]` **5.7 Melody interval actions (F035-F036, F042).** **Sol/high.**
-   Separate previous, current, together, and sing-back operations.
+   Original A1 handoff: incremental build passed with `xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug build CODE_SIGNING_ALLOWED=NO` (exit 0). `xcrun simctl install 55373408-99CC-4EB3-A771-6ACF29E2D96A /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa/Build/Products/Debug-iphonesimulator/Acquiring.app` passed (exit 0). `SIMCTL_CHILD_ACQUIRING_UI_TEST_SESSION_ID=a1-human-review-500 xcrun simctl launch --terminate-running-process 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios --ui-testing --ui-testing-scenario=library.ready` passed (exit 0, PID 76632); this launches the real-catalog review fixture, not a test suite. No automated tests, screenshot inspection, or full testing ran. Review `500 Miles`: Play, Reset (stopped at beginning), Play again (starts at beginning), and allow a section to reach its end to check looping. Subsequent disposition: user approved A1 and requested the A2 section-switch behavior below; prior unrelated pending reviews remain pending.
+2. `[approved]` **A2 Section switching and navigation continuity (F014–F015, F027, F029; old 3.5, 6.3). Sol/high.** Explicit user override of Android's section auto-continuation: selecting a different section stops the old playback and starts the new section at the beginning, paused. Merely navigating away and back to the same active Quiz preserves its section, position, settings, and playback state. Provide an accessible Info-to-Quiz return and reject stale loads/commands; process-death restoration and device recovery are not part of this checkpoint. User explicitly advanced A2 with “Proceed with the plan”; no full-test approval is implied.
 
-Human gate 5 — **Discovery/card-actions packet** — **Terra/high** for browse and
-gestures; **Sol/high** for sing-back/audio coordination.
+   Implemented by Sol/high: synchronous section replacement stops old transport/previews before rebuilding; revision-bound load/Play/Pause/Reset commands and replacement observation prevent stale commands/progress from winning. Shared app-lifetime section, mode, tempo, and Lock-in-Major state restore the active Quiz without reloading matching audio. Song Detail has a labeled Quiz return action and shares the section selection; changing section there also stops old playback. No public package API, schema, or engine redesign.
 
-### Phase 6 — Tessitura and persistent practice
+   Checks: the exact incremental `xcodebuild` and `simctl install` commands recorded in A1 passed again for A2 (exit 0 each; existing preview `scheduleBuffer` async-alternative warning only). `SIMCTL_CHILD_ACQUIRING_UI_TEST_SESSION_ID=a2-human-review-500 xcrun simctl launch --terminate-running-process 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios --ui-testing --ui-testing-scenario=library.ready` passed (exit 0, PID 77803). No automated tests, screenshots, or perceptual audio verification ran. Human review: play `500 Miles`, change Verse to Chorus (silent/paused at beginning), press Play and switch rapidly (last selection remains paused at beginning), then play and visit Info → Quiz (same section and continuing position). Subsequent disposition: user directed progression to A3; full testing remains separately gated.
+3. `[approved]` **A3 Tap seeking (F028; seek part of old 4.5). Terra/high.** Map tap position around the fixed playhead to bounded beats, retain prior requested playback, and provide an accessible seek equivalent. Implemented both lanes, immediate seek snapping, named one-beat Back/Forward controls, current-position text, and VoiceOver adjustable actions. Seeking cancels previews and uses revision/observation guards; unready/buffering/pending states cannot seek. Drag/inertia is handled in A4 below; Root-only seeking remains C5. User explicitly advanced A3 and requested the A4/A5/B1 batch before the next review.
 
-1. `[ ]` **6.1 Tessitura modal and calibration (F048).** **Sol/high.** Permission,
-   cancel/error/retry, three voiced seconds, final-two-second average, silence
-   pause, and dropout grace/restart.
-2. `[ ]` **6.2 Target placement/presentation (F048-F049).** **Terra/high.**
-   Comfortable window, interval unit, contour/tritone rules, anchor, octave
-   stepper, and clear-adjustment/session distinction.
-3. `[ ]` **6.3 Timeline targets and transport (F029, F042, F046, F049).**
-   **Sol/high.** Follow root/melody/interval/chord tones, save normalized drag,
-   reset, continue sections, and offer accessible non-drag control.
-4. `[ ]` **6.4 Persistent practice modes (F046).** **Sol/high.** Long-press root,
-   low-latency melody/rest, chord-tone clamping, and index restoration.
-5. `[ ]` **6.5 Pitch gauge and run scoring (F046-F047).** **Sol/xhigh.** Show
-   bounded live marker/no-signal state; score contiguous settled runs with
-   median, unscored result, marker, and badges.
-6. `[ ]` **6.6 Final header/navigation (F014, F025).** **Terra/medium.** Compact
-   native arrangement without changing state ownership.
+   Checks: `xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug build CODE_SIGNING_ALLOWED=NO` passed (exit 0; existing preview `scheduleBuffer` async-alternative warning only). The A1 `simctl install` command passed for this build (exit 0). `SIMCTL_CHILD_ACQUIRING_UI_TEST_SESSION_ID=a3-human-review-500 xcrun simctl launch --terminate-running-process 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios --ui-testing --ui-testing-scenario=library.ready` passed (exit 0, PID 81921). No automated tests, screenshots, or perceptual verification ran.
 
-Human gate 6 — **Practice packet** — **Sol/high** for DSP/timing/scoring;
-**Terra/high** for presentation and accessibility.
+   Human review with `500 Miles`: while paused, tap ahead/behind the playhead in either lane (both lanes align at the new position without audio); press Play and tap (playback continues from there); try Back/Forward 1 beat and check bounds; change section after seeking (new section still starts paused at the beginning). Subsequent direction: implement A4, A5, and B1 together before the next review; full testing remains separately gated.
+4. `[review]` **A4 Drag/inertial seeking (F028; seek part of old 4.5). Sol/high.** Pause around scrubbing, resume only when previously requested, stop at bounds, and arbitrate drag/tap/cancel/inertia exactly once. Implemented shared scrub ownership for both lanes, exclusive tap/drag recognition, silent local drag/coast progress, and one revision-bound seek at settle. Left drags advance, right drags rewind; measured-time inertia stops at bounds or within 2.5 seconds. Tap during coast stops in place without jumping. System cancellation and navigation settle once; section changes and Reset discard stale work. Tempo changes settle the gesture before reconfiguration. Only captured requested playback resumes; zero-tempo remains physically paused.
 
-### Phase 7 — Platform audio and media
+   User-authorized batch handoff (A4 + A5 + B1): one combined incremental build/install/launch rather than intermediate review stops. `xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug build CODE_SIGNING_ALLOWED=NO` passed (exit 0; existing preview `scheduleBuffer` async-alternative warning only). `xcrun simctl install 55373408-99CC-4EB3-A771-6ACF29E2D96A /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa/Build/Products/Debug-iphonesimulator/Acquiring.app` passed (exit 0). `SIMCTL_CHILD_ACQUIRING_UI_TEST_SESSION_ID=a4-a5-b1-human-review-500 xcrun simctl launch --terminate-running-process 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios --ui-testing --ui-testing-scenario=library.ready` passed (exit 0, PID 83960); this is the real-catalog review fixture, not a test suite. No automated tests, screenshots, or perceptual verification ran.
 
-1. `[ ]` **7.1 Arpeggiation/settings (F029-F034, F049).** **Terra/medium.**
-   Support the full picker, off default, four-cycle maximum, and exact setting
-   continuity/reset semantics.
-2. `[ ]` **7.2 Audio hardening (F036, F038).** **Sol/high.** One audio session,
-   off-main synthesis, native output rate, and no click-through.
-3. `[ ]` **7.3 Now Playing/remotes (F039).** **Sol/high.** Publish section,
-   elapsed state and remote play/pause/stop/seek events.
-4. `[ ]` **7.4 Interruptions/routes/cleanup (F027, F038-F039, F041-F049).**
-   **Sol/xhigh.** Recover background/lock/route changes and release microphone
-   ownership while rejecting stale results.
+   Review with `500 Miles`: (1) paused drag/swipe in both lanes, including tap-to-stop coast, remains silent; (2) playing drag pauses during drag/coast and resumes once afterward; (3) reposition Play/Pause, visit Info and return, then try its move/reset menu; (4) change tempo while playing, set 0%, then reset to 100% (same position/prior intent), and repeat while explicitly paused (stays paused). Inspect placement/gesture feel on the simulator; agents have not viewed images. Await critique of this batch before B2; full testing remains separately gated.
+5. `[review]` **A5 Draggable Play/Pause (F029; placement part of old 6.3). Terra/high.** Save normalized placement, clamp to available space, restore across layout/navigation, and provide a non-drag alternative. Implemented a floating control across the available Full Quiz area, normalized UserDefaults placement, finite/clamped restoration, and cancellation-aware drag handling. The original Play/Pause command guards are retained; Reset stays separate. VoiceOver and a long-press menu offer named positions and placement reset. Batch build/install/launch evidence is recorded under A4; human placement review remains pending.
 
-Human gate 7 — **Platform-media packet** — **Sol/high**, escalating to
-**Sol/xhigh** for background, routes, and concurrency.
+### B — Complete sound controls
 
-### Phase 8 — Favorites and playlists
+Build on the existing audio interfaces with one shared configuration/command
+owner; preserve progress and requested play state on changes. Keep synthesis off
+the UI path and reuse native-rate output/envelope/cancellation infrastructure
+(relevant implementation acceptance from old 7.2; device verification remains gated).
 
-1. `[ ]` **8.1 Favorites (F050).** **Terra/medium.** Built-in Favorites,
-   optimistic rollback, hollow star, uniqueness, and errors.
-2. `[ ]` **8.2 Playlist Library section (F051).** **Terra/medium.** Accordion
-   summaries/counts, states, expansion persistence.
-3. `[ ]` **8.3 Playlist page and durability (F051, F053).** **Terra/high.**
-   Newest-first songs, Quiz navigation, swipe removal, unresolved-slug hiding,
-   and survival across successful/failed/cancelled catalog replacement.
+1. `[review]` **B1 Tempo (F030; old 3.7). Terra/medium; corrective audio pass Sol/high.** Support 0–200%, reset to 100%, zero-tempo pause, and position/intent continuity. User reported rough live adjustments after the initial B1 build. Corrected the root cause: slider changes no longer rebuild the timeline, recreate voices, or restart the audio session/engine/poller. Sections load once at native BPM; an additive renderer rate API advances one fractional musical clock in place. Oscillator phase and voice age remain output-sample based; active envelope state is retained. Positive changes preserve position and playing/paused state; zero pauses while retaining prior intent, and restoring positive tempo resumes that intent when the engine is available. Explicit Pause/Reset/new section still clear intent. Play stays disabled at zero; settings and section/navigation continuity remain. Human listening review is pending.
 
-Human gate 8 — **User-library packet** — **Terra/medium** for persistence,
-restoration, and errors. F052 custom-playlist management UI remains excluded.
+   Corrective-pass checks (reported live-tempo defect; not the final testing stage): with shell pipefail enabled, `swift test --package-path ios/Packages/AcquiringKit --filter 'testQuizRendererTempoRatePreservesPositionAndAdvancesFractionally|testQuizRendererTempoChangePreservesSustainedVoiceAgeAndPhase|testQuizRendererZeroAndPausedRateChangesDoNotMoveTransport|testQuizRendererHonorsOnsetPauseSeekAndLoop|testRendererSeekToEndStaysAtEndUntilPlaybackResumes' 2>&1 | tail -n 65` passed (exit 0, 5 tests/0 failures). These are three new tempo/voice-continuity/paused-zero regressions plus two existing onset/seek/loop-boundary checks; no full suite ran. `xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug build CODE_SIGNING_ALLOWED=NO` passed (exit 0; existing preview async-alternative warning only). The A4 `simctl install` command passed again (exit 0). `SIMCTL_CHILD_ACQUIRING_UI_TEST_SESSION_ID=b1-live-tempo-review-500 xcrun simctl launch --terminate-running-process 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios --ui-testing --ui-testing-scenario=library.ready` passed (exit 0, PID 87205). No screenshots or perceptual audio inspection by the agent.
 
-### Phase 9 — Accessibility and release
+   Review `500 Miles`: play and repeatedly sweep positive tempo (e.g. 50–200%) without pauses, restarts, pitch shifts, or beat jumps; set zero then reset to 100% to check retained position/intent; repeat adjustments while explicitly paused and confirm it stays paused. Stop for critique before advancing. A4/A5 pending reviews and the final full-testing approval gate are unchanged.
+2. `[ ]` **B2 Instrument selection (F032; old 3.7). Terra/medium.** Wire all ten existing instruments with sawtooth default and setting continuity.
+3. `[ ]` **B3 Melody/chord balance (F034; old 3.7). Terra/medium.** Wire independently weighted layers, labeled 0.5 default, and existing gain/headroom rules.
+4. `[ ]` **B4 Global transpose (F031; transpose part of old 5.6). Sol/high.** Apply -12…+12 once through shared pitch/configuration paths, including subsequent previews and practice consumers.
+5. `[ ]` **B5 Chord arpeggiation (F033; old 7.1). Terra/medium.** Wire all eight options, off default, maximum four cycles per beat, and exact continuation/reset semantics. Live tone selection and slot phase must derive from the shared musical clock and chord-relative elapsed beats (or native-BPM source-time equivalents), so tempo changes preserve the active arpeggio cycle. Keep oscillator/voice age independent of tempo; do not bake new output-second events or reload the section for tempo-only changes. Preview arpeggio step timing is a separate existing behavior, not a substitute for live transport scheduling.
 
-1. `[ ]` **9.1 Accessibility/adaptive audit (F054).** **Terra/high.** Verify
-   VoiceOver, Dynamic Type, reduced motion, focus, orientations, small phone,
-   and iPad evidence.
-2. `[ ]` **9.2 Clean install and recovery release checks (F010, F012, F039, F053).**
-   **Sol/high.** Verify full catalog, upgrade/offline, interrupted download,
-   background soak, privacy, and durable user data.
-3. `[ ]` **9.3 Archive and release gate (F001-F054).** **Sol/xhigh.** Verify
-   archive/signature/manifests, zero pending/skipped parity tests, and required
-   release evidence. TestFlight remains explicit-only.
+### C — Complete Quiz cards and modes
 
-Human gate 9 — **Release sign-off** — **Terra/high** for accessibility/adaptive
-review; **Sol/xhigh** for release integration and hardware/background diagnosis.
+Establish shared preview cancellation and single/double/long-action arbitration
+with C1 (old 5.6, preview part of 7.2). Expose named VoiceOver actions. Implement
+tap preview now; attach double-tap/long-press practice consumers in E4/E7 when
+available. Never add the retired magnifier or expose inactive practice controls.
 
-### Fast-track review policy
+1. `[ ]` **C1 Active chord/root card and preview (F035–F036, F054; old 3.6, 3.8). Terra/high.** Bind duration/rest/overlap-aware active state and onset-key notation; tap previews replace earlier playback without click-through.
+2. `[ ]` **C2 Melody card and preview (F035–F036; old 3.8, 3.9). Terra/high.** Display and preview the active spelled melody pitch with correct rests and unavailable states.
+3. `[ ]` **C3 Interval cards and playback (F035–F036; old 3.8, 3.9, 5.7). Terra/high.** Derive previous/current root and melody intervals; support independent/together playback, collapse/repeat, direction, spelling, and duration-aware selection.
+4. `[ ]` **C4 Chord-tone row and previews (F035–F036; old 3.8, 3.9). Terra/high.** Bind tones to the active chord; make individual previews cancel exclusively and preserve event/rest semantics.
+5. `[ ]` **C5 Root-only mode and seeking (F026, F028; old 3.10). Terra/high.** Hide full-only surfaces, expose root interval/slider controls, and preserve transport while changing modes.
+6. `[ ]` **C6 Lock in Major (F037; old 3.10). Terra/high.** Complete fixed relative-Ionian/major spelling across timeline, cards, roots, and preview registers using existing domain rules.
 
-The user authorized batching human review and accepting checkpoint commits
-through Phases 0-2, even at the expense of broad testing, provided focused
-tests, deterministic previews, and screenshots are retained. After those
-commits, stop at Human gate 3 with the first coherent Quiz UI. Broad matrices,
-full parity-test cleanup, and TestFlight remain deferred until explicitly
-requested or until Phase 9.
+### D — Complete the library
 
-## Verification matrix
+1. `[ ]` **D1 Alphabetical All Songs (F006; old 5.1). Terra/medium.** Entry/states, A–Z/0–9/# groups, counts, one expanded group, index navigation, and sorted rows.
+2. `[ ]` **D2 Complexity browse (F007; complexity part of old 5.2). Terra/medium.** Ten buckets, Unrated, correct counts and membership.
+3. `[ ]` **D3 Mode browse (F008; mode part of old 5.2). Terra/medium.** Seven canonical modes, counts, and cross-mode membership.
+4. `[ ]` **D4 Filter and restoration (F009; old 5.3). Terra/high.** Normalized title/artist fuzzy matching at 250 ms; no-match/legacy warning; preserve filter/group/expansion/scroll without payload loading.
+5. `[ ]` **D5 External search (F005; old 5.4). Luna/low.** Hooktheory system-browser handoff, failure/unavailable state, and return continuity.
+6. `[ ]` **D6 Favorites (F050; old 8.1). Terra/medium.** Hollow/filled star, unique built-in membership, optimistic rollback, and errors.
+7. `[ ]` **D7 Playlist summaries (F051; old 8.2). Terra/medium.** Library accordion, counts, states, and expansion persistence.
+8. `[ ]` **D8 Playlist contents and removal (F051, F053; old 8.3). Terra/high.** Newest-first rows, Quiz navigation, swipe removal, unresolved-slug hiding, and separate durable user storage. Full catalog-replacement durability verification is reserved for the approval gate.
 
-- Static visual changes: deterministic `#Preview`, focused view/store test,
-  simulator build, relaunch, screenshot.
-- Interactive changes: targeted XCUITest with stable accessibility identifiers
-  and an attached post-interaction screenshot.
-- Shared theory/catalog/audio changes: targeted tests during iteration and the
-  entire Swift package suite at the phase boundary.
-- Phase boundary: iPhone 17 and iPhone 14 Pro simulators in portrait and
-  landscape, one booted simulator at a time.
-- Hardware-only behavior: user-authorized TestFlight on the available iPhone;
-  perceptual audio, microphone, interruptions, lock screen, headphones, and
-  Bluetooth remain incomplete until signed by the human reviewer.
-- Release: zero pending/skipped parity tests and complete required iPad evidence.
+### E — Add vocal practice
+
+1. `[ ]` **E1 Microphone/session ownership (F040–F041; old 4.2, ownership parts of 7.2/7.4). Sol/high.** Just-in-time permission, exclusive lease, denial/error handling, native capture/YIN/gates/smoothing reuse, stale-owner rejection, and cleanup. Include a minimal usable capture state for review.
+2. `[ ]` **E2 Two-note capture and feedback (F043–F044; old 4.1, 4.3, 4.4). Sol/high.** Manual collapsed/expanded tool, independent three-second slots, stable capture, silence/dropout handling, pitch/spelling/cents, interval name/direction, exact replay and rerecord/cancel.
+3. `[ ]` **E3 Pair playback and Flip-Flop (F043, F045; non-seek part of old 4.5). Sol/high.** Pair/alternating playback/capture, independent slot state, cancellation and final pause.
+4. `[ ]` **E4 Card sing-back (F042, F044; old 5.5, sing-back parts of 4.1/5.6/5.7). Sol/high.** Root, melody, interval, and chord-tone double taps open target-guided listening after preview settles; use shared ownership/arbitration, target-mode sheet and named accessible actions.
+5. `[ ]` **E5 Tessitura calibration (F048; old 6.1). Sol/high.** Permission/cancel/error/retry, three voiced seconds, final-two-second averaging, silence pause and dropout grace/restart.
+6. `[ ]` **E6 Target placement and adjustment (F048–F049; old 6.2, target part of 6.3). Terra/high.** Comfortable window, interval-unit placement, contour/tritone rules, anchor/octave stepper, transpose-once, and clear-adjustment/session distinction.
+7. `[ ]` **E7 Persistent practice (F046, F049; old 6.4, target-following parts of 6.3/5.6). Sol/high.** Long-press root/melody/chord-tone targets, fast melody tracking with rest/no-signal handling, chord-tone clamping, index restoration, and transport-following placement.
+8. `[ ]` **E8 Live markers and scoring (F046–F047; old 6.5). Sol/high.** Bounded live marker, settled contiguous-run scoring using median, explicit unscored result, badges, and stale-sample rejection.
+
+### F — Complete platform behavior
+
+1. `[ ]` **F1 Now Playing and remotes (F039; old 7.3). Sol/high.** Publish song/section and elapsed state; route remote play/pause/stop/seek through the shared transport.
+2. `[ ]` **F2 Background/interruption/route recovery (F027, F036, F038–F039, F041–F049; old 7.2/7.4). Sol/high.** Complete output recovery, session transitions, cleanup and stale-result rejection. Device-specific verification follows explicit approval; do not claim hardware behavior verified from a simulator.
+3. `[ ]` **F3 Remaining layout/accessibility implementation (F014, F025, F054; old 6.6, implementation part of 9.1). Terra/high.** Compact final native layout, focus, VoiceOver alternatives, Dynamic Type, reduced motion, rotation and iPad adaptation. Add semantics with each earlier feature; reserve broad audit/matrix for the gate.
+
+## Full-app testing approval gate
+
+**Not authorized by this roadmap or by individual feature approvals.** After A–F
+implementation, present remaining known gaps and the proposed full-test scope,
+then wait for the user's explicit instruction to begin. Do not begin because a
+phase ended, an agent continued, or a feature was approved.
+
+Once authorized, perform these former Phase 9 acceptance checks:
+
+1. **T1 Full regression and accessibility (old 9.1).** Run app/package/UI suites;
+   reconcile obsolete tests with in-scope parity; collect VoiceOver, Dynamic Type,
+   reduced-motion, focus, orientation, small-phone and iPad evidence.
+2. **T2 Catalog/data/platform verification (old 9.2; F010, F012, F039, F053).**
+   Full catalog and appropriate real songs, clean install/upgrade/offline, failed
+   and cancelled/interrupted replacement, backup recovery, user-data durability,
+   privacy, background soak, microphone, interruptions, lock screen and routes.
+3. **T3 Release readiness (old 9.3).** Resolve failures; rerun affected checks;
+   require zero pending/skipped in-scope parity tests and required device evidence.
+   Review archive/signature/manifests only in the authorized release workflow.
+
+TestFlight upload and release require separate explicit direction. Full-test
+approval alone does not authorize publishing.
 
 ## Explicit exclusions and defaults
 
-- `[excluded]` F013 missing-payload auto-harvest, F052 custom-playlist management
-  UI, and F055 unused audiation container.
-- `[excluded]` the puck/magnifying-glass UI, unused `TripleClickable` helper,
-  obsolete Quiz skip button, database verification/search-by-slug controls,
-  transient layouts, 55% balance intermediate, renames/icons, Android build work,
-  and monorepo/release-only commits.
-- Preserve the final gestures that replaced the magnifying glass: single tap
-  preview, double tap sing-back, and long press persistent practice.
+- Exclude F013 missing-payload auto-harvest, F052 custom-playlist management UI,
+  and F055 unused audiation container.
+- Exclude the puck/magnifying glass, unused TripleClickable helper, obsolete Quiz
+  skip button, database-verification/search-by-slug controls, transient layouts,
+  intermediate 55% balance, rename/icon-only history, and Android/release-only
+  commits. Preserve the final single-tap preview, double-tap sing-back, and
+  long-press practice actions.
 - Target iOS 17+, English, dark presentation, iPhone/iPad, both orientations,
   background audio, Dynamic Type, VoiceOver, and reduced motion.
-- Open Hooktheory and YouTube in the system browser; do not add an in-app browser
-  or region-specific policy.
-- Normal review uses the iPhone 17 simulator; phase review adds iPhone 14 Pro.
-  Do not claim iPad or hardware completion without corresponding evidence.
-- TestFlight is an external action and runs only after explicit user direction.
+- Use system-browser Hooktheory/YouTube links. Keep download/resync in the
+  upper-right Settings Form and Add a TheoryTab Song on the main Library.
+- Keep one warm iPhone 17 simulator for iteration; iPhone 14 Pro, iPad and
+  hardware evidence belong to approved final testing unless separately requested.
+- Preserve existing stored data and uncommitted work. This roadmap requires no
+  schema migration or public-interface replacement.
