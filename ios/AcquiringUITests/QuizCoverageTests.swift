@@ -323,20 +323,70 @@ final class QuizCoverageTests: XCTestCase {
 
     // MARK: - F043 practice dock
 
-    func testVocalPracticeDockStartsCollapsedAndOpens() {
+    func testFullChordOnlyPreviewsWhileMarkedRootStartsSingBack() {
         let app = launchReadyQuiz()
+        let chord = app.buttons["quiz.chord.preview"]
+        let root = app.buttons["quiz.root.preview"]
         let toggle = app.buttons["vocal.practice.expand"]
         let first = app.descendants(matching: .any)["vocal.practice.slot.1"].firstMatch
+        XCTAssertTrue(chord.waitForExistence(timeout: 10))
+        XCTAssertTrue(root.waitForExistence(timeout: 10))
+        XCTAssertTrue(waitForEnabled(chord, timeout: 30))
+        XCTAssertTrue(waitForEnabled(root, timeout: 30))
+
+        chord.doubleTap()
+        XCTAssertFalse(first.exists, "The full chord card must remain preview-only")
+        chord.press(forDuration: 1.1)
+        XCTAssertTrue(waitForValue(toggle, "Collapsed", timeout: 5))
+        XCTAssertFalse(first.exists, "Long-pressing the full chord must not start persistent practice")
+
+        root.doubleTap()
+        XCTAssertTrue(first.waitForExistence(timeout: 5), "The marked root card must still offer sing-back")
+        XCTAssertFalse(
+            app.descendants(matching: .any)["vocal.practice.interval"].firstMatch.isEnabled,
+            "The interval result requires two recorded notes"
+        )
+    }
+
+    func testVocalPracticeDockStaysSingleFromLibraryThroughQuizAndOpens() {
+        let app = launchReadyLibrary()
+        let toggle = app.buttons["vocal.practice.expand"]
+        let first = app.descendants(matching: .any)["vocal.practice.slot.1"].firstMatch
+        let section = app.descendants(matching: .any)["quiz.section"]
         XCTAssertTrue(toggle.waitForExistence(timeout: 10))
+        XCTAssertEqual(app.descendants(matching: .any).matching(identifier: "vocal.practice.dock").count, 1)
         XCTAssertFalse(first.exists)
         toggle.tap()
         XCTAssertTrue(first.waitForExistence(timeout: 5))
         XCTAssertTrue(first.isHittable)
         XCTAssertTrue(app.descendants(matching: .any)["vocal.practice.slot.2"].firstMatch.isHittable)
-        XCTAssertTrue(app.buttons["quiz.section"].isHittable)
+        XCTAssertFalse(app.alerts.element.exists, "Expanding must not request microphone access")
+        toggle.tap()
+
+        let search = app.textFields["library.search.field"]
+        search.tap()
+        search.typeText("500 Miles")
+        let song = app.buttons[Fixture.fiveHundredMiles]
+        XCTAssertTrue(song.waitForExistence(timeout: 10))
+        song.tap()
+        XCTAssertTrue(app.navigationBars[Fixture.quizTitle].waitForExistence(timeout: 10))
+        XCTAssertEqual(app.descendants(matching: .any).matching(identifier: "vocal.practice.dock").count, 1)
+
+        toggle.tap()
+        XCTAssertTrue(first.waitForExistence(timeout: 5))
+        XCTAssertTrue(
+            poll(timeout: 5) { section.exists && section.isEnabled && section.isHittable },
+            "Quiz section selector must be ready before opening its native menu"
+        )
         XCTAssertTrue(app.buttons["quiz.play"].isHittable)
         XCTAssertFalse(app.alerts.element.exists, "Expanding must not request microphone access")
-        XCTAssertFalse(app.scrollViews.firstMatch.exists, "Expanding practice must not enable page scrolling")
+        let dock = app.descendants(matching: .any)["vocal.practice.dock"].firstMatch
+        for identifier in ["quiz.mode", "quiz.reset", "quiz.section", "quiz.play"] {
+            let control = app.descendants(matching: .any)[identifier].firstMatch
+            // The dock container includes 8 pt of decorative top padding.
+            XCTAssertLessThanOrEqual(control.frame.maxY, dock.frame.minY + 8 + 0.5,
+                                     "\(identifier) must stay above the expanded singing dock content")
+        }
         let footerTop = app.buttons["quiz.reset"].frame.minY
         for identifier in ["quiz.tempo", "quiz.arpeggio", "quiz.instrument", "quiz.transpose"] {
             let control = app.descendants(matching: .any)[identifier].firstMatch
@@ -344,11 +394,11 @@ final class QuizCoverageTests: XCTestCase {
             XCTAssertLessThanOrEqual(control.frame.maxY, footerTop + 0.5,
                                      "\(identifier) must not overlap the transport row")
         }
-        app.buttons["quiz.section"].tap()
+        section.tap()
         let chorus = app.buttons["Chorus"]
         XCTAssertTrue(chorus.waitForExistence(timeout: 5))
         chorus.tap()
-        XCTAssertTrue(waitForValue(app.buttons["quiz.section"], "Chorus", timeout: 5))
+        XCTAssertTrue(waitForValue(section, "Chorus", timeout: 5))
         XCTAssertTrue(first.isHittable, "Changing section must not close the dock")
         toggle.tap()
         XCTAssertFalse(first.exists)
@@ -384,6 +434,8 @@ final class QuizCoverageTests: XCTestCase {
         flipFlop.tap()
         XCTAssertTrue(waitForValue(flipFlop, "1", timeout: 5), "The switch itself must turn on")
         XCTAssertTrue(stop.waitForExistence(timeout: 5))
+        XCTAssertFalse(first.isEnabled, "Flip-Flop disables the first individual pitch card")
+        XCTAssertFalse(second.isEnabled, "Flip-Flop disables the second individual pitch card")
         let survived = expectation(description: "Survive both Flip-Flop capture windows")
         DispatchQueue.main.asyncAfter(deadline: .now() + 8) { survived.fulfill() }
         wait(for: [survived], timeout: 12)
@@ -391,10 +443,12 @@ final class QuizCoverageTests: XCTestCase {
         XCTAssertTrue(stop.isHittable)
         stop.tap()
         XCTAssertTrue(poll(timeout: 5) { !stop.exists })
+        XCTAssertTrue(first.isEnabled, "Stopping Flip-Flop re-enables the first pitch card")
+        XCTAssertTrue(second.isEnabled, "Stopping Flip-Flop re-enables the second pitch card")
         XCTAssertEqual(app.state, .runningForeground)
     }
 
-    func testDoubleTapOpensOnlyIntervalToolAndCollapseRetainsTarget() {
+    func testDoubleTapOpensOnlyIntervalToolAndCollapseClearsTargets() {
         let app = launchReadyQuiz()
         let root = app.buttons["quiz.root.preview"]
         XCTAssertTrue(root.waitForExistence(timeout: 10))
@@ -402,13 +456,17 @@ final class QuizCoverageTests: XCTestCase {
         root.doubleTap()
         let toggle = app.buttons["vocal.practice.expand"]
         let first = app.buttons["vocal.practice.slot.1"]
+        let section = app.descendants(matching: .any)["quiz.section"]
         XCTAssertTrue(first.waitForExistence(timeout: 10))
         XCTAssertTrue(waitForValue(toggle, "Expanded", timeout: 5))
         XCTAssertEqual(app.buttons.matching(identifier: "vocal.practice.expand").count, 1)
         XCTAssertFalse(app.navigationBars["Sing back"].exists)
         XCTAssertFalse(app.navigationBars["Vocal practice"].exists)
         XCTAssertFalse(app.descendants(matching: .any)["vocal.practice.panel"].exists)
-        XCTAssertTrue(app.buttons["quiz.section"].isHittable)
+        XCTAssertTrue(
+            poll(timeout: 5) { section.exists && section.isEnabled && section.isHittable },
+            "Quiz section selector must be ready before opening its native menu"
+        )
 
         toggle.tap()
         XCTAssertTrue(waitForValue(toggle, "Collapsed", timeout: 5))
@@ -416,11 +474,48 @@ final class QuizCoverageTests: XCTestCase {
         XCTAssertFalse(app.buttons["vocal.practice.stop"].exists)
         toggle.tap()
         XCTAssertTrue(first.waitForExistence(timeout: 5))
-        XCTAssertFalse((first.value as? String ?? "No pitch").hasPrefix("No pitch"),
-                       "Reopening must retain the assigned target")
+        XCTAssertTrue(
+            poll(timeout: 5) { (first.value as? String ?? "No pitch").hasPrefix("No pitch") },
+            "Rapid reopening must finalize the cleared target"
+        )
+
+        root.doubleTap()
+        XCTAssertTrue(
+            poll(timeout: 5) { !(first.value as? String ?? "No pitch").hasPrefix("No pitch") },
+            "Double-tapping the root must load a target before changing sections"
+        )
+        XCTAssertTrue(
+            poll(timeout: 5) { section.exists && section.isEnabled && section.isHittable },
+            "Quiz section selector must be ready before opening its native menu"
+        )
+        section.tap()
+        let chorus = app.buttons["Chorus"]
+        XCTAssertTrue(chorus.waitForExistence(timeout: 5))
+        chorus.tap()
+        XCTAssertTrue(waitForValue(section, "Chorus", timeout: 5))
+        XCTAssertTrue(
+            poll(timeout: 5) { (first.value as? String ?? "No pitch").hasPrefix("No pitch") },
+            "Changing sections must clear the loaded target"
+        )
+
+        root.doubleTap()
+        XCTAssertTrue(
+            poll(timeout: 5) { !(first.value as? String ?? "No pitch").hasPrefix("No pitch") },
+            "Double-tapping the root must load a target before backgrounding"
+        )
+        XCUIDevice.shared.press(.home)
+        app.activate()
+        XCTAssertTrue(waitForValue(toggle, "Collapsed", timeout: 5))
+        toggle.tap()
+        XCTAssertTrue(first.waitForExistence(timeout: 5))
+        XCTAssertTrue(
+            poll(timeout: 5) { (first.value as? String ?? "No pitch").hasPrefix("No pitch") },
+            "Backgrounding must clear the loaded target"
+        )
         // The underlying Song Detail must use the same tool, with no hidden sheet presenter.
         app.navigationBars.buttons["BackButton"].firstMatch.tap()
         XCTAssertTrue(toggle.waitForExistence(timeout: 10))
+        XCTAssertEqual(app.descendants(matching: .any).matching(identifier: "vocal.practice.dock").count, 1)
         XCTAssertEqual(app.buttons.matching(identifier: "vocal.practice.expand").count, 1)
         XCTAssertFalse(app.navigationBars["Sing back"].exists)
         if toggle.value as? String == "Expanded" { toggle.tap() }
@@ -589,13 +684,8 @@ final class QuizCoverageTests: XCTestCase {
         file: StaticString = #filePath,
         line: UInt = #line
     ) -> XCUIApplication {
-        let app = XCUIApplication()
-        app.launchArguments = ["--ui-testing", "--ui-testing-scenario=library.ready"]
-        if previewFonts { app.launchArguments.append("--preview-notation-fonts") }
-        app.launchEnvironment["ACQUIRING_UI_TEST_SESSION_ID"] = UUID().uuidString
-        app.launch()
+        let app = launchReadyLibrary(previewFonts: previewFonts, file: file, line: line)
         let search = app.textFields["library.search.field"]
-        XCTAssertTrue(search.waitForExistence(timeout: 15), file: file, line: line)
         search.tap()
         search.typeText("500 Miles")
         let song = app.buttons[Fixture.fiveHundredMiles]
@@ -606,6 +696,21 @@ final class QuizCoverageTests: XCTestCase {
             file: file,
             line: line
         )
+        return app
+    }
+
+    private func launchReadyLibrary(
+        previewFonts: Bool = false,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments = ["--ui-testing", "--ui-testing-scenario=library.ready"]
+        if previewFonts { app.launchArguments.append("--preview-notation-fonts") }
+        app.launchEnvironment["ACQUIRING_UI_TEST_SESSION_ID"] = UUID().uuidString
+        app.launch()
+        let search = app.textFields["library.search.field"]
+        XCTAssertTrue(search.waitForExistence(timeout: 15), file: file, line: line)
         return app
     }
 

@@ -60,11 +60,13 @@ struct IntervalSingingTool: View {
                     }
                     Menu {
                         Button("Reset recordings") {
-                            model.collapse()
-                            model.clearError()
-                            model.expand()
+                            model.resetManualPractice()
                         }
                         Button("Calibrate comfortable pitch") { model.startCalibration() }
+                            .disabled(!model.canCalibrateComfortablePitch)
+                            .accessibilityHint(
+                                model.canCalibrateComfortablePitch ? "" : "Open a song to calibrate"
+                            )
                         Section(model.comfortablePitchLabel.map { "Comfortable pitch: \($0)" } ?? "Comfortable pitch not set") {
                             Button("Lower comfortable pitch one semitone") { model.adjustComfortablePitch(semitones: -1) }
                             Button("Raise comfortable pitch one semitone") { model.adjustComfortablePitch(semitones: 1) }
@@ -143,15 +145,17 @@ struct IntervalSingingTool: View {
         let sample = slot == 1 ? model.displayedSlot1 : model.displayedSlot2
         let captured = slot == 1 ? model.slot1 : model.slot2
         let target = slot == 1 ? model.targetRequest?.first : model.targetRequest?.second
+        let isRecording = model.recordingSlot == slot
         let active = model.recordingSlot == slot || model.listeningSlot == slot
         return DockPitchCard(
             title: target?.scaleDegreeLabel ?? (slot == 1 ? "First note" : "Second note"),
             sample: sample,
             isReference: captured == nil && target != nil,
             isActive: active,
+            isRecording: isRecording,
             remainingMilliseconds: model.captureRemainingMilliseconds,
-            isEnabled: !model.isFlipFlopEnabled,
-            showsPitchHint: !model.isFlipFlopEnabled && model.recordingSlot != slot,
+            isEnabled: !model.isFlipFlopEnabled && !isRecording,
+            showsPitchHint: !model.isFlipFlopEnabled && !isRecording,
             isTessituraAdjusted: model.isSingingTargetTessituraAdjusted(slot: slot),
             play: { model.playSlot(slot) },
             record: { model.toggleRecording(slot: slot) }
@@ -160,7 +164,8 @@ struct IntervalSingingTool: View {
     }
 
     private var intervalCard: some View {
-        Button { model.playPair() } label: {
+        let hasCapturedPair = model.slot1 != nil && model.slot2 != nil
+        return Button { model.playPair() } label: {
             VStack(spacing: 6) {
                 Text("Interval").font(.caption).foregroundStyle(.secondary)
                 if let interval = model.measuredInterval {
@@ -173,7 +178,7 @@ struct IntervalSingingTool: View {
                 } else {
                     Text("—").font(.title2).foregroundStyle(.secondary)
                 }
-                Text(model.measuredInterval == nil && model.targetRequest != nil ? "Hear targets" : "Tap to hear")
+                Text(hasCapturedPair ? "Tap to hear" : "Record both notes")
                     .font(.system(size: 10)).foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity)
@@ -183,7 +188,7 @@ struct IntervalSingingTool: View {
             .contentShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)
-        .disabled(model.displayedSlot1 == nil || model.displayedSlot2 == nil)
+        .disabled(!hasCapturedPair)
         .accessibilityLabel("Measured interval")
         .accessibilityValue(model.measuredInterval.map { "\($0.namedInterval.spokenName), \(PersistentPitchFeedback.formatCentsError($0.centsDeviation))" } ?? "Record both notes")
         .accessibilityHint("Plays the first note, second note, then both together")
@@ -252,6 +257,7 @@ private struct DockPitchCard: View {
     let sample: VocalPitchSample?
     let isReference: Bool
     let isActive: Bool
+    let isRecording: Bool
     let remainingMilliseconds: Int
     let isEnabled: Bool
     let showsPitchHint: Bool
@@ -325,21 +331,47 @@ private struct DockPitchCard: View {
             }
         }
         .contentShape(RoundedRectangle(cornerRadius: 8))
+        .disabled(!isEnabled)
         .gesture(TapGesture(count: 2).onEnded { if isEnabled { record() } }
             .exclusively(before: TapGesture(count: 1).onEnded { if isEnabled { play() } }))
         .accessibilityElement(children: .ignore)
         .accessibilityAddTraits(.isButton)
         .accessibilityLabel(title)
         .accessibilityValue("\(sample?.pitchLabel ?? "No pitch"), \(isReference ? "Reference" : sample.map { errorText($0.centsFromReference) } ?? ""), \(status), \(isTessituraAdjusted ? "Tessitura adjusted" : "Original target octave")")
-        .accessibilityHint(isEnabled ? "Single tap replays. Double tap records or stops listening." : "Turn off Flip-Flop to record an individual note")
-        .accessibilityAction(named: "Replay") { if isEnabled { play() } }
-        .accessibilityAction(named: isActive ? "Stop recording" : "Record or sing back") { if isEnabled { record() } }
+        .accessibilityHint(
+            isEnabled
+                ? "Single tap replays. Double tap records or stops listening."
+                : isRecording
+                    ? "Recording in progress. Use Stop microphone to stop."
+                    : "Turn off Flip-Flop to record an individual note"
+        )
+        .dockPitchCardActions(
+            isEnabled: isEnabled,
+            isActive: isActive,
+            play: play,
+            record: record
+        )
     }
 
     private func errorText(_ cents: Double) -> String {
-        let label = PersistentPitchFeedback.formatCentsError(cents)
-        guard PersistentPitchFeedback.showsLiveErrorPercentage(centsError: cents) else { return label }
-        return "\(label) · \(PersistentPitchFeedback.formatLiveErrorPercentage(centsError: cents))"
+        PersistentPitchFeedback.formatCentsError(cents)
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func dockPitchCardActions(
+        isEnabled: Bool,
+        isActive: Bool,
+        play: @escaping () -> Void,
+        record: @escaping () -> Void
+    ) -> some View {
+        if isEnabled {
+            accessibilityAction(named: "Replay") { play() }
+                .accessibilityAction(named: isActive ? "Stop recording" : "Record or sing back") { record() }
+        } else {
+            self
+        }
     }
 }
 

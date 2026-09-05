@@ -116,7 +116,19 @@ struct QuizCardsView: View {
                     previous: previous,
                     current: current,
                     interval: interval,
-                    identifier: "quiz.root.interval"
+                    identifier: "quiz.root.interval",
+                    labels: [
+                        previous.map {
+                            usesRelativeIonianContext
+                                ? RelativeIonianContext.degreeLabel(for: $0, contextKey: ionianContextKey)
+                                : (rootState?.previousDegreeLabel ?? "")
+                        } ?? "",
+                        current.map {
+                            usesRelativeIonianContext
+                                ? RelativeIonianContext.degreeLabel(for: $0, contextKey: ionianContextKey)
+                                : (rootState?.currentDegreeLabel ?? "")
+                        } ?? ""
+                    ]
                 )
             }
         }
@@ -191,6 +203,14 @@ struct QuizCardsView: View {
                             current: state?.current,
                             interval: state?.interval,
                             identifier: "quiz.melody.interval",
+                            labels: [
+                                state.map {
+                                    usesRelativeIonianContext
+                                        ? RelativeIonianContext.degreeLabel(for: $0.previous, contextKey: ionianContextKey)
+                                        : $0.previousDegreeLabel
+                                } ?? "",
+                                currentLabel
+                            ],
                             fixedHeight: MelodyCardLayout.singleOrIntervalHeight,
                             showsPitchNames: false
                         )
@@ -231,10 +251,6 @@ struct QuizCardsView: View {
                     identifier: "quiz.chord.preview",
                     enabled: isPreviewEnabled && !voicing.isEmpty,
                     action: { onPreview(voicing, active.nativeDuration(bpm: section.bpm)) },
-                    doubleTapAction: root.flatMap { singBackAction([previewMIDI(for: $0)]) },
-                    longPressAction: persistentAction(.simpleRoot),
-                    doubleTapActionName: "Sing Back",
-                    isTessituraEnabled: isTessituraEnabled,
                     showsSingBackHint: false,
                     fixedHeight: compact ? 44 : nil
                 ) {
@@ -422,6 +438,7 @@ struct QuizCardsView: View {
         current: SpelledPitch?,
         interval: NamedInterval?,
         identifier: String,
+        labels: [String],
         fixedHeight: CGFloat? = nil,
         showsPitchNames: Bool = true
     ) -> some View {
@@ -431,7 +448,7 @@ struct QuizCardsView: View {
                 identifier: identifier,
                 enabled: isPreviewEnabled,
                 action: { onIntervalPreview(intervalPreviewPair(previous: previous, current: current)) },
-                doubleTapAction: singBackAction(intervalPreviewPair(previous: previous, current: current)),
+                doubleTapAction: singBackAction(intervalPreviewPair(previous: previous, current: current), labels: labels),
                 longPressAction: persistentAction(identifier.hasPrefix("quiz.root") ? .simpleRoot : .melody),
                 previewActionName: "Preview sequence and together",
                 doubleTapActionName: "Sing Back Interval",
