@@ -73,6 +73,11 @@ public enum QuizArpeggioOption: String, CaseIterable, Sendable {
     }
 }
 
+public enum QuizChordMode: Sendable, Equatable {
+    case full
+    case rootOnly
+}
+
 public struct PreviewRequest: Equatable, Sendable {
     public let frequenciesHz: [Double]
     public let duration: Duration
@@ -106,12 +111,14 @@ public struct QuizSoundConfiguration: Equatable, Sendable {
     public let melodyChordBalance: Double
     public let transposeSemitones: Int
     public let arpeggioOption: QuizArpeggioOption
+    public let chordMode: QuizChordMode
 
     public init(
         waveform: SynthWaveform = .sawtooth,
         melodyChordBalance: Double = 0.5,
         transposeSemitones: Int = 0,
-        arpeggioOption: QuizArpeggioOption = .off
+        arpeggioOption: QuizArpeggioOption = .off,
+        chordMode: QuizChordMode = .full
     ) {
         self.waveform = waveform
         self.melodyChordBalance = melodyChordBalance.isFinite
@@ -119,6 +126,7 @@ public struct QuizSoundConfiguration: Equatable, Sendable {
             : 0.5
         self.transposeSemitones = min(max(transposeSemitones, -12), 12)
         self.arpeggioOption = arpeggioOption
+        self.chordMode = chordMode
     }
 
     public var melodyGain: Double { melodyChordBalance }
@@ -190,6 +198,7 @@ public struct QuizEvent: Equatable, Sendable {
     public let waveform: SynthWaveform
     public let gain: Float
     public let channel: AudioPlaybackChannel
+    public let rootFrequencyHz: Double?
 
     public init(
         onsetSeconds: Double,
@@ -197,7 +206,8 @@ public struct QuizEvent: Equatable, Sendable {
         frequenciesHz: [Double],
         waveform: SynthWaveform,
         gain: Float = 1,
-        channel: AudioPlaybackChannel = .melody
+        channel: AudioPlaybackChannel = .melody,
+        rootFrequencyHz: Double? = nil
     ) {
         self.onsetSeconds = onsetSeconds
         self.durationSeconds = durationSeconds
@@ -205,6 +215,7 @@ public struct QuizEvent: Equatable, Sendable {
         self.waveform = waveform
         self.gain = gain
         self.channel = channel
+        self.rootFrequencyHz = rootFrequencyHz
     }
 }
 
