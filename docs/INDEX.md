@@ -5,8 +5,9 @@
 | Document | Use it when… |
 | --- | --- |
 | [Product architecture](./architecture.md) | You need the web, Android, iOS, contract, data, or release boundaries. |
-| [Feature parity](./feature-parity.md) | You need the current cross-platform implementation status. |
-| [iOS porting plan](./porting-plan.md) | You are implementing the Swift/SwiftUI application. |
+| [iOS porting plan](./porting-plan.md) | You are implementing the Swift/SwiftUI application; this is the sole active execution order and review contract. |
+| [Feature parity](./feature-parity.md) | You need the stable F001–F055 capability inventory or current cross-platform implementation status. |
+| [Android app analysis](./android-app-analysis.md) | You need the audited final Android behavior or source references behind a parity capability. |
 | [Web architecture](./web-architecture.md) | You need the detailed web engine, catalog, and oracle design. |
 
 Master map of repo documentation. **Read the linked file when your task matches its scope** — do not guess module behavior from this index alone.
@@ -61,6 +62,11 @@ Master map of repo documentation. **Read the linked file when your task matches 
 ## Agent quick-routing
 
 ```
+Task involves the native iOS port?
+  → porting-plan.md for execution order and review gates
+  → feature-parity.md for stable capability IDs/status
+  → android-app-analysis.md for final Android behavior
+
 Task involves modularizing data vs code / gitignore / portable data bundle?
   → HANDOFF.md (repo root)
 

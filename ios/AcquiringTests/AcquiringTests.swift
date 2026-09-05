@@ -6,6 +6,72 @@ import XCTest
 @testable import Acquiring
 
 final class AcquiringTests: XCTestCase {
+    func testUITestCatalogFixtureContainsTheRequestedCompressedSongs() throws {
+        let fixture = try UITestCatalogFixture.load(from: Bundle(for: AcquiringTests.self))
+
+        XCTAssertEqual(fixture.source.snapshot, "acquiring-full-catalog-fixture-source.db")
+        XCTAssertEqual(fixture.source.schemaVersion, 3)
+        XCTAssertEqual(fixture.source.songCount, 40_979)
+        XCTAssertEqual(fixture.source.payloadEncoding, "base64-chunks")
+        XCTAssertEqual(fixture.source.payloadCompression, "gzip")
+        XCTAssertEqual(fixture.songs.map(\.id), [
+            "weird-al-yankovic__everything-you-know-is-wrong",
+            "the-proclaimers__500-miles",
+            "olivia-rodrigo__drop-dead",
+            "lady-gaga__bad-romance",
+            "billy-joel__honesty",
+            "scott-joplin__the-entertainer",
+            "scott-joplin__gladiolus-rag",
+            "queen__bohemian-rhapsody"
+        ])
+        let expectedChecksums = [
+            "weird-al-yankovic__everything-you-know-is-wrong": "8674ec36bc3fc170d20028e20612b6b0c6c65c63e650c1ccff621883ff6b3cff",
+            "the-proclaimers__500-miles": "42ad263451e6812d4f5e3636b46f8d4030e7bd41f4160d0cf0089fc54634e4d1",
+            "olivia-rodrigo__drop-dead": "1ea9f1be0ecc0306c28c0cb67ef15fc5b3d84f958ab78112d32210fcddb29ef6",
+            "lady-gaga__bad-romance": "652096b49593d8f6201f17a174264ed67b48fc212a75e44e178ecd2fb01642c2",
+            "billy-joel__honesty": "26125f6c2dabd5a8bacfee1af5a18e139f40caeb341532d124e1ff955a2b9549",
+            "scott-joplin__the-entertainer": "6fff797a517d508317d48767a763a23d4b63867a0ae77afc844ed91e2782235f",
+            "scott-joplin__gladiolus-rag": "99f081f3e283652167e0c018dff24890efeffc8a3077a13f4ae3ea7dac5ff539",
+            "queen__bohemian-rhapsody": "7b45210a17a65b30aebf05611e775225c85c49deb4c7f39ad66b4d389bb872bb"
+        ]
+
+        for song in fixture.songs {
+            let payload = try song.compressedPayload()
+            XCTAssertFalse(payload.isEmpty, song.id)
+            XCTAssertTrue(payload.starts(with: [0x1F, 0x8B]), song.id)
+            XCTAssertEqual(payload.count, song.compressedPayloadByteCount, song.id)
+            XCTAssertEqual(song.compressedPayloadSHA256, expectedChecksums[song.id], song.id)
+            XCTAssertEqual(try song.catalogSong().status, "enriched", song.id)
+        }
+    }
+
+    @MainActor
+    func testUITestCatalogFixtureInstallsAndDecodesEverySong() async throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appending(path: "AcquiringTests-UIFixture-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: directory) }
+
+        let coordinator = CatalogCoordinator(
+            configuration: CatalogConfiguration(
+                directoryURL: directory,
+                downloadURL: URL(string: "https://example.invalid/catalog.db.gz")!
+            )
+        )
+        try await coordinator.prepare()
+        let installedCount = try await AppEnvironment.installUITestCatalog(
+            into: coordinator,
+            bundle: Bundle(for: AcquiringTests.self)
+        )
+        XCTAssertEqual(installedCount, 8)
+
+        let fixture = try UITestCatalogFixture.load(from: Bundle(for: AcquiringTests.self))
+        for song in fixture.songs {
+            let document = try await coordinator.songDocument(id: song.id)
+            XCTAssertEqual(document.song.id, song.id)
+            XCTAssertFalse(document.sections.isEmpty, song.id)
+        }
+    }
+
     @MainActor
     func testFavoritesMembershipIsUniqueAndNewestFirst() throws {
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
@@ -87,6 +153,126 @@ final class AcquiringTests: XCTestCase {
             let pitchClasses = Set(ChordInterpreter.chordNotes(for: chord, key: fixture.key).map { (($0 % 12) + 12) % 12 }).sorted()
             XCTAssertEqual(pitchClasses, fixture.expectedPcs, fixture.id)
         }
+    }
+
+    func testChordTimelinePresentationKeepsAndroidTimelineSemantics() {
+        let section = ExtractedSection(
+            sectionName: "Timeline",
+            chords: [
+                ["root": .number(1), "type": .number(5), "beat": .number(0), "duration": .number(1)],
+                ["rest": .bool(true), "beat": .number(3), "duration": .number(1)],
+                ["root": .number(1), "type": .number(5), "beat": .number(5), "duration": .number(2)]
+            ],
+            metadata: [
+                "keys": .array([
+                    .object(["tonic": .string("C"), "scale": .string("major"), "beat": .number(1)]),
+                    .object(["tonic": .string("C"), "scale": .string("minor"), "beat": .number(5)])
+                ])
+            ]
+        )
+
+        let presentation = ChordTimelinePresentation(section: section)
+
+        XCTAssertEqual(presentation.visuals.map(\.onset), [1, 3, 5])
+        XCTAssertEqual(presentation.visuals.map(\.duration), [1, 1, 2])
+        XCTAssertEqual(presentation.visuals[0].display?.symbol, "I", "a later modulation must not relabel earlier chords")
+        XCTAssertEqual(presentation.localX(for: presentation.visuals[1]), 120)
+        XCTAssertEqual(presentation.width(for: presentation.visuals[2]), 120)
+        XCTAssertGreaterThan(
+            presentation.localX(for: presentation.visuals[1]),
+            presentation.localX(for: presentation.visuals[0]) + presentation.width(for: presentation.visuals[0]),
+            "a missing chord interval remains a natural gap"
+        )
+        XCTAssertNil(presentation.visuals[1].display, "rests are blocks with no numeral")
+        XCTAssertTrue(presentation.visuals[1].isRest)
+        XCTAssertEqual(presentation.visuals[2].display?.symbol, "i", "the key at onset determines the numeral")
+    }
+
+    func testChordTimelinePresentationUsesHalfOpenLatestActiveEventAndFixedPlayhead() {
+        let section = ExtractedSection(
+            sectionName: "Timeline",
+            chords: [
+                ["root": .number(1), "type": .number(5), "beat": .number(1), "duration": .number(2)],
+                ["root": .number(5), "type": .number(5), "beat": .number(2), "duration": .number(2)]
+            ]
+        )
+        let presentation = ChordTimelinePresentation(section: section)
+
+        XCTAssertEqual(presentation.activeVisual(at: 1)?.sourceIndex, 0)
+        XCTAssertEqual(presentation.activeVisual(at: 2)?.sourceIndex, 1)
+        XCTAssertNil(presentation.activeVisual(at: 4))
+
+        let containerWidth: CGFloat = 320
+        let active = presentation.visuals[1]
+        XCTAssertEqual(
+            presentation.x(for: active, containerWidth: containerWidth, currentBeat: active.onset),
+            containerWidth / 2,
+            accuracy: 0.001
+        )
+        XCTAssertEqual(ChordTimelinePresentation.progressAnimationDuration(reduceMotion: false), 0.12)
+        XCTAssertNil(ChordTimelinePresentation.progressAnimationDuration(reduceMotion: true))
+    }
+
+    func testMelodyTimelinePresentationUsesAndroidPitchAndTimelineCoordinates() {
+        let section = ExtractedSection(
+            sectionName: "Timeline",
+            notes: .array([
+                .object(["sd": .string("1"), "beat": .number(1), "duration": .number(1)]),
+                .object(["rest": .bool(true), "beat": .number(2), "duration": .number(1)]),
+                .object(["sd": .string("#4"), "beat": .number(4), "duration": .number(0.5), "octave": .number(1)]),
+                .object(["sd": .string("5"), "beat": .number(3), "duration": .number(1)]),
+                .object(["sd": .string("6"), "beat": .number(4), "duration": .number(1)])
+            ])
+        )
+
+        let presentation = MelodyTimelinePresentation(section: section)
+
+        XCTAssertEqual(presentation.restCount, 1)
+        XCTAssertEqual(presentation.visuals.map(\.sourceIndex), [0, 2, 3, 4])
+        XCTAssertEqual(presentation.visuals.map(\.onset), [1, 4, 3, 4])
+        XCTAssertEqual(presentation.visuals.map(\.staffDegree), [1, 11, 5, 6])
+        XCTAssertEqual(presentation.noteHeight, 5)
+        XCTAssertEqual(presentation.localX(for: presentation.visuals[1]), 180)
+        XCTAssertEqual(presentation.width(for: presentation.visuals[1]), 30)
+        XCTAssertLessThan(
+            presentation.y(for: presentation.visuals[1]),
+            presentation.y(for: presentation.visuals[3]),
+            "higher staff degrees render higher in the lane"
+        )
+        XCTAssertGreaterThan(
+            presentation.localX(for: presentation.visuals[1]),
+            presentation.localX(for: presentation.visuals[0]) + presentation.width(for: presentation.visuals[0]),
+            "rests and missing events remain blank gaps"
+        )
+        XCTAssertEqual(
+            presentation.x(for: presentation.visuals[1], containerWidth: 320, currentBeat: 4),
+            160,
+            accuracy: 0.001
+        )
+    }
+
+    func testPreviewPlaybackGenerationKeepsLatestRequestCurrent() {
+        let generation = PreviewPlaybackGeneration()
+        let first = generation.begin()
+        XCTAssertTrue(generation.isCurrent(first))
+
+        let second = generation.begin()
+        XCTAssertFalse(generation.isCurrent(first))
+        XCTAssertTrue(generation.isCurrent(second))
+        XCTAssertFalse(generation.invalidate(ifCurrent: first))
+        XCTAssertTrue(generation.isCurrent(second))
+
+        XCTAssertTrue(generation.invalidate(ifCurrent: second))
+        XCTAssertFalse(generation.isCurrent(second))
+    }
+
+    func testPreviewPlaybackGenerationStopInvalidatesPendingRequest() {
+        let generation = PreviewPlaybackGeneration()
+        let request = generation.begin()
+
+        generation.invalidate()
+
+        XCTAssertFalse(generation.isCurrent(request))
     }
 
     @MainActor
@@ -672,6 +858,125 @@ final class AcquiringTests: XCTestCase {
     }
 
     @MainActor
+    func testBlankSearchShowsRecentsOnlyAfterTheCurrentScopeReceivesFocus() throws {
+        let fixture = try makeLibraryStore(maintenance: ScriptedCatalogMaintenanceService())
+        defer { fixture.cleanup() }
+
+        XCTAssertFalse(fixture.store.shouldShowRecentContent)
+
+        fixture.store.setSearchFocused(true, for: .songs)
+        XCTAssertTrue(fixture.store.shouldShowRecentContent)
+
+        fixture.store.searchScope = .artists
+        XCTAssertFalse(fixture.store.shouldShowRecentContent)
+        fixture.store.setSearchFocused(true, for: .artists)
+        XCTAssertTrue(fixture.store.shouldShowRecentContent)
+
+        fixture.store.query = "Miles"
+        XCTAssertFalse(fixture.store.shouldShowRecentContent)
+        fixture.store.query = ""
+        XCTAssertTrue(fixture.store.shouldShowRecentContent)
+    }
+
+    @MainActor
+    func testSubmittingSongSearchRunsWithoutWaitingForTheDebounce() async throws {
+        let expected = CatalogSong(
+            id: "the-proclaimers__500-miles",
+            artist: "The Proclaimers",
+            title: "500 Miles"
+        )
+        let fixture = try makeLibraryStore(
+            maintenance: ScriptedCatalogMaintenanceService(),
+            songSuggestions: [expected]
+        )
+        defer { fixture.cleanup() }
+
+        fixture.store.query = "500 Miles"
+        fixture.store.submitSearch()
+
+        for _ in 0..<20 where fixture.store.suggestions != .content([expected]) {
+            try await Task.sleep(for: .milliseconds(10))
+        }
+
+        XCTAssertEqual(fixture.store.suggestions, .content([expected]))
+    }
+
+    @MainActor
+    func testFailedSecondSuggestionPageRetainsFirstPageAndPublishesPagingError() async throws {
+        let fixture = try makeLibraryStore(
+            maintenance: ScriptedCatalogMaintenanceService(),
+            failingSongSuggestionOffset: 20
+        )
+        defer { fixture.cleanup() }
+        let firstPage = (0..<20).map {
+            CatalogSong(id: "artist__song-\($0)", artist: "Artist", title: "Song \($0)")
+        }
+        fixture.store.query = "Song"
+        fixture.store.suggestions = .content(firstPage)
+        fixture.store.hasMoreSongSuggestions = true
+
+        fixture.store.loadMoreSuggestions()
+        for _ in 0..<20 where fixture.store.pagingError == nil {
+            try await Task.sleep(for: .milliseconds(10))
+        }
+
+        XCTAssertEqual(fixture.store.suggestions, .content(firstPage))
+        XCTAssertEqual(fixture.store.pagingError, "Test catalog failure.")
+        XCTAssertFalse(fixture.store.isLoadingMoreSuggestions)
+        XCTAssertTrue(fixture.store.hasMoreSongSuggestions)
+        fixture.store.query = ""
+    }
+
+    @MainActor
+    func testOpeningSongArtistPreservesOriginAndAvoidsDuplicateArtistRoute() async throws {
+        let fixture = try makeLibraryStore(maintenance: ScriptedCatalogMaintenanceService())
+        defer { fixture.cleanup() }
+        let song = CatalogSong(
+            id: "the-beatles__help",
+            artist: "The-Beatles",
+            title: "Help"
+        )
+
+        fixture.store.path = [.songDetail(song.id), .quiz(song.id)]
+        await fixture.store.openArtist(from: song)
+        XCTAssertEqual(fixture.store.path, [.artist("The Beatles")])
+
+        fixture.store.path += [.songDetail(song.id), .quiz(song.id)]
+        await fixture.store.openArtist(from: song)
+        XCTAssertEqual(fixture.store.path, [.artist("The Beatles")])
+
+        await fixture.store.refreshUserContent()
+        XCTAssertEqual(fixture.store.recentArtists, ["The Beatles"])
+    }
+
+    @MainActor
+    func testLibraryLoadPublishesLoadingUntilPreparationCompletes() async throws {
+        let preparationStarted = AsyncStream<Void>.makeStream()
+        let preparationRelease = AsyncStream<Void>.makeStream()
+        let fixture = try makeLibraryStore(
+            maintenance: ScriptedCatalogMaintenanceService(),
+            catalogCount: 7,
+            prepareCatalog: {
+                preparationStarted.continuation.yield(())
+                preparationStarted.continuation.finish()
+                for await _ in preparationRelease.stream { break }
+            }
+        )
+        defer { fixture.cleanup() }
+        var startedIterator = preparationStarted.stream.makeAsyncIterator()
+
+        let loadTask = Task { await fixture.store.load() }
+        _ = await startedIterator.next()
+
+        XCTAssertEqual(fixture.store.catalogState, .loading)
+
+        preparationRelease.continuation.yield(())
+        preparationRelease.continuation.finish()
+        await loadTask.value
+        XCTAssertEqual(fixture.store.catalogState, .content(7))
+    }
+
+    @MainActor
     func testLibraryLoadReportsPreparationFailure() async throws {
         let fixture = try makeLibraryStore(
             maintenance: ScriptedCatalogMaintenanceService(),
@@ -682,6 +987,27 @@ final class AcquiringTests: XCTestCase {
         await fixture.store.load()
 
         XCTAssertEqual(fixture.store.catalogState, .failure("Test catalog failure."))
+    }
+
+    @MainActor
+    func testLibraryLoadCanRetryPreparationFailureAndBecomeReady() async throws {
+        var preparationAttempts = 0
+        let fixture = try makeLibraryStore(
+            maintenance: ScriptedCatalogMaintenanceService(),
+            catalogCount: 9,
+            prepareCatalog: {
+                preparationAttempts += 1
+                if preparationAttempts == 1 { throw TestCatalogFailure() }
+            }
+        )
+        defer { fixture.cleanup() }
+
+        await fixture.store.load()
+        XCTAssertEqual(fixture.store.catalogState, .failure("Test catalog failure."))
+
+        await fixture.store.load()
+        XCTAssertEqual(fixture.store.catalogState, .content(9))
+        XCTAssertEqual(preparationAttempts, 2)
     }
 
     @MainActor
@@ -715,6 +1041,8 @@ final class AcquiringTests: XCTestCase {
         maintenance: any CatalogMaintenanceService,
         catalogCount: Int = 0,
         catalogCountThrows: Bool = false,
+        failingSongSuggestionOffset: Int? = nil,
+        songSuggestions: [CatalogSong] = [],
         prepareCatalog: @escaping @MainActor () async throws -> Void = {}
     ) throws -> (
         store: LibraryStore,
@@ -724,7 +1052,9 @@ final class AcquiringTests: XCTestCase {
     ) {
         let catalog = StubCatalogRepository(
             songCount: catalogCount,
-            failsSongCount: catalogCountThrows
+            failsSongCount: catalogCountThrows,
+            failingSongSuggestionOffset: failingSongSuggestionOffset,
+            songSuggestions: songSuggestions
         )
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(
@@ -883,10 +1213,19 @@ private final class ScriptedCatalogMaintenanceService: CatalogMaintenanceService
 private actor StubCatalogRepository: CatalogRepository {
     let count: Int
     let failsSongCount: Bool
+    let failingSongSuggestionOffset: Int?
+    let songSuggestions: [CatalogSong]
 
-    init(songCount: Int, failsSongCount: Bool = false) {
+    init(
+        songCount: Int,
+        failsSongCount: Bool = false,
+        failingSongSuggestionOffset: Int? = nil,
+        songSuggestions: [CatalogSong] = []
+    ) {
         count = songCount
         self.failsSongCount = failsSongCount
+        self.failingSongSuggestionOffset = failingSongSuggestionOffset
+        self.songSuggestions = songSuggestions
     }
 
     func status() -> CatalogStatus {
@@ -900,7 +1239,11 @@ private actor StubCatalogRepository: CatalogRepository {
     func song(id: String) -> CatalogSong? { nil }
     func songDocument(id: String) throws -> SongDocument { throw CatalogError.missingSong(id) }
     func searchSongs(title query: String) -> [CatalogSong] { [] }
-    func songSuggestions(query: String, limit: Int, offset: Int) -> [CatalogSong] { [] }
+    func songSuggestions(query: String, limit: Int, offset: Int) throws -> [CatalogSong] {
+        if offset == failingSongSuggestionOffset { throw TestCatalogFailure() }
+        guard offset == 0 else { return [] }
+        return Array(songSuggestions.prefix(limit))
+    }
     func artistSuggestions(query: String, limit: Int, offset: Int) -> [String] { [] }
     func songs(artist: String) -> [CatalogSong] { [] }
     func songs(ids: [String]) -> [CatalogSong] { [] }
