@@ -591,6 +591,11 @@ final class VocalPracticeModel {
         slot == 1 ? targetRequest?.first : targetRequest?.second
     }
 
+    func isSingingTargetTessituraAdjusted(slot: Int) -> Bool {
+        guard let target = targetNote(for: slot), let resolved = resolvedTargetMIDI(for: slot) else { return false }
+        return resolved != target.sourceMIDI + transpose
+    }
+
     private func resolvedTargetMIDI(for slot: Int) -> Int? {
         guard let targetRequest else { return nil }
         let resolved = SingingTargets.resolve(

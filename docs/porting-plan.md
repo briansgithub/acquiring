@@ -882,3 +882,37 @@ and inspect both capture windows; quiet input should produce ordinary no-signal
 feedback. (3) Load a target or capture notes, then minimize/reopen to inspect the
 summary and retained state. Real singing accuracy, device audio routes and the
 visual feel remain human-review items; no screenshots or full suites were run.
+
+
+### Quiz singing dots — first pass, 2026-09-05
+
+`[approved]` User authorized committing this first pass. Runtime model: unknown. User requested a 5–10 minute implementation
+for feedback. Added one 16 pt radial-gradient PitchHintDot shared by Quiz cards
+and the singing dock. Enabled root, melody, interval, and chord-tone sing-back
+cards show the noninteractive top-trailing badge; unavailable cards do not.
+Quiz badges use white without a comfortable-pitch anchor and #9E9E9E whenever
+one exists. Dock badges use actual resolved-versus-transposed-source octave
+changes, and hide during recording or Flip-Flop. VoiceOver gets register state
+on the parent card; the badge is hidden from accessibility. Existing named
+practice actions remain, and interval cards now also expose long-press
+persistent root/melody practice. The full-chord card stays unmarked for Android
+badge parity; its existing iOS practice gestures and target-preview-before-listen
+behavior remain. Existing iOS card arrangements remain. No audio engine changes.
+
+Checks:
+- `xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug build CODE_SIGNING_ALLOWED=NO`: passed after adding a missing badge-visibility helper caught by the first build; existing AudioSystem async-alternative warning remains.
+- `git diff --check -- ios/Acquiring/Features/QuizCards.swift ios/Acquiring/Features/SongViews.swift ios/Acquiring/Features/VocalPracticeModel.swift ios/Acquiring/Features/VocalPracticeViews.swift`: passed.
+- `xcrun simctl terminate 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios`: passed.
+- `xcrun simctl install 55373408-99CC-4EB3-A771-6ACF29E2D96A /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa/Build/Products/Debug-iphonesimulator/Acquiring.app`: passed.
+- `xcrun simctl launch 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios`: passed.
+- `open -a Simulator --args -CurrentDeviceUDID 55373408-99CC-4EB3-A771-6ACF29E2D96A`: passed.
+
+Review: (1) Open full-catalog 500 Miles → Quiz and compare melody/chord-tone
+badge placement and contrast; the full-chord card has no dot. (2) Tap to preview,
+double-tap a note and interval to load singing targets, then long-press an
+interval to toggle persistent practice. (3) Calibrate/clear comfortable pitch in
+the singing-tool options and inspect quiz badge colors and the target-slot
+actual-shift distinction. (4) Switch Root-only/Full and inspect unavailable
+states. No runtime accessibility inspection, screenshots, or tests were run;
+visual, gesture, and microphone behavior await human review. Earlier pending
+reviews stay pending. First-pass commit authorized; no release.

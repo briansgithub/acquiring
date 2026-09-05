@@ -288,6 +288,8 @@ struct VocalPracticeDock: View {
             isActive: active,
             remainingMilliseconds: model.captureRemainingMilliseconds,
             isEnabled: !model.isFlipFlopEnabled,
+            showsPitchHint: !model.isFlipFlopEnabled && model.recordingSlot != slot,
+            isTessituraAdjusted: model.isSingingTargetTessituraAdjusted(slot: slot),
             play: { model.playSlot(slot) },
             record: { model.toggleRecording(slot: slot) }
         )
@@ -388,6 +390,8 @@ private struct DockPitchCard: View {
     let isActive: Bool
     let remainingMilliseconds: Int
     let isEnabled: Bool
+    let showsPitchHint: Bool
+    let isTessituraAdjusted: Bool
     let play: () -> Void
     let record: () -> Void
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -406,6 +410,7 @@ private struct DockPitchCard: View {
                 if isActive { Image(systemName: "mic.fill").foregroundStyle(.tint) }
             }
             .font(.caption).foregroundStyle(.secondary)
+            .padding(.trailing, showsPitchHint ? 16 : 0)
             if let sample {
                 DockPitchTape(midi: sample.rawMIDI, color: isReference ? .secondary : dockPitchColor(sample.centsFromReference))
                     .animation(reduceMotion ? nil : .linear(duration: 0.1), value: sample.rawMIDI)
@@ -450,13 +455,18 @@ private struct DockPitchCard: View {
                 .allowsHitTesting(false)
             }
         }
+        .overlay(alignment: .topTrailing) {
+            if showsPitchHint {
+                PitchHintDot(isAdjusted: isTessituraAdjusted).padding(5)
+            }
+        }
         .contentShape(RoundedRectangle(cornerRadius: 8))
         .gesture(TapGesture(count: 2).onEnded { if isEnabled { record() } }
             .exclusively(before: TapGesture(count: 1).onEnded { if isEnabled { play() } }))
         .accessibilityElement(children: .ignore)
         .accessibilityAddTraits(.isButton)
         .accessibilityLabel(title)
-        .accessibilityValue("\(sample?.pitchLabel ?? "No pitch"), \(isReference ? "Reference" : sample.map { errorText($0.centsFromReference) } ?? ""), \(status)")
+        .accessibilityValue("\(sample?.pitchLabel ?? "No pitch"), \(isReference ? "Reference" : sample.map { errorText($0.centsFromReference) } ?? ""), \(status), \(isTessituraAdjusted ? "Tessitura adjusted" : "Original target octave")")
         .accessibilityHint(isEnabled ? "Single tap replays. Double tap records or stops listening." : "Turn off Flip-Flop to record an individual note")
         .accessibilityAction(named: "Replay") { if isEnabled { play() } }
         .accessibilityAction(named: isActive ? "Stop recording" : "Record or sing back") { if isEnabled { record() } }
