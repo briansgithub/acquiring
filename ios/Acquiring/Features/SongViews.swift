@@ -811,10 +811,10 @@ struct QuizView: View {
     @State private var usesRelativeIonianContext = false
     @State private var tempoPercent = 100.0
     @State private var soundConfiguration = QuizSoundConfiguration()
-    @State private var showsInstrumentChooser = false
     @State private var quizCardPreviewTask: Task<Void, Never>?
     @State private var quizCardPreviewGeneration = 0
     @State private var practiceTargets: QuizPracticeTargets?
+    @State private var quizCardStackHeight: CGFloat = 44
 
     private var playing: Bool {
         transportPhase == .playing || transportPhase == .buffering
@@ -857,14 +857,6 @@ struct QuizView: View {
         .task(id: songID) { await load() }
         .task(id: transportObservationGeneration) { await observeTransport() }
         .vocalPracticePresentation(model: environment.vocalPractice, includesManualPractice: true)
-        .sheet(isPresented: $showsInstrumentChooser) {
-            QuizInstrumentChooser(selection: soundConfiguration.waveform) { waveform in
-                if let sectionID = selectedSectionID {
-                    changeInstrument(waveform, sectionID: sectionID)
-                }
-                showsInstrumentChooser = false
-            }
-        }
         .onDisappear {
             environment.vocalPractice.cancelActivity()
             finishTimelineScrub(resumingIfNeeded: true)
@@ -907,6 +899,8 @@ struct QuizView: View {
         return VStack(spacing: 4) {
             if let selected {
                 QuizHeader(
+                    songID: songID,
+                    sectionID: selected.id,
                     initialKey: selected.section.key(at: PlaybackTiming.firstBeat),
                     currentKey: selected.section.key(at: currentBeat(in: selected.section)),
                     usesRelativeIonianContext: $usesRelativeIonianContext,
@@ -1005,48 +999,127 @@ struct QuizView: View {
                 } else {
                     rootOnlySeekControl(section: section, sectionID: sectionID)
                 }
-                transportControls(section: section, sections: sections, beat: beat)
-                QuizCardsView(
-                    section: section,
-                    beat: beat,
-                    rootOnly: mode == .rootOnly,
-                    usesRelativeIonianContext: usesRelativeIonianContext,
-                    isPreviewEnabled: sectionLoadStatus.isReady && timelineScrub == nil,
-                    compact: true,
-                    onPreview: { midiNotes, duration in
-                        requestQuizCardPreview(midiNotes: midiNotes, duration: duration)
-                    },
-                    onIntervalPreview: { midiNotes in
-                        requestQuizCardPreview(
-                            midiNotes: midiNotes,
-                            asInterval: true,
-                            duration: .milliseconds(450)
-                        )
-                    },
-                    onSingBack: { request in
-                        cancelQuizCardPreview()
-                        cancelPlaybackCommand()
-                        finishTimelineScrub(resumingIfNeeded: false)
-                        environment.vocalPractice.requestSingBack(request)
-                    },
-                    onPersistentPractice: { selection in
-                        cancelQuizCardPreview()
-                        environment.vocalPractice.togglePersistent(selection)
-                    },
-                    onPracticeContext: { targets in
-                        practiceTargets = targets
-                        updatePracticeContext()
-                    }
-                )
+                quizCardsWithBalanceFader(section: section, sectionID: sectionID, beat: beat)
                 playbackKnobs(sectionID: sectionID)
                 Spacer(minLength: 0)
+                HStack {
+                    Spacer(minLength: 0)
+                    transportControls(sectionID: sectionID, sections: sections)
+                }
                 VocalPracticeDock(model: environment.vocalPractice)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
-    private func transportControls(section: ExtractedSection, sections: [QuizSection], beat: Double) -> some View {
+    private func quizCardsWithBalanceFader(
+        section: ExtractedSection,
+        sectionID: String,
+        beat: Double
+    ) -> some View {
+        HStack(alignment: .top, spacing: 8) {
+            QuizCardsView(
+                section: section,
+                beat: beat,
+                rootOnly: mode == .rootOnly,
+                usesRelativeIonianContext: usesRelativeIonianContext,
+                isPreviewEnabled: sectionLoadStatus.isReady && timelineScrub == nil,
+                compact: true,
+                onPreview: { midiNotes, duration in
+                    requestQuizCardPreview(midiNotes: midiNotes, duration: duration)
+                },
+                onIntervalPreview: { midiNotes in
+                    requestQuizCardPreview(
+                        midiNotes: midiNotes,
+                        asInterval: true,
+                        duration: .milliseconds(450)
+                    )
+                },
+                onSingBack: { request in
+                    cancelQuizCardPreview()
+                    cancelPlaybackCommand()
+                    finishTimelineScrub(resumingIfNeeded: false)
+                    environment.vocalPractice.requestSingBack(request)
+                },
+                onPersistentPractice: { selection in
+                    cancelQuizCardPreview()
+                    environment.vocalPractice.togglePersistent(selection)
+                },
+                onPracticeContext: { targets in
+                    practiceTargets = targets
+                    updatePracticeContext()
+                }
+            )
+            .frame(maxWidth: .infinity)
+            .background {
+                GeometryReader { proxy in
+                    Color.clear.preference(
+                        key: QuizCardStackHeightPreference.self,
+                        value: proxy.size.height
+                    )
+                }
+            }
+
+            VerticalQuizBalanceFader(
+                value: Binding(
+                    get: { soundConfiguration.melodyChordBalance },
+                    set: { balance in
+                        _ = setSoundConfiguration(
+                            QuizSoundConfiguration(
+                                waveform: soundConfiguration.waveform,
+                                melodyChordBalance: balance,
+                                transposeSemitones: soundConfiguration.transposeSemitones,
+                                arpeggioOption: soundConfiguration.arpeggioOption,
+                                chordMode: soundConfiguration.chordMode
+                            ),
+                            sectionID: sectionID
+                        )
+                    }
+                ),
+                isEnabled: sectionLoadStatus.isReady && !playbackCommandPending && timelineScrub == nil,
+                accessibilityValue: balanceAccessibilityValue(soundConfiguration.melodyChordBalance),
+                onReset: { resetBalance(sectionID: sectionID) }
+            )
+            // The fader track uses the measured card content, excluding the
+            // compact layout's absent section headers, so its endpoints meet the
+            // melody row's top and the chord-tone row's bottom exactly.
+            .frame(height: quizCardStackHeight)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .onPreferenceChange(QuizCardStackHeightPreference.self) { height in
+            guard height.isFinite, height > 0 else { return }
+            quizCardStackHeight = height
+        }
+    }
+
+    private func transportControls(sectionID: String, sections: [QuizSection]) -> some View {
                 HStack(spacing: 4) {
+                    Button(action: requestPlaybackReset) {
+                        Image(systemName: "arrow.counterclockwise").frame(width: 44, height: 44)
+                    }
+                    .disabled(!sectionLoadStatus.isReady || playbackCommandPending || transportPhase == .buffering)
+                    .accessibilityIdentifier("quiz.reset")
+                    .accessibilityLabel("Reset quiz playback")
+                    .accessibilityHint("Stops playback and returns to the beginning")
+
+                    QuizSelectorMenu(
+                        identityContext: "\(songID):section",
+                        options: sections.map {
+                            QuizSelectorOption(id: $0.id, title: $0.section.safeSectionName)
+                        },
+                        selectedID: sectionID,
+                        caption: nil,
+                        selectedDisplayTitle: nil,
+                        selectedAccessibilityValue: nil,
+                        usesSubheadline: true,
+                        width: 120,
+                        expandsToAvailableWidth: false,
+                        accessibilityIdentifier: "quiz.section",
+                        accessibilityLabel: "Quiz section",
+                        isEnabled: true,
+                        onSelect: { id in selectSection(id, sections: sections) }
+                    )
+                    .equatable()
+
                     QuizTransportButton(
                         phase: transportPhase,
                         isReady: sectionLoadStatus.isReady,
@@ -1055,59 +1128,6 @@ struct QuizView: View {
                         action: requestPlaybackToggle,
                         compact: true
                     )
-
-                    Menu {
-                            ForEach(sections) { entry in
-                                Button(entry.section.safeSectionName) {
-                                    selectSection(entry.id, sections: sections)
-                                }
-                            }
-                        } label: {
-                            VStack(spacing: 1) {
-                                Label(section.safeSectionName, systemImage: "chevron.down")
-                                    .font(.subheadline.weight(.medium))
-                                    .lineLimit(1)
-                                Text(sectionLoadStatus.isReady
-                                     ? "Beat \(beat.formatted(.number.precision(.fractionLength(0...1))))"
-                                     : sectionLoadStatus.label)
-                                    .font(.caption2.monospacedDigit())
-                                    .foregroundStyle(.secondary)
-                                    .lineLimit(1)
-                                    .accessibilityIdentifier("quiz.section.status")
-                            }
-                            .frame(maxWidth: .infinity, minHeight: 44)
-                            .contentShape(Rectangle())
-                        }
-                        .disabled(sections.count < 2)
-                        .accessibilityIdentifier("quiz.section")
-                        .accessibilityLabel("Quiz section")
-                        .accessibilityValue(section.safeSectionName)
-
-                    Button {
-                        requestDiscreteSeek(to: beat - 1, in: section)
-                    } label: {
-                        Image(systemName: "backward.end.fill").frame(width: 44, height: 44)
-                    }
-                    .disabled(!canSeek || beat <= PlaybackTiming.firstBeat)
-                    .accessibilityLabel("Back 1 beat")
-                    .accessibilityIdentifier("quiz.seekBack")
-
-                    Button {
-                        requestDiscreteSeek(to: beat + 1, in: section)
-                    } label: {
-                        Image(systemName: "forward.end.fill").frame(width: 44, height: 44)
-                    }
-                    .disabled(!canSeek || beat >= playbackEndBeat(in: section))
-                    .accessibilityLabel("Forward 1 beat")
-                    .accessibilityIdentifier("quiz.seekForward")
-
-                    Button(action: requestPlaybackReset) {
-                        Image(systemName: "arrow.counterclockwise").frame(width: 44, height: 44)
-                    }
-                    .disabled(!sectionLoadStatus.isReady || playbackCommandPending || transportPhase == .buffering)
-                    .accessibilityIdentifier("quiz.reset")
-                    .accessibilityLabel("Reset quiz playback")
-                    .accessibilityHint("Stops playback and returns to the beginning")
                 }
                 .buttonStyle(.plain)
     }
@@ -1115,10 +1135,6 @@ struct QuizView: View {
     private func rootOnlySeekControl(section: ExtractedSection, sectionID: String) -> some View {
         let endBeat = playbackEndBeat(in: section)
         return VStack(alignment: .leading, spacing: 6) {
-            LabeledContent(
-                "Position",
-                value: "Beat \(currentBeat(in: section).formatted(.number.precision(.fractionLength(0...2))))"
-            )
             Slider(
                 value: Binding(
                     get: { currentBeat(in: section) },
@@ -1248,22 +1264,27 @@ struct QuizView: View {
 
     private func soundControls(sectionID: String) -> some View {
         VStack(spacing: 0) {
-            Button {
-                showsInstrumentChooser = true
-            } label: {
-                VStack(spacing: 1) {
-                    Text("Instrument").font(.caption2).foregroundStyle(.secondary)
-                    Label(soundConfiguration.waveform.displayName, systemImage: "chevron.down")
-                        .font(.subheadline.weight(.medium))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
+            QuizSelectorMenu(
+                identityContext: "\(songID):\(sectionID):instrument",
+                options: SynthWaveform.allCases.map {
+                    QuizSelectorOption(id: $0.rawValue, title: $0.displayName)
+                },
+                selectedID: soundConfiguration.waveform.rawValue,
+                caption: "Instrument",
+                selectedDisplayTitle: nil,
+                selectedAccessibilityValue: nil,
+                usesSubheadline: false,
+                width: nil,
+                expandsToAvailableWidth: true,
+                accessibilityIdentifier: "quiz.instrument",
+                accessibilityLabel: "Quiz instrument",
+                isEnabled: true,
+                onSelect: { id in
+                    guard let waveform = SynthWaveform(rawValue: id) else { return }
+                    changeInstrument(waveform, sectionID: sectionID)
                 }
-                .frame(maxWidth: .infinity, minHeight: 44)
-                .contentShape(Rectangle())
-            }
-            .accessibilityIdentifier("quiz.instrument")
-            .accessibilityLabel("Quiz instrument")
-            .accessibilityValue(soundConfiguration.waveform.displayName)
+            )
+            .equatable()
 
             HStack(spacing: 0) {
                 Button {
@@ -1301,43 +1322,6 @@ struct QuizView: View {
                 .accessibilityIdentifier("quiz.transpose.up")
             }
 
-            VStack(spacing: 0) {
-                Text("Chords · Mix · Melody")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
-                    .accessibilityHidden(true)
-                Slider(
-                    value: Binding(
-                        get: { soundConfiguration.melodyChordBalance },
-                        set: { balance in
-                            _ = setSoundConfiguration(
-                                QuizSoundConfiguration(
-                                    waveform: soundConfiguration.waveform,
-                                    melodyChordBalance: balance,
-                                    transposeSemitones: soundConfiguration.transposeSemitones,
-                                    arpeggioOption: soundConfiguration.arpeggioOption,
-                                    chordMode: soundConfiguration.chordMode
-                                ),
-                                sectionID: sectionID
-                            )
-                        }
-                    ),
-                    in: 0...1,
-                    step: 0.01
-                )
-                .accessibilityIdentifier("quiz.balance")
-                .accessibilityLabel("Melody and chord balance")
-                .accessibilityValue(balanceAccessibilityValue(soundConfiguration.melodyChordBalance))
-                .accessibilityAction(named: "Reset balance") {
-                    resetBalance(sectionID: sectionID)
-                }
-                .contextMenu {
-                    Button("Reset balance to 50 / 50") { resetBalance(sectionID: sectionID) }
-                }
-            }
-            .frame(height: 44)
         }
         .buttonStyle(.plain)
         .disabled(!sectionLoadStatus.isReady || playbackCommandPending || timelineScrub != nil)
@@ -1523,13 +1507,6 @@ struct QuizView: View {
             finishTimelineScrub(resumingIfNeeded: true)
             return
         }
-        if timelineScrub != nil {
-            finishTimelineScrub(resumingIfNeeded: true)
-        }
-        requestSeek(to: targetBeat, in: section)
-    }
-
-    private func requestDiscreteSeek(to targetBeat: Double, in section: ExtractedSection) {
         if timelineScrub != nil {
             finishTimelineScrub(resumingIfNeeded: true)
         }
@@ -2053,50 +2030,102 @@ private enum QuizSectionLoadStatus: Equatable {
     }
 }
 
-private struct QuizInstrumentChooser: View {
-    let selection: SynthWaveform
-    let onSelect: (SynthWaveform) -> Void
-    @Environment(\.dismiss) private var dismiss
+private struct QuizCardStackHeightPreference: PreferenceKey {
+    static let defaultValue: CGFloat = 44
+
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
+}
+
+/// A vertical balance fader whose track occupies the measured card stack. Its thumb
+/// intentionally projects 10 points beyond each endpoint, matching Android's track
+/// inset so the usable track, rather than the thumb bounds, aligns to the cards.
+private struct VerticalQuizBalanceFader: View {
+    @Binding var value: Double
+    let isEnabled: Bool
+    let accessibilityValue: String
+    let onReset: () -> Void
+
+    private let thumbRadius: CGFloat = 10
 
     var body: some View {
-        NavigationStack {
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 6) {
-                ForEach(SynthWaveform.allCases, id: \.self) { waveform in
-                    Button {
-                        onSelect(waveform)
-                    } label: {
-                        HStack(spacing: 4) {
-                            Text(waveform.displayName)
-                                .font(.subheadline.weight(.medium))
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.8)
-                            if waveform == selection {
-                                Image(systemName: "checkmark").font(.caption)
-                            }
-                        }
-                        .frame(maxWidth: .infinity, minHeight: 44)
-                        .background(
-                            waveform == selection ? Color.accentColor.opacity(0.18) : Color.secondary.opacity(0.10),
-                            in: RoundedRectangle(cornerRadius: 10)
-                        )
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(waveform.displayName)
-                    .accessibilityAddTraits(waveform == selection ? .isSelected : [])
+        GeometryReader { proxy in
+            let trackHeight = max(proxy.size.height, 1)
+            let thumbY = (1 - CGFloat(clampedValue)) * trackHeight
+
+            HStack(spacing: 3) {
+                ZStack(alignment: .top) {
+                    Capsule()
+                        .fill(Color.secondary.opacity(0.38))
+                        .frame(width: 4, height: trackHeight)
+                    Capsule()
+                        .fill(Color.accentColor)
+                        .frame(width: 4, height: trackHeight * CGFloat(clampedValue))
+                        .frame(maxHeight: .infinity, alignment: .bottom)
+                    Circle()
+                        .fill(Color.accentColor)
+                        .frame(width: thumbRadius * 2, height: thumbRadius * 2)
+                        .shadow(color: .black.opacity(0.22), radius: 1, y: 1)
+                        .offset(y: thumbY - thumbRadius)
                 }
+                .frame(width: 28)
+                .frame(maxHeight: .infinity, alignment: .top)
+
+                Text("Volume Mix".map(String.init).joined(separator: "\n"))
+                    .font(.system(size: 9, weight: .medium, design: .rounded))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize()
+                    .accessibilityHidden(true)
             }
-            .padding(16)
-            .frame(maxHeight: .infinity, alignment: .top)
-            .navigationTitle("Instrument")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { gesture in
+                        updateValue(for: gesture.location.y, trackHeight: trackHeight)
+                    }
+            )
+        }
+        .frame(width: 44)
+        .contentShape(Rectangle())
+        .opacity(isEnabled ? 1 : 0.45)
+        .disabled(!isEnabled)
+        .accessibilityElement(children: .ignore)
+        .accessibilityIdentifier("quiz.balance")
+        .accessibilityLabel("Chord and melody volume balance")
+        .accessibilityValue(accessibilityValue)
+        .accessibilityHint("Swipe up for melody or down for chords.")
+        .accessibilityAdjustableAction { direction in
+            guard isEnabled else { return }
+            switch direction {
+            case .increment:
+                value = min(value + 0.01, 1)
+            case .decrement:
+                value = max(value - 0.01, 0)
+            @unknown default:
+                break
             }
         }
-        .presentationDetents([.height(540), .large])
+        .accessibilityAction(named: "Reset balance") {
+            guard isEnabled else { return }
+            onReset()
+        }
+        .contextMenu {
+            Button("Reset balance to 50 / 50", action: onReset)
+                .disabled(!isEnabled)
+        }
+    }
+
+    private var clampedValue: Double {
+        min(max(value, 0), 1)
+    }
+
+    private func updateValue(for locationY: CGFloat, trackHeight: CGFloat) {
+        guard isEnabled, trackHeight > 0 else { return }
+        let rawValue = min(max(1 - Double(locationY / trackHeight), 0), 1)
+        value = (rawValue * 100).rounded() / 100
     }
 }
 
@@ -2126,7 +2155,7 @@ private struct QuizTransportButton: View {
                 }
                 if !compact { Text(title) }
             }
-            .frame(minWidth: compact ? 20 : 100, minHeight: compact ? 28 : nil)
+            .frame(minWidth: compact ? 44 : 100, minHeight: compact ? 44 : nil)
         }
         .buttonStyle(.borderedProminent)
         .disabled(!isReady || !isPlaybackEnabled || isBusy)
@@ -2137,6 +2166,115 @@ private struct QuizTransportButton: View {
                 ? "Set tempo above zero percent to play"
                 : ""
         )
+    }
+}
+
+private struct QuizSelectorOption: Identifiable, Equatable, Sendable {
+    let id: String
+    let title: String
+}
+
+/// Keeps native selector menus alive while transport observations redraw Quiz.
+/// The callback intentionally stays out of equality: its captured state locations
+/// remain valid, while the identity includes every value it closes over.
+private struct QuizSelectorMenu: View, Equatable {
+    let identityContext: String
+    let options: [QuizSelectorOption]
+    let selectedID: String
+    let caption: String?
+    let selectedDisplayTitle: String?
+    let selectedAccessibilityValue: String?
+    let usesSubheadline: Bool
+    let width: CGFloat?
+    let expandsToAvailableWidth: Bool
+    let accessibilityIdentifier: String
+    let accessibilityLabel: String
+    let isEnabled: Bool
+    let onSelect: (String) -> Void
+
+    private var selectedTitle: String {
+        options.first(where: { $0.id == selectedID })?.title
+            ?? options.first?.title
+            ?? "Section"
+    }
+
+    nonisolated static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.identityContext == rhs.identityContext
+            && lhs.options == rhs.options
+            && lhs.selectedID == rhs.selectedID
+            && lhs.caption == rhs.caption
+            && lhs.selectedDisplayTitle == rhs.selectedDisplayTitle
+            && lhs.selectedAccessibilityValue == rhs.selectedAccessibilityValue
+            && lhs.usesSubheadline == rhs.usesSubheadline
+            && lhs.width == rhs.width
+            && lhs.expandsToAvailableWidth == rhs.expandsToAvailableWidth
+            && lhs.accessibilityIdentifier == rhs.accessibilityIdentifier
+            && lhs.accessibilityLabel == rhs.accessibilityLabel
+            && lhs.isEnabled == rhs.isEnabled
+    }
+
+    var body: some View {
+        Menu {
+            ForEach(options) { option in
+                Button {
+                    onSelect(option.id)
+                } label: {
+                    if option.id == selectedID {
+                        Label(option.title, systemImage: "checkmark")
+                    } else {
+                        Text(option.title)
+                    }
+                }
+            }
+        } label: {
+            selectorLabel
+        }
+        .disabled(!isEnabled || options.count < 2)
+        .accessibilityIdentifier(accessibilityIdentifier)
+        .accessibilityLabel(accessibilityLabel)
+        .accessibilityValue(selectedAccessibilityValue ?? selectedTitle)
+    }
+
+    @ViewBuilder
+    private var selectorLabel: some View {
+        if expandsToAvailableWidth {
+            selectorText
+                .padding(.horizontal, 6)
+                .frame(maxWidth: .infinity, minHeight: 44)
+                .overlay(outline)
+                .contentShape(Rectangle())
+        } else {
+            selectorText
+                .padding(.horizontal, 6)
+                .frame(width: width, height: 44)
+                .overlay(outline)
+                .contentShape(Rectangle())
+        }
+    }
+
+    @ViewBuilder
+    private var selectorText: some View {
+        if let caption {
+            VStack(spacing: 1) {
+                Text(caption)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                Label(selectedDisplayTitle ?? selectedTitle, systemImage: "chevron.down")
+                    .font(.subheadline.weight(.medium))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+            }
+        } else {
+            Label(selectedDisplayTitle ?? selectedTitle, systemImage: "chevron.down")
+                .font(usesSubheadline ? .subheadline.weight(.medium) : .caption.weight(.semibold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+    }
+
+    private var outline: some View {
+        RoundedRectangle(cornerRadius: 8, style: .continuous)
+            .stroke(.secondary.opacity(0.45), lineWidth: 1)
     }
 }
 
@@ -2169,6 +2307,8 @@ private struct QuizTimelineScrub {
 }
 
 private struct QuizHeader: View {
+    let songID: String
+    let sectionID: String
     let initialKey: KeyInfo
     let currentKey: KeyInfo
     @Binding var usesRelativeIonianContext: Bool
@@ -2194,35 +2334,34 @@ private struct QuizHeader: View {
             HStack(spacing: 0) {
                 majorToggle
                 Spacer(minLength: 0)
-                Menu {
-                    ForEach(QuizDisplayMode.allCases) { option in
-                        Button {
-                            mode = option
-                        } label: {
-                            if mode == option {
-                                Label(option.title, systemImage: "checkmark")
-                            } else {
-                                Text(option.title)
-                            }
-                        }
+                QuizSelectorMenu(
+                    identityContext: "\(songID):\(sectionID):mode",
+                    options: QuizDisplayMode.allCases.map {
+                        QuizSelectorOption(id: $0.rawValue, title: $0.title)
+                    },
+                    selectedID: mode.rawValue,
+                    caption: nil,
+                    selectedDisplayTitle: mode == .full ? "Full" : "Roots",
+                    selectedAccessibilityValue: mode.title,
+                    usesSubheadline: false,
+                    width: 52,
+                    expandsToAvailableWidth: false,
+                    accessibilityIdentifier: "quiz.mode",
+                    accessibilityLabel: "Quiz mode",
+                    isEnabled: isReady,
+                    onSelect: { id in
+                        guard let selectedMode = QuizDisplayMode(rawValue: id) else { return }
+                        mode = selectedMode
                     }
-                } label: {
-                    Text(mode == .full ? "Full" : "Roots")
-                        .font(.caption.weight(.semibold))
-                        .frame(width: 52, height: 44)
-                        .contentShape(Rectangle())
-                }
-                .disabled(!isReady)
-                .accessibilityIdentifier("quiz.mode")
-                .accessibilityLabel("Quiz mode")
-                .accessibilityValue(mode.title)
+                )
+                .equatable()
             }
         }
         .frame(height: 44)
     }
 
     private var keyLabel: some View {
-        Text("(\(displayedKeyLabel))")
+        Text(displayedKeyLabel)
             .font(.system(size: 24, weight: .bold))
             .foregroundStyle(modeColor)
             .lineLimit(1)

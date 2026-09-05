@@ -215,6 +215,95 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertFalse(app.alerts["Audio"].exists)
     }
 
+    func testQuizSectionMenuAppliesPausedAndPlayingSelections() {
+        let app = launchApp(scenario: .ready)
+        let search = app.textFields["library.search.field"]
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        search.tap()
+        search.typeText("500 Miles")
+        let song = app.buttons[Fixture.fiveHundredMiles]
+        XCTAssertTrue(song.waitForExistence(timeout: 5))
+        song.tap()
+
+        let sectionPicker = app.descendants(matching: .any)["quiz.section"]
+        XCTAssertTrue(sectionPicker.waitForExistence(timeout: 5))
+
+        func selectSection(_ name: String) {
+            sectionPicker.tap()
+            let option = app.buttons[name]
+            XCTAssertTrue(option.waitForExistence(timeout: 5))
+            option.tap()
+            let applied = expectation(
+                for: NSPredicate(format: "value == %@", name),
+                evaluatedWith: sectionPicker
+            )
+            wait(for: [applied], timeout: 5)
+        }
+
+        // Reopen the native menu for every paused selection.
+        selectSection("Chorus")
+        selectSection("Verse")
+
+        let play = app.buttons["quiz.play"]
+        XCTAssertTrue(play.waitForExistence(timeout: 5))
+        let ready = expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: play)
+        wait(for: [ready], timeout: 90)
+        XCTAssertEqual(play.label, "Play")
+        play.tap()
+        let playing = expectation(for: NSPredicate(format: "label == %@", "Pause"), evaluatedWith: play)
+        wait(for: [playing], timeout: 90)
+
+        selectSection("Chorus")
+        let pausedAfterSectionChange = expectation(
+            for: NSPredicate(format: "label == %@", "Play"),
+            evaluatedWith: play
+        )
+        wait(for: [pausedAfterSectionChange], timeout: 5)
+    }
+
+    func testQuizInstrumentAndModeMenusApplyWhilePlaying() {
+        let app = launchApp(scenario: .ready)
+        let search = app.textFields["library.search.field"]
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        search.tap()
+        search.typeText("500 Miles")
+        let song = app.buttons[Fixture.fiveHundredMiles]
+        XCTAssertTrue(song.waitForExistence(timeout: 5))
+        song.tap()
+
+        let play = app.buttons["quiz.play"]
+        XCTAssertTrue(play.waitForExistence(timeout: 5))
+        let ready = expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: play)
+        wait(for: [ready], timeout: 90)
+        play.tap()
+        let playing = expectation(for: NSPredicate(format: "label == %@", "Pause"), evaluatedWith: play)
+        wait(for: [playing], timeout: 90)
+
+        let instrument = app.descendants(matching: .any)["quiz.instrument"]
+        XCTAssertTrue(instrument.waitForExistence(timeout: 5))
+        instrument.tap()
+        let sine = app.buttons["Sine"]
+        XCTAssertTrue(sine.waitForExistence(timeout: 5))
+        sine.tap()
+        let instrumentApplied = expectation(
+            for: NSPredicate(format: "value == %@", "Sine"),
+            evaluatedWith: instrument
+        )
+        wait(for: [instrumentApplied], timeout: 5)
+
+        let mode = app.descendants(matching: .any)["quiz.mode"]
+        XCTAssertTrue(mode.waitForExistence(timeout: 5))
+        mode.tap()
+        let roots = app.buttons["Root-only"]
+        XCTAssertTrue(roots.waitForExistence(timeout: 5))
+        roots.tap()
+        let modeApplied = expectation(
+            for: NSPredicate(format: "value == %@", "Root-only"),
+            evaluatedWith: mode
+        )
+        wait(for: [modeApplied], timeout: 5)
+    }
+
     func testQuizCardPreviewsDoNotCrashAndMelodyCardsUseCompactHeights() {
         let app = launchApp(scenario: .ready)
         let searchField = app.textFields["library.search.field"]
