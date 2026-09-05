@@ -153,6 +153,68 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(fiveHundredMiles.waitForExistence(timeout: 5))
     }
 
+    func testQuizInstrumentAndTransposeMenusApplySelections() {
+        let app = launchApp(scenario: .ready)
+        let search = app.textFields["library.search.field"]
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        search.tap()
+        search.typeText("500 Miles")
+        let song = app.buttons[Fixture.fiveHundredMiles]
+        XCTAssertTrue(song.waitForExistence(timeout: 5))
+        song.tap()
+        let play = app.buttons["quiz.play"]
+        XCTAssertTrue(play.waitForExistence(timeout: 5))
+        let ready = expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: play)
+        wait(for: [ready], timeout: 5)
+        play.tap()
+
+        let instrument = app.buttons["quiz.instrument"]
+        XCTAssertTrue(instrument.isHittable, "Instrument should be visible without scrolling")
+        instrument.tap()
+        let sine = app.buttons["Sine"]
+        XCTAssertTrue(sine.waitForExistence(timeout: 3))
+        sine.tap()
+        let sineApplied = expectation(
+            for: NSPredicate(format: "value == %@", "Sine"), evaluatedWith: instrument
+        )
+        wait(for: [sineApplied], timeout: 3)
+        let chooserDismissed = expectation(
+            for: NSPredicate(format: "exists == false"), evaluatedWith: app.navigationBars["Instrument"]
+        )
+        wait(for: [chooserDismissed], timeout: 5)
+
+        let transpose = app.buttons["quiz.transpose"]
+        XCTAssertTrue(transpose.isHittable, "Transpose should be visible without scrolling")
+        let transposeUp = app.buttons["quiz.transpose.up"]
+        let transposeReady = expectation(for: NSPredicate(format: "hittable == true"), evaluatedWith: transposeUp)
+        wait(for: [transposeReady], timeout: 5)
+        XCTAssertFalse(app.alerts["Audio"].exists)
+        transposeUp.tap()
+        let transposeApplied = expectation(
+            for: NSPredicate(format: "value == %@", "+1 semitones"), evaluatedWith: transpose
+        )
+        wait(for: [transposeApplied], timeout: 5)
+        app.buttons["quiz.transpose.down"].tap()
+        let transposeReset = expectation(
+            for: NSPredicate(format: "value == %@", "0 semitones"), evaluatedWith: transpose
+        )
+        wait(for: [transposeReset], timeout: 3)
+        XCTAssertEqual(instrument.value as? String, "Sine")
+        XCTAssertTrue(app.buttons["quiz.lockInMajor"].isHittable)
+        XCTAssertTrue(app.buttons["Open vocal practice"].isHittable)
+        XCTAssertFalse(app.scrollViews.firstMatch.exists, "Quiz should have no scrolling page")
+        let key = app.staticTexts["quiz.key"]
+        XCTAssertTrue(key.exists)
+        XCTAssertEqual(key.frame.midX, app.frame.midX, accuracy: 2)
+        let originalY = key.frame.minY
+        app.swipeUp()
+        app.swipeRight()
+        XCTAssertTrue(instrument.isHittable, "Swiping must not navigate away from Quiz")
+        XCTAssertEqual(key.frame.minY, originalY, accuracy: 2, "The page must not scroll")
+        XCTAssertEqual(app.state, .runningForeground)
+        XCTAssertFalse(app.alerts["Audio"].exists)
+    }
+
     func testQuizCardPreviewsDoNotCrashAndMelodyCardsUseCompactHeights() {
         let app = launchApp(scenario: .ready)
         let searchField = app.textFields["library.search.field"]

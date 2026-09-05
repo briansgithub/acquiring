@@ -23,6 +23,8 @@ struct QuizCardsView: View {
     let rootOnly: Bool
     let usesRelativeIonianContext: Bool
     let isPreviewEnabled: Bool
+    /// Removes visual section labels and uses the fixed-height card rows needed by the single-screen quiz.
+    let compact: Bool
     let onPreview: ([Int], Duration) -> Void
     let onIntervalPreview: ([Int]) -> Void
     let onSingBack: ((SingingTargetRequest) -> Void)?
@@ -38,6 +40,7 @@ struct QuizCardsView: View {
         rootOnly: Bool,
         usesRelativeIonianContext: Bool,
         isPreviewEnabled: Bool,
+        compact: Bool = false,
         onPreview: @escaping ([Int], Duration) -> Void,
         onIntervalPreview: @escaping ([Int]) -> Void,
         onSingBack: ((SingingTargetRequest) -> Void)? = nil,
@@ -49,6 +52,7 @@ struct QuizCardsView: View {
         self.rootOnly = rootOnly
         self.usesRelativeIonianContext = usesRelativeIonianContext
         self.isPreviewEnabled = isPreviewEnabled
+        self.compact = compact
         self.onPreview = onPreview
         self.onIntervalPreview = onIntervalPreview
         self.onSingBack = onSingBack
@@ -64,7 +68,7 @@ struct QuizCardsView: View {
         let melodyState = presentation.melodyState(at: beat, activeMelody: activeMelody)
         let targets = practiceTargets(activeChord: activeChord, activeMelody: activeMelody, rootState: rootState)
 
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: compact ? 3 : 12) {
             if rootOnly {
                 rootOnlyCards(rootState: rootState)
             } else {
@@ -86,7 +90,7 @@ struct QuizCardsView: View {
     }
 
     private func rootOnlyCards(rootState: ChordRootIntervalState?) -> some View {
-        QuizCardSection("Roots") {
+        QuizCardSection("Roots", compact: compact) {
             let previous = rootState?.previousIntervalPitch
             let current = rootState?.currentIntervalPitch
             let interval = rootState?.interval
@@ -117,7 +121,7 @@ struct QuizCardsView: View {
 
     @ViewBuilder
     private func melodyCards(active: MelodyNote?, state: MelodyIntervalState?) -> some View {
-        QuizCardSection("Melody") {
+        QuizCardSection("Melody", compact: compact) {
             if let active,
                !active.isRest,
                active.duration > 0,
@@ -204,7 +208,7 @@ struct QuizCardsView: View {
         active: QuizCardsPresentation.ActiveChord?,
         rootState: ChordRootIntervalState?
     ) -> some View {
-        QuizCardSection("Chord") {
+        QuizCardSection("Chord", compact: compact) {
             if let active, !active.isRest {
             let key = section.key(at: active.onset)
             let symbol = usesRelativeIonianContext
@@ -225,7 +229,8 @@ struct QuizCardsView: View {
                     action: { onPreview(voicing, active.nativeDuration(bpm: section.bpm)) },
                     doubleTapAction: root.flatMap { singBackAction([previewMIDI(for: $0)]) },
                     longPressAction: persistentAction(.simpleRoot),
-                    doubleTapActionName: "Sing Back"
+                    doubleTapActionName: "Sing Back",
+                    fixedHeight: compact ? 44 : nil
                 ) {
                     FittedRomanNumeral(
                         display: RomanNumeralDisplay(symbol: symbol, borrowed: active.chord["borrowed"]),
@@ -233,7 +238,7 @@ struct QuizCardsView: View {
                         minimumFontSize: 12,
                         color: .white
                     )
-                    .frame(maxWidth: .infinity, minHeight: 58)
+                    .frame(maxWidth: .infinity, minHeight: compact ? 34 : 58)
                 }
                 .frame(maxWidth: .infinity)
 
@@ -241,12 +246,17 @@ struct QuizCardsView: View {
                     title: "Current chord root",
                     pitch: root,
                     degree: root.map { degreeLabel(for: $0, sourceKey: key) },
-                    identifier: "quiz.root.preview"
+                    identifier: "quiz.root.preview",
+                    fixedHeight: compact ? 44 : nil
                 )
                 .frame(maxWidth: 140)
             }
             } else {
-                QuizUnavailableCard("Chord unavailable", identifier: "quiz.chord.unavailable")
+                QuizUnavailableCard(
+                    "Chord unavailable",
+                    identifier: "quiz.chord.unavailable",
+                    fixedHeight: compact ? 44 : nil
+                )
             }
         }
         .accessibilityIdentifier("quiz.chordCard")
@@ -254,7 +264,7 @@ struct QuizCardsView: View {
 
     @ViewBuilder
     private func chordToneCards(active: QuizCardsPresentation.ActiveChord?) -> some View {
-        QuizCardSection("Chord tones") {
+        QuizCardSection("Chord tones", compact: compact) {
             if let active, !active.isRest {
             let key = section.key(at: active.onset)
             let tones = ChordInterpreter.chordNotes(for: active.chord, key: key)
@@ -272,10 +282,18 @@ struct QuizCardsView: View {
                     }
                 }
             } else {
-                QuizUnavailableCard("Chord tones unavailable", identifier: "quiz.chordTones.unavailable")
+                QuizUnavailableCard(
+                    "Chord tones unavailable",
+                    identifier: "quiz.chordTones.unavailable",
+                    fixedHeight: compact ? 44 : nil
+                )
             }
             } else {
-                QuizUnavailableCard("Chord tones unavailable", identifier: "quiz.chordTones.unavailable")
+                QuizUnavailableCard(
+                    "Chord tones unavailable",
+                    identifier: "quiz.chordTones.unavailable",
+                    fixedHeight: compact ? 44 : nil
+                )
             }
         }
     }
@@ -309,10 +327,11 @@ struct QuizCardsView: View {
             action: { onPreview([preview], .milliseconds(450)) },
             doubleTapAction: singBackAction([preview], labels: [label]),
             longPressAction: persistentAction(.chordTone(requestedIndex: index)),
-            doubleTapActionName: "Sing Back"
+            doubleTapActionName: "Sing Back",
+            fixedHeight: compact ? 44 : nil
         ) {
             FittedScaleDegree(label, maximumFontSize: 28, minimumFontSize: 11, color: .white)
-                .frame(maxWidth: .infinity, minHeight: 44)
+                .frame(maxWidth: .infinity, minHeight: compact ? 34 : 44)
         }
     }
 
@@ -321,7 +340,8 @@ struct QuizCardsView: View {
         title: String,
         pitch: SpelledPitch?,
         degree: String?,
-        identifier: String
+        identifier: String,
+        fixedHeight: CGFloat? = nil
     ) -> some View {
         if let pitch {
             let label = usesRelativeIonianContext
@@ -334,18 +354,19 @@ struct QuizCardsView: View {
                 action: { onPreview([previewMIDI(for: pitch)], .milliseconds(450)) },
                 doubleTapAction: singBackAction([previewMIDI(for: pitch)], labels: [label]),
                 longPressAction: persistentAction(.simpleRoot),
-                doubleTapActionName: "Sing Back"
+                doubleTapActionName: "Sing Back",
+                fixedHeight: fixedHeight
             ) {
                 if label.isEmpty {
                     Text(pitch.displayName)
                         .font(.title3.weight(.semibold))
                 } else {
                     FittedScaleDegree(label, maximumFontSize: 42, minimumFontSize: 13, color: .white)
-                        .frame(maxWidth: .infinity, minHeight: 58)
+                        .frame(maxWidth: .infinity, minHeight: compact ? 34 : 58)
                 }
             }
         } else {
-            QuizUnavailableCard("\(title) unavailable", identifier: identifier)
+            QuizUnavailableCard("\(title) unavailable", identifier: identifier, fixedHeight: fixedHeight)
         }
     }
 
@@ -594,19 +615,27 @@ private final class QuizCardsPresentation {
 
 private struct QuizCardSection<Content: View>: View {
     let title: String
+    let compact: Bool
     @ViewBuilder let content: () -> Content
 
-    init(_ title: String, @ViewBuilder content: @escaping () -> Content) {
+    init(_ title: String, compact: Bool = false, @ViewBuilder content: @escaping () -> Content) {
         self.title = title
+        self.compact = compact
         self.content = content
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 5) {
-            Text(title)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
+        if compact {
             content()
+                .accessibilityElement(children: .contain)
+                .accessibilityLabel(title)
+        } else {
+            VStack(alignment: .leading, spacing: 5) {
+                Text(title)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                content()
+            }
         }
     }
 }

@@ -2,7 +2,7 @@ import AcquiringCore
 import SwiftUI
 import UIKit
 
-/// The inline practice control used by both Quiz and Song Detail.  It stays small
+/// The inline practice control used by both Quiz and Song Detail. It stays small
 /// until requested, while the model continues to own all microphone arbitration
 /// and capture timing.
 struct VocalPracticePanel: View {
@@ -177,6 +177,103 @@ struct VocalPracticePanel: View {
     private func measuredIntervalLabel(_ interval: MeasuredInterval) -> String {
         let cents = interval.centsDeviation.formatted(.number.precision(.fractionLength(0)))
         return "\(interval.namedInterval.spokenName), \(cents) cents deviation"
+    }
+}
+
+/// A compact control intended for a Quiz safe-area inset.  Detailed capture controls
+/// live in a sheet so the quiz itself remains a single, non-scrolling screen.
+struct VocalPracticeDock: View {
+    @Bindable var model: VocalPracticeModel
+
+    init(model: VocalPracticeModel) {
+        self.model = model
+    }
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Button {
+                model.isExpanded ? model.collapse() : model.expand()
+            } label: {
+                Label(model.isExpanded ? "Close" : "Practice", systemImage: "mic.fill")
+            }
+            .buttonStyle(.borderedProminent)
+            .frame(minHeight: 44)
+            .accessibilityLabel(model.isExpanded ? "Close vocal practice" : "Open vocal practice")
+            .accessibilityHint(model.isExpanded ? "Closes practice and stops an active recording." : "Opens manual vocal practice.")
+
+            Divider()
+                .frame(height: 24)
+
+            if model.persistentSelection != nil {
+                persistentFeedback
+            } else if model.errorMessage != nil {
+                Label("Practice error", systemImage: "exclamationmark.triangle.fill")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.red)
+                    .accessibilityLabel("Vocal practice error. Open practice for details.")
+            } else {
+                Text(statusText)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .accessibilityLabel("Vocal practice status, \(statusText)")
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 12)
+        .frame(height: 44)
+        .background(.thinMaterial)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("vocal.practice.dock")
+    }
+
+    private var persistentFeedback: some View {
+        HStack(spacing: 8) {
+            VStack(alignment: .leading, spacing: 1) {
+                Text(livePitchText)
+                    .font(.footnote.monospacedDigit().weight(.semibold))
+                    .lineLimit(1)
+                if let cents = model.liveCentsError {
+                    Text("\(cents, format: .number.precision(.fractionLength(0)))¢")
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(centsColor(cents))
+                }
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(liveFeedbackAccessibilityLabel)
+
+            Button("Stop", role: .cancel) {
+                model.stopPersistentPractice()
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+            .frame(minHeight: 44)
+            .accessibilityLabel("Stop persistent pitch practice")
+        }
+    }
+
+    private var statusText: String {
+        if model.recordingSlot != nil { return "Recording" }
+        if model.listeningSlot != nil { return "Listening" }
+        if model.isExpanded { return "Practice open" }
+        return "Ready"
+    }
+
+    private var livePitchText: String {
+        guard let midi = model.persistentMeasuredMIDI else { return "Listening…" }
+        return "Live \(midi.formatted(.number.precision(.fractionLength(1))))"
+    }
+
+    private var liveFeedbackAccessibilityLabel: String {
+        guard let cents = model.liveCentsError else {
+            return "Persistent pitch practice, listening for a voiced pitch"
+        }
+        return "Persistent pitch practice, \(livePitchText), \(cents.formatted(.number.precision(.fractionLength(0)))) cents from target"
+    }
+
+    private func centsColor(_ cents: Double) -> Color {
+        abs(cents) <= 15 ? .green : abs(cents) <= 35 ? .orange : .red
     }
 }
 
@@ -423,19 +520,25 @@ private struct PracticeErrorMessage: View {
     }
 }
 
-/// Attach this once at the active Song Detail or Quiz boundary.  It centralizes
-/// the two modal flows so card gestures never create competing sheet presenters.
+/// Attach this once at the active Song Detail or Quiz boundary. It centralizes
+/// manual, guided, and calibration flows so card gestures never create competing
+/// sheet presenters. Manual practice is opt-in because Song Detail retains its
+/// existing guided-only behavior.
 struct VocalPracticePresentation: ViewModifier {
     @Bindable var model: VocalPracticeModel
+    let includesManualPractice: Bool
 
-    init(model: VocalPracticeModel) {
+    init(model: VocalPracticeModel, includesManualPractice: Bool = false) {
         self.model = model
+        self.includesManualPractice = includesManualPractice
     }
 
     func body(content: Content) -> some View {
         content
             .sheet(item: activePresentation) { presentation in
                 switch presentation {
+                case .manual:
+                    ManualPracticeSheet(model: model)
                 case .guided:
                     NavigationStack {
                         ScrollView {
@@ -454,7 +557,10 @@ struct VocalPracticePresentation: ViewModifier {
                         .navigationBarTitleDisplayMode(.inline)
                         .toolbar {
                             ToolbarItem(placement: .cancellationAction) {
-                                Button("Done") { model.clearSingingTargets() }
+                                Button("Done") {
+                                    model.clearSingingTargets()
+                                    if includesManualPractice { model.collapse() }
+                                }
                             }
                         }
                     }
@@ -468,11 +574,13 @@ struct VocalPracticePresentation: ViewModifier {
     }
 
     private enum Presentation: Identifiable {
+        case manual
         case guided
         case calibration
 
         var id: String {
             switch self {
+            case .manual: "manual"
             case .guided: "guided"
             case .calibration: "calibration"
             }
@@ -483,19 +591,23 @@ struct VocalPracticePresentation: ViewModifier {
         Binding(
             get: {
                 if case .idle = model.calibrationState {
-                    return model.targetRequest == nil ? nil : .guided
+                    if model.targetRequest != nil { return .guided }
+                    if includesManualPractice, model.isExpanded { return .manual }
+                    return nil
                 }
                 return .calibration
             },
             set: { presentation in
                 guard case nil = presentation else { return }
-                switch self.activePresentation.wrappedValue {
-                case .guided:
+                // A model-driven switch from manual/guided practice to calibration can
+                // cause SwiftUI to clear the old sheet binding. Calibration owns the
+                // microphone at that point, so never treat that transition as a cancel.
+                guard case .idle = model.calibrationState else { return }
+                if model.targetRequest != nil {
                     model.clearSingingTargets()
-                case .calibration:
-                    model.cancelCalibration()
-                case nil:
-                    break
+                    if includesManualPractice { model.collapse() }
+                } else if includesManualPractice, model.isExpanded {
+                    model.collapse()
                 }
             }
         )
@@ -503,8 +615,41 @@ struct VocalPracticePresentation: ViewModifier {
 }
 
 extension View {
-    func vocalPracticePresentation(model: VocalPracticeModel) -> some View {
-        modifier(VocalPracticePresentation(model: model))
+    func vocalPracticePresentation(
+        model: VocalPracticeModel,
+        includesManualPractice: Bool = false
+    ) -> some View {
+        modifier(VocalPracticePresentation(
+            model: model,
+            includesManualPractice: includesManualPractice
+        ))
+    }
+}
+
+private struct ManualPracticeSheet: View {
+    @Bindable var model: VocalPracticeModel
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VocalPracticePanel(model: model)
+                    .padding()
+                    .frame(maxWidth: 680, alignment: .leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .navigationTitle("Vocal practice")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") {
+                        model.collapse()
+                    }
+                    .accessibilityLabel("Done with vocal practice")
+                    .accessibilityHint("Closes practice and stops an active recording.")
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
     }
 }
 
