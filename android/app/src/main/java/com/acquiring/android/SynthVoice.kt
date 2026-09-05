@@ -10,6 +10,22 @@ internal class SynthVoice(
     private val waveform: AudioEngine.Waveform,
     private val sampleRate: Int
 ) {
+    // Matched to iOS using frequency-weighted levels across representative notes:
+    // 100 ms attacks for strings, nylon guitar and marimba; 300 ms for the others.
+    // Apply once per voice so previews, chords and streaming share the same balance.
+    private val instrumentGain = when (waveform) {
+        AudioEngine.Waveform.SINE -> 1.00
+        AudioEngine.Waveform.SQUARE -> 0.49
+        AudioEngine.Waveform.SAWTOOTH -> 0.74
+        AudioEngine.Waveform.TRIANGLE -> 1.18
+        AudioEngine.Waveform.STRINGS -> 1.33
+        AudioEngine.Waveform.ELECTRIC_PIANO -> 0.61
+        AudioEngine.Waveform.WARM_ORGAN -> 1.22
+        AudioEngine.Waveform.MARIMBA -> 1.31
+        AudioEngine.Waveform.VIBRAPHONE -> 0.65
+        AudioEngine.Waveform.NYLON_GUITAR -> 1.74
+    }
+
     private var phase = 0.0
     private var modPhase = 0.0
     private val delayLine: DoubleArray
@@ -99,7 +115,7 @@ internal class SynthVoice(
         }
 
         phase = wrapUnitPhase(phase + frequencyHz / sampleRate)
-        return wave
+        return wave * instrumentGain
     }
 
     private fun wrapUnitPhase(value: Double): Double = when {

@@ -67,6 +67,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
@@ -2226,7 +2227,38 @@ fun QuizTab(
                 Box(modifier = Modifier.align(Alignment.CenterEnd)) { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isWaveformExpanded) }
             }
             ExposedDropdownMenuWithScrollbar(expanded = isWaveformExpanded, onDismissRequest = { isWaveformExpanded = false }) {
-                AudioEngine.Waveform.entries.forEach { waveform -> DropdownMenuItem(text = { Text(waveform.name.lowercase().split("_").joinToString(" ") { it.replaceFirstChar { c -> c.uppercase() } }, style = MaterialTheme.typography.bodySmall, maxLines = 1) }, onClick = { onWaveformChange(waveform); isWaveformExpanded = false }) }
+                AudioEngine.Waveform.entries.groupBy { waveform ->
+                    when (waveform) {
+                        AudioEngine.Waveform.SINE,
+                        AudioEngine.Waveform.SQUARE,
+                        AudioEngine.Waveform.SAWTOOTH,
+                        AudioEngine.Waveform.TRIANGLE -> "Waveforms"
+                        else -> "Synths"
+                    }
+                }.forEach { (category, waveforms) ->
+                    Text(
+                        text = category,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            .semantics { heading() }
+                    )
+                    waveforms.forEach { waveform ->
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    waveform.name.lowercase().split("_").joinToString(" ") {
+                                        it.replaceFirstChar { c -> c.uppercase() }
+                                    },
+                                    style = MaterialTheme.typography.bodySmall,
+                                    maxLines = 1
+                                )
+                            },
+                            onClick = { onWaveformChange(waveform); isWaveformExpanded = false }
+                        )
+                    }
+                }
             }
         }
     }
