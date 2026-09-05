@@ -777,12 +777,14 @@ struct QuizView: View {
     let songID: String
     let onOpenArtist: (CatalogSong) -> Void
     @Environment(AppEnvironment.self) private var environment
+    @Environment(\.scenePhase) private var scenePhase
     @State private var state: FeatureState<SongDocument> = .loading
     @State private var selectedSectionID: String?
     @State private var sectionLoadTask: Task<Void, Never>?
     @State private var sectionLoadGeneration = 0
     @State private var sectionLoadStatus: QuizSectionLoadStatus = .idle
     @State private var activeQuizRevision: UInt64?
+    @State private var playbackOwner: AppAudioSystem.QuizPlaybackOwner?
     @State private var restartLoadRevision: UInt64?
     @State private var transportObservationGeneration = 0
     @State private var mode: QuizDisplayMode = .full
@@ -858,10 +860,23 @@ struct QuizView: View {
         .task(id: transportObservationGeneration) { await observeTransport() }
         .onDisappear {
             environment.vocalPractice.cancelActivity()
-            finishTimelineScrub(resumingIfNeeded: true)
-            cancelSectionLoad()
             cancelPlaybackCommand()
-            cancelQuizCardPreview()
+            finishTimelineScrub(resumingIfNeeded: false)
+            cancelSectionLoad()
+            if let revision = activeQuizRevision, let playbackOwner {
+                _ = environment.audio.cancelQuizCardPreview(revision: revision, owner: playbackOwner)
+                _ = environment.audio.pauseQuizForLifecycle(revision: revision, owner: playbackOwner)
+            }
+            playbackOwner = nil
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active {
+                activatePlaybackOwnerIfReady()
+            } else {
+                cancelPlaybackCommand()
+                finishTimelineScrub(resumingIfNeeded: false)
+                playbackOwner = nil
+            }
         }
         .onChange(of: usesRelativeIonianContext) { _, enabled in
             cancelQuizCardPreview()
@@ -1120,8 +1135,6 @@ struct QuizView: View {
                             setMode(selectedMode, sectionID: sectionID)
                         }
                     )
-                    .equatable()
-
                     Button(action: requestPlaybackReset) {
                         Image(systemName: "arrow.counterclockwise").frame(width: 44, height: 44)
                             .contentShape(Rectangle())
@@ -1148,7 +1161,6 @@ struct QuizView: View {
                         isEnabled: true,
                         onSelect: { id in selectSection(id, sections: sections) }
                     )
-                    .equatable()
                     // Bottom-anchored menus otherwise place the first section nearest the trigger.
                     .menuOrder(.fixed)
 
@@ -1322,7 +1334,6 @@ struct QuizView: View {
                     changeInstrument(waveform, sectionID: sectionID)
                 }
             )
-            .equatable()
             .menuOrder(.fixed)
 
             HStack(spacing: 0) {
@@ -1370,7 +1381,7 @@ struct QuizView: View {
     }
 
     private func changeInstrument(_ waveform: SynthWaveform, sectionID: String) {
-        _ = setSoundConfiguration(
+        let didApply = setSoundConfiguration(
             QuizSoundConfiguration(
                 waveform: waveform,
                 melodyChordBalance: soundConfiguration.melodyChordBalance,
@@ -1380,6 +1391,7 @@ struct QuizView: View {
             ),
             sectionID: sectionID
         )
+        if didApply { environment.selectQuizInstrument(waveform) }
     }
 
     private func changeTranspose(_ semitones: Int, sectionID: String) {
@@ -1523,18 +1535,23 @@ struct QuizView: View {
             && !playbackCommandPending
             && transportPhase != .buffering
             && activeQuizRevision != nil
+            && playbackOwner != nil
     }
 
     private func requestSeek(to targetBeat: Double, in section: ExtractedSection) {
         environment.vocalPractice.handleTransportDiscontinuity()
-        guard canSeek, let revision = activeQuizRevision else { return }
+        guard canSeek, let revision = activeQuizRevision, let playbackOwner else { return }
         cancelQuizCardPreview()
         let endBeat = playbackEndBeat(in: section)
         let boundedBeat = min(max(targetBeat, PlaybackTiming.firstBeat), endBeat)
         let span = endBeat - PlaybackTiming.firstBeat
         guard span > 0 else { return }
         let targetProgress = (boundedBeat - PlaybackTiming.firstBeat) / span
-        guard environment.audio.seekQuiz(to: targetProgress, revision: revision) else { return }
+        guard environment.audio.seekQuiz(
+            to: targetProgress,
+            revision: revision,
+            owner: playbackOwner
+        ) else { return }
         progress = targetProgress
         seekGeneration &+= 1
         // Cancel the stream that could still be holding an observation from
@@ -1555,7 +1572,7 @@ struct QuizView: View {
     }
 
     private func beginTimelineDrag(in section: ExtractedSection, sectionID: String) {
-        guard canSeek, let revision = activeQuizRevision,
+        guard canSeek, let revision = activeQuizRevision, let playbackOwner,
               selectedSectionID == sectionID else { return }
 
         cancelQuizCardPreview()
@@ -1577,11 +1594,15 @@ struct QuizView: View {
             return
         }
 
-        guard let shouldResume = environment.audio.pauseQuizForScrubbing(revision: revision) else {
+        guard let shouldResume = environment.audio.pauseQuizForScrubbing(
+            revision: revision,
+            owner: playbackOwner
+        ) else {
             return
         }
         timelineScrub = QuizTimelineScrub(
             revision: revision,
+            owner: playbackOwner,
             sectionID: sectionID,
             originBeat: beat,
             beat: beat,
@@ -1732,7 +1753,11 @@ struct QuizView: View {
         guard span > 0 else { return }
         let targetProgress = (min(max(scrub.beat, PlaybackTiming.firstBeat), endBeat)
             - PlaybackTiming.firstBeat) / span
-        guard environment.audio.seekQuiz(to: targetProgress, revision: scrub.revision) else { return }
+        guard environment.audio.seekQuiz(
+            to: targetProgress,
+            revision: scrub.revision,
+            owner: scrub.owner
+        ) else { return }
         progress = targetProgress
         seekGeneration &+= 1
         // Resume observation from the one committed engine position rather
@@ -1741,7 +1766,10 @@ struct QuizView: View {
 
         guard scrub.shouldResume else { return }
         do {
-            try environment.audio.resumeQuizAfterScrubbing(revision: scrub.revision)
+            try environment.audio.resumeQuizAfterScrubbing(
+                revision: scrub.revision,
+                owner: scrub.owner
+            )
         } catch is CancellationError {
         } catch {
             self.error = error.localizedDescription
@@ -1769,7 +1797,8 @@ struct QuizView: View {
               tempoPercent > 0,
               transportPhase != .buffering,
               timelineScrub == nil,
-              let revision = activeQuizRevision else { return }
+              let revision = activeQuizRevision,
+              let playbackOwner else { return }
         let shouldPause = playing
         // Latch synchronously, before the Task starts, so repeated taps cannot
         // enqueue duplicate commands against the same published state.
@@ -1782,9 +1811,9 @@ struct QuizView: View {
             do {
                 try Task.checkCancellation()
                 if shouldPause {
-                    await environment.audio.pauseQuiz(revision: revision)
+                    await environment.audio.pauseQuiz(revision: revision, owner: playbackOwner)
                 } else {
-                    try await environment.audio.playQuiz(revision: revision)
+                    try await environment.audio.playQuiz(revision: revision, owner: playbackOwner)
                 }
             } catch is CancellationError {
             } catch {
@@ -1796,7 +1825,8 @@ struct QuizView: View {
     private func requestPlaybackReset() {
         guard sectionLoadStatus.isReady, !playbackCommandPending,
               transportPhase != .buffering,
-              let revision = activeQuizRevision else { return }
+              let revision = activeQuizRevision,
+              let playbackOwner else { return }
         cancelQuizCardPreview()
         environment.vocalPractice.handleTransportDiscontinuity()
         finishTimelineScrub(resumingIfNeeded: false)
@@ -1807,7 +1837,7 @@ struct QuizView: View {
                 playbackCommandTask = nil
             }
             guard !Task.isCancelled else { return }
-            await environment.audio.resetQuiz(revision: revision)
+            await environment.audio.resetQuiz(revision: revision, owner: playbackOwner)
         }
     }
 
@@ -1836,7 +1866,6 @@ struct QuizView: View {
             )
             selectedSectionID = restored.key
             environment.vocalPractice.enterSong(songID: songID, sectionID: restored.key)
-            environment.audio.updateNowPlaying(song: document.song, sectionName: restored.section.safeSectionName)
             mode = continuity.mode
             tempoPercent = continuity.tempoPercent
             let restoredSoundConfiguration = continuity.playbackConfiguration.soundConfiguration
@@ -1863,6 +1892,7 @@ struct QuizView: View {
             ) {
                 activeQuizRevision = revision
                 sectionLoadStatus = .ready(restored.section.safeSectionName)
+                activatePlaybackOwnerIfReady()
             } else {
                 scheduleSectionLoad(restored.section, id: restored.key, position: .restart)
             }
@@ -1875,9 +1905,6 @@ struct QuizView: View {
         position: QuizLoadPosition
     ) {
         cancelQuizCardPreview()
-        if case let .content(document) = state {
-            environment.audio.updateNowPlaying(song: document.song, sectionName: section.safeSectionName)
-        }
         switch position {
         case .restart:
             finishTimelineScrub(resumingIfNeeded: false)
@@ -1925,6 +1952,7 @@ struct QuizView: View {
             progress = 0
         }
         activeQuizRevision = revision
+        playbackOwner = nil
         let timeline = timeline(for: section)
         sectionLoadStatus = .loading(section.safeSectionName)
 
@@ -1948,6 +1976,7 @@ struct QuizView: View {
                     progress = 0
                 }
                 sectionLoadStatus = .ready(section.safeSectionName)
+                activatePlaybackOwnerIfReady()
                 sectionLoadTask = nil
             } catch is CancellationError {
                 // A newer section superseded this load.
@@ -1965,6 +1994,14 @@ struct QuizView: View {
         sectionLoadGeneration == generation
             && selectedSectionID == id
             && activeQuizRevision == revision
+    }
+
+    private func activatePlaybackOwnerIfReady() {
+        guard scenePhase == .active,
+              sectionLoadStatus.isReady,
+              let revision = activeQuizRevision
+        else { return }
+        playbackOwner = environment.audio.activateQuizPlaybackOwner(revision: revision)
     }
 
     private func cancelSectionLoad() {
@@ -2216,10 +2253,10 @@ private struct QuizSelectorOption: Identifiable, Equatable, Sendable {
     var groupTitle: String? = nil
 }
 
-/// Keeps native selector menus alive while transport observations redraw Quiz.
-/// The callback intentionally stays out of equality: its captured state locations
-/// remain valid, while the identity includes every value it closes over.
-private struct QuizSelectorMenu: View, Equatable {
+/// Keeps one UIKit menu control alive while transport observations redraw Quiz.
+/// Its coordinator refreshes the action closure without replacing a menu that is
+/// already being presented.
+private struct QuizSelectorMenu: View {
     let identityContext: String
     let options: [QuizSelectorOption]
     let selectedID: String
@@ -2240,106 +2277,121 @@ private struct QuizSelectorMenu: View, Equatable {
             ?? "Section"
     }
 
-    nonisolated static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.identityContext == rhs.identityContext
-            && lhs.options == rhs.options
-            && lhs.selectedID == rhs.selectedID
-            && lhs.caption == rhs.caption
-            && lhs.selectedDisplayTitle == rhs.selectedDisplayTitle
-            && lhs.selectedAccessibilityValue == rhs.selectedAccessibilityValue
-            && lhs.usesSubheadline == rhs.usesSubheadline
-            && lhs.width == rhs.width
-            && lhs.expandsToAvailableWidth == rhs.expandsToAvailableWidth
-            && lhs.accessibilityIdentifier == rhs.accessibilityIdentifier
-            && lhs.accessibilityLabel == rhs.accessibilityLabel
-            && lhs.isEnabled == rhs.isEnabled
-    }
-
     var body: some View {
-        Menu {
-            ForEach(Array(optionGroups.enumerated()), id: \.offset) { _, group in
-                if let title = group.title {
-                    Section(title) {
-                        selectorButtons(group.options)
-                    }
-                } else {
-                    selectorButtons(group.options)
-                }
-            }
-        } label: {
-            selectorLabel
+        StableQuizMenuButton(
+            identityContext: identityContext,
+            options: options,
+            selectedID: selectedID,
+            caption: caption,
+            selectedTitle: selectedDisplayTitle ?? selectedTitle,
+            selectedAccessibilityValue: selectedAccessibilityValue ?? selectedTitle,
+            usesSubheadline: usesSubheadline,
+            accessibilityIdentifier: accessibilityIdentifier,
+            accessibilityLabel: accessibilityLabel,
+            isEnabled: isEnabled && options.count >= 2,
+            onSelect: onSelect
+        )
+        .frame(maxWidth: expandsToAvailableWidth ? .infinity : nil)
+        .frame(width: expandsToAvailableWidth ? nil : width)
+        .frame(minHeight: 44)
+    }
+}
+
+private struct StableQuizMenuButton: UIViewRepresentable {
+    let identityContext: String
+    let options: [QuizSelectorOption]
+    let selectedID: String
+    let caption: String?
+    let selectedTitle: String
+    let selectedAccessibilityValue: String
+    let usesSubheadline: Bool
+    let accessibilityIdentifier: String
+    let accessibilityLabel: String
+    let isEnabled: Bool
+    let onSelect: (String) -> Void
+
+    @MainActor
+    final class Coordinator {
+        var onSelect: (String) -> Void
+        var menuSignature = ""
+
+        init(onSelect: @escaping (String) -> Void) {
+            self.onSelect = onSelect
         }
-        .disabled(!isEnabled || options.count < 2)
-        .accessibilityIdentifier(accessibilityIdentifier)
-        .accessibilityLabel(accessibilityLabel)
-        .accessibilityValue(selectedAccessibilityValue ?? selectedTitle)
+
+        func select(_ id: String) {
+            onSelect(id)
+        }
     }
 
-    private var optionGroups: [(title: String?, options: [QuizSelectorOption])] {
-        options.reduce(into: []) { groups, option in
+    func makeCoordinator() -> Coordinator {
+        Coordinator(onSelect: onSelect)
+    }
+
+    func makeUIView(context: Context) -> UIButton {
+        let button = UIButton(type: .system)
+        button.showsMenuAsPrimaryAction = true
+        button.changesSelectionAsPrimaryAction = false
+        button.accessibilityTraits.insert(.button)
+        return button
+    }
+
+    func updateUIView(_ button: UIButton, context: Context) {
+        context.coordinator.onSelect = onSelect
+        button.isEnabled = isEnabled
+        button.accessibilityIdentifier = accessibilityIdentifier
+        button.accessibilityLabel = accessibilityLabel
+        button.accessibilityValue = selectedAccessibilityValue
+
+        var configuration = UIButton.Configuration.plain()
+        configuration.title = selectedTitle
+        configuration.subtitle = caption
+        configuration.image = UIImage(systemName: "chevron.down")
+        configuration.imagePlacement = .trailing
+        configuration.imagePadding = 5
+        configuration.titleAlignment = .center
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 4, leading: 6, bottom: 4, trailing: 6)
+        configuration.baseForegroundColor = .label
+        configuration.background.strokeColor = UIColor.secondaryLabel.withAlphaComponent(0.45)
+        configuration.background.strokeWidth = 1
+        configuration.background.cornerRadius = 8
+        button.configuration = configuration
+        button.titleLabel?.font = usesSubheadline
+            ? .preferredFont(forTextStyle: .subheadline)
+            : .preferredFont(forTextStyle: .caption1)
+
+        let signature = ([identityContext, selectedID] + options.flatMap {
+            [$0.id, $0.title, $0.groupTitle ?? ""]
+        }).joined(separator: "\u{1F}")
+        guard context.coordinator.menuSignature != signature else { return }
+        context.coordinator.menuSignature = signature
+        button.menu = makeMenu(coordinator: context.coordinator)
+    }
+
+    private func makeMenu(coordinator: Coordinator) -> UIMenu {
+        let groups = options.reduce(into: [(title: String?, options: [QuizSelectorOption])]()) { groups, option in
             if let lastGroup = groups.last, lastGroup.title == option.groupTitle {
                 groups[groups.count - 1].options.append(option)
             } else {
                 groups.append((title: option.groupTitle, options: [option]))
             }
         }
-    }
-
-    @ViewBuilder
-    private func selectorButtons(_ options: [QuizSelectorOption]) -> some View {
-        ForEach(options) { option in
-            Button {
-                onSelect(option.id)
-            } label: {
-                if option.id == selectedID {
-                    Label(option.title, systemImage: "checkmark")
-                } else {
-                    Text(option.title)
+        let children: [UIMenuElement] = groups.map { group in
+            let actions = group.options.map { option in
+                UIAction(
+                    title: option.title,
+                    state: option.id == selectedID ? .on : .off
+                ) { [weak coordinator] _ in
+                    coordinator?.select(option.id)
                 }
             }
+            return UIMenu(
+                title: group.title ?? "",
+                options: .displayInline,
+                children: actions
+            )
         }
-    }
-
-    @ViewBuilder
-    private var selectorLabel: some View {
-        if expandsToAvailableWidth {
-            selectorText
-                .padding(.horizontal, 6)
-                .frame(maxWidth: .infinity, minHeight: 44)
-                .overlay(outline)
-                .contentShape(Rectangle())
-        } else {
-            selectorText
-                .padding(.horizontal, 6)
-                .frame(width: width, height: 44)
-                .overlay(outline)
-                .contentShape(Rectangle())
-        }
-    }
-
-    @ViewBuilder
-    private var selectorText: some View {
-        if let caption {
-            VStack(spacing: 1) {
-                Text(caption)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                Label(selectedDisplayTitle ?? selectedTitle, systemImage: "chevron.down")
-                    .font(.subheadline.weight(.medium))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
-            }
-        } else {
-            Label(selectedDisplayTitle ?? selectedTitle, systemImage: "chevron.down")
-                .font(usesSubheadline ? .subheadline.weight(.medium) : .caption.weight(.semibold))
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
-        }
-    }
-
-    private var outline: some View {
-        RoundedRectangle(cornerRadius: 8, style: .continuous)
-            .stroke(.secondary.opacity(0.45), lineWidth: 1)
+        return UIMenu(options: .displayInline, children: children)
     }
 }
 
@@ -2361,6 +2413,7 @@ private struct QuizSection: Identifiable {
 
 private struct QuizTimelineScrub {
     let revision: UInt64
+    let owner: AppAudioSystem.QuizPlaybackOwner
     let sectionID: String
     var originBeat: Double
     var beat: Double

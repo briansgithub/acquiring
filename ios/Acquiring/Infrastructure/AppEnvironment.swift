@@ -268,6 +268,76 @@ struct QuizPlaybackConfiguration: Equatable {
     }
 }
 
+extension QuizSoundConfiguration {
+    func replacing(waveform: SynthWaveform) -> Self {
+        Self(
+            waveform: waveform,
+            melodyChordBalance: melodyChordBalance,
+            transposeSemitones: transposeSemitones,
+            arpeggioOption: arpeggioOption,
+            chordMode: chordMode
+        )
+    }
+}
+
+struct QuizInstrumentPreferences {
+    static let defaultsKey = "defaultQuizInstrument"
+
+    private let defaults: UserDefaults
+
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+    }
+
+    var savedDefault: SynthWaveform {
+        get {
+            guard let rawValue = defaults.string(forKey: Self.defaultsKey),
+                  let waveform = SynthWaveform(rawValue: rawValue)
+            else { return .sawtooth }
+            return waveform
+        }
+        nonmutating set {
+            defaults.set(newValue.rawValue, forKey: Self.defaultsKey)
+        }
+    }
+}
+
+@MainActor
+@Observable
+final class QuizInstrumentSession {
+    private let preferences: QuizInstrumentPreferences
+    @ObservationIgnored private let applyToAudio: (SynthWaveform) -> Void
+    private(set) var selection: SynthWaveform
+    private(set) var savedDefault: SynthWaveform
+
+    init(
+        preferences: QuizInstrumentPreferences = QuizInstrumentPreferences(),
+        applyToAudio: @escaping (SynthWaveform) -> Void = { _ in }
+    ) {
+        self.preferences = preferences
+        selection = preferences.savedDefault
+        savedDefault = preferences.savedDefault
+        self.applyToAudio = applyToAudio
+        applyToAudio(selection)
+    }
+
+    func select(_ waveform: SynthWaveform) {
+        guard selection != waveform else { return }
+        selection = waveform
+        applyToAudio(waveform)
+    }
+
+    func saveDefault(_ waveform: SynthWaveform) {
+        preferences.savedDefault = waveform
+        savedDefault = waveform
+        if selection == waveform {
+            applyToAudio(waveform)
+        } else {
+            select(waveform)
+        }
+    }
+}
+
 @MainActor
 @Observable
 final class AppEnvironment {
@@ -276,6 +346,7 @@ final class AppEnvironment {
     let history: HistoryStore
     let userLibrary: UserLibraryStore
     let audio: AppAudioSystem
+    let quizInstrument: QuizInstrumentSession
     let vocalPractice: VocalPracticeModel
     let catalogConfiguration: CatalogConfiguration
     private(set) var quizContinuity: QuizContinuityState?
@@ -285,7 +356,11 @@ final class AppEnvironment {
     private var hasPresentedCatalogLaunchFailure = false
 #endif
 
-    init(modelContext: ModelContext, uiTestSession: UITestSession? = UITestSession.current()) throws {
+    init(
+        modelContext: ModelContext,
+        uiTestSession: UITestSession? = UITestSession.current(),
+        quizInstrumentDefaults: UserDefaults = .standard
+    ) throws {
         let arguments = ProcessInfo.processInfo.arguments
         let isUITesting = uiTestSession != nil
 #if DEBUG
@@ -339,8 +414,15 @@ final class AppEnvironment {
         maintenance = ExclusiveCatalogMaintenanceService(base: selectedMaintenance)
         history = HistoryStore(suiteName: uiTestSession?.historySuiteName)
         userLibrary = try UserLibraryStore(context: modelContext)
-        audio = AppAudioSystem()
-        vocalPractice = VocalPracticeModel(audio: audio)
+        let audioSystem = AppAudioSystem()
+        audio = audioSystem
+        quizInstrument = QuizInstrumentSession(
+            preferences: QuizInstrumentPreferences(defaults: quizInstrumentDefaults),
+            applyToAudio: { [weak audioSystem] waveform in
+                audioSystem?.setSessionInstrument(waveform)
+            }
+        )
+        vocalPractice = VocalPracticeModel(audio: audioSystem)
     }
 
     func quizContinuity(for songID: String) -> QuizContinuityState? {
@@ -355,7 +437,30 @@ final class AppEnvironment {
         } else {
             quizContinuity = QuizContinuityState(songID: songID, sectionID: sectionID)
         }
+        if let configuration = quizContinuity?.playbackConfiguration.soundConfiguration {
+            quizContinuity?.playbackConfiguration.soundConfiguration = configuration.replacing(
+                waveform: quizInstrument.selection
+            )
+        }
         return quizContinuity!
+    }
+
+    func selectQuizInstrument(_ waveform: SynthWaveform) {
+        quizInstrument.select(waveform)
+        if let configuration = quizContinuity?.playbackConfiguration.soundConfiguration {
+            quizContinuity?.playbackConfiguration.soundConfiguration = configuration.replacing(
+                waveform: waveform
+            )
+        }
+    }
+
+    func saveDefaultQuizInstrument(_ waveform: SynthWaveform) {
+        quizInstrument.saveDefault(waveform)
+        if let configuration = quizContinuity?.playbackConfiguration.soundConfiguration {
+            quizContinuity?.playbackConfiguration.soundConfiguration = configuration.replacing(
+                waveform: waveform
+            )
+        }
     }
 
     func rememberQuizSettings(
