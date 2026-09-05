@@ -13,8 +13,6 @@ struct AllSongsBrowseView: View {
                 index(groups: browse.groups, proxy: proxy)
                 browseList(browse: $browse)
             }
-            .navigationTitle("All Songs")
-            .navigationBarTitleDisplayMode(.inline)
             .task(id: store.catalogRevision) {
                 await browse.refresh(catalogRevision: store.catalogRevision)
             }
@@ -47,9 +45,6 @@ struct AllSongsBrowseView: View {
                     .accessibilityLabel("Clear song filter")
                 }
             }
-            HooktheorySearchButton(query: browse.filterText.wrappedValue)
-                .frame(maxWidth: .infinity, alignment: .leading)
-
             if let warning = browse.wrappedValue.legacyMetadataWarning {
                 Label(warning, systemImage: "exclamationmark.triangle")
                     .font(.footnote)
@@ -116,6 +111,7 @@ struct AllSongsBrowseView: View {
                 if let id { browse.wrappedValue.recordScrollAnchor(id: id) }
             }
         ))
+        .scrollDismissesKeyboard(.interactively)
         .accessibilityIdentifier("allSongs.list")
     }
 
