@@ -4,6 +4,7 @@ final class SynthVoice {
     let frequencyHz: Double
     private let waveform: SynthWaveform
     private let sampleRate: Double
+    private let outputGain: Double
     private var phase = 0.0
     private var modulationPhase = 0.0
     private var filterState = 0.0
@@ -14,6 +15,7 @@ final class SynthVoice {
         self.frequencyHz = frequencyHz
         self.waveform = waveform
         self.sampleRate = sampleRate
+        outputGain = Self.outputGain(for: waveform)
         let period = max(Int(sampleRate / frequencyHz), 2)
         switch waveform {
         case .strings, .nylonGuitar:
@@ -101,7 +103,32 @@ final class SynthVoice {
             wave = filterState
         }
         phase = wrap(phase + frequencyHz / sampleRate)
-        return wave
+        return wave * outputGain
+    }
+
+    /// Perceived-level calibration for reference notes at MIDI pitches 48, 55,
+    /// 60, 64, 69, and 72. Strings, nylon guitar, and marimba use their 100 ms
+    /// attack/body; other timbres use 300 ms. Values are geometric-mean ratios
+    /// to sine after A-weighting.
+    private static func outputGain(for waveform: SynthWaveform) -> Double {
+        switch waveform {
+        case .sine: 1.00
+        case .square: 0.49
+        case .sawtooth: 0.74
+        case .triangle: 1.18
+        case .strings: 1.33
+        case .electricPiano: 0.61
+        case .warmOrgan: 1.22
+        case .marimba: 1.31
+        case .vibraphone: 0.65
+        case .nylonGuitar: 1.74
+        case .flute: 1.09
+        case .clarinet: 1.13
+        case .oboe: 1.26
+        case .brass: 1.27
+        case .bell: 0.50
+        case .synthBass: 5.94
+        }
     }
 
     private func pluckedSample(attenuation: Double) -> Double {

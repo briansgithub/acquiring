@@ -1298,8 +1298,14 @@ struct QuizView: View {
         VStack(spacing: 0) {
             QuizSelectorMenu(
                 identityContext: "\(songID):\(sectionID):instrument",
-                options: SynthWaveform.allCases.map {
-                    QuizSelectorOption(id: $0.rawValue, title: $0.displayName)
+                options: SynthWaveform.allCases.map { waveform in
+                    QuizSelectorOption(
+                        id: waveform.rawValue,
+                        title: waveform.displayName,
+                        groupTitle: [.sine, .square, .sawtooth, .triangle].contains(waveform)
+                            ? "Waveforms"
+                            : "Synths"
+                    )
                 },
                 selectedID: soundConfiguration.waveform.rawValue,
                 caption: "Instrument",
@@ -1317,6 +1323,7 @@ struct QuizView: View {
                 }
             )
             .equatable()
+            .menuOrder(.fixed)
 
             HStack(spacing: 0) {
                 Button {
@@ -2206,6 +2213,7 @@ private struct QuizTransportButton: View {
 private struct QuizSelectorOption: Identifiable, Equatable, Sendable {
     let id: String
     let title: String
+    var groupTitle: String? = nil
 }
 
 /// Keeps native selector menus alive while transport observations redraw Quiz.
@@ -2249,15 +2257,13 @@ private struct QuizSelectorMenu: View, Equatable {
 
     var body: some View {
         Menu {
-            ForEach(options) { option in
-                Button {
-                    onSelect(option.id)
-                } label: {
-                    if option.id == selectedID {
-                        Label(option.title, systemImage: "checkmark")
-                    } else {
-                        Text(option.title)
+            ForEach(Array(optionGroups.enumerated()), id: \.offset) { _, group in
+                if let title = group.title {
+                    Section(title) {
+                        selectorButtons(group.options)
                     }
+                } else {
+                    selectorButtons(group.options)
                 }
             }
         } label: {
@@ -2267,6 +2273,31 @@ private struct QuizSelectorMenu: View, Equatable {
         .accessibilityIdentifier(accessibilityIdentifier)
         .accessibilityLabel(accessibilityLabel)
         .accessibilityValue(selectedAccessibilityValue ?? selectedTitle)
+    }
+
+    private var optionGroups: [(title: String?, options: [QuizSelectorOption])] {
+        options.reduce(into: []) { groups, option in
+            if let lastGroup = groups.last, lastGroup.title == option.groupTitle {
+                groups[groups.count - 1].options.append(option)
+            } else {
+                groups.append((title: option.groupTitle, options: [option]))
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func selectorButtons(_ options: [QuizSelectorOption]) -> some View {
+        ForEach(options) { option in
+            Button {
+                onSelect(option.id)
+            } label: {
+                if option.id == selectedID {
+                    Label(option.title, systemImage: "checkmark")
+                } else {
+                    Text(option.title)
+                }
+            }
+        }
     }
 
     @ViewBuilder
