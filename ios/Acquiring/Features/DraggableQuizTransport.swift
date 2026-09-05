@@ -29,19 +29,26 @@ struct DraggableQuizTransportHost<Content: View>: View {
 
     var body: some View {
         GeometryReader { geometry in
-            let bounds = availableBounds(in: geometry.size)
-            let resolved = resolvedPosition(in: geometry.size)
+            let constrainedControlSize = constrainedControlSize(in: geometry.size)
+            let bounds = availableBounds(in: geometry.size, controlSize: constrainedControlSize)
+            let resolved = resolvedPosition(in: geometry.size, controlSize: constrainedControlSize)
             let displayed = position(
                 from: resolved,
                 translation: dragState.translation,
                 in: bounds
             )
             content()
-                .frame(width: controlSize.width, height: controlSize.height)
+                .frame(width: constrainedControlSize.width, height: constrainedControlSize.height)
                 .offset(x: displayed.x, y: displayed.y)
                 // The high-priority drag recognizes before the button; a touch that
                 // never crosses the threshold still activates the original control.
-                .highPriorityGesture(dragGesture(in: geometry.size, startingAt: resolved))
+                .highPriorityGesture(
+                    dragGesture(
+                        in: geometry.size,
+                        controlSize: constrainedControlSize,
+                        startingAt: resolved
+                    )
+                )
                 .accessibilityHint(
                     "Drag to move. Use the Move transport or Reset transport placement actions to reposition without dragging."
                 )
@@ -70,8 +77,8 @@ struct DraggableQuizTransportHost<Content: View>: View {
         }
     }
 
-    private func resolvedPosition(in availableSize: CGSize) -> CGPoint {
-        let bounds = availableBounds(in: availableSize)
+    private func resolvedPosition(in availableSize: CGSize, controlSize: CGSize) -> CGPoint {
+        let bounds = availableBounds(in: availableSize, controlSize: controlSize)
         guard let placement else {
             return CGPoint(x: bounds.maxX, y: max(bounds.maxY - quizTransportDefaultBottomClearance, 0))
         }
@@ -83,6 +90,7 @@ struct DraggableQuizTransportHost<Content: View>: View {
 
     private func dragGesture(
         in availableSize: CGSize,
+        controlSize: CGSize,
         startingAt start: CGPoint
     ) -> some Gesture {
         DragGesture(minimumDistance: 12, coordinateSpace: .local)
@@ -93,7 +101,7 @@ struct DraggableQuizTransportHost<Content: View>: View {
                 state = QuizTransportDragState(translation: value.translation)
             }
             .onEnded { value in
-                let bounds = availableBounds(in: availableSize)
+                let bounds = availableBounds(in: availableSize, controlSize: controlSize)
                 save(
                     position: position(from: start, translation: value.translation, in: bounds),
                     in: bounds
@@ -101,7 +109,14 @@ struct DraggableQuizTransportHost<Content: View>: View {
             }
     }
 
-    private func availableBounds(in availableSize: CGSize) -> CGRect {
+    private func constrainedControlSize(in availableSize: CGSize) -> CGSize {
+        CGSize(
+            width: min(controlSize.width, max(availableSize.width, 0)),
+            height: min(controlSize.height, max(availableSize.height, 0))
+        )
+    }
+
+    private func availableBounds(in availableSize: CGSize, controlSize: CGSize) -> CGRect {
         CGRect(
             origin: .zero,
             size: CGSize(

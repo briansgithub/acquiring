@@ -1,7 +1,10 @@
 import AcquiringAudio
 import AcquiringCore
+import Combine
 import Foundation
+import QuartzCore
 import SwiftUI
+import UIKit
 
 struct SongDetailView: View {
     let songID: String
@@ -148,7 +151,8 @@ struct SongDetailView: View {
                 _ = environment.audio.beginQuizReplacement(
                     songID: songID,
                     sectionID: $0,
-                    tempoPercent: continuity.tempoPercent
+                    tempoPercent: continuity.tempoPercent,
+                    soundConfiguration: continuity.playbackConfiguration.soundConfiguration
                 )
             }
         )
@@ -753,7 +757,6 @@ struct QuizView: View {
     let songID: String
     let onOpenArtist: (CatalogSong) -> Void
     @Environment(AppEnvironment.self) private var environment
-    @Environment(\.dismiss) private var dismiss
     @State private var state: FeatureState<SongDocument> = .loading
     @State private var selectedSectionID: String?
     @State private var sectionLoadTask: Task<Void, Never>?
@@ -764,6 +767,7 @@ struct QuizView: View {
     @State private var transportObservationGeneration = 0
     @State private var mode: QuizDisplayMode = .full
     @State private var progress = 0.0
+    @State private var transportSampleTimestamp = CACurrentMediaTime()
     @State private var transportPhase: TransportPhase = .stopped
     @State private var playbackCommandPending = false
     @State private var playbackCommandTask: Task<Void, Never>?
@@ -774,6 +778,8 @@ struct QuizView: View {
     @State private var error: String?
     @State private var usesRelativeIonianContext = false
     @State private var tempoPercent = 100.0
+    @State private var soundConfiguration = QuizSoundConfiguration()
+    @State private var soundControlsExpanded = true
 
     private var playing: Bool {
         transportPhase == .playing || transportPhase == .buffering
@@ -803,7 +809,7 @@ struct QuizView: View {
                 quiz(document)
             }
         }
-        .navigationTitle("Quiz")
+        .navigationTitle(navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
         .task(id: songID) { await load() }
         .task(id: transportObservationGeneration) { await observeTransport() }
@@ -833,6 +839,12 @@ struct QuizView: View {
         )
     }
 
+    private var navigationTitle: String {
+        guard case let .content(document) = state else { return "Quiz" }
+        let artist = document.song.artist?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return artist.isEmpty ? document.song.displayTitle : "\(document.song.displayTitle) by \(artist)"
+    }
+
     private func quiz(_ document: SongDocument) -> some View {
         let sections = document.orderedSections.map { QuizSection(id: $0.key, section: $0.section) }
         let selected = sections.first(where: { $0.id == selectedSectionID }) ?? sections.first
@@ -840,16 +852,12 @@ struct QuizView: View {
         return VStack(spacing: 12) {
             if let selected {
                 QuizHeader(
-                    song: document.song,
                     initialKey: selected.section.keys.first?.key ?? KeyInfo(tonic: "C", scale: "major"),
                     currentKey: selected.section.key(at: currentBeat(in: selected.section)),
-                    mode: mode,
-                    usesRelativeIonianContext: $usesRelativeIonianContext,
-                    onOpenArtist: onOpenArtist,
-                    onInfo: { dismiss() }
+                    usesRelativeIonianContext: $usesRelativeIonianContext
                 )
 
-                if sections.count > 1 {
+                if mode == .rootOnly, sections.count > 1 {
                     Picker("Quiz section", selection: sectionBinding(sections: sections)) {
                         ForEach(sections) { entry in
                             Text(entry.section.safeSectionName).tag(entry.id)
@@ -876,7 +884,7 @@ struct QuizView: View {
 
                 switch mode {
                 case .full:
-                    fullQuiz(selected.section, sectionID: selected.id)
+                    fullQuiz(selected.section, sectionID: selected.id, sections: sections)
                 case .rootOnly:
                     RootOnlyQuizSurface(
                         key: selected.section.key(at: currentBeat(in: selected.section))
@@ -910,41 +918,32 @@ struct QuizView: View {
         scheduleSectionLoad(selected.section, id: selected.id, position: .restart)
     }
 
-    private func fullQuiz(_ section: ExtractedSection, sectionID: String) -> some View {
+    private func fullQuiz(
+        _ section: ExtractedSection,
+        sectionID: String,
+        sections: [QuizSection]
+    ) -> some View {
         let beat = currentBeat(in: section)
         return ZStack(alignment: .topLeading) {
-            VStack(spacing: 20) {
-                VStack(spacing: 0) {
-                    MelodyTimelineView(
-                        section: section,
-                        currentBeat: beat,
-                        usesRelativeIonianContext: usesRelativeIonianContext,
-                        isPlaying: playing,
-                        seekGeneration: seekGeneration,
-                        isSeekEnabled: canSeek,
-                        onSeek: { requestTimelineTap(to: $0, in: section) },
-                        onDragStart: { beginTimelineDrag(in: section, sectionID: sectionID) },
-                        onDragChange: updateTimelineDrag,
-                        onDragEnd: endTimelineDrag,
-                        onDragCancel: cancelTimelineDrag
-                    )
-                    .frame(height: MelodyTimelinePresentation.laneHeight)
-                    .accessibilityIdentifier("quiz.timeline")
-                    ChordTimelineView(
-                        section: section,
-                        currentBeat: beat,
-                        isPlaying: playing,
-                        seekGeneration: seekGeneration,
-                        isSeekEnabled: canSeek,
-                        onSeek: { requestTimelineTap(to: $0, in: section) },
-                        onDragStart: { beginTimelineDrag(in: section, sectionID: sectionID) },
-                        onDragChange: updateTimelineDrag,
-                        onDragEnd: endTimelineDrag,
-                        onDragCancel: cancelTimelineDrag
-                    )
-                    .frame(height: ChordTimelinePresentation.laneHeight)
-                    .accessibilityIdentifier("quiz.chordTimeline")
-                }
+            ScrollView {
+                VStack(spacing: 20) {
+                QuizTimelinePairView(
+                    section: section,
+                    sectionID: sectionID,
+                    currentBeat: beat,
+                    sourceTimestamp: transportSampleTimestamp,
+                    endBeat: playbackEndBeat(in: section),
+                    tempoPercent: tempoPercent,
+                    usesRelativeIonianContext: usesRelativeIonianContext,
+                    isPlaying: transportPhase == .playing && timelineScrub == nil,
+                    seekGeneration: seekGeneration,
+                    isSeekEnabled: canSeek,
+                    onSeek: { requestTimelineTap(to: $0, in: section) },
+                    onDragStart: { beginTimelineDrag(in: section, sectionID: sectionID) },
+                    onDragChange: updateTimelineDrag,
+                    onDragEnd: endTimelineDrag,
+                    onDragCancel: cancelTimelineDrag
+                )
                 HStack(spacing: 12) {
                     Button("Back 1 beat") {
                         requestDiscreteSeek(to: beat - 1, in: section)
@@ -1014,15 +1013,46 @@ struct QuizView: View {
                         .accessibilityValue("\(Int(tempoPercent)) percent")
                         .accessibilityHint(tempoPercent == 0 ? "Playback is paused" : "Adjusts playback speed")
                 }
+                soundControls(sectionID: sectionID)
+                }
+                .padding(.bottom, 16)
             }
-            DraggableQuizTransportHost {
-                QuizTransportButton(
-                    phase: transportPhase,
-                    isReady: sectionLoadStatus.isReady,
-                    isPlaybackEnabled: tempoPercent > 0,
-                    commandPending: playbackCommandPending || timelineScrub != nil,
-                    action: requestPlaybackToggle
-                )
+            DraggableQuizTransportHost(
+                controlSize: CGSize(width: sections.count > 1 ? 330 : 180, height: 64)
+            ) {
+                HStack(spacing: 8) {
+                    QuizTransportButton(
+                        phase: transportPhase,
+                        isReady: sectionLoadStatus.isReady,
+                        isPlaybackEnabled: tempoPercent > 0,
+                        commandPending: playbackCommandPending || timelineScrub != nil,
+                        action: requestPlaybackToggle
+                    )
+
+                    if sections.count > 1 {
+                        Picker(selection: sectionBinding(sections: sections)) {
+                            ForEach(sections) { entry in
+                                Text(entry.section.safeSectionName).tag(entry.id)
+                            }
+                        } label: {
+                            Text(section.safeSectionName)
+                                .lineLimit(1)
+                        }
+                        .pickerStyle(.menu)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityIdentifier("quiz.section")
+                        .accessibilityLabel("Quiz section")
+                        .accessibilityValue(section.safeSectionName)
+                    }
+                }
+                .padding(.horizontal, sections.count > 1 ? 8 : 0)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background {
+                    if sections.count > 1 {
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .fill(.ultraThinMaterial)
+                    }
+                }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -1050,6 +1080,252 @@ struct QuizView: View {
         environment.rememberQuizSettings(songID: songID, tempoPercent: normalizedTempo)
     }
 
+    private func soundControls(sectionID: String) -> some View {
+        DisclosureGroup("Sound", isExpanded: $soundControlsExpanded) {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Picker(
+                        "Instrument",
+                        selection: Binding(
+                            get: { soundConfiguration.waveform },
+                            set: { waveform in
+                                setSoundConfiguration(
+                                    QuizSoundConfiguration(
+                                        waveform: waveform,
+                                        melodyChordBalance: soundConfiguration.melodyChordBalance,
+                                        transposeSemitones: soundConfiguration.transposeSemitones,
+                                        arpeggioOption: soundConfiguration.arpeggioOption
+                                    ),
+                                    sectionID: sectionID
+                                )
+                            }
+                        )
+                    ) {
+                        ForEach(SynthWaveform.allCases, id: \.self) { waveform in
+                            Text(waveform.displayName).tag(waveform)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .accessibilityIdentifier("quiz.instrument")
+                    .accessibilityLabel("Quiz instrument")
+                    .accessibilityValue(soundConfiguration.waveform.displayName)
+
+                    Spacer()
+
+                    Button("Reset") {
+                        setSoundConfiguration(
+                            QuizSoundConfiguration(
+                                waveform: .sawtooth,
+                                melodyChordBalance: soundConfiguration.melodyChordBalance,
+                                transposeSemitones: soundConfiguration.transposeSemitones,
+                                arpeggioOption: soundConfiguration.arpeggioOption
+                            ),
+                            sectionID: sectionID
+                        )
+                    }
+                    .disabled(soundConfiguration.waveform == .sawtooth)
+                    .accessibilityIdentifier("quiz.instrumentReset")
+                    .accessibilityLabel("Reset quiz instrument to Sawtooth")
+                }
+
+                arpeggioControls(sectionID: sectionID)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        LabeledContent(
+                            "Melody / chords",
+                            value: balanceLabel(soundConfiguration.melodyChordBalance)
+                        )
+                        Spacer()
+                        Button("Reset") {
+                            setSoundConfiguration(
+                                QuizSoundConfiguration(
+                                    waveform: soundConfiguration.waveform,
+                                    melodyChordBalance: 0.5,
+                                    transposeSemitones: soundConfiguration.transposeSemitones,
+                                    arpeggioOption: soundConfiguration.arpeggioOption
+                                ),
+                                sectionID: sectionID
+                            )
+                        }
+                        .disabled(soundConfiguration.melodyChordBalance == 0.5)
+                        .accessibilityIdentifier("quiz.balanceReset")
+                        .accessibilityLabel("Reset melody and chord balance to 50 50")
+                    }
+                    Slider(
+                        value: Binding(
+                            get: { soundConfiguration.melodyChordBalance },
+                            set: { balance in
+                                setSoundConfiguration(
+                                    QuizSoundConfiguration(
+                                        waveform: soundConfiguration.waveform,
+                                        melodyChordBalance: balance,
+                                        transposeSemitones: soundConfiguration.transposeSemitones,
+                                        arpeggioOption: soundConfiguration.arpeggioOption
+                                    ),
+                                    sectionID: sectionID
+                                )
+                            }
+                        ),
+                        in: 0...1,
+                        step: 0.01
+                    )
+                    .accessibilityIdentifier("quiz.balance")
+                    .accessibilityLabel("Melody and chord balance")
+                    .accessibilityValue(balanceAccessibilityValue(soundConfiguration.melodyChordBalance))
+                    HStack {
+                        Text("Chords only")
+                        Spacer()
+                        Text("Melody only")
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .accessibilityHidden(true)
+                }
+
+                HStack {
+                    Picker(
+                        "Transpose",
+                        selection: Binding(
+                            get: { soundConfiguration.transposeSemitones },
+                            set: { semitones in
+                                setSoundConfiguration(
+                                    QuizSoundConfiguration(
+                                        waveform: soundConfiguration.waveform,
+                                        melodyChordBalance: soundConfiguration.melodyChordBalance,
+                                        transposeSemitones: semitones,
+                                        arpeggioOption: soundConfiguration.arpeggioOption
+                                    ),
+                                    sectionID: sectionID
+                                )
+                            }
+                        )
+                    ) {
+                        ForEach(Array(-12...12), id: \.self) { semitones in
+                            Text(transposeLabel(semitones)).tag(semitones)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .accessibilityIdentifier("quiz.transpose")
+                    .accessibilityLabel("Quiz transpose")
+                    .accessibilityValue(transposeLabel(soundConfiguration.transposeSemitones))
+
+                    Spacer()
+
+                    Button("Reset") {
+                        setSoundConfiguration(
+                            QuizSoundConfiguration(
+                                waveform: soundConfiguration.waveform,
+                                melodyChordBalance: soundConfiguration.melodyChordBalance,
+                                transposeSemitones: 0,
+                                arpeggioOption: soundConfiguration.arpeggioOption
+                            ),
+                            sectionID: sectionID
+                        )
+                    }
+                    .disabled(soundConfiguration.transposeSemitones == 0)
+                    .accessibilityIdentifier("quiz.transposeReset")
+                    .accessibilityLabel("Reset quiz transpose to zero semitones")
+                }
+            }
+            .padding(.top, 6)
+        }
+        .disabled(!sectionLoadStatus.isReady)
+        .accessibilityIdentifier("quiz.sound")
+    }
+
+    private func arpeggioControls(sectionID: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Picker(
+                    "Chord arpeggio",
+                    selection: Binding(
+                        get: { soundConfiguration.arpeggioOption },
+                        set: { arpeggioOption in
+                            setSoundConfiguration(
+                                QuizSoundConfiguration(
+                                    waveform: soundConfiguration.waveform,
+                                    melodyChordBalance: soundConfiguration.melodyChordBalance,
+                                    transposeSemitones: soundConfiguration.transposeSemitones,
+                                    arpeggioOption: arpeggioOption
+                                ),
+                                sectionID: sectionID
+                            )
+                        }
+                    )
+                ) {
+                    ForEach(QuizArpeggioOption.allCases, id: \.self) { option in
+                        Text(option.displayName).tag(option)
+                    }
+                }
+                .pickerStyle(.menu)
+                .accessibilityIdentifier("quiz.arpeggio")
+                .accessibilityLabel("Chord arpeggio")
+                .accessibilityValue(arpeggioAccessibilityValue(soundConfiguration.arpeggioOption))
+
+                Spacer()
+
+                Button("Reset") {
+                    setSoundConfiguration(
+                        QuizSoundConfiguration(
+                            waveform: soundConfiguration.waveform,
+                            melodyChordBalance: soundConfiguration.melodyChordBalance,
+                            transposeSemitones: soundConfiguration.transposeSemitones,
+                            arpeggioOption: .off
+                        ),
+                        sectionID: sectionID
+                    )
+                }
+                .disabled(soundConfiguration.arpeggioOption == .off)
+                .accessibilityIdentifier("quiz.arpeggioReset")
+                .accessibilityLabel("Reset chord arpeggio to Off")
+            }
+
+            Text("Repeats chord notes at the selected cycles per beat.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private func arpeggioAccessibilityValue(_ option: QuizArpeggioOption) -> String {
+        option == .off ? "Off" : "\(option.displayName) cycles per beat"
+    }
+
+    private func setSoundConfiguration(
+        _ configuration: QuizSoundConfiguration,
+        sectionID: String
+    ) {
+        guard soundConfiguration != configuration else { return }
+        finishTimelineScrub(resumingIfNeeded: true)
+        guard sectionLoadStatus.isReady,
+              selectedSectionID == sectionID,
+              let revision = activeQuizRevision,
+              let updatedRevision = environment.audio.updateQuizSoundConfiguration(
+                  songID: songID,
+                  sectionID: sectionID,
+                  soundConfiguration: configuration,
+                  revision: revision
+              )
+        else { return }
+        soundConfiguration = configuration
+        activeQuizRevision = updatedRevision
+        environment.rememberQuizSettings(songID: songID, soundConfiguration: configuration)
+    }
+
+    private func balanceLabel(_ melodyBalance: Double) -> String {
+        let melody = Int((melodyBalance * 100).rounded())
+        return "\(melody) / \(100 - melody)"
+    }
+
+    private func balanceAccessibilityValue(_ melodyBalance: Double) -> String {
+        let melody = Int((melodyBalance * 100).rounded())
+        return "\(melody) percent melody, \(100 - melody) percent chords"
+    }
+
+    private func transposeLabel(_ semitones: Int) -> String {
+        semitones > 0 ? "+\(semitones) semitones" : "\(semitones) semitones"
+    }
+
     private func chordCard(_ section: ExtractedSection) -> some View {
         let active = activeChord(in: section)
         let key = active.map { section.key(at: $0.beat) } ?? section.keys[0].key
@@ -1070,13 +1346,13 @@ struct QuizView: View {
             HStack(spacing: 12) {
                 FittedRomanNumeral(
                     display: RomanNumeralDisplay(symbol: symbol, borrowed: active?.chord["borrowed"]),
-                    maximumFontSize: 64,
+                    maximumFontSize: 44,
                     minimumFontSize: 14
                 )
-                .frame(width: 210, height: 90)
+                .frame(width: 210, height: 52)
                 if !rootDegree.isEmpty {
-                    FittedScaleDegree(rootDegree, maximumFontSize: 48, minimumFontSize: 14)
-                        .frame(width: 70, height: 90)
+                    FittedScaleDegree(rootDegree, maximumFontSize: 36, minimumFontSize: 14)
+                        .frame(width: 70, height: 52)
                 }
             }
             .frame(maxWidth: .infinity)
@@ -1414,12 +1690,14 @@ struct QuizView: View {
             selectedSectionID = restored.key
             mode = continuity.mode
             tempoPercent = continuity.tempoPercent
+            soundConfiguration = continuity.playbackConfiguration.soundConfiguration
             usesRelativeIonianContext = continuity.usesRelativeIonianContext
             state = .content(document)
             if let revision = environment.audio.restorableQuizRevision(
                 songID: songID,
                 sectionID: restored.key,
-                tempoPercent: tempoPercent
+                tempoPercent: tempoPercent,
+                soundConfiguration: soundConfiguration
             ) {
                 activeQuizRevision = revision
                 sectionLoadStatus = .ready(restored.section.safeSectionName)
@@ -1446,13 +1724,15 @@ struct QuizView: View {
         sectionLoadGeneration &+= 1
         let generation = sectionLoadGeneration
         let tempoPercent = tempoPercent
+        let soundConfiguration = soundConfiguration
         let revision: UInt64
         switch position {
         case .restart:
             revision = environment.audio.beginQuizReplacement(
                 songID: songID,
                 sectionID: id,
-                tempoPercent: tempoPercent
+                tempoPercent: tempoPercent,
+                soundConfiguration: soundConfiguration
             )
             restartLoadRevision = revision
             transportObservationGeneration &+= 1
@@ -1462,14 +1742,16 @@ struct QuizView: View {
             revision = environment.audio.beginQuizReload(
                 songID: songID,
                 sectionID: id,
-                tempoPercent: tempoPercent
+                tempoPercent: tempoPercent,
+                soundConfiguration: soundConfiguration
             )
             restartLoadRevision = nil
         @unknown default:
             revision = environment.audio.beginQuizReplacement(
                 songID: songID,
                 sectionID: id,
-                tempoPercent: tempoPercent
+                tempoPercent: tempoPercent,
+                soundConfiguration: soundConfiguration
             )
             restartLoadRevision = revision
             transportObservationGeneration &+= 1
@@ -1489,7 +1771,8 @@ struct QuizView: View {
                     sectionID: id,
                     tempoPercent: tempoPercent,
                     position: position,
-                    revision: revision
+                    revision: revision,
+                    soundConfiguration: soundConfiguration
                 )
                 try Task.checkCancellation()
                 guard isCurrentSectionLoad(generation, id: id, revision: revision) else { return }
@@ -1539,6 +1822,7 @@ struct QuizView: View {
             // remain paused at the pre-scrub beat until the single final seek.
             guard timelineScrub == nil else { continue }
             let duration = value.duration.secondsValue
+            transportSampleTimestamp = CACurrentMediaTime()
             transportPhase = value.phase
             progress = duration > 0 ? min(max(value.elapsed.secondsValue / duration, 0), 1) : 0
             if value.phase == .failed, let message = value.errorDescription {
@@ -1564,7 +1848,8 @@ struct QuizView: View {
                 durationSeconds: note.duration / beatsPerSecond,
                 frequenciesHz: [MusicTheory.frequency(midi: Double(midi))],
                 waveform: .sawtooth,
-                gain: 0.5
+                gain: 1,
+                channel: .melody
             )
         }
         let chordEvents = section.chords.compactMap { chord -> QuizEvent? in
@@ -1582,11 +1867,16 @@ struct QuizView: View {
                 durationSeconds: duration / beatsPerSecond,
                 frequenciesHz: notes.map { MusicTheory.frequency(midi: Double($0)) },
                 waveform: .sawtooth,
-                gain: 0.5
+                gain: 1,
+                channel: .chord
             )
         }
         let duration = (playbackEndBeat(in: section) - PlaybackTiming.firstBeat) / beatsPerSecond
-        return AcquiringAudio.QuizTimeline(durationSeconds: duration, events: melodyEvents + chordEvents)
+        return AcquiringAudio.QuizTimeline(
+            durationSeconds: duration,
+            events: melodyEvents + chordEvents,
+            nativeBeatsPerSecond: beatsPerSecond
+        )
     }
 }
 
@@ -1679,56 +1969,37 @@ private struct QuizTimelineScrub {
 }
 
 private struct QuizHeader: View {
-    let song: CatalogSong
     let initialKey: KeyInfo
     let currentKey: KeyInfo
-    let mode: QuizDisplayMode
     @Binding var usesRelativeIonianContext: Bool
-    let onOpenArtist: (CatalogSong) -> Void
-    let onInfo: () -> Void
+
+    private var displayedKey: KeyInfo {
+        usesRelativeIonianContext ? RelativeIonianContext.key(for: initialKey) : currentKey
+    }
+
+    private var displayedKeyLabel: String {
+        SongDetailPresentation.keyLabel(
+            KeyInfo(
+                tonic: displayedKey.tonic,
+                scale: RelativeIonianContext.canonicalScaleName(displayedKey.scale)
+            )
+        )
+    }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .firstTextBaseline, spacing: 0) {
-                Text(mode == .full ? song.displayTitle : "Root focus")
-                    .font(.headline)
-                    .lineLimit(1)
-
-                if mode == .full,
-                   let artist = song.artist?.trimmingCharacters(in: .whitespacesAndNewlines),
-                   !artist.isEmpty {
-                    Text(" by ")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    Button(song.displayArtist) { onOpenArtist(song) }
-                        .buttonStyle(.plain)
-                        .font(.subheadline.weight(.medium))
-                        .lineLimit(1)
-                        .accessibilityIdentifier("quiz.artist")
-                }
-
-                Spacer(minLength: 12)
-                Button("Info", action: onInfo)
-                    .buttonStyle(.bordered)
-                    .accessibilityIdentifier("quiz.info")
-            }
-
-            HStack(alignment: .center, spacing: 12) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Initial: \(SongDetailPresentation.keyLabel(initialKey))")
-                    Text("Current: \(SongDetailPresentation.keyLabel(currentKey))")
-                }
+        HStack(alignment: .center, spacing: 12) {
+            Text("(\(displayedKeyLabel))")
                 .font(.caption)
                 .foregroundStyle(.secondary)
+                .accessibilityLabel("Key \(displayedKeyLabel)")
 
-                Spacer(minLength: 8)
+            Spacer(minLength: 8)
 
-                Toggle("Lock in Major", isOn: $usesRelativeIonianContext)
-                    .toggleStyle(.switch)
-                    .font(.caption)
-                    .accessibilityHint("Shows chord degrees against the relative major key")
-                    .accessibilityIdentifier("quiz.lockInMajor")
-            }
+            Toggle("Lock in Major", isOn: $usesRelativeIonianContext)
+                .toggleStyle(.switch)
+                .font(.caption)
+                .accessibilityHint("Updates the key label and chord degrees to the relative major key")
+                .accessibilityIdentifier("quiz.lockInMajor")
         }
         .padding(12)
         .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))
@@ -1761,13 +2032,9 @@ private struct QuizShellPreview: View {
     var body: some View {
         VStack(spacing: 16) {
             QuizHeader(
-                song: CatalogSong(id: "preview", artist: "Sample Artist", title: "Seed Song"),
                 initialKey: KeyInfo(tonic: "C", scale: "major"),
                 currentKey: KeyInfo(tonic: "D", scale: "major"),
-                mode: .full,
-                usesRelativeIonianContext: $usesRelativeIonianContext,
-                onOpenArtist: { _ in },
-                onInfo: {}
+                usesRelativeIonianContext: $usesRelativeIonianContext
             )
             RootOnlyQuizSurface(key: KeyInfo(tonic: "D", scale: "major"))
         }
@@ -1858,9 +2125,13 @@ struct MelodyTimelinePresentation: Equatable {
     }
 }
 
-private struct MelodyTimelineView: View {
+private struct QuizTimelinePairView: View {
     let section: ExtractedSection
+    let sectionID: String
     let currentBeat: Double
+    let sourceTimestamp: CFTimeInterval
+    let endBeat: Double
+    let tempoPercent: Double
     let usesRelativeIonianContext: Bool
     let isPlaying: Bool
     let seekGeneration: Int
@@ -1870,26 +2141,37 @@ private struct MelodyTimelineView: View {
     let onDragChange: (CGFloat, Date) -> Void
     let onDragEnd: () -> Void
     let onDragCancel: () -> Void
+
+    @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var displayedBeat: Double?
-    @State private var dragIsActive = false
-    @GestureState private var dragGestureIsRecognized = false
+    @AppStorage(TimelineFrameRatePreference.defaultsKey)
+    private var frameRateRawValue = TimelineFrameRatePreference.standard.rawValue
+    @StateObject private var displayModel: QuizTimelineDisplayModel
+    @State private var isVisible = false
 
     init(
         section: ExtractedSection,
+        sectionID: String,
         currentBeat: Double,
+        sourceTimestamp: CFTimeInterval,
+        endBeat: Double,
+        tempoPercent: Double,
         usesRelativeIonianContext: Bool,
-        isPlaying: Bool = false,
-        seekGeneration: Int = 0,
-        isSeekEnabled: Bool = false,
-        onSeek: @escaping (Double) -> Void = { _ in },
-        onDragStart: @escaping () -> Void = {},
-        onDragChange: @escaping (CGFloat, Date) -> Void = { _, _ in },
-        onDragEnd: @escaping () -> Void = {},
-        onDragCancel: @escaping () -> Void = {}
+        isPlaying: Bool,
+        seekGeneration: Int,
+        isSeekEnabled: Bool,
+        onSeek: @escaping (Double) -> Void,
+        onDragStart: @escaping () -> Void,
+        onDragChange: @escaping (CGFloat, Date) -> Void,
+        onDragEnd: @escaping () -> Void,
+        onDragCancel: @escaping () -> Void
     ) {
         self.section = section
+        self.sectionID = sectionID
         self.currentBeat = currentBeat
+        self.sourceTimestamp = sourceTimestamp
+        self.endBeat = endBeat
+        self.tempoPercent = tempoPercent
         self.usesRelativeIonianContext = usesRelativeIonianContext
         self.isPlaying = isPlaying
         self.seekGeneration = seekGeneration
@@ -1899,18 +2181,386 @@ private struct MelodyTimelineView: View {
         self.onDragChange = onDragChange
         self.onDragEnd = onDragEnd
         self.onDragCancel = onDragCancel
+        _displayModel = StateObject(wrappedValue: QuizTimelineDisplayModel(
+            section: section,
+            sectionID: sectionID,
+            usesRelativeIonianContext: usesRelativeIonianContext,
+            initialBeat: currentBeat
+        ))
     }
 
-    private var presentation: MelodyTimelinePresentation {
-        MelodyTimelinePresentation(
+    var body: some View {
+        lifecycleContent
+    }
+
+    private var lanes: some View {
+        VStack(spacing: 0) {
+            MelodyTimelineView(
+                presentation: displayModel.melodyPresentation,
+                currentBeat: currentBeat,
+                displayedBeat: displayModel.displayedBeat,
+                isSeekEnabled: isSeekEnabled,
+                onSeek: onSeek,
+                onDragStart: onDragStart,
+                onDragChange: onDragChange,
+                onDragEnd: onDragEnd,
+                onDragCancel: onDragCancel
+            )
+            .frame(height: MelodyTimelinePresentation.laneHeight)
+            .accessibilityIdentifier("quiz.timeline")
+
+            ChordTimelineView(
+                presentation: displayModel.chordPresentation,
+                currentBeat: currentBeat,
+                displayedBeat: displayModel.displayedBeat,
+                isSeekEnabled: isSeekEnabled,
+                onSeek: onSeek,
+                onDragStart: onDragStart,
+                onDragChange: onDragChange,
+                onDragEnd: onDragEnd,
+                onDragCancel: onDragCancel
+            )
+            .frame(height: ChordTimelinePresentation.laneHeight)
+            .accessibilityIdentifier("quiz.chordTimeline")
+        }
+    }
+
+    private var sourceObservationContent: some View {
+        lanes
+            .onChange(of: sourceTimestamp) { _, timestamp in
+                synchronizeSource(forceSnap: false, timestamp: timestamp)
+            }
+            .onChange(of: currentBeat) { _, _ in
+                // Drag/coast owns the beat while audio is paused, so reflect it
+                // immediately instead of waiting for an audio transport timestamp.
+                guard !isPlaying else { return }
+                synchronizeSource(forceSnap: true, timestamp: CACurrentMediaTime())
+            }
+            .onChange(of: isPlaying) { _, _ in
+                synchronizeSource(forceSnap: true, timestamp: CACurrentMediaTime())
+            }
+            .onChange(of: seekGeneration) { _, _ in
+                synchronizeSource(forceSnap: true, timestamp: CACurrentMediaTime())
+            }
+            .onChange(of: tempoPercent) { _, _ in
+                synchronizeSource(forceSnap: true, timestamp: CACurrentMediaTime())
+            }
+    }
+
+    private var presentationObservationContent: some View {
+        sourceObservationContent
+            .onChange(of: sectionID) { _, _ in
+                displayModel.updatePresentations(
+                    section: section,
+                    sectionID: sectionID,
+                    usesRelativeIonianContext: usesRelativeIonianContext
+                )
+                synchronizeSource(forceSnap: true, timestamp: CACurrentMediaTime())
+            }
+            .onChange(of: usesRelativeIonianContext) { _, _ in
+                displayModel.updatePresentations(
+                    section: section,
+                    sectionID: sectionID,
+                    usesRelativeIonianContext: usesRelativeIonianContext
+                )
+            }
+    }
+
+    private var lifecycleContent: some View {
+        presentationObservationContent
+        .onAppear {
+            isVisible = true
+            displayModel.updatePresentations(
+                section: section,
+                sectionID: sectionID,
+                usesRelativeIonianContext: usesRelativeIonianContext
+            )
+            synchronizeSource(forceSnap: true, timestamp: sourceTimestamp)
+            displayModel.setLifecycle(
+                isVisible: true,
+                sceneIsActive: scenePhase == .active,
+                reduceMotion: reduceMotion
+            )
+            displayModel.setFrameRatePreference(frameRatePreference)
+        }
+        .onDisappear {
+            isVisible = false
+            displayModel.setLifecycle(
+                isVisible: false,
+                sceneIsActive: scenePhase == .active,
+                reduceMotion: reduceMotion
+            )
+        }
+        .onChange(of: scenePhase) { _, phase in
+            displayModel.setLifecycle(
+                isVisible: isVisible,
+                sceneIsActive: phase == .active,
+                reduceMotion: reduceMotion
+            )
+        }
+        .onChange(of: reduceMotion) { _, enabled in
+            displayModel.setLifecycle(
+                isVisible: isVisible,
+                sceneIsActive: scenePhase == .active,
+                reduceMotion: enabled
+            )
+        }
+        .onChange(of: frameRateRawValue) { _, _ in
+            displayModel.setFrameRatePreference(frameRatePreference)
+        }
+    }
+
+    private var frameRatePreference: TimelineFrameRatePreference {
+        TimelineFrameRatePreference(rawValue: frameRateRawValue) ?? .standard
+    }
+
+    private func synchronizeSource(forceSnap: Bool, timestamp: CFTimeInterval) {
+        let beatsPerSecond = max(section.bpm, 1) / 60 * max(tempoPercent, 0) / 100
+        displayModel.updateSource(
+            beat: currentBeat,
+            timestamp: timestamp,
+            endBeat: endBeat,
+            beatsPerSecond: beatsPerSecond,
+            isPlaying: isPlaying,
+            forceSnap: forceSnap
+        )
+    }
+}
+
+@MainActor
+private final class QuizTimelineDisplayModel: ObservableObject {
+    @Published private(set) var displayedBeat: Double
+    @Published private(set) var melodyPresentation: MelodyTimelinePresentation
+    @Published private(set) var chordPresentation: ChordTimelinePresentation
+
+    private var presentationSectionID: String
+    private var presentationUsesRelativeIonianContext: Bool
+    private var sourceBeat: Double
+    private var sourceTimestamp: CFTimeInterval
+    private var anchorBeat: Double
+    private var anchorTimestamp: CFTimeInterval
+    private var endBeat = PlaybackTiming.firstBeat
+    private var beatsPerSecond = 0.0
+    private var isPlaying = false
+    private var isVisible = false
+    private var sceneIsActive = false
+    private var reduceMotion = false
+    private var frameRatePreference = TimelineFrameRatePreference.standard
+    private var displayLink: CADisplayLink?
+    private let displayLinkTarget = QuizTimelineDisplayLinkTarget()
+
+    init(
+        section: ExtractedSection,
+        sectionID: String,
+        usesRelativeIonianContext: Bool,
+        initialBeat: Double
+    ) {
+        presentationSectionID = sectionID
+        presentationUsesRelativeIonianContext = usesRelativeIonianContext
+        melodyPresentation = MelodyTimelinePresentation(
             section: section,
             usesRelativeIonianContext: usesRelativeIonianContext
         )
+        chordPresentation = ChordTimelinePresentation(section: section)
+        displayedBeat = initialBeat
+        sourceBeat = initialBeat
+        let now = CACurrentMediaTime()
+        sourceTimestamp = now
+        anchorBeat = initialBeat
+        anchorTimestamp = now
+        displayLinkTarget.owner = self
+    }
+
+    func updatePresentations(
+        section: ExtractedSection,
+        sectionID: String,
+        usesRelativeIonianContext: Bool
+    ) {
+        if presentationSectionID != sectionID {
+            presentationSectionID = sectionID
+            presentationUsesRelativeIonianContext = usesRelativeIonianContext
+            melodyPresentation = MelodyTimelinePresentation(
+                section: section,
+                usesRelativeIonianContext: usesRelativeIonianContext
+            )
+            chordPresentation = ChordTimelinePresentation(section: section)
+        } else if presentationUsesRelativeIonianContext != usesRelativeIonianContext {
+            presentationUsesRelativeIonianContext = usesRelativeIonianContext
+            melodyPresentation = MelodyTimelinePresentation(
+                section: section,
+                usesRelativeIonianContext: usesRelativeIonianContext
+            )
+        }
+    }
+
+    func updateSource(
+        beat: Double,
+        timestamp: CFTimeInterval,
+        endBeat: Double,
+        beatsPerSecond: Double,
+        isPlaying: Bool,
+        forceSnap: Bool
+    ) {
+        let sampleTimestamp = timestamp.isFinite && timestamp > 0
+            ? timestamp
+            : CACurrentMediaTime()
+        let normalizedEndBeat = max(endBeat, PlaybackTiming.firstBeat)
+        let boundedBeat = min(max(beat, PlaybackTiming.firstBeat), normalizedEndBeat)
+        let normalizedRate = beatsPerSecond.isFinite ? max(beatsPerSecond, 0) : 0
+        let previousSpan = self.endBeat - PlaybackTiming.firstBeat
+        let span = normalizedEndBeat - PlaybackTiming.firstBeat
+        let previousPrediction = projectedBeat(at: sampleTimestamp)
+        let sourceWrapped = span > 0
+            && sourceBeat - boundedBeat > span / 2
+        let rateChanged = abs(self.beatsPerSecond - normalizedRate) > 0.000_001
+        let phaseChanged = self.isPlaying != isPlaying
+        let boundsChanged = abs(previousSpan - span) > 0.000_001
+        let drift = circularDelta(from: previousPrediction, to: boundedBeat, span: span)
+        let driftLimit = max(0.2, normalizedRate * 0.15)
+        let shouldSnap = forceSnap || sourceWrapped || rateChanged || phaseChanged
+            || boundsChanged || abs(drift) > driftLimit
+
+        self.endBeat = normalizedEndBeat
+        self.beatsPerSecond = normalizedRate
+        self.isPlaying = isPlaying
+        sourceBeat = boundedBeat
+        sourceTimestamp = sampleTimestamp
+
+        if shouldSnap || !isPlaying {
+            anchorBeat = boundedBeat
+            anchorTimestamp = sampleTimestamp
+            displayedBeat = boundedBeat
+        } else {
+            // The audio sample remains authoritative, but a tiny late sample
+            // must not tug the playhead backward every polling interval.
+            // Positive error is caught up gradually; meaningful error snaps.
+            anchorBeat = wrappedBeat(
+                previousPrediction + max(drift, 0) * 0.25,
+                span: span
+            )
+            anchorTimestamp = sampleTimestamp
+        }
+        updateDisplayLinkState()
+    }
+
+    func setLifecycle(isVisible: Bool, sceneIsActive: Bool, reduceMotion: Bool) {
+        self.isVisible = isVisible
+        self.sceneIsActive = sceneIsActive
+        self.reduceMotion = reduceMotion
+        updateDisplayLinkState()
+    }
+
+    func setFrameRatePreference(_ preference: TimelineFrameRatePreference) {
+        frameRatePreference = preference
+        configureFrameRate()
+    }
+
+    fileprivate func displayFrame(_ link: CADisplayLink) {
+        guard isPlaying, isVisible, sceneIsActive, !reduceMotion else { return }
+        let timestamp = link.targetTimestamp > 0 ? link.targetTimestamp : link.timestamp
+        displayedBeat = projectedBeat(at: timestamp)
+    }
+
+    private func projectedBeat(at timestamp: CFTimeInterval) -> Double {
+        guard isPlaying, beatsPerSecond > 0 else { return sourceBeat }
+        let elapsed = max(timestamp - anchorTimestamp, 0)
+        return wrappedBeat(anchorBeat + elapsed * beatsPerSecond, span: endBeat - PlaybackTiming.firstBeat)
+    }
+
+    private func wrappedBeat(_ beat: Double, span: Double) -> Double {
+        guard span > 0 else { return PlaybackTiming.firstBeat }
+        var phase = (beat - PlaybackTiming.firstBeat).truncatingRemainder(dividingBy: span)
+        if phase < 0 { phase += span }
+        return PlaybackTiming.firstBeat + phase
+    }
+
+    private func circularDelta(from: Double, to: Double, span: Double) -> Double {
+        guard span > 0 else { return to - from }
+        var delta = (to - from).truncatingRemainder(dividingBy: span)
+        if delta > span / 2 { delta -= span }
+        if delta < -span / 2 { delta += span }
+        return delta
+    }
+
+    private func updateDisplayLinkState() {
+        let shouldRun = isPlaying && beatsPerSecond > 0 && isVisible && sceneIsActive && !reduceMotion
+        if shouldRun {
+            guard displayLink == nil else { return }
+            let link = CADisplayLink(target: displayLinkTarget, selector: #selector(QuizTimelineDisplayLinkTarget.tick(_:)))
+            displayLink = link
+            configureFrameRate()
+            link.add(to: .main, forMode: .common)
+        } else {
+            displayLink?.invalidate()
+            displayLink = nil
+            displayedBeat = sourceBeat
+        }
+    }
+
+    private func configureFrameRate() {
+        guard let displayLink else { return }
+        let preferred = frameRatePreference.framesPerSecond(
+            displayMaximum: UIScreen.main.maximumFramesPerSecond
+        )
+        displayLink.preferredFrameRateRange = CAFrameRateRange(
+            minimum: Float(min(preferred, 30)),
+            maximum: Float(preferred),
+            preferred: Float(preferred)
+        )
+    }
+}
+
+@MainActor
+private final class QuizTimelineDisplayLinkTarget: NSObject {
+    weak var owner: QuizTimelineDisplayModel?
+
+    @objc func tick(_ displayLink: CADisplayLink) {
+        guard let owner else {
+            displayLink.invalidate()
+            return
+        }
+        owner.displayFrame(displayLink)
+    }
+}
+
+private struct MelodyTimelineView: View {
+    let presentation: MelodyTimelinePresentation
+    let currentBeat: Double
+    let displayedBeat: Double
+    let isSeekEnabled: Bool
+    let onSeek: (Double) -> Void
+    let onDragStart: () -> Void
+    let onDragChange: (CGFloat, Date) -> Void
+    let onDragEnd: () -> Void
+    let onDragCancel: () -> Void
+    @State private var dragIsActive = false
+    @GestureState private var dragGestureIsRecognized = false
+
+    init(
+        presentation: MelodyTimelinePresentation,
+        currentBeat: Double,
+        displayedBeat: Double,
+        isSeekEnabled: Bool = false,
+        onSeek: @escaping (Double) -> Void = { _ in },
+        onDragStart: @escaping () -> Void = {},
+        onDragChange: @escaping (CGFloat, Date) -> Void = { _, _ in },
+        onDragEnd: @escaping () -> Void = {},
+        onDragCancel: @escaping () -> Void = {}
+    ) {
+        self.presentation = presentation
+        self.currentBeat = currentBeat
+        self.displayedBeat = displayedBeat
+        self.isSeekEnabled = isSeekEnabled
+        self.onSeek = onSeek
+        self.onDragStart = onDragStart
+        self.onDragChange = onDragChange
+        self.onDragEnd = onDragEnd
+        self.onDragCancel = onDragCancel
     }
 
     var body: some View {
         GeometryReader { proxy in
-            let visualBeat = displayedBeat ?? currentBeat
+            let visualBeat = displayedBeat
             let translation = presentation.translation(
                 containerWidth: proxy.size.width,
                 currentBeat: visualBeat
@@ -1922,7 +2572,7 @@ private struct MelodyTimelineView: View {
                         if presentation.width(for: visual) > 0 {
                             Rectangle()
                                 .fill(
-                                    visual.isActive(at: currentBeat)
+                                    visual.isActive(at: visualBeat)
                                         ? Color.indigo
                                         : Color.indigo.opacity(0.6)
                                 )
@@ -2010,30 +2660,11 @@ private struct MelodyTimelineView: View {
                 break
             }
         }
-        .onAppear { displayedBeat = currentBeat }
         .onDisappear { cancelActiveDragIfNeeded() }
         .onChange(of: dragGestureIsRecognized) { wasRecognized, isRecognized in
             if wasRecognized, !isRecognized {
                 cancelActiveDragIfNeeded()
             }
-        }
-        .onChange(of: currentBeat) { oldBeat, newBeat in
-            updateDisplayedBeat(from: oldBeat, to: newBeat)
-        }
-        .onChange(of: seekGeneration) { _, _ in
-            updateDisplayedBeatImmediately()
-        }
-        .onChange(of: isPlaying) { _, isPlaying in
-            guard !isPlaying else { return }
-            updateDisplayedBeatImmediately()
-        }
-        .onChange(of: reduceMotion) { _, reduceMotion in
-            guard reduceMotion else { return }
-            updateDisplayedBeatImmediately()
-        }
-        .onChange(of: section.id) { _, _ in
-            cancelActiveDragIfNeeded()
-            updateDisplayedBeatImmediately()
         }
     }
 
@@ -2052,24 +2683,6 @@ private struct MelodyTimelineView: View {
             ? "No active note"
             : "Active pitches \(activePitches.joined(separator: ", "))"
         return "Melody timeline. \(eventText); \(restText). \(activeText). Current beat \(beatText)"
-    }
-
-    private func updateDisplayedBeat(from oldBeat: Double, to newBeat: Double) {
-        if isPlaying, !reduceMotion, newBeat > oldBeat {
-            withAnimation(.linear(duration: ChordTimelinePresentation.defaultProgressAnimationDuration)) {
-                displayedBeat = newBeat
-            }
-        } else {
-            updateDisplayedBeatImmediately()
-        }
-    }
-
-    private func updateDisplayedBeatImmediately() {
-        var transaction = Transaction()
-        transaction.animation = nil
-        withTransaction(transaction) {
-            displayedBeat = currentBeat
-        }
     }
 
     private func cancelActiveDragIfNeeded() {
@@ -2157,26 +2770,22 @@ struct ChordTimelinePresentation: Equatable {
 }
 
 private struct ChordTimelineView: View {
-    let section: ExtractedSection
+    let presentation: ChordTimelinePresentation
     let currentBeat: Double
-    let isPlaying: Bool
-    let seekGeneration: Int
+    let displayedBeat: Double
     let isSeekEnabled: Bool
     let onSeek: (Double) -> Void
     let onDragStart: () -> Void
     let onDragChange: (CGFloat, Date) -> Void
     let onDragEnd: () -> Void
     let onDragCancel: () -> Void
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var displayedBeat: Double?
     @State private var dragIsActive = false
     @GestureState private var dragGestureIsRecognized = false
 
     init(
-        section: ExtractedSection,
+        presentation: ChordTimelinePresentation,
         currentBeat: Double,
-        isPlaying: Bool = false,
-        seekGeneration: Int = 0,
+        displayedBeat: Double,
         isSeekEnabled: Bool = false,
         onSeek: @escaping (Double) -> Void = { _ in },
         onDragStart: @escaping () -> Void = {},
@@ -2184,10 +2793,9 @@ private struct ChordTimelineView: View {
         onDragEnd: @escaping () -> Void = {},
         onDragCancel: @escaping () -> Void = {}
     ) {
-        self.section = section
+        self.presentation = presentation
         self.currentBeat = currentBeat
-        self.isPlaying = isPlaying
-        self.seekGeneration = seekGeneration
+        self.displayedBeat = displayedBeat
         self.isSeekEnabled = isSeekEnabled
         self.onSeek = onSeek
         self.onDragStart = onDragStart
@@ -2196,14 +2804,10 @@ private struct ChordTimelineView: View {
         self.onDragCancel = onDragCancel
     }
 
-    private var presentation: ChordTimelinePresentation {
-        ChordTimelinePresentation(section: section)
-    }
-
     var body: some View {
         GeometryReader { proxy in
-            let active = presentation.activeVisual(at: currentBeat)
-            let visualBeat = displayedBeat ?? currentBeat
+            let visualBeat = displayedBeat
+            let active = presentation.activeVisual(at: visualBeat)
             let translation = presentation.translation(
                 containerWidth: proxy.size.width,
                 currentBeat: visualBeat
@@ -2316,54 +2920,17 @@ private struct ChordTimelineView: View {
                 }
             }
         }
-        .onAppear { displayedBeat = currentBeat }
         .onDisappear { cancelActiveDragIfNeeded() }
         .onChange(of: dragGestureIsRecognized) { wasRecognized, isRecognized in
             if wasRecognized, !isRecognized {
                 cancelActiveDragIfNeeded()
             }
         }
-        .onChange(of: currentBeat) { oldBeat, newBeat in
-            updateDisplayedBeat(from: oldBeat, to: newBeat)
-        }
-        .onChange(of: seekGeneration) { _, _ in
-            updateDisplayedBeatImmediately()
-        }
-        .onChange(of: isPlaying) { _, isPlaying in
-            guard !isPlaying else { return }
-            updateDisplayedBeatImmediately()
-        }
-        .onChange(of: reduceMotion) { _, reduceMotion in
-            guard reduceMotion else { return }
-            updateDisplayedBeatImmediately()
-        }
-        .onChange(of: section.id) { _, _ in
-            cancelActiveDragIfNeeded()
-            updateDisplayedBeatImmediately()
-        }
     }
 
     private func accessibilityLabel(for active: ChordTimelineVisual?) -> String {
         let event = active?.accessibilityDescription ?? "No active chord"
         return "Chord timeline. \(event). Current beat \(currentBeat.formatted(.number.precision(.fractionLength(0...2))))"
-    }
-
-    private func updateDisplayedBeat(from oldBeat: Double, to newBeat: Double) {
-        if isPlaying, !reduceMotion, newBeat > oldBeat {
-            withAnimation(.linear(duration: ChordTimelinePresentation.defaultProgressAnimationDuration)) {
-                displayedBeat = newBeat
-            }
-        } else {
-            updateDisplayedBeatImmediately()
-        }
-    }
-
-    private func updateDisplayedBeatImmediately() {
-        var transaction = Transaction()
-        transaction.animation = nil
-        withTransaction(transaction) {
-            displayedBeat = currentBeat
-        }
     }
 
     private func cancelActiveDragIfNeeded() {
@@ -2399,17 +2966,23 @@ private struct TimelinePairPreview: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            VStack(spacing: 0) {
-                MelodyTimelineView(
-                    section: section,
-                    currentBeat: currentBeat,
-                    usesRelativeIonianContext: false,
-                    isPlaying: isPlaying
-                )
-                .frame(height: MelodyTimelinePresentation.laneHeight)
-                ChordTimelineView(section: section, currentBeat: currentBeat, isPlaying: isPlaying)
-                    .frame(height: ChordTimelinePresentation.laneHeight)
-            }
+            QuizTimelinePairView(
+                section: section,
+                sectionID: "timeline-preview",
+                currentBeat: currentBeat,
+                sourceTimestamp: CACurrentMediaTime(),
+                endBeat: 7,
+                tempoPercent: 100,
+                usesRelativeIonianContext: false,
+                isPlaying: isPlaying,
+                seekGeneration: 0,
+                isSeekEnabled: false,
+                onSeek: { _ in },
+                onDragStart: {},
+                onDragChange: { _, _ in },
+                onDragEnd: {},
+                onDragCancel: {}
+            )
             Toggle("Playing", isOn: $isPlaying)
             Slider(value: $currentBeat, in: 1...7, step: 0.25) {
                 Text("Current beat")

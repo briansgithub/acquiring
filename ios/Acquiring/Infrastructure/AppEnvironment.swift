@@ -211,6 +211,30 @@ enum QuizDisplayMode: String, CaseIterable, Hashable, Identifiable {
     }
 }
 
+/// A visual rendering preference only; never changes the audio clock or tempo.
+enum TimelineFrameRatePreference: String, CaseIterable, Identifiable {
+    case standard = "60"
+    case maximum = "maximum"
+
+    static let defaultsKey = "timelineFrameRate"
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .standard: "60 fps"
+        case .maximum: "Maximum"
+        }
+    }
+
+    func framesPerSecond(displayMaximum: Int) -> Int {
+        let supportedMaximum = max(displayMaximum, 1)
+        switch self {
+        case .standard: return min(60, supportedMaximum)
+        case .maximum: return supportedMaximum
+        }
+    }
+}
+
 struct QuizContinuityState: Equatable {
     let songID: String
     var sectionID: String
@@ -228,8 +252,7 @@ struct QuizContinuityState: Equatable {
     var usesRelativeIonianContext = false
 }
 
-/// App-local Quiz sound configuration. B1 deliberately owns only tempo; later
-/// controls can extend this value without adding parallel continuity state.
+/// Shared Quiz settings retained across section changes and tab navigation.
 struct QuizPlaybackConfiguration: Equatable {
     static let defaultTempoPercent = 100.0
     static let tempoRange = 0.0...200.0
@@ -237,6 +260,7 @@ struct QuizPlaybackConfiguration: Equatable {
     var tempoPercent: Double = defaultTempoPercent {
         didSet { tempoPercent = Self.normalizedTempoPercent(tempoPercent) }
     }
+    var soundConfiguration = QuizSoundConfiguration()
 
     static func normalizedTempoPercent(_ value: Double) -> Double {
         guard value.isFinite else { return defaultTempoPercent }
@@ -336,11 +360,15 @@ final class AppEnvironment {
         songID: String,
         mode: QuizDisplayMode? = nil,
         tempoPercent: Double? = nil,
+        soundConfiguration: QuizSoundConfiguration? = nil,
         usesRelativeIonianContext: Bool? = nil
     ) {
         guard quizContinuity?.songID == songID else { return }
         if let mode { quizContinuity?.mode = mode }
         if let tempoPercent { quizContinuity?.tempoPercent = tempoPercent }
+        if let soundConfiguration {
+            quizContinuity?.playbackConfiguration.soundConfiguration = soundConfiguration
+        }
         if let usesRelativeIonianContext {
             quizContinuity?.usesRelativeIonianContext = usesRelativeIonianContext
         }

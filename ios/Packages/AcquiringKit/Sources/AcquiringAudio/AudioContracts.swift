@@ -12,12 +12,65 @@ public enum SynthWaveform: String, CaseIterable, Codable, Sendable {
     case marimba
     case vibraphone
     case nylonGuitar
+    case flute
+    case clarinet
+    case oboe
+    case brass
+    case bell
+    case synthBass
+
+    public var displayName: String {
+        switch self {
+        case .sine: "Sine"
+        case .square: "Square"
+        case .sawtooth: "Sawtooth"
+        case .triangle: "Triangle"
+        case .strings: "Strings"
+        case .electricPiano: "Electric Piano"
+        case .warmOrgan: "Warm Organ"
+        case .marimba: "Marimba"
+        case .vibraphone: "Vibraphone"
+        case .nylonGuitar: "Nylon Guitar"
+        case .flute: "Synth Flute"
+        case .clarinet: "Synth Clarinet"
+        case .oboe: "Synth Oboe"
+        case .brass: "Synth Brass"
+        case .bell: "Synth Bell"
+        case .synthBass: "Synth Bass"
+        }
+    }
 }
 
 public enum AudioPlaybackChannel: String, CaseIterable, Sendable {
     case melody
     case chord
     case preview
+}
+
+public enum QuizArpeggioOption: String, CaseIterable, Sendable {
+    case quarter = "1/4"
+    case third = "1/3"
+    case half = "1/2"
+    case off
+    case one = "1"
+    case two = "2"
+    case three = "3"
+    case four = "4"
+
+    public var displayName: String { rawValue }
+
+    public var cyclesPerBeat: Double {
+        switch self {
+        case .quarter: 0.25
+        case .third: 1.0 / 3.0
+        case .half: 0.5
+        case .off: 0
+        case .one: 1
+        case .two: 2
+        case .three: 3
+        case .four: 4
+        }
+    }
 }
 
 public struct PreviewRequest: Equatable, Sendable {
@@ -27,6 +80,7 @@ public struct PreviewRequest: Equatable, Sendable {
     public let arpeggioStep: Duration
     public let waveform: SynthWaveform
     public let gain: Float
+    public let usesMusicalConfiguration: Bool
 
     public init(
         frequenciesHz: [Double],
@@ -34,7 +88,8 @@ public struct PreviewRequest: Equatable, Sendable {
         arpeggiates: Bool = false,
         arpeggioStep: Duration = .milliseconds(160),
         waveform: SynthWaveform = .sawtooth,
-        gain: Float = 1
+        gain: Float = 1,
+        usesMusicalConfiguration: Bool = true
     ) {
         self.frequenciesHz = frequenciesHz
         self.duration = duration
@@ -42,7 +97,32 @@ public struct PreviewRequest: Equatable, Sendable {
         self.arpeggioStep = arpeggioStep
         self.waveform = waveform
         self.gain = gain
+        self.usesMusicalConfiguration = usesMusicalConfiguration
     }
+}
+
+public struct QuizSoundConfiguration: Equatable, Sendable {
+    public let waveform: SynthWaveform
+    public let melodyChordBalance: Double
+    public let transposeSemitones: Int
+    public let arpeggioOption: QuizArpeggioOption
+
+    public init(
+        waveform: SynthWaveform = .sawtooth,
+        melodyChordBalance: Double = 0.5,
+        transposeSemitones: Int = 0,
+        arpeggioOption: QuizArpeggioOption = .off
+    ) {
+        self.waveform = waveform
+        self.melodyChordBalance = melodyChordBalance.isFinite
+            ? min(max(melodyChordBalance, 0), 1)
+            : 0.5
+        self.transposeSemitones = min(max(transposeSemitones, -12), 12)
+        self.arpeggioOption = arpeggioOption
+    }
+
+    public var melodyGain: Double { melodyChordBalance }
+    public var chordGain: Double { 1 - melodyChordBalance }
 }
 
 public enum TransportPhase: String, Equatable, Sendable {
@@ -109,29 +189,40 @@ public struct QuizEvent: Equatable, Sendable {
     public let frequenciesHz: [Double]
     public let waveform: SynthWaveform
     public let gain: Float
+    public let channel: AudioPlaybackChannel
 
     public init(
         onsetSeconds: Double,
         durationSeconds: Double,
         frequenciesHz: [Double],
         waveform: SynthWaveform,
-        gain: Float = 1
+        gain: Float = 1,
+        channel: AudioPlaybackChannel = .melody
     ) {
         self.onsetSeconds = onsetSeconds
         self.durationSeconds = durationSeconds
         self.frequenciesHz = frequenciesHz
         self.waveform = waveform
         self.gain = gain
+        self.channel = channel
     }
 }
 
 public struct QuizTimeline: Equatable, Sendable {
     public let durationSeconds: Double
     public let events: [QuizEvent]
+    public let nativeBeatsPerSecond: Double
 
-    public init(durationSeconds: Double, events: [QuizEvent]) {
+    public init(
+        durationSeconds: Double,
+        events: [QuizEvent],
+        nativeBeatsPerSecond: Double = 2
+    ) {
         self.durationSeconds = durationSeconds
         self.events = events
+        self.nativeBeatsPerSecond = nativeBeatsPerSecond.isFinite && nativeBeatsPerSecond > 0
+            ? nativeBeatsPerSecond
+            : 2
     }
 }
 
