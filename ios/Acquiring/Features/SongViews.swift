@@ -1450,7 +1450,7 @@ struct QuizView: View {
             ),
             range: 0...Double(options.count - 1),
             valueLabel: soundConfiguration.arpeggioOption == .off
-                ? "Off" : "\(soundConfiguration.arpeggioOption.displayName) / beat",
+                ? "Off" : "\(soundConfiguration.arpeggioOption.displayName) cycles / beat",
             accessibilityValue: arpeggioAccessibilityValue(soundConfiguration.arpeggioOption),
             ringLabels: options.map { $0 == .off ? "Off" : $0.displayName },
             resetValue: Double(options.firstIndex(of: .off) ?? 3),
