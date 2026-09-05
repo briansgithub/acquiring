@@ -143,12 +143,6 @@ struct SongDetailView: View {
                 }
             }
         }
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            IntervalSingingTool(model: environment.vocalPractice)
-                .padding(.horizontal)
-                .padding(.vertical, 8)
-            .background(.bar)
-        }
     }
 
     private func selectedSectionBinding(
@@ -918,15 +912,12 @@ struct QuizView: View {
             }
             .safeAreaInset(edge: .bottom, spacing: 4) {
                 if let selected {
-                    VStack(spacing: 4) {
-                        HStack {
-                            Spacer(minLength: 0)
-                            transportControls(sectionID: selected.id, sections: sections)
-                        }
-                        IntervalSingingTool(model: environment.vocalPractice)
+                    HStack {
+                        Spacer(minLength: 0)
+                        transportControls(sectionID: selected.id, sections: sections)
                     }
                     .padding(.horizontal, 12)
-                    .padding(.bottom, 4)
+                    .padding(.bottom, 12)
                     .frame(maxWidth: 760)
                     .frame(maxWidth: .infinity)
                     .background(.bar)

@@ -16,7 +16,9 @@ struct LibraryScene: View {
         @Bindable var store = store
         NavigationStack(path: $store.path) {
             LibraryView(store: store)
+                .safeAreaInset(edge: .bottom, spacing: 0) { singingDock }
                 .navigationDestination(for: AppRoute.self) { route in
+                    Group {
                     switch route {
                     case let .artist(name): ArtistSongsView(artist: name, store: store)
                     case .allSongs: AllSongsBrowseView(store: store)
@@ -30,6 +32,8 @@ struct LibraryScene: View {
                             Task { await store.openArtist(from: song) }
                         }
                     }
+                    }
+                    .safeAreaInset(edge: .bottom, spacing: 0) { singingDock }
                 }
         }
         .environment(store.userContent)
@@ -48,6 +52,15 @@ struct LibraryScene: View {
             if phase == .background { environment.vocalPractice.handleSceneBackgrounded() }
         }
         .task { await store.load() }
+    }
+
+    private var singingDock: some View {
+        IntervalSingingTool(model: environment.vocalPractice)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .frame(maxWidth: 760)
+            .frame(maxWidth: .infinity)
+            .background(.bar)
     }
 }
 

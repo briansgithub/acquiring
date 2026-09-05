@@ -962,3 +962,195 @@ export, `codesign --verify --deep --strict`, and App Store Connect upload. Versi
 The script recorded build 10. Tester availability/review and iPhone 14 Pro microphone
 behavior remain unverified. Notification/group changes and an in-app update button
 were discussed as recommendations only; none were implemented in this release.
+
+
+### Interval Singing Tool parity and tessitura dots — 2026-09-05
+
+`[review]` Implemented the user-approved three-pass batch using Android as the
+functional reference. Coordinator runtime model: unknown. Actual implementation
+routes: **gpt-5.6-terra/medium** for UI/ordinary integration and
+**gpt-5.6-sol/high** for capture, cancellation, and audio timing. Groups were
+integrated sequentially; separate worktrees prevented overlapping file edits.
+This record supersedes earlier *behavior contracts* that retained results after
+collapse, allowed uncaptured target-pair playback, or previewed targets before
+auto-listening. It does not promote or erase earlier pending review statuses.
+
+The conversation **Evaluate quiz card dots**
+(`01a072ba-f9e1-7b30-8707-d57094d59278`) supplied the additional 18-item dot
+contract below. Android source was inspected for the relevant behavior only.
+Existing selector styling, compact animated gauges, percentages, audio services,
+pitch-analysis helpers, and native permission/calibration presentation remain.
+
+#### Ordered implementation checklist
+
+“Smoke passed” means the named limited scenario passed, not verified complete
+Android/iOS parity. Signal/audio assertions without deterministic input remain
+explicitly unverified; appearance and physical input remain human/device review.
+
+| Order / parity IDs | Android reference | Required iOS behavior and result | Status / remaining check |
+|---|---|---|---|
+| 1. Dock placement — F043, F054 | `HummingIntervalPopup.kt` expandable panel | Reuse one app-lifetime tool on Library and every main navigation route, including Song Detail and Quiz. Expansion is nonmodal and requests no microphone permission. Route-local safe-area insets reserve space above the dock; Quiz transport has an extra 8 pt for its native prominent button. Preserve the separately presented calibration and the other task's Introduction screen. | **Smoke passed**. Human visual/adaptive review pending. |
+| 2. Clearing and context — F041–F043 | `HummingIntervalPopup.kt:129`, `:217`, `:291` | Collapse cancels manual capture/pending previews immediately and clears targets/captures after the 220 ms closing animation. Rapid reopen finalizes that clear and stays idle. Reset clears immediately while expanded. Background clears/collapses; song/section changes cancel obsolete work and clear manual content without unnecessarily collapsing. Preserve the separate comfortable-pitch anchor/session rules. | **Smoke passed** for target collapse/reopen, section change, background/foreground, and Song Detail navigation. Captured-signal clearing still unverified. |
+| 3. Manual capture and feedback — F043–F044 | `HummingIntervalPopup.kt:388`, `:593`, `:790` | Clear only the chosen manual slot before its independent 3 s attempt. Preserve the other slot, fractional pitch, spelling/octave, nearest-note cents, animated attitude-style note tape/string, Android color bands, countdown/progress, and exact single-slot replay. Keep the iOS signed semitone-relative percentage. Existing sequence/48 ms freshness checks reject held frames. Silent retries remain empty with retry feedback. Disable the recording card's gestures and accessible actions; the separate Stop control stays available. | **Smoke passed** for simulator capture startup/lifecycle. Final accessible disabled-state check: **smoke passed**. Injected fresh/stale/dropout measurements and exact-frequency replay remain **implemented/unverified**. |
+| 4. Target-guided practice — F042, F044, F049 | `HummingIntervalPopup.kt:279`, `:330`; `SingingTargets.kt` | Fresh target requests cancel old work, clear captures, expand, pause Quiz, and auto-listen only to slot 1 after approximately 800 ms. Remove automatic target tones; keep explicit Quiz preview gestures. Preserve 3 s listening windows and double-tap slot switching/stopping. Resolve the active target on each fresh reading so transpose/comfortable-pitch changes update guidance without rewriting captured frequencies or separating an interval pair. | **Smoke passed** for single-root handoff and cancellation on collapse/context/background. Exact delay, rapid replacement, live retarget, and paired listening remain **implemented/unverified**. |
+| 5. Interval result/replay — F043–F045 | `HummingIntervalPopup.kt:662`, `:768`, `:776` | Preserve interval naming, raw-pitch direction, signed cents deviation, and empty state. Both UI and model require two captures. Replay first, second, then together; use ideal resolved notes for a complete target pair, measured exact frequencies otherwise. Existing exact-preview configuration avoids a second transpose. | **Implemented/unverified** for audio sequence/tuning. Disabled uncaptured-pair behavior **smoke passed**. |
+| 6. Flip-Flop/session integration — F041, F045, F049 | `HummingIntervalPopup.kt:243`, `:358` | Preserve 3 s first capture, 3 s second capture, 2 s pause, cancellation and exclusive microphone leases. Both pitch cards are disabled during Flip-Flop. A quiet automatic window keeps previous results without repeated manual-retry errors; ordinary manual retries clear their slot. Keep generation guards, permission recovery, calibration, and persistent-practice ownership. | **Smoke passed** for simulator input after preview, both manual windows, a complete Flip-Flop cycle and Stop. Final disabled/enabled-card check: **smoke passed**. Permission denial/recovery, timing races, physical routes/interruption remain human/device review pending. |
+| 7. Tessitura dots and card mapping — F042, F049, F054 | `MainActivity.kt:2019`, `:3347`, `:3402`, `:3482`, `:3558`, `:3624`, `:3729`; `HummingIntervalPopup.kt:596`, `:632`; `TessituraControl.kt:170` | Preserve the 18 rules below. Remove full Roman-chord double-tap/long-press practice; add interval endpoint labels to target requests. Calibration is disabled outside a song/section, matching Android; Library still supports free recording. | Full-chord preview-only versus marked-root sing-back **smoke passed**. Remaining dot visual/color and unavailable-card fixture checks are human/device review pending. |
+
+Implementation entry points: `LibraryViews.swift:29`, `SongViews.swift:913`,
+`VocalPracticeModel.swift:176` (clear), `:232` (pair replay), `:280` (targets),
+`:540` (context), `:733` (capture), `:769` (live target resolution),
+`VocalPracticeViews.swift:145` (dock cards), and `QuizCards.swift:435` (intervals).
+All paths above are under `ios/Acquiring/Features/`; Android references are under
+`android/app/src/main/java/com/acquiring/android/`.
+
+#### Tessitura dots: all 18 implementation-sized requirements
+
+“Already matching” below records source-level parity preserved in this batch;
+it is not a claim that every combination was runtime-tested.
+
+| # | UI/function contract | Disposition and iOS reference |
+|---|---|---|
+| 1 | Reuse one 16 pt soft radial glow with no outlined ring. | Already matching: `QuizCards.swift:763`, shared `PitchHintDot`. Human visual review pending. |
+| 2 | Position the dot at the upper trailing corner as an overlay; do not grow the card or cover its label. | Already matching: Quiz overlay `QuizCards.swift:746` and dock header/overlay in `VocalPracticeViews.swift`. |
+| 3 | Quiz dots are white when no comfortable-pitch anchor exists. Manual transpose alone does not make them gray. | Already matching: `SongViews.swift` supplies anchor presence; `PitchHintDot` chooses its color. |
+| 4 | Quiz dots become gray `#9E9E9E` whenever an anchor exists, even if that particular note does not move. | Already matching; source-level confirmation. Actual calibration/color appearance needs human review. |
+| 5 | A quiz dot indicates sing-back capability and tessitura state; it does not blink or track microphone activity, progress, or accuracy. | Already matching: static flag and decorative view. |
+| 6 | Show dots only on valid, enabled sing-back cards. Unavailable placeholders and disabled cards must not show floating dots. | Already matching: `QuizCards.swift:706`, `:746`. Dedicated unavailable-card runtime fixture not run. |
+| 7 | Map cards consistently: root interval → previous/current slots 1/2; current root degree → slot 1; current/lone melody → slot 1; previous melody alone → slot 1; melody interval → previous/current slots 1/2; each chord tone → that tone in slot 1. The full Roman-numeral chord has no dot and only previews. | Existing mappings preserved at `QuizCards.swift:95`, `:185`, `:330`, `:392`, `:435`; full-chord extra practice actions removed at `:249`. Chord/root distinction smoke passed. |
+| 8 | The dot itself has no tap target; the parent card owns interaction. | Already matching: `PitchHintDot.allowsHitTesting(false)`. |
+| 9 | Single tap explicitly previews a note, chord, or interval. Intervals preview previous, current, then together; a replacement cancels the older preview. | Already matching: `QuizCards.swift:403`, `:450` and the existing shared preview arbiter. Sound/order unverified in this batch. |
+| 10 | Single tap, double tap and long press are exclusive so sing-back/persistent practice does not also emit an unwanted preview. | Already matching shared card gesture handling: `QuizCards.swift:801`, `:866`. Full-chord/root gesture smoke passed. |
+| 11 | Double-tap handoff stops persistent practice, pauses Quiz, replaces the target request, clears old captures and expands the tool. | Preserved shared model integration at `VocalPracticeModel.swift:280`; single-root handoff smoke passed. |
+| 12 | Automatically listen to the first assigned slot after about 800 ms, then use a 3 s window. Superseding requests, collapse and lifecycle changes cancel pending work. | Implemented Android timing without the former automatic target-preview sequence. Context/collapse smoke passed; exact timing/replacement races unverified. |
+| 13 | Request microphone access only when an input action begins, using the shared exclusive owner and permission recovery. A dot is not a permission indicator. | Existing native iOS adaptation retained. Expansion/no-prompt and simulator capture startup smoke passed; denied permission recovery unverified. |
+| 14 | Pass source pitches and displayed scale-degree labels, preserving accidentals, relative-Ionian labels, and chord-root-relative labels. Interval targets carry both endpoint labels. | Interval labels added at `QuizCards.swift:114`, `:200`, `:435`; existing single-note labels preserved. |
+| 15 | Apply transpose once, shift tessitura by whole octaves, and move interval endpoints together using the existing comfortable-range resolver. Captured frequencies remain unchanged. | Existing `AcquiringCore/SingingTargets.swift` reused; active-listening retarget updated. Deterministic pitch/replay assertions unverified. |
+| 16 | Long press toggles persistent selection: both simple-root cards select the current root; melody cards, including a previous-note card, select the current melody; each chord-tone card selects its displayed tone index. | Already matching: `QuizCards.swift:344`, `:405`, `:452`. Full Roman-chord long-press practice removed. |
+| 17 | Dock dots use actual resolved-target versus source-plus-transpose movement. A dock dot can stay white while its originating quiz dot is gray. Hide a slot's dot during its recording and hide both during Flip-Flop; target-listening cards remain interactive. | Preserved resolver check `VocalPracticeModel.swift:618`; recording gating updated in `VocalPracticeViews.swift`. **smoke passed** for Flip-Flop card disabling; dot appearance needs human review. |
+| 18 | Keep the dot hidden from VoiceOver; describe register state and expose named Sing Back/Persistent actions on the parent card. Disabled recording cards omit custom actions and direct users to Stop. | Existing Quiz parent actions retained; dock disabled semantics and inaccurate Flip-Flop-only hint corrected. Human VoiceOver review pending. |
+
+#### Checks, demonstrated failures, and pass disposition
+
+All seven feature-group incremental build/install/launch checkpoints passed after bounded compile fixes. The final build also passed after the spacing and accessibility corrections:
+
+```sh
+xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug build CODE_SIGNING_ALLOWED=NO
+```
+
+Pass 1 compile corrections: use an element-query count, return the opaque interval-card view explicitly, and retain the adjacent root-card pitch binding. Behavioral failures were deferred as planned. Pass 2 retained the native section selector query and collected stronger accessibility evidence. Pass 3 identified the NavigationStack-level inset overlay, moved insets inside the active routes, then reserved the prominent Play button's extra visual extent. Only affected scenarios were rerun. One attempt (`phase3-layout-smoke`) stopped before testing because another build briefly locked Xcode's build database; retry began after it was free.
+
+**focused-smoke** — Exit 65: 2 passed, 2 failed. Full-chord/root gestures and microphone/Flip-Flop passed; section/control overlap blocked the two navigation/clearing scenarios.
+
+```sh
+xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 120 -resultBundlePath /var/folders/zp/zqxv_w6x5fq_g2c_p38f8k1h0000gp/T/acquiring-singing-g61gfs7c/focused-smoke.xcresult -only-testing:AcquiringUITests/QuizCoverageTests/testVocalPracticeDockStaysSingleFromLibraryThroughQuizAndOpens -only-testing:AcquiringUITests/QuizCoverageTests/testDoubleTapOpensOnlyIntervalToolAndCollapseClearsTargets -only-testing:AcquiringUITests/QuizCoverageTests/testFullChordOnlyPreviewsWhileMarkedRootStartsSingBack -only-testing:AcquiringUITests/QuizCoverageTests/testMicrophoneCaptureAndFlipFlopDoNotCrash test CODE_SIGNING_ALLOWED=NO
+```
+
+**phase3-layout-smoke-retry** — Exit 65: 1 passed, 1 failed. Clearing/context/background passed. All dock interactions worked; the added geometry regression found only the native Play button extending about 6 pt into the dock padding.
+
+```sh
+xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 120 -resultBundlePath /var/folders/zp/zqxv_w6x5fq_g2c_p38f8k1h0000gp/T/acquiring-singing-g61gfs7c/phase3-layout-smoke-retry.xcresult -only-testing:AcquiringUITests/QuizCoverageTests/testVocalPracticeDockStaysSingleFromLibraryThroughQuizAndOpens -only-testing:AcquiringUITests/QuizCoverageTests/testDoubleTapOpensOnlyIntervalToolAndCollapseClearsTargets test CODE_SIGNING_ALLOWED=NO
+```
+
+**final-layout-a11y-smoke** — Exit 0: 2 passed, 0 failures, 0 skipped. Dock/control geometry, section selection and navigation passed after the final 8 pt spacing correction. Microphone/Flip-Flop passed with added assertions that both cards are disabled during Flip-Flop and enabled after Stop.
+
+```sh
+xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 120 -resultBundlePath /var/folders/zp/zqxv_w6x5fq_g2c_p38f8k1h0000gp/T/acquiring-singing-g61gfs7c/final-layout-a11y-smoke.xcresult -only-testing:AcquiringUITests/QuizCoverageTests/testVocalPracticeDockStaysSingleFromLibraryThroughQuizAndOpens -only-testing:AcquiringUITests/QuizCoverageTests/testMicrophoneCaptureAndFlipFlopDoNotCrash test CODE_SIGNING_ALLOWED=NO
+```
+
+The latest applicable results therefore cover **four distinct focused UI scenarios with passing results**. The four were not rerun as a full suite after every fix. Result counts were confirmed with `xcrun xcresulttool get test-results summary --path <the exact result-bundle path above> --compact`. Test automation inspected accessibility text and frames; no screenshot attachments were inspected.
+
+Final source/whitespace checks passed:
+
+```sh
+swiftc -frontend -parse ios/Acquiring/Features/VocalPracticeViews.swift
+git diff --check -- ios/Acquiring/Features/LibraryViews.swift ios/Acquiring/Features/SongViews.swift ios/Acquiring/Features/QuizCards.swift ios/Acquiring/Features/VocalPracticeModel.swift ios/Acquiring/Features/VocalPracticeViews.swift ios/AcquiringUITests/QuizCoverageTests.swift docs/porting-plan.md
+```
+
+Installed and launched the normal app for review on the existing warm iPhone 17; the test process had already ended, so terminate reported no running process. Install, launch, and opening Simulator passed:
+
+```sh
+xcrun simctl terminate 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios
+xcrun simctl install 55373408-99CC-4EB3-A771-6ACF29E2D96A /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa/Build/Products/Debug-iphonesimulator/Acquiring.app
+xcrun simctl launch 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios
+open -a Simulator --args -CurrentDeviceUDID 55373408-99CC-4EB3-A771-6ACF29E2D96A
+```
+
+
+No remaining demonstrated behavioral failure is silently counted as parity.
+The signal-level items above were source-reviewed, not tested with injected pitch
+readings: this batch added no audio/clock injection seam. When those measurements
+are tested, use injected readings for fresh/stale/silence/dropout assertions;
+simulator microphone output cannot establish singing accuracy. Real microphone
+responsiveness, perceived tuning/playback, device routes, and calibration remain
+human/device review pending. No broad/full-app suite or screenshot inspection.
+
+#### Human review (500 Miles)
+
+1. Expand on Library, enter 500 Miles → Quiz, and visit Song Detail. Confirm one
+   compact dock, readable gauges, and usable section, semitone, instrument and
+   transport controls while expanded.
+2. Record both slots and replay each/the interval. Retry one in silence, then
+   Reset; inspect the independent results, countdown, cents/percentage colors,
+   and whether the selected silent retry is clearly empty.
+3. Double-tap root/melody/interval cards, switch listening slots, and adjust
+   transpose/comfortable pitch. Collapse/reopen and change sections while a
+   request is pending; confirm cleared results and no automatic restart. Run
+   Flip-Flop through both windows/pause and Stop.
+4. Calibrate and clear comfortable pitch. Check quiz white/gray anchor state
+   against the dock's actual-shift rule, hidden recording/Flip-Flop dots,
+   interval endpoint labels, full-chord preview-only gestures, and VoiceOver.
+
+Suggested **Android-only future improvements**, recorded but not implemented:
+result-preserving minimize; target-pair preview before recording; percentage
+feedback; clearer no-signal retry guidance. Android remains the current reference.
+
+No public package API, DSP, audio-engine rewrite, database migration, or shared
+cross-platform framework was introduced. This batch made no Android changes,
+commit, worktree deletion, or TestFlight delivery. Unrelated dirty work and earlier
+review records were preserved; the separate implementation worktrees remain.
+
+
+### Singing pitch cards: cents only and merge approval — 2026-09-05
+
+`[approved for commit, merge, and push; device review pending]` User requested
+removing percentage error from pitch cards while retaining cents, then authorized
+committing and merging the singing-tool batch and pushing it. Runtime model:
+unknown. The card's shared error formatter now returns only signed cents, so both
+visible text and VoiceOver omit the percentage suffix. Gauge colors, pitch
+measurement, and interval calculations remain unchanged. This supersedes earlier
+instructions in this document to retain percentage feedback on pitch cards.
+
+Prepared the seven singing-related source/test/documentation files on an isolated
+branch based on `main`. Only the singing-dock changes from the shared Library and
+Song files were included; unrelated catalog, Introduction, instrument-grouping,
+audio-normalization, and TestFlight edits were excluded. The dock uses the same
+tested route-local insets on main's existing Library implementation.
+
+Validation from `/Users/brian/Desktop/acquiring-interval-singing-release`:
+
+```sh
+xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -derivedDataPath /tmp/acquiring-interval-singing-release-build build CODE_SIGNING_ALLOWED=NO
+xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -derivedDataPath /tmp/acquiring-interval-singing-release-build -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 120 -only-testing:AcquiringUITests/QuizCoverageTests/testVocalPracticeDockStaysSingleFromLibraryThroughQuizAndOpens -resultBundlePath /tmp/acquiring-interval-singing-release-smoke-content.xcresult test CODE_SIGNING_ALLOWED=NO
+git diff --cached --check
+```
+
+The initial smoke run failed one geometric assertion: the native Play button
+extended about 6 pt into the dock container's 8 pt decorative top padding.
+All other assertions passed. Corrected the regression boundary to the actual
+dock content, keeping the control reachability and interaction checks. No extra
+layout change was needed. The command above records that focused rerun.
+
+Build passed. Focused navigation/layout test: passed, 1 test, 0 failures (confirmed with xcresulttool). Installed and launched
+the built app on the existing iPhone 17 using `xcrun simctl install` and
+`xcrun simctl launch`; both passed. No screenshot inspection, full suite, or
+TestFlight upload. Earlier signal/timing/device verification gaps remain pending.
+
+Human review: record a pitch and confirm its signed cents error remains while no
+percentage appears or is spoken by VoiceOver. Inspect the gauge while expanded
+and use the surrounding Quiz controls.
+
+Transport clarification: song Play/Pause, playback Reset and section selection
+remain inside Quiz with a loaded section. The user permits an instrument selector
+outside that context; no relocation was requested. Independent singing-tool
+recording and pitch-replay controls remain available in the global dock.
