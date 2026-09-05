@@ -18,7 +18,7 @@ struct LibraryScene: View {
                 .navigationDestination(for: AppRoute.self) { route in
                     switch route {
                     case let .artist(name): ArtistSongsView(artist: name, store: store)
-                    case .allSongs: AllSongsView(store: store)
+                    case .allSongs: AllSongsBrowseView(store: store)
                     case let .playlist(id): PlaylistSongsView(playlistID: id, store: store)
                     case let .songDetail(id):
                         SongDetailView(songID: id) { song in
@@ -31,6 +31,7 @@ struct LibraryScene: View {
                     }
                 }
         }
+        .environment(store.userContent)
         .task { await store.load() }
     }
 }
@@ -216,7 +217,20 @@ private struct SearchCatalogView: View {
             .accessibilityIdentifier("library.search.scope")
 
             List {
+                Section {
+                    NavigationLink(value: AppRoute.allSongs) {
+                        Label("All Songs", systemImage: "music.note.list")
+                    }
+                    .accessibilityIdentifier("library.allSongs")
+                    .accessibilityHint("Browse songs alphabetically, by complexity, or by mode")
+                    PlaylistsSectionView(store: store)
+                }
+
                 searchResults
+
+                Section {
+                    HooktheorySearchButton(query: store.query)
+                }
 
                 Section {
                     ManualHarvestView(store: store)
@@ -319,7 +333,7 @@ private struct SearchCatalogView: View {
     }
 }
 
-private struct SongRow: View {
+struct SongRow: View {
     let song: CatalogSong
     let action: () -> Void
 
@@ -329,6 +343,8 @@ private struct SongRow: View {
                 Text(song.displayTitle).foregroundStyle(.primary)
                 Text(song.displayArtist).font(.subheadline).foregroundStyle(.secondary)
             }
+            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+            .contentShape(Rectangle())
         }
         .accessibilityLabel("\(song.displayTitle), by \(song.displayArtist)")
     }
@@ -688,15 +704,6 @@ private struct DownloadCatalogButton: View {
     }
 }
 
-private struct AllSongsView: View {
-    let store: LibraryStore
-
-    var body: some View {
-        Text("All Songs")
-            .navigationTitle("All Songs")
-    }
-}
-
 private struct ArtistSongsView: View {
     let artist: String
     let store: LibraryStore
@@ -727,16 +734,6 @@ private struct ArtistSongsView: View {
                 state = .failure(error.localizedDescription)
             }
         }
-    }
-}
-
-private struct PlaylistSongsView: View {
-    let playlistID: String
-    let store: LibraryStore
-
-    var body: some View {
-        Text(playlistID)
-            .navigationTitle(playlistID)
     }
 }
 

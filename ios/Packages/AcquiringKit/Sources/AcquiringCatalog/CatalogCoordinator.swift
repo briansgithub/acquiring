@@ -191,7 +191,7 @@ public actor CatalogCoordinator: CatalogRepository {
             let placeholders = Array(repeating: "?", count: ids.count).joined(separator: ",")
             return try Row.fetchAll(
                 db,
-                sql: "SELECT slug, artist, title, url, status FROM songs WHERE slug IN (\(placeholders))",
+                sql: "SELECT slug, artist, title, url, status FROM songs WHERE dataBlob IS NOT NULL AND slug IN (\(placeholders))",
                 arguments: StatementArguments(ids)
             ).map(Self.song(from:))
         }

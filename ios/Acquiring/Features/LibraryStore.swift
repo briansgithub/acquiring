@@ -103,7 +103,9 @@ final class LibraryStore {
     private(set) var isArtistSearchFocused = false
     var recentSongs: [CatalogSong] = []
     var recentArtists: [String] = []
-    var playlists: [PlaylistSummary] = []
+    let browse: AllSongsBrowseStore
+    let userContent: UserLibraryViewModel
+    private(set) var catalogRevision = 0
     var query = "" { didSet { scheduleSearch() } }
     var searchScope: SearchScope = .songs { didSet { scheduleSearch() } }
     var maintenanceState: CatalogMaintenanceState = .idle
@@ -115,7 +117,6 @@ final class LibraryStore {
     private let catalog: any CatalogRepository
     private let maintenance: any CatalogMaintenanceService
     private let history: HistoryStore
-    private let userLibrary: UserLibraryStore
     private let prepareCatalog: @MainActor () async throws -> Void
     private let downloadURL: URL
     private let expectedSongCount: Int
@@ -175,7 +176,8 @@ final class LibraryStore {
         self.catalog = catalog
         self.maintenance = maintenance
         self.history = history
-        self.userLibrary = userLibrary
+        self.browse = AllSongsBrowseStore(catalog: catalog)
+        self.userContent = UserLibraryViewModel(catalog: catalog, userLibrary: userLibrary)
         self.prepareCatalog = prepareCatalog
         self.downloadURL = downloadURL
         self.expectedSongCount = expectedSongCount
@@ -187,6 +189,7 @@ final class LibraryStore {
             try await prepareCatalog()
             let count = try await catalog.songCount()
             catalogState = count == 0 ? .empty : .content(count)
+            catalogRevision &+= 1
             await refreshUserContent()
         } catch {
             catalogState = .failure(error.localizedDescription)
@@ -194,11 +197,11 @@ final class LibraryStore {
     }
 
     func refreshUserContent() async {
+        await userContent.refresh(catalogRevision: catalogRevision)
         do {
             let slugs = await history.songSlugs()
             recentSongs = try await catalog.songs(ids: slugs)
             recentArtists = await history.artists()
-            playlists = try userLibrary.summaries()
             userContentError = nil
         } catch {
             userContentError = error.localizedDescription
@@ -358,6 +361,7 @@ final class LibraryStore {
                     let count = try await catalog.songCount()
                     guard generation == maintenanceGeneration, !Task.isCancelled else { return }
                     catalogState = count == 0 ? .empty : .content(count)
+                    catalogRevision &+= 1
                     await refreshUserContent()
                     guard generation == maintenanceGeneration, !Task.isCancelled else { return }
                     maintenanceState = .completed(operation: operation, songCount: count)

@@ -12,12 +12,12 @@ IDs: 52 in-scope capabilities; F013, F052, and F055 remain deferred.
   records. This revision neither approves pending features nor starts full testing.
 - Implement remaining features in dependency order A–F below. Existing acceptance
   criteria survive the reorder; old checkpoint numbers are mapped on each row.
-- Library/settings/harvest/search, Song Detail/Chords, and the first Quiz timelines
-  and Play/Pause are implemented to varying review states. All Songs and Playlist
-  destinations remain placeholders. Do not rebuild completed surfaces.
-- Phase C implementation is complete through C6 in the user-authorized combined
-  batch; human listening/feature reviews remain pending. Stop for feedback before
-  D1; full testing is still separately gated. TestFlight remains at build 6 (Phase B).
+- Library/settings/harvest/search, Song Detail/Chords, Quiz transport/cards, All
+  Songs, Favorites, and Playlists are implemented to varying review states.
+  Do not rebuild completed surfaces.
+- Phase D implementation is complete through D8 in the user-authorized combined
+  batch; prior pending reviews are preserved. Stop for feedback before E1;
+  full testing is still separately gated. TestFlight remains at build 6 (Phase B).
 - Use one implementer per feature. Established routes: Terra/medium for ordinary
   UI/integration, Terra/high for complex state/notation, Sol/high for audio,
   timing, microphone ownership and concurrency, Luna/low for simple isolated
@@ -324,14 +324,22 @@ available. Never add the retired magnifier or expose inactive practice controls.
 
 ### D — Complete the library
 
-1. `[ ]` **D1 Alphabetical All Songs (F006; old 5.1). Terra/medium.** Entry/states, A–Z/0–9/# groups, counts, one expanded group, index navigation, and sorted rows.
-2. `[ ]` **D2 Complexity browse (F007; complexity part of old 5.2). Terra/medium.** Ten buckets, Unrated, correct counts and membership.
-3. `[ ]` **D3 Mode browse (F008; mode part of old 5.2). Terra/medium.** Seven canonical modes, counts, and cross-mode membership.
-4. `[ ]` **D4 Filter and restoration (F009; old 5.3). Terra/high.** Normalized title/artist fuzzy matching at 250 ms; no-match/legacy warning; preserve filter/group/expansion/scroll without payload loading.
-5. `[ ]` **D5 External search (F005; old 5.4). Luna/low.** Hooktheory system-browser handoff, failure/unavailable state, and return continuity.
-6. `[ ]` **D6 Favorites (F050; old 8.1). Terra/medium.** Hollow/filled star, unique built-in membership, optimistic rollback, and errors.
-7. `[ ]` **D7 Playlist summaries (F051; old 8.2). Terra/medium.** Library accordion, counts, states, and expansion persistence.
-8. `[ ]` **D8 Playlist contents and removal (F051, F053; old 8.3). Terra/high.** Newest-first rows, Quiz navigation, swipe removal, unresolved-slug hiding, and separate durable user storage. Full catalog-replacement durability verification is reserved for the approval gate.
+1. `[review]` **D1 Alphabetical All Songs (F006; old 5.1). Terra/medium route.** Library entry, A–Z/individual 0–9/# groups, counts, one expanded group, sticky headings, index navigation, and sorted rows implemented.
+2. `[review]` **D2 Complexity browse (F007; complexity part of old 5.2). Terra/medium route.** Ten buckets plus Unrated use existing scalar count/membership queries.
+3. `[review]` **D3 Mode browse (F008; mode part of old 5.2). Terra/medium route.** Seven canonical modes use the stored cross-mode memberships and counts.
+4. `[review]` **D4 Filter and restoration (F009; old 5.3). Terra/high route.** 250 ms normalized title/artist filtering, empty/error/retry/no-match/legacy states, and cancellation/generation guards implemented. App-lifetime state retains grouping/filter/expansion and native scroll-position binding; browsing never decodes payloads.
+5. `[review]` **D5 External search (F005; old 5.4). Luna/low route.** Library and All Songs expose an explicit Search Hooktheory.com button using the current query, with blank-query disabling and browser-open failure feedback. This native button replaces Android's external-search checkbox; local query/navigation remain in place.
+6. `[review]` **D6 Favorites (F050; old 8.1). Terra/medium route.** Quiz and Song Detail have hollow/filled stars backed by existing unique SwiftData membership. Shared optimistic state, serialized saves, count reconciliation, rollback, and dismissible errors are implemented.
+7. `[review]` **D7 Playlist summaries (F051; old 8.2). Terra/medium route.** Library accordion includes durable counts, loading/empty/error/retry, app-lifetime expansion, five newest preview rows, and an Open Playlist action.
+8. `[review]` **D8 Playlist contents and removal (F051, F053; old 8.3). Terra/high route.** Full newest-first list enters Quiz through the origin-preserving route; swipe/named accessible removal updates membership/counts with rollback and retained errors. Resolution hides absent/non-loadable songs without deleting slugs. Catalog and user stores stay separate; catalog-replacement durability verification remains at the approval gate.
+
+   Combined D1–D8 handoff: user explicitly requested the whole next phase. Actual implementation used two Terra/high agents for D1–D4 and D6–D8; the coordinator handled D5 and shared integration locally to avoid another routine agent (coordinator runtime model ID unavailable). New browse/user-library view models reuse existing catalog queries, grouping rules, and SwiftData operations. Catalog revisions refresh relevant presentation state; membership changes invalidate stale playlist loads. `CatalogCoordinator.songs(ids:)` now excludes null payloads, matching Android's loadable-row resolution while still selecting scalar columns only. No schema migration or custom-playlist management was added.
+
+   Verification: `xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug build CODE_SIGNING_ALLOWED=NO` passed (exit 0; existing unused sound-configuration-result warnings). `plutil -lint ios/Acquiring.xcodeproj/project.pbxproj` passed. One combined build/install/launch replaces per-feature builds for the requested batch; no test suite or screenshot inspection was performed.
+
+   Simulator handoff uses the **normal app**, not `--ui-testing`, so Favorites use durable `UserDataV1` storage. A bounded read found the existing installed catalog has 40,979 browse songs, 40,977 ratings, 46,111 mode memberships, and `500 Miles`; this was catalog selection for review, not full-catalog validation. `xcrun simctl terminate 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios`, `xcrun simctl install 55373408-99CC-4EB3-A771-6ACF29E2D96A /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa/Build/Products/Debug-iphonesimulator/Acquiring.app`, `xcrun simctl launch --terminate-running-process 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios`, and `open -a Simulator --args -CurrentDeviceUDID 55373408-99CC-4EB3-A771-6ACF29E2D96A` passed (exit 0). Existing catalog/user data were retained. The eight-song automated fixture remains unchanged and intentionally has no complexity ratings.
+
+   Human review: (1) Library → All Songs: browse Alphabetical/Complexity/Mode, filter `the proclaimers`, and open `500 Miles`; (2) Back twice, check retained browse state, then try Search Hooktheory.com and return; (3) star `500 Miles`, return to Library → Playlists → Favorites → Open Favorites; optionally star `Bad Romance` to compare newest-first ordering; (4) swipe-remove a song and confirm its count/star update. Stop for critique before E1. No commit or TestFlight upload in this batch; full testing still needs separate approval after A–F.
 
 ### E — Add vocal practice
 
