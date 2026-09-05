@@ -71,4 +71,82 @@ final class AcquiringAudioTests: XCTestCase {
         XCTAssertEqual(renderer.durationSeconds, 2, accuracy: 0.001)
         XCTAssertEqual(renderer.progress, 0.25, accuracy: 0.001)
     }
+
+    func testQuizRendererTempoRatePreservesPositionAndAdvancesFractionally() {
+        let renderer = QuizPCMRenderer(sampleRate: 1_000)
+        renderer.configure(QuizTimeline(
+            durationSeconds: 2,
+            events: [QuizEvent(onsetSeconds: 0, durationSeconds: 2, frequenciesHz: [100], waveform: .sine)]
+        ))
+        renderer.play()
+        var samples = [Float](repeating: 0, count: 100)
+
+        renderer.setPlaybackRate(0.755)
+        samples.withUnsafeMutableBufferPointer { renderer.render(into: $0) }
+        XCTAssertEqual(renderer.progress, 75.5 / 2_000, accuracy: 1e-12)
+        XCTAssertEqual(renderer.durationSeconds, 2.0 / 0.755, accuracy: 1e-12)
+
+        let progressBeforeChange = renderer.progress
+        renderer.setPlaybackRate(1.25)
+        XCTAssertEqual(renderer.progress, progressBeforeChange, accuracy: 1e-12)
+        samples.withUnsafeMutableBufferPointer { renderer.render(into: $0) }
+        XCTAssertEqual(renderer.progress, 200.5 / 2_000, accuracy: 1e-12)
+        XCTAssertEqual(renderer.durationSeconds, 2.0 / 1.25, accuracy: 1e-12)
+    }
+
+    func testQuizRendererTempoChangePreservesSustainedVoiceAgeAndPhase() {
+        let timeline = QuizTimeline(
+            durationSeconds: 2,
+            events: [QuizEvent(onsetSeconds: 0, durationSeconds: 2, frequenciesHz: [137], waveform: .marimba)]
+        )
+        let changed = QuizPCMRenderer(sampleRate: 1_000)
+        let reference = QuizPCMRenderer(sampleRate: 1_000)
+        changed.configure(timeline)
+        reference.configure(timeline)
+        changed.play()
+        reference.play()
+        var leadIn = [Float](repeating: 0, count: 100)
+        leadIn.withUnsafeMutableBufferPointer { changed.render(into: $0) }
+        leadIn.withUnsafeMutableBufferPointer { reference.render(into: $0) }
+
+        changed.setPlaybackRate(2)
+        var changedSamples = [Float](repeating: 0, count: 128)
+        var referenceSamples = [Float](repeating: 0, count: 128)
+        changedSamples.withUnsafeMutableBufferPointer { changed.render(into: $0) }
+        referenceSamples.withUnsafeMutableBufferPointer { reference.render(into: $0) }
+
+        for (changedSample, referenceSample) in zip(changedSamples, referenceSamples) {
+            XCTAssertEqual(changedSample, referenceSample, accuracy: 1e-7)
+        }
+        XCTAssertEqual(changed.currentFrame, 356)
+        XCTAssertEqual(reference.currentFrame, 228)
+    }
+
+    func testQuizRendererZeroAndPausedRateChangesDoNotMoveTransport() {
+        let renderer = QuizPCMRenderer(sampleRate: 1_000)
+        renderer.configure(QuizTimeline(
+            durationSeconds: 1,
+            events: [QuizEvent(onsetSeconds: 0, durationSeconds: 1, frequenciesHz: [100], waveform: .sine)]
+        ))
+        renderer.seek(progress: 0.25)
+        renderer.setPlaybackRate(1.5)
+        var samples = [Float](repeating: 1, count: 20)
+        samples.withUnsafeMutableBufferPointer { renderer.render(into: $0) }
+        XCTAssertEqual(renderer.phase, .paused)
+        XCTAssertEqual(renderer.progress, 0.25, accuracy: 1e-12)
+        XCTAssertTrue(samples.allSatisfy { $0 == 0 })
+
+        renderer.play()
+        renderer.setPlaybackRate(0)
+        samples = [Float](repeating: 1, count: 20)
+        samples.withUnsafeMutableBufferPointer { renderer.render(into: $0) }
+        XCTAssertEqual(renderer.progress, 0.25, accuracy: 1e-12)
+        XCTAssertTrue(samples.allSatisfy { $0 == 0 })
+
+        renderer.pause()
+        renderer.setPlaybackRate(0.5)
+        samples.withUnsafeMutableBufferPointer { renderer.render(into: $0) }
+        XCTAssertEqual(renderer.phase, .paused)
+        XCTAssertEqual(renderer.progress, 0.25, accuracy: 1e-12)
+    }
 }

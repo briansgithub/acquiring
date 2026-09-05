@@ -2,19 +2,26 @@
 
 Follow the least-context, risk-proportional procedure below when working in `ios/`.
 
-## Dev loop: Previews first, one warm simulator second, device last
+## Fast feature iteration
 
-- Give every new or materially changed visual component a `#Preview`. Inject a stub `AppEnvironment` with small fixture data rather than the real catalog — previews only recompile the view's dependency slice and stay warm between edits, which is the fastest possible loop on this machine's CPU (2014 quad-core, no Apple Silicon).
+- Reuse previews and add a focused `#Preview` only when it materially speeds the current feature. Use small deterministic fixtures. Routine simulator review uses the exact full-catalog `500 Miles` fixture; add other requested songs only for a specific missing case.
 - For anything needing a live app process (navigation, catalog queries, Quiz/library state), boot one simulator and leave it running for the session. Use `Cmd+R` / incremental `xcodebuild build`; do not Clean Build Folder or wipe DerivedData unless something is actually stale — Debug already builds incrementally (only Release uses whole-module optimization; keep it that way).
 - Only escalate to the physical iPhone when the simulator genuinely cannot validate the behavior: real microphone/YIN pitch detection, background audio, lock-screen/interruption/route-change handling, or Bluetooth. Everything else belongs in Previews or the simulator.
-- After implementing each feature or UI change (not just at the end of a batch), rebuild, reinstall, and relaunch the app in the simulator and check it visually (screenshot) before moving on or reporting the change as done. Terminate any previously running instance first — a stale process (especially one launched with `--ui-testing`, which points at a fake catalog URL) can otherwise be mistaken for the new build.
+- For each completed feature, run one incremental build, terminate the stale app process, install, and launch on the warm iPhone 17 simulator. Inspect code and accessibility text; never inspect screenshots. Human review supplies visual/perceptual feedback. Describe what the user should inspect when visual judgment is needed.
 
-## Atomic parity workflow
+## Dependency-based parity workflow
 
-- Work on exactly one numbered checkpoint from `../docs/porting-plan.md` at a time. Before editing, inspect both the feature's first Android commit and its final production caller at `android-parity-ios-v1`; tests or declarations without a production caller do not establish parity.
-- Reuse the existing package, catalog, audio, and state infrastructure. Add the narrowest focused unit/store test and one focused XCUITest for the checkpoint; do not grow a multi-feature navigation test.
-- Close the simulator loop autonomously: build, reinstall, terminate the stale app, relaunch, exercise the interaction, and save the review state with an `XCTAttachment` screenshot.
-- Present the checkpoint's final Android behavior, interaction script, screenshots, exact checks/results, and deliberate native-iOS adaptations for human review. Stay on the same checkpoint for critique and do not start the next one until approval. Commit only the approved checkpoint and its focused evidence.
+- Work on one feature from groups A–F in `../docs/porting-plan.md`. Read the final Android behavior and existing iOS caller; revisit history only for an ambiguity not resolved by the audit.
+- Preserve existing package, catalog, audio, state, and persistence implementations. Complete each feature's visible behavior, errors, and accessibility before review; avoid separate shell/wiring checkpoints.
+- Use one implementer per feature: Terra for UI/integration, Sol for audio/timing/microphone/concurrency, Luna for simple isolated changes. Delegate only substantial independent work; avoid routine documentation/reviewer agents.
+- Report the actual model, concise change summary, exact checks/results, and a two-to-four-step review script. Update status once at handoff. Stop for human critique; advance when approved or directed onward. Preserve pending older review statuses. Commit only approved, separable changes and preserve unrelated/uncommitted work.
+
+## Testing requires a separate final gate
+
+- During feature iteration, build/install/launch and human review are the default. Use focused diagnostics/regression tests only for a concrete failure or material correctness risk; do not add tests merely to mirror implementation.
+- No routine full suites, screenshots, multi-device matrices, broad audits, or phase-boundary test sweeps.
+- After A–F implementation, present known gaps and proposed full-test scope, then wait for explicit user approval before full-app testing. Feature approval or a request to proceed with implementation does not authorize that testing.
+- Once approved, verify app/package/UI regression, full catalog, clean install/upgrade/offline/recovery, persistence, accessibility/device coverage, and audio/microphone lifecycle. Fix findings and rerun affected checks. TestFlight/release remain separately authorized.
 
 ## Real device delivery: TestFlight only
 

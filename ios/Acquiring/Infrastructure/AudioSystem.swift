@@ -18,6 +18,13 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     private var pitchPipeline: PitchPipeline?
     private var notificationTasks: [Task<Void, Never>] = []
     private var transportPollTask: Task<Void, Never>?
+    private var quizTimelineLoaded = false
+    /// Requested playback is separate from the physical renderer state: a
+    /// zero-tempo Quiz is paused but resumes when a positive tempo returns.
+    private var quizPlaybackRequested = false
+    private var quizContext: QuizAudioContext?
+    private var quizRevision: UInt64 = 0
+    private var quizLoadPendingRevision: UInt64?
     private let previewGeneration = PreviewPlaybackGeneration()
     private var previewRender: (token: UInt64, task: Task<[Float], any Error>)?
 
@@ -110,11 +117,13 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
 
     func load(_ timeline: QuizTimeline, position: QuizLoadPosition) async throws {
         transportPollTask?.cancel()
-        let shouldContinuePlaying = transportState.phase == .playing || transportState.phase == .buffering
+        let shouldContinuePlaying = quizPlaybackRequested && !isQuizTempoPaused
         let snapshot = quizRenderer.configure(
             timeline,
+            playbackRate: 1,
             preserveProgress: position == .preserveProgress
         )
+        quizTimelineLoaded = true
         publish(TransportState(
             phase: .paused,
             elapsed: .seconds(snapshot.elapsed),
@@ -123,30 +132,333 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         if shouldContinuePlaying { try await play() }
     }
 
+    /// Invalidates every queued command for the previous quiz and silences it
+    /// before the replacement timeline is built. The replacement intentionally
+    /// starts paused even when the old section was playing.
+    func beginQuizReplacement(songID: String, sectionID: String, tempoPercent: Double) -> UInt64 {
+        quizRevision &+= 1
+        quizLoadPendingRevision = quizRevision
+        transportPollTask?.cancel()
+        invalidatePreviewPlayback()
+        quizRenderer.stop()
+        quizTimelineLoaded = false
+        quizPlaybackRequested = false
+        quizContext = QuizAudioContext(
+            songID: songID,
+            sectionID: sectionID,
+            tempoPercent: tempoPercent
+        )
+        let snapshot = quizRenderer.snapshot()
+        publish(TransportState(
+            phase: .stopped,
+            elapsed: .zero,
+            duration: .seconds(snapshot.duration)
+        ))
+        return quizRevision
+    }
+
+    /// A same-section settings change keeps its progress and requested playback
+    /// state, while still superseding an older queued rebuild.
+    func beginQuizReload(songID: String, sectionID: String, tempoPercent: Double) -> UInt64 {
+        guard quizContext?.songID == songID,
+              quizContext?.sectionID == sectionID,
+              quizTimelineLoaded
+        else {
+            return beginQuizReplacement(
+                songID: songID,
+                sectionID: sectionID,
+                tempoPercent: tempoPercent
+            )
+        }
+        quizRevision &+= 1
+        quizLoadPendingRevision = quizRevision
+        quizContext = QuizAudioContext(
+            songID: songID,
+            sectionID: sectionID,
+            tempoPercent: tempoPercent
+        )
+        if isQuizTempoPaused { pauseQuizForZeroTempo() }
+        return quizRevision
+    }
+
+    func loadQuiz(
+        _ timeline: QuizTimeline,
+        songID: String,
+        sectionID: String,
+        tempoPercent: Double,
+        position: QuizLoadPosition,
+        revision: UInt64
+    ) async throws {
+        try Task.checkCancellation()
+        guard isCurrentQuiz(
+            songID: songID,
+            sectionID: sectionID,
+            tempoPercent: tempoPercent,
+            revision: revision
+        ) else {
+            throw CancellationError()
+        }
+        transportPollTask?.cancel()
+        let shouldContinuePlaying = position == .preserveProgress
+            && quizPlaybackRequested
+            && !isQuizTempoPaused
+        let snapshot = quizRenderer.configure(
+            timeline,
+            playbackRate: tempoPercent / 100,
+            preserveProgress: position == .preserveProgress
+        )
+        guard isCurrentQuiz(
+            songID: songID,
+            sectionID: sectionID,
+            tempoPercent: tempoPercent,
+            revision: revision
+        ) else {
+            throw CancellationError()
+        }
+        quizTimelineLoaded = true
+        quizLoadPendingRevision = nil
+        publish(TransportState(
+            phase: .paused,
+            elapsed: .seconds(snapshot.elapsed),
+            duration: .seconds(snapshot.duration)
+        ))
+        if shouldContinuePlaying {
+            try startQuizPlayback(expectedRevision: revision)
+        }
+    }
+
+    /// Applies a same-section tempo change directly to the musical clock. This
+    /// supersedes stale UI commands without rebuilding the timeline, voices,
+    /// audio session, or engine.
+    func updateQuizTempo(
+        songID: String,
+        sectionID: String,
+        tempoPercent: Double,
+        revision: UInt64
+    ) -> UInt64? {
+        guard revision == quizRevision,
+              quizTimelineLoaded,
+              quizLoadPendingRevision == nil,
+              quizContext?.songID == songID,
+              quizContext?.sectionID == sectionID
+        else { return nil }
+
+        let previousState = transportState
+        let wasTempoPaused = isQuizTempoPaused
+        let normalizedTempo = tempoPercent.isFinite
+            ? min(max(tempoPercent, 0), 200)
+            : 100
+        quizRevision &+= 1
+        quizContext = QuizAudioContext(
+            songID: songID,
+            sectionID: sectionID,
+            tempoPercent: normalizedTempo
+        )
+        quizRenderer.setPlaybackRate(normalizedTempo / 100)
+
+        if normalizedTempo <= 0 {
+            transportPollTask?.cancel()
+            quizRenderer.pause()
+            let snapshot = quizRenderer.snapshot()
+            publish(TransportState(
+                phase: .paused,
+                elapsed: .seconds(snapshot.elapsed),
+                duration: .seconds(snapshot.duration)
+            ))
+        } else if quizPlaybackRequested, wasTempoPaused, engine.isRunning {
+            quizRenderer.play()
+            let snapshot = quizRenderer.snapshot()
+            publish(TransportState(
+                phase: .playing,
+                elapsed: .seconds(snapshot.elapsed),
+                duration: .seconds(snapshot.duration)
+            ))
+            beginTransportPolling()
+        } else {
+            let snapshot = quizRenderer.snapshot()
+            publish(TransportState(
+                phase: previousState.phase,
+                elapsed: .seconds(snapshot.elapsed),
+                duration: .seconds(snapshot.duration),
+                errorDescription: previousState.errorDescription
+            ))
+        }
+        return quizRevision
+    }
+
+    func restorableQuizRevision(
+        songID: String,
+        sectionID: String,
+        tempoPercent: Double
+    ) -> UInt64? {
+        guard quizTimelineLoaded,
+              quizLoadPendingRevision == nil,
+              quizContext == QuizAudioContext(
+                songID: songID,
+                sectionID: sectionID,
+                tempoPercent: tempoPercent
+              )
+        else { return nil }
+        return quizRevision
+    }
+
+    func playQuiz(revision: UInt64) async throws {
+        try Task.checkCancellation()
+        guard revision == quizRevision else { throw CancellationError() }
+        try startQuizPlayback(expectedRevision: revision)
+    }
+
+    func pauseQuiz(revision: UInt64) async {
+        guard revision == quizRevision else { return }
+        await pause()
+    }
+
+    func resetQuiz(revision: UInt64) async {
+        guard revision == quizRevision else { return }
+        await reset()
+    }
+
+    /// Pauses a loaded quiz synchronously and returns the playback intent that a
+    /// matching scrub completion may restore. Keeping this handoff on the main
+    /// actor prevents a queued pause from landing after the scrub has moved on.
+    func pauseQuizForScrubbing(revision: UInt64) -> Bool? {
+        guard revision == quizRevision,
+              quizTimelineLoaded,
+              quizLoadPendingRevision == nil
+        else { return nil }
+
+        let shouldResume = quizPlaybackRequested
+        transportPollTask?.cancel()
+        invalidatePreviewPlayback()
+        quizRenderer.pause()
+        let snapshot = quizRenderer.snapshot()
+        publish(TransportState(
+            phase: .paused,
+            elapsed: .seconds(snapshot.elapsed),
+            duration: .seconds(snapshot.duration)
+        ))
+        return shouldResume
+    }
+
+    /// Restores playback only while the scrub's quiz revision is still current.
+    func resumeQuizAfterScrubbing(revision: UInt64) throws {
+        guard revision == quizRevision,
+              quizTimelineLoaded,
+              quizLoadPendingRevision == nil
+        else { throw CancellationError() }
+        try startQuizPlayback(expectedRevision: revision)
+    }
+
+    /// Seeks the current quiz without changing its requested transport state.
+    /// The revision check makes a tap queued against a previous section a no-op.
+    @discardableResult
+    func seekQuiz(to progress: Double, revision: UInt64) -> Bool {
+        guard revision == quizRevision,
+              quizTimelineLoaded,
+              quizLoadPendingRevision == nil
+        else { return false }
+
+        // A preview should never continue over the newly selected quiz position.
+        invalidatePreviewPlayback()
+        // Replace the poller so a sample captured before the seek cannot publish
+        // over the new position after it completes.
+        transportPollTask?.cancel()
+        let bounded = min(max(progress, 0), 1)
+        quizRenderer.seek(progress: bounded)
+        let snapshot = quizRenderer.snapshot()
+        let phase = transportState.phase
+        publish(TransportState(
+            phase: phase,
+            elapsed: .seconds(snapshot.elapsed),
+            duration: .seconds(snapshot.duration)
+        ))
+        if phase == .playing {
+            beginTransportPolling()
+        }
+        return true
+    }
+
     func play() async throws {
-        try configureSession(category: .playback)
-        installRemoteCommandsIfNeeded()
-        if !engine.isRunning { try engine.start() }
-        quizRenderer.play()
-        publish(TransportState(phase: .playing, elapsed: transportState.elapsed, duration: transportState.duration))
-        beginTransportPolling()
+        try startQuizPlayback(expectedRevision: nil)
+    }
+
+    private func startQuizPlayback(expectedRevision: UInt64?) throws {
+        if let expectedRevision, expectedRevision != quizRevision {
+            throw CancellationError()
+        }
+        guard quizTimelineLoaded else {
+            throw AcquiringAudioError.invalidRequest("Load a quiz timeline before starting playback.")
+        }
+
+        quizPlaybackRequested = true
+        guard !isQuizTempoPaused else {
+            pauseQuizForZeroTempo()
+            return
+        }
+
+        transportPollTask?.cancel()
+        let startingSnapshot = quizRenderer.snapshot()
+        publish(TransportState(
+            phase: .buffering,
+            elapsed: .seconds(startingSnapshot.elapsed),
+            duration: .seconds(startingSnapshot.duration)
+        ))
+
+        do {
+            try configureSession(category: .playback)
+            installRemoteCommandsIfNeeded()
+            if !engine.isRunning { try engine.start() }
+            if let expectedRevision, expectedRevision != quizRevision {
+                throw CancellationError()
+            }
+            quizRenderer.play()
+            let playingSnapshot = quizRenderer.snapshot()
+            publish(TransportState(
+                phase: .playing,
+                elapsed: .seconds(playingSnapshot.elapsed),
+                duration: .seconds(playingSnapshot.duration)
+            ))
+            beginTransportPolling()
+        } catch {
+            quizRenderer.pause()
+            let failedSnapshot = quizRenderer.snapshot()
+            publish(TransportState(
+                phase: .failed,
+                elapsed: .seconds(failedSnapshot.elapsed),
+                duration: .seconds(failedSnapshot.duration),
+                errorDescription: error.localizedDescription
+            ))
+            throw error
+        }
     }
 
     func pause() async {
+        quizPlaybackRequested = false
         transportPollTask?.cancel()
         quizRenderer.pause()
         let snapshot = quizRenderer.snapshot()
         publish(TransportState(phase: .paused, elapsed: .seconds(snapshot.elapsed), duration: .seconds(snapshot.duration)))
     }
 
+    func reset() async {
+        quizPlaybackRequested = false
+        transportPollTask?.cancel()
+        invalidatePreviewPlayback()
+        quizRenderer.stop()
+        let snapshot = quizRenderer.snapshot()
+        publish(TransportState(
+            phase: .stopped,
+            elapsed: .zero,
+            duration: .seconds(snapshot.duration)
+        ))
+    }
+
     func seek(to progress: Double) async {
-        let bounded = min(max(progress, 0), 1)
-        quizRenderer.seek(progress: bounded)
-        let seconds = transportState.duration.secondsValue * bounded
-        publish(TransportState(phase: transportState.phase, elapsed: .seconds(seconds), duration: transportState.duration))
+        _ = seekQuiz(to: progress, revision: quizRevision)
     }
 
     func stop() async {
+        quizPlaybackRequested = false
         transportPollTask?.cancel()
         invalidatePreviewPlayback()
         quizRenderer.stop()
@@ -182,6 +494,35 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
             logger.error("Audio session setup failed: \(error.localizedDescription, privacy: .public)")
             throw AcquiringAudioError.session(error.localizedDescription)
         }
+    }
+
+    private func isCurrentQuiz(
+        songID: String,
+        sectionID: String,
+        tempoPercent: Double,
+        revision: UInt64
+    ) -> Bool {
+        revision == quizRevision
+            && quizContext == QuizAudioContext(
+                songID: songID,
+                sectionID: sectionID,
+                tempoPercent: tempoPercent
+            )
+    }
+
+    private var isQuizTempoPaused: Bool {
+        (quizContext?.tempoPercent ?? 100) <= 0
+    }
+
+    private func pauseQuizForZeroTempo() {
+        transportPollTask?.cancel()
+        quizRenderer.pause()
+        let snapshot = quizRenderer.snapshot()
+        publish(TransportState(
+            phase: .paused,
+            elapsed: .seconds(snapshot.elapsed),
+            duration: .seconds(snapshot.duration)
+        ))
     }
 
     private func clearPreviewRender(ifToken token: UInt64) {
@@ -301,6 +642,12 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     }
 }
 
+private struct QuizAudioContext: Equatable {
+    let songID: String
+    let sectionID: String
+    let tempoPercent: Double
+}
+
 final class PreviewPlaybackGeneration: @unchecked Sendable {
     private let lock = NSLock()
     private var value: UInt64 = 0
@@ -338,10 +685,15 @@ private final class LockedQuizRenderer: @unchecked Sendable {
         renderer = QuizPCMRenderer(sampleRate: sampleRate)
     }
 
-    func configure(_ timeline: QuizTimeline, preserveProgress: Bool) -> (elapsed: Double, duration: Double) {
+    func configure(
+        _ timeline: QuizTimeline,
+        playbackRate: Double,
+        preserveProgress: Bool
+    ) -> (elapsed: Double, duration: Double) {
         lock.withLock {
             let progress = renderer.progress
             renderer.configure(timeline)
+            renderer.setPlaybackRate(playbackRate)
             if preserveProgress { renderer.seek(progress: progress) }
             return (renderer.progress * renderer.durationSeconds, renderer.durationSeconds)
         }
@@ -351,6 +703,7 @@ private final class LockedQuizRenderer: @unchecked Sendable {
     func pause() { lock.withLock { renderer.pause() } }
     func stop() { lock.withLock { renderer.stop() } }
     func seek(progress: Double) { lock.withLock { renderer.seek(progress: progress) } }
+    func setPlaybackRate(_ rate: Double) { lock.withLock { renderer.setPlaybackRate(rate) } }
 
     func snapshot() -> (elapsed: Double, duration: Double) {
         lock.withLock { (renderer.progress * renderer.durationSeconds, renderer.durationSeconds) }
