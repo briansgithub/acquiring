@@ -180,54 +180,148 @@ struct VocalPracticePanel: View {
     }
 }
 
-/// A compact control intended for a Quiz safe-area inset.  Detailed capture controls
-/// live in a sheet so the quiz itself remains a single, non-scrolling screen.
+/// Nonmodal Quiz practice dock; microphone and playback remain model-owned.
 struct VocalPracticeDock: View {
     @Bindable var model: VocalPracticeModel
-
-    init(model: VocalPracticeModel) {
-        self.model = model
-    }
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        HStack(spacing: 10) {
+        VStack(spacing: 6) {
             Button {
-                model.isExpanded ? model.collapse() : model.expand()
+                model.isExpanded ? model.minimize() : model.expand()
             } label: {
-                Label(model.isExpanded ? "Close" : "Practice", systemImage: "mic.fill")
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
+                HStack(spacing: 8) {
+                    Image(systemName: "waveform")
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("Interval Singing Tool").font(.subheadline.weight(.medium))
+                        if !model.isExpanded, let summary = minimizedSummary {
+                            Text(summary).font(.caption2).foregroundStyle(.secondary)
+                                .lineLimit(1).minimumScaleFactor(0.8)
+                        }
+                    }
+                    Spacer(minLength: 0)
+                    Image(systemName: model.isExpanded ? "chevron.down" : "chevron.up")
+                }
+                .frame(minHeight: 44)
+                .contentShape(Rectangle())
             }
-            .buttonStyle(.borderedProminent)
-            .frame(minHeight: 44)
-            .accessibilityLabel(model.isExpanded ? "Close vocal practice" : "Open vocal practice")
-            .accessibilityHint(model.isExpanded ? "Closes practice and stops an active recording." : "Opens manual vocal practice.")
+            .buttonStyle(.plain)
+            .accessibilityLabel(model.isExpanded ? "Minimize interval singing tool" : "Expand interval singing tool")
+            .accessibilityIdentifier("vocal.practice.expand")
 
-            Divider()
-                .frame(height: 24)
-
-            if model.persistentSelection != nil {
-                persistentFeedback
-            } else if model.errorMessage != nil {
-                Label("Practice error", systemImage: "exclamationmark.triangle.fill")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.red)
-                    .accessibilityLabel("Vocal practice error. Open practice for details.")
-            } else {
-                Text(statusText)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-                    .accessibilityLabel("Vocal practice status, \(statusText)")
+            if model.isExpanded {
+                HStack(spacing: 6) {
+                    pitchCard(slot: 1)
+                    pitchCard(slot: 2)
+                    intervalCard
+                }
+                HStack(spacing: 10) {
+                    Text("Flip-Flop").font(.caption)
+                    Toggle("Flip-Flop", isOn: Binding(
+                        get: { model.isFlipFlopEnabled },
+                        set: { model.setFlipFlopEnabled($0) }
+                    ))
+                    .labelsHidden()
+                    .fixedSize()
+                    .frame(minHeight: 44)
+                    .accessibilityLabel("Flip-Flop")
+                    .accessibilityIdentifier("vocal.practice.flipFlop")
+                    Spacer(minLength: 0)
+                    if model.isManualPracticeActive {
+                        Button("Stop", role: .cancel) { model.cancelManualPractice() }
+                            .font(.caption.weight(.semibold))
+                            .frame(minWidth: 44, minHeight: 44)
+                            .accessibilityLabel("Stop microphone")
+                            .accessibilityIdentifier("vocal.practice.stop")
+                    }
+                    Menu {
+                        Button("Reset recordings") {
+                            model.collapse()
+                            model.clearError()
+                            model.expand()
+                        }
+                        Button("Calibrate comfortable pitch") { model.startCalibration() }
+                        Button("Clear comfortable pitch") { model.clearTessituraAdjustment() }
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .frame(minWidth: 44, minHeight: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .accessibilityLabel("Interval singing options")
+                }
+                if let error = model.errorMessage {
+                    PracticeErrorMessage(message: error, clear: model.clearError)
+                }
             }
-
-            Spacer(minLength: 0)
+            if model.persistentSelection != nil { persistentFeedback }
+            if !model.isExpanded, model.errorMessage != nil {
+                Text("Practice error — expand for details")
+                    .font(.caption).foregroundStyle(.red)
+            }
         }
-        .padding(.horizontal, 12)
-        .frame(minHeight: 44)
-        .background(.thinMaterial)
+        .padding(.horizontal, 10)
+        .padding(.bottom, model.isExpanded ? 6 : 0)
+        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(.secondary.opacity(0.45), lineWidth: 1))
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.22), value: model.isExpanded)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("vocal.practice.dock")
+    }
+
+    private var minimizedSummary: String? {
+        let notes = [model.displayedSlot1?.pitchLabel, model.displayedSlot2?.pitchLabel].compactMap { $0 }
+        guard !notes.isEmpty else { return nil }
+        let pitches = notes.joined(separator: " → ")
+        guard let interval = model.measuredInterval else { return pitches }
+        return "\(pitches) · \(interval.namedInterval.quality)\(interval.namedInterval.number) \(interval.direction?.arrow ?? "·")"
+    }
+
+    private func pitchCard(slot: Int) -> some View {
+        let sample = slot == 1 ? model.displayedSlot1 : model.displayedSlot2
+        let captured = slot == 1 ? model.slot1 : model.slot2
+        let target = slot == 1 ? model.targetRequest?.first : model.targetRequest?.second
+        let active = model.recordingSlot == slot || model.listeningSlot == slot
+        return DockPitchCard(
+            title: target?.scaleDegreeLabel ?? (slot == 1 ? "First note" : "Second note"),
+            sample: sample,
+            isReference: captured == nil && target != nil,
+            isActive: active,
+            remainingMilliseconds: model.captureRemainingMilliseconds,
+            isEnabled: !model.isFlipFlopEnabled,
+            play: { model.playSlot(slot) },
+            record: { model.toggleRecording(slot: slot) }
+        )
+        .accessibilityIdentifier("vocal.practice.slot.\(slot)")
+    }
+
+    private var intervalCard: some View {
+        Button { model.playPair() } label: {
+            VStack(spacing: 6) {
+                Text("Interval").font(.caption).foregroundStyle(.secondary)
+                if let interval = model.measuredInterval {
+                    Text("\(interval.namedInterval.quality)\(interval.namedInterval.number) \(interval.direction?.arrow ?? "·")")
+                        .font(.title3.weight(.semibold))
+                        .minimumScaleFactor(0.7)
+                    Text(PersistentPitchFeedback.formatCentsError(interval.centsDeviation))
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(abs(interval.centsDeviation) < 15 ? Color.green : Color.secondary)
+                } else {
+                    Text("—").font(.title2).foregroundStyle(.secondary)
+                }
+                Text("Tap to hear").font(.system(size: 10)).foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 124)
+            .background(.primary.opacity(0.035), in: RoundedRectangle(cornerRadius: 8))
+            .overlay(RoundedRectangle(cornerRadius: 8).stroke(.secondary.opacity(0.3)))
+            .contentShape(RoundedRectangle(cornerRadius: 8))
+        }
+        .buttonStyle(.plain)
+        .disabled(model.slot1 == nil || model.slot2 == nil)
+        .accessibilityLabel("Measured interval")
+        .accessibilityValue(model.measuredInterval.map { "\($0.namedInterval.spokenName), \(PersistentPitchFeedback.formatCentsError($0.centsDeviation))" } ?? "Record both notes")
+        .accessibilityHint("Plays the first note, second note, then both together")
+        .accessibilityIdentifier("vocal.practice.interval")
     }
 
     private var persistentFeedback: some View {
@@ -276,6 +370,140 @@ struct VocalPracticeDock: View {
 
     private func centsColor(_ cents: Double) -> Color {
         abs(cents) <= 15 ? .green : abs(cents) <= 35 ? .orange : .red
+    }
+}
+
+private func dockPitchColor(_ cents: Double) -> Color {
+    switch PersistentPitchFeedback.band(centsError: cents) {
+    case .accurate: .green
+    case .close: .yellow
+    case .far: .red
+    }
+}
+
+private struct DockPitchCard: View {
+    let title: String
+    let sample: VocalPitchSample?
+    let isReference: Bool
+    let isActive: Bool
+    let remainingMilliseconds: Int
+    let isEnabled: Bool
+    let play: () -> Void
+    let record: () -> Void
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private var status: String {
+        if isActive { return "\(Int(ceil(Double(remainingMilliseconds) / 1000)))s remaining" }
+        if isReference { return "Reference" }
+        return sample == nil ? "Double tap to record" : "Tap to replay"
+    }
+
+    var body: some View {
+        VStack(spacing: 2) {
+            HStack(spacing: 2) {
+                Text(title).lineLimit(1).minimumScaleFactor(0.6)
+                Spacer(minLength: 0)
+                if isActive { Image(systemName: "mic.fill").foregroundStyle(.tint) }
+            }
+            .font(.caption).foregroundStyle(.secondary)
+            if let sample {
+                DockPitchTape(midi: sample.rawMIDI, color: isReference ? .secondary : dockPitchColor(sample.centsFromReference))
+                    .animation(reduceMotion ? nil : .linear(duration: 0.1), value: sample.rawMIDI)
+                if isReference {
+                    Text("Sing this pitch").font(.system(size: 10)).foregroundStyle(.secondary)
+                } else {
+                    Text(errorText(sample.centsFromReference))
+                        .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                        .foregroundStyle(dockPitchColor(sample.centsFromReference))
+                        .lineLimit(1).minimumScaleFactor(0.7)
+                }
+            } else {
+                Spacer(minLength: 0)
+                Text(isActive ? "Listening…" : "Record a pitch")
+                    .font(.caption).foregroundStyle(.secondary)
+                Spacer(minLength: 0)
+            }
+            HStack(spacing: 2) {
+                if let sample {
+                    Text("Oct \(Int(floor(sample.rawMIDI / 12)) - 1)")
+                    Spacer(minLength: 0)
+                }
+                Text(status).lineLimit(1).minimumScaleFactor(0.7)
+            }
+            .font(.system(size: 9)).foregroundStyle(isActive ? Color.accentColor : .secondary)
+        }
+        .padding(6)
+        .frame(maxWidth: .infinity)
+        .frame(height: 124)
+        .background(isActive ? Color.accentColor.opacity(0.12) : Color.primary.opacity(0.035), in: RoundedRectangle(cornerRadius: 8))
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(isActive ? Color.accentColor : Color.secondary.opacity(0.3), lineWidth: isActive ? 2 : 1))
+        .overlay(alignment: .bottomLeading) {
+            if isActive {
+                GeometryReader { geometry in
+                    Capsule().fill(Color.accentColor)
+                        .frame(width: geometry.size.width * CGFloat(min(max(Double(remainingMilliseconds) / 3000, 0), 1)), height: 3)
+                        .animation(reduceMotion ? nil : .linear(duration: 0.1), value: remainingMilliseconds)
+                }
+                .frame(height: 3)
+                .padding(.horizontal, 6)
+                .padding(.bottom, 3)
+                .allowsHitTesting(false)
+            }
+        }
+        .contentShape(RoundedRectangle(cornerRadius: 8))
+        .gesture(TapGesture(count: 2).onEnded { if isEnabled { record() } }
+            .exclusively(before: TapGesture(count: 1).onEnded { if isEnabled { play() } }))
+        .accessibilityElement(children: .ignore)
+        .accessibilityAddTraits(.isButton)
+        .accessibilityLabel(title)
+        .accessibilityValue("\(sample?.pitchLabel ?? "No pitch"), \(isReference ? "Reference" : sample.map { errorText($0.centsFromReference) } ?? ""), \(status)")
+        .accessibilityHint(isEnabled ? "Single tap replays. Double tap records or stops listening." : "Turn off Flip-Flop to record an individual note")
+        .accessibilityAction(named: "Replay") { if isEnabled { play() } }
+        .accessibilityAction(named: isActive ? "Stop recording" : "Record or sing back") { if isEnabled { record() } }
+    }
+
+    private func errorText(_ cents: Double) -> String {
+        let label = PersistentPitchFeedback.formatCentsError(cents)
+        guard PersistentPitchFeedback.showsLiveErrorPercentage(centsError: cents) else { return label }
+        return "\(label) · \(PersistentPitchFeedback.formatLiveErrorPercentage(centsError: cents))"
+    }
+}
+
+/// The measured pitch moves the note tape beneath a stationary tuning line.
+private struct DockPitchTape: View, @preconcurrency Animatable {
+    var midi: Double
+    let color: Color
+    var animatableData: Double {
+        get { midi }
+        set { midi = newValue }
+    }
+
+    var body: some View {
+        Canvas { context, size in
+            let centerY = size.height / 2
+            let spacing: CGFloat = 22
+            let nearest = Int(midi.rounded())
+            for note in (nearest - 3)...(nearest + 3) {
+                let y = centerY - CGFloat(Double(note) - midi) * spacing
+                guard y > -spacing, y < size.height + spacing else { continue }
+                let name = SpelledPitch.fromMIDI(note).displayName.filter { !$0.isNumber && $0 != "-" }
+                let emphasized = abs(Double(note) - midi) < 0.5
+                context.draw(Text(name).font(.system(size: emphasized ? 13 : 11, weight: emphasized ? .semibold : .regular)).foregroundColor(.primary.opacity(emphasized ? 1 : 0.45)), at: CGPoint(x: size.width / 2, y: y))
+                var ticks = Path()
+                ticks.move(to: CGPoint(x: 0, y: y)); ticks.addLine(to: CGPoint(x: 7, y: y))
+                ticks.move(to: CGPoint(x: size.width - 7, y: y)); ticks.addLine(to: CGPoint(x: size.width, y: y))
+                context.stroke(ticks, with: .color(.secondary.opacity(0.45)), lineWidth: 1)
+            }
+            var line = Path()
+            let gap = min(CGFloat(18), size.width / 3)
+            line.move(to: CGPoint(x: 0, y: centerY))
+            line.addLine(to: CGPoint(x: size.width / 2 - gap, y: centerY))
+            line.move(to: CGPoint(x: size.width / 2 + gap, y: centerY))
+            line.addLine(to: CGPoint(x: size.width, y: centerY))
+            context.stroke(line, with: .color(color.opacity(0.85)), lineWidth: 2)
+        }
+        .clipped()
+        .accessibilityHidden(true)
     }
 }
 
@@ -593,6 +821,7 @@ struct VocalPracticePresentation: ViewModifier {
         Binding(
             get: {
                 if case .idle = model.calibrationState {
+                    if includesManualPractice { return nil }
                     if model.targetRequest != nil { return .guided }
                     if includesManualPractice, model.isExpanded { return .manual }
                     return nil

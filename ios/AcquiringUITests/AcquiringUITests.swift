@@ -201,8 +201,8 @@ final class AcquiringUITests: XCTestCase {
         wait(for: [transposeReset], timeout: 3)
         XCTAssertEqual(instrument.value as? String, "Sine")
         XCTAssertTrue(app.buttons["quiz.lockInMajor"].isHittable)
-        XCTAssertTrue(app.buttons["Open vocal practice"].isHittable)
-        XCTAssertFalse(app.scrollViews.firstMatch.exists, "Quiz should have no scrolling page")
+        XCTAssertTrue(app.buttons["vocal.practice.expand"].isHittable)
+        XCTAssertTrue(app.scrollViews.firstMatch.exists, "Quiz content stays reachable above the practice dock")
         let key = app.staticTexts["quiz.key"]
         XCTAssertTrue(key.exists)
         XCTAssertEqual(key.frame.midX, app.frame.midX, accuracy: 2)

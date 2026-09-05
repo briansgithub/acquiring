@@ -325,22 +325,60 @@ final class QuizCoverageTests: XCTestCase {
 
     func testVocalPracticeDockStartsCollapsedAndOpens() {
         let app = launchReadyQuiz()
-        let dock = app.descendants(matching: .any)["vocal.practice.dock"]
-        XCTAssertTrue(dock.waitForExistence(timeout: 10))
-        XCTAssertFalse(
-            app.descendants(matching: .any)["vocal.practice.panel"].exists,
-            "The dock must start collapsed"
-        )
-        let open = app.buttons["Open vocal practice"]
-        XCTAssertTrue(open.waitForExistence(timeout: 5))
-        open.tap()
-        XCTAssertTrue(
-            app.descendants(matching: .any)["vocal.practice.panel"].waitForExistence(timeout: 5),
-            "Opening the dock must reveal the practice panel"
-        )
+        let toggle = app.buttons["vocal.practice.expand"]
+        let first = app.descendants(matching: .any)["vocal.practice.slot.1"].firstMatch
+        XCTAssertTrue(toggle.waitForExistence(timeout: 10))
+        XCTAssertFalse(first.exists)
+        toggle.tap()
+        XCTAssertTrue(first.waitForExistence(timeout: 5))
+        XCTAssertTrue(first.isHittable)
+        XCTAssertTrue(app.descendants(matching: .any)["vocal.practice.slot.2"].firstMatch.isHittable)
+        XCTAssertTrue(app.buttons["quiz.section"].isHittable)
+        XCTAssertTrue(app.buttons["quiz.play"].isHittable)
+        XCTAssertFalse(app.alerts.element.exists, "Expanding must not request microphone access")
+        app.buttons["quiz.section"].tap()
+        let chorus = app.buttons["Chorus"]
+        XCTAssertTrue(chorus.waitForExistence(timeout: 5))
+        chorus.tap()
+        XCTAssertTrue(waitForValue(app.buttons["quiz.section"], "Chorus", timeout: 5))
+        XCTAssertTrue(first.isHittable, "Changing section must not close the dock")
+        toggle.tap()
+        XCTAssertFalse(first.exists)
+        toggle.tap()
+        XCTAssertTrue(first.waitForExistence(timeout: 5))
         XCTAssertEqual(app.state, .runningForeground)
-        // No microphone permission dialog may appear until recording is requested.
-        XCTAssertFalse(app.alerts.element.exists, "Opening the dock must not request permission")
+    }
+
+    /// Uses the real simulator input callback; silence is valid and no pitch is required.
+    func testMicrophoneCaptureAndFlipFlopDoNotCrash() {
+        let app = launchReadyQuiz()
+        app.buttons["vocal.practice.expand"].tap()
+        let first = app.descendants(matching: .any)["vocal.practice.slot.1"].firstMatch
+        XCTAssertTrue(first.waitForExistence(timeout: 5))
+        first.doubleTap()
+        let stop = app.buttons["vocal.practice.stop"]
+        XCTAssertTrue(stop.waitForExistence(timeout: 5), "Microphone action should begin")
+        XCTAssertTrue(poll(timeout: 5) { (first.value as? String)?.contains("remaining") == true },
+                      "Audio input must actually start, rather than immediately returning a permission or engine error")
+        XCTAssertTrue(poll(timeout: 10) { app.state != .runningForeground || !stop.exists })
+        XCTAssertEqual(app.state, .runningForeground, "First microphone callback must not crash")
+        let second = app.descendants(matching: .any)["vocal.practice.slot.2"].firstMatch
+        second.doubleTap()
+        XCTAssertTrue(stop.waitForExistence(timeout: 5))
+        XCTAssertTrue(poll(timeout: 10) { app.state != .runningForeground || !stop.exists })
+        XCTAssertEqual(app.state, .runningForeground)
+        let flipFlop = app.switches["vocal.practice.flipFlop"]
+        flipFlop.tap()
+        XCTAssertTrue(waitForValue(flipFlop, "1", timeout: 5), "The switch itself must turn on")
+        XCTAssertTrue(stop.waitForExistence(timeout: 5))
+        let survived = expectation(description: "Survive both Flip-Flop capture windows")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 8) { survived.fulfill() }
+        wait(for: [survived], timeout: 12)
+        XCTAssertEqual(app.state, .runningForeground)
+        XCTAssertTrue(stop.isHittable)
+        stop.tap()
+        XCTAssertTrue(poll(timeout: 5) { !stop.exists })
+        XCTAssertEqual(app.state, .runningForeground)
     }
 
     // MARK: - F054 layout under the device's current Dynamic Type setting
@@ -397,9 +435,9 @@ final class QuizCoverageTests: XCTestCase {
                 "\(identifier) at \(frame) overlaps the footer starting at \(footerTop)"
             )
         }
-        let openPractice = app.buttons.matching(identifier: "Open vocal practice").firstMatch
+        let openPractice = app.buttons.matching(identifier: "vocal.practice.expand").firstMatch
         let openPracticeByLabel = app.buttons
-            .matching(NSPredicate(format: "label == %@", "Open vocal practice")).firstMatch
+            .matching(NSPredicate(format: "label == %@", "vocal.practice.expand")).firstMatch
         XCTAssertTrue(
             (openPractice.exists && openPractice.isHittable)
                 || (openPracticeByLabel.exists && openPracticeByLabel.isHittable),

@@ -910,27 +910,29 @@ struct QuizView: View {
 
         return GeometryReader { viewport in
             // The dense Quiz dashboard fits its text to the available viewport.
-            // Keep all targets >=44pt; the practice sheet retains full Dynamic Type.
+            // Keep all targets >=44pt; scrolling keeps content reachable above the practice dock.
             let maximumControlType: DynamicTypeSize = viewport.size.height >= 760 ? .xxxLarge : .large
-            VStack(spacing: 4) {
-                if let selected {
-                    QuizHeader(
-                        songID: songID,
-                        sectionID: selected.id,
-                        initialKey: selected.section.key(at: PlaybackTiming.firstBeat),
-                        currentKey: selected.section.key(at: currentBeat(in: selected.section)),
-                        usesRelativeIonianContext: $usesRelativeIonianContext,
-                        mode: modeBinding(sectionID: selected.id),
-                        isReady: sectionLoadStatus.isReady && !playbackCommandPending
-                    )
+            ScrollView {
+                VStack(spacing: 4) {
+                    if let selected {
+                        QuizHeader(
+                            songID: songID,
+                            sectionID: selected.id,
+                            initialKey: selected.section.key(at: PlaybackTiming.firstBeat),
+                            currentKey: selected.section.key(at: currentBeat(in: selected.section)),
+                            usesRelativeIonianContext: $usesRelativeIonianContext,
+                            mode: modeBinding(sectionID: selected.id),
+                            isReady: sectionLoadStatus.isReady && !playbackCommandPending
+                        )
 
-                    quizSurface(selected.section, sectionID: selected.id)
+                        quizSurface(selected.section, sectionID: selected.id)
+                    }
                 }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 4)
+                .frame(maxWidth: 760)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 4)
-            .frame(maxWidth: 760)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .safeAreaInset(edge: .bottom, spacing: 4) {
                 if let selected {
                     VStack(spacing: 4) {
