@@ -953,3 +953,12 @@ pitch and persistent-feedback options. Physical iPhone mic startup after playbac
 the next device check when a new TestFlight build is authorized. No screenshots,
 full suite, commit, push, or new upload. Pre-existing Quiz layout/test changes and
 the build-9 counter remain intact. Earlier review statuses remain unchanged.
+
+Release follow-up: user authorized commit and TestFlight delivery. Committed the
+integrated Quiz layout, unified interval tool, microphone recovery, and focused tests
+as `eb9ed7b8`. `ios/scripts/deploy-testflight.sh` passed: Release archive, local IPA
+export, `codesign --verify --deep --strict`, and App Store Connect upload. Version
+1.0 (10) uploaded successfully; Apple's response was "Uploaded package is processing."
+The script recorded build 10. Tester availability/review and iPhone 14 Pro microphone
+behavior remain unverified. Notification/group changes and an in-app update button
+were discussed as recommendations only; none were implemented in this release.
