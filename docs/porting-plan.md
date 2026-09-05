@@ -594,6 +594,156 @@ playing and verify the new selection starts paused, including on iPhone 14 Pro
 when a separately authorized build is delivered. Earlier pending review statuses
 and the separate full-testing gate are unchanged.
 
+### Autonomous-test defect fixes — 2026-09-05, review pending
+
+Current-agent implementation (runtime model identity unavailable); no delegation.
+The user requested fixes to D1–D4 in `ios-autonomous-test-report.md`.
+
+- **D1 fixed:** Reset and transpose icon labels now give their entire 44 × 44
+  frames rectangular hit shapes, including blank padding around the glyphs.
+- **D2 fixed:** Settings screen/status identifiers live on non-interactive leaves,
+  not the Form or a container that overwrites descendants' identifiers.
+- **D4 fixed:** Playlist header/summary rows have full-width, minimum-44-point hit
+  shapes. Synchronous summary refresh no longer publishes an intermediate loading
+  state that tears down existing rows.
+- **D3 remains open:** At the largest accessibility text size, a bottom inset plus
+  an intrinsically growing dock still clipped by about 12 points. Anchoring the
+  inset to a GeometryReader fixed that clipping but overlapped sound controls
+  (tempo bottom 784; footer top 634.7). Both production layout attempts were
+  reverted after the two-attempt limit. Ask before expanding into an adaptive
+  layout pass; preserve the user's single-screen/no-scrolling requirement.
+
+Verification: the initial focused `xcodebuild test` run passed **9/9** (transpose
+paused/playing/bounds, instrument selection, minimum hit targets, Reset, Favorites,
+Settings retry, default-size geometry). Corner taps and one centre tap on Favorites
+were asserted, not replaced with direct model calls. Results:
+`/tmp/acquiring-ui-fixes.r8IG4m/focused.xcresult`. This run included the first,
+subsequently reverted layout attempt. Each largest-text run passed dock opening
+but failed geometry (**1/2**); see `large-text.xcresult` and
+`large-text-fixed.xcresult` in the same directory. The geometry test now also
+rejects footer/sound-control overlap. Do not describe D3 or the full suite as passing.
+
+After reverting the layout attempts, the final incremental build passed:
+
+```sh
+xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug build CODE_SIGNING_ALLOWED=NO
+```
+
+The existing simulator was restored to content size `large`. No screenshots,
+full-suite/catalog/DSP reruns, physical-device verification, commit, or release.
+The other agent's report, project/test edits, and release-number change are retained.
+Human review: (1) in 500 Miles, tap transpose padding and Reset while playing;
+(2) favorite it and tap the middle of the Favorites row; (3) check Settings actions.
+Older pending reviews remain pending.
+
+### Adaptive Quiz, ring taps, and live typography samples — 2026-09-05
+
+User authorized the expanded D3 pass plus melody proportions, arpeggio-label taps,
+and a quick live font sampler. Layout/card integration used the current agent
+(runtime identity unavailable); ring taps used Terra/medium; a parallel existing
+agent implemented the typography sampler (runtime identity unavailable).
+
+- **D3 geometry now passes** on iPhone 17 at the largest accessibility text size:
+  viewport-aware Quiz text sizing and a bottom safe-area footer keep controls
+  on screen without overlap or page scrolling. The dense dashboard caps text at
+  Large below 760 points of available height, or XXX Large above it. Detailed
+  practice sheets keep full Dynamic Type; this is a deliberate single-screen
+  tradeoff, not a claim of unrestricted text scaling. Physical review is pending.
+- Melody interval and previous/current note group each occupy half the row,
+  excluding the central gutter. Previous/current notes retain 44-point heights;
+  interval and single-degree cards retain 88-point heights. Single-degree cards
+  occupy the same right-hand slot as the interval, rather than recentering.
+- Arpeggio ring taps choose the nearest discrete value; centre taps reset Off.
+  The existing 96-point square owns hit testing without encroaching on adjacent
+  controls. Drag snapping, tempo tap reset, and accessibility actions survive.
+- `Aa` in the Quiz toolbar previews eight session-only notation font families:
+  System Serif, Georgia, Palatino, Baskerville, Didot, Hoefler Text, Times New
+  Roman, Avenir Next. The last three are in More Fonts to keep menus short.
+  Font selection updates Canvas drawing and its existing exact text measurement;
+  audio settings/position are untouched. The menu uses the existing snapshot-based
+  Equatable pattern to survive playback redraws. Default remains System Serif.
+
+Focused verification, no screenshots or broad suites:
+
+- `large-text-built.xcresult`: **3/4 UI cases passed**: full-screen/non-overlap
+  geometry, >=44-point primary hit targets, and card preview/proportion/single-slot
+  checks. The remaining case verified all four integer arpeggio taps, centre reset,
+  and Palatino/Didot switching while playing, then failed finding Avenir Next.
+- `font-menu.xcresult` repeated that failure after removing the menu heading.
+- `font-menu-grouped.xcresult` still failed at the same direct Avenir Next lookup,
+  although its accessibility text showed the new More Fonts submenu. The logged
+  failure at QuizCoverageTests lines 211/212 does not match the updated source,
+  where those lines locate More Fonts and the direct lookup is later. Root cause
+  is unconfirmed; do not mark the complete font/submenu test as passing. Stop
+  retries under the two-cycle rule and request human review before broadening.
+- Result bundles/logs are in `/tmp/acquiring-adaptive-ui.QgrrjX`. All final source
+  compiled successfully as part of `xcodebuild test` (initial missing nonisolated
+  Equatable annotation repaired). The last test command was:
+
+```sh
+xcodebuild -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 180 -maximum-test-execution-time-allowance 180 -only-testing:AcquiringUITests/QuizCoverageTests/testArpeggioRingTapsAndFontSamplesDuringPlayback -resultBundlePath /tmp/acquiring-adaptive-ui.QgrrjX/font-menu-grouped.xcresult test CODE_SIGNING_ALLOWED=NO
+```
+
+Human review with 500 Miles: (1) play and tap arpeggio integers/centre;
+(2) compare Aa font samples, including More Fonts, while audio keeps playing;
+(3) watch interval/repeated-note transitions and confirm the new proportions.
+Simulator text size is restored to Large. No commit, push, TestFlight release,
+physical-device validation, or full-suite rerun is authorized by this handoff.
+
+### Palatino selected; sampler hidden — 2026-09-05
+
+User selected Palatino. It is now the default for fitted Roman numerals and scale
+degrees, including Quiz and Song Detail. Aa is hidden in normal launches; sampler
+implementation remains available with `--preview-notation-fonts`. Its focused UI
+test explicitly opts into that flag. Current-agent implementation; runtime model
+identity unavailable. Existing pending tests/reviews are not otherwise changed.
+
+Android's melody interval Text in MainActivity.kt uses 32.sp, FontWeight.Bold,
+and the default sans-serif family (normally Roboto; device replacements can vary).
+The user asked whether iOS can use it too: yes, by bundling/registering a licensed
+Roboto font. No font asset was added and the iOS interval font remains unchanged
+pending that implementation request.
+
+Incremental build passed (no full/UI suites run):
+`xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug build CODE_SIGNING_ALLOWED=NO`.
+Log: `/tmp/acquiring-palatino.6Ak8Qd/build.log`. Human review: open 500 Miles and
+check the Palatino numeral/degree cards; confirm Aa is absent. No release/commit.
+
+### Roboto melody intervals, empty rest slots, and row captions — 2026-09-05
+
+Implemented by the current agent (runtime model identity unavailable), without
+delegation. User requested the interval-font change, removal of rest/null cards,
+and Android-style left captions.
+
+- Melody intervals use bundled Roboto Bold at a base 32 points, matching Android's
+  32.sp bold sans-serif choice. Root intervals are unchanged; fitted Roman/degree
+  displays remain Palatino. The unmodified Android-static font from official
+  Roboto Classic v3.016 and its SIL OFL license ship in `Acquiring/Fonts`; Info.plist
+  registers it through UIAppFonts. Provenance is beside the font.
+- Missing/rest melody, chord, root, interval, and chord-tone slots are transparent,
+  noninteractive, and hidden from accessibility. No dash, disabled placeholder
+  button, or background is drawn. Row heights remain stable. Root-only cards also
+  clear during a chord rest instead of resolving an earlier chord's root state.
+- Compact rows now have a 44-point left gutter for Melody, Chord, and Chord Tones,
+  with two-line secondary captions like Android. Labels remain during rests.
+  Melody pair/interval halves are calculated from the remaining card width.
+
+Build and **3/3 focused tests passed**, including the largest accessibility text
+size on the existing iPhone 17 simulator: UIFont resource/registration/bold trait
+and bundled license; labels/no unavailable buttons plus card previews and existing
+50/50/single-slot geometry; full-screen/no-overlap geometry. Command:
+
+```sh
+xcodebuild -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 180 -maximum-test-execution-time-allowance 180 -only-testing:AcquiringTests/AcquiringTests/testMelodyIntervalRobotoBoldIsBundledAndRegistered -only-testing:AcquiringUITests/AcquiringUITests/testQuizCardPreviewsDoNotCrashAndMelodyCardsUseCompactHeights -only-testing:AcquiringUITests/QuizCoverageTests/testQuizStaysOneScreenWithNoClippedControls -resultBundlePath /tmp/acquiring-roboto.0apQWX/cards.xcresult test CODE_SIGNING_ALLOWED=NO
+```
+
+`plutil -lint` passed for Info.plist and project.pbxproj; scoped `git diff --check`
+passed. Normal simulator text size restored. No screenshots, full suites,
+physical-device checks, commit, or TestFlight upload. Prior unrelated failures and
+pending reviews are not reclassified. Human review: (1) play 500 Miles and inspect
+Roboto interval text/left labels; (2) watch a rest/gap and confirm only empty space
+remains, with no card background or dash and no row jumping.
+
 ## Full-app testing approval gate
 
 **Not authorized by this roadmap or by individual feature approvals.** After A–F
@@ -634,3 +784,32 @@ approval alone does not authorize publishing.
   hardware evidence belong to approved final testing unless separately requested.
 - Preserve existing stored data and uncommitted work. This roadmap requires no
   schema migration or public-interface replacement.
+
+
+### Quiz arpeggio cycle boundaries — 2026-09-05
+
+`[review]` Runtime model: unknown. Compared Android's knob mapping, chord-event
+construction and renderer against iOS. Both already specify cycles per beat:
+1/4 completes a cycle in four beats; 1 completes one per beat; 4 completes four
+per beat. Corrected iOS floating-point slot classification at exact boundaries,
+where seconds-to-beats arithmetic could leave the previous tone selected.
+Regression tests reproduced eight assertions failing before the correction.
+New coverage checks all enabled rates, 2–7 tones, before/at/after boundaries,
+a nonzero chord onset, and rendered tone order for 2–4 tones at three tempo
+rates over repeated cycles and section looping. Knob UI, chord voicings, static
+previews and Android are unchanged. Earlier pending reviews remain pending.
+The sample-boundary defect is confirmed; whether it explains the user's audible
+mismatch in every song still needs listening review.
+
+Checks:
+- `swift test --package-path ios/Packages/AcquiringKit --filter 'ArpeggioTimingTests|AcquiringAudioTests'`: passed, 38 tests, zero failures.
+- `xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug build CODE_SIGNING_ALLOWED=NO`: passed.
+- `xcrun simctl terminate 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios`: no running process to terminate.
+- `xcrun simctl install 55373408-99CC-4EB3-A771-6ACF29E2D96A /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa/Build/Products/Debug-iphonesimulator/Acquiring.app`: passed.
+- `xcrun simctl launch 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios`: passed.
+
+Review: (1) In 500 Miles Quiz, choose Full chords and chord-only balance, then
+listen at 1/4 for one complete chord-tone cycle over four beats. (2) Check 1,
+2 and 4 for that many complete cycles per beat, including a section loop and
+changed tempo. Automated checks verify PCM, not perceived audio; no screenshots,
+UI accessibility automation, device installation, TestFlight upload or commit.

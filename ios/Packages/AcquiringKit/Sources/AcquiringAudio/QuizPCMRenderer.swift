@@ -270,6 +270,23 @@ public final class QuizPCMRenderer: @unchecked Sendable {
         }
     }
 
+    static func arpeggioPosition(
+        elapsedBeats: Double,
+        toneCount: Int,
+        option: QuizArpeggioOption
+    ) -> (toneIndex: Int, progress: Double) {
+        guard toneCount > 1, option.cyclesPerBeat > 0 else { return (0, 0) }
+        let rawSlot = max(elapsedBeats, 0) * Double(toneCount) * option.cyclesPerBeat
+        // Frame → seconds → beats conversion can land a few ULPs below an
+        // integer. Snap only roundoff at a boundary, never a musical subdivision:
+        // the last tone owns [lastSlot, cycleEnd), and cycleEnd starts tone zero.
+        let nearestSlot = rawSlot.rounded()
+        let tolerance = 32 * max(rawSlot, 1).ulp
+        let exactSlot = abs(rawSlot - nearestSlot) <= tolerance ? nearestSlot : rawSlot
+        let slot = floor(exactSlot)
+        return (Int(slot.truncatingRemainder(dividingBy: Double(toneCount))), exactSlot - slot)
+    }
+
     private func sampleSum(
         _ voices: [SynthVoice],
         envelope: Double,
@@ -279,13 +296,17 @@ public final class QuizPCMRenderer: @unchecked Sendable {
         arpeggioOption: QuizArpeggioOption
     ) -> Double {
         if channel == .chord, voices.count > 1, arpeggioOption.cyclesPerBeat > 0 {
-            let exactSlot = max(elapsedBeats, 0) * Double(voices.count) * arpeggioOption.cyclesPerBeat
-            let slotProgress = exactSlot - floor(exactSlot)
+            let position = Self.arpeggioPosition(
+                elapsedBeats: elapsedBeats,
+                toneCount: voices.count,
+                option: arpeggioOption
+            )
+            let slotProgress = position.progress
             let slotEnvelope = min(
                 min(max(slotProgress / 0.08, 0), 1),
                 min(max((1 - slotProgress) / 0.12, 0), 1)
             )
-            let voiceIndex = Int(floor(exactSlot).truncatingRemainder(dividingBy: Double(voices.count)))
+            let voiceIndex = position.toneIndex
             return voices[voiceIndex].nextSample(
                 envelope: envelope * slotEnvelope,
                 elapsedSeconds: elapsedSeconds,

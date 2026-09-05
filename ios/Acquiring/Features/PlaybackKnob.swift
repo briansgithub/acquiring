@@ -71,11 +71,11 @@ struct PlaybackKnob: View {
             .onChanged { change in
                 update(for: change.location)
             }
-        let tapOrDrag = TapGesture()
+        let tapOrDrag = SpatialTapGesture(coordinateSpace: .local)
             .exclusively(before: drag)
             .onEnded { result in
-                if case .first = result {
-                    reset()
+                if case .first(let tap) = result {
+                    handleTap(at: tap.location)
                 }
             }
 
@@ -103,14 +103,16 @@ struct PlaybackKnob: View {
             indicator(at: fraction)
         }
         .frame(width: dialDiameter, height: dialDiameter)
-        .contentShape(Circle())
+        // The square hit shape stays within the dial's existing footprint while
+        // including ring-label text that extends beyond the circular track.
+        .contentShape(Rectangle())
         .highPriorityGesture(tapOrDrag)
         .allowsHitTesting(isEnabled)
         .opacity(isEnabled ? 1 : 0.5)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(title)
         .accessibilityValue(accessibilityValue)
-        .accessibilityHint("Drag around the dial to adjust. Double-tap to reset, or swipe up or down to adjust one step.")
+        .accessibilityHint(interactionAccessibilityHint)
         .accessibilityAdjustableAction { direction in
             switch direction {
             case .increment:
@@ -173,9 +175,57 @@ struct PlaybackKnob: View {
         return ((value - range.lowerBound) / (range.upperBound - range.lowerBound)).clamped(to: 0...1)
     }
 
+    private var interactionAccessibilityHint: String {
+        if ringLabels.count > 1 {
+            return "Tap a ring label to select it. Drag around the dial to adjust. Double-tap the center to reset, or swipe up or down to adjust one step."
+        }
+        return "Drag around the dial to adjust. Double-tap to reset, or swipe up or down to adjust one step."
+    }
+
     private func update(for location: CGPoint) {
         guard let fraction = fraction(for: location) else { return }
         setValue(range.lowerBound + fraction * (range.upperBound - range.lowerBound))
+    }
+
+    private func handleTap(at location: CGPoint) {
+        guard isEnabled else { return }
+
+        if ringLabels.count > 1, isOutsideCenter(at: location) {
+            selectNearestRingLabel(to: location)
+        } else {
+            reset()
+        }
+    }
+
+    private func isOutsideCenter(at location: CGPoint) -> Bool {
+        let dx = location.x - dialCenter
+        let dy = location.y - dialCenter
+        let centerRadius = compact ? 27.0 : 36.0
+        return dx * dx + dy * dy > centerRadius * centerRadius
+    }
+
+    private func selectNearestRingLabel(to location: CGPoint) {
+        guard ringLabels.count > 1 else { return }
+        let dx = Double(location.x - dialCenter)
+        let dy = Double(location.y - dialCenter)
+        var angle = atan2(dy, dx) * 180 / .pi
+        if angle < 0 { angle += 360 }
+
+        let nearestIndex = (0..<ringLabels.count).min { lhs, rhs in
+            circularDistance(angle, ringLabelAngle(at: lhs)) < circularDistance(angle, ringLabelAngle(at: rhs))
+        }
+        guard let nearestIndex else { return }
+        selectRingLabel(at: nearestIndex)
+    }
+
+    private func selectRingLabel(at index: Int) {
+        guard ringLabels.count > 1, ringLabels.indices.contains(index) else { return }
+        let fraction = Double(index) / Double(ringLabels.count - 1)
+        setValue(range.lowerBound + fraction * (range.upperBound - range.lowerBound))
+    }
+
+    private func ringLabelAngle(at index: Int) -> Double {
+        135 + 270 * Double(index) / Double(ringLabels.count - 1)
     }
 
     /// Returns nil in the center, so an imprecise touch does not change the setting.
@@ -197,7 +247,10 @@ struct PlaybackKnob: View {
     }
 
     private func circularDistance(_ lhs: Double, _ rhs: Double) -> Double {
-        abs((lhs - rhs + 180).truncatingRemainder(dividingBy: 360) - 180)
+        let difference = (lhs - rhs).truncatingRemainder(dividingBy: 360)
+        if difference > 180 { return 360 - difference }
+        if difference < -180 { return 360 + difference }
+        return abs(difference)
     }
 
     private func adjust(by amount: Double) {

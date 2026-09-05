@@ -195,6 +195,8 @@ struct VocalPracticeDock: View {
                 model.isExpanded ? model.collapse() : model.expand()
             } label: {
                 Label(model.isExpanded ? "Close" : "Practice", systemImage: "mic.fill")
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
             }
             .buttonStyle(.borderedProminent)
             .frame(minHeight: 44)
@@ -222,7 +224,7 @@ struct VocalPracticeDock: View {
             Spacer(minLength: 0)
         }
         .padding(.horizontal, 12)
-        .frame(height: 44)
+        .frame(minHeight: 44)
         .background(.thinMaterial)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("vocal.practice.dock")

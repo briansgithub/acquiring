@@ -815,6 +815,10 @@ struct QuizView: View {
     @State private var quizCardPreviewGeneration = 0
     @State private var practiceTargets: QuizPracticeTargets?
     @State private var quizCardStackHeight: CGFloat = 44
+    @State private var notationFontStyle: QuizNotationFontStyle = .palatino
+
+    // Retain the temporary sampler for future comparisons, hidden in normal use.
+    private let showsFontSampler = ProcessInfo.processInfo.arguments.contains("--preview-notation-fonts")
 
     private var playing: Bool {
         transportPhase == .playing || transportPhase == .buffering
@@ -847,7 +851,15 @@ struct QuizView: View {
         .navigationTitle(navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
         .background(QuizNavigationGestureGuard())
+        .quizNotationFontStyle(notationFontStyle)
         .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                if showsFontSampler, case .content = state {
+                    QuizFontSamplerMenu(selection: $notationFontStyle)
+                        .equatable()
+                        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 if case .content = state {
                     FavoriteSongButton(songID: songID)
@@ -896,25 +908,47 @@ struct QuizView: View {
         let sections = document.orderedSections.map { QuizSection(id: $0.key, section: $0.section) }
         let selected = sections.first(where: { $0.id == selectedSectionID }) ?? sections.first
 
-        return VStack(spacing: 4) {
-            if let selected {
-                QuizHeader(
-                    songID: songID,
-                    sectionID: selected.id,
-                    initialKey: selected.section.key(at: PlaybackTiming.firstBeat),
-                    currentKey: selected.section.key(at: currentBeat(in: selected.section)),
-                    usesRelativeIonianContext: $usesRelativeIonianContext,
-                    mode: modeBinding(sectionID: selected.id),
-                    isReady: sectionLoadStatus.isReady && !playbackCommandPending
-                )
+        return GeometryReader { viewport in
+            // The dense Quiz dashboard fits its text to the available viewport.
+            // Keep all targets >=44pt; the practice sheet retains full Dynamic Type.
+            let maximumControlType: DynamicTypeSize = viewport.size.height >= 760 ? .xxxLarge : .large
+            VStack(spacing: 4) {
+                if let selected {
+                    QuizHeader(
+                        songID: songID,
+                        sectionID: selected.id,
+                        initialKey: selected.section.key(at: PlaybackTiming.firstBeat),
+                        currentKey: selected.section.key(at: currentBeat(in: selected.section)),
+                        usesRelativeIonianContext: $usesRelativeIonianContext,
+                        mode: modeBinding(sectionID: selected.id),
+                        isReady: sectionLoadStatus.isReady && !playbackCommandPending
+                    )
 
-                quizSurface(selected.section, sectionID: selected.id, sections: sections)
+                    quizSurface(selected.section, sectionID: selected.id)
+                }
             }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 4)
+            .frame(maxWidth: 760)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .safeAreaInset(edge: .bottom, spacing: 4) {
+                if let selected {
+                    VStack(spacing: 4) {
+                        HStack {
+                            Spacer(minLength: 0)
+                            transportControls(sectionID: selected.id, sections: sections)
+                        }
+                        VocalPracticeDock(model: environment.vocalPractice)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.bottom, 4)
+                    .frame(maxWidth: 760)
+                    .frame(maxWidth: .infinity)
+                    .background(.bar)
+                }
+            }
+            .dynamicTypeSize(...maximumControlType)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 4)
-        .frame(maxWidth: 760)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
     private func sectionBinding(sections: [QuizSection]) -> Binding<String> {
@@ -973,8 +1007,7 @@ struct QuizView: View {
 
     private func quizSurface(
         _ section: ExtractedSection,
-        sectionID: String,
-        sections: [QuizSection]
+        sectionID: String
     ) -> some View {
         let beat = currentBeat(in: section)
         return VStack(spacing: 4) {
@@ -1002,11 +1035,6 @@ struct QuizView: View {
                 quizCardsWithBalanceFader(section: section, sectionID: sectionID, beat: beat)
                 playbackKnobs(sectionID: sectionID)
                 Spacer(minLength: 0)
-                HStack {
-                    Spacer(minLength: 0)
-                    transportControls(sectionID: sectionID, sections: sections)
-                }
-                VocalPracticeDock(model: environment.vocalPractice)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
@@ -1095,6 +1123,7 @@ struct QuizView: View {
                 HStack(spacing: 4) {
                     Button(action: requestPlaybackReset) {
                         Image(systemName: "arrow.counterclockwise").frame(width: 44, height: 44)
+                            .contentShape(Rectangle())
                     }
                     .disabled(!sectionLoadStatus.isReady || playbackCommandPending || transportPhase == .buffering)
                     .accessibilityIdentifier("quiz.reset")
@@ -1291,6 +1320,7 @@ struct QuizView: View {
                     changeTranspose(soundConfiguration.transposeSemitones - 1, sectionID: sectionID)
                 } label: {
                     Image(systemName: "minus").frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
                 }
                 .disabled(soundConfiguration.transposeSemitones <= -12)
                 .accessibilityLabel("Transpose down one semitone")
@@ -1316,6 +1346,7 @@ struct QuizView: View {
                     changeTranspose(soundConfiguration.transposeSemitones + 1, sectionID: sectionID)
                 } label: {
                     Image(systemName: "plus").frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
                 }
                 .disabled(soundConfiguration.transposeSemitones >= 12)
                 .accessibilityLabel("Transpose up one semitone")

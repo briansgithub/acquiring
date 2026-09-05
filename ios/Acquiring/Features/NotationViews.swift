@@ -1,5 +1,132 @@
 import AcquiringCore
 import SwiftUI
+import UIKit
+
+/// Session-scoped typography choices for quiz notation.
+enum QuizNotationFontStyle: String, CaseIterable, Identifiable, Sendable {
+    case systemSerif
+    case georgia
+    case palatino
+    case baskerville
+    case didot
+    case hoeflerText
+    case timesNewRoman
+    case avenirNext
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .systemSerif: "System Serif"
+        case .georgia: "Georgia"
+        case .palatino: "Palatino"
+        case .baskerville: "Baskerville"
+        case .didot: "Didot"
+        case .hoeflerText: "Hoefler Text"
+        case .timesNewRoman: "Times New Roman"
+        case .avenirNext: "Avenir Next"
+        }
+    }
+
+    func font(size: CGFloat, weight: Font.Weight) -> Font {
+        if self == .systemSerif {
+            return .system(size: size, weight: weight, design: .serif)
+        }
+        return Font(uiFont(size: size, bold: weight != .regular))
+    }
+
+    private func uiFont(size: CGFloat, bold: Bool) -> UIFont {
+        let name: String?
+        switch self {
+        case .systemSerif:
+            name = nil
+        case .georgia:
+            name = bold ? "Georgia-Bold" : "Georgia"
+        case .palatino:
+            name = bold ? "Palatino-Bold" : "Palatino-Roman"
+        case .baskerville:
+            name = bold ? "Baskerville-Bold" : "Baskerville"
+        case .didot:
+            name = bold ? "Didot-Bold" : "Didot"
+        case .hoeflerText:
+            name = bold ? "HoeflerText-Black" : "HoeflerText-Regular"
+        case .timesNewRoman:
+            name = bold ? "TimesNewRomanPS-BoldMT" : "TimesNewRomanPSMT"
+        case .avenirNext:
+            name = bold ? "AvenirNext-DemiBold" : "AvenirNext-Regular"
+        }
+        if let name, let font = UIFont(name: name, size: size) { return font }
+
+        let descriptor = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .body)
+        let serifDescriptor = descriptor.withDesign(.serif) ?? descriptor
+        let weightedDescriptor = bold
+            ? serifDescriptor.withSymbolicTraits(.traitBold) ?? serifDescriptor
+            : serifDescriptor
+        return UIFont(descriptor: weightedDescriptor, size: size)
+    }
+}
+
+struct QuizFontSamplerMenu: View, Equatable {
+    private let selection: QuizNotationFontStyle
+    private let setSelection: (QuizNotationFontStyle) -> Void
+
+    init(selection: Binding<QuizNotationFontStyle>) {
+        self.selection = selection.wrappedValue
+        setSelection = { selection.wrappedValue = $0 }
+    }
+
+    nonisolated static func == (lhs: QuizFontSamplerMenu, rhs: QuizFontSamplerMenu) -> Bool {
+        lhs.selection == rhs.selection
+    }
+
+    var body: some View {
+        Menu {
+            ForEach(QuizNotationFontStyle.allCases.prefix(5)) { style in
+                fontChoice(style)
+            }
+            Menu("More Fonts") {
+                ForEach(QuizNotationFontStyle.allCases.dropFirst(5)) { style in
+                    fontChoice(style)
+                }
+            }
+            .accessibilityIdentifier("quiz.fontSampler.more")
+        } label: {
+            Text("Aa")
+                .font(.system(.body, design: .serif).weight(.semibold))
+                .frame(width: 44, height: 44)
+                .contentShape(Rectangle())
+        }
+        .accessibilityLabel("Notation font")
+        .accessibilityValue(selection.displayName)
+        .accessibilityIdentifier("quiz.fontSampler")
+    }
+
+    private func fontChoice(_ style: QuizNotationFontStyle) -> some View {
+        Button {
+            setSelection(style)
+        } label: {
+            Label(style.displayName, systemImage: style == selection ? "checkmark" : "textformat")
+        }
+        .accessibilityIdentifier("quiz.fontSampler.\(style.rawValue)")
+    }
+}
+
+private struct QuizNotationFontStyleKey: EnvironmentKey {
+    static let defaultValue = QuizNotationFontStyle.palatino
+}
+
+extension EnvironmentValues {
+    var quizNotationFontStyle: QuizNotationFontStyle {
+        get { self[QuizNotationFontStyleKey.self] }
+        set { self[QuizNotationFontStyleKey.self] = newValue }
+    }
+}
+
+extension View {
+    func quizNotationFontStyle(_ style: QuizNotationFontStyle) -> some View {
+        environment(\.quizNotationFontStyle, style)
+    }
+}
 
 private enum RomanGlyphStyle {
     case base
@@ -27,6 +154,7 @@ private enum RomanGlyphStyle {
         default: .bold
         }
     }
+
 }
 
 private struct RomanGlyph {
@@ -63,6 +191,7 @@ private struct RomanDisplayLayout {
 struct FittedRomanNumeral: View {
     let display: RomanNumeralDisplay
     let color: Color
+    @Environment(\.quizNotationFontStyle) private var notationFontStyle
     @ScaledMetric(relativeTo: .largeTitle) private var maximumFontSize: CGFloat = 64
     @ScaledMetric(relativeTo: .body) private var minimumFontSize: CGFloat = 12
 
@@ -358,7 +487,7 @@ struct FittedRomanNumeral: View {
 
     private func styledText(_ text: String, style: RomanGlyphStyle, fontSize: CGFloat) -> Text {
         Text(text)
-            .font(.system(size: fontSize * style.scale, weight: style.weight, design: .serif))
+            .font(notationFontStyle.font(size: fontSize * style.scale, weight: style.weight))
             .foregroundColor(color)
     }
 }
@@ -388,6 +517,7 @@ private struct ScaleDegreeLayout {
 struct FittedScaleDegree: View {
     let source: String
     let color: Color
+    @Environment(\.quizNotationFontStyle) private var notationFontStyle
     @ScaledMetric(relativeTo: .largeTitle) private var maximumFontSize: CGFloat = 84
     @ScaledMetric(relativeTo: .body) private var minimumFontSize: CGFloat = 16
 
@@ -539,13 +669,13 @@ struct FittedScaleDegree: View {
 
     private func degreeText(_ text: String, fontSize: CGFloat) -> Text {
         Text(text)
-            .font(.system(size: fontSize, weight: .bold, design: .serif))
+            .font(notationFontStyle.font(size: fontSize, weight: .bold))
             .foregroundColor(color)
     }
 
     private func accidentalText(_ text: String, fontSize: CGFloat) -> Text {
         Text(text)
-            .font(.system(size: fontSize * 0.66, weight: .regular, design: .serif))
+            .font(notationFontStyle.font(size: fontSize * 0.66, weight: .regular))
             .foregroundColor(color)
     }
 }
