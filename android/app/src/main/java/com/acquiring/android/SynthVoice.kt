@@ -14,6 +14,16 @@ internal class SynthVoice(
     private var modPhase = 0.0
     private val delayLine: DoubleArray
     private var delayPointer = 0
+    // Pipe ranks from 16-foot through mixtures, referenced to the suboctave.
+    // Filter once per voice so high notes do not fold upper ranks below Nyquist.
+    private val churchOrganPartials = if (waveform == AudioEngine.Waveform.CHURCH_ORGAN) {
+        listOf(
+            1.0 to 0.16, 2.0 to 0.44, 4.0 to 0.18, 6.0 to 0.10,
+            8.0 to 0.07, 12.0 to 0.035, 16.0 to 0.015
+        ).filter { (ratio, _) -> frequencyHz * 0.5 * ratio < sampleRate * 0.5 }
+    } else {
+        emptyList()
+    }
 
     init {
         val period = sampleRate / frequencyHz
@@ -69,6 +79,28 @@ internal class SynthVoice(
             AudioEngine.Waveform.WARM_ORGAN -> {
                 val radians = 2.0 * PI * phase
                 0.68 * sin(radians) + 0.22 * sin(radians * 2.0) + 0.10 * sin(radians * 3.0)
+            }
+
+            AudioEngine.Waveform.CHURCH_ORGAN -> {
+                val radians = 2.0 * PI * modPhase
+                var output = 0.0
+                for (index in churchOrganPartials.indices) {
+                    val (ratio, weight) = churchOrganPartials[index]
+                    output += weight * sin(radians * ratio)
+                }
+                modPhase = wrapUnitPhase(modPhase + frequencyHz * 0.5 / sampleRate)
+                output
+            }
+
+            AudioEngine.Waveform.CLARINET -> {
+                val radians = 2.0 * PI * phase
+                0.74 * sin(radians) + 0.19 * sin(radians * 3.0) + 0.07 * sin(radians * 5.0)
+            }
+
+            AudioEngine.Waveform.REED_ORGAN -> {
+                val radians = 2.0 * PI * phase
+                0.54 * sin(radians) + 0.25 * sin(radians * 2.0) +
+                    0.14 * sin(radians * 3.0) + 0.07 * sin(radians * 4.0)
             }
 
             AudioEngine.Waveform.MARIMBA -> {
