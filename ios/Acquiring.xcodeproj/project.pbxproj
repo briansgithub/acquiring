@@ -33,6 +33,11 @@
 		A10000000000000000000018 /* ios_ui_test_catalog.json in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000018 /* ios_ui_test_catalog.json */; };
 		A10000000000000000000019 /* DraggableQuizTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000019 /* DraggableQuizTransport.swift */; };
 		A1000000000000000000001A /* QuizCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001A /* QuizCards.swift */; };
+		A1000000000000000000001B /* AllSongsBrowseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001B /* AllSongsBrowseStore.swift */; };
+		A1000000000000000000001C /* AllSongsBrowseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001C /* AllSongsBrowseView.swift */; };
+		A1000000000000000000001D /* UserLibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001D /* UserLibraryViewModel.swift */; };
+		A1000000000000000000001E /* UserLibraryViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001E /* UserLibraryViews.swift */; };
+		A1000000000000000000001F /* HooktheorySearchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001F /* HooktheorySearchButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,6 +84,11 @@
 		B1000000000000000000001A /* QuizCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizCards.swift; sourceTree = "<group>"; };
 		B10000000000000000000017 /* ExportOptions-TestFlight.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ExportOptions-TestFlight.plist"; sourceTree = "<group>"; };
 		B10000000000000000000018 /* ios_ui_test_catalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = ios_ui_test_catalog.json; path = ../contracts/fixtures/ios_ui_test_catalog.json; sourceTree = SOURCE_ROOT; };
+		B1000000000000000000001B /* AllSongsBrowseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllSongsBrowseStore.swift; sourceTree = "<group>"; };
+		B1000000000000000000001C /* AllSongsBrowseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllSongsBrowseView.swift; sourceTree = "<group>"; };
+		B1000000000000000000001D /* UserLibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserLibraryViewModel.swift; sourceTree = "<group>"; };
+		B1000000000000000000001E /* UserLibraryViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserLibraryViews.swift; sourceTree = "<group>"; };
+		B1000000000000000000001F /* HooktheorySearchButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HooktheorySearchButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,6 +173,11 @@
 				B10000000000000000000013 /* NotationViews.swift */,
 				B10000000000000000000019 /* DraggableQuizTransport.swift */,
 				B1000000000000000000001A /* QuizCards.swift */,
+				B1000000000000000000001B /* AllSongsBrowseStore.swift */,
+				B1000000000000000000001C /* AllSongsBrowseView.swift */,
+				B1000000000000000000001D /* UserLibraryViewModel.swift */,
+				B1000000000000000000001E /* UserLibraryViews.swift */,
+				B1000000000000000000001F /* HooktheorySearchButton.swift */,
 				B10000000000000000000011 /* SongViews.swift */,
 			);
 			path = Features;
@@ -247,7 +262,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		D10000000000000000000001 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000001, A10000000000000000000002, A10000000000000000000003, A10000000000000000000004, A10000000000000000000008, A10000000000000000000009, A1000000000000000000000A, A1000000000000000000000B, A1000000000000000000000C, A1000000000000000000000D, A1000000000000000000000E, A10000000000000000000014, A10000000000000000000019, A1000000000000000000001A); runOnlyForDeploymentPostprocessing = 0; };
+		D10000000000000000000001 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000001, A10000000000000000000002, A10000000000000000000003, A10000000000000000000004, A10000000000000000000008, A10000000000000000000009, A1000000000000000000000A, A1000000000000000000000B, A1000000000000000000000C, A1000000000000000000000D, A1000000000000000000000E, A10000000000000000000014, A10000000000000000000019, A1000000000000000000001A, A1000000000000000000001B, A1000000000000000000001C, A1000000000000000000001D, A1000000000000000000001E, A1000000000000000000001F); runOnlyForDeploymentPostprocessing = 0; };
 		D10000000000000000000004 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000005); runOnlyForDeploymentPostprocessing = 0; };
 		D10000000000000000000007 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000007); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXSourcesBuildPhase section */

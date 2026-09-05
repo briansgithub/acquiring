@@ -50,6 +50,11 @@ struct SongDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
+                if case .content = state {
+                    FavoriteSongButton(songID: songID)
+                }
+            }
+            ToolbarItem(placement: .topBarTrailing) {
                 NavigationLink(value: AppRoute.quiz(songID)) {
                     Label("Quiz", systemImage: "questionmark.music.note")
                 }
@@ -813,6 +818,13 @@ struct QuizView: View {
         }
         .navigationTitle(navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                if case .content = state {
+                    FavoriteSongButton(songID: songID)
+                }
+            }
+        }
         .task(id: songID) { await load() }
         .task(id: transportObservationGeneration) { await observeTransport() }
         .onDisappear {
