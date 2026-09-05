@@ -72,8 +72,10 @@ final class VocalPracticeModel {
 
     @ObservationIgnored private var microphoneTask: Task<Void, Never>?
     @ObservationIgnored private var previewTask: Task<Void, Never>?
+    @ObservationIgnored private var collapseClearTask: Task<Void, Never>?
     @ObservationIgnored private var activeLease: MicrophoneLease?
     @ObservationIgnored private var operationGeneration: UInt64 = 0
+    @ObservationIgnored private var collapseClearGeneration: UInt64 = 0
     private var manualOperation: ManualOperation?
     @ObservationIgnored private var latestReading: PitchReading?
     @ObservationIgnored private var latestReadingInstant: ContinuousClock.Instant?
@@ -102,6 +104,10 @@ final class VocalPracticeModel {
 
     var comfortablePitchLabel: String? {
         comfortablePitchMIDI.map { SpelledPitch.fromMIDI(Int($0.rounded())).displayName }
+    }
+
+    var canCalibrateComfortablePitch: Bool {
+        songID != nil && sectionID != nil
     }
 
     var persistentTarget: ResolvedPersistentPitchTarget? {
@@ -160,25 +166,48 @@ final class VocalPracticeModel {
     }
 
     func expand() {
+        if collapseClearTask != nil {
+            cancelPendingCollapseClear()
+            clearManualPracticeContent()
+        }
         isExpanded = true
     }
 
-    /// Hides the dock without discarding the pitches the user is comparing.
     func minimize() {
+        cancelPendingCollapseClear()
         cancelPreview()
         cancelManualPractice()
         isExpanded = false
+        let generation = collapseClearGeneration
+        collapseClearTask = Task { @MainActor [weak self] in
+            do {
+                try await Task.sleep(for: .milliseconds(220))
+            } catch {
+                return
+            }
+            guard let self,
+                  self.collapseClearGeneration == generation,
+                  !self.isExpanded
+            else { return }
+            self.clearManualPracticeContent()
+            self.collapseClearTask = nil
+        }
     }
 
     func collapse() {
         minimize()
-        targetRequest = nil
-        slot1 = nil
-        slot2 = nil
+    }
+
+    func resetManualPractice() {
+        cancelPendingCollapseClear()
+        cancelPreview()
+        cancelManualPractice()
+        clearManualPracticeContent()
+        errorMessage = nil
     }
 
     func toggleRecording(slot: Int) {
-        guard slot == 1 || slot == 2 else { return }
+        guard (slot == 1 || slot == 2), !isFlipFlopEnabled else { return }
         if recordingSlot == slot || listeningSlot == slot {
             cancelManualPractice()
             return
@@ -191,6 +220,7 @@ final class VocalPracticeModel {
     }
 
     func playSlot(_ slot: Int) {
+        guard !isFlipFlopEnabled else { return }
         guard let sample = slot == 1 ? slot1 : slot == 2 ? slot2 : nil else { return }
         cancelMicrophoneActivity(resetPersistentSelection: true)
         clearManualActivityState()
@@ -200,6 +230,7 @@ final class VocalPracticeModel {
     }
 
     func playPair() {
+        guard let slot1, let slot2 else { return }
         let resolvedTargets = targetRequest.map {
             SingingTargets.resolve(
                 request: $0,
@@ -207,18 +238,15 @@ final class VocalPracticeModel {
                 comfortablePitchMIDI: comfortablePitchMIDI
             )
         }
-        let frequencies: (Double, Double)?
+        let frequencies: (Double, Double)
         if let first = resolvedTargets?.first, let second = resolvedTargets?.second {
             frequencies = (
                 MusicTheory.frequency(midi: Double(first)),
                 MusicTheory.frequency(midi: Double(second))
             )
-        } else if let slot1, let slot2 {
-            frequencies = (slot1.frequencyHz, slot2.frequencyHz)
         } else {
-            frequencies = nil
+            frequencies = (slot1.frequencyHz, slot2.frequencyHz)
         }
-        guard let frequencies else { return }
 
         cancelMicrophoneActivity(resetPersistentSelection: true)
         clearManualActivityState()
@@ -250,6 +278,7 @@ final class VocalPracticeModel {
     }
 
     func requestSingBack(_ request: SingingTargetRequest) {
+        cancelPendingCollapseClear()
         cancelActivity()
         errorMessage = nil
         targetRequest = request
@@ -258,35 +287,21 @@ final class VocalPracticeModel {
         isExpanded = true
         audio.cancelQuizCardPreview()
 
-        let resolved = SingingTargets.resolve(
-            request: request,
-            transpose: transpose,
-            comfortablePitchMIDI: comfortablePitchMIDI
-        )
+        let autoListenDeadline = clock.now.advanced(by: .milliseconds(800))
         previewTask = Task { @MainActor [weak self] in
             guard let self else { return }
             do {
                 await self.audio.pause()
                 try Task.checkCancellation()
-                for target in [resolved.first, resolved.second].compactMap({ $0 }) {
-                    try Task.checkCancellation()
-                    let sourceFrequency = MusicTheory.frequency(midi: Double(target - self.transpose))
-                    try await self.audio.play(PreviewRequest(
-                        frequenciesHz: [sourceFrequency],
-                        duration: .milliseconds(450),
-                        usesMusicalConfiguration: true
-                    ))
-                    try await Task.sleep(for: .milliseconds(600))
-                }
-                // Each scheduled 450 ms note plus its 150 ms settling gap, followed by
-                // the remainder of Android's 300 ms expand + 500 ms auto-listen delay.
-                try await Task.sleep(for: .milliseconds(200))
+                try await self.clock.sleep(until: autoListenDeadline)
                 try Task.checkCancellation()
-                if request.first != nil {
-                    self.startListening(slot: 1)
-                } else if request.second != nil {
-                    self.startListening(slot: 2)
-                }
+                guard request.first != nil,
+                      self.targetRequest?.requestID == request.requestID,
+                      self.isExpanded,
+                      self.manualOperation == nil
+                else { return }
+                self.previewTask = nil
+                self.startListening(slot: 1)
             } catch is CancellationError {
                 return
             } catch {
@@ -304,11 +319,13 @@ final class VocalPracticeModel {
     }
 
     func clearSingingTargets() {
+        cancelPreview()
         cancelManualPractice()
         targetRequest = nil
     }
 
     func startCalibration() {
+        guard canCalibrateComfortablePitch else { return }
         cancelActivity()
         errorMessage = nil
         calibrationState = .requestingPermission
@@ -521,9 +538,14 @@ final class VocalPracticeModel {
     }
 
     func enterSong(songID: String, sectionID: String) {
+        let contextChanged = self.songID != songID || self.sectionID != sectionID
+        if contextChanged {
+            cancelPendingCollapseClear()
+            cancelActivity()
+            clearManualPracticeContent()
+        }
         if self.songID != songID {
             if self.songID != nil {
-                cancelActivity()
                 tessituraSession.clearSession()
                 comfortablePitchMIDI = nil
                 melodyRunScores.removeAll()
@@ -554,12 +576,14 @@ final class VocalPracticeModel {
     }
 
     func handleSceneBackgrounded() {
+        cancelPendingCollapseClear()
         cancelActivity()
         isExpanded = false
-        targetRequest = nil
+        clearManualPracticeContent()
     }
 
     func leaveSong() {
+        cancelPendingCollapseClear()
         cancelActivity()
         targetRequest = nil
         slot1 = nil
@@ -634,6 +658,7 @@ final class VocalPracticeModel {
     }
 
     private func startCapture(slot: Int) {
+        clearSlot(slot)
         beginManualOperation(.capture(slot: slot))
     }
 
@@ -672,7 +697,7 @@ final class VocalPracticeModel {
 
                 switch operation {
                 case let .capture(slot):
-                    await self.capturePitch(slot: slot, generation: generation)
+                    await self.capturePitch(slot: slot, generation: generation, reportsMissingSignal: true)
                 case let .listen(slot):
                     await self.listenToTarget(slot: slot, generation: generation)
                 case .flipFlop:
@@ -705,7 +730,11 @@ final class VocalPracticeModel {
         }
     }
 
-    private func capturePitch(slot: Int, generation: UInt64) async {
+    private func capturePitch(
+        slot: Int,
+        generation: UInt64,
+        reportsMissingSignal: Bool = false
+    ) async {
         recordingSlot = slot
         listeningSlot = nil
         captureRemainingMilliseconds = 3_000
@@ -727,7 +756,9 @@ final class VocalPracticeModel {
 
         if isCurrent(generation), let lastAcceptedReading {
             setSlot(slot, sample: makeSample(rawMIDI: lastAcceptedReading.midi, slot: slot))
-        } else if isCurrent(generation), (slot == 1 ? slot1 : slot2) == nil {
+        } else if reportsMissingSignal,
+                  isCurrent(generation),
+                  (slot == 1 ? slot1 : slot2) == nil {
             errorMessage = "No voiced pitch was detected. Try recording again."
         }
         recordingSlot = nil
@@ -736,14 +767,15 @@ final class VocalPracticeModel {
     }
 
     private func listenToTarget(slot: Int, generation: UInt64) async {
-        guard let targetMIDI = resolvedTargetMIDI(for: slot) else { return }
+        guard resolvedTargetMIDI(for: slot) != nil else { return }
         listeningSlot = slot
         recordingSlot = nil
         let deadline = clock.now.advanced(by: .seconds(3))
         var consumedSequence = latestReadingSequence
         while isCurrent(generation), !microphoneStreamEnded, clock.now < deadline {
             captureRemainingMilliseconds = milliseconds(clock.now.duration(to: deadline))
-            if let reading = consumeFreshReading(after: &consumedSequence, maximumAge: .milliseconds(48)) {
+            if let reading = consumeFreshReading(after: &consumedSequence, maximumAge: .milliseconds(48)),
+               let targetMIDI = resolvedTargetMIDI(for: slot) {
                 setSlot(slot, sample: makeSample(
                     rawMIDI: reading.midi,
                     slot: slot,
@@ -759,6 +791,10 @@ final class VocalPracticeModel {
 
     private func setSlot(_ slot: Int, sample: VocalPitchSample) {
         if slot == 1 { slot1 = sample } else { slot2 = sample }
+    }
+
+    private func clearSlot(_ slot: Int) {
+        if slot == 1 { slot1 = nil } else { slot2 = nil }
     }
 
     private func beginPreview(_ operation: @escaping @MainActor () async throws -> Void) {
@@ -809,6 +845,18 @@ final class VocalPracticeModel {
         captureRemainingMilliseconds = 0
         isFlipFlopEnabled = false
         manualHasSignal = false
+    }
+
+    private func cancelPendingCollapseClear() {
+        collapseClearGeneration &+= 1
+        collapseClearTask?.cancel()
+        collapseClearTask = nil
+    }
+
+    private func clearManualPracticeContent() {
+        targetRequest = nil
+        slot1 = nil
+        slot2 = nil
     }
 
     private func stopPersistentState() {
