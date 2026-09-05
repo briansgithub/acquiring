@@ -37,7 +37,26 @@ struct LibraryScene: View {
                     }
                 }
             }
-            .environment(store.userContent)
+            .navigationDestination(for: AppRoute.self) { route in
+                switch route {
+                case let .artist(name): ArtistSongsView(artist: name, store: store)
+                case .allSongs:
+                    AllSongsBrowseView(store: store)
+                        .navigationTitle("All Songs")
+                        .navigationBarTitleDisplayMode(.inline)
+                case let .playlist(id): PlaylistSongsView(playlistID: id, store: store)
+                case let .songDetail(id):
+                    SongDetailView(songID: id) { song in
+                        Task { await store.openArtist(from: song) }
+                    }
+                case let .quiz(id):
+                    QuizView(songID: id) { song in
+                        Task { await store.openArtist(from: song) }
+                    }
+                }
+            }
+        }
+        .environment(store.userContent)
         .environment(environment.vocalPractice)
         .tessituraCalibrationPresentation(model: environment.vocalPractice)
         .onChange(of: store.path) { _, path in
@@ -55,17 +74,6 @@ struct LibraryScene: View {
         .task { await store.load() }
     }
 
-    @ViewBuilder
-    private var singingDock: some View {
-        if hasCompletedIntroduction {
-            IntervalSingingTool(model: environment.vocalPractice)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .frame(maxWidth: 760)
-                .frame(maxWidth: .infinity)
-                .background(.bar)
-        }
-    }
 }
 
 private struct LibraryView: View {
