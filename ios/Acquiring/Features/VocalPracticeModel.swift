@@ -74,7 +74,7 @@ final class VocalPracticeModel {
     @ObservationIgnored private var previewTask: Task<Void, Never>?
     @ObservationIgnored private var activeLease: MicrophoneLease?
     @ObservationIgnored private var operationGeneration: UInt64 = 0
-    @ObservationIgnored private var manualOperation: ManualOperation?
+    private var manualOperation: ManualOperation?
     @ObservationIgnored private var latestReading: PitchReading?
     @ObservationIgnored private var latestReadingInstant: ContinuousClock.Instant?
     @ObservationIgnored private var latestReadingSequence: UInt64 = 0
@@ -89,6 +89,8 @@ final class VocalPracticeModel {
     init(audio: AppAudioSystem) {
         self.audio = audio
     }
+
+    var isManualPracticeActive: Bool { manualOperation != nil }
 
     var displayedSlot1: VocalPitchSample? { displayedSample(slot: 1, captured: slot1) }
     var displayedSlot2: VocalPitchSample? { displayedSample(slot: 2, captured: slot2) }
@@ -161,9 +163,15 @@ final class VocalPracticeModel {
         isExpanded = true
     }
 
-    func collapse() {
-        isExpanded = false
+    /// Hides the dock without discarding the pitches the user is comparing.
+    func minimize() {
+        cancelPreview()
         cancelManualPractice()
+        isExpanded = false
+    }
+
+    func collapse() {
+        minimize()
         targetRequest = nil
         slot1 = nil
         slot2 = nil

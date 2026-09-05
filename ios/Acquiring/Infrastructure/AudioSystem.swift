@@ -643,7 +643,9 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
                 Int(ceil(Double(profile.analysisHopSize) * format.sampleRate / 16_000)),
                 1
             ))
-            input.installTap(onBus: 0, bufferSize: requestedTapFrames, format: format) { buffer, _ in
+            // AVAudioEngine invokes taps on its audio queue. An unannotated
+            // closure here inherits MainActor and traps when the first buffer arrives.
+            input.installTap(onBus: 0, bufferSize: requestedTapFrames, format: format) { @Sendable buffer, _ in
                 pipeline.consume(buffer)
             }
             guard pendingMicrophone?.id == id else {

@@ -813,3 +813,72 @@ listen at 1/4 for one complete chord-tone cycle over four beats. (2) Check 1,
 2 and 4 for that many complete cycles per beat, including a section loop and
 changed tempo. Automated checks verify PCM, not perceived audio; no screenshots,
 UI accessibility automation, device installation, TestFlight upload or commit.
+
+
+### Interval singing dock first pass — 2026-09-05
+
+`[review]` Runtime model: unknown. Implemented the approved first-pass UI on
+Quiz: inline expandable material dock, three compact cards, animated note tapes,
+Android tuning colors, signed cents/semitone-relative percentage, active border
+and countdown, target-reference distinction, and existing recording/replay,
+interval playback and Flip-Flop wiring. The options menu retains Reset and
+comfortable-pitch calibration. `minimize()` cancels manual capture and pending
+previews while retaining targets/captures; Reset keeps the clearing behavior.
+Quiz scrolls above its bottom safe-area inset so its controls remain reachable.
+Manual/guided sheets are suppressed on Quiz; calibration and Song Detail retain
+their existing presentations. Named accessible actions and Reduce Motion remain.
+App-wide dock placement and further visual/adaptive refinement await feedback.
+No audio engine changes, public package API changes, commits or release upload.
+Earlier pending review statuses remain pending.
+
+Checks:
+- `xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug build CODE_SIGNING_ALLOWED=NO`: passed after correcting the gauge's Swift actor-conformance annotation; existing AudioSystem async-alternative warnings remain.
+- `xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -only-testing:AcquiringUITests/QuizCoverageTests/testVocalPracticeDockStartsCollapsedAndOpens -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 120 test CODE_SIGNING_ALLOWED=NO`: passed; xcresult summary confirms one test, zero failures. Tests card/transport/section reachability, changing to Chorus while expanded, no permission prompt on expansion, and minimize/reopen. Updated existing dock identifiers and the scrolling expectation; other tests were not run.
+- `git diff --check -- ios/Acquiring/Features ios/AcquiringUITests`: passed.
+- `xcrun simctl install 55373408-99CC-4EB3-A771-6ACF29E2D96A /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa/Build/Products/Debug-iphonesimulator/Acquiring.app`: passed.
+- `xcrun simctl launch 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios`: passed (normal app). The test opened 500 Miles; its session ended afterward, so the normal app was relaunched at Library. Desktop accessibility navigation is unavailable because osascript lacks assistive access.
+
+Human review: (1) Open 500 Miles → Quiz and expand Interval Singing Tool; change
+section, instrument and semitone settings with the dock open. (2) Double-tap a
+quiz pitch/interval to inspect the target gauge and sing-back; check line colors,
+labels and readability. (3) Minimize/reopen to inspect retained targets/captures;
+try Flip-Flop and Reset. No screenshot inspection or physical-microphone testing;
+visual likeness, real singing responsiveness and retained captured-pitch behavior
+still need human review. Calibration remains available in the dock options menu.
+
+
+### Interval singing second pass and microphone crash — 2026-09-05
+
+`[review]` Runtime model: unknown. User approved the first pass visually and
+requested another short pass plus a simulator microphone crash fix. The crash
+report `Acquiring-2026-09-05-135240.ips` identifies `_dispatch_assert_queue_fail`
+inside the AVAudioEngine tap closure in `AppAudioSystem.acquireMicrophone`.
+That unannotated closure inherited MainActor, although the engine invokes it
+on its audio callback queue. Explicit `@Sendable` prevents that inheritance;
+the existing Sendable pitch pipeline and MainActor publication bridge remain.
+This is an audio callback fix for all microphone owners, not a simulator bypass.
+
+UI: larger error labels, a gap in the tuning line around note names, octave
+labels outside the moving tape, a capture-progress bar, an explicit Stop button,
+and retained pitch/interval summary when minimized. Manual operation state is
+now observable so the Stop control follows acquisition/cancellation directly.
+The Flip-Flop switch has its own accessibility target and 44 pt height. Dock
+cards are 124 pt high (previously 116); remaining Quiz content stays scrollable.
+First-pass visual acceptance is recorded here; this pass and older unrelated
+review statuses remain pending. No commit or TestFlight upload.
+
+Checks:
+- `xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug build CODE_SIGNING_ALLOWED=NO`: passed, with the existing AudioSystem async-alternative warning.
+- `xcrun simctl privacy 55373408-99CC-4EB3-A771-6ACF29E2D96A grant microphone com.acquiring.ios`: passed; the focused test uses real simulator capture, not mocked readings.
+- `xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -only-testing:AcquiringUITests/QuizCoverageTests/testMicrophoneCaptureAndFlipFlopDoNotCrash -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 120 test CODE_SIGNING_ALLOWED=NO`: passed on final run; xcresult summary confirms one test, zero failures. Verifies actual capture starts, first and second timed captures survive, Flip-Flop remains active through both slots and the pause, and Stop exits capture. The initial run reached normal no-voiced-pitch feedback without crashing, but failed to activate the combined label/switch hit target; separating the switch target corrected that issue. Only text accessibility evidence was inspected.
+- Final result bundle: `/Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa/Logs/Test/Test-Acquiring-2026.09.05_14-03-44--0400.xcresult`.
+- `git diff --check -- ios/Acquiring ios/AcquiringUITests`: passed.
+- `xcrun simctl install 55373408-99CC-4EB3-A771-6ACF29E2D96A /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa/Build/Products/Debug-iphonesimulator/Acquiring.app`: passed.
+- `xcrun simctl launch 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios`: passed; normal app opened at Library in the existing iPhone 17 simulator.
+
+Review: (1) Open 500 Miles → Quiz → Interval Singing Tool and double-tap either
+pitch card to record; inspect countdown/progress and try Stop. (2) Try Flip-Flop
+and inspect both capture windows; quiet input should produce ordinary no-signal
+feedback. (3) Load a target or capture notes, then minimize/reopen to inspect the
+summary and retained state. Real singing accuracy, device audio routes and the
+visual feel remain human-review items; no screenshots or full suites were run.
