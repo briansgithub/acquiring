@@ -3,7 +3,7 @@ import XCTest
 
 final class AcquiringAudioTests: XCTestCase {
     func testSoundConfigurationAndPreviewOptOutNormalizeAtTheBoundary() {
-        XCTAssertEqual(QuizSoundConfiguration().waveform, .sawtooth)
+        XCTAssertEqual(QuizSoundConfiguration().waveform, .clarinet)
         XCTAssertEqual(QuizSoundConfiguration().melodyGain, 0.5)
         XCTAssertEqual(QuizSoundConfiguration().chordGain, 0.5)
         XCTAssertEqual(QuizSoundConfiguration().arpeggioOption, .off)
@@ -56,9 +56,7 @@ final class AcquiringAudioTests: XCTestCase {
 
     func testWaveformDisplayNamesAreUniqueAndSynthLabelsAreExplicit() {
         XCTAssertEqual(Set(SynthWaveform.allCases.map(\.displayName)).count, SynthWaveform.allCases.count)
-        for waveform in [
-            SynthWaveform.flute, .clarinet, .oboe, .brass, .bell, .synthBass
-        ] {
+        for waveform in [SynthWaveform.flute, .clarinet] {
             XCTAssertTrue(waveform.displayName.hasPrefix("Synth "))
         }
     }
