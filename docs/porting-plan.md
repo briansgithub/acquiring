@@ -519,6 +519,81 @@ without moving the page; (4) open/close the bottom Practice tool. Portrait fit,
 actual touch behavior and visual usability still need review; broader layout and
 accessibility coverage remain at the full-testing gate.
 
+### Quiz layout and stable outlined selectors — human review pending
+
+`[review]` User-requested follow-up; implementation by gpt-5.6-terra/high,
+coordinator runtime identity unavailable. Removed the key/scale parentheses,
+visible beat readouts, and previous/next beat buttons. Reset, section selection,
+and Play/Pause now sit above Practice in a trailing footer, with Play/Pause
+rightmost. Timeline seeking and its spoken position remain available. The
+vertical balance fader sits to the right of the compact cards, measuring their
+actual height so its track meets the melody-card top and chord-tone-card bottom.
+Like current Android, up favors melody, down favors chords, and the upright
+caption reads Volume Mix. The 44pt touch area retains 0.01 adjustment and reset
+actions. Visual alignment remains for human review.
+
+The user also reported that section choices react without applying **only while
+playing** on iPhone 14 Pro. The focused pre-fix simulator run selected Chorus and
+Verse successfully while paused, then failed native hit testing on Chorus during
+playback (invalid activation point on two attempts), exhausting its 240-second
+test allowance. Playback publishes every 50ms; the inline selector was rebuilt
+with those updates. Section loading itself accepts a different valid ID and
+updates selection synchronously before the audio load.
+
+Section, Instrument, and Full/Roots now share an Equatable native SwiftUI Menu
+view with a 1pt rounded outline, inset labels, selected-option checkmarks, and
+44pt triggers. It refreshes for meaningful selector inputs rather than playback
+progress. Equality includes the song/section identity needed by each callback,
+options, selected ID, enabled state, and presentation values. Document section
+keys are used consistently; they are not ExtractedSection's composite IDs.
+The comparator is nonisolated and options are Sendable for Swift 6. Instrument
+returns from its sheet workaround to this native menu. Scope is explicitly the
+three main Quiz selectors; other screens, knobs, transpose buttons, and practice
+flows are unchanged. Switching sections still starts the new section paused.
+
+The initial layout-only incremental Debug build passed. Final verification of
+the shared selectors used:
+
+```sh
+xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -only-testing:AcquiringUITests/AcquiringUITests/testQuizSectionMenuAppliesPausedAndPlayingSelections -only-testing:AcquiringUITests/AcquiringUITests/testQuizInstrumentAndModeMenusApplyWhilePlaying -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 240 -maximum-test-execution-time-allowance 240 -resultBundlePath /tmp/acquiring-quiz-selectors-verified.xcresult test CODE_SIGNING_ALLOWED=NO
+```
+
+Passed, exit 0: **2 tests, 0 failures, 0 skips**, on the warm iPhone 17 simulator.
+The exact full-catalog `500 Miles` fixture covers paused/reopened section menus,
+section choice while playing and the resulting paused state, plus Instrument
+and Full/Root-only choices while playing. Tests use ordinary native menu taps
+without bypassing hit testing. The first shared-selector attempt stopped at a
+Swift 6 Equatable-isolation compile error; the corrected command above passed.
+The existing audio preview async-alternative warning remains unrelated.
+`git diff --check -- ios/Acquiring/Features/SongViews.swift ios/AcquiringUITests/AcquiringUITests.swift`
+passed. No full suite or screenshot inspection ran. Older tests referencing
+removed beat-step/status controls and the prior transpose review remain pending.
+
+Final normal simulator handoff:
+
+```sh
+xcrun simctl terminate 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios
+xcrun simctl install 55373408-99CC-4EB3-A771-6ACF29E2D96A /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa/Build/Products/Debug-iphonesimulator/Acquiring.app
+xcrun simctl launch 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios
+open -a Simulator
+```
+
+Terminate reported no running app (exit 3 after the test runner had closed it).
+Install, normal launch, and Simulator-open passed (exit 0; launch PID 22641).
+Normal catalog/user data were retained. No physical-device delivery or TestFlight
+upload was performed. The user subsequently authorized committing this follow-up
+and merging the current branch into `main`; visual/physical review remains pending.
+The pre-existing `.testflight-build-number` edit is preserved outside the commit.
+Implementation worktree `/Users/brian/Desktop/acquiring-ios-quiz-layout` remains
+with matching uncommitted source/test edits; the primary checkout was validated.
+
+Human review with `500 Miles`: (1) check the unparenthesized key, card-aligned
+vertical fader, and lower-right transport; (2) while playing, choose an instrument
+and Full/Roots using the matching outlined menus; (3) switch sections while
+playing and verify the new selection starts paused, including on iPhone 14 Pro
+when a separately authorized build is delivered. Earlier pending review statuses
+and the separate full-testing gate are unchanged.
+
 ## Full-app testing approval gate
 
 **Not authorized by this roadmap or by individual feature approvals.** After A–F
