@@ -85,12 +85,14 @@ final class AcquiringTests: XCTestCase {
         } catch is CancellationError {
         }
 
+        audio.setSessionInstrument(.flute)
+        let reentryConfiguration = configuration.replacing(waveform: .flute)
         XCTAssertEqual(
             audio.restorableQuizRevision(
                 songID: "song",
                 sectionID: "verse",
                 tempoPercent: 100,
-                soundConfiguration: configuration
+                soundConfiguration: reentryConfiguration
             ),
             revision
         )
