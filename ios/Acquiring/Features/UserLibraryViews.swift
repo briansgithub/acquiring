@@ -51,6 +51,8 @@ struct PlaylistsSectionView: View {
                         Image(systemName: userContent.isPlaylistsExpanded ? "chevron.up" : "chevron.down")
                             .accessibilityHidden(true)
                     }
+                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(userContent.isPlaylistsExpanded ? "Collapse Playlists" : "Expand Playlists")
@@ -123,6 +125,8 @@ private struct PlaylistAccordionRow: View {
                     .foregroundStyle(.secondary)
                     .accessibilityHidden(true)
             }
+            .frame(maxWidth: .infinity, minHeight: 44)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .accessibilityLabel(isExpanded ? "Collapse \(summary.name)" : "Expand \(summary.name)")

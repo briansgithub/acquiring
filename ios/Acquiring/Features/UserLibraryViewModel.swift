@@ -69,8 +69,9 @@ final class UserLibraryViewModel {
     }
 
     private func refreshDurableState(generation: Int) async {
-        playlistSummaries = .loading
-
+        // These reads are synchronous on the main actor. Keep existing rows
+        // mounted until their replacement is ready instead of publishing an
+        // intermediate loading state on every Library appearance/refresh.
         do {
             _ = try userLibrary.ensureFavorites()
             let summaries = try userLibrary.summaries()

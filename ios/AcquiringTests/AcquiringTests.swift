@@ -3,9 +3,19 @@ import AcquiringCore
 import Foundation
 import SwiftData
 import XCTest
+import UIKit
 @testable import Acquiring
 
 final class AcquiringTests: XCTestCase {
+    @MainActor
+    func testMelodyIntervalRobotoBoldIsBundledAndRegistered() throws {
+        let font = try XCTUnwrap(UIFont(name: "Roboto-Bold", size: 32))
+        XCTAssertEqual(font.fontName, "Roboto-Bold")
+        XCTAssertTrue(font.fontDescriptor.symbolicTraits.contains(.traitBold))
+        XCTAssertNotNil(Bundle.main.url(forResource: "Roboto-Bold", withExtension: "ttf", subdirectory: "Fonts"))
+        XCTAssertNotNil(Bundle.main.url(forResource: "OFL", withExtension: "txt", subdirectory: "Fonts"))
+    }
+
     func testUITestCatalogFixtureContainsTheRequestedCompressedSongs() throws {
         let fixture = try UITestCatalogFixture.load(from: Bundle(for: AcquiringTests.self))
 

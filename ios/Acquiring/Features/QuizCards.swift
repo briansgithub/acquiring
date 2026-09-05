@@ -133,14 +133,12 @@ struct QuizCardsView: View {
                 )
             switch QuizIntervals.melodyPitchCardDisplayMode(currentPitch: current, intervalState: state) {
             case .hidden:
-                QuizUnavailableCard(
-                    "Melody unavailable",
-                    identifier: "quiz.melody.unavailable",
+                QuizEmptyCardSlot(
                     fixedHeight: MelodyCardLayout.singleOrIntervalHeight
                 )
             case .single:
-                HStack {
-                    Spacer(minLength: 0)
+                GeometryReader { row in
+                    let halfWidth = max(0, (row.size.width - 8) / 2)
                     pitchCard(
                         title: "Current melody note",
                         pitch: current,
@@ -148,9 +146,10 @@ struct QuizCardsView: View {
                         identifier: "quiz.melody.current",
                         fixedHeight: MelodyCardLayout.singleOrIntervalHeight
                     )
-                    .frame(maxWidth: 180)
-                    Spacer(minLength: 0)
+                    .frame(width: halfWidth)
+                    .offset(x: halfWidth + 8)
                 }
+                .frame(height: MelodyCardLayout.singleOrIntervalHeight)
             case .interval:
                 let cards = state.map {
                     QuizIntervals.melodyPitchCards(
@@ -161,42 +160,44 @@ struct QuizCardsView: View {
                         currentLabel: currentLabel
                     )
                 } ?? []
-                HStack(alignment: .center, spacing: 8) {
-                    if let previous = cards.first(where: { $0.role == .previous }) {
-                        positionedPitchCard(previous, title: "Previous melody note", identifier: "quiz.melody.previous")
-                    } else {
-                        QuizUnavailableCard(
-                            "Previous melody unavailable",
-                            identifier: "quiz.melody.previous",
-                            fixedHeight: MelodyCardLayout.pairHeight
+                GeometryReader { row in
+                    let halfWidth = max(0, (row.size.width - 8) / 2)
+                    HStack(alignment: .center, spacing: 8) {
+                        HStack(spacing: 8) {
+                            if let previous = cards.first(where: { $0.role == .previous }) {
+                                positionedPitchCard(previous, title: "Previous melody note", identifier: "quiz.melody.previous")
+                            } else {
+                                QuizEmptyCardSlot(
+                                    fixedHeight: MelodyCardLayout.pairHeight
+                                )
+                                .frame(height: MelodyCardLayout.singleOrIntervalHeight, alignment: .bottom)
+                            }
+                            if let currentCard = cards.first(where: { $0.role == .current }) {
+                                positionedPitchCard(currentCard, title: "Current melody note", identifier: "quiz.melody.current")
+                            } else {
+                                QuizEmptyCardSlot(
+                                    fixedHeight: MelodyCardLayout.pairHeight
+                                )
+                                .frame(height: MelodyCardLayout.singleOrIntervalHeight, alignment: .top)
+                            }
+                        }
+                        .frame(width: halfWidth)
+                        intervalCard(
+                            title: "Melody interval",
+                            previous: state?.previous,
+                            current: state?.current,
+                            interval: state?.interval,
+                            identifier: "quiz.melody.interval",
+                            fixedHeight: MelodyCardLayout.singleOrIntervalHeight,
+                            showsPitchNames: false
                         )
-                        .frame(height: MelodyCardLayout.singleOrIntervalHeight, alignment: .bottom)
+                        .frame(width: halfWidth)
                     }
-                    if let currentCard = cards.first(where: { $0.role == .current }) {
-                        positionedPitchCard(currentCard, title: "Current melody note", identifier: "quiz.melody.current")
-                    } else {
-                        QuizUnavailableCard(
-                            "Current melody unavailable",
-                            identifier: "quiz.melody.current",
-                            fixedHeight: MelodyCardLayout.pairHeight
-                        )
-                        .frame(height: MelodyCardLayout.singleOrIntervalHeight, alignment: .top)
-                    }
-                    intervalCard(
-                        title: "Melody interval",
-                        previous: state?.previous,
-                        current: state?.current,
-                        interval: state?.interval,
-                        identifier: "quiz.melody.interval",
-                        fixedHeight: MelodyCardLayout.singleOrIntervalHeight,
-                        showsPitchNames: false
-                    )
                 }
+                .frame(height: MelodyCardLayout.singleOrIntervalHeight)
             }
             } else {
-                QuizUnavailableCard(
-                    "Melody unavailable",
-                    identifier: "quiz.melody.unavailable",
+                QuizEmptyCardSlot(
                     fixedHeight: MelodyCardLayout.singleOrIntervalHeight
                 )
             }
@@ -252,9 +253,7 @@ struct QuizCardsView: View {
                 .frame(maxWidth: 140)
             }
             } else {
-                QuizUnavailableCard(
-                    "Chord unavailable",
-                    identifier: "quiz.chord.unavailable",
+                QuizEmptyCardSlot(
                     fixedHeight: compact ? 44 : nil
                 )
             }
@@ -264,7 +263,7 @@ struct QuizCardsView: View {
 
     @ViewBuilder
     private func chordToneCards(active: QuizCardsPresentation.ActiveChord?) -> some View {
-        QuizCardSection("Chord tones", compact: compact) {
+        QuizCardSection("Chord Tones", compact: compact) {
             if let active, !active.isRest {
             let key = section.key(at: active.onset)
             let tones = ChordInterpreter.chordNotes(for: active.chord, key: key)
@@ -282,16 +281,12 @@ struct QuizCardsView: View {
                     }
                 }
             } else {
-                QuizUnavailableCard(
-                    "Chord tones unavailable",
-                    identifier: "quiz.chordTones.unavailable",
+                QuizEmptyCardSlot(
                     fixedHeight: compact ? 44 : nil
                 )
             }
             } else {
-                QuizUnavailableCard(
-                    "Chord tones unavailable",
-                    identifier: "quiz.chordTones.unavailable",
+                QuizEmptyCardSlot(
                     fixedHeight: compact ? 44 : nil
                 )
             }
@@ -366,7 +361,7 @@ struct QuizCardsView: View {
                 }
             }
         } else {
-            QuizUnavailableCard("\(title) unavailable", identifier: identifier, fixedHeight: fixedHeight)
+            QuizEmptyCardSlot(fixedHeight: fixedHeight)
         }
     }
 
@@ -435,7 +430,9 @@ struct QuizCardsView: View {
             ) {
                 VStack(spacing: 3) {
                     Text(interval.shorthand)
-                        .font(.title3.bold().monospaced())
+                        .font(showsPitchNames
+                              ? .title3.bold().monospaced()
+                              : .custom("Roboto-Bold", size: 32, relativeTo: .title3))
                         .lineLimit(1)
                         .minimumScaleFactor(0.65)
                     if showsPitchNames {
@@ -447,7 +444,7 @@ struct QuizCardsView: View {
                 .frame(maxWidth: .infinity)
             }
         } else {
-            QuizUnavailableCard("\(title) unavailable", identifier: identifier, fixedHeight: fixedHeight)
+            QuizEmptyCardSlot(fixedHeight: fixedHeight)
         }
     }
 
@@ -593,7 +590,7 @@ private final class QuizCardsPresentation {
     }
 
     func rootState(at beat: Double, activeChord: ActiveChord?) -> ChordRootIntervalState? {
-        guard let activeChord else { return nil }
+        guard let activeChord, !activeChord.isRest else { return nil }
         if let cachedRootState, cachedRootState.active == activeChord { return cachedRootState.state }
         let state = QuizIntervals.resolveChordRootState(section: section, currentBeat: beat)
         cachedRootState = (activeChord, state)
@@ -626,9 +623,20 @@ private struct QuizCardSection<Content: View>: View {
 
     var body: some View {
         if compact {
-            content()
-                .accessibilityElement(children: .contain)
-                .accessibilityLabel(title)
+            HStack(alignment: .center, spacing: 8) {
+                Text(title)
+                    .font(.caption2.weight(.medium))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
+                    .multilineTextAlignment(.leading)
+                    .frame(width: 44, alignment: .leading)
+                    .accessibilityAddTraits(.isHeader)
+                content()
+                    .frame(maxWidth: .infinity)
+            }
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel(title)
         } else {
             VStack(alignment: .leading, spacing: 5) {
                 Text(title)
@@ -850,30 +858,16 @@ private extension View {
     }
 }
 
-private struct QuizUnavailableCard: View {
-    let title: String
-    let identifier: String
+/// Preserve the row/slot geometry during rests, but draw no card and expose no
+/// placeholder or dead control to touch/VoiceOver.
+private struct QuizEmptyCardSlot: View {
     let fixedHeight: CGFloat?
 
-    init(_ title: String, identifier: String, fixedHeight: CGFloat? = nil) {
-        self.title = title
-        self.identifier = identifier
-        self.fixedHeight = fixedHeight
-    }
-
     var body: some View {
-        Button(action: {}) {
-            Text("—")
-                .font(.title3)
-                .frame(maxWidth: .infinity, minHeight: 44)
-                .frame(height: fixedHeight)
-        }
-        .buttonStyle(.plain)
-        .foregroundStyle(.secondary)
-        .background(.quaternary, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .disabled(true)
-        .accessibilityLabel(title)
-        .accessibilityHint("No preview is available")
-        .accessibilityIdentifier(identifier)
+        Color.clear
+            .frame(maxWidth: .infinity)
+            .frame(height: fixedHeight ?? 44)
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
     }
 }

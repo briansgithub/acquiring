@@ -380,7 +380,6 @@ private struct CatalogSettingsView: View {
         }
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
-        .accessibilityIdentifier("catalog.settings.screen")
     }
 }
 
@@ -430,6 +429,8 @@ private struct AppUpdateSettingsSection: View {
             .accessibilityHint("Opens Acquiring in TestFlight to check for a newer beta build")
         } header: {
             Text("App Updates")
+                // A leaf anchors the screen without overriding Form controls' IDs.
+                .accessibilityIdentifier("catalog.settings.screen")
         } footer: {
             Text("Updates are delivered through TestFlight. Select Acquiring there and tap Update if a newer build is available.")
         }
@@ -471,6 +472,7 @@ private struct CatalogSettingsStatusView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Label("Catalog unavailable", systemImage: "exclamationmark.triangle")
                     .foregroundStyle(.red)
+                    .accessibilityIdentifier("catalog.settings.status.failure")
                 Text(message)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
@@ -479,7 +481,6 @@ private struct CatalogSettingsStatusView: View {
                 }
                 .accessibilityIdentifier("catalog.retry")
             }
-            .accessibilityIdentifier("catalog.settings.status.failure")
         }
     }
 }
