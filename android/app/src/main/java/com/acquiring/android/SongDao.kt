@@ -36,6 +36,9 @@ interface SongDao {
     @Query("SELECT * FROM songs WHERE slug = :slug")
     suspend fun getSongBySlug(slug: String): Song?
 
+    @Query("SELECT complexityRating FROM song_browse_entries WHERE slug = :slug")
+    suspend fun getComplexityRating(slug: String): Double?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSong(song: Song)
 
@@ -243,4 +246,3 @@ interface SongDao {
     )
     suspend fun getSongsInMode(mode: String, filterText: String = ""): List<SongBrowseRow>
 }
-

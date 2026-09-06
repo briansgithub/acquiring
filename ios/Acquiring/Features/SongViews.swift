@@ -300,6 +300,12 @@ private struct SongInfoView: View {
                     }
                     DetailRow("Chords", "\(chords.count) (\(uniqueChords.count) unique)")
                     DetailRow("Melody notes", SongDetailPresentation.melodyLabel(section: section))
+                    if let complexity = song.complexityRating {
+                        DetailRow(
+                            "Complexity score",
+                            "\(complexity.formatted(.number.precision(.fractionLength(0...1)))) / 100"
+                        )
+                    }
                 }
 
                 if !chords.isEmpty {

@@ -6,19 +6,23 @@ public struct CatalogSong: Identifiable, Codable, Equatable, Sendable {
     public let title: String?
     public let url: URL?
     public let status: String
+    /// Corpus-normalized 0–100 rating used to describe a song's musical complexity.
+    public let complexityRating: Double?
 
     public init(
         id: String,
         artist: String?,
         title: String?,
         url: URL? = nil,
-        status: String = "ready"
+        status: String = "ready",
+        complexityRating: Double? = nil
     ) {
         self.id = id
         self.artist = artist
         self.title = title
         self.url = url
         self.status = status
+        self.complexityRating = complexityRating
     }
 
     public var displayTitle: String { title?.nilIfBlank ?? "Unknown Title" }

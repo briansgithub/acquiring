@@ -467,6 +467,7 @@ internal fun MainScreen(
     var selectedArtistSongs by remember { mutableStateOf<List<SongBrowseRow>?>(null) }
     var selectedSong by remember { mutableStateOf<Song?>(null) }
     var selectedSongSections by remember { mutableStateOf<Map<String, ExtractedSection>?>(null) }
+    var selectedSongComplexityRating by remember { mutableStateOf<Double?>(null) }
     var selectedSectionId by remember { mutableStateOf<String?>(null) }
     var isShowingAllSongs by rememberSaveable { mutableStateOf(false) }
     var currentTab by remember { mutableStateOf(2) }
@@ -567,6 +568,15 @@ internal fun MainScreen(
         if (selectedSong != null) {
             globalTranspose = 0
             AudioEngine.globalTranspose = 0
+        }
+    }
+    LaunchedEffect(activeDb, selectedSong?.slug) {
+        selectedSongComplexityRating = selectedSong?.slug?.let { slug ->
+            try {
+                activeDb.songDao().getComplexityRating(slug)
+            } catch (_: Exception) {
+                null
+            }
         }
     }
 
@@ -1009,6 +1019,7 @@ internal fun MainScreen(
                 // Song Detail View with Tabs
                 SongDetailView(
                     song = selectedSong!!,
+                    complexityRating = selectedSongComplexityRating,
                     sections = selectedSongSections!!,
                     selectedSectionId = selectedSectionId,
                     onSectionChange = { selectedSectionId = it },
@@ -1505,6 +1516,7 @@ internal const val QUIZ_TEMPO_DIAL_TEST_TAG = "QuizTempoDial"
 @Composable
 fun SongDetailView(
     song: Song,
+    complexityRating: Double? = null,
     sections: Map<String, ExtractedSection>,
     selectedSectionId: String?,
     onSectionChange: (String) -> Unit,
@@ -1762,7 +1774,14 @@ fun SongDetailView(
         }
 
         when (currentTab) {
-            0 -> InfoTab(song, selectedSection, sections, selectedSectionKey, onSectionChange)
+            0 -> InfoTab(
+                song,
+                complexityRating,
+                selectedSection,
+                sections,
+                selectedSectionKey,
+                onSectionChange
+            )
             1 -> ChordsTab(
                 section = selectedSection,
                 showLetterNames = showLetterNames,
@@ -3869,6 +3888,7 @@ private fun formatBeat(beat: Double): String =
 @Composable
 fun InfoTab(
     song: Song,
+    complexityRating: Double?,
     section: ExtractedSection,
     sections: Map<String, ExtractedSection>,
     selectedId: String?,
@@ -3954,6 +3974,9 @@ fun InfoTab(
                 InfoRow("Beats", formatBeat(beats) + (measures?.let { " · $it bars" } ?: ""))
             }
             InfoRow("Chords", "${progression.size} (${uniqueChordCount} unique)")
+            complexityRating?.let { score ->
+                InfoRow("Complexity score", "${"%.1f".format(score)} / 100")
+            }
             if (melodyNotes.isNotEmpty()) {
                 InfoRow("Melody notes", "$soundedNotes sounded / ${melodyNotes.size} total")
             } else {
