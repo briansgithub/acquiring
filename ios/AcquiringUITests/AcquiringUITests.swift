@@ -215,10 +215,28 @@ final class AcquiringUITests: XCTestCase {
 
         let arpeggiate = app.switches["songDetail.chords.arpeggiate"]
         XCTAssertTrue(arpeggiate.waitForExistence(timeout: 5))
-        let arpeggioSpeed = app.descendants(matching: .any)["songDetail.chords.arpeggioSpeed"]
-        XCTAssertFalse(arpeggioSpeed.exists)
         arpeggiate.tap()
-        XCTAssertTrue(arpeggioSpeed.waitForExistence(timeout: 5))
+        XCTAssertEqual(arpeggiate.value as? String, "1")
+
+        // The tone row replaced the arpeggio-speed knob and is populated before any tap.
+        XCTAssertTrue(
+            app.descendants(matching: .any)["songDetail.chords.tones"].waitForExistence(timeout: 5)
+        )
+        let firstTone = app.descendants(matching: .any)["songDetail.chords.tone.0"]
+        XCTAssertTrue(firstTone.waitForExistence(timeout: 5))
+        firstTone.tap()
+
+        let chordCards = app.buttons.matching(
+            NSPredicate(
+                format: "label BEGINSWITH %@ AND NOT label BEGINSWITH %@",
+                "Play ",
+                "Play chord tone "
+            )
+        )
+        if chordCards.count > 1 {
+            chordCards.element(boundBy: 1).tap()
+            XCTAssertTrue(firstTone.waitForExistence(timeout: 5), "The tone row follows the tapped chord card")
+        }
         attachScreenshot(of: app, named: "phase-2-song-detail-chords")
 
         app.navigationBars["Song"].buttons.element(boundBy: 0).tap()

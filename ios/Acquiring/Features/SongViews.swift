@@ -16,7 +16,6 @@ struct SongDetailView: View {
     @State private var selectedSectionID: String?
     @State private var showsLetterNames = false
     @State private var arpeggiatesChords = false
-    @State private var arpeggioStepMilliseconds = 80.0
     @State private var audioError: String?
     @State private var showsAudioDiagnostics = false
     @State private var audioRecoveryTask: Task<Void, Never>?
@@ -148,14 +147,8 @@ struct SongDetailView: View {
                         section: selected.section,
                         showsLetterNames: $showsLetterNames,
                         arpeggiates: $arpeggiatesChords,
-                        arpeggioStepMilliseconds: $arpeggioStepMilliseconds,
-                        onPreview: { chord in
-                            preview(
-                                chord,
-                                arpeggiates: arpeggiatesChords,
-                                arpeggioStepMilliseconds: Int(arpeggioStepMilliseconds.rounded())
-                            )
-                        }
+                        onPreview: { chord in preview(chord, arpeggiates: arpeggiatesChords) },
+                        onPreviewTone: { midi in previewTone(midi) }
                     )
                 }
             }
@@ -220,12 +213,28 @@ struct SongDetailView: View {
         arpeggioStepMilliseconds: Int = 80
     ) {
         guard !chord.isRest, !chord.notes.isEmpty else { return }
+        playPreview(
+            midi: chord.notes,
+            arpeggiates: arpeggiates,
+            arpeggioStepMilliseconds: arpeggioStepMilliseconds
+        )
+    }
+
+    private func previewTone(_ midi: Int) {
+        playPreview(midi: [midi])
+    }
+
+    private func playPreview(
+        midi: [Int],
+        arpeggiates: Bool = false,
+        arpeggioStepMilliseconds: Int = 80
+    ) {
         environment.vocalPractice.cancelActivity()
         Task {
             do {
                 try await environment.audio.play(
                     PreviewRequest(
-                        frequenciesHz: chord.notes.map { MusicTheory.frequency(midi: Double($0)) },
+                        frequenciesHz: midi.map { MusicTheory.frequency(midi: Double($0)) },
                         duration: .milliseconds(450),
                         arpeggiates: arpeggiates,
                         arpeggioStep: .milliseconds(arpeggioStepMilliseconds),
@@ -455,11 +464,19 @@ private struct SongChordsView: View {
     let section: ExtractedSection
     @Binding var showsLetterNames: Bool
     @Binding var arpeggiates: Bool
-    @Binding var arpeggioStepMilliseconds: Double
     let onPreview: (SongDetailChord) -> Void
+    let onPreviewTone: (Int) -> Void
+    @State private var selectedChordID: String?
 
     private var chords: [SongDetailChord] { SongDetailPresentation.uniqueChords(in: section) }
     private var key: KeyInfo { section.keys.first?.key ?? KeyInfo(tonic: "C", scale: "major") }
+
+    /// The most recently tapped chord, falling back to the first of the inventory so the
+    /// tone row is populated on arrival. Resolving by id also drops a stale selection when
+    /// the section changes underneath us.
+    private var selectedChord: SongDetailChord? {
+        chords.first { $0.id == selectedChordID } ?? chords.first
+    }
 
     var body: some View {
         ScrollView {
@@ -477,18 +494,7 @@ private struct SongChordsView: View {
                     .accessibilityIdentifier("songDetail.chords.letters")
                 Toggle("Arpeggiate", isOn: $arpeggiates)
                     .accessibilityIdentifier("songDetail.chords.arpeggiate")
-                if arpeggiates {
-                    PlaybackKnob(
-                        title: "Arpeggio step",
-                        value: $arpeggioStepMilliseconds,
-                        range: 30...1_000,
-                        valueLabel: "\(Int(arpeggioStepMilliseconds.rounded())) ms",
-                        accessibilityValue: "\(Int(arpeggioStepMilliseconds.rounded())) milliseconds between notes",
-                        resetValue: 80,
-                        identifier: "songDetail.chords.arpeggioSpeed"
-                    )
-                    .frame(maxWidth: .infinity)
-                }
+                chordTones
 
                 if chords.isEmpty {
                     ContentUnavailableView(
@@ -504,7 +510,11 @@ private struct SongChordsView: View {
                         spacing: 12
                     ) {
                         ForEach(chords) { chord in
-                            Button { onPreview(chord) } label: {
+                            let isSelected = chord.id == selectedChord?.id
+                            Button {
+                                selectedChordID = chord.id
+                                onPreview(chord)
+                            } label: {
                                 VStack(spacing: 7) {
                                     FittedRomanNumeral(
                                         display: RomanNumeralDisplay(
@@ -526,16 +536,61 @@ private struct SongChordsView: View {
                                 .frame(maxWidth: .infinity, minHeight: 68)
                                 .padding(8)
                                 .background(.quaternary, in: RoundedRectangle(cornerRadius: 12))
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .strokeBorder(.tint, lineWidth: isSelected ? 2 : 0)
+                                }
                             }
                             .buttonStyle(.plain)
                             .accessibilityLabel("Play \(chord.letter.isEmpty ? chord.roman : chord.letter)")
+                            .accessibilityAddTraits(isSelected ? [.isSelected] : [])
                         }
                     }
                 }
             }
             .padding()
         }
+        .onChange(of: section) { _, _ in selectedChordID = nil }
         .accessibilityIdentifier("songDetail.chords")
+    }
+
+    /// The selected chord's tones, sharing the quiz cards' labeling and wrapping.
+    /// Tap previews one tone; sing-back and persistent practice stay quiz-only.
+    @ViewBuilder
+    private var chordTones: some View {
+        if let chord = selectedChord, !chord.notes.isEmpty, let rootMIDI = chord.rootPositionRootMIDI {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Chord tones · \(chord.letter.isEmpty ? chord.roman : chord.letter)")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                ChordToneCardLayout(tones: chord.notes, rootMIDI: rootMIDI) { index, tone, label in
+                    ChordTonePreviewCard(label: label, index: index) { onPreviewTone(tone) }
+                }
+            }
+            .accessibilityIdentifier("songDetail.chords.tones")
+        }
+    }
+}
+
+private struct ChordTonePreviewCard: View {
+    let label: String
+    let index: Int
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            FittedScaleDegree(label, maximumFontSize: 28, minimumFontSize: 11, color: .white)
+                .frame(maxWidth: .infinity, minHeight: 34)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 5)
+                .frame(maxWidth: .infinity)
+                .frame(height: 44)
+                .background(.tint, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Play chord tone \(label)")
+        .accessibilityHint("Plays a preview")
+        .accessibilityIdentifier("songDetail.chords.tone.\(index)")
     }
 }
 
@@ -595,6 +650,8 @@ private struct SongDetailChord: Identifiable {
     let roman: String
     let letter: String
     let notes: [Int]
+    /// Reference root for degree labels, so an inverted chord still labels from its root.
+    let rootPositionRootMIDI: Int?
 }
 
 private enum SongDetailPresentation {
@@ -693,7 +750,8 @@ private enum SongDetailPresentation {
                 isRest: isRest,
                 roman: isRest ? "Rest" : "—",
                 letter: "",
-                notes: []
+                notes: [],
+                rootPositionRootMIDI: nil
             )
         }
         let roman = ChordInterpreter.romanSymbol(for: chord, key: key)
@@ -706,7 +764,8 @@ private enum SongDetailPresentation {
             isRest: false,
             roman: displayRoman,
             letter: ChordInterpreter.letterName(for: chord, key: key),
-            notes: ChordInterpreter.chordNotes(for: chord, key: key)
+            notes: ChordInterpreter.chordNotes(for: chord, key: key),
+            rootPositionRootMIDI: ChordInterpreter.rootPositionChordNotes(for: chord, key: key).first
         )
     }
 

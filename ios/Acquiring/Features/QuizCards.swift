@@ -290,16 +290,8 @@ struct QuizCardsView: View {
             let tones = ChordInterpreter.chordNotes(for: active.chord, key: key)
             let root = ChordInterpreter.rootPositionChordNotes(for: active.chord, key: key).first
             if let root, !tones.isEmpty {
-                ViewThatFits(in: .horizontal) {
-                    toneRow(tones: tones, root: root, chord: active.chord, key: key)
-                    LazyVGrid(
-                        columns: [GridItem(.adaptive(minimum: 56), spacing: 8)],
-                        spacing: 8
-                    ) {
-                        ForEach(Array(tones.enumerated()), id: \.offset) { index, tone in
-                            toneCard(tone: tone, root: root, chord: active.chord, key: key, index: index)
-                        }
-                    }
+                ChordToneCardLayout(tones: tones, rootMIDI: root) { index, tone, label in
+                    toneCard(tone: tone, label: label, chord: active.chord, key: key, index: index)
                 }
             } else {
                 QuizEmptyCardSlot(
@@ -314,27 +306,13 @@ struct QuizCardsView: View {
         }
     }
 
-    private func toneRow(
-        tones: [Int],
-        root: Int,
-        chord: [String: JSONValue],
-        key: KeyInfo
-    ) -> some View {
-        HStack(spacing: tones.count >= 7 ? 3 : 7) {
-            ForEach(Array(tones.enumerated()), id: \.offset) { index, tone in
-                toneCard(tone: tone, root: root, chord: chord, key: key, index: index)
-            }
-        }
-    }
-
     private func toneCard(
         tone: Int,
-        root: Int,
+        label: String,
         chord: [String: JSONValue],
         key: KeyInfo,
         index: Int
     ) -> some View {
-        let label = MusicTheory.relativeMajorDegreeLabel(midi: tone, rootMIDI: root)
         let preview = chordTonePreviewMIDI(tone, chord: chord, key: key)
         return QuizCardButton(
             title: "Play chord tone \(label)",
@@ -756,6 +734,32 @@ private struct QuizCardButton<Content: View>: View {
             : "Preview unavailable")
         .opacity(enabled ? 1 : 0.45)
         .accessibilityIdentifier(identifier)
+    }
+}
+
+/// A chord's tones as scale-degree cards, labeled relative to the chord's root-position root.
+/// Shared so the quiz stack and the song chord inventory agree on spelling and wrapping;
+/// each call site supplies its own card chrome and gestures.
+struct ChordToneCardLayout<Card: View>: View {
+    let tones: [Int]
+    let rootMIDI: Int
+    /// Receives the tone's index, its source MIDI, and its degree label.
+    @ViewBuilder let card: (Int, Int, String) -> Card
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: tones.count >= 7 ? 3 : 7) { cards }
+            LazyVGrid(
+                columns: [GridItem(.adaptive(minimum: 56), spacing: 8)],
+                spacing: 8
+            ) { cards }
+        }
+    }
+
+    private var cards: some View {
+        ForEach(Array(tones.enumerated()), id: \.offset) { index, tone in
+            card(index, tone, MusicTheory.relativeMajorDegreeLabel(midi: tone, rootMIDI: rootMIDI))
+        }
     }
 }
 
