@@ -24,7 +24,7 @@ final class AcquiringUITests: XCTestCase {
         continueAfterFailure = false
     }
 
-    func testAudioDiagnosticsResetAndSettingsShareSheet() {
+    func testAudioDiagnosticsResetAndHiddenSettingsEntry() {
         let app = launchApp(scenario: .ready, arguments: ["--ui-testing-audio-start-failure"])
         openQuiz(app, searchText: "500 Miles", songButton: Fixture.fiveHundredMiles, navigationTitle: Fixture.fiveHundredMilesQuizTitle)
         app.buttons["quiz.play"].tap()
@@ -39,12 +39,12 @@ final class AcquiringUITests: XCTestCase {
         pause.tap()
         app.navigationBars[Fixture.fiveHundredMilesQuizTitle].buttons.element(boundBy: 0).tap()
         openCatalogSettings(app)
-        let share = app.buttons["settings.shareAudioDiagnostics"]
-        scrollToHittable(share, in: app)
-        share.tap()
-        let report = app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", "Acquiring-Audio-Diagnostics")).firstMatch
-        XCTAssertTrue(report.waitForExistence(timeout: 10), app.debugDescription)
-        XCTAssertTrue(app.cells["Copy"].exists && app.cells["Save to Files"].exists, app.debugDescription)
+        // The report stays reachable from the failure alert, but Settings no longer
+        // advertises it while playback is healthy.
+        XCTAssertFalse(
+            app.buttons["settings.shareAudioDiagnostics"].exists,
+            "Audio Diagnostics must stay hidden in Settings"
+        )
     }
 
     func testSearchKeyboardDismissesOutsideAndReopensInside() {

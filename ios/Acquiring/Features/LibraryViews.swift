@@ -173,11 +173,6 @@ private struct IntroductionView: View {
                         pitchHintRow("White dot: original octave", isAdjusted: false)
                         pitchHintRow("Gray dot: more comfortable octave", isAdjusted: true)
                     }
-
-                    Text("Open a song, then choose “Calibrate comfortable pitch” in the singing tool’s menu and hum an easy note.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .padding(.top, 2)
                 }
             }
             .padding(.horizontal, 20)
