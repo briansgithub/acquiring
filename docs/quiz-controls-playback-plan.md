@@ -1,7 +1,8 @@
 # Quiz controls, instrument preferences, and foreground playback
 
-Status: implemented in isolated worktrees; final iOS verification and merge are
-in progress. Scope: **iOS and Android**, confirmed by the user. This is a focused
+Status: implemented in isolated worktrees and merged into the primary checkout.
+The iOS real-relaunch UI check and physical-device review remain pending.
+Scope: **iOS and Android**, confirmed by the user. This is a focused
 attachment to `docs/porting-plan.md`; its existing review
 and release gates remain in force. The requested behavior below supersedes older
 requirements to continue Quiz audio after navigation or in the background.
@@ -10,6 +11,30 @@ Planning runtime: **unknown**. Routes below use the repository's established
 Sol/high and Terra/medium assignments; they are capability choices, not pricing
 claims. Source observations came from the primary working tree, including pending
 instrument normalization/grouping. Implementation must retain those changes.
+
+## Completion — 2026-09-05
+
+Merged `codex/quiz-controls` at `1e471820` into the original primary branch,
+`codex/normalize-instrument-volumes`, with a fast-forward. All platform worker
+tips are reachable from that branch. Preserved the unrelated uncommitted edits,
+including the shared singing-tool dock and existing review-log additions; no
+unrelated changes were committed. The final Android source matches the validated
+worktree. The combined primary iOS sources were built, installed, and launched:
+
+- `python3 android/scripts/compact_check.py --name ios-quiz-primary-merged-build --keep-success-log -- xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -derivedDataPath /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug build CODE_SIGNING_ALLOWED=NO`:
+  passed, 134.5 s.
+- `xcrun simctl install 55373408-99CC-4EB3-A771-6ACF29E2D96A /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa/Build/Products/Debug-iphonesimulator/Acquiring.app`:
+  passed. `xcrun simctl launch 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios`:
+  passed; the normal app is open in the existing iPhone 17 simulator.
+- `git diff --check` after preserving local edits: passed. Reachability checks
+  for the integration branch and all three platform worker branches passed.
+
+The authorized final iOS retry passed the instrument/mode menu test. The lifecycle
+test verified background pause and instrument continuity between songs, then
+failed on test navigation before its real-relaunch assertions. The narrow test
+navigation correction is committed at `9b7aafcd`; no further retry ran. Detailed
+Android, normalization, iOS core/selector results and remaining human checks are
+in the Quiz controls entry in `docs/porting-plan.md`. No full suite or release ran.
 
 ## Behavior contract
 
