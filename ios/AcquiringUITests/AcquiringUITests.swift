@@ -365,6 +365,18 @@ final class AcquiringUITests: XCTestCase {
             "The playback clock must keep advancing while the instrument menu commits"
         )
 
+        let tempo = app.descendants(matching: .any)["quiz.tempo"]
+        XCTAssertTrue(tempo.waitForExistence(timeout: 5))
+        let tempoBefore = tempo.value as? String
+        tempo.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.85)).press(
+            forDuration: 0.1,
+            thenDragTo: tempo.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.44))
+        )
+        XCTAssertTrue(waitForValueChange(tempo, from: tempoBefore, timeout: 5))
+        let fasterPercent = (tempo.value as? String)
+            .flatMap { Int($0.split(separator: " ").first ?? "") }
+        XCTAssertGreaterThan(fasterPercent ?? 0, 100, "The production knob must set a faster playback tempo")
+
         let mode = app.descendants(matching: .any)["quiz.mode"]
         XCTAssertTrue(mode.waitForExistence(timeout: 5))
         XCTAssertEqual(mode.frame.midY, app.buttons["quiz.reset"].frame.midY, accuracy: 2,
