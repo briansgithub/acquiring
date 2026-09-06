@@ -4,15 +4,19 @@ import android.content.Context
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotFocused
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.Espresso.pressBack
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -53,6 +57,68 @@ class SongSearchUiTest {
     @Test
     fun titleSearchShowsResultsAndOpensQuiz() {
         searchAndOpenSong("Search by Title", " ALL STAR ", "Search Title", 1)
+    }
+
+    @Test
+    fun quizBackPreservesAllSongsFilterAndGroup() {
+        runBlocking {
+            db.songDao().upsertBrowseEntry(SongBrowseEntry("all-star", "smash-mouth", "All Star", "A", 12.0, 1))
+        }
+        val session = TessituraSessionViewModel()
+        composeRule.setContent {
+            MaterialTheme { MainScreen(db, userDb, session) }
+        }
+        composeRule.onNodeWithText("All Songs").performClick()
+        composeRule.onNodeWithTag("AllSongsFilter").performTextInput("All Star")
+        composeRule.waitUntil(5_000) {
+            composeRule.onAllNodesWithText("A").fetchSemanticsNodes().isNotEmpty()
+        }
+        composeRule.onNodeWithContentDescription("Expand A").performClick()
+        val songRow = hasText("All Star") and hasClickAction() and !hasSetTextAction()
+        composeRule.waitUntil(5_000) { composeRule.onAllNodes(songRow).fetchSemanticsNodes().isNotEmpty() }
+        composeRule.onNode(songRow).performClick()
+        waitForText("Play")
+        pressBack()
+        composeRule.onNodeWithTag("AllSongsFilter").assertIsDisplayed()
+        composeRule.onNodeWithContentDescription("Collapse A").assertIsDisplayed()
+        composeRule.onNode(songRow).assertIsDisplayed()
+    }
+
+    @Test
+    fun informationIsADetourAndQuizBackReturnsToSearchOrArtist() {
+        val session = TessituraSessionViewModel()
+        composeRule.setContent {
+            MaterialTheme { MainScreen(db, userDb, session) }
+        }
+        val field = composeRule.onNode(hasSetTextAction() and hasText("Search by Title"))
+        field.performClick().performTextInput("All")
+        waitForText("All Star")
+        composeRule.onNodeWithText("All Star").performClick()
+        waitForText("Play")
+        androidx.test.espresso.Espresso.closeSoftKeyboard()
+        repeat(2) { visit ->
+            composeRule.onNodeWithTag(QUIZ_INFO_BUTTON_TEST_TAG).performClick()
+            waitForText("OVERVIEW")
+            if (visit == 0) pressBack() else composeRule.onNodeWithText("< Back").performClick()
+            waitForText("Play")
+            composeRule.onNodeWithTag(QUIZ_INFO_BUTTON_TEST_TAG).assertIsDisplayed()
+        }
+        pressBack()
+        field.assertIsDisplayed()
+        composeRule.onNodeWithTag(QUIZ_INFO_BUTTON_TEST_TAG).assertDoesNotExist()
+
+        field.performClick()
+        waitForText("All Star")
+        composeRule.onNodeWithText("All Star").performClick()
+        waitForText("Play")
+        composeRule.onNodeWithText("smash mouth").performClick()
+        waitForText("All Star")
+        composeRule.onNodeWithText("All Star").performClick()
+        waitForText("Play")
+        composeRule.onNodeWithText("< Back").performClick()
+        waitForText("All Star")
+        composeRule.onNodeWithText("smash mouth").assertIsDisplayed()
+        composeRule.onNodeWithTag(QUIZ_INFO_BUTTON_TEST_TAG).assertDoesNotExist()
     }
 
     private fun searchAndOpenSong(label: String, query: String, button: String, count: Int) {

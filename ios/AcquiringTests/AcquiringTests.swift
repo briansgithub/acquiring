@@ -1231,6 +1231,19 @@ final class AcquiringTests: XCTestCase {
     }
 
     @MainActor
+    func testOpeningQuizKeepsEachOriginWithoutInsertingInformation() async throws {
+        let fixture = try makeLibraryStore(maintenance: ScriptedCatalogMaintenanceService())
+        defer { fixture.cleanup() }
+        let song = CatalogSong(id: "the-proclaimers__500-miles", artist: "the-proclaimers", title: "500 Miles")
+        let origins: [[AppRoute]] = [[], [.artist("the-proclaimers")], [.allSongs], [.playlist("favorites")]]
+        for origin in origins {
+            fixture.store.path = origin
+            fixture.store.openSong(song)
+            XCTAssertEqual(fixture.store.path, origin + [.quiz(song.id)])
+        }
+    }
+
+    @MainActor
     func testOpeningSongArtistPreservesOriginAndAvoidsDuplicateArtistRoute() async throws {
         let fixture = try makeLibraryStore(maintenance: ScriptedCatalogMaintenanceService())
         defer { fixture.cleanup() }
@@ -1240,11 +1253,11 @@ final class AcquiringTests: XCTestCase {
             title: "Help"
         )
 
-        fixture.store.path = [.songDetail(song.id), .quiz(song.id)]
+        fixture.store.path = [.quiz(song.id), .songDetail(song.id)]
         await fixture.store.openArtist(from: song)
         XCTAssertEqual(fixture.store.path, [.artist("The Beatles")])
 
-        fixture.store.path += [.songDetail(song.id), .quiz(song.id)]
+        fixture.store.path += [.quiz(song.id), .songDetail(song.id)]
         await fixture.store.openArtist(from: song)
         XCTAssertEqual(fixture.store.path, [.artist("The Beatles")])
 

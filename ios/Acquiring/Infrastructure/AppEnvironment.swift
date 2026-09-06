@@ -212,6 +212,18 @@ enum QuizDisplayMode: String, CaseIterable, Hashable, Identifiable {
     }
 }
 
+enum QuizNavigationPreference {
+    static let edgeSwipeBackKey = "quizEdgeSwipeBackEnabled"
+
+    static var defaults: UserDefaults {
+        if let session = UITestSession.current(),
+           let defaults = UserDefaults(suiteName: "\(session.historySuiteName).navigation") {
+            return defaults
+        }
+        return .standard
+    }
+}
+
 /// A visual rendering preference only; never changes the audio clock or tempo.
 enum TimelineFrameRatePreference: String, CaseIterable, Identifiable {
     case standard = "60"

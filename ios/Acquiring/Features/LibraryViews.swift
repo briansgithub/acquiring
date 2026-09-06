@@ -471,6 +471,8 @@ private struct SearchCatalogView: View {
             .padding(.top, 8)
             .accessibilityIdentifier("library.search.scope")
 
+            recentSongList
+
             if store.shouldShowMissingCatalogNotice {
                 Text("Database not downloaded. Download in Settings.")
                     .font(.caption)
@@ -478,6 +480,26 @@ private struct SearchCatalogView: View {
                     .padding(.top, 10)
                     .accessibilityIdentifier("library.catalog.unavailable")
             }
+        }
+    }
+
+    @ViewBuilder
+    private var recentSongList: some View {
+        if store.hasInstalledCatalog,
+           store.searchScope == .songs,
+           case .idle = store.suggestions,
+           store.shouldShowRecentContent,
+           !store.recentSongs.isEmpty {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("Recent:")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                ForEach(store.recentSongs) { song in
+                    SongRow(song: song, isCompact: true) { store.openSong(song) }
+                        .buttonStyle(.plain)
+                }
+            }
+            .padding(.top, 8)
         }
     }
 
@@ -493,14 +515,7 @@ private struct SearchCatalogView: View {
     private var songResults: some View {
         switch store.suggestions {
         case .idle:
-            if store.shouldShowRecentContent, !store.recentSongs.isEmpty {
-                Section("Recent Songs") {
-                    ForEach(store.recentSongs) { song in
-                        SongRow(song: song, isCompact: true) { store.openSong(song) }
-                            .listRowInsets(EdgeInsets(top: 2, leading: 16, bottom: 2, trailing: 16))
-                    }
-                }
-            }
+            EmptyView()
         case .loading: ProgressView()
         case let .content(songs):
             ForEach(songs) { song in SongRow(song: song) { store.openSong(song) } }
@@ -612,10 +627,20 @@ struct SongRow: View {
 private struct CatalogSettingsView: View {
     @Bindable var store: LibraryStore
     @State private var showsIntroduction = false
+    @AppStorage(QuizNavigationPreference.edgeSwipeBackKey, store: QuizNavigationPreference.defaults)
+    private var enablesQuizEdgeSwipeBack = false
 
     var body: some View {
         Form {
             InstrumentSettingsSection()
+            Section {
+                Toggle("Edge swipe Back in Quiz", isOn: $enablesQuizEdgeSwipeBack)
+                    .accessibilityIdentifier("settings.quizEdgeSwipeBack")
+            } header: {
+                Text("Navigation")
+            } footer: {
+                Text("Swipe from the left screen edge to return to the list that opened the quiz.")
+            }
             Section {
                 Button {
                     showsIntroduction = true

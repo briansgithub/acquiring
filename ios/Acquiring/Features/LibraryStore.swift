@@ -311,7 +311,6 @@ final class LibraryStore {
             await history.addSong(song.id)
             await history.addArtist(song.artist)
         }
-        path.append(.songDetail(song.id))
         path.append(.quiz(song.id))
     }
 

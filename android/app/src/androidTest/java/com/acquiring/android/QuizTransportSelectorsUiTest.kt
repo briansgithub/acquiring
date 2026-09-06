@@ -103,7 +103,7 @@ class QuizTransportSelectorsUiTest {
                     persistentPitchSource = pitchSource,
                     isFavorite = false,
                     onToggleFavorite = {},
-                    onBack = { currentTab = 0 }
+                    onBack = { currentTab = 2 }
                 )
             }
         }
@@ -139,7 +139,7 @@ class QuizTransportSelectorsUiTest {
         composeTestRule.runOnIdle { assertEquals("chorus", selectedSectionId) }
         waitForAdvancingPlayback()
 
-        composeTestRule.onNodeWithText("< Back").performClick()
+        composeTestRule.onNodeWithTag(QUIZ_INFO_BUTTON_TEST_TAG).performClick()
         composeTestRule.waitUntil(5_000) {
             QuizPlaybackController.state.value.phase == QuizPlaybackPhase.PAUSED
         }

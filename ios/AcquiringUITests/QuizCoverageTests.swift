@@ -15,12 +15,103 @@ final class QuizCoverageTests: XCTestCase {
         continueAfterFailure = true
     }
 
+    func testInformationDetourPreservesQuizAndBackReturnsDirectlyToSearch() {
+        let app = launchReadyQuiz()
+        let info = app.buttons["quiz.info"]
+        XCTAssertTrue(info.waitForExistence(timeout: 10))
+        XCTAssertEqual(info.label, "Song information")
+        XCTAssertGreaterThanOrEqual(info.frame.width, 43.5)
+        XCTAssertGreaterThanOrEqual(info.frame.height, 43.5)
+
+        let section = app.descendants(matching: .any)["quiz.section"]
+        section.tap()
+        app.buttons["Chorus"].tap()
+        XCTAssertTrue(waitForValue(section, "Chorus", timeout: 5))
+        let instrument = app.descendants(matching: .any)["quiz.instrument"]
+        instrument.tap()
+        app.buttons["Sine"].tap()
+        XCTAssertTrue(waitForValue(instrument, "Sine", timeout: 5))
+
+        for visit in 0..<3 {
+            info.tap()
+            XCTAssertTrue(app.descendants(matching: .any)["songDetail.info"].waitForExistence(timeout: 10))
+            if visit == 1 {
+                app.buttons["songDetail.quiz"].tap()
+            } else {
+                app.navigationBars.buttons["BackButton"].firstMatch.tap()
+            }
+            XCTAssertTrue(info.waitForExistence(timeout: 10))
+            XCTAssertTrue(waitForValue(section, "Chorus", timeout: 5))
+            XCTAssertTrue(waitForValue(instrument, "Sine", timeout: 5))
+        }
+        app.navigationBars.buttons["BackButton"].firstMatch.tap()
+        XCTAssertTrue(app.textFields["library.search.field"].waitForExistence(timeout: 10))
+        XCTAssertFalse(app.navigationBars["Song"].exists)
+        XCTAssertFalse(info.exists)
+    }
+
+    func testQuizEdgeBackSettingDefaultsOffPersistsAndReturnsToArtist() {
+        let app = launchReadyQuiz()
+        func edgeSwipe() {
+            let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0.5))
+            let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.85, dy: 0.5))
+            start.press(forDuration: 0.05, thenDragTo: end)
+        }
+        edgeSwipe()
+        XCTAssertTrue(app.buttons["quiz.info"].exists, "Edge Back must be off by default")
+        app.navigationBars.buttons["BackButton"].firstMatch.tap()
+        app.buttons["catalog.settings"].tap()
+        let toggle = app.switches["settings.quizEdgeSwipeBack"]
+        XCTAssertTrue(toggle.waitForExistence(timeout: 10))
+        XCTAssertEqual(toggle.value as? String, "0")
+        if toggle.switches.firstMatch.exists { toggle.switches.firstMatch.tap() } else { toggle.tap() }
+        XCTAssertTrue(waitForValue(toggle, "1", timeout: 5))
+
+        app.terminate()
+        app.launch()
+        app.buttons["catalog.settings"].tap()
+        XCTAssertTrue(waitForValue(toggle, "1", timeout: 10), "The setting must survive relaunch")
+        app.navigationBars.buttons["BackButton"].firstMatch.tap()
+        let search = app.textFields["library.search.field"]
+        let artistsScope = app.segmentedControls["library.search.scope"].buttons["Artists"]
+        artistsScope.tap()
+        XCTAssertTrue(artistsScope.isSelected)
+        search.tap()
+        search.typeText("proclaimers")
+        let artist = app.buttons.matching(NSPredicate(format: "label MATCHES[c] %@", "the[- ]proclaimers")).firstMatch
+        guard artist.waitForExistence(timeout: 10) else { XCTFail("Artist result missing"); return }
+        artist.tap()
+        let song = app.buttons[Fixture.fiveHundredMiles]
+        guard song.waitForExistence(timeout: 10) else { XCTFail("Artist's song missing"); return }
+        song.tap()
+        XCTAssertTrue(app.buttons["quiz.info"].waitForExistence(timeout: 10))
+        app.swipeRight()
+        XCTAssertTrue(app.buttons["quiz.info"].exists, "A full-screen swipe must not leave Quiz")
+        edgeSwipe()
+        XCTAssertTrue(song.waitForExistence(timeout: 10), "Enabled edge Back must return directly to the artist's songs")
+        XCTAssertFalse(app.buttons["quiz.info"].exists)
+        XCTAssertFalse(app.navigationBars["Song"].exists)
+
+        app.navigationBars.buttons["BackButton"].firstMatch.tap()
+        app.buttons["catalog.settings"].tap()
+        XCTAssertTrue(toggle.waitForExistence(timeout: 10))
+        if toggle.switches.firstMatch.exists { toggle.switches.firstMatch.tap() } else { toggle.tap() }
+        XCTAssertTrue(waitForValue(toggle, "0", timeout: 5))
+        app.navigationBars.buttons["BackButton"].firstMatch.tap()
+        artist.tap()
+        song.tap()
+        XCTAssertTrue(app.buttons["quiz.info"].waitForExistence(timeout: 10))
+        edgeSwipe()
+        XCTAssertTrue(app.buttons["quiz.info"].exists, "Turning the setting off must disable edge Back again")
+    }
+
     // MARK: - F054 control geometry
 
     /// Every primary Quiz control must present at least a 44 pt touch target.
     func testQuizPrimaryControlsMeetMinimumTouchTargets() {
         let app = launchReadyQuiz()
         let identifiers = [
+            "quiz.info",
             "quiz.reset",
             "quiz.section",
             "quiz.play",
@@ -510,8 +601,8 @@ final class QuizCoverageTests: XCTestCase {
             poll(timeout: 5) { (first.value as? String ?? "No pitch").hasPrefix("No pitch") },
             "Backgrounding must clear the loaded target"
         )
-        // The underlying Song Detail must use the same tool, with no hidden sheet presenter.
-        app.navigationBars.buttons["BackButton"].firstMatch.tap()
+        // Song information must use the same tool, with no hidden sheet presenter.
+        app.buttons["quiz.info"].tap()
         XCTAssertTrue(toggle.waitForExistence(timeout: 10))
         XCTAssertEqual(app.descendants(matching: .any).matching(identifier: "vocal.practice.dock").count, 1)
         XCTAssertEqual(app.buttons.matching(identifier: "vocal.practice.expand").count, 1)
@@ -597,14 +688,9 @@ final class QuizCoverageTests: XCTestCase {
         star.tap()
         XCTAssertTrue(waitForValue(star, "Favorite", timeout: 5), "The star must reflect membership")
 
-        // Opening a song pushes Song detail and Quiz, so walk back to Library.
+        // Quiz returns directly to its source in one Back action.
         let searchField = app.textFields["library.search.field"]
-        for _ in 0..<4 where !searchField.exists {
-            let back = app.navigationBars.buttons["BackButton"].firstMatch
-            guard back.waitForExistence(timeout: 3), back.isHittable else { break }
-            back.tap()
-            _ = searchField.waitForExistence(timeout: 3)
-        }
+        app.navigationBars.buttons["BackButton"].firstMatch.tap()
         XCTAssertTrue(searchField.waitForExistence(timeout: 10), "Back from Quiz must return to Library")
 
         // Playlists is a collapsed accordion on Library; open it first.
@@ -641,6 +727,17 @@ final class QuizCoverageTests: XCTestCase {
             "Expanding Favorites must reveal its contents"
         )
         XCTAssertTrue(entry.exists, "The favourited song must be listed in Favorites")
+
+        openFavorites.tap()
+        let playlistSong = app.buttons[Fixture.fiveHundredMiles]
+        XCTAssertTrue(playlistSong.waitForExistence(timeout: 10))
+        playlistSong.tap()
+        XCTAssertTrue(app.buttons["quiz.info"].waitForExistence(timeout: 10))
+        app.navigationBars.buttons["BackButton"].firstMatch.tap()
+        XCTAssertTrue(playlistSong.waitForExistence(timeout: 10), "Quiz Back must return directly to Favorites")
+        XCTAssertFalse(app.navigationBars["Song"].exists)
+        app.navigationBars.buttons["BackButton"].firstMatch.tap()
+        XCTAssertTrue(entry.waitForExistence(timeout: 10))
 
         // Remove through the named accessibility action rather than a raw swipe.
         if entry.exists {

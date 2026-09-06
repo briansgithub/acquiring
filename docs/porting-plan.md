@@ -1557,3 +1557,78 @@ See [the consolidation record](worktree-consolidation-2026-09-05.md) for exact
 checks, preserved recovery references, and separate pending work. The earlier
 return-to-Library keyboard check and physical-device acceptance are not claimed
 resolved. No push or release was performed.
+
+### Quiz information navigation and optional iOS edge Back — 2026-09-05
+
+Runtime model: unknown. Implemented; human visual review pending. The approved
+navigation target is the originating list (search/home, artist, playlist, or
+All Songs), rather than always forcing Library.
+
+- Android and iOS Quiz now have a small circled information button beside
+  Favorite. Information is a detour: its Back returns to Quiz, and Quiz Back
+  returns directly to the originating list. iOS's Song Detail Quiz action pops
+  the existing Quiz instead of adding another route. Existing song/section,
+  settings, and audio lifecycle ownership are retained.
+- Settings → Navigation → **Edge swipe Back in Quiz** is an iOS preference,
+  **off by default**. Enabling permits the native left-edge Back gesture;
+  full-screen swipe navigation remains disabled in Quiz. The preference survives
+  relaunch, and the guard restores native gesture state when leaving Quiz.
+- Preserve the pre-existing compact Recent-song UI and transpose-width edits.
+  This checkpoint does not approve older pending features or authorize release.
+
+Verification: no screenshots were inspected. Both incremental Debug builds
+passed. Five focused iOS checks passed across runs: route origin preservation,
+artist route trimming, repeated information/Quiz returns with section and
+instrument continuity, Favorites playlist return, and the edge-Back setting
+(default off, persisted on after relaunch, edge Back to artist, then off again).
+The information button's 44 pt accessibility target passed after using a plain
+button style.
+
+Outstanding checks: the All Songs UI flow still stops while trying to expand
+its group before opening a song; its navigation portion is unverified. The
+existing instrument/transpose menu UI test timed out at both 120 s and 240 s;
+no broader investigation was performed. The owner explicitly deferred further
+Android testing. Earlier Android transport/continuity and All Songs return tests
+passed, but search tests clipped their result row on the small emulator, and the
+new detour test ended at an artist-label assertion. Android is not fully verified.
+
+Exact substantive commands below were run through `android/scripts/compact_check.py`
+(`scripts/compact_check.py` when working in `android/`); the labels identify logs
+under the system temporary `ai-agent-checks` directory. Repeated harness-fix
+attempts are not additional acceptance evidence.
+
+```sh
+# Android working directory: /Users/brian/Desktop/acquiring/android
+# quiz-info-android-build: PASS
+JAVA_HOME=/Users/brian/.gradle/jdks/eclipse_adoptium-21-x86_64-os_x.2/jdk-21.0.12.1+1/Contents/Home ANDROID_HOME=/Users/brian/Library/Android/sdk ./gradlew assembleDebug --console=plain
+# quiz-info-android-navigation: overall FAIL (JUnit harness); transport case PASS
+JAVA_HOME=/Users/brian/.gradle/jdks/eclipse_adoptium-21-x86_64-os_x.2/jdk-21.0.12.1+1/Contents/Home ANDROID_HOME=/Users/brian/Library/Android/sdk ./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.acquiring.android.SongSearchUiTest,com.acquiring.android.QuizTransportSelectorsUiTest --console=plain
+# quiz-info-android-navigation-verified: All Songs PASS; two search cases FAIL
+JAVA_HOME=/Users/brian/.gradle/jdks/eclipse_adoptium-21-x86_64-os_x.2/jdk-21.0.12.1+1/Contents/Home ANDROID_HOME=/Users/brian/Library/Android/sdk ./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.acquiring.android.SongSearchUiTest --console=plain
+# quiz-info-android-detour: FAIL at final artist-label assertion; further testing deferred
+JAVA_HOME=/Users/brian/.gradle/jdks/eclipse_adoptium-21-x86_64-os_x.2/jdk-21.0.12.1+1/Contents/Home ANDROID_HOME=/Users/brian/Library/Android/sdk ./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.acquiring.android.SongSearchUiTest#informationIsADetourAndQuizBackReturnsToSearchOrArtist --console=plain
+
+# Remaining commands: /Users/brian/Desktop/acquiring
+# quiz-info-ios-build: PASS; later test commands also compiled the Settings addition
+xcodebuild -quiet build -project ios/Acquiring.xcodeproj -scheme Acquiring -derivedDataPath /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug CODE_SIGNING_ALLOWED=NO
+# quiz-info-ios-settings-navigation: 3 passed, 3 failed (All Songs, artist-entry test harness, menu timeout)
+xcodebuild -quiet test -project ios/Acquiring.xcodeproj -scheme Acquiring -derivedDataPath /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 240 -only-testing:AcquiringTests/AcquiringTests/testOpeningQuizKeepsEachOriginWithoutInsertingInformation -only-testing:AcquiringTests/AcquiringTests/testOpeningSongArtistPreservesOriginAndAvoidsDuplicateArtistRoute -only-testing:AcquiringUITests/QuizCoverageTests/testInformationDetourPreservesQuizAndBackReturnsDirectlyToSearch -only-testing:AcquiringUITests/QuizCoverageTests/testQuizEdgeBackSettingDefaultsOffPersistsAndReturnsToArtist -only-testing:AcquiringUITests/AcquiringUITests/testAllSongsExpandsInlineAndRetainsItsFilterWhenReopened -only-testing:AcquiringUITests/AcquiringUITests/testQuizInstrumentAndTransposeMenusApplySelections CODE_SIGNING_ALLOWED=NO
+# quiz-info-ios-gesture-final: setting/gesture PASS; All Songs FAIL before navigation
+xcodebuild -quiet test -project ios/Acquiring.xcodeproj -scheme Acquiring -derivedDataPath /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 180 -only-testing:AcquiringUITests/QuizCoverageTests/testQuizEdgeBackSettingDefaultsOffPersistsAndReturnsToArtist -only-testing:AcquiringUITests/AcquiringUITests/testAllSongsExpandsInlineAndRetainsItsFilterWhenReopened CODE_SIGNING_ALLOWED=NO
+# No stale app was running (terminate returned code 3); install and launch both succeeded
+xcrun simctl terminate 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios
+xcrun simctl install 55373408-99CC-4EB3-A771-6ACF29E2D96A /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa/Build/Products/Debug-iphonesimulator/Acquiring.app
+xcrun simctl launch 55373408-99CC-4EB3-A771-6ACF29E2D96A com.acquiring.ios
+```
+
+Final iOS results were confirmed with `xcrun xcresulttool get test-results summary`
+for `Test-Acquiring-2026.09.05_23-31-02--0400.xcresult` and
+`Test-Acquiring-2026.09.05_23-42-47--0400.xcresult` in the above DerivedData
+`Logs/Test/` directory. Earlier Favorites success is in
+`Test-Acquiring-2026.09.05_23-18-15--0400.xcresult`. The warm iPhone 17 simulator
+has the updated app installed and running. No commit, push, or release was made.
+
+Human review: (1) open 500 Miles and inspect the information icon/title spacing;
+visit information and return to Quiz; (2) use Quiz Back and confirm the source
+list; (3) enable then disable the iOS setting and check left-edge Back while
+ordinary timeline/knob gestures continue working.
