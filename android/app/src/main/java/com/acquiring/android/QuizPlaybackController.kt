@@ -57,8 +57,8 @@ internal object QuizPlaybackController {
                     holdsFocus = false
                     ownsFocusRequest = false
                     resumeAfterTransientFocusLoss = false
+                    engine?.pauseForLifecycle()
                 }
-                engine?.pauseForLifecycle()
             }
 
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
@@ -66,19 +66,17 @@ internal object QuizPlaybackController {
                     resumeAfterTransientFocusLoss =
                         activeQuizOwner != null && engine?.isPlaybackRequested == true
                     holdsFocus = false
+                    engine?.pauseForLifecycle()
                 }
-                engine?.pauseForLifecycle()
             }
 
             AudioManager.AUDIOFOCUS_GAIN -> {
-                val shouldResume = synchronized(lock) {
+                synchronized(lock) {
                     val validRequest = ownsFocusRequest && activeQuizOwner != null
                     holdsFocus = validRequest
-                    val resume = validRequest && resumeAfterTransientFocusLoss
+                    if (validRequest && resumeAfterTransientFocusLoss) engine?.play()
                     resumeAfterTransientFocusLoss = false
-                    resume
                 }
-                if (shouldResume) engine?.play()
             }
         }
     }
@@ -115,20 +113,18 @@ internal object QuizPlaybackController {
 
     /** Pauses only if [owner] still owns the visible Quiz. */
     fun detachQuiz(owner: Any, retainedScrubBeat: Double? = null) {
-        val shouldPause = synchronized(lock) {
+        val shouldAbandonFocus = synchronized(lock) {
             if (activeQuizOwner !== owner) return
             activeQuizOwner = null
             resumeAfterTransientFocusLoss = false
-            true
-        }
-        if (shouldPause) {
             if (retainedScrubBeat != null) {
                 engine?.seek(retainedScrubBeat, resume = false)
             } else {
                 engine?.pauseForLifecycle()
             }
-            abandonFocus()
+            true
         }
+        if (shouldAbandonFocus) abandonFocus()
     }
 
     fun configure(newConfig: QuizPlaybackConfig) {
@@ -158,14 +154,24 @@ internal object QuizPlaybackController {
             }
         }
         if (!needsLoad) return
-        val shouldPlay = continuePlaying && hasActiveQuiz() && requestFocus()
-        engine?.load(newTimeline, continuePlaying = shouldPlay)
+        val focusOwner = if (continuePlaying) requestFocus() else null
+        val shouldPlay = synchronized(lock) {
+            val permitted = focusOwner != null && activeQuizOwner === focusOwner
+            engine?.load(newTimeline, continuePlaying = permitted)
+            permitted
+        }
+        if (focusOwner != null && !shouldPlay) abandonFocus()
     }
 
     fun play() {
-        if (!hasActiveQuiz() || !requestFocus()) return
-        synchronized(lock) { resumeAfterTransientFocusLoss = false }
-        engine?.play()
+        val focusOwner = requestFocus() ?: return
+        val shouldAbandonFocus = synchronized(lock) {
+            if (activeQuizOwner !== focusOwner) return@synchronized true
+            resumeAfterTransientFocusLoss = false
+            engine?.play()
+            false
+        }
+        if (shouldAbandonFocus) abandonFocus()
     }
 
     fun pause() {
@@ -180,9 +186,13 @@ internal object QuizPlaybackController {
     fun pauseForScrub(): Boolean = engine?.pauseForScrub() ?: false
 
     fun seek(beat: Double, resume: Boolean) {
-        val shouldResume = resume && hasActiveQuiz() && requestFocus()
-        if (!shouldResume) synchronized(lock) { resumeAfterTransientFocusLoss = false }
-        engine?.seek(beat, shouldResume)
+        val focusOwner = if (resume) requestFocus() else null
+        val shouldResume = synchronized(lock) {
+            val permitted = focusOwner != null && activeQuizOwner === focusOwner
+            if (!permitted) resumeAfterTransientFocusLoss = false
+            engine?.seek(beat, permitted)
+            permitted
+        }
         if (!shouldResume) abandonFocus()
     }
 
@@ -193,27 +203,33 @@ internal object QuizPlaybackController {
     }
 
     private fun pauseAndClearResume(abandonAudioFocus: Boolean) {
-        synchronized(lock) { resumeAfterTransientFocusLoss = false }
-        engine?.pauseForLifecycle()
+        synchronized(lock) {
+            resumeAfterTransientFocusLoss = false
+            engine?.pauseForLifecycle()
+        }
         if (abandonAudioFocus) abandonFocus()
     }
 
-    private fun hasActiveQuiz(): Boolean = synchronized(lock) { activeQuizOwner != null }
-
-    private fun requestFocus(): Boolean {
+    /** Returns the Quiz owner for which focus was granted, or null. */
+    private fun requestFocus(): Any? {
         val manager: AudioManager
         val request: AudioFocusRequest
+        val owner: Any
         synchronized(lock) {
-            if (holdsFocus) return true
-            manager = audioManager ?: return false
-            request = focusRequest ?: return false
+            owner = activeQuizOwner ?: return null
+            if (holdsFocus && ownsFocusRequest) return owner
+            manager = audioManager ?: return null
+            request = focusRequest ?: return null
         }
         val granted = manager.requestAudioFocus(request) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
-        synchronized(lock) {
-            holdsFocus = granted
-            ownsFocusRequest = granted
+        val accepted = synchronized(lock) {
+            val stillOwned = granted && activeQuizOwner === owner
+            holdsFocus = stillOwned
+            ownsFocusRequest = stillOwned
+            stillOwned
         }
-        return granted
+        if (granted && !accepted) manager.abandonAudioFocusRequest(request)
+        return owner.takeIf { accepted }
     }
 
     private fun abandonFocus() {
