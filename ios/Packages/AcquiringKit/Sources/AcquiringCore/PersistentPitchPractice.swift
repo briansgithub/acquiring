@@ -215,6 +215,53 @@ public enum PersistentPitchFeedback {
     }
 }
 
+/// Paces the live pitch-error readout printed beside the melody timeline marker.
+///
+/// The detector reports a fresh cents error every frame, and a number that restates itself
+/// sixty times a second cannot be read. The readout is refreshed on a fixed cadence while the
+/// marker keeps tracking every frame, so the singer gets a stable figure without the marker
+/// lagging their voice. A reading that goes away clears the readout at once rather than
+/// leaving a stale number under the marker, and the first voiced frame after that prints
+/// immediately instead of waiting out an interval.
+public struct LivePitchErrorSampler: Sendable {
+    public static let updateIntervalMilliseconds = 250
+
+    private var elapsedMilliseconds = 0
+    private var isTracking = false
+    public private(set) var displayedCentsError: Double?
+
+    public init() {}
+
+    @discardableResult
+    public mutating func sample(
+        centsError: Double?,
+        advancingBy tickMilliseconds: Int
+    ) -> Double? {
+        guard let centsError else {
+            reset()
+            return nil
+        }
+        guard isTracking else {
+            isTracking = true
+            elapsedMilliseconds = 0
+            displayedCentsError = centsError
+            return displayedCentsError
+        }
+        elapsedMilliseconds += max(tickMilliseconds, 0)
+        if elapsedMilliseconds >= Self.updateIntervalMilliseconds {
+            elapsedMilliseconds -= Self.updateIntervalMilliseconds
+            displayedCentsError = centsError
+        }
+        return displayedCentsError
+    }
+
+    public mutating func reset() {
+        isTracking = false
+        elapsedMilliseconds = 0
+        displayedCentsError = nil
+    }
+}
+
 public struct MelodyTimelinePitchScore: Equatable, Sendable {
     public let errorPercentage: Int
     public let signedCentsError: Double

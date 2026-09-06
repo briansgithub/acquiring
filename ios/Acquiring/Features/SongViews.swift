@@ -3214,6 +3214,12 @@ private struct MelodyTimelineView: View {
     @State private var dragIsActive = false
     @GestureState private var dragGestureIsRecognized = false
 
+    private static let liveMarkerDiameter: CGFloat = 11
+    /// Clearance between the readout pill and the playhead line it sits left of.
+    private static let liveReadoutGap: CGFloat = 8
+    /// Half the pill's rendered height, used only to keep it clear of the lane edges.
+    private static let liveReadoutHalfHeight: CGFloat = 9
+
     init(
         presentation: MelodyTimelinePresentation,
         currentBeat: Double,
@@ -3389,18 +3395,42 @@ private struct MelodyTimelineView: View {
             }
 
             if let active = presentation.activeVisual(at: currentBeat),
+               let cents = vocalPractice.liveCentsError,
                let steps = vocalPractice.liveMarkerStaffSteps,
                steps.isFinite,
                abs(steps) <= 7 {
+                let markerY = liveMarkerY(for: active, staffSteps: steps)
+                let markerCenterY = markerY + Self.liveMarkerDiameter / 2
+
                 Circle()
-                    .fill(.orange)
+                    .fill(Color.pitchFeedback(PersistentPitchFeedback.band(centsError: cents)))
                     .overlay(Circle().stroke(.white.opacity(0.8), lineWidth: 1))
-                    .frame(width: 11, height: 11)
+                    .frame(width: Self.liveMarkerDiameter, height: Self.liveMarkerDiameter)
                     .offset(
-                        x: containerWidth / 2 - 5.5,
-                        y: liveMarkerY(for: active, staffSteps: steps)
+                        x: containerWidth / 2 - Self.liveMarkerDiameter / 2,
+                        y: markerY
                     )
                     .accessibilityHidden(true)
+
+                if let percentage = vocalPractice.sampledLivePercentageText,
+                   let band = vocalPractice.sampledFeedbackBand {
+                    // A zero-height rail ending short of the playhead: a trailing overlay on
+                    // it centres the pill on the marker without this view having to know how
+                    // tall the pill renders.
+                    Color.clear
+                        .frame(
+                            width: max(containerWidth / 2 - Self.liveReadoutGap, 0),
+                            height: 0
+                        )
+                        .overlay(alignment: .trailing) {
+                            LivePitchErrorReadout(
+                                text: percentage,
+                                color: Color.pitchFeedback(band)
+                            )
+                        }
+                        .offset(y: liveReadoutCenterY(markerCenterY: markerCenterY))
+                        .accessibilityHidden(true)
+                }
             }
         }
     }
@@ -3424,12 +3454,19 @@ private struct MelodyTimelineView: View {
         ), MelodyTimelinePresentation.laneHeight - 12)
     }
 
+    /// Keeps the readout pill inside the lane. The marker may sit within half a pill of the
+    /// lane edge, where centring on it alone would push the number under the rounded clip.
+    private func liveReadoutCenterY(markerCenterY: CGFloat) -> CGFloat {
+        min(max(markerCenterY, Self.liveReadoutHalfHeight),
+            MelodyTimelinePresentation.laneHeight - Self.liveReadoutHalfHeight)
+    }
+
     private var practiceAccessibilitySummary: String {
         guard let vocalPractice,
               vocalPractice.persistentSelection == .melody
         else { return "" }
         let scored = presentation.pitchRuns.compactMap { vocalPractice.score(forRunID: $0.id) }.count
-        if let live = vocalPractice.persistentLivePercentageText {
+        if let live = vocalPractice.sampledLivePercentageText {
             return "Persistent melody practice is on, live pitch \(live), \(scored) completed run scores."
         }
         return "Persistent melody practice is on, waiting for a voiced pitch, \(scored) completed run scores."
@@ -3439,6 +3476,37 @@ private struct MelodyTimelineView: View {
         guard dragIsActive else { return }
         dragIsActive = false
         onDragCancel()
+    }
+}
+
+/// The live cents-off readout riding beside the melody marker: how far the sung pitch sits
+/// from the target note, signed sharp or flat. A dark pill keeps the number legible over the
+/// note bars, and the accuracy band is carried by the text colour so it reads as one object
+/// with the marker it labels.
+private struct LivePitchErrorReadout: View {
+    let text: String
+    let color: Color
+
+    var body: some View {
+        Text(text)
+            .font(.caption2.weight(.bold).monospacedDigit())
+            .foregroundStyle(color)
+            .padding(.horizontal, 5)
+            .padding(.vertical, 2)
+            .background(.black.opacity(0.76), in: Capsule())
+            .fixedSize()
+    }
+}
+
+extension Color {
+    /// The timeline's shared pitch-accuracy palette, so the live marker, its readout, and the
+    /// banked run scores never disagree about what "close" looks like.
+    static func pitchFeedback(_ band: PitchFeedbackBand) -> Color {
+        switch band {
+        case .accurate: .green
+        case .close: .orange
+        case .far: .red
+        }
     }
 }
 
@@ -3464,11 +3532,7 @@ private struct MelodyRunScoreBadge: View {
     private var color: Color {
         switch outcome {
         case let .scored(_, score):
-            switch score.errorPercentage {
-            case ..<15: .green
-            case ..<50: .orange
-            default: .red
-            }
+            .pitchFeedback(PersistentPitchFeedback.band(centsError: score.centsErrorMagnitude))
         case .unscored:
             .gray
         }

@@ -56,6 +56,9 @@ final class VocalPracticeModel {
     private(set) var persistentPhase: VocalPersistentPhase = .idle
     private(set) var persistentMeasuredMIDI: Double?
     private(set) var liveCentsError: Double?
+    /// [liveCentsError] refreshed on a readable cadence, for the printed percentage. The
+    /// marker itself keeps following the unsampled value.
+    private(set) var sampledLiveCentsError: Double?
     private(set) var melodyRunScores: [Int: MelodyRunScoreOutcome] = [:]
     private(set) var errorMessage: String?
 
@@ -87,6 +90,7 @@ final class VocalPracticeModel {
     @ObservationIgnored private var scoringRunSourceMIDI: Int?
     @ObservationIgnored private var scoringRunTargetMIDI: Int?
     @ObservationIgnored private var lastScoredReadingSequence: UInt64 = 0
+    @ObservationIgnored private var livePercentageSampler = LivePitchErrorSampler()
 
     init(audio: AppAudioSystem) {
         self.audio = audio
@@ -147,6 +151,20 @@ final class VocalPracticeModel {
               PersistentPitchFeedback.showsLiveErrorPercentage(centsError: liveCentsError)
         else { return nil }
         return PersistentPitchFeedback.formatLiveErrorPercentage(centsError: liveCentsError)
+    }
+
+    var sampledFeedbackBand: PitchFeedbackBand? {
+        sampledLiveCentsError.map(PersistentPitchFeedback.band)
+    }
+
+    /// The percentage printed beside the timeline marker, or nil when nothing voiced is
+    /// arriving or the reading is a semitone or more out - past that the number saturates
+    /// and stops separating "slightly flat" from "singing a different note".
+    var sampledLivePercentageText: String? {
+        guard let sampledLiveCentsError,
+              PersistentPitchFeedback.showsLiveErrorPercentage(centsError: sampledLiveCentsError)
+        else { return nil }
+        return PersistentPitchFeedback.formatLiveErrorPercentage(centsError: sampledLiveCentsError)
     }
 
     var manualStatusText: String? {
@@ -563,6 +581,7 @@ final class VocalPracticeModel {
     func handleTransportDiscontinuity() {
         discardActiveScore()
         liveCentsError = nil
+        resetLivePercentageSampling()
         persistentMeasuredMIDI = nil
     }
 
@@ -871,7 +890,13 @@ final class VocalPracticeModel {
         persistentPhase = .idle
         persistentMeasuredMIDI = nil
         liveCentsError = nil
+        resetLivePercentageSampling()
         discardActiveScore()
+    }
+
+    private func resetLivePercentageSampling() {
+        livePercentageSampler.reset()
+        sampledLiveCentsError = nil
     }
 
     private func prepareReadingState() {
@@ -936,6 +961,7 @@ final class VocalPracticeModel {
         if persistentTarget == nil {
             persistentMeasuredMIDI = nil
             liveCentsError = nil
+            resetLivePercentageSampling()
         }
         if resetScoreForCurrentRun, scoringRun != nil {
             restartActiveScore()
@@ -943,6 +969,12 @@ final class VocalPracticeModel {
     }
 
     private func updatePersistentReadingAndScore() {
+        defer {
+            sampledLiveCentsError = livePercentageSampler.sample(
+                centsError: liveCentsError,
+                advancingBy: MelodyRunScoringSession.sampleIntervalMilliseconds
+            )
+        }
         guard persistentPhase == .listening, let targetMIDI = persistentTargetMIDI else {
             persistentMeasuredMIDI = nil
             liveCentsError = nil
