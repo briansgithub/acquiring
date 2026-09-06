@@ -31,7 +31,7 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 3))
         search.typeText("500 Miles")
 
-        app.navigationBars["Library"].staticTexts["Library"].tap()
+        app.navigationBars["Library"].staticTexts["Library"].firstMatch.tap()
         XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 3))
         XCTAssertEqual(search.value as? String, "500 Miles")
 
