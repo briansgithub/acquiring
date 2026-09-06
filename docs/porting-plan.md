@@ -965,7 +965,7 @@ were discussed as recommendations only; none were implemented in this release.
 
 ### Quiz controls, instrument defaults, and foreground playback — 2026-09-05
 
-`[implementation authorized; final iOS verification and merge pending]` Runtime
+`[implemented; device review and iOS relaunch check pending]` Runtime
 model: unknown. Requested routes: Sol/high for playback/state and Android,
 Terra/medium for iOS presentation. Implemented the approved
 `docs/quiz-controls-playback-plan.md` in isolated platform worktrees and integrated
@@ -1022,12 +1022,22 @@ Focused validation (no full suites or screenshots):
 - Last two-case retry:
   `xcodebuild -quiet test -project ios/Acquiring.xcodeproj -scheme Acquiring -derivedDataPath /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -parallel-testing-enabled NO -only-testing:AcquiringUITests/AcquiringUITests/testQuizInstrumentAndModeMenusApplyWhilePlaying -only-testing:AcquiringUITests/AcquiringUITests/testInstrumentDefaultSessionAndForegroundPlaybackLifecycle CODE_SIGNING_ALLOWED=NO`:
   exit 65, two UI failures caused by stale element/readiness assumptions. Final
-  test-only query/readiness corrections are committed at `7896375a` but unexecuted.
+  test-only query/readiness corrections were committed at `7896375a`.
   Result: `Test-Acquiring-2026.09.05_20-45-33--0400.xcresult` in the DerivedData
-  `Logs/Test` directory. Retry authorization is pending under the supplied
-  two-cycle limit; passing checks will not be repeated.
+  `Logs/Test` directory.
+- User authorized one final two-case retry. The same command with
+  `-resultBundlePath /tmp/Acquiring-quiz-controls-retry-7896375a-20260905.xcresult`
+  exited 65: two executed, one passed, one failed in 158.780 s. The production
+  instrument/mode menu and faster-tempo case passed (49.64 s). The lifecycle case
+  verified the Settings default selection, foreground/background pause, and Sine
+  continuity into Bad Romance, then its navigation helper used only one Back and
+  could not reach `catalog.settings`. Its persistence/relaunch tail was not
+  reached. Corrected this remaining test-only navigation call without another
+  retry; the iOS real-relaunch postcondition remains unverified. The two core
+  ownership/preferences tests and section-menu case passed separately above.
 - `git diff --check 91cce16c..HEAD -- android ios`: passed on the integrated feature
-  branch. Final primary-checkout merge/build remains pending.
+  branch. Final primary-checkout integration/build results are recorded in the
+  completion note in `docs/quiz-controls-playback-plan.md`.
 
 Limits/review: Android's existing full-library search fixture clips a song row on
 this small emulator, so the selector test uses production SongDetailView directly;
