@@ -130,7 +130,7 @@ final class SynthVoice {
         case .flute: 1.09
         case .clarinet: 1.13
         case .oboe: 1.26
-        case .churchOrgan: 1.00
+        case .churchOrgan: 1.57
         }
     }
 

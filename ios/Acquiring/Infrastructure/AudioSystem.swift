@@ -28,7 +28,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     /// zero-tempo Quiz is paused but resumes when a positive tempo returns.
     private var quizPlaybackRequested = false
     private var quizContext: QuizAudioContext?
-    private var sessionInstrument: SynthWaveform = .sawtooth
+    private var sessionInstrument: SynthWaveform = .clarinet
     private var quizRevision: UInt64 = 0
     private var quizPlaybackOwnerGeneration: UInt64 = 0
     private var quizPlaybackOwnerIsActive = false

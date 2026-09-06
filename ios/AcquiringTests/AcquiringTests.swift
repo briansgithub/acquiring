@@ -15,9 +15,9 @@ final class AcquiringTests: XCTestCase {
         defer { defaults.removePersistentDomain(forName: suiteName) }
         let preferences = QuizInstrumentPreferences(defaults: defaults)
 
-        XCTAssertEqual(preferences.savedDefault, .sawtooth)
+        XCTAssertEqual(preferences.savedDefault, .clarinet)
         defaults.set("removed-instrument", forKey: QuizInstrumentPreferences.defaultsKey)
-        XCTAssertEqual(preferences.savedDefault, .sawtooth)
+        XCTAssertEqual(preferences.savedDefault, .clarinet)
         preferences.savedDefault = .flute
 
         var applied: [SynthWaveform] = []
@@ -26,16 +26,16 @@ final class AcquiringTests: XCTestCase {
         XCTAssertEqual(session.savedDefault, .flute)
         XCTAssertEqual(applied, [.flute])
 
-        session.select(.bell)
-        XCTAssertEqual(session.selection, .bell)
+        session.select(.electricPiano)
+        XCTAssertEqual(session.selection, .electricPiano)
         XCTAssertEqual(session.savedDefault, .flute)
         XCTAssertEqual(preferences.savedDefault, .flute)
 
-        session.saveDefault(.bell)
-        XCTAssertEqual(session.selection, .bell)
-        XCTAssertEqual(session.savedDefault, .bell)
-        XCTAssertEqual(preferences.savedDefault, .bell)
-        XCTAssertEqual(applied.last, .bell)
+        session.saveDefault(.electricPiano)
+        XCTAssertEqual(session.selection, .electricPiano)
+        XCTAssertEqual(session.savedDefault, .electricPiano)
+        XCTAssertEqual(preferences.savedDefault, .electricPiano)
+        XCTAssertEqual(applied.last, .electricPiano)
 
         session.saveDefault(.clarinet)
         XCTAssertEqual(session.selection, .clarinet)
