@@ -2212,6 +2212,7 @@ private struct StableQuizMenuButton: UIViewRepresentable {
         let button = UIButton(type: .system)
         button.showsMenuAsPrimaryAction = true
         button.changesSelectionAsPrimaryAction = false
+        button.preferredMenuElementOrder = .fixed
         button.accessibilityTraits.insert(.button)
         return button
     }
