@@ -278,6 +278,70 @@ final class PersistentPitchPracticeTests: XCTestCase {
         )
     }
 
+    func testLiveErrorReadoutPrintsImmediatelyThenOnTheSampleInterval() {
+        var sampler = LivePitchErrorSampler()
+        let tick = MelodyRunScoringSession.sampleIntervalMilliseconds
+
+        // The first voiced frame prints at once - a singer should not wait out an interval
+        // to see their first number.
+        XCTAssertEqual(sampler.sample(centsError: 12, advancingBy: tick), 12)
+
+        var elapsed = 0
+        while elapsed + tick < LivePitchErrorSampler.updateIntervalMilliseconds {
+            elapsed += tick
+            XCTAssertEqual(
+                sampler.sample(centsError: 48, advancingBy: tick),
+                12,
+                "the readout must hold still for a full interval, not track every frame"
+            )
+        }
+
+        elapsed += tick
+        XCTAssertGreaterThanOrEqual(elapsed, LivePitchErrorSampler.updateIntervalMilliseconds)
+        XCTAssertEqual(sampler.sample(centsError: 48, advancingBy: tick), 48)
+    }
+
+    func testLiveErrorReadoutClearsOnDropoutAndReprintsOnTheNextVoicedFrame() {
+        var sampler = LivePitchErrorSampler()
+        let tick = MelodyRunScoringSession.sampleIntervalMilliseconds
+        XCTAssertEqual(sampler.sample(centsError: 12, advancingBy: tick), 12)
+
+        // Losing the pitch must blank the number rather than leave a stale one under the
+        // marker, which would read as a measurement that is no longer being taken.
+        XCTAssertNil(sampler.sample(centsError: nil, advancingBy: tick))
+        XCTAssertNil(sampler.displayedCentsError)
+
+        XCTAssertEqual(sampler.sample(centsError: -30, advancingBy: tick), -30)
+    }
+
+    func testLiveErrorReadoutKeepsItsCadenceWhenFramesStraddleTheInterval() {
+        var sampler = LivePitchErrorSampler()
+        let tick = MelodyRunScoringSession.sampleIntervalMilliseconds
+        // 2000ms is a whole number of both 16ms frames and 250ms intervals, so the expected
+        // count is exact. The frame does not divide the interval, and a sampler that zeroed
+        // its clock on each print would round every interval up to 256ms and lose one of
+        // these eight over the span.
+        let span = 2_000
+        XCTAssertEqual(span % tick, 0)
+        XCTAssertEqual(span % LivePitchErrorSampler.updateIntervalMilliseconds, 0)
+
+        var cents = 0.0
+        var prints = 0
+        _ = sampler.sample(centsError: cents, advancingBy: tick)
+        var previous = sampler.displayedCentsError
+
+        for _ in 0..<(span / tick) {
+            cents += 1
+            _ = sampler.sample(centsError: cents, advancingBy: tick)
+            if sampler.displayedCentsError != previous {
+                prints += 1
+                previous = sampler.displayedCentsError
+            }
+        }
+
+        XCTAssertEqual(prints, span / LivePitchErrorSampler.updateIntervalMilliseconds)
+    }
+
     private func score(runID: Int, samples: [Double]) -> MelodyTimelinePitchScore? {
         var accumulator = MelodyTimelinePitchScoreAccumulator()
         accumulator.begin(runID: runID)
