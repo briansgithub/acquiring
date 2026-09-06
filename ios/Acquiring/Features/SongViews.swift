@@ -1327,27 +1327,10 @@ struct QuizView: View {
     }
 
     private func transposeSelector(sectionID: String) -> some View {
-        QuizSelectorMenu(
-            identityContext: "\(songID):\(sectionID):transpose",
-            options: (-12...12).map { semitones in
-                QuizSelectorOption(id: String(semitones), title: transposeNumber(semitones))
-            },
-            selectedID: String(soundConfiguration.transposeSemitones),
-            caption: "Transpose",
-            selectedDisplayTitle: transposeNumber(soundConfiguration.transposeSemitones),
-            selectedAccessibilityValue: transposeLabel(soundConfiguration.transposeSemitones),
-            usesSubheadline: false,
-            width: 72,
-            expandsToAvailableWidth: false,
-            accessibilityIdentifier: "quiz.transpose",
-            accessibilityLabel: "Transpose",
-            isEnabled: sectionLoadStatus.isReady && !playbackCommandPending && timelineScrub == nil,
-            onSelect: { id in
-                guard let semitones = Int(id) else { return }
-                changeTranspose(semitones, sectionID: sectionID)
-            }
-        )
-        .menuOrder(.fixed)
+        QuizTransposeSelector(selectedValue: soundConfiguration.transposeSemitones) { semitones in
+            changeTranspose(semitones, sectionID: sectionID)
+        }
+        .disabled(!sectionLoadStatus.isReady || playbackCommandPending || timelineScrub != nil)
     }
 
     private func changeInstrument(_ waveform: SynthWaveform, sectionID: String) {
@@ -2139,6 +2122,78 @@ private struct QuizTransportButton: View {
                 ? "Set tempo above zero percent to play"
                 : ""
         )
+    }
+}
+
+private struct QuizTransposeSelector: View {
+    let selectedValue: Int
+    let onSelect: (Int) -> Void
+    @State private var isPresented = false
+    @ScaledMetric(relativeTo: .body) private var rowHeight: CGFloat = 44
+    @ScaledMetric(relativeTo: .body) private var listWidth: CGFloat = 96
+
+    private func title(_ value: Int) -> String {
+        value > 0 ? "+\(value)" : "\(value)"
+    }
+
+    var body: some View {
+        Button {
+            isPresented = true
+        } label: {
+            VStack(spacing: 0) {
+                Text("Transpose").font(.caption2)
+                HStack(spacing: 3) {
+                    Text(title(selectedValue)).font(.caption)
+                    Image(systemName: "chevron.down").font(.system(size: 9))
+                }
+            }
+            .fixedSize()
+            .padding(.horizontal, 4)
+            .frame(minWidth: 44, minHeight: 44)
+            .contentShape(Rectangle())
+            .overlay {
+                RoundedRectangle(cornerRadius: 8)
+                    .strokeBorder(.secondary.opacity(0.45), lineWidth: 1)
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("quiz.transpose")
+        .accessibilityLabel("Transpose")
+        .accessibilityValue("\(title(selectedValue)) semitones")
+        .popover(isPresented: $isPresented) {
+            ScrollViewReader { proxy in
+                ScrollView(.vertical) {
+                    VStack(spacing: 0) {
+                        ForEach(-12...12, id: \.self) { value in
+                            Button {
+                                isPresented = false
+                                onSelect(value)
+                            } label: {
+                                Text(title(value))
+                                    .font(.body.monospacedDigit())
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: rowHeight)
+                                    .contentShape(Rectangle())
+                                    .overlay(alignment: .trailing) {
+                                        if value == selectedValue {
+                                            Image(systemName: "checkmark")
+                                                .font(.caption2)
+                                                .padding(.trailing, 8)
+                                        }
+                                    }
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("\(title(value)) semitones")
+                            .accessibilityAddTraits(value == selectedValue ? [.isSelected] : [])
+                            .id(value)
+                        }
+                    }
+                }
+                .frame(width: listWidth, height: rowHeight * 7)
+                .onAppear { proxy.scrollTo(0, anchor: .center) }
+            }
+            .presentationCompactAdaptation(.popover)
+        }
     }
 }
 
