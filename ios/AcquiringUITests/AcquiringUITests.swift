@@ -381,7 +381,6 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(mode.waitForExistence(timeout: 5))
         XCTAssertEqual(mode.frame.midY, app.buttons["quiz.reset"].frame.midY, accuracy: 2,
                        "Full/Root-only belongs in the transport row")
-        let beatBeforeMode = timeline.value as? String
         mode.tap()
         let roots = app.buttons["Root-only"]
         XCTAssertTrue(roots.waitForExistence(timeout: 5))
@@ -391,18 +390,21 @@ final class AcquiringUITests: XCTestCase {
             evaluatedWith: mode
         )
         wait(for: [modeApplied], timeout: 5)
+        let rootTimeline = app.sliders["quiz.rootSeek"]
+        XCTAssertTrue(rootTimeline.waitForExistence(timeout: 5))
+        let beatAfterMode = rootTimeline.value as? String
         XCTAssertTrue(
-            waitForValueChange(timeline, from: beatBeforeMode, timeout: 5),
+            waitForValueChange(rootTimeline, from: beatAfterMode, timeout: 5),
             "The playback clock must keep advancing while the mode menu commits"
         )
 
-        let beatBeforeSecondInstrument = timeline.value as? String
+        let beatBeforeSecondInstrument = rootTimeline.value as? String
         instrument.tap()
         let square = app.buttons["Square"]
         XCTAssertTrue(square.waitForExistence(timeout: 5))
         square.tap()
         XCTAssertTrue(
-            waitForValueChange(timeline, from: beatBeforeSecondInstrument, timeout: 5),
+            waitForValueChange(rootTimeline, from: beatBeforeSecondInstrument, timeout: 5),
             "The menu must remain responsive across repeated playback selections"
         )
     }
@@ -462,6 +464,8 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertEqual(timeline.value as? String, retainedBeat, "The paused beat must remain retained")
 
         app.navigationBars[Fixture.fiveHundredMilesQuizTitle].buttons.element(boundBy: 0).tap()
+        XCTAssertTrue(app.navigationBars["Song"].waitForExistence(timeout: 5))
+        app.navigationBars["Song"].buttons.element(boundBy: 0).tap()
         let search = app.textFields["library.search.field"]
         XCTAssertTrue(search.waitForExistence(timeout: 5))
         let clear = app.buttons["library.search.clear"]
