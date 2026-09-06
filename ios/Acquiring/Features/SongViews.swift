@@ -1083,7 +1083,7 @@ struct QuizView: View {
 
     private func transportControls(sectionID: String, sections: [QuizSection]) -> some View {
         VStack(alignment: .trailing, spacing: 4) {
-            HStack(spacing: 4) {
+            HStack(spacing: 8) {
                 Spacer(minLength: 0)
                 instrumentSelector(sectionID: sectionID)
                 transposeSelector(sectionID: sectionID)
@@ -1106,7 +1106,7 @@ struct QuizView: View {
                 )
             }
             if !environment.vocalPractice.isExpanded {
-                HStack(spacing: 4) {
+                HStack(spacing: 8) {
                     QuizSelectorMenu(
                         identityContext: "\(songID):\(sectionID):mode",
                         options: QuizDisplayMode.allCases.map {

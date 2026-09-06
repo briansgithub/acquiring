@@ -50,7 +50,8 @@ struct PlaybackKnob: View {
                 .font(compact ? .caption2 : .subheadline)
                 .foregroundStyle(Color.accentColor)
                 .multilineTextAlignment(.center)
-                .lineLimit(2, reservesSpace: compact)
+                .lineLimit(compact ? 1 : 2, reservesSpace: compact)
+                .minimumScaleFactor(0.75)
 
             dial
         }
@@ -58,7 +59,7 @@ struct PlaybackKnob: View {
     }
 
     private var dialDiameter: CGFloat {
-        compact ? 96 : 120
+        compact ? 72 : 120
     }
 
     private var dialCenter: CGFloat {
@@ -80,9 +81,9 @@ struct PlaybackKnob: View {
             }
 
         return ZStack {
-            DialArc(endAngle: 405, inset: compact ? 15 : 18)
+            DialArc(endAngle: 405, inset: compact ? 8 : 18)
                 .stroke(.secondary.opacity(0.24), style: .init(lineWidth: 4, lineCap: .round))
-            DialArc(endAngle: 135 + 270 * fraction, inset: compact ? 15 : 18)
+            DialArc(endAngle: 135 + 270 * fraction, inset: compact ? 8 : 18)
                 .stroke(Color.accentColor, style: .init(lineWidth: 4, lineCap: .round))
 
             ForEach(Array(ringLabels.enumerated()), id: \.offset) { index, label in
@@ -97,7 +98,7 @@ struct PlaybackKnob: View {
                 .overlay {
                     Circle().strokeBorder(.white.opacity(0.25), lineWidth: 1)
                 }
-                .frame(width: compact ? 54 : 72, height: compact ? 54 : 72)
+                .frame(width: compact ? 44 : 72, height: compact ? 44 : 72)
                 .shadow(color: .black.opacity(0.16), radius: 2, y: 2)
 
             indicator(at: fraction)
@@ -200,7 +201,7 @@ struct PlaybackKnob: View {
     private func isOutsideCenter(at location: CGPoint) -> Bool {
         let dx = location.x - dialCenter
         let dy = location.y - dialCenter
-        let centerRadius = compact ? 27.0 : 36.0
+        let centerRadius = compact ? 22.0 : 36.0
         return dx * dx + dy * dy > centerRadius * centerRadius
     }
 
