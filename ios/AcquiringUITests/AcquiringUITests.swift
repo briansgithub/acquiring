@@ -365,7 +365,7 @@ final class AcquiringUITests: XCTestCase {
             "The playback clock must keep advancing while the instrument menu commits"
         )
 
-        let tempo = app.descendants(matching: .any)["quiz.tempo"]
+        let tempo = app.otherElements["quiz.tempo"]
         XCTAssertTrue(tempo.waitForExistence(timeout: 5))
         let tempoBefore = tempo.value as? String
         tempo.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.85)).press(
@@ -431,6 +431,7 @@ final class AcquiringUITests: XCTestCase {
             navigationTitle: Fixture.fiveHundredMilesQuizTitle
         )
         let instrument = app.buttons["quiz.instrument"]
+        XCTAssertTrue(instrument.waitForExistence(timeout: 90))
         XCTAssertTrue(waitForValue(instrument, equalTo: "Synth Flute", timeout: 5))
 
         let timeline = app.descendants(matching: .any)["quiz.timeline"]
