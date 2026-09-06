@@ -10,36 +10,8 @@ struct IntervalSingingTool: View {
 
     var body: some View {
         VStack(spacing: 6) {
-            if !model.isExpanded {
-            Button {
-                model.isExpanded ? model.minimize() : model.expand()
-            } label: {
-                HStack(spacing: 8) {
-                    Image(systemName: "waveform")
-                    VStack(alignment: .leading, spacing: 1) {
-                        Text("Interval Singing Tool").font(.subheadline.weight(.medium))
-                        if !model.isExpanded, let summary = minimizedSummary {
-                            Text(summary).font(.caption2).foregroundStyle(.secondary)
-                                .lineLimit(1).minimumScaleFactor(0.8)
-                        }
-                    }
-                    Spacer(minLength: 0)
-                    Label(model.isExpanded ? "Collapse" : "Expand",
-                          systemImage: model.isExpanded ? "chevron.down" : "chevron.up")
-                        .font(.caption.weight(.semibold))
-                        .fixedSize()
-                }
-                .frame(minHeight: 44)
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(model.isExpanded ? "Collapse interval singing tool" : "Expand interval singing tool")
-            .accessibilityValue(model.isExpanded ? "Expanded" : "Collapsed")
-            .accessibilityIdentifier("vocal.practice.expand")
-            }
-
-            if model.isExpanded {
-                HStack(spacing: 6) {
+            HStack(spacing: 8) {
+                if model.isExpanded {
                     Text("Flip-Flop").font(.caption)
                     Toggle("Flip-Flop", isOn: Binding(
                         get: { model.isFlipFlopEnabled },
@@ -77,17 +49,34 @@ struct IntervalSingingTool: View {
                     .accessibilityLabel("Tessitura")
                     .accessibilityValue(model.comfortablePitchLabel ?? "Comfortable pitch not set")
                     .accessibilityIdentifier("vocal.practice.tessitura")
-                    Button { model.minimize() } label: {
-                        Label("Collapse", systemImage: "chevron.down")
-                            .font(.caption.weight(.semibold))
-                            .frame(minHeight: 44)
-                            .contentShape(Rectangle())
+                } else {
+                    Image(systemName: "waveform")
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("Interval Singing Tool").font(.subheadline.weight(.medium))
+                        if let summary = minimizedSummary {
+                            Text(summary).font(.caption2).foregroundStyle(.secondary)
+                                .lineLimit(1).minimumScaleFactor(0.8)
+                        }
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Collapse interval singing tool")
-                    .accessibilityValue("Expanded")
-                    .accessibilityIdentifier("vocal.practice.expand")
+                    Spacer(minLength: 0)
                 }
+                Button {
+                    model.isExpanded ? model.minimize() : model.expand()
+                } label: {
+                    Image(systemName: model.isExpanded ? "chevron.down" : "chevron.up")
+                        .font(.system(size: 14, weight: .semibold))
+                        .frame(width: 44, height: 44)
+                        .background(.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 8))
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(model.isExpanded ? "Collapse interval singing tool" : "Expand interval singing tool")
+                .accessibilityValue(model.isExpanded ? "Expanded" : "Collapsed")
+                .accessibilityIdentifier("vocal.practice.expand")
+            }
+            .frame(minHeight: 44)
+
+            if model.isExpanded {
                 if showsPersistentDetails, model.persistentSelection != nil {
                     ScrollView {
                         PersistentPracticeStatus(model: model)

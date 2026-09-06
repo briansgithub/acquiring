@@ -382,6 +382,60 @@ final class QuizCoverageTests: XCTestCase {
 
     // MARK: - F043 practice dock
 
+    func testSingingToolCollapsesOnQuizExitAndAppClose() {
+        let app = launchReadyQuiz()
+        let toggle = app.buttons["vocal.practice.expand"]
+        let first = app.buttons["vocal.practice.slot.1"]
+        let mode = app.buttons["quiz.mode"]
+
+        func expandTool() {
+            XCTAssertTrue(waitForValue(toggle, "Collapsed", timeout: 10))
+            XCTAssertTrue(toggle.isHittable)
+            toggle.tap()
+            XCTAssertTrue(waitForValue(toggle, "Expanded", timeout: 5))
+            XCTAssertTrue(first.waitForExistence(timeout: 5))
+            XCTAssertTrue(toggle.isHittable, "The collapse chevron must remain reachable")
+            XCTAssertEqual(app.buttons.matching(identifier: "vocal.practice.expand").count, 1)
+        }
+
+        expandTool()
+        XCTAssertFalse(mode.exists)
+        XCTAssertFalse(app.buttons["quiz.section"].exists)
+        for identifier in ["quiz.instrument", "quiz.transpose", "quiz.reset", "quiz.play"] {
+            XCTAssertTrue(app.buttons[identifier].isHittable, "\(identifier) must remain reachable")
+        }
+        toggle.tap()
+        XCTAssertTrue(waitForValue(toggle, "Collapsed", timeout: 5))
+        XCTAssertTrue(mode.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["quiz.section"].isHittable)
+
+        expandTool()
+        app.buttons["quiz.info"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["songDetail.info"].waitForExistence(timeout: 10))
+        XCTAssertTrue(waitForValue(toggle, "Collapsed", timeout: 5))
+        XCTAssertFalse(first.exists)
+        app.buttons["songDetail.quiz"].tap()
+        XCTAssertTrue(app.buttons["quiz.info"].waitForExistence(timeout: 10))
+
+        expandTool()
+        XCUIDevice.shared.press(.home)
+        app.activate()
+        XCTAssertTrue(waitForValue(toggle, "Collapsed", timeout: 10))
+        XCTAssertFalse(first.exists)
+
+        expandTool()
+        app.navigationBars.buttons["BackButton"].firstMatch.tap()
+        XCTAssertTrue(app.textFields["library.search.field"].waitForExistence(timeout: 10))
+        XCTAssertTrue(waitForValue(toggle, "Collapsed", timeout: 5))
+        XCTAssertFalse(first.exists)
+
+        expandTool()
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(waitForValue(toggle, "Collapsed", timeout: 15))
+        XCTAssertFalse(first.exists)
+    }
+
     func testFullChordOnlyPreviewsWhileMarkedRootStartsSingBack() {
         let app = launchReadyQuiz()
         let chord = app.buttons["quiz.chord.preview"]

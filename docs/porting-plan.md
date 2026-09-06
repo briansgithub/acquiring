@@ -1632,3 +1632,56 @@ Human review: (1) open 500 Miles and inspect the information icon/title spacing;
 visit information and return to Quiz; (2) use Quiz Back and confirm the source
 list; (3) enable then disable the iOS setting and check left-edge Back while
 ordinary timeline/knob gestures continue working.
+
+
+### Singing transport balance and departure collapse — 2026-09-06
+
+Runtime model: GPT-6. Implemented; human visual review pending.
+The transport rows share a 228 pt width, with 44 pt button heights and 8 pt
+spacing. Transpose gets a 72 pt width, Reset matches the selector outlines,
+and compact Play/Pause uses the same dimensions without native button padding.
+The singing dock keeps one 44 pt chevron at its trailing edge in either state.
+Leaving Quiz (including the information detour) or leaving a song cancels
+practice and collapses the dock; backgrounding uses the same cleanup and cold
+launch remains collapsed. Navigation-driven collapse suppresses animation;
+manual toggling retains the existing animation and Reduce Motion behavior.
+
+Checks:
+
+- Incremental build passed (exit 0; existing AudioSystem.swift:191 async warning):
+  `xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug build CODE_SIGNING_ALLOWED=NO`
+- The first focused lifecycle run timed out on the accessibility query after
+  returning to Library. After suppressing the departure animation, the same
+  regression passed: **1 test, 0 failures, 0 skips**, including chevron access,
+  transport reachability, information detour, background/foreground, Quiz Back,
+  and process relaunch. Exact passing command (exit 0):
+  `xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -only-testing:AcquiringUITests/QuizCoverageTests/testSingingToolCollapsesOnQuizExitAndAppClose -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 240 -maximum-test-execution-time-allowance 240 -resultBundlePath /tmp/acquiring-singing-lifecycle-retry.xcresult test CODE_SIGNING_ALLOWED=NO`
+- Final simulator install and fixture launch passed. The stale-process terminate
+  reported nothing to terminate (exit 3); the test runner had already closed it.
+  No screenshots were inspected and no full suite or release was run.
+
+Review: (1) open `500 Miles` and compare transport alignment, sizes, and spacing;
+(2) toggle the chevron and try the first-row controls while expanded;
+(3) leave Quiz via information or Back, then background/reopen the app and
+confirm the tool is collapsed. Earlier review statuses remain pending.
+
+
+### Quiz information and Favorite buttons on the key row — 2026-09-06
+
+Runtime model: GPT-6. Implemented; human visual review pending.
+Information and Favorite now sit on the right of the key-signature row as
+separate 44 pt outlined buttons with an 8 pt gap, outside the navigation bar's
+shared gray group. The key remains centered and reserves space for both buttons;
+Lock in Major stays on the left. Existing actions and accessibility labels,
+values, and identifiers are retained. Earlier uncommitted work is preserved.
+
+Incremental build passed (exit 0; existing AudioSystem.swift:191 async warning):
+`xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug build CODE_SIGNING_ALLOWED=NO`
+`git diff --check -- ios/Acquiring/Features/SongViews.swift` passed (exit 0).
+The stale simulator app was terminated, the build installed, and the full-catalog
+library fixture launched successfully on the warm iPhone 17. Code/accessibility
+label inspection only; no new UI test or screenshot inspection for this layout edit.
+
+Review: (1) open `500 Miles` → Quiz and check the two separate buttons alongside
+the centered key; (2) toggle Favorite and open information to check both actions.
+Earlier review statuses remain pending.
