@@ -158,11 +158,7 @@ final class LibraryStore {
     }
 
     var shouldShowRecentContent: Bool {
-        guard query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return false }
-        switch searchScope {
-        case .songs: return isSongSearchFocused
-        case .artists: return isArtistSearchFocused
-        }
+        query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     convenience init(environment: AppEnvironment) {
