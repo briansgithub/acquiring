@@ -1543,3 +1543,17 @@ all selectors, inspect all three knobs in both modes, change songs/defaults and
 relaunch, then leave Quiz/background the app and confirm paused audio and absent
 external controls. No release/upload was performed. Unrelated primary-checkout
 edits are backed up for preservation and remain outside feature commits.
+
+### Completed-work integration, phase two — 2026-09-05
+
+Phase two is merged into main, including the approved compact transport layout,
+Set/Clear tessitura menu (calibration-only Clear; no stepper), complexity scores,
+release-notes policy, and FPS-description removal. The final dock regression
+passed after compact sizing corrections. Nineteen worktrees and twenty local
+branches were retired after recovery and ancestry checks. The Introduction-card
+review worktree was explicitly excluded and remains unchanged.
+
+See [the consolidation record](worktree-consolidation-2026-09-05.md) for exact
+checks, preserved recovery references, and separate pending work. The earlier
+return-to-Library keyboard check and physical-device acceptance are not claimed
+resolved. No push or release was performed.
