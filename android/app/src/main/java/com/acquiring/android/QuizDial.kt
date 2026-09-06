@@ -7,6 +7,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -21,11 +23,13 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.setProgress
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.Text
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -84,8 +88,21 @@ internal fun QuizDial(
     }
 
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(label, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
-        Text(valueLabel, color = primary, style = MaterialTheme.typography.labelSmall)
+        Text(
+            text = label,
+            modifier = Modifier.fillMaxWidth().height(36.dp),
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.labelMedium,
+            textAlign = TextAlign.Center,
+            maxLines = 2
+        )
+        Text(
+            text = valueLabel,
+            modifier = Modifier.height(18.dp),
+            color = primary,
+            style = MaterialTheme.typography.labelSmall,
+            maxLines = 1
+        )
         Box(
             modifier = Modifier
                 .size(100.dp)
@@ -101,7 +118,17 @@ internal fun QuizDial(
                         true
                     }
                 }
-                .then(if (onTap != null) Modifier.clickable(onClick = onTap) else Modifier)
+                .then(
+                    if (onTap != null) {
+                        Modifier.clickable(
+                            onClickLabel = "Reset $label",
+                            role = Role.Button,
+                            onClick = onTap
+                        )
+                    } else {
+                        Modifier
+                    }
+                )
                 .pointerInput(valueRange, semanticsSteps) {
                     detectDragGestures(
                         onDragStart = { position ->
