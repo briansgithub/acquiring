@@ -115,13 +115,25 @@ public actor CatalogCoordinator: CatalogRepository {
 
     public func song(id: String) throws -> CatalogSong? {
         try read { db in
-            try Row.fetchOne(db, sql: "SELECT slug, artist, title, url, status FROM songs WHERE slug = ?", arguments: [id]).map(Self.song(from:))
+            try Row.fetchOne(db, sql: """
+                SELECT songs.slug, songs.artist, songs.title, songs.url, songs.status,
+                       entries.complexityRating
+                FROM songs
+                LEFT JOIN song_browse_entries entries ON entries.slug = songs.slug
+                WHERE songs.slug = ?
+                """, arguments: [id]).map(Self.song(from:))
         }
     }
 
     public func songDocument(id: String) throws -> SongDocument {
         try read { db in
-            guard let row = try Row.fetchOne(db, sql: "SELECT slug, artist, title, url, status, dataBlob FROM songs WHERE slug = ?", arguments: [id]) else {
+            guard let row = try Row.fetchOne(db, sql: """
+                SELECT songs.slug, songs.artist, songs.title, songs.url, songs.status,
+                       songs.dataBlob, entries.complexityRating
+                FROM songs
+                LEFT JOIN song_browse_entries entries ON entries.slug = songs.slug
+                WHERE songs.slug = ?
+                """, arguments: [id]) else {
                 throw CatalogError.missingSong(id)
             }
             guard let payload: Data = row["dataBlob"] else { throw CatalogError.invalidPayload("song has no chord payload") }
@@ -389,7 +401,8 @@ public actor CatalogCoordinator: CatalogRepository {
             artist: row["artist"],
             title: row["title"],
             url: (row["url"] as String?).flatMap(URL.init(string:)),
-            status: row["status"] ?? "ready"
+            status: row["status"] ?? "ready",
+            complexityRating: row["complexityRating"]
         )
     }
 
