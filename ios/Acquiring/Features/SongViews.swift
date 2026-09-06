@@ -1517,6 +1517,7 @@ struct QuizView: View {
             range: 0...1,
             step: 0.01,
             valueLabel: balanceLabel(soundConfiguration.melodyChordBalance),
+            showValueLabel: false,
             accessibilityValue: balanceAccessibilityValue(soundConfiguration.melodyChordBalance),
             resetValue: 0.5,
             identifier: "quiz.balance",
@@ -2288,7 +2289,7 @@ private struct QuizTransposeSelector: View {
             ScrollViewReader { proxy in
                 ScrollView(.vertical) {
                     VStack(spacing: 0) {
-                        ForEach(-12...12, id: \.self) { value in
+                        ForEach((-12...12).reversed(), id: \.self) { value in
                             Button {
                                 isPresented = false
                                 onSelect(value)

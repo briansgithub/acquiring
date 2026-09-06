@@ -177,18 +177,25 @@ private struct AudioDiagnosticsActivitySheet: UIViewControllerRepresentable {
 }
 
 struct AudioDiagnosticsSettingsSection: View {
+    /// Hidden now that the playback failure appears fixed. Set to `true` to bring the
+    /// entry back while chasing a regression, or delete this section once the reports
+    /// are confirmed unnecessary. The in-quiz failure alert still offers the report.
+    static let isVisible = false
+
     @Environment(AppEnvironment.self) private var environment
     @State private var showsShare = false
 
     var body: some View {
-        Section {
-            Button("Share Audio Diagnostics") { showsShare = true }
-                .accessibilityIdentifier("settings.shareAudioDiagnostics")
-                .sheet(isPresented: $showsShare) { AudioDiagnosticsSheet(audio: environment.audio) }
-        } header: {
-            Text("Audio Diagnostics")
-        } footer: {
-            Text("Save the report and attach it to the support conversation. Include whether playback was audible. Reports stay on this phone until you share them; no audio is recorded.")
+        if Self.isVisible {
+            Section {
+                Button("Share Audio Diagnostics") { showsShare = true }
+                    .accessibilityIdentifier("settings.shareAudioDiagnostics")
+                    .sheet(isPresented: $showsShare) { AudioDiagnosticsSheet(audio: environment.audio) }
+            } header: {
+                Text("Audio Diagnostics")
+            } footer: {
+                Text("Save the report and attach it to the support conversation. Include whether playback was audible. Reports stay on this phone until you share them; no audio is recorded.")
+            }
         }
     }
 }

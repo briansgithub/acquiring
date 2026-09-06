@@ -436,16 +436,20 @@ final class QuizCoverageTests: XCTestCase {
         XCTAssertFalse(first.exists)
     }
 
-    func testFullChordOnlyPreviewsWhileMarkedRootStartsSingBack() {
+    func testFullChordOnlyPreviewsWhileChordToneStartsSingBack() {
         let app = launchReadyQuiz()
         let chord = app.buttons["quiz.chord.preview"]
-        let root = app.buttons["quiz.root.preview"]
+        let tone = app.buttons["quiz.chordTone.0"]
         let toggle = app.buttons["vocal.practice.expand"]
         let first = app.descendants(matching: .any)["vocal.practice.slot.1"].firstMatch
         XCTAssertTrue(chord.waitForExistence(timeout: 10))
-        XCTAssertTrue(root.waitForExistence(timeout: 10))
+        XCTAssertTrue(tone.waitForExistence(timeout: 10))
         XCTAssertTrue(waitForEnabled(chord, timeout: 30))
-        XCTAssertTrue(waitForEnabled(root, timeout: 30))
+        XCTAssertTrue(waitForEnabled(tone, timeout: 30))
+        XCTAssertFalse(
+            app.buttons["quiz.root.preview"].exists,
+            "Full mode shows only the full-width chord card, with no root card beside it"
+        )
 
         chord.doubleTap()
         XCTAssertFalse(first.exists, "The full chord card must remain preview-only")
@@ -453,8 +457,8 @@ final class QuizCoverageTests: XCTestCase {
         XCTAssertTrue(waitForValue(toggle, "Collapsed", timeout: 5))
         XCTAssertFalse(first.exists, "Long-pressing the full chord must not start persistent practice")
 
-        root.doubleTap()
-        XCTAssertTrue(first.waitForExistence(timeout: 5), "The marked root card must still offer sing-back")
+        tone.doubleTap()
+        XCTAssertTrue(first.waitForExistence(timeout: 5), "The chord tone card must still offer sing-back")
         XCTAssertFalse(
             app.descendants(matching: .any)["vocal.practice.interval"].firstMatch.isEnabled,
             "The interval result requires two recorded notes"
@@ -554,10 +558,10 @@ final class QuizCoverageTests: XCTestCase {
     func testMicrophoneCaptureAndFlipFlopDoNotCrash() {
         let app = launchReadyQuiz()
         // Reproduce the phone's playback-to-input transition, not only cold capture.
-        let rootPreview = app.buttons["quiz.root.preview"]
-        XCTAssertTrue(rootPreview.waitForExistence(timeout: 10))
-        XCTAssertTrue(waitForEnabled(rootPreview, timeout: 30))
-        rootPreview.tap()
+        let tonePreview = app.buttons["quiz.chordTone.0"]
+        XCTAssertTrue(tonePreview.waitForExistence(timeout: 10))
+        XCTAssertTrue(waitForEnabled(tonePreview, timeout: 30))
+        tonePreview.tap()
         app.buttons["vocal.practice.expand"].tap()
         let first = app.descendants(matching: .any)["vocal.practice.slot.1"].firstMatch
         XCTAssertTrue(first.waitForExistence(timeout: 5))
@@ -593,10 +597,10 @@ final class QuizCoverageTests: XCTestCase {
 
     func testDoubleTapOpensOnlyIntervalToolAndCollapseClearsTargets() {
         let app = launchReadyQuiz()
-        let root = app.buttons["quiz.root.preview"]
-        XCTAssertTrue(root.waitForExistence(timeout: 10))
-        XCTAssertTrue(waitForEnabled(root, timeout: 30))
-        root.doubleTap()
+        let tone = app.buttons["quiz.chordTone.0"]
+        XCTAssertTrue(tone.waitForExistence(timeout: 10))
+        XCTAssertTrue(waitForEnabled(tone, timeout: 30))
+        tone.doubleTap()
         let toggle = app.buttons["vocal.practice.expand"]
         let first = app.buttons["vocal.practice.slot.1"]
         let section = app.descendants(matching: .any)["quiz.section"]
@@ -622,10 +626,10 @@ final class QuizCoverageTests: XCTestCase {
             "Rapid reopening must finalize the cleared target"
         )
 
-        root.doubleTap()
+        tone.doubleTap()
         XCTAssertTrue(
             poll(timeout: 5) { !(first.value as? String ?? "No pitch").hasPrefix("No pitch") },
-            "Double-tapping the root must load a target before changing sections"
+            "Double-tapping the chord tone must load a target before changing sections"
         )
         XCTAssertTrue(
             poll(timeout: 5) { section.exists && section.isEnabled && section.isHittable },
@@ -641,10 +645,10 @@ final class QuizCoverageTests: XCTestCase {
             "Changing sections must clear the loaded target"
         )
 
-        root.doubleTap()
+        tone.doubleTap()
         XCTAssertTrue(
             poll(timeout: 5) { !(first.value as? String ?? "No pitch").hasPrefix("No pitch") },
-            "Double-tapping the root must load a target before backgrounding"
+            "Double-tapping the chord tone must load a target before backgrounding"
         )
         XCUIDevice.shared.press(.home)
         app.activate()

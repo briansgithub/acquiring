@@ -76,7 +76,7 @@ struct QuizCardsView: View {
                 rootOnlyCards(rootState: rootState)
             } else {
                 melodyCards(active: activeMelody, state: melodyState)
-                chordCards(active: activeChord, rootState: rootState)
+                chordCards(active: activeChord)
                 chordToneCards(active: activeChord)
             }
         }
@@ -228,10 +228,7 @@ struct QuizCardsView: View {
     }
 
     @ViewBuilder
-    private func chordCards(
-        active: QuizCardsPresentation.ActiveChord?,
-        rootState: ChordRootIntervalState?
-    ) -> some View {
+    private func chordCards(active: QuizCardsPresentation.ActiveChord?) -> some View {
         QuizCardSection("Chord", compact: compact) {
             if let active, !active.isRest {
             let key = section.key(at: active.onset)
@@ -243,36 +240,24 @@ struct QuizCardsView: View {
                 )
                 : ChordInterpreter.romanSymbol(for: active.chord, key: key)
             let voicing = chordPreviewNotes(for: active.chord, key: key)
-            let root = rootState?.currentIntervalPitch
 
-            HStack(alignment: .center, spacing: 8) {
-                QuizCardButton(
-                    title: "Play chord \(symbol)",
-                    identifier: "quiz.chord.preview",
-                    enabled: isPreviewEnabled && !voicing.isEmpty,
-                    action: { onPreview(voicing, active.nativeDuration(bpm: section.bpm)) },
-                    showsSingBackHint: false,
-                    fixedHeight: compact ? 44 : nil
-                ) {
-                    FittedRomanNumeral(
-                        display: RomanNumeralDisplay(symbol: symbol, borrowed: active.chord["borrowed"]),
-                        maximumFontSize: 36,
-                        minimumFontSize: 12,
-                        color: .white
-                    )
-                    .frame(maxWidth: .infinity, minHeight: compact ? 34 : 58)
-                }
-                .frame(maxWidth: .infinity)
-
-                rootCard(
-                    title: "Current chord root",
-                    pitch: root,
-                    degree: root.map { degreeLabel(for: $0, sourceKey: key) },
-                    identifier: "quiz.root.preview",
-                    fixedHeight: compact ? 44 : nil
+            QuizCardButton(
+                title: "Play chord \(symbol)",
+                identifier: "quiz.chord.preview",
+                enabled: isPreviewEnabled && !voicing.isEmpty,
+                action: { onPreview(voicing, active.nativeDuration(bpm: section.bpm)) },
+                showsSingBackHint: false,
+                fixedHeight: compact ? 44 : nil
+            ) {
+                FittedRomanNumeral(
+                    display: RomanNumeralDisplay(symbol: symbol, borrowed: active.chord["borrowed"]),
+                    maximumFontSize: 36,
+                    minimumFontSize: 12,
+                    color: .white
                 )
-                .frame(maxWidth: 140)
+                .frame(maxWidth: .infinity, minHeight: compact ? 34 : 58)
             }
+            .frame(maxWidth: .infinity)
             } else {
                 QuizEmptyCardSlot(
                     fixedHeight: compact ? 44 : nil

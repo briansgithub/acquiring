@@ -7,6 +7,7 @@ struct PlaybackKnob: View {
     private let range: ClosedRange<Double>
     private let step: Double
     private let valueLabel: String
+    private let showValueLabel: Bool
     private let accessibilityValue: String
     private let ringLabels: [String]
     private let ringLabelRadius: Double
@@ -22,6 +23,7 @@ struct PlaybackKnob: View {
         range: ClosedRange<Double>,
         step: Double = 1,
         valueLabel: String,
+        showValueLabel: Bool = true,
         accessibilityValue: String,
         ringLabels: [String] = [],
         ringLabelRadius: Double = 0.45,
@@ -34,6 +36,7 @@ struct PlaybackKnob: View {
         self.range = range
         self.step = step
         self.valueLabel = valueLabel
+        self.showValueLabel = showValueLabel
         self.accessibilityValue = accessibilityValue
         self.ringLabels = ringLabels
         self.ringLabelRadius = ringLabelRadius
@@ -50,12 +53,14 @@ struct PlaybackKnob: View {
                 .lineLimit(compact ? 1 : 2, reservesSpace: compact)
                 .minimumScaleFactor(compact ? 0.8 : 1)
 
-            Text(valueLabel)
-                .font(compact ? .caption2 : .subheadline)
-                .foregroundStyle(Color.accentColor)
-                .multilineTextAlignment(.center)
-                .lineLimit(compact ? 1 : 2, reservesSpace: compact)
-                .minimumScaleFactor(0.75)
+            if showValueLabel {
+                Text(valueLabel)
+                    .font(compact ? .caption2 : .subheadline)
+                    .foregroundStyle(Color.accentColor)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(compact ? 1 : 2, reservesSpace: compact)
+                    .minimumScaleFactor(0.75)
+            }
 
             dial
                 // Keep the top arpeggio label clear of the value above the dial.
