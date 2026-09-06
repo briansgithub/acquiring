@@ -13,8 +13,15 @@ struct InstrumentSettingsSection: View {
                     set: { environment.saveDefaultQuizInstrument($0) }
                 )
             ) {
-                ForEach(SynthWaveform.allCases, id: \.self) { waveform in
-                    Text(waveform.displayName).tag(waveform)
+                Section("Waveforms") {
+                    ForEach(waveforms, id: \.self) { waveform in
+                        Text(waveform.displayName).tag(waveform)
+                    }
+                }
+                Section("Synths") {
+                    ForEach(synths, id: \.self) { waveform in
+                        Text(waveform.displayName).tag(waveform)
+                    }
                 }
             }
             .pickerStyle(.menu)
@@ -22,5 +29,13 @@ struct InstrumentSettingsSection: View {
             .accessibilityValue(environment.quizInstrument.savedDefault.displayName)
             .accessibilityHint("Changes the sound used when a new quiz starts and updates the current quiz.")
         }
+    }
+
+    private var waveforms: [SynthWaveform] {
+        [.sine, .square, .sawtooth, .triangle]
+    }
+
+    private var synths: [SynthWaveform] {
+        SynthWaveform.allCases.filter { !waveforms.contains($0) }
     }
 }
