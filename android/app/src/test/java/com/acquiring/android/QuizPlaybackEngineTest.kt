@@ -274,6 +274,30 @@ class QuizPlaybackEngineTest {
     }
 
     @Test
+    fun engine_lifecyclePauseCancelsQueuedResumeAndRetainsTheScrubBeat() {
+        val sink = FakeSink(blockFirstWrite = true)
+        val engine = QuizPlaybackEngine(config(), sampleRate = 1_000) { sink }
+        try {
+            engine.load(simpleTimeline(), continuePlaying = true)
+            assertTrue(sink.firstWriteEntered.await(3, TimeUnit.SECONDS))
+
+            engine.seek(2.25, resume = true)
+            engine.pauseForLifecycle()
+            sink.unblockWrites()
+
+            awaitCondition {
+                engine.state.value.phase == QuizPlaybackPhase.PAUSED &&
+                    engine.state.value.beat == 2.25
+            }
+            assertFalse(engine.isPlaybackRequested)
+            assertEquals(0, sink.playCalls.get())
+        } finally {
+            sink.unblockWrites()
+            engine.release()
+        }
+    }
+
+    @Test
     fun engine_scrubResumeIntentReflectsCommandsImmediately() {
         val sink = FakeSink(blockAfterPlay = true)
         val engine = QuizPlaybackEngine(config(), sampleRate = 1_000) { sink }

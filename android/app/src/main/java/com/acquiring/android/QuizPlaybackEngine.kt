@@ -455,6 +455,11 @@ internal class QuizPlaybackEngine(
         offer(Command.Pause(revision))
     }
 
+    /** Invalidates queued resume/load work while preserving the audible beat. */
+    fun pauseForLifecycle() {
+        pause()
+    }
+
     /** Pauses immediately and returns whether this scrub session should resume. */
     fun pauseForScrub(): Boolean {
         val revision = transportRevision.incrementAndGet()

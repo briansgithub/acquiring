@@ -140,6 +140,37 @@ final class LibraryStore {
     @ObservationIgnored private var catalogUpdateGeneration = 0
     @ObservationIgnored private var retryHarvestURL: URL?
     @ObservationIgnored private var didAttemptAutomaticCatalogInstall = false
+    private var catalogInstallWasAutomatic = false
+
+    var hasInstalledCatalog: Bool {
+        guard case let .content(count) = catalogState else { return false }
+        return count > 0
+    }
+
+    var isAutomaticCatalogInstall: Bool {
+        catalogInstallWasAutomatic
+    }
+
+    var isAutomaticCatalogInstallRunning: Bool {
+        isAutomaticCatalogInstall && maintenanceState.isRunning
+    }
+
+    var shouldShowMissingCatalogNotice: Bool {
+        guard !hasInstalledCatalog else { return false }
+        guard !maintenanceState.isRunning else { return false }
+        if case .failure = catalogState { return true }
+        guard case .empty = catalogState else { return false }
+
+        switch maintenanceState {
+        case .cancelled(operation: .downloadAndInstall),
+             .failed(operation: .downloadAndInstall, message: _):
+            return true
+        case let .completed(operation: .downloadAndInstall, songCount):
+            return songCount == 0
+        case .idle, .running, .cancelling, .completed, .cancelled, .failed:
+            return false
+        }
+    }
 
     var canInstallCatalog: Bool {
         guard !maintenanceState.isRunning else { return false }
@@ -197,16 +228,19 @@ final class LibraryStore {
 
     func load() async {
         catalogState = .loading
+        scheduleSearch(debounced: false)
         do {
             try await prepareCatalog()
             let count = try await catalog.songCount()
             catalogState = count == 0 ? .empty : .content(count)
             catalogRevision &+= 1
-            await refreshUserContent()
             if count == 0, !didAttemptAutomaticCatalogInstall {
                 didAttemptAutomaticCatalogInstall = true
-                installCatalog()
+                startCatalogInstall(automatically: true)
+            } else if count > 0 {
+                scheduleSearch(debounced: false)
             }
+            await refreshUserContent()
         } catch {
             catalogState = .failure(error.localizedDescription)
         }
@@ -305,7 +339,12 @@ final class LibraryStore {
     }
 
     func installCatalog() {
+        startCatalogInstall(automatically: false)
+    }
+
+    private func startCatalogInstall(automatically: Bool) {
         guard canInstallCatalog else { return }
+        catalogInstallWasAutomatic = automatically
         begin(
             operation: .downloadAndInstall,
             run: maintenance.downloadAndInstall()
@@ -314,6 +353,7 @@ final class LibraryStore {
 
     func harvest() {
         guard canHarvest else { return }
+        catalogInstallWasAutomatic = false
         guard let url = Self.validHarvestURL(from: harvestURL) else {
             retryHarvestURL = nil
             maintenanceState = .failed(
@@ -379,6 +419,8 @@ final class LibraryStore {
         if operation == .downloadAndInstall {
             catalogUpdateGeneration &+= 1
             catalogUpdateState = .idle
+        } else {
+            catalogInstallWasAutomatic = false
         }
         maintenanceTask?.cancel()
         maintenanceGeneration += 1
@@ -409,6 +451,9 @@ final class LibraryStore {
                     guard generation == maintenanceGeneration, !Task.isCancelled else { return }
                     catalogState = count == 0 ? .empty : .content(count)
                     catalogRevision &+= 1
+                    if count > 0 {
+                        scheduleSearch(debounced: false)
+                    }
                     await refreshUserContent()
                     guard generation == maintenanceGeneration, !Task.isCancelled else { return }
                     maintenanceState = .completed(operation: operation, songCount: count)
@@ -475,6 +520,13 @@ final class LibraryStore {
 
         let term = normalizedQuery
         guard !term.isEmpty else {
+            suggestions = .idle
+            artistSuggestions = .idle
+            hasMoreSongSuggestions = false
+            hasMoreArtistSuggestions = false
+            return
+        }
+        guard hasInstalledCatalog else {
             suggestions = .idle
             artistSuggestions = .idle
             hasMoreSongSuggestions = false

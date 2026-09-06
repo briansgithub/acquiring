@@ -5,40 +5,61 @@ import UIKit
 
 struct LibraryScene: View {
     @State private var store: LibraryStore
+    @AppStorage private var hasCompletedIntroduction: Bool
     @Environment(\.scenePhase) private var scenePhase
     private let environment: AppEnvironment
 
     init(environment: AppEnvironment) {
         self.environment = environment
         _store = State(initialValue: LibraryStore(environment: environment))
+        // Keep UI-test onboarding isolated without resetting it on a test relaunch.
+        let testSession = UITestSession.current()
+        let defaults = testSession.flatMap {
+            UserDefaults(suiteName: "\($0.historySuiteName).introduction")
+        } ?? .standard
+        let skipsIntroduction = testSession != nil
+            && !ProcessInfo.processInfo.arguments.contains("--ui-testing-introduction")
+        _hasCompletedIntroduction = AppStorage(
+            wrappedValue: skipsIntroduction,
+            "hasCompletedIntroduction",
+            store: defaults
+        )
     }
 
     var body: some View {
         @Bindable var store = store
         NavigationStack(path: $store.path) {
-            LibraryView(store: store)
-                .safeAreaInset(edge: .bottom, spacing: 0) { singingDock }
-                .navigationDestination(for: AppRoute.self) { route in
-                    Group {
-                    switch route {
-                    case let .artist(name): ArtistSongsView(artist: name, store: store)
-                    case .allSongs:
-                        AllSongsBrowseView(store: store)
-                            .navigationTitle("All Songs")
-                            .navigationBarTitleDisplayMode(.inline)
-                    case let .playlist(id): PlaylistSongsView(playlistID: id, store: store)
-                    case let .songDetail(id):
-                        SongDetailView(songID: id) { song in
-                            Task { await store.openArtist(from: song) }
-                        }
-                    case let .quiz(id):
-                        QuizView(songID: id) { song in
-                            Task { await store.openArtist(from: song) }
-                        }
+            Group {
+                if hasCompletedIntroduction {
+                    LibraryView(store: store)
+                } else {
+                    IntroductionView {
+                        hasCompletedIntroduction = true
                     }
-                    }
-                    .safeAreaInset(edge: .bottom, spacing: 0) { singingDock }
                 }
+            }
+            .safeAreaInset(edge: .bottom, spacing: 0) { singingDock }
+            .navigationDestination(for: AppRoute.self) { route in
+                Group {
+                switch route {
+                case let .artist(name): ArtistSongsView(artist: name, store: store)
+                case .allSongs:
+                    AllSongsBrowseView(store: store)
+                        .navigationTitle("All Songs")
+                        .navigationBarTitleDisplayMode(.inline)
+                case let .playlist(id): PlaylistSongsView(playlistID: id, store: store)
+                case let .songDetail(id):
+                    SongDetailView(songID: id) { song in
+                        Task { await store.openArtist(from: song) }
+                    }
+                case let .quiz(id):
+                    QuizView(songID: id) { song in
+                        Task { await store.openArtist(from: song) }
+                    }
+                }
+                }
+                .safeAreaInset(edge: .bottom, spacing: 0) { singingDock }
+            }
         }
         .environment(store.userContent)
         .environment(environment.vocalPractice)
@@ -53,18 +74,22 @@ struct LibraryScene: View {
             if !remainsInSong { environment.vocalPractice.leaveSong() }
         }
         .onChange(of: scenePhase) { _, phase in
+            if phase != .active { environment.audio.pauseForAppInactivity() }
             if phase == .background { environment.vocalPractice.handleSceneBackgrounded() }
         }
         .task { await store.load() }
     }
 
+    @ViewBuilder
     private var singingDock: some View {
-        IntervalSingingTool(model: environment.vocalPractice)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .frame(maxWidth: 760)
-            .frame(maxWidth: .infinity)
-            .background(.bar)
+        if hasCompletedIntroduction {
+            IntervalSingingTool(model: environment.vocalPractice)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .frame(maxWidth: 760)
+                .frame(maxWidth: .infinity)
+                .background(.bar)
+        }
     }
 }
 
@@ -72,7 +97,7 @@ private struct LibraryView: View {
     @Bindable var store: LibraryStore
 
     var body: some View {
-        content
+        SearchCatalogView(store: store)
             .onAppear { Task { await store.refreshUserContent() } }
             .navigationTitle("Library")
             .navigationBarTitleDisplayMode(.inline)
@@ -91,106 +116,253 @@ private struct LibraryView: View {
                 }
             }
     }
+}
 
-    @ViewBuilder
-    private var content: some View {
-        switch store.catalogState {
-        case .idle, .loading:
-            LibraryLoadingView()
-        case .empty:
-            setupContent
-        case .content:
-            SearchCatalogView(store: store)
-        case let .failure(message):
-            CatalogFailureView(message: message)
+private struct IntroductionView: View {
+    var continueToLibrary: (() -> Void)? = nil
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                IntroductionSection(
+                    title: "Train your ear with real songs",
+                    identifier: "introduction.objective"
+                ) {
+                    Text("Learn intervals and harmony through catchy songs and real-world examples.")
+                        .foregroundStyle(.secondary)
+                }
+
+                IntroductionSection(
+                    title: "From a circle to Acquiring",
+                    identifier: "introduction.story"
+                ) {
+                    Text("It started with diatonic scale degrees arranged in a circle. Next came “Inquiring”—asking questions about songs. Finally, “Acquiring,” because I wanted to find my app faster in the app list.")
+                        .foregroundStyle(.secondary)
+
+                    let layout = dynamicTypeSize.isAccessibilitySize
+                        ? AnyLayout(VStackLayout(alignment: .leading, spacing: 14))
+                        : AnyLayout(HStackLayout(alignment: .center, spacing: 18))
+                    layout {
+                        ScaleDegreeCircle()
+                        IntroductionNameProgression()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .padding(.top, 2)
+                }
+
+                IntroductionSection(
+                    title: "Three ways to use a card",
+                    identifier: "introduction.gestures"
+                ) {
+                    VStack(spacing: 10) {
+                        IntroductionGestureRow(
+                            action: "Tap",
+                            detail: "Play the card.",
+                            systemImage: "hand.tap"
+                        )
+                        IntroductionGestureRow(
+                            action: "Double-tap",
+                            detail: "Open the interval singing queue.",
+                            systemImage: "hand.tap.fill"
+                        )
+                        IntroductionGestureRow(
+                            action: "Press and hold",
+                            detail: "Turn on continuous pitch monitoring.",
+                            systemImage: "hand.point.up.left.fill"
+                        )
+                    }
+                }
+
+                IntroductionSection(
+                    title: "Find your comfortable range",
+                    identifier: "introduction.tessitura"
+                ) {
+                    Text("Tessitura is your comfortable singing range. Set a comfortable pitch so singing targets can shift by octaves to suit your voice.")
+                        .foregroundStyle(.secondary)
+
+                    ViewThatFits(in: .horizontal) {
+                        HStack(spacing: 12) {
+                            PitchHintExample(
+                                title: "White dot: Original octave.",
+                                isAdjusted: false
+                            )
+                            PitchHintExample(
+                                title: "Gray dot: Comfortable pitch set.",
+                                isAdjusted: true
+                            )
+                        }
+                        VStack(spacing: 10) {
+                            PitchHintExample(
+                                title: "White dot: Original octave.",
+                                isAdjusted: false
+                            )
+                            PitchHintExample(
+                                title: "Gray dot: Comfortable pitch set.",
+                                isAdjusted: true
+                            )
+                        }
+                    }
+
+                    Text("Open a song, then choose “Calibrate comfortable pitch” in the singing tool’s menu and hum an easy note.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .padding(.top, 2)
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 24)
+            .frame(maxWidth: 680, alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: .center)
+            .accessibilityIdentifier("introduction.content")
         }
-    }
-
-    @ViewBuilder
-    private var setupContent: some View {
-        switch store.maintenanceState {
-        case let .running(operation: .downloadAndInstall, progress):
-            CatalogSetupProgressView(message: progress.message)
-        case .cancelling(operation: .downloadAndInstall):
-            CatalogSetupProgressView(message: "Cancelling catalog setup…")
-        case let .failed(operation: .downloadAndInstall, message):
-            CatalogFailureView(message: "The full catalog download failed. \(message)")
-        case .cancelled(operation: .downloadAndInstall):
-            CatalogFailureView(message: "The full catalog download was cancelled.")
-        case .idle,
-             .running(operation: .harvest, progress: _),
-             .cancelling(operation: .harvest),
-             .cancelled(operation: .harvest),
-             .failed(operation: .harvest, _),
-             .completed(operation: .downloadAndInstall, songCount: _),
-             .completed(operation: .harvest, songCount: _):
-            CatalogEmptyView()
+        .background(Color.accentColor.opacity(0.04))
+        .navigationTitle("Introduction")
+        .navigationBarTitleDisplayMode(.inline)
+        .safeAreaInset(edge: .bottom) {
+            if let continueToLibrary {
+                Button(action: continueToLibrary) {
+                    Text("Continue")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                }
+                .buttonStyle(.borderedProminent)
+                .frame(maxWidth: 640)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 12)
+                .frame(maxWidth: .infinity)
+                .background(.bar)
+                .accessibilityIdentifier("introduction.continue")
+            }
         }
     }
 }
 
-private struct LibraryLoadingView: View {
+private struct IntroductionSection<Content: View>: View {
+    let title: String
+    let identifier: String
+    @ViewBuilder let content: () -> Content
+
     var body: some View {
-        VStack(spacing: 12) {
-            ProgressView()
-            Text("Opening catalog…")
-                .foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.title3.weight(.bold))
+                .accessibilityAddTraits(.isHeader)
+                .accessibilityIdentifier(identifier)
+            content()
+                .font(.body)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(.background, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .stroke(Color.accentColor.opacity(0.22), lineWidth: 1)
+        }
+    }
+}
+
+private struct ScaleDegreeCircle: View {
+    private let degrees = ["1", "2", "3", "4", "5", "6", "7"]
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(Color.accentColor.opacity(0.12))
+            Circle()
+                .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
+            ForEach(Array(degrees.enumerated()), id: \.offset) { index, degree in
+                let angle = Angle.degrees(Double(index) / Double(degrees.count) * 360 - 90)
+                Text(degree)
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(index == 0 ? Color.accentColor : .primary)
+                    .offset(x: cos(angle.radians) * 32, y: sin(angle.radians) * 32)
+            }
+            Image(systemName: "music.note")
+                .font(.system(size: 12, weight: .bold))
+                .foregroundStyle(Color.accentColor)
+        }
+        .frame(width: 92, height: 92)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Scale degrees arranged in a circle")
+    }
+}
+
+private struct IntroductionNameProgression: View {
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 6) {
+                progressionLabel("Circle")
+                Image(systemName: "chevron.right")
+                progressionLabel("Inquiring")
+                Image(systemName: "chevron.right")
+                progressionLabel("Acquiring", emphasized: true)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                progressionLabel("Circle")
+                progressionLabel("Inquiring")
+                progressionLabel("Acquiring", emphasized: true)
+            }
+        }
+        .font(.caption.weight(.semibold))
+        .foregroundStyle(.secondary)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Circle, then Inquiring, then Acquiring")
+    }
+
+    private func progressionLabel(_ text: String, emphasized: Bool = false) -> some View {
+        Text(text)
+            .foregroundStyle(emphasized ? Color.accentColor : .secondary)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+private struct IntroductionGestureRow: View {
+    let action: String
+    let detail: String
+    let systemImage: String
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 10) {
+            Image(systemName: systemImage)
+                .frame(width: 22)
+                .foregroundStyle(Color.accentColor)
+                .accessibilityHidden(true)
+            Text(action).fontWeight(.semibold) + Text(" — \(detail)")
+        }
+        .frame(maxWidth: .infinity, minHeight: 28, alignment: .leading)
+    }
+}
+
+private struct PitchHintExample: View {
+    let title: String
+    let isAdjusted: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 6) {
+                Image(systemName: "music.note")
+                    .font(.caption.weight(.bold))
+                RoundedRectangle(cornerRadius: 3, style: .continuous)
+                    .fill(.white.opacity(0.72))
+                    .frame(width: 30, height: 5)
+                Spacer(minLength: 0)
+            }
+            .foregroundStyle(.white)
+            .accessibilityHidden(true)
+            Text(title)
+                .font(.caption.weight(.medium))
+                .foregroundStyle(.primary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, minHeight: 82, alignment: .leading)
+        .background(Color.accentColor.opacity(0.82), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay(alignment: .topTrailing) {
+            PitchHintDot(isAdjusted: isAdjusted)
+                .padding(7)
+        }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Opening catalog")
-        .accessibilityIdentifier("catalog.status.loading")
-    }
-}
-
-private struct CatalogFailureView: View {
-    let message: String
-
-    var body: some View {
-        VStack(spacing: 12) {
-            ContentUnavailableView(
-                "Unable to load catalog",
-                systemImage: "exclamationmark.triangle",
-                description: Text(message)
-            )
-            Text("Open Settings to try again or install a new catalog.")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-        }
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .accessibilityElement(children: .contain)
-        .accessibilityIdentifier("catalog.status.failure")
-    }
-}
-
-private struct CatalogEmptyView: View {
-    var body: some View {
-        ContentUnavailableView(
-            "Preparing your song catalog",
-            systemImage: "music.note.list",
-            description: Text("Acquiring downloads the full catalog automatically the first time you open it. Check Settings for progress or help.")
-        )
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .accessibilityElement(children: .combine)
-        .accessibilityIdentifier("catalog.status.empty")
-    }
-}
-
-private struct CatalogSetupProgressView: View {
-    let message: String
-
-    var body: some View {
-        VStack(spacing: 12) {
-            ProgressView()
-            Text(message)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .accessibilityElement(children: .combine)
-        .accessibilityIdentifier("catalog.status.loading")
     }
 }
 
@@ -225,6 +397,7 @@ private struct SearchCatalogView: View {
         List {
             Section {
                 PlaylistsSectionView(store: store)
+                    .disabled(!store.hasInstalledCatalog)
             }
             Section {
                 searchControls
@@ -237,7 +410,9 @@ private struct SearchCatalogView: View {
                     .listRowInsets(EdgeInsets(top: 20, leading: 16, bottom: 12, trailing: 16))
                     .listRowSeparator(.hidden)
             }
-            searchResults
+            if store.hasInstalledCatalog {
+                searchResults
+            }
 
             Section {
                 hooktheoryDisclosure
@@ -254,11 +429,12 @@ private struct SearchCatalogView: View {
 
             Section {
                 allSongsDisclosure
+                    .disabled(!store.hasInstalledCatalog)
                     .id("library.allSongs.section")
                     .listRowInsets(EdgeInsets(top: 20, leading: 16, bottom: 8, trailing: 16))
                     .listRowSeparator(.hidden)
 
-                if isAllSongsExpanded {
+                if isAllSongsExpanded, store.hasInstalledCatalog {
                     AllSongsBrowseView(store: store)
                         .frame(height: 560)
                         .background(.background, in: RoundedRectangle(cornerRadius: 14))
@@ -411,6 +587,13 @@ private struct SearchCatalogView: View {
             .padding(.top, 8)
             .accessibilityIdentifier("library.search.scope")
 
+            if store.shouldShowMissingCatalogNotice {
+                Text("Database not downloaded. Download in Settings.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 10)
+                    .accessibilityIdentifier("library.catalog.unavailable")
+            }
         }
     }
 
@@ -544,30 +727,61 @@ struct SongRow: View {
 
 private struct CatalogSettingsView: View {
     @Bindable var store: LibraryStore
+    @State private var showsIntroduction = false
 
     var body: some View {
         Form {
+            InstrumentSettingsSection()
+            Section {
+                Button {
+                    showsIntroduction = true
+                } label: {
+                    Label("Introduction", systemImage: "book")
+                }
+                .accessibilityIdentifier("settings.introduction")
+            }
             AppUpdateSettingsSection()
             TimelineRenderingSettingsSection()
 
-            Section("Catalog") {
-                CatalogSettingsStatusView(store: store)
-                CatalogUpdateStatusView(store: store)
-                CatalogUpdateButton(store: store)
-                DownloadMaintenanceStatusView(store: store)
+            if showsCatalogSettings {
+                Section("Catalog") {
+                    CatalogSettingsStatusView(store: store)
+                    CatalogUpdateStatusView(store: store)
+                    CatalogUpdateButton(store: store)
+                    if !store.isAutomaticCatalogInstall {
+                        DownloadMaintenanceStatusView(store: store)
+                    }
+                }
             }
         }
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
+        .fullScreenCover(isPresented: $showsIntroduction) {
+            NavigationStack {
+                IntroductionView()
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button("Done") { showsIntroduction = false }
+                                .accessibilityIdentifier("introduction.done")
+                        }
+                    }
+            }
+        }
         .task(id: hasInstalledCatalog) {
             guard hasInstalledCatalog else { return }
             await store.checkForCatalogUpdate()
         }
     }
 
-    private var hasInstalledCatalog: Bool {
-        if case .content = store.catalogState { return true }
-        return false
+    private var hasInstalledCatalog: Bool { store.hasInstalledCatalog }
+
+    private var showsCatalogSettings: Bool {
+        guard !store.isAutomaticCatalogInstallRunning else { return false }
+        switch store.catalogState {
+        case .idle, .loading: return false
+        case .empty: return !store.isAutomaticCatalogInstall || store.shouldShowMissingCatalogNotice
+        case .content, .failure: return true
+        }
     }
 }
 
@@ -650,7 +864,7 @@ private struct CatalogSettingsStatusView: View {
             }
             .accessibilityIdentifier("catalog.settings.status.loading")
         case .empty:
-            Label("No catalog installed", systemImage: "music.note.list")
+            Label("Database not downloaded", systemImage: "music.note.list")
                 .accessibilityIdentifier("catalog.settings.status.empty")
         case let .content(count):
             Label("\(count.formatted()) songs installed", systemImage: "checkmark.circle.fill")
@@ -938,6 +1152,9 @@ private struct CatalogUpdateButton: View {
     }
 
     private var offersCatalogDownload: Bool {
+        if case .empty = store.catalogState {
+            return store.isAutomaticCatalogInstall && !store.isAutomaticCatalogInstallRunning
+        }
         if case .failure = store.catalogState { return true }
         switch store.catalogUpdateState {
         case .updateAvailable, .unknown: return true
@@ -946,6 +1163,7 @@ private struct CatalogUpdateButton: View {
     }
 
     private var buttonTitle: String {
+        if case .empty = store.catalogState { return "Download Database" }
         if case .failure = store.catalogState {
             return "Repair Catalog"
         }
@@ -997,18 +1215,9 @@ private struct ArtistSongsView: View {
     }
 }
 
-#Preview("Library — Loading") {
+#Preview("Introduction") {
     NavigationStack {
-        LibraryLoadingView()
-            .navigationTitle("Library")
-    }
-    .preferredColorScheme(.dark)
-}
-
-#Preview("Library — Empty") {
-    NavigationStack {
-        CatalogEmptyView()
-            .navigationTitle("Library")
+        IntroductionView(continueToLibrary: {})
     }
     .preferredColorScheme(.dark)
 }
@@ -1021,14 +1230,6 @@ private struct ArtistSongsView: View {
             description: Text("Search the installed catalog to begin.")
         )
         .navigationTitle("Library")
-    }
-    .preferredColorScheme(.dark)
-}
-
-#Preview("Library — Failure") {
-    NavigationStack {
-        CatalogFailureView(message: "The catalog could not be opened.")
-            .navigationTitle("Library")
     }
     .preferredColorScheme(.dark)
 }

@@ -1,4 +1,5 @@
 import AcquiringCatalog
+import AcquiringAudio
 import AcquiringCore
 import Foundation
 import SwiftData
@@ -7,6 +8,113 @@ import UIKit
 @testable import Acquiring
 
 final class AcquiringTests: XCTestCase {
+    @MainActor
+    func testQuizInstrumentSessionSeparatesCurrentSelectionFromSavedDefault() throws {
+        let suiteName = "AcquiringTests.QuizInstrument.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let preferences = QuizInstrumentPreferences(defaults: defaults)
+
+        XCTAssertEqual(preferences.savedDefault, .clarinet)
+        defaults.set("removed-instrument", forKey: QuizInstrumentPreferences.defaultsKey)
+        XCTAssertEqual(preferences.savedDefault, .clarinet)
+        preferences.savedDefault = .flute
+
+        var applied: [SynthWaveform] = []
+        let session = QuizInstrumentSession(preferences: preferences) { applied.append($0) }
+        XCTAssertEqual(session.selection, .flute)
+        XCTAssertEqual(session.savedDefault, .flute)
+        XCTAssertEqual(applied, [.flute])
+
+        session.select(.electricPiano)
+        XCTAssertEqual(session.selection, .electricPiano)
+        XCTAssertEqual(session.savedDefault, .flute)
+        XCTAssertEqual(preferences.savedDefault, .flute)
+
+        session.saveDefault(.electricPiano)
+        XCTAssertEqual(session.selection, .electricPiano)
+        XCTAssertEqual(session.savedDefault, .electricPiano)
+        XCTAssertEqual(preferences.savedDefault, .electricPiano)
+        XCTAssertEqual(applied.last, .electricPiano)
+
+        session.saveDefault(.clarinet)
+        XCTAssertEqual(session.selection, .clarinet)
+        XCTAssertEqual(session.savedDefault, .clarinet)
+        XCTAssertEqual(preferences.savedDefault, .clarinet)
+
+        let restarted = QuizInstrumentSession(preferences: preferences)
+        XCTAssertEqual(restarted.selection, .clarinet)
+        XCTAssertEqual(restarted.savedDefault, .clarinet)
+    }
+
+    @MainActor
+    func testLifecycleInvalidatesQueuedQuizOwnerAndRetainsPositionForReentry() async throws {
+        let audio = AppAudioSystem()
+        let configuration = QuizSoundConfiguration(waveform: .triangle)
+        let timeline = QuizTimeline(
+            durationSeconds: 4,
+            events: [QuizEvent(
+                onsetSeconds: 0,
+                durationSeconds: 4,
+                frequenciesHz: [440],
+                waveform: .triangle
+            )]
+        )
+        let revision = audio.beginQuizReplacement(
+            songID: "song",
+            sectionID: "verse",
+            tempoPercent: 100,
+            soundConfiguration: configuration
+        )
+        try await audio.loadQuiz(
+            timeline,
+            songID: "song",
+            sectionID: "verse",
+            tempoPercent: 100,
+            position: .restart,
+            revision: revision,
+            soundConfiguration: configuration
+        )
+        let firstOwner = try XCTUnwrap(audio.activateQuizPlaybackOwner(revision: revision))
+        XCTAssertTrue(audio.seekQuiz(to: 0.5, revision: revision, owner: firstOwner))
+
+        audio.pauseForAppInactivity()
+        do {
+            try await audio.playQuiz(revision: revision, owner: firstOwner)
+            XCTFail("A play queued by the inactive Quiz must be rejected")
+        } catch is CancellationError {
+        }
+
+        audio.setSessionInstrument(.flute)
+        let reentryConfiguration = configuration.replacing(waveform: .flute)
+        XCTAssertEqual(
+            audio.restorableQuizRevision(
+                songID: "song",
+                sectionID: "verse",
+                tempoPercent: 100,
+                soundConfiguration: reentryConfiguration
+            ),
+            revision
+        )
+        let reenteredOwner = try XCTUnwrap(audio.activateQuizPlaybackOwner(revision: revision))
+        try await audio.playQuiz(revision: revision, owner: reenteredOwner)
+        var states = (await audio.states()).makeAsyncIterator()
+        let nextState = await states.next()
+        let resumed = try XCTUnwrap(nextState)
+        XCTAssertEqual(resumed.phase, .playing)
+        let elapsed = resumed.elapsed.components
+        let elapsedSeconds = Double(elapsed.seconds) + Double(elapsed.attoseconds) / 1e18
+        XCTAssertGreaterThan(elapsedSeconds, 1.9)
+
+        let replacementOwner = try XCTUnwrap(audio.activateQuizPlaybackOwner(revision: revision))
+        XCTAssertFalse(audio.pauseQuizForLifecycle(revision: revision, owner: reenteredOwner))
+        var replacementStates = (await audio.states()).makeAsyncIterator()
+        let nextReplacementState = await replacementStates.next()
+        let replacementState = try XCTUnwrap(nextReplacementState)
+        XCTAssertEqual(replacementState.phase, .playing)
+        XCTAssertTrue(audio.pauseQuizForLifecycle(revision: revision, owner: replacementOwner))
+    }
+
     @MainActor
     func testMelodyIntervalRobotoBoldIsBundledAndRegistered() throws {
         let font = try XCTUnwrap(UIFont(name: "Roboto-Bold", size: 32))
@@ -888,6 +996,83 @@ final class AcquiringTests: XCTestCase {
     }
 
     @MainActor
+    func testMissingCatalogNoticeSurvivesFailedManualRetry() async throws {
+        let maintenance = ScriptedCatalogMaintenanceService(downloads: [
+            { failureStream(TestCatalogFailure()) },
+            { failureStream(TestCatalogFailure()) }
+        ])
+        let fixture = try makeLibraryStore(maintenance: maintenance)
+        defer { fixture.cleanup() }
+
+        await fixture.store.load()
+        await fixture.store.waitForMaintenance()
+
+        XCTAssertFalse(fixture.store.hasInstalledCatalog)
+        XCTAssertTrue(fixture.store.isAutomaticCatalogInstall)
+        XCTAssertFalse(fixture.store.isAutomaticCatalogInstallRunning)
+        XCTAssertTrue(fixture.store.shouldShowMissingCatalogNotice)
+
+        fixture.store.retryMaintenance()
+        await fixture.store.waitForMaintenance()
+
+        XCTAssertEqual(maintenance.downloadCallCount, 2)
+        XCTAssertFalse(fixture.store.isAutomaticCatalogInstall)
+        XCTAssertTrue(fixture.store.shouldShowMissingCatalogNotice)
+    }
+
+    @MainActor
+    func testQueuedSearchRunsWhenAutomaticCatalogInstallMakesCatalogReady() async throws {
+        let installRelease = AsyncStream<Void>.makeStream()
+        let expected = CatalogSong(
+            id: "the-proclaimers__500-miles",
+            artist: "The Proclaimers",
+            title: "500 Miles"
+        )
+        let maintenance = ScriptedCatalogMaintenanceService(downloads: [
+            {
+                AsyncThrowingStream { continuation in
+                    let producer = Task {
+                        continuation.yield(.connecting)
+                        var iterator = installRelease.stream.makeAsyncIterator()
+                        _ = await iterator.next()
+                        continuation.yield(.completed(songCount: 7))
+                        continuation.finish()
+                    }
+                    continuation.onTermination = { _ in producer.cancel() }
+                }
+            }
+        ])
+        let fixture = try makeLibraryStore(
+            maintenance: maintenance,
+            catalogCount: 0,
+            catalogCounts: [0, 7],
+            songSuggestions: [expected]
+        )
+        defer { fixture.cleanup() }
+
+        await fixture.store.load()
+        XCTAssertTrue(fixture.store.isAutomaticCatalogInstallRunning)
+        XCTAssertFalse(fixture.store.shouldShowMissingCatalogNotice)
+
+        fixture.store.query = "500 Miles"
+        fixture.store.submitSearch()
+        try await Task.sleep(for: .milliseconds(20))
+        XCTAssertEqual(fixture.store.suggestions, .idle)
+
+        installRelease.continuation.yield(())
+        installRelease.continuation.finish()
+        await fixture.store.waitForMaintenance()
+        for _ in 0..<20 where fixture.store.suggestions != .content([expected]) {
+            try await Task.sleep(for: .milliseconds(10))
+        }
+
+        XCTAssertTrue(fixture.store.hasInstalledCatalog)
+        XCTAssertTrue(fixture.store.isAutomaticCatalogInstall)
+        XCTAssertFalse(fixture.store.isAutomaticCatalogInstallRunning)
+        XCTAssertEqual(fixture.store.suggestions, .content([expected]))
+    }
+
+    @MainActor
     func testReadyCatalogDoesNotDownloadOnLaunch() async throws {
         let maintenance = ScriptedCatalogMaintenanceService()
         let fixture = try makeLibraryStore(maintenance: maintenance, catalogCount: 7)
@@ -1001,9 +1186,11 @@ final class AcquiringTests: XCTestCase {
         )
         let fixture = try makeLibraryStore(
             maintenance: ScriptedCatalogMaintenanceService(),
+            catalogCount: 1,
             songSuggestions: [expected]
         )
         defer { fixture.cleanup() }
+        await fixture.store.load()
 
         fixture.store.query = "500 Miles"
         fixture.store.submitSearch()
@@ -1019,9 +1206,11 @@ final class AcquiringTests: XCTestCase {
     func testFailedSecondSuggestionPageRetainsFirstPageAndPublishesPagingError() async throws {
         let fixture = try makeLibraryStore(
             maintenance: ScriptedCatalogMaintenanceService(),
+            catalogCount: 20,
             failingSongSuggestionOffset: 20
         )
         defer { fixture.cleanup() }
+        await fixture.store.load()
         let firstPage = (0..<20).map {
             CatalogSong(id: "artist__song-\($0)", artist: "Artist", title: "Song \($0)")
         }
@@ -1101,6 +1290,7 @@ final class AcquiringTests: XCTestCase {
         await fixture.store.load()
 
         XCTAssertEqual(fixture.store.catalogState, .failure("Test catalog failure."))
+        XCTAssertTrue(fixture.store.shouldShowMissingCatalogNotice)
     }
 
     @MainActor
@@ -1155,6 +1345,7 @@ final class AcquiringTests: XCTestCase {
         maintenance: any CatalogMaintenanceService,
         assetMetadata: any CatalogAssetMetadataService = StubCatalogAssetMetadataService(),
         catalogCount: Int = 0,
+        catalogCounts: [Int]? = nil,
         catalogCountThrows: Bool = false,
         failingSongSuggestionOffset: Int? = nil,
         songSuggestions: [CatalogSong] = [],
@@ -1166,7 +1357,7 @@ final class AcquiringTests: XCTestCase {
         cleanup: () -> Void
     ) {
         let catalog = StubCatalogRepository(
-            songCount: catalogCount,
+            songCounts: catalogCounts ?? [catalogCount],
             failsSongCount: catalogCountThrows,
             failingSongSuggestionOffset: failingSongSuggestionOffset,
             songSuggestions: songSuggestions
@@ -1383,29 +1574,32 @@ private final class ScriptedCatalogMaintenanceService: CatalogMaintenanceService
 }
 
 private actor StubCatalogRepository: CatalogRepository {
-    let count: Int
+    private var songCounts: [Int]
     let failsSongCount: Bool
     let failingSongSuggestionOffset: Int?
     let songSuggestions: [CatalogSong]
 
     init(
-        songCount: Int,
+        songCounts: [Int],
         failsSongCount: Bool = false,
         failingSongSuggestionOffset: Int? = nil,
         songSuggestions: [CatalogSong] = []
     ) {
-        count = songCount
+        self.songCounts = songCounts
         self.failsSongCount = failsSongCount
         self.failingSongSuggestionOffset = failingSongSuggestionOffset
         self.songSuggestions = songSuggestions
     }
 
     func status() -> CatalogStatus {
-        count == 0 ? .unavailable : .ready(songCount: count)
+        let count = songCounts.first ?? 0
+        return count == 0 ? .unavailable : .ready(songCount: count)
     }
 
     func songCount() throws -> Int {
         if failsSongCount { throw TestCatalogFailure() }
+        let count = songCounts.first ?? 0
+        if songCounts.count > 1 { songCounts.removeFirst() }
         return count
     }
     func song(id: String) -> CatalogSong? { nil }
