@@ -69,9 +69,9 @@ final class AllSongsBrowseStore {
         guard case let .content(metadata) = metadataState, metadata.browseCount > 0 else { return nil }
         switch browseMode {
         case .complexity where metadata.ratedSongCount == 0:
-            return "Complexity data requires the latest song catalog. Return to Library to update it."
+            return "Complexity data requires the latest song catalog. Open Settings to update it."
         case .mode where metadata.modeMembershipCount == 0:
-            return "Mode data requires the latest song catalog. Return to Library to update it."
+            return "Mode data requires the latest song catalog. Open Settings to update it."
         default:
             return nil
         }

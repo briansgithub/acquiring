@@ -24,17 +24,20 @@ object AudioEngine {
     private const val PREVIEW_FADE_OUT_MS = 24
     private const val TAG = "AudioEngine"
 
-    enum class Waveform {
-        SINE,
-        SQUARE,
-        SAWTOOTH,
-        TRIANGLE,
-        STRINGS,
-        ELECTRIC_PIANO,
-        WARM_ORGAN,
-        MARIMBA,
-        VIBRAPHONE,
-        NYLON_GUITAR
+    enum class Waveform(val displayName: String) {
+        SINE("Sine"),
+        SQUARE("Square"),
+        SAWTOOTH("Sawtooth"),
+        TRIANGLE("Triangle"),
+        STRINGS("Strings"),
+        ELECTRIC_PIANO("Electric Piano"),
+        WARM_ORGAN("Warm Organ"),
+        CHURCH_ORGAN("Church Organ"),
+        MARIMBA("Marimba"),
+        VIBRAPHONE("Vibraphone"),
+        NYLON_GUITAR("Plucked Zither"),
+        CLARINET("Synth Clarinet"),
+        REED_ORGAN("Reed Organ")
     }
 
     enum class PlaybackChannel {
@@ -43,7 +46,7 @@ object AudioEngine {
 
     private val allPlaybackChannels = PlaybackChannel.entries.toSet()
 
-    var currentWaveform = Waveform.SAWTOOTH
+    var currentWaveform = Waveform.CLARINET
     var globalTranspose = 0
 
     class PlaybackSnapshot internal constructor(internal val trackIds: Set<Long>)

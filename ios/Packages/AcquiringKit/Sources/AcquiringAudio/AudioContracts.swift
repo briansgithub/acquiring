@@ -15,9 +15,7 @@ public enum SynthWaveform: String, CaseIterable, Codable, Sendable {
     case flute
     case clarinet
     case oboe
-    case brass
-    case bell
-    case synthBass
+    case churchOrgan
 
     public var displayName: String {
         switch self {
@@ -30,13 +28,11 @@ public enum SynthWaveform: String, CaseIterable, Codable, Sendable {
         case .warmOrgan: "Warm Organ"
         case .marimba: "Marimba"
         case .vibraphone: "Vibraphone"
-        case .nylonGuitar: "Nylon Guitar"
+        case .nylonGuitar: "Plucked Zither"
         case .flute: "Synth Flute"
         case .clarinet: "Synth Clarinet"
-        case .oboe: "Synth Oboe"
-        case .brass: "Synth Brass"
-        case .bell: "Synth Bell"
-        case .synthBass: "Synth Bass"
+        case .oboe: "Reed Organ"
+        case .churchOrgan: "Church Organ"
         }
     }
 }
@@ -103,7 +99,7 @@ public struct PreviewRequest: Equatable, Sendable {
         duration: Duration = .milliseconds(450),
         arpeggiates: Bool = false,
         arpeggioStep: Duration = .milliseconds(160),
-        waveform: SynthWaveform = .sawtooth,
+        waveform: SynthWaveform = .clarinet,
         gain: Float = 1,
         usesMusicalConfiguration: Bool = true
     ) {
@@ -125,7 +121,7 @@ public struct QuizSoundConfiguration: Equatable, Sendable {
     public let chordMode: QuizChordMode
 
     public init(
-        waveform: SynthWaveform = .sawtooth,
+        waveform: SynthWaveform = .clarinet,
         melodyChordBalance: Double = 0.5,
         transposeSemitones: Int = 0,
         arpeggioOption: QuizArpeggioOption = .off,

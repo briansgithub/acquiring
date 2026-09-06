@@ -12,13 +12,13 @@ class InstrumentSessionOwnerTest {
     }
 
     @Test
-    fun missingAndInvalidDefaultsUseSawtooth() {
+    fun missingAndInvalidDefaultsUseClarinet() {
         assertEquals(
-            AudioEngine.Waveform.SAWTOOTH,
+            AudioEngine.Waveform.CLARINET,
             InstrumentSessionOwner(FakeStore()).sessionInstrument.value
         )
         assertEquals(
-            AudioEngine.Waveform.SAWTOOTH,
+            AudioEngine.Waveform.CLARINET,
             InstrumentSessionOwner(FakeStore("removed-instrument")).sessionInstrument.value
         )
     }

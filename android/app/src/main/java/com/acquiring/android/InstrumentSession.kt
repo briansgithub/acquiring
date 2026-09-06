@@ -59,7 +59,7 @@ internal class InstrumentSessionOwner(
     companion object {
         internal fun decode(identifier: String?): AudioEngine.Waveform =
             AudioEngine.Waveform.entries.firstOrNull { it.name == identifier }
-                ?: AudioEngine.Waveform.SAWTOOTH
+                ?: AudioEngine.Waveform.CLARINET
     }
 }
 
@@ -96,11 +96,6 @@ internal object AppInstrumentSession {
     private fun requireOwner(): InstrumentSessionOwner =
         checkNotNull(owner) { "AppInstrumentSession.initialize must run before use" }
 }
-
-internal fun AudioEngine.Waveform.displayName(): String =
-    name.lowercase().split("_").joinToString(" ") { word ->
-        word.replaceFirstChar { character -> character.uppercase() }
-    }
 
 internal fun AudioEngine.Waveform.categoryName(): String = when (this) {
     AudioEngine.Waveform.SINE,

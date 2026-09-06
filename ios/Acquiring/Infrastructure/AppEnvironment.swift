@@ -91,6 +91,7 @@ struct UITestSession {
     }
 
     var historySuiteName: String { "AcquiringUITests.\(identifier)" }
+    var instrumentPreferencesSuiteName: String { "AcquiringUITests.\(identifier).QuizInstrument" }
 
     static func current(processInfo: ProcessInfo = .processInfo) -> Self? {
 #if DEBUG
@@ -268,14 +269,86 @@ struct QuizPlaybackConfiguration: Equatable {
     }
 }
 
+extension QuizSoundConfiguration {
+    func replacing(waveform: SynthWaveform) -> Self {
+        Self(
+            waveform: waveform,
+            melodyChordBalance: melodyChordBalance,
+            transposeSemitones: transposeSemitones,
+            arpeggioOption: arpeggioOption,
+            chordMode: chordMode
+        )
+    }
+}
+
+struct QuizInstrumentPreferences {
+    static let defaultsKey = "defaultQuizInstrument"
+
+    private let defaults: UserDefaults
+
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+    }
+
+    var savedDefault: SynthWaveform {
+        get {
+            guard let rawValue = defaults.string(forKey: Self.defaultsKey),
+                  let waveform = SynthWaveform(rawValue: rawValue)
+            else { return .sawtooth }
+            return waveform
+        }
+        nonmutating set {
+            defaults.set(newValue.rawValue, forKey: Self.defaultsKey)
+        }
+    }
+}
+
+@MainActor
+@Observable
+final class QuizInstrumentSession {
+    private let preferences: QuizInstrumentPreferences
+    @ObservationIgnored private let applyToAudio: (SynthWaveform) -> Void
+    private(set) var selection: SynthWaveform
+    private(set) var savedDefault: SynthWaveform
+
+    init(
+        preferences: QuizInstrumentPreferences = QuizInstrumentPreferences(),
+        applyToAudio: @escaping (SynthWaveform) -> Void = { _ in }
+    ) {
+        self.preferences = preferences
+        selection = preferences.savedDefault
+        savedDefault = preferences.savedDefault
+        self.applyToAudio = applyToAudio
+        applyToAudio(selection)
+    }
+
+    func select(_ waveform: SynthWaveform) {
+        guard selection != waveform else { return }
+        selection = waveform
+        applyToAudio(waveform)
+    }
+
+    func saveDefault(_ waveform: SynthWaveform) {
+        preferences.savedDefault = waveform
+        savedDefault = waveform
+        if selection == waveform {
+            applyToAudio(waveform)
+        } else {
+            select(waveform)
+        }
+    }
+}
+
 @MainActor
 @Observable
 final class AppEnvironment {
     let catalog: CatalogCoordinator
     let maintenance: any CatalogMaintenanceService
+    let catalogAssetMetadata: any CatalogAssetMetadataService
     let history: HistoryStore
     let userLibrary: UserLibraryStore
     let audio: AppAudioSystem
+    let quizInstrument: QuizInstrumentSession
     let vocalPractice: VocalPracticeModel
     let catalogConfiguration: CatalogConfiguration
     private(set) var quizContinuity: QuizContinuityState?
@@ -285,7 +358,11 @@ final class AppEnvironment {
     private var hasPresentedCatalogLaunchFailure = false
 #endif
 
-    init(modelContext: ModelContext, uiTestSession: UITestSession? = UITestSession.current()) throws {
+    init(
+        modelContext: ModelContext,
+        uiTestSession: UITestSession? = UITestSession.current(),
+        quizInstrumentDefaults: UserDefaults? = nil
+    ) throws {
         let arguments = ProcessInfo.processInfo.arguments
         let isUITesting = uiTestSession != nil
 #if DEBUG
@@ -318,10 +395,20 @@ final class AppEnvironment {
         catalog = coordinator
         catalogConfiguration = configuration
 #if DEBUG
+        let selectedAssetMetadata: any CatalogAssetMetadataService
+        if isUITesting {
+            selectedAssetMetadata = CatalogAssetMetadataUITestService(
+                hasInstalledCatalog: seedsUITestCatalog,
+                updateAvailable: arguments.contains("--ui-testing-catalog-update-available")
+            )
+        } else {
+            selectedAssetMetadata = CatalogAssetMetadataTracker(configuration: configuration)
+        }
         let selectedMaintenance: any CatalogMaintenanceService
         if isUITesting, let scenario = CatalogMaintenanceUITestScenario(arguments: arguments) {
             selectedMaintenance = CatalogMaintenanceUITestService(
                 scenario: scenario,
+                assetMetadata: selectedAssetMetadata,
                 installFixture: { try await Self.installUITestCatalog(into: coordinator) }
             )
         } else {
@@ -331,16 +418,30 @@ final class AppEnvironment {
             )
         }
 #else
+        let selectedAssetMetadata: any CatalogAssetMetadataService = CatalogAssetMetadataTracker(
+            configuration: configuration
+        )
         let selectedMaintenance: any CatalogMaintenanceService = DefaultCatalogMaintenanceService(
             coordinator: coordinator,
             configuration: configuration
         )
 #endif
+        catalogAssetMetadata = selectedAssetMetadata
         maintenance = ExclusiveCatalogMaintenanceService(base: selectedMaintenance)
         history = HistoryStore(suiteName: uiTestSession?.historySuiteName)
         userLibrary = try UserLibraryStore(context: modelContext)
-        audio = AppAudioSystem()
-        vocalPractice = VocalPracticeModel(audio: audio)
+        let audioSystem = AppAudioSystem()
+        audio = audioSystem
+        let instrumentDefaults = quizInstrumentDefaults
+            ?? uiTestSession.flatMap { UserDefaults(suiteName: $0.instrumentPreferencesSuiteName) }
+            ?? .standard
+        quizInstrument = QuizInstrumentSession(
+            preferences: QuizInstrumentPreferences(defaults: instrumentDefaults),
+            applyToAudio: { [weak audioSystem] waveform in
+                audioSystem?.setSessionInstrument(waveform)
+            }
+        )
+        vocalPractice = VocalPracticeModel(audio: audioSystem)
     }
 
     func quizContinuity(for songID: String) -> QuizContinuityState? {
@@ -355,7 +456,30 @@ final class AppEnvironment {
         } else {
             quizContinuity = QuizContinuityState(songID: songID, sectionID: sectionID)
         }
+        if let configuration = quizContinuity?.playbackConfiguration.soundConfiguration {
+            quizContinuity?.playbackConfiguration.soundConfiguration = configuration.replacing(
+                waveform: quizInstrument.selection
+            )
+        }
         return quizContinuity!
+    }
+
+    func selectQuizInstrument(_ waveform: SynthWaveform) {
+        quizInstrument.select(waveform)
+        if let configuration = quizContinuity?.playbackConfiguration.soundConfiguration {
+            quizContinuity?.playbackConfiguration.soundConfiguration = configuration.replacing(
+                waveform: waveform
+            )
+        }
+    }
+
+    func saveDefaultQuizInstrument(_ waveform: SynthWaveform) {
+        quizInstrument.saveDefault(waveform)
+        if let configuration = quizContinuity?.playbackConfiguration.soundConfiguration {
+            quizContinuity?.playbackConfiguration.soundConfiguration = configuration.replacing(
+                waveform: waveform
+            )
+        }
     }
 
     func rememberQuizSettings(
@@ -475,6 +599,39 @@ private enum CatalogMaintenanceUITestScenario: Equatable, Sendable {
     }
 }
 
+private actor CatalogAssetMetadataUITestService: CatalogAssetMetadataService {
+    private static let currentIdentity = CatalogAssetIdentity(
+        eTag: "\"ui-test-current\"",
+        lastModified: "Sat, 05 Sep 2026 12:00:00 GMT",
+        contentLength: 1_024
+    )
+    private let remoteIdentity: CatalogAssetIdentity
+    private var installedIdentity: CatalogAssetIdentity?
+
+    init(hasInstalledCatalog: Bool, updateAvailable: Bool) {
+        installedIdentity = hasInstalledCatalog ? Self.currentIdentity : nil
+        remoteIdentity = updateAvailable
+            ? CatalogAssetIdentity(
+                eTag: "\"ui-test-update\"",
+                lastModified: "Sat, 05 Sep 2026 13:00:00 GMT",
+                contentLength: 2_048
+            )
+            : Self.currentIdentity
+    }
+
+    func remoteAsset() -> CatalogAssetMetadata {
+        CatalogAssetMetadata(identity: remoteIdentity, byteCount: remoteIdentity.contentLength)
+    }
+
+    func installedAssetIdentity() -> CatalogAssetIdentity? {
+        installedIdentity
+    }
+
+    func recordInstalledAsset(_ identity: CatalogAssetIdentity?) {
+        installedIdentity = identity
+    }
+}
+
 private final class UITestMaintenanceRunController: @unchecked Sendable {
     private enum Phase {
         case starting
@@ -538,14 +695,20 @@ private final class CatalogMaintenanceUITestService: CatalogMaintenanceService, 
     typealias Stream = AsyncThrowingStream<CatalogProgress, any Error>
 
     let scenario: CatalogMaintenanceUITestScenario
+    let assetMetadata: any CatalogAssetMetadataService
     let installFixture: InstallFixture
     private let lock = NSLock()
     private var downloadAttempts = 0
     private var harvestAttempts = 0
     private var firstHarvestURL: URL?
 
-    init(scenario: CatalogMaintenanceUITestScenario, installFixture: @escaping InstallFixture) {
+    init(
+        scenario: CatalogMaintenanceUITestScenario,
+        assetMetadata: any CatalogAssetMetadataService,
+        installFixture: @escaping InstallFixture
+    ) {
         self.scenario = scenario
+        self.assetMetadata = assetMetadata
         self.installFixture = installFixture
     }
 
@@ -591,6 +754,8 @@ private final class CatalogMaintenanceUITestService: CatalogMaintenanceService, 
                         guard controller.beginCommit() else { throw CancellationError() }
                         continuation.yield(.installing)
                         let count = try await self.installFixture()
+                        let remoteAsset = try await self.assetMetadata.remoteAsset()
+                        try await self.assetMetadata.recordInstalledAsset(remoteAsset.identity)
                         controller.finish()
                         continuation.yield(.completed(songCount: count))
                         continuation.finish()

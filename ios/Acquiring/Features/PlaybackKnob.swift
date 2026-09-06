@@ -44,13 +44,13 @@ struct PlaybackKnob: View {
             Text(title)
                 .font(compact ? .caption.weight(.semibold) : .headline)
                 .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(compact ? 2 : nil, reservesSpace: compact)
 
             Text(valueLabel)
                 .font(compact ? .caption2 : .subheadline)
                 .foregroundStyle(Color.accentColor)
                 .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(compact ? 2 : nil, reservesSpace: compact)
 
             dial
         }

@@ -7,6 +7,10 @@ import UIKit
 
 @MainActor
 final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
+    struct QuizPlaybackOwner: Equatable, Sendable {
+        fileprivate let generation: UInt64
+    }
+
     private let logger = Logger(subsystem: "com.acquiring.ios", category: "audio")
     private var engine: AVAudioEngine
     private var player: AVAudioPlayerNode
@@ -15,8 +19,6 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     private var sourceNode: AVAudioSourceNode
     private var transportState = TransportState(phase: .stopped)
     private var stateContinuations: [UUID: AsyncStream<TransportState>.Continuation] = [:]
-    private var remoteCommandsInstalled = false
-    private var remoteCommandTargets: [(command: MPRemoteCommand, target: Any)] = []
     private var pendingMicrophone: PendingMicrophone?
     private var activeMicrophone: ActiveMicrophone?
     private var notificationTasks: [Task<Void, Never>] = []
@@ -26,12 +28,13 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     /// zero-tempo Quiz is paused but resumes when a positive tempo returns.
     private var quizPlaybackRequested = false
     private var quizContext: QuizAudioContext?
+    private var sessionInstrument: SynthWaveform = .sawtooth
     private var quizRevision: UInt64 = 0
+    private var quizPlaybackOwnerGeneration: UInt64 = 0
+    private var quizPlaybackOwnerIsActive = false
     private var quizLoadPendingRevision: UInt64?
     private let previewGeneration = PreviewPlaybackGeneration()
     private var previewRender: (token: UInt64, task: Task<[Float], any Error>)?
-    private var nowPlayingSong: CatalogSong?
-    private var nowPlayingSectionName = ""
     private var shouldResumeAfterInterruption = false
 
     init() {
@@ -46,8 +49,29 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         engine.attach(sourceNode)
         engine.connect(player, to: engine.mainMixerNode, format: format)
         engine.connect(sourceNode, to: engine.mainMixerNode, format: format)
-        installRemoteCommandsIfNeeded()
+        // The app previously published persistent media controls. Clear any
+        // metadata retained by this process while keeping playback foreground-only.
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
         observeAudioSession()
+    }
+
+    func setSessionInstrument(_ waveform: SynthWaveform) {
+        guard sessionInstrument != waveform else { return }
+        sessionInstrument = waveform
+        if let context = quizContext,
+           context.soundConfiguration.waveform != waveform {
+            let soundConfiguration = context.soundConfiguration.replacing(waveform: waveform)
+            quizContext = QuizAudioContext(
+                songID: context.songID,
+                sectionID: context.sectionID,
+                tempoPercent: context.tempoPercent,
+                soundConfiguration: soundConfiguration
+            )
+            if quizTimelineLoaded {
+                quizRenderer.setSoundConfiguration(soundConfiguration)
+            }
+        }
+        invalidatePreviewPlayback()
     }
 
     func play(_ request: PreviewRequest) async throws {
@@ -97,6 +121,13 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
 
     func cancelQuizCardPreview() {
         invalidatePreviewPlayback()
+    }
+
+    @discardableResult
+    func cancelQuizCardPreview(revision: UInt64, owner: QuizPlaybackOwner) -> Bool {
+        guard ownsQuiz(revision: revision, owner: owner) else { return false }
+        invalidatePreviewPlayback()
+        return true
     }
 
     private func beginPreviewPlayback() async -> UInt64 {
@@ -204,6 +235,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         tempoPercent: Double,
         soundConfiguration: QuizSoundConfiguration = .init()
     ) -> UInt64 {
+        invalidateQuizPlaybackOwner()
         quizRevision &+= 1
         quizLoadPendingRevision = quizRevision
         transportPollTask?.cancel()
@@ -413,27 +445,48 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         return quizRevision
     }
 
-    func playQuiz(revision: UInt64) async throws {
-        try Task.checkCancellation()
-        guard revision == quizRevision else { throw CancellationError() }
-        try startQuizPlayback(expectedRevision: revision)
+    func activateQuizPlaybackOwner(revision: UInt64) -> QuizPlaybackOwner? {
+        guard revision == quizRevision,
+              quizTimelineLoaded,
+              quizLoadPendingRevision == nil
+        else { return nil }
+        quizPlaybackOwnerGeneration &+= 1
+        quizPlaybackOwnerIsActive = true
+        return QuizPlaybackOwner(generation: quizPlaybackOwnerGeneration)
     }
 
-    func pauseQuiz(revision: UInt64) async {
-        guard revision == quizRevision else { return }
+    func playQuiz(revision: UInt64, owner: QuizPlaybackOwner) async throws {
+        try Task.checkCancellation()
+        guard ownsQuiz(revision: revision, owner: owner) else { throw CancellationError() }
+        try startQuizPlayback(expectedRevision: revision, expectedOwner: owner)
+    }
+
+    func pauseQuiz(revision: UInt64, owner: QuizPlaybackOwner) async {
+        guard ownsQuiz(revision: revision, owner: owner) else { return }
         await pause()
     }
 
-    func resetQuiz(revision: UInt64) async {
-        guard revision == quizRevision else { return }
+    @discardableResult
+    func pauseQuizForLifecycle(revision: UInt64, owner: QuizPlaybackOwner) -> Bool {
+        guard ownsQuiz(revision: revision, owner: owner) else { return false }
+        pauseForLifecycle()
+        return true
+    }
+
+    func pauseForAppInactivity() {
+        pauseForLifecycle()
+    }
+
+    func resetQuiz(revision: UInt64, owner: QuizPlaybackOwner) async {
+        guard ownsQuiz(revision: revision, owner: owner) else { return }
         await reset()
     }
 
     /// Pauses a loaded quiz synchronously and returns the playback intent that a
     /// matching scrub completion may restore. Keeping this handoff on the main
     /// actor prevents a queued pause from landing after the scrub has moved on.
-    func pauseQuizForScrubbing(revision: UInt64) -> Bool? {
-        guard revision == quizRevision,
+    func pauseQuizForScrubbing(revision: UInt64, owner: QuizPlaybackOwner) -> Bool? {
+        guard ownsQuiz(revision: revision, owner: owner),
               quizTimelineLoaded,
               quizLoadPendingRevision == nil
         else { return nil }
@@ -452,12 +505,12 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     }
 
     /// Restores playback only while the scrub's quiz revision is still current.
-    func resumeQuizAfterScrubbing(revision: UInt64) throws {
-        guard revision == quizRevision,
+    func resumeQuizAfterScrubbing(revision: UInt64, owner: QuizPlaybackOwner) throws {
+        guard ownsQuiz(revision: revision, owner: owner),
               quizTimelineLoaded,
               quizLoadPendingRevision == nil
         else { throw CancellationError() }
-        try startQuizPlayback(expectedRevision: revision)
+        try startQuizPlayback(expectedRevision: revision, expectedOwner: owner)
     }
 
     /// Seeks the current quiz without changing its requested transport state.
@@ -489,12 +542,25 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         return true
     }
 
+    @discardableResult
+    func seekQuiz(to progress: Double, revision: UInt64, owner: QuizPlaybackOwner) -> Bool {
+        guard ownsQuiz(revision: revision, owner: owner) else { return false }
+        return seekQuiz(to: progress, revision: revision)
+    }
+
     func play() async throws {
         try startQuizPlayback(expectedRevision: nil)
     }
 
-    private func startQuizPlayback(expectedRevision: UInt64?) throws {
+    private func startQuizPlayback(
+        expectedRevision: UInt64?,
+        expectedOwner: QuizPlaybackOwner? = nil
+    ) throws {
         if let expectedRevision, expectedRevision != quizRevision {
+            throw CancellationError()
+        }
+        if let expectedOwner,
+           !ownsQuiz(revision: expectedRevision ?? quizRevision, owner: expectedOwner) {
             throw CancellationError()
         }
         guard quizTimelineLoaded else {
@@ -549,6 +615,35 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         quizRenderer.pause()
         let snapshot = quizRenderer.snapshot()
         publish(TransportState(phase: .paused, elapsed: .seconds(snapshot.elapsed), duration: .seconds(snapshot.duration)))
+    }
+
+    private func pauseForLifecycle() {
+        invalidateQuizPlaybackOwner()
+        quizPlaybackRequested = false
+        shouldResumeAfterInterruption = false
+        transportPollTask?.cancel()
+        invalidatePreviewPlayback()
+        player.stop()
+        player.volume = 1
+        quizRenderer.pause()
+        guard quizTimelineLoaded else { return }
+        let snapshot = quizRenderer.snapshot()
+        publish(TransportState(
+            phase: .paused,
+            elapsed: .seconds(snapshot.elapsed),
+            duration: .seconds(snapshot.duration)
+        ))
+    }
+
+    private func ownsQuiz(revision: UInt64, owner: QuizPlaybackOwner) -> Bool {
+        revision == quizRevision
+            && quizPlaybackOwnerIsActive
+            && owner.generation == quizPlaybackOwnerGeneration
+    }
+
+    private func invalidateQuizPlaybackOwner() {
+        quizPlaybackOwnerGeneration &+= 1
+        quizPlaybackOwnerIsActive = false
     }
 
     func reset() async {
@@ -907,16 +1002,15 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     }
 
     private func configuredPreview(_ request: PreviewRequest) -> PreviewRequest {
-        guard request.usesMusicalConfiguration,
-              let sound = quizContext?.soundConfiguration
-        else { return request }
-        let pitchRatio = pow(2, Double(sound.transposeSemitones) / 12)
+        guard request.usesMusicalConfiguration else { return request }
+        let transposeSemitones = quizContext?.soundConfiguration.transposeSemitones ?? 0
+        let pitchRatio = pow(2, Double(transposeSemitones) / 12)
         return PreviewRequest(
             frequenciesHz: request.frequenciesHz.map { $0 * pitchRatio },
             duration: request.duration,
             arpeggiates: request.arpeggiates,
             arpeggioStep: request.arpeggioStep,
-            waveform: sound.waveform,
+            waveform: sessionInstrument,
             gain: request.gain,
             usesMusicalConfiguration: false
         )
@@ -985,45 +1079,6 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     private func publish(_ state: TransportState) {
         transportState = state
         for continuation in stateContinuations.values { continuation.yield(state) }
-        publishNowPlaying(state)
-    }
-
-    func updateNowPlaying(song: CatalogSong, sectionName: String) {
-        nowPlayingSong = song
-        nowPlayingSectionName = sectionName.trimmingCharacters(in: .whitespacesAndNewlines)
-        publishNowPlaying(transportState)
-    }
-
-    private func publishNowPlaying(_ state: TransportState) {
-        let song = nowPlayingSong
-        let duration = state.duration.secondsValue
-        let elapsed = state.elapsed.secondsValue
-        let rate = state.phase == .playing
-            ? max((quizContext?.tempoPercent ?? 100) / 100, 0)
-            : 0
-        var info: [String: Any] = [
-            MPMediaItemPropertyTitle: song?.displayTitle ?? "Acquiring Quiz",
-            MPMediaItemPropertyArtist: song?.displayArtist ?? "",
-            MPMediaItemPropertyPlaybackDuration: duration.isFinite ? max(duration, 0) : 0,
-            MPNowPlayingInfoPropertyElapsedPlaybackTime: elapsed.isFinite ? max(elapsed, 0) : 0,
-            MPNowPlayingInfoPropertyPlaybackRate: rate.isFinite ? rate : 0,
-            MPNowPlayingInfoPropertyDefaultPlaybackRate: 1,
-            MPNowPlayingInfoPropertyMediaType: MPNowPlayingInfoMediaType.audio.rawValue,
-            MPNowPlayingInfoPropertyIsLiveStream: false
-        ]
-        if !nowPlayingSectionName.isEmpty {
-            info[MPMediaItemPropertyAlbumTitle] = nowPlayingSectionName
-        }
-        if let song {
-            info[MPNowPlayingInfoPropertyExternalContentIdentifier] = song.id
-        }
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = info
-    }
-
-    private func seek(toElapsedSeconds seconds: Double) {
-        let duration = quizRenderer.snapshot().duration
-        guard duration.isFinite, duration > 0, seconds.isFinite else { return }
-        _ = seekQuiz(to: min(max(seconds / duration, 0), 1), revision: quizRevision)
     }
 
     private func beginTransportPolling() {
@@ -1040,59 +1095,6 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
                 ))
             }
         }
-    }
-
-    private func installRemoteCommandsIfNeeded() {
-        guard !remoteCommandsInstalled else { return }
-        remoteCommandsInstalled = true
-        let center = MPRemoteCommandCenter.shared()
-        center.playCommand.isEnabled = true
-        center.pauseCommand.isEnabled = true
-        center.stopCommand.isEnabled = true
-        center.togglePlayPauseCommand.isEnabled = true
-        center.changePlaybackPositionCommand.isEnabled = true
-        center.previousTrackCommand.isEnabled = true
-
-        let playTarget = center.playCommand.addTarget { [weak self] _ in
-            Task { try? await self?.play() }
-            return .success
-        }
-        remoteCommandTargets.append((center.playCommand, playTarget))
-        let pauseTarget = center.pauseCommand.addTarget { [weak self] _ in
-            Task { await self?.pause() }
-            return .success
-        }
-        remoteCommandTargets.append((center.pauseCommand, pauseTarget))
-        let stopTarget = center.stopCommand.addTarget { [weak self] _ in
-            Task { await self?.stop() }
-            return .success
-        }
-        remoteCommandTargets.append((center.stopCommand, stopTarget))
-        let toggleTarget = center.togglePlayPauseCommand.addTarget { [weak self] _ in
-            Task { @MainActor in
-                guard let self else { return }
-                if self.transportState.phase == .playing || self.quizPlaybackRequested {
-                    await self.pause()
-                } else {
-                    try? await self.play()
-                }
-            }
-            return .success
-        }
-        remoteCommandTargets.append((center.togglePlayPauseCommand, toggleTarget))
-        let positionTarget = center.changePlaybackPositionCommand.addTarget { [weak self] event in
-            guard let position = event as? MPChangePlaybackPositionCommandEvent,
-                  position.positionTime.isFinite
-            else { return .commandFailed }
-            Task { @MainActor in self?.seek(toElapsedSeconds: position.positionTime) }
-            return .success
-        }
-        remoteCommandTargets.append((center.changePlaybackPositionCommand, positionTarget))
-        let beginningTarget = center.previousTrackCommand.addTarget { [weak self] _ in
-            Task { @MainActor in self?.seek(toElapsedSeconds: 0) }
-            return .success
-        }
-        remoteCommandTargets.append((center.previousTrackCommand, beginningTarget))
     }
 
     private func observeAudioSession() {

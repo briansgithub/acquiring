@@ -190,7 +190,7 @@ internal fun QuizInstrumentMenu(
     modifier: Modifier = Modifier
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
-    val selectedLabel = selectedInstrument.displayName()
+    val selectedLabel = selectedInstrument.displayName
 
     Box(modifier) {
         FilledTonalIconButton(
@@ -226,7 +226,7 @@ internal fun QuizInstrumentMenu(
                     )
                     instruments.forEach { instrument ->
                         DropdownMenuItem(
-                            text = { Text(instrument.displayName(), maxLines = 1) },
+                            text = { Text(instrument.displayName, maxLines = 1) },
                             leadingIcon = {
                                 RadioButton(
                                     selected = instrument == selectedInstrument,
@@ -1127,7 +1127,7 @@ private fun AppSettingsMenu(
                     )
                     instruments.forEach { instrument ->
                         DropdownMenuItem(
-                            text = { Text(instrument.displayName()) },
+                            text = { Text(instrument.displayName) },
                             leadingIcon = {
                                 RadioButton(
                                     selected = instrument == defaultInstrument,
@@ -1139,7 +1139,7 @@ private fun AppSettingsMenu(
                                 isExpanded = false
                             },
                             modifier = Modifier.semantics {
-                                contentDescription = "Default instrument: ${instrument.displayName()}"
+                                contentDescription = "Default instrument: ${instrument.displayName}"
                                 stateDescription = if (instrument == defaultInstrument) {
                                     "Selected"
                                 } else {

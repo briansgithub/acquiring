@@ -38,7 +38,7 @@ class QuizTransportSelectorsUiTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         AppAudioOutput.initialize(context)
         AppInstrumentSession.initialize(context)
-        AppInstrumentSession.selectForSession(AudioEngine.Waveform.SAWTOOTH)
+        AppInstrumentSession.selectForSession(AudioEngine.Waveform.CLARINET)
         QuizPlaybackController.initialize(context)
         QuizPlaybackController.reset()
     }
