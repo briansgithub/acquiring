@@ -47,6 +47,20 @@ final class AcquiringUITests: XCTestCase {
         )
     }
 
+    func testSingleAudioStartFailureRecoversWithoutAnAlert() {
+        // The field failure was a single poisoned-graph start. Once it is rebuilt and
+        // retried automatically the listener should never learn it happened, so this
+        // asserts the absence of the alert the test above depends on.
+        let app = launchApp(scenario: .ready, arguments: ["--ui-testing-audio-start-failure-once"])
+        openQuiz(app, searchText: "500 Miles", songButton: Fixture.fiveHundredMiles, navigationTitle: Fixture.fiveHundredMilesQuizTitle)
+        app.buttons["quiz.play"].tap()
+        let pause = app.buttons["quiz.play"]
+        let playing = expectation(for: NSPredicate(format: "label == %@", "Pause"), evaluatedWith: pause)
+        wait(for: [playing], timeout: 10)
+        XCTAssertFalse(app.alerts["Audio"].exists)
+        pause.tap()
+    }
+
     func testSearchKeyboardDismissesOutsideAndReopensInside() {
         let app = launchApp(scenario: .ready)
         let search = app.textFields["library.search.field"]
