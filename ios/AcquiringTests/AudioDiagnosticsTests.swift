@@ -48,9 +48,12 @@ final class AudioDiagnosticsTests: XCTestCase {
         var engines: [ObjectIdentifier] = []
         var activations: [Bool] = []
         let error = startupError
+        // Starts 1 and 2 are the Play tap and its automatic rebuild-and-retry; the
+        // injected outage has to outlast both so the explicit reset stays the
+        // visible recovery this test is about. Start 3 is the reset's own retry.
         let hardware = AudioHardwareOperations(startEngine: { engine in
             engines.append(ObjectIdentifier(engine))
-            if engines.count == 1 { throw error }
+            if engines.count <= 2 { throw error }
         }, setSessionActive: { activations.append($0) }, isAppActive: { true })
         let audio = AppAudioSystem(diagnostics: diagnostics, hardware: hardware)
         let (revision, owner, configuration) = try await loadQuiz(audio)
@@ -63,7 +66,7 @@ final class AudioDiagnosticsTests: XCTestCase {
         let state = await states.next()
         XCTAssertEqual(state?.phase, .playing)
         XCTAssertEqual(state?.elapsed, .seconds(2))
-        XCTAssertEqual(engines.count, 2)
+        XCTAssertEqual(engines.count, 3)
         XCTAssertNotEqual(engines.first, engines.last)
         XCTAssertTrue(activations.contains(false))
         XCTAssertEqual(audio.restorableQuizRevision(songID: "fixture", sectionID: "verse", tempoPercent: 100, soundConfiguration: configuration), revision)
@@ -89,7 +92,9 @@ final class AudioDiagnosticsTests: XCTestCase {
             try await audio.resetAudioAndRetryQuiz(revision: revision, owner: owner)
             XCTFail("Recovery must propagate repeated startup failure")
         } catch { XCTAssertEqual((error as NSError).code, 2003329396) }
-        XCTAssertEqual(attempts, 2)
+        // The Play tap now costs two starts, not one: the initial attempt plus a
+        // single automatic rebuild-and-retry. The reset's own retry is the third.
+        XCTAssertEqual(attempts, 3)
         XCTAssertEqual(diagnostics.report?.failure?.operation, "quiz.engineStart.failed")
         XCTAssertTrue(diagnostics.report?.subsequentEvents.contains { $0.operation == "recovery.retry.failed" } == true)
         var states = (await audio.states()).makeAsyncIterator()
@@ -203,6 +208,155 @@ final class AudioDiagnosticsTests: XCTestCase {
         } catch { XCTAssertEqual((error as NSError).code, 2003329396) }
         XCTAssertFalse(rebuilt)
         XCTAssertEqual(reported, [2003329396])
+    }
+
+    @MainActor
+    func testPlaybackStartReplacesAnEngineThatInstantiatedTheInputNode() async throws {
+        let directory = URL.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let diagnostics = AudioDiagnostics(fileURL: directory.appendingPathComponent("report.json"))
+        var engines: [ObjectIdentifier] = []
+        let audio = AppAudioSystem(diagnostics: diagnostics, hardware: .init(
+            startEngine: { engines.append(ObjectIdentifier($0)) },
+            setSessionActive: { _ in },
+            isAppActive: { true }
+        ))
+        let (revision, owner, _) = try await loadQuiz(audio)
+        // Reaching the poisoned state is the whole precondition: an engine that has
+        // read its input node cannot start again under .playback on real hardware.
+        audio.instantiateInputNodeForTesting()
+        diagnostics.record(.init(operation: "fixture.failure", state: [:], error: startupError))
+        try await audio.playQuiz(revision: revision, owner: owner)
+        let operations = diagnostics.report?.subsequentEvents.map(\.operation) ?? []
+        XCTAssertTrue(operations.contains("engine.replaceBeforePlaybackStart"))
+        XCTAssertTrue(operations.contains("engine.rebuild.succeeded"))
+        XCTAssertTrue(operations.contains("quiz.engineStart.succeeded"))
+        // Replaced before starting, so the start itself never had to fail or retry.
+        XCTAssertEqual(engines.count, 1)
+        XCTAssertFalse(operations.contains("quiz.engineStart.failed"))
+        let started = diagnostics.report?.subsequentEvents.first { $0.operation == "quiz.engineStart.succeeded" }
+        XCTAssertEqual(started?.state["engineInputNodeInstantiated"], "false")
+        await audio.stop()
+    }
+
+    @MainActor
+    func testPlaybackStartLeavesACleanEngineAloneAndArmsNoSampleRateReset() async throws {
+        let directory = URL.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let diagnostics = AudioDiagnostics(fileURL: directory.appendingPathComponent("report.json"))
+        var engines: [ObjectIdentifier] = []
+        let audio = AppAudioSystem(diagnostics: diagnostics, hardware: .init(
+            startEngine: { engines.append(ObjectIdentifier($0)) },
+            setSessionActive: { _ in },
+            isAppActive: { true }
+        ))
+        let (revision, owner, _) = try await loadQuiz(audio)
+        diagnostics.record(.init(operation: "fixture.failure", state: [:], error: startupError))
+        try await audio.playQuiz(revision: revision, owner: owner)
+        let operations = diagnostics.report?.subsequentEvents.map(\.operation) ?? []
+        // A user who never sings must pay nothing: no rebuild, and no session call
+        // to undo a capture preference that was never set.
+        XCTAssertFalse(operations.contains("engine.replaceBeforePlaybackStart"))
+        XCTAssertFalse(operations.contains("engine.rebuild.begin"))
+        XCTAssertFalse(operations.contains("session.resetPlaybackSampleRate"))
+        XCTAssertEqual(engines.count, 1)
+        let started = diagnostics.report?.subsequentEvents.first { $0.operation == "quiz.engineStart.succeeded" }
+        XCTAssertEqual(started?.state["engineInputNodeInstantiated"], "false")
+        await audio.stop()
+    }
+
+    @MainActor
+    func testSingleStartFailureRecoversSilentlyWithoutSurfacingAnError() async throws {
+        let directory = URL.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let diagnostics = AudioDiagnostics(fileURL: directory.appendingPathComponent("report.json"))
+        var attempts = 0
+        let error = startupError
+        let audio = AppAudioSystem(diagnostics: diagnostics, hardware: .init(startEngine: { _ in
+            attempts += 1
+            if attempts == 1 { throw error }
+        }, setSessionActive: { _ in }, isAppActive: { true }))
+        let (revision, owner, _) = try await loadQuiz(audio)
+        // The field failure with no alert: one start fails, the rebuild cures it,
+        // and the listener simply hears the quiz.
+        try await audio.playQuiz(revision: revision, owner: owner)
+        XCTAssertEqual(attempts, 2)
+        var states = (await audio.states()).makeAsyncIterator()
+        XCTAssertEqual(await states.next()?.phase, .playing)
+        let operations = diagnostics.report?.subsequentEvents.map(\.operation) ?? []
+        XCTAssertTrue(operations.contains("quiz.engineStart.retryAfterRebuild.succeeded"))
+        await audio.stop()
+    }
+
+    @MainActor
+    func testAutomaticRetryIsBoundedToOneRebuildPerStartAttempt() async throws {
+        let directory = URL.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let diagnostics = AudioDiagnostics(fileURL: directory.appendingPathComponent("report.json"))
+        var attempts = 0
+        let error = startupError
+        let audio = AppAudioSystem(diagnostics: diagnostics, hardware: .init(startEngine: { _ in
+            attempts += 1
+            throw error
+        }, setSessionActive: { _ in }, isAppActive: { true }))
+        let (revision, owner, _) = try await loadQuiz(audio)
+        do {
+            try await audio.playQuiz(revision: revision, owner: owner)
+            XCTFail("A start that fails twice must surface to the listener")
+        } catch {
+            // The first failure is the one worth showing; it describes the state the
+            // rebuild was trying to cure.
+            XCTAssertEqual((error as NSError).code, 2003329396)
+        }
+        // The bound the DEBUG injection budget is sized against. If this number
+        // changes, AppAudioSystem.automaticEngineStartRetries changed with it.
+        XCTAssertEqual(attempts, 2)
+        let operations = diagnostics.report?.subsequentEvents.map(\.operation) ?? []
+        XCTAssertTrue(operations.contains("quiz.engineStart.retryAfterRebuild.failed"))
+        await audio.stop()
+    }
+
+    @MainActor
+    func testAutomaticRetryIsRefusedWhileTheAppIsInactive() async throws {
+        let directory = URL.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        var attempts = 0
+        let error = startupError
+        let audio = AppAudioSystem(diagnostics: AudioDiagnostics(fileURL: directory.appendingPathComponent("report.json")), hardware: .init(startEngine: { _ in
+            attempts += 1
+            throw error
+        }, setSessionActive: { _ in }, isAppActive: { false }))
+        let (revision, owner, _) = try await loadQuiz(audio)
+        do { try await audio.playQuiz(revision: revision, owner: owner) } catch { }
+        // Rebuilding a graph for an app on its way to the background would race the
+        // system tearing the session down anyway.
+        XCTAssertEqual(attempts, 1)
+        await audio.stop()
+    }
+
+    @MainActor
+    func testForegroundingRetiresAStaleResumeLatchWithoutResuming() async throws {
+        let directory = URL.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let diagnostics = AudioDiagnostics(fileURL: directory.appendingPathComponent("report.json"))
+        let audio = AppAudioSystem(diagnostics: diagnostics, hardware: .init(
+            startEngine: { _ in },
+            setSessionActive: { _ in },
+            isAppActive: { true }
+        ))
+        let (revision, owner, _) = try await loadQuiz(audio)
+        try await audio.playQuiz(revision: revision, owner: owner)
+        diagnostics.record(.init(operation: "fixture.failure", state: [:], error: startupError))
+        // iOS never guarantees the matching .ended, so the latch this sets can
+        // otherwise stand indefinitely and authorize a later, unrelated one.
+        audio.handleInterruptionBegan()
+        audio.handleAppBecameActive()
+        let operations = diagnostics.report?.subsequentEvents.map(\.operation) ?? []
+        XCTAssertTrue(operations.contains("session.staleResumeRetired"))
+        var states = (await audio.states()).makeAsyncIterator()
+        // Retiring the latch must not double as a resume.
+        XCTAssertEqual(await states.next()?.phase, .paused)
+        await audio.stop()
     }
 
     @MainActor

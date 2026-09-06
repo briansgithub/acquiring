@@ -53,20 +53,52 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     private let previewGeneration = PreviewPlaybackGeneration()
     private var previewRender: (token: UInt64, task: Task<[Float], any Error>)?
     private var shouldResumeAfterInterruption = false
+    /// AVAudioEngine cannot be asked whether its input node exists, and merely
+    /// reading `engine.inputNode` instantiates it permanently: there is no way to
+    /// detach one. An engine whose graph holds an input node cannot start again
+    /// while the session category is `.playback`, because input is unavailable and
+    /// `start()` throws 'what' (2003329396) for the life of that instance. Track
+    /// the transition explicitly so the graph can be replaced before it is needed.
+    private var engineHasInputNode = false
+    /// Capture leaves a 16 kHz preference on the shared session. Arm the cleanup
+    /// only when capture actually set one, so a user who never sings pays no extra
+    /// session calls and no extra diagnostic events.
+    private var needsPlaybackSampleRateReset = false
+    /// Guards against a seam re-entering the automatic retry from inside itself.
+    private var isRetryingEngineStart = false
+
+    /// A start failure that nothing explains is rebuilt and retried exactly once,
+    /// the way the manual reset does it. The DEBUG injection below derives its
+    /// failure budget from this so the two cannot drift apart.
+    private static let automaticEngineStartRetries = 1
 
     init(diagnostics: AudioDiagnostics? = nil, hardware: AudioHardwareOperations = .init()) {
         var resolvedHardware = hardware
         #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("--ui-testing"),
-           ProcessInfo.processInfo.arguments.contains("--ui-testing-audio-start-failure") {
-            let start = hardware.startEngine
-            var injected = false
-            resolvedHardware.startEngine = { engine in
-                if !injected {
-                    injected = true
-                    throw NSError(domain: "com.apple.coreaudio.avfaudio", code: 2003329396)
+        if ProcessInfo.processInfo.arguments.contains("--ui-testing") {
+            // A start failure is now rebuilt and retried automatically, so an
+            // injected outage has to outlast the retry to reach the user-visible
+            // alert. Sizing the budget from the retry policy keeps the two in step:
+            // testAutomaticRetryIsBoundedToOneRebuildPerStartAttempt pins the bound.
+            // The `once` variant injects a single failure instead, so a UI test can
+            // prove the silent self-heal end to end.
+            let arguments = ProcessInfo.processInfo.arguments
+            var remainingFailures = 0
+            if arguments.contains("--ui-testing-audio-start-failure") {
+                remainingFailures = AppAudioSystem.automaticEngineStartRetries + 1
+            } else if arguments.contains("--ui-testing-audio-start-failure-once") {
+                remainingFailures = 1
+            }
+            if remainingFailures > 0 {
+                let start = hardware.startEngine
+                var budget = remainingFailures
+                resolvedHardware.startEngine = { engine in
+                    if budget > 0 {
+                        budget -= 1
+                        throw NSError(domain: "com.apple.coreaudio.avfaudio", code: 2003329396)
+                    }
+                    try start(engine)
                 }
-                try start(engine)
             }
         }
         #endif
@@ -230,8 +262,11 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
             channel.update(from: source.baseAddress!, count: samples.count)
         }
         guard generation.isCurrent(token), !Task.isCancelled else { return false }
-        player.scheduleBuffer(buffer, completionHandler: nil)
+        // Start before scheduling: starting may replace the engine, and a buffer
+        // queued on the outgoing player would be discarded along with it, leaving
+        // `play()` running against an empty queue and a silent preview.
         try startEngineIfNeeded(operation: "preview.engineStart")
+        player.scheduleBuffer(buffer, completionHandler: nil)
         player.play()
         failedPreview = nil
         recordAudioEvent("preview.started")
@@ -819,6 +854,35 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         releaseMicrophone(id: lease.id)
     }
 
+    /// The only place in this file that may name `engine.inputNode`. Reading that
+    /// property is itself the state transition that poisons the graph for playback,
+    /// so the read and the bookkeeping have to be the same operation — a bare read
+    /// anywhere else would set the trap without recording it.
+    private func instantiatedInputNode() -> AVAudioInputNode {
+        engineHasInputNode = true
+        return engine.inputNode
+    }
+
+    /// A tap can only live on an input node that this engine actually instantiated,
+    /// so when there is none there is nothing to remove — and calling through would
+    /// instantiate one, re-poisoning a graph that is still clean. Teardown runs on
+    /// paths that may never have installed a tap at all, including a cancelled
+    /// acquisition, which is exactly when the bare call did the damage.
+    private func removeMicrophoneTapIfInstalled() {
+        guard engineHasInputNode else { return }
+        instantiatedInputNode().removeTap(onBus: 0)
+    }
+
+    #if DEBUG
+    /// Instantiating the input node is the one state transition that stops an engine
+    /// starting under `.playback`, and AVAudioEngine offers no way to observe or undo
+    /// it. Tests need to reach that state without real capture hardware, whose
+    /// availability differs between simulators.
+    func instantiateInputNodeForTesting() {
+        _ = instantiatedInputNode()
+    }
+    #endif
+
     /// Hardware input can remain disabled on an engine first used for playback.
     /// Re-query the real route, then rebuild that engine once if its cached input
     /// still has no format. Never invent a sample rate for an unavailable device.
@@ -836,7 +900,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
                let builtIn = session.availableInputs?.first(where: { $0.portType == .builtInMic }) {
                 try audioOperation("microphone.preferredInput") { try session.setPreferredInput(builtIn) }
             }
-            let input = engine.inputNode
+            let input = instantiatedInputNode()
             let hardware = input.inputFormat(forBus: 0)
             let format = input.outputFormat(forBus: 0)
             recordAudioEvent("microphone.inputFormatObserved", details: [
@@ -884,6 +948,9 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
 
         if category == .playAndRecord {
             let profile = captureProfile ?? activeMicrophone?.profile ?? .standard
+            // Capture is about to leave preferences on the session that only make
+            // sense for capture; arm the cleanup that playback performs later.
+            needsPlaybackSampleRateReset = true
             do {
                 // These are preferences, not assumptions. The tap's resolved format
                 // is always converted to the Android-equivalent 16 kHz analysis stream.
@@ -897,6 +964,19 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
             } catch {
                 logger.info(
                     "Audio capture preference was unavailable; using resolved hardware format: \(error.localizedDescription, privacy: .public)"
+                )
+            }
+        } else if category == .playback, needsPlaybackSampleRateReset {
+            // A field report showed a 16 kHz capture preference still standing on a
+            // playback session hours later. Zero restores the system default. Disarm
+            // first so a device that refuses the request cannot re-record the attempt
+            // on every later playback start.
+            needsPlaybackSampleRateReset = false
+            do {
+                try audioOperation("session.resetPlaybackSampleRate") { try session.setPreferredSampleRate(0) }
+            } catch {
+                logger.info(
+                    "Playback sample rate reset was unavailable; using resolved hardware format: \(error.localizedDescription, privacy: .public)"
                 )
             }
         }
@@ -945,6 +1025,9 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         engine = replacementEngine
         player = replacementPlayer
         sourceNode = replacementSource
+        // The replacement graph has never had its input node read, which is the
+        // whole point of building one: this is the only way the flag clears.
+        engineHasInputNode = false
         recordAudioEvent("engine.rebuild.succeeded")
     }
 
@@ -956,7 +1039,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         }
         guard let active = activeMicrophone, active.id != id else { return }
         activeMicrophone = nil
-        engine.inputNode.removeTap(onBus: 0)
+        removeMicrophoneTapIfInstalled()
         active.pipeline.deactivate()
         active.continuation.finish()
         transitionSessionAfterMicrophoneRelease()
@@ -973,7 +1056,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         }
         guard let active = activeMicrophone, active.id == id else { return }
         activeMicrophone = nil
-        engine.inputNode.removeTap(onBus: 0)
+        removeMicrophoneTapIfInstalled()
         active.pipeline.deactivate()
         active.continuation.finish()
         transitionSessionAfterMicrophoneRelease()
@@ -989,7 +1072,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         }
         guard let active = activeMicrophone, active.id == id else { return }
         activeMicrophone = nil
-        engine.inputNode.removeTap(onBus: 0)
+        removeMicrophoneTapIfInstalled()
         active.pipeline.deactivate()
         active.continuation.finish(throwing: error)
         transitionSessionAfterMicrophoneRelease()
@@ -1004,7 +1087,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         }
         if let active = activeMicrophone {
             activeMicrophone = nil
-            engine.inputNode.removeTap(onBus: 0)
+            removeMicrophoneTapIfInstalled()
             active.pipeline.deactivate()
             active.continuation.finish()
             logger.info("Microphone pitch capture stopped")
@@ -1023,7 +1106,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         }
         if let active = activeMicrophone {
             activeMicrophone = nil
-            engine.inputNode.removeTap(onBus: 0)
+            removeMicrophoneTapIfInstalled()
             active.pipeline.deactivate()
             active.continuation.finish(throwing: error)
             logger.error("Microphone pitch capture ended: \(error.localizedDescription, privacy: .public)")
@@ -1204,8 +1287,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
             },
             Task { @MainActor [weak self] in
                 for await _ in NotificationCenter.default.notifications(named: UIApplication.didBecomeActiveNotification) {
-                    self?.appIsActive = true
-                    self?.recordAudioEvent("app.didBecomeActive")
+                    self?.handleAppBecameActive()
                 }
             },
             Task { @MainActor [weak self] in
@@ -1221,7 +1303,35 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         ]
     }
 
-    private func handleInterruptionBegan() {
+    /// iOS does not guarantee an `.ended` interruption notification, and a field
+    /// report showed two `session.interruptionBegan` with no `.ended` ever arriving.
+    /// Foregrounding is the point at which a latched resume can no longer honestly
+    /// be honored, so retire it here rather than leave it standing to authorize a
+    /// later, unrelated `.ended`.
+    ///
+    /// This deliberately does not resume playback. Backgrounding already runs
+    /// `pauseForAppInactivity()`, which clears both this latch and the playback
+    /// request, and the app's design is that returning to the foreground requires an
+    /// explicit Play.
+    ///
+    /// `didBecomeActive` and the interruption notification are independent streams
+    /// with no ordering guarantee, so this could in principle retire a latch just as
+    /// a genuine `.ended` arrives. That race is benign here: reaching this method at
+    /// all means the app went inactive, and every route out of active runs
+    /// `pauseForAppInactivity()`, which has already cleared the playback request
+    /// that `handleInterruptionEnded` requires before it will resume. An interruption
+    /// the app stays active through — the only kind `.ended` can still resume — never
+    /// reaches this method. So this is hygiene against a flag outliving its meaning,
+    /// not a change to any currently reachable playback behavior.
+    func handleAppBecameActive() {
+        appIsActive = true
+        recordAudioEvent("app.didBecomeActive")
+        guard shouldResumeAfterInterruption else { return }
+        shouldResumeAfterInterruption = false
+        recordAudioEvent("session.staleResumeRetired")
+    }
+
+    func handleInterruptionBegan() {
         audioRecoveryGeneration &+= 1
         recordAudioEvent("session.interruptionBegan")
         shouldResumeAfterInterruption = quizPlaybackRequested
@@ -1288,7 +1398,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         guard !recoveryInProgress else { return }
         invalidatePreviewPlayback()
         if let activeMicrophone {
-            let inputFormat = engine.inputNode.outputFormat(forBus: 0)
+            let inputFormat = instantiatedInputNode().outputFormat(forBus: 0)
             if abs(inputFormat.sampleRate - activeMicrophone.sampleRate) > 0.5
                 || inputFormat.channelCount != activeMicrophone.channelCount {
                 failAllMicrophoneCapture(
@@ -1351,9 +1461,59 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         return try diagnostics.export()
     }
 
+    /// Once `engine.inputNode` has been instantiated, that engine can never start
+    /// again while the session category is `.playback`: input is unavailable, the
+    /// input route is empty, and `start()` throws 'what' (2003329396) for the life
+    /// of the instance. AVAudioEngine cannot detach an input node, so a replacement
+    /// graph is the only cure — this is what the manual Reset Audio and Retry was
+    /// really doing when a tester confirmed it restored sound.
+    ///
+    /// Doing it here rather than at the microphone release is deliberate. The
+    /// caller has already established that the engine is stopped, and a stopped
+    /// engine cannot be rendering, so replacing it can never cut audible audio. An
+    /// eager rebuild at release time would run while a preview was still playing.
+    private func replaceEngineIfInputNodeBlocksPlayback() {
+        guard engineHasInputNode else { return }
+        // Capture still owns the graph it is settling into; replacing it here would
+        // pull the input node out from under an acquisition that is mid-flight.
+        guard pendingMicrophone == nil, activeMicrophone == nil else { return }
+        recordAudioEvent("engine.replaceBeforePlaybackStart")
+        rebuildAudioEngine()
+    }
+
+    /// The explicit reset experiment owns the rebuild while it runs; a second
+    /// rebuild inside its own retry step would race its stages and hide the outcome
+    /// the tester is trying to send us.
+    private func canRetryEngineStartAfterRebuild() -> Bool {
+        guard !recoveryInProgress, !isRetryingEngineStart else { return false }
+        guard pendingMicrophone == nil, activeMicrophone == nil else { return false }
+        return appIsActive && hardware.isAppActive()
+    }
+
     private func startEngineIfNeeded(operation: String) throws {
         guard !engine.isRunning else { return }
-        try audioOperation(operation) { try hardware.startEngine(engine) }
+        replaceEngineIfInputNodeBlocksPlayback()
+        do {
+            try audioOperation(operation) { try hardware.startEngine(engine) }
+        } catch let startFailure {
+            // One rebuild, one retry, written straight-line: there is no call back
+            // into this function and no loop, so a third attempt is unreachable by
+            // construction rather than by a counter that could drift.
+            guard canRetryEngineStartAfterRebuild() else { throw startFailure }
+            isRetryingEngineStart = true
+            defer { isRetryingEngineStart = false }
+            rebuildAudioEngine()
+            do {
+                try audioOperation(operation + ".retryAfterRebuild") {
+                    try hardware.startEngine(engine)
+                }
+            } catch {
+                // Both attempts are already in the diagnostic history. Surface the
+                // first failure, because that is the one describing the state the
+                // rebuild was trying to cure.
+                throw startFailure
+            }
+        }
     }
 
     private func audioOperation(_ operation: String, _ body: () throws -> Void) throws {
@@ -1407,12 +1567,16 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
             "quizRequested": String(quizPlaybackRequested),
             "microphonePending": String(pendingMicrophone != nil),
             "microphoneActive": String(activeMicrophone != nil),
-            "recoveryInProgress": String(recoveryInProgress)
+            "recoveryInProgress": String(recoveryInProgress),
+            // The exact condition behind the field failure, readable straight from
+            // the next exported report instead of inferred from the event order.
+            "engineInputNodeInstantiated": String(engineHasInputNode),
+            "preferredIOBufferDuration": String(session.preferredIOBufferDuration)
         ]
         // Avoid instantiating the lazy input node during ordinary playback.
         if activeMicrophone != nil {
-            let input = engine.inputNode.inputFormat(forBus: 0)
-            let tap = engine.inputNode.outputFormat(forBus: 0)
+            let input = instantiatedInputNode().inputFormat(forBus: 0)
+            let tap = instantiatedInputNode().outputFormat(forBus: 0)
             state["inputSampleRate"] = String(input.sampleRate)
             state["inputChannels"] = String(input.channelCount)
             state["tapSampleRate"] = String(tap.sampleRate)
