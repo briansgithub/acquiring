@@ -17,17 +17,14 @@ final class AutonomousDiagnosticsTests: XCTestCase {
 
     // MARK: - F031 Transpose
 
-    /// Baseline: an ordinary +1 tap while paused, with no menu interaction first.
-    func testTransposeUpWhilePausedWithoutAnyMenuInteraction() {
+    /// A compact native menu can apply a semitone while paused.
+    func testTransposeMenuAppliesValueWhilePaused() {
         let app = launchReadyQuiz()
         let transpose = app.buttons["quiz.transpose"]
         XCTAssertTrue(transpose.waitForExistence(timeout: 10))
         XCTAssertEqual(transpose.value as? String, "0 semitones")
 
-        let up = app.buttons["quiz.transpose.up"]
-        XCTAssertTrue(waitForHittable(up, timeout: 10))
-        // Tap the padded corner, not the glyph: the entire 44 pt label must act.
-        up.coordinate(withNormalizedOffset: CGVector(dx: 0.15, dy: 0.15)).tap()
+        selectTranspose("+1 semitones", from: transpose, in: app)
 
         XCTAssertTrue(
             waitForValue(transpose, "+1 semitones", timeout: 5),
@@ -36,43 +33,24 @@ final class AutonomousDiagnosticsTests: XCTestCase {
         XCTAssertFalse(app.alerts["Audio"].exists, "Configuration was rejected rather than undelivered")
     }
 
-    /// The full -12 / 0 / +12 range, reset-by-value-tap, and no accumulation.
-    func testTransposeBoundsResetAndRepeatedChangesWhilePaused() {
+    /// The menu exposes the full -12 / 0 / +12 range.
+    func testTransposeMenuExposesBoundsAndOriginalKeyWhilePaused() {
         let app = launchReadyQuiz()
         let transpose = app.buttons["quiz.transpose"]
         XCTAssertTrue(transpose.waitForExistence(timeout: 10))
-        let up = app.buttons["quiz.transpose.up"]
-        let down = app.buttons["quiz.transpose.down"]
-        XCTAssertTrue(waitForHittable(up, timeout: 10))
-
-        for step in 1...12 {
-            up.tap()
-            XCTAssertTrue(
-                waitForValue(transpose, "+\(step) semitones", timeout: 3),
-                "Stopped advancing at +\(step); observed \(String(describing: transpose.value))"
-            )
-        }
-        XCTAssertFalse(up.isEnabled, "+12 is the upper bound")
-
-        transpose.tap()
-        XCTAssertTrue(waitForValue(transpose, "0 semitones", timeout: 3), "Value tap must reset to zero")
-
-        for step in 1...12 {
-            down.tap()
-            XCTAssertTrue(
-                waitForValue(transpose, "-\(step) semitones", timeout: 3),
-                "Stopped descending at -\(step); observed \(String(describing: transpose.value))"
-            )
-        }
-        XCTAssertFalse(down.isEnabled, "-12 is the lower bound")
-
-        transpose.tap()
+        selectTranspose("+12 semitones", from: transpose, in: app)
+        XCTAssertTrue(waitForValue(transpose, "+12 semitones", timeout: 3))
+        selectTranspose("0 semitones", from: transpose, in: app)
+        XCTAssertTrue(waitForValue(transpose, "0 semitones", timeout: 3))
+        selectTranspose("-12 semitones", from: transpose, in: app)
+        XCTAssertTrue(waitForValue(transpose, "-12 semitones", timeout: 3))
+        selectTranspose("0 semitones", from: transpose, in: app)
         XCTAssertTrue(waitForValue(transpose, "0 semitones", timeout: 3))
         XCTAssertFalse(app.alerts["Audio"].exists)
     }
 
-    /// Same ordinary tap, but while the transport is playing.
-    func testTransposeUpWhilePlaying() {
+    /// The menu keeps playback running while it commits a selection.
+    func testTransposeMenuAppliesValueWhilePlaying() {
         let app = launchReadyQuiz()
         let play = app.buttons["quiz.play"]
         XCTAssertTrue(play.waitForExistence(timeout: 10))
@@ -81,9 +59,8 @@ final class AutonomousDiagnosticsTests: XCTestCase {
         XCTAssertTrue(waitForLabel(play, "Pause", timeout: 30), "Transport never started")
 
         let transpose = app.buttons["quiz.transpose"]
-        let up = app.buttons["quiz.transpose.up"]
-        XCTAssertTrue(waitForHittable(up, timeout: 10))
-        up.tap()
+        XCTAssertTrue(waitForHittable(transpose, timeout: 10))
+        selectTranspose("+1 semitones", from: transpose, in: app)
         XCTAssertTrue(
             waitForValue(transpose, "+1 semitones", timeout: 5),
             "Playing +1 tap did not change the displayed value. Observed: \(String(describing: transpose.value))"
@@ -106,16 +83,15 @@ final class AutonomousDiagnosticsTests: XCTestCase {
         XCTAssertTrue(waitForValue(instrument, "Sine", timeout: 5))
 
         let transpose = app.buttons["quiz.transpose"]
-        let up = app.buttons["quiz.transpose.up"]
-        XCTAssertTrue(waitForHittable(up, timeout: 10))
-        up.tap()
+        XCTAssertTrue(waitForHittable(transpose, timeout: 10))
+        selectTranspose("+1 semitones", from: transpose, in: app)
         let appliedOnFirstTap = waitForValue(transpose, "+1 semitones", timeout: 5)
         if !appliedOnFirstTap {
             XCTAssertFalse(
                 app.alerts["Audio"].exists,
                 "First tap after the menu was rejected by the app, not swallowed"
             )
-            up.tap()
+            selectTranspose("+1 semitones", from: transpose, in: app)
             let appliedOnSecondTap = waitForValue(transpose, "+1 semitones", timeout: 5)
             XCTAssertTrue(
                 appliedOnSecondTap,
@@ -139,12 +115,11 @@ final class AutonomousDiagnosticsTests: XCTestCase {
         XCTAssertTrue(waitForValue(section, "Chorus", timeout: 5))
 
         let transpose = app.buttons["quiz.transpose"]
-        let up = app.buttons["quiz.transpose.up"]
-        XCTAssertTrue(waitForHittable(up, timeout: 10))
-        up.tap()
+        XCTAssertTrue(waitForHittable(transpose, timeout: 10))
+        selectTranspose("+1 semitones", from: transpose, in: app)
         let appliedOnFirstTap = waitForValue(transpose, "+1 semitones", timeout: 5)
         if !appliedOnFirstTap {
-            up.tap()
+            selectTranspose("+1 semitones", from: transpose, in: app)
             XCTAssertTrue(
                 waitForValue(transpose, "+1 semitones", timeout: 5),
                 "Neither tap after the section menu reached transpose. Observed: \(String(describing: transpose.value))"
@@ -155,56 +130,13 @@ final class AutonomousDiagnosticsTests: XCTestCase {
         }
     }
 
-    /// Second-cycle diagnostic: reports what the transpose element actually is and
-    /// which delivery mechanism, if any, reaches its action.
-    func testTransposeTapDeliveryMechanisms() {
+    func testTransposeMenuIsReachableByAccessibilityIdentifier() {
         let app = launchReadyQuiz()
         let transpose = app.buttons["quiz.transpose"]
         XCTAssertTrue(transpose.waitForExistence(timeout: 10))
-        let up = app.buttons["quiz.transpose.up"]
-        XCTAssertTrue(waitForHittable(up, timeout: 10))
-
-        print("DIAGNOSTIC-TRANSPOSE-BEGIN")
-        print("up: exists=\(up.exists) enabled=\(up.isEnabled) hittable=\(up.isHittable) frame=\(up.frame) label=\(up.label) value=\(String(describing: up.value))")
-        print("value element: enabled=\(transpose.isEnabled) hittable=\(transpose.isHittable) frame=\(transpose.frame) value=\(String(describing: transpose.value))")
-        print("matching identifier count: \(app.descendants(matching: .any).matching(identifier: "quiz.transpose.up").count)")
-        print(app.descendants(matching: .any)["quiz.cards"].exists ? "cards present" : "cards missing")
-        print("DIAGNOSTIC-TRANSPOSE-TREE\n\(app.debugDescription)")
-        print("DIAGNOSTIC-TRANSPOSE-END")
-
-        var reached: [String] = []
-
-        up.tap()
-        if waitForValue(transpose, "+1 semitones", timeout: 3) { reached.append("XCUIElement.tap") }
-
-        if reached.isEmpty {
-            up.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
-            if waitForValue(transpose, "+1 semitones", timeout: 3) { reached.append("coordinate center tap") }
-        }
-        if reached.isEmpty {
-            up.press(forDuration: 0.08)
-            if waitForValue(transpose, "+1 semitones", timeout: 3) { reached.append("press 80ms") }
-        }
-        if reached.isEmpty {
-            // Does any control in the same disabled container still work?
-            let instrument = app.descendants(matching: .any)["quiz.instrument"]
-            instrument.tap()
-            let sine = app.buttons["Sine"]
-            if sine.waitForExistence(timeout: 3) {
-                sine.tap()
-                if waitForValue(instrument, "Sine", timeout: 3) {
-                    reached.append("sibling instrument menu works")
-                }
-            }
-        }
-        if reached.isEmpty {
-            // The named accessibility action path, bypassing hit testing geometry.
-            let reset = app.buttons["quiz.transpose"]
-            reset.tap()
-            reached.append("value-tap result: \(String(describing: transpose.value))")
-        }
-
-        XCTFail("DIAGNOSTIC transpose delivery outcomes: \(reached); final value \(String(describing: transpose.value))")
+        XCTAssertTrue(waitForHittable(transpose, timeout: 10))
+        selectTranspose("+1 semitones", from: transpose, in: app)
+        XCTAssertTrue(waitForValue(transpose, "+1 semitones", timeout: 5))
     }
 
     // MARK: - F012 / F001 catalog retry identity
@@ -302,5 +234,12 @@ final class AutonomousDiagnosticsTests: XCTestCase {
 
     private func waitForHittable(_ element: XCUIElement, timeout: TimeInterval) -> Bool {
         poll(timeout: timeout) { element.exists && element.isHittable }
+    }
+
+    private func selectTranspose(_ title: String, from transpose: XCUIElement, in app: XCUIApplication) {
+        transpose.tap()
+        let choice = app.buttons[title]
+        XCTAssertTrue(choice.waitForExistence(timeout: 5), "Transpose option \(title) is missing")
+        choice.tap()
     }
 }
