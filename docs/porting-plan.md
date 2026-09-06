@@ -962,3 +962,78 @@ export, `codesign --verify --deep --strict`, and App Store Connect upload. Versi
 The script recorded build 10. Tester availability/review and iPhone 14 Pro microphone
 behavior remain unverified. Notification/group changes and an in-app update button
 were discussed as recommendations only; none were implemented in this release.
+
+### Quiz controls, instrument defaults, and foreground playback — 2026-09-05
+
+`[implementation authorized; final iOS verification and merge pending]` Runtime
+model: unknown. Requested routes: Sol/high for playback/state and Android,
+Terra/medium for iOS presentation. Implemented the approved
+`docs/quiz-controls-playback-plan.md` in isolated platform worktrees and integrated
+both platforms on `codex/quiz-controls`. The newer primary-branch catalog and
+explicit Synth Clarinet default are retained; this supersedes the plan's original
+sawtooth fallback assumption.
+
+Both apps now group instruments as Waveforms/Synths behind a piano transport
+button, put compact native Transpose selection in the transport, and use equally
+sized Tempo, Arpeggiate, and Melody / Chord Mix knobs in Full and Roots modes.
+Session selection survives song changes. Settings stores a separate default using
+a stable identifier; deliberate default changes also update the current session.
+Normalization covers all 14 current iOS and 13 Android presets; Church Organ uses
+a calibrated gain of 1.57.
+
+The iOS native selector keeps its UIButton/menu identity through playback updates,
+refreshes callbacks, and fixes native menu ordering. Android keeps transport hit
+regions above the movable Play control. Playback ownership invalidates queued
+resume work when leaving Quiz or losing foreground activity; position is retained
+and return requires Play. Removed Android's media service/notification and iOS
+remote transport/Now Playing publication/background audio capability, retaining
+foreground interruption/focus handling. The remaining iOS Now Playing assignment
+only clears stale metadata.
+
+Focused validation (no full suites or screenshots):
+
+- Android, from the Android worktree's `android` directory, with SDK
+  `/Users/brian/Library/Android/sdk` and JDK 21:
+  `python3 scripts/compact_check.py --name android-focused-unit-final -- ./gradlew testDebugUnitTest --tests com.acquiring.android.InstrumentSessionOwnerTest --tests com.acquiring.android.QuizDialTest --tests com.acquiring.android.QuizPlaybackEngineTest --tests com.acquiring.android.InstrumentVolumeTest --console=plain`:
+  passed, 28 tests, 128.1 s. Following the final controller-locking change,
+  `python3 scripts/compact_check.py --name android-lifecycle-unit-final -- ./gradlew testDebugUnitTest --tests com.acquiring.android.QuizPlaybackEngineTest --tests com.acquiring.android.InstrumentSessionOwnerTest --console=plain`
+  passed, 56.6 s.
+- `./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.acquiring.android.QuizTransportSelectorsUiTest`:
+  passed, one test, 91.3 s on API 36 emulator-5554 (360 dp). This mounts production
+  SongDetailView/QuizTab with the real playback controller, proves clock advancement
+  through instrument/transpose/mode/section changes including 160% tempo, and covers
+  Quiz exit/reentry and song changes with equal section data.
+- `./gradlew assembleDebug`: passed, 3.4 s. `adb -s emulator-5554 install -r app/build/outputs/apk/debug/app-debug.apk`:
+  Success. `adb -s emulator-5554 shell am start -W -n com.acquiring.android/.MainActivity`:
+  Status ok. Actual installed Settings selection of Sine survived `am force-stop`
+  and cold launch, verified by the reopened Default instrument row and saved
+  `default_instrument=SINE`; restored Synth Clarinet and verified CLARINET after
+  another cold launch. Unit tests cover separate session/default state.
+- Android source and merged manifest inspection found no QuizPlaybackService,
+  MediaSession/media-button, foreground-service, or notification-permission hooks.
+- From the iOS worktree's `ios/Packages/AcquiringKit`,
+  `swift test --filter WaveformLoudnessNormalizationTests`: passed, two tests,
+  25.708 s; all 14 presets within 1.5 dB weighted loudness spread and nonclipping
+  static/arpeggio/stream headroom across three registers.
+- iOS app and UI targets compiled/linked with the current sources. Focused Xcode
+  testing passed `AcquiringTests/testQuizInstrumentSessionSeparatesCurrentSelectionFromSavedDefault`,
+  `AcquiringTests/testLifecycleInvalidatesQueuedQuizOwnerAndRetainsPositionForReentry`,
+  and `AcquiringUITests/testQuizSectionMenuAppliesPausedAndPlayingSelections`.
+- Last two-case retry:
+  `xcodebuild -quiet test -project ios/Acquiring.xcodeproj -scheme Acquiring -derivedDataPath /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -parallel-testing-enabled NO -only-testing:AcquiringUITests/AcquiringUITests/testQuizInstrumentAndModeMenusApplyWhilePlaying -only-testing:AcquiringUITests/AcquiringUITests/testInstrumentDefaultSessionAndForegroundPlaybackLifecycle CODE_SIGNING_ALLOWED=NO`:
+  exit 65, two UI failures caused by stale element/readiness assumptions. Final
+  test-only query/readiness corrections are committed at `7896375a` but unexecuted.
+  Result: `Test-Acquiring-2026.09.05_20-45-33--0400.xcresult` in the DerivedData
+  `Logs/Test` directory. Retry authorization is pending under the supplied
+  two-cycle limit; passing checks will not be repeated.
+- `git diff --check 91cce16c..HEAD -- android ios`: passed on the integrated feature
+  branch. Final primary-checkout merge/build remains pending.
+
+Limits/review: Android's existing full-library search fixture clips a song row on
+this small emulator, so the selector test uses production SongDetailView directly;
+search behavior was not changed. Physical headset/focus/lock-screen behavior and
+visual balance remain human checks. On both apps, review 500 Miles while switching
+all selectors, inspect all three knobs in both modes, change songs/defaults and
+relaunch, then leave Quiz/background the app and confirm paused audio and absent
+external controls. No release/upload was performed. Unrelated primary-checkout
+edits are backed up for preservation and remain outside feature commits.

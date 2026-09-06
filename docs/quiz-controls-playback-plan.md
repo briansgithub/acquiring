@@ -1,7 +1,8 @@
 # Quiz controls, instrument preferences, and foreground playback
 
-Status: implementation plan only. Scope: **iOS and Android**, confirmed by the
-user. This is a focused attachment to `docs/porting-plan.md`; its existing review
+Status: implemented in isolated worktrees; final iOS verification and merge are
+in progress. Scope: **iOS and Android**, confirmed by the user. This is a focused
+attachment to `docs/porting-plan.md`; its existing review
 and release gates remain in force. The requested behavior below supersedes older
 requirements to continue Quiz audio after navigation or in the background.
 
@@ -17,13 +18,21 @@ instrument normalization/grouping. Implementation must retain those changes.
 | Compact Transpose | iOS replaces **Shift** and its +/− buttons with a native menu named **Transpose**, showing the current signed semitone value. Preserve −12…+12 and zero as the original key. Android adapts its existing Transpose dropdown. Use each platform's native menu style. |
 | Transport tools | Move Instrument and Transpose into the existing transport tools. Instrument becomes one piano-icon button; its accessible label/value identifies the selected sound. Preserve the Waveforms/Synths groups and selected-item indication. |
 | Session instrument | One session owner initializes from the saved default once per app run. Quiz changes affect that owner and audio immediately, survive song changes and Android activity recreation, and do not overwrite the default. Song continuity must not restore a conflicting instrument. |
-| Settings default | Add a grouped Default Instrument selector. Persist the stable instrument identifier, with sawtooth fallback for missing/invalid values. A deliberate default change also updates the current session immediately; a fresh process starts from the saved default. |
+| Settings default | Add a grouped Default Instrument selector. Persist the stable instrument identifier, with Synth Clarinet fallback for missing/invalid values. A deliberate default change also updates the current session immediately; a fresh process starts from the saved default. |
 | Three knobs | Replace the balance fader with **Melody / Chord Mix**, to the right of **Arpeggiate**: Tempo → Arpeggiate → Mix. Preserve the existing mapping: 0 = chords, 1 = melody, 0.5 = equal; reset to 0.5. This remains a mix control, not master volume. |
 | Responsive selectors | Every production Quiz selector opens and commits a selection on a normal tap while the playback clock continues advancing. No double-tap, pause-first, or reduced-update-rate workaround. |
 | Foreground playback only | Leaving Quiz or losing foreground activity pauses at the current position and cancels pending resume intent. Returning requires an explicit Play. Section changes within a visible Quiz retain their existing playback behavior. A new song retains the session instrument. |
 | No persistent media controls | No app-owned notification/media transport outside Quiz, Now Playing publication, lock-screen controls, or remote/headset transport commands. Retain foreground audio-focus, interruption, and headphone-disconnection handling. |
 
 ## Implementation order
+
+Implementation retained the newer catalog and explicit Synth Clarinet default
+merged into the primary branch during this work. That supersedes this plan's
+original sawtooth fallback assumption. Normalization covers all current presets
+(14 on iOS, 13 on Android), including the new Church Organ. The implementation
+and focused-check evidence are recorded in the Quiz controls entry in
+`docs/porting-plan.md`. Runtime model remains unknown; route names below record
+the requested assignments only.
 
 Treat this as one coherent Quiz revision with internal phases and one final human
 review. Run iOS and Android in parallel only when each has an implementer and a
