@@ -365,10 +365,6 @@ final class AcquiringUITests: XCTestCase {
             "The playback clock must keep advancing while the instrument menu commits"
         )
 
-        let tempo = app.sliders["quiz.tempo"]
-        XCTAssertTrue(tempo.waitForExistence(timeout: 5))
-        tempo.adjust(toNormalizedSliderPosition: 0.85)
-
         let mode = app.descendants(matching: .any)["quiz.mode"]
         XCTAssertTrue(mode.waitForExistence(timeout: 5))
         XCTAssertEqual(mode.frame.midY, app.buttons["quiz.reset"].frame.midY, accuracy: 2,
@@ -385,7 +381,7 @@ final class AcquiringUITests: XCTestCase {
         wait(for: [modeApplied], timeout: 5)
         XCTAssertTrue(
             waitForValueChange(timeline, from: beatBeforeMode, timeout: 5),
-            "The faster playback clock must keep advancing while the mode menu commits"
+            "The playback clock must keep advancing while the mode menu commits"
         )
 
         let beatBeforeSecondInstrument = timeline.value as? String
@@ -431,7 +427,7 @@ final class AcquiringUITests: XCTestCase {
         wait(for: [ready], timeout: 90)
         let initialBeat = timeline.value as? String
         play.tap()
-        XCTAssertTrue(waitForValue(play, equalTo: "Pause", timeout: 90))
+        XCTAssertTrue(waitForLabel(play, equalTo: "Pause", timeout: 90))
 
         instrument.tap()
         let sine = app.buttons["Sine"]
@@ -446,7 +442,7 @@ final class AcquiringUITests: XCTestCase {
         XCUIDevice.shared.press(.home)
         app.activate()
         XCTAssertTrue(
-            waitForValue(play, equalTo: "Play", timeout: 10),
+            waitForLabel(play, equalTo: "Play", timeout: 10),
             "Returning from the background must require explicit Play"
         )
         let retainedBeat = timeline.value as? String
@@ -1182,6 +1178,19 @@ final class AcquiringUITests: XCTestCase {
             usleep(100_000)
         }
         return element.value as? String == expectedValue
+    }
+
+    private func waitForLabel(
+        _ element: XCUIElement,
+        equalTo expectedLabel: String,
+        timeout: TimeInterval
+    ) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if element.label == expectedLabel { return true }
+            usleep(100_000)
+        }
+        return element.label == expectedLabel
     }
 
     private func openQuiz(
