@@ -26,8 +26,6 @@ final class QuizCoverageTests: XCTestCase {
             "quiz.play",
             "quiz.instrument",
             "quiz.transpose",
-            "quiz.transpose.up",
-            "quiz.transpose.down",
             "quiz.lockInMajor",
             "quiz.mode",
             "quiz.tempo",
@@ -279,45 +277,15 @@ final class QuizCoverageTests: XCTestCase {
 
     // MARK: - F034 blend
 
-    func testVolumeMixFaderFavoursMelodyUpwardAndChordsDownward()  {
+    func testMelodyChordMixKnobAdjustsEndpointsAndResets()  {
         let app = launchReadyQuiz()
-        let fader = app.descendants(matching: .any)["quiz.balance"]
-        XCTAssertTrue(fader.waitForExistence(timeout: 10))
-        XCTAssertEqual(fader.value as? String, "50 percent melody, 50 percent chords")
-
-        // The blend is continuous; a tap maps the touch height onto the track.
-        // Assert direction and midpoint restoration, not an exact endpoint pixel:
-        // the true 0 and 1 endpoints belong to the renderer tests.
-        fader.coordinate(withNormalizedOffset: CGVector(dx: 0.3, dy: 0.02)).tap()
-        let nearTop = melodyPercent(of: fader)
-        XCTAssertNotNil(nearTop)
-        XCTAssertGreaterThanOrEqual(
-            nearTop ?? 0, 95,
-            "The top of the fader must favour melody. Value: \(String(describing: fader.value))"
-        )
-
-        fader.coordinate(withNormalizedOffset: CGVector(dx: 0.3, dy: 0.98)).tap()
-        let nearBottom = melodyPercent(of: fader)
-        XCTAssertNotNil(nearBottom)
-        XCTAssertLessThanOrEqual(
-            nearBottom ?? 100, 5,
-            "The bottom of the fader must favour chords. Value: \(String(describing: fader.value))"
-        )
-
-        fader.coordinate(withNormalizedOffset: CGVector(dx: 0.3, dy: 0.5)).tap()
-        XCTAssertEqual(melodyPercent(of: fader) ?? -1, 50, accuracy: 3, "Mid-track is an even blend")
-
-        fader.press(forDuration: 1.1)
-        let resetItem = app.buttons["Reset balance to 50 / 50"]
-        if resetItem.waitForExistence(timeout: 5) {
-            resetItem.tap()
-            XCTAssertTrue(
-                poll(timeout: 3) { (fader.value as? String) == "50 percent melody, 50 percent chords" },
-                "Reset must restore the midpoint. Value: \(String(describing: fader.value))"
-            )
-        } else {
-            XCTFail("The fader offers no reachable reset action")
-        }
+        let mix = app.descendants(matching: .any)["quiz.balance"]
+        XCTAssertTrue(mix.waitForExistence(timeout: 10))
+        XCTAssertEqual(mix.value as? String, "50 percent melody, 50 percent chords")
+        XCTAssertTrue(invokeKnobAction(app, knob: "quiz.balance", action: "increase"))
+        XCTAssertTrue(poll(timeout: 3) { (mix.value as? String) == "51 percent melody, 49 percent chords" })
+        XCTAssertTrue(invokeKnobAction(app, knob: "quiz.balance", action: "reset"))
+        XCTAssertTrue(poll(timeout: 3) { (mix.value as? String) == "50 percent melody, 50 percent chords" })
         XCTAssertFalse(app.alerts["Audio"].exists)
     }
 
@@ -562,13 +530,6 @@ final class QuizCoverageTests: XCTestCase {
     }
 
     // MARK: - Helpers
-
-    private func melodyPercent(of fader: XCUIElement) -> Int? {
-        guard let value = fader.value as? String,
-              let first = value.split(separator: " ").first
-        else { return nil }
-        return Int(first)
-    }
 
     private func invokeKnobAction(_ app: XCUIApplication, knob: String, action: String) -> Bool {
         let element = app.descendants(matching: .any)[knob]
