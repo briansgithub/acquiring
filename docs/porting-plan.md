@@ -1741,3 +1741,31 @@ Next: reproduce on the phone, export a report, use Reset Audio and Retry, and
 export the result from Settings with an explicit report of whether sound returned.
 Compare full force-quit/relaunch separately. Use that evidence to choose a targeted
 fix; the underlying intermittent failure remains unconfirmed.
+
+### TestFlight build 12 released — 2026-09-06
+
+Owner approved the exact What to Test notes and said to proceed. Released source
+`13a7b0d1` from clean, pushed `main`; all completed pending UI changes are included.
+`bash ios/scripts/deploy-testflight.sh --build 12` passed (exit 0, 283.0 s) through
+`python3 android/scripts/compact_check.py --name audio-diagnostics-upload-12
+--keep-success-log --`: archive, local export, signature verification and upload
+all succeeded. Apple accepted the upload at 01:18 EDT and completed processing.
+Log: `/private/var/folders/zp/zqxv_w6x5fq_g2c_p38f8k1h0000gp/T/ai-agent-checks/acquiring/20260906-011325-851876-audio-diagnostics-upload-12.log`.
+
+App Store Connect build ID `56faf14b-e42e-4608-af66-c23ddc051747`; version 1.0 (12)
+is **Testing** in Acquiring Internal Testers, with exactly one tester (the owner).
+The user approved using this existing automatic-distribution group instead of a
+separate diagnostic group. No external group was assigned and no separate
+Notify Testers action was sent. The English (U.S.) notes below were saved;
+App Store Connect showed Saved:
+
+- Check Quiz info/Back navigation, Transpose, and updated mix/singing controls.
+- If Play fails on iPhone 14 Pro, use Reset Audio and Retry.
+- Share Audio Diagnostics from the Audio alert or Settings; attach the JSON and say whether sound returned.
+
+The physical-device failure is still an investigation, not a confirmed fix.
+Next: update the iPhone 14 Pro to 1.0 (12), reproduce, try the explicit reset,
+and attach the diagnostic JSON plus whether sound returned. Build-number and
+release-receipt changes are committed/pushed under the owner's instruction to
+commit all outstanding changes and push. Prior simulator checks remain the
+validation evidence; no new broad test suites were run for this release.
