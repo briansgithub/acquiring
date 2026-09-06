@@ -23,6 +23,29 @@ final class AcquiringUITests: XCTestCase {
         continueAfterFailure = false
     }
 
+    func testSearchKeyboardDismissesOutsideAndReopensInside() {
+        let app = launchApp(scenario: .ready)
+        let search = app.textFields["library.search.field"]
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        search.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 3))
+        search.typeText("500 Miles")
+
+        app.navigationBars["Library"].staticTexts["Library"].tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 3))
+        XCTAssertEqual(search.value as? String, "500 Miles")
+
+        search.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 3))
+        app.buttons["library.search.clear"].tap()
+        XCTAssertTrue(app.keyboards.firstMatch.exists)
+        search.typeText("500 Miles")
+        let song = app.buttons[Fixture.fiveHundredMiles]
+        XCTAssertTrue(song.waitForExistence(timeout: 5))
+        song.tap()
+        XCTAssertTrue(app.navigationBars[Fixture.fiveHundredMilesQuizTitle].waitForExistence(timeout: 5))
+    }
+
     func testLibraryLoadingState() {
         let app = launchApp(scenario: .loading)
 

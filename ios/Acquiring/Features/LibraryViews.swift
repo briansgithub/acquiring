@@ -1,6 +1,7 @@
 import AcquiringCatalog
 import AcquiringCore
 import SwiftUI
+import UIKit
 
 struct LibraryScene: View {
     @State private var store: LibraryStore
@@ -206,6 +207,11 @@ private struct SearchCatalogView: View {
             }
             .padding(10)
             .background(.quaternary, in: RoundedRectangle(cornerRadius: 10))
+            .background {
+                SearchKeyboardDismissal(isEnabled: isSearchFieldFocused) {
+                    isSearchFieldFocused = false
+                }
+            }
             .padding(.horizontal)
             .padding(.top)
             .onChange(of: isSearchFieldFocused) { _, isFocused in
@@ -816,4 +822,63 @@ private struct ArtistSongsView: View {
     )
     .padding()
     .preferredColorScheme(.dark)
+}
+
+/// Observe outside taps without consuming button actions or text-field touches.
+private struct SearchKeyboardDismissal: UIViewRepresentable {
+    var isEnabled: Bool
+    var dismiss: () -> Void
+
+    func makeUIView(context: Context) -> TapObserverView {
+        TapObserverView()
+    }
+
+    func updateUIView(_ view: TapObserverView, context: Context) {
+        view.isEnabled = isEnabled
+        view.dismiss = dismiss
+    }
+
+    static func dismantleUIView(_ view: TapObserverView, coordinator: ()) {
+        view.detach()
+    }
+
+    final class TapObserverView: UIView, UIGestureRecognizerDelegate {
+        var isEnabled = false
+        var dismiss: (() -> Void)?
+        private lazy var outsideTap = UITapGestureRecognizer(target: self, action: #selector(tappedOutside))
+
+        override func didMoveToWindow() {
+            super.didMoveToWindow()
+            detach()
+            outsideTap.cancelsTouchesInView = false
+            outsideTap.delegate = self
+            window?.addGestureRecognizer(outsideTap)
+        }
+
+        func detach() {
+            outsideTap.view?.removeGestureRecognizer(outsideTap)
+        }
+
+        func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+            guard isEnabled, !bounds.contains(touch.location(in: self)) else { return false }
+            // Let another editable field take focus without dismissing its keyboard.
+            var touchedView = touch.view
+            while let view = touchedView {
+                if view is UITextField || view is UITextView { return false }
+                touchedView = view.superview
+            }
+            return true
+        }
+
+        func gestureRecognizer(
+            _ gestureRecognizer: UIGestureRecognizer,
+            shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
+        ) -> Bool {
+            true
+        }
+
+        @objc private func tappedOutside() {
+            if isEnabled { dismiss?() }
+        }
+    }
 }
