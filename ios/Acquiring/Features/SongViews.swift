@@ -2697,8 +2697,14 @@ struct MelodyTimelinePresentation: Equatable {
         })
     }
 
+    /// Points per diatonic staff step. Android clamps this to 5-10 **pixels**
+    /// (MainActivity.kt), not points: at a 2x/3x display scale
+    /// `laneHeight / 28` is 6.3-9.4px, always inside that window, so the clamp
+    /// never fires and the lane shows the full 28 staff steps. Applying the
+    /// clamp in points instead pinned iOS to 5pt/step, cutting the visible
+    /// pitch window to ~17.6 steps and clipping outer notes off the lane.
     var noteHeight: CGFloat {
-        min(max(Self.laneHeight / 28, 5), 10)
+        Self.laneHeight / 28
     }
 
     func localX(for visual: MelodyTimelineVisual) -> CGFloat {
