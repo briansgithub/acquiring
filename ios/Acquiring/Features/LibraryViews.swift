@@ -656,6 +656,7 @@ private struct CatalogSettingsView: View {
                 }
                 .accessibilityIdentifier("settings.introduction")
             }
+            AudioDiagnosticsSettingsSection()
             AppUpdateSettingsSection()
             TimelineRenderingSettingsSection()
 

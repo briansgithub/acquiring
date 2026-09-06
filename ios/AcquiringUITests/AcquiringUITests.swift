@@ -24,6 +24,29 @@ final class AcquiringUITests: XCTestCase {
         continueAfterFailure = false
     }
 
+    func testAudioDiagnosticsResetAndSettingsShareSheet() {
+        let app = launchApp(scenario: .ready, arguments: ["--ui-testing-audio-start-failure"])
+        openQuiz(app, searchText: "500 Miles", songButton: Fixture.fiveHundredMiles, navigationTitle: Fixture.fiveHundredMilesQuizTitle)
+        app.buttons["quiz.play"].tap()
+        let alert = app.alerts["Audio"]
+        XCTAssertTrue(alert.waitForExistence(timeout: 10))
+        XCTAssertTrue(alert.buttons["Share Audio Diagnostics"].exists)
+        alert.buttons["Reset Audio and Retry"].tap()
+        XCTAssertTrue(alert.waitForNonExistence(timeout: 5))
+        let pause = app.buttons["quiz.play"]
+        let playing = expectation(for: NSPredicate(format: "label == %@", "Pause"), evaluatedWith: pause)
+        wait(for: [playing], timeout: 10)
+        pause.tap()
+        app.navigationBars[Fixture.fiveHundredMilesQuizTitle].buttons.element(boundBy: 0).tap()
+        openCatalogSettings(app)
+        let share = app.buttons["settings.shareAudioDiagnostics"]
+        scrollToHittable(share, in: app)
+        share.tap()
+        let report = app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", "Acquiring-Audio-Diagnostics")).firstMatch
+        XCTAssertTrue(report.waitForExistence(timeout: 10), app.debugDescription)
+        XCTAssertTrue(app.cells["Copy"].exists && app.cells["Save to Files"].exists, app.debugDescription)
+    }
+
     func testSearchKeyboardDismissesOutsideAndReopensInside() {
         let app = launchApp(scenario: .ready)
         let search = app.textFields["library.search.field"]
