@@ -576,6 +576,14 @@ final class VocalPracticeModel {
     }
 
     func handleSceneBackgrounded() {
+        collapseForDeparture()
+    }
+
+    func leaveQuiz() {
+        collapseForDeparture()
+    }
+
+    private func collapseForDeparture() {
         cancelPendingCollapseClear()
         cancelActivity()
         isExpanded = false
@@ -583,8 +591,7 @@ final class VocalPracticeModel {
     }
 
     func leaveSong() {
-        cancelPendingCollapseClear()
-        cancelActivity()
+        collapseForDeparture()
         targetRequest = nil
         slot1 = nil
         slot2 = nil

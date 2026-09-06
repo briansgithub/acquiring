@@ -846,31 +846,21 @@ struct QuizView: View {
         .quizNotationFontStyle(notationFontStyle)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                NavigationLink(value: AppRoute.songDetail(songID)) {
-                    Image(systemName: "info.circle")
-                        .frame(minWidth: 44, minHeight: 44)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Song information")
-                .accessibilityIdentifier("quiz.info")
-            }
-            ToolbarItem(placement: .topBarTrailing) {
                 if showsFontSampler, case .content = state {
                     QuizFontSamplerMenu(selection: $notationFontStyle)
                         .equatable()
                         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
                 }
             }
-            ToolbarItem(placement: .topBarTrailing) {
-                if case .content = state {
-                    FavoriteSongButton(songID: songID)
-                }
-            }
         }
         .task(id: songID) { await load() }
         .task(id: transportObservationGeneration) { await observeTransport() }
         .onDisappear {
-            environment.vocalPractice.cancelActivity()
+            var transaction = Transaction()
+            transaction.disablesAnimations = true
+            withTransaction(transaction) {
+                environment.vocalPractice.leaveQuiz()
+            }
             cancelPlaybackCommand()
             finishTimelineScrub(resumingIfNeeded: false)
             cancelSectionLoad()
@@ -938,6 +928,7 @@ struct QuizView: View {
                 VStack(spacing: 4) {
                     if let selected {
                         QuizHeader(
+                            songID: songID,
                             initialKey: selected.section.key(at: PlaybackTiming.firstBeat),
                             currentKey: selected.section.key(at: currentBeat(in: selected.section)),
                             usesRelativeIonianContext: $usesRelativeIonianContext
@@ -1094,15 +1085,14 @@ struct QuizView: View {
     }
 
     private func transportControls(sectionID: String, sections: [QuizSection]) -> some View {
-        VStack(alignment: .trailing, spacing: 4) {
-            HStack(spacing: 8) {
-                Spacer(minLength: 0)
+        VStack(spacing: QuizTransportLayout.spacing) {
+            HStack(spacing: QuizTransportLayout.spacing) {
                 instrumentSelector(sectionID: sectionID)
                 transposeSelector(sectionID: sectionID)
                 Button(action: requestPlaybackReset) {
-                    Image(systemName: "arrow.counterclockwise").frame(width: 44, height: 44)
-                        .contentShape(Rectangle())
+                    Image(systemName: "arrow.counterclockwise")
                 }
+                .buttonStyle(QuizIconButtonStyle())
                 .disabled(!sectionLoadStatus.isReady || playbackCommandPending || transportPhase == .buffering)
                 .accessibilityIdentifier("quiz.reset")
                 .accessibilityLabel("Reset quiz playback")
@@ -1118,7 +1108,7 @@ struct QuizView: View {
                 )
             }
             if !environment.vocalPractice.isExpanded {
-                HStack(spacing: 8) {
+                HStack(spacing: QuizTransportLayout.spacing) {
                     QuizSelectorMenu(
                         identityContext: "\(songID):\(sectionID):mode",
                         options: QuizDisplayMode.allCases.map {
@@ -1129,7 +1119,7 @@ struct QuizView: View {
                         selectedDisplayTitle: mode == .full ? "Full" : "Roots",
                         selectedAccessibilityValue: mode.title,
                         usesSubheadline: false,
-                        width: 56,
+                        width: QuizTransportLayout.selectorWidth,
                         expandsToAvailableWidth: false,
                         accessibilityIdentifier: "quiz.mode",
                         accessibilityLabel: "Quiz mode",
@@ -1149,8 +1139,8 @@ struct QuizView: View {
                         selectedDisplayTitle: nil,
                         selectedAccessibilityValue: nil,
                         usesSubheadline: true,
-                        width: 104,
-                        expandsToAvailableWidth: false,
+                        width: nil,
+                        expandsToAvailableWidth: true,
                         accessibilityIdentifier: "quiz.section",
                         accessibilityLabel: "Quiz section",
                         isEnabled: true,
@@ -1161,6 +1151,7 @@ struct QuizView: View {
                 }
             }
         }
+        .frame(width: QuizTransportLayout.width)
         .buttonStyle(.plain)
         .fixedSize(horizontal: false, vertical: true)
     }
@@ -2085,6 +2076,34 @@ private enum QuizSectionLoadStatus: Equatable {
     }
 }
 
+private enum QuizTransportLayout {
+    static let controlSize: CGFloat = 44
+    static let selectorWidth: CGFloat = 72
+    static let spacing: CGFloat = 8
+    static let width = controlSize * 3 + selectorWidth + spacing * 3
+}
+
+private struct QuizIconButtonStyle: ButtonStyle {
+    var isProminent = false
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(size: 16, weight: .semibold))
+            .frame(width: QuizTransportLayout.controlSize, height: QuizTransportLayout.controlSize)
+            .foregroundStyle(isProminent ? Color.white : Color.primary)
+            .background(isProminent ? Color.accentColor : .clear, in: RoundedRectangle(cornerRadius: 8))
+            .overlay {
+                if !isProminent {
+                    RoundedRectangle(cornerRadius: 8)
+                        .strokeBorder(.secondary.opacity(0.45), lineWidth: 1)
+                }
+            }
+            .contentShape(RoundedRectangle(cornerRadius: 8))
+            .opacity(!isEnabled ? 0.4 : configuration.isPressed ? 0.65 : 1)
+    }
+}
+
 private struct QuizTransportButton: View {
     let phase: TransportPhase
     let isReady: Bool
@@ -2102,7 +2121,7 @@ private struct QuizTransportButton: View {
     }
 
     var body: some View {
-        Button(action: action) {
+        let button = Button(action: action) {
             HStack(spacing: 8) {
                 if isBusy {
                     ProgressView().controlSize(.small)
@@ -2111,9 +2130,15 @@ private struct QuizTransportButton: View {
                 }
                 if !compact { Text(title) }
             }
-            .frame(minWidth: compact ? 44 : 100, minHeight: compact ? 44 : nil)
+            .frame(minWidth: compact ? nil : 100)
         }
-        .buttonStyle(.borderedProminent)
+        Group {
+            if compact {
+                button.buttonStyle(QuizIconButtonStyle(isProminent: true))
+            } else {
+                button.buttonStyle(.borderedProminent)
+            }
+        }
         .disabled(!isReady || !isPlaybackEnabled || isBusy)
         .accessibilityIdentifier("quiz.play")
         .accessibilityLabel(title)
@@ -2140,16 +2165,15 @@ private struct QuizTransposeSelector: View {
         Button {
             isPresented = true
         } label: {
-            VStack(spacing: 0) {
+            VStack(spacing: 2) {
                 Text("Transpose").font(.caption2)
                 HStack(spacing: 3) {
-                    Text(title(selectedValue)).font(.caption)
+                    Text(title(selectedValue)).font(.caption.weight(.semibold).monospacedDigit())
                     Image(systemName: "chevron.down").font(.system(size: 9))
                 }
             }
             .fixedSize()
-            .padding(.horizontal, 4)
-            .frame(minWidth: 44, minHeight: 44)
+            .frame(width: QuizTransportLayout.selectorWidth, height: QuizTransportLayout.controlSize)
             .contentShape(Rectangle())
             .overlay {
                 RoundedRectangle(cornerRadius: 8)
@@ -2395,6 +2419,7 @@ private struct QuizTimelineScrub {
 }
 
 private struct QuizHeader: View {
+    let songID: String
     let initialKey: KeyInfo
     let currentKey: KeyInfo
     @Binding var usesRelativeIonianContext: Bool
@@ -2414,10 +2439,19 @@ private struct QuizHeader: View {
 
     var body: some View {
         ZStack {
-            keyLabel.padding(.horizontal, 56)
-            HStack(spacing: 0) {
+            // Reserve matching space on both sides so the key stays centered.
+            keyLabel.padding(.horizontal, 104)
+            HStack(spacing: 8) {
                 majorToggle
                 Spacer(minLength: 0)
+                NavigationLink(value: AppRoute.songDetail(songID)) {
+                    Image(systemName: "info.circle")
+                }
+                .buttonStyle(QuizIconButtonStyle())
+                .accessibilityLabel("Song information")
+                .accessibilityIdentifier("quiz.info")
+                FavoriteSongButton(songID: songID)
+                    .buttonStyle(QuizIconButtonStyle())
             }
         }
         .frame(height: 44)

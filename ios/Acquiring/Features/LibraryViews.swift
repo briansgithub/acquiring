@@ -71,7 +71,14 @@ struct LibraryScene: View {
                 default: false
                 }
             } ?? false
-            if !remainsInSong { environment.vocalPractice.leaveSong() }
+            if !remainsInSong {
+                // Collapse the dock without competing with the navigation transition.
+                var transaction = Transaction()
+                transaction.disablesAnimations = true
+                withTransaction(transaction) {
+                    environment.vocalPractice.leaveSong()
+                }
+            }
         }
         .onChange(of: scenePhase) { _, phase in
             if phase != .active { environment.audio.pauseForAppInactivity() }
