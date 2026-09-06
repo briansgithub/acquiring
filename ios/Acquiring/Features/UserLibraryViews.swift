@@ -34,6 +34,62 @@ struct FavoriteSongButton: View {
     }
 }
 
+/// Shared visual treatment for the primary Library disclosure controls.
+struct LibrarySectionHeading: View {
+    let title: String
+    let subtitle: String
+    let systemImage: String
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: systemImage)
+                .font(.title3.weight(.medium))
+                .foregroundStyle(Color.accentColor)
+                .frame(width: 38, height: 38)
+                .background(Color.accentColor.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
+struct LibrarySectionLabel: View {
+    let title: String
+    let subtitle: String
+    let systemImage: String
+    let isExpanded: Bool
+    var isLoading = false
+
+    var body: some View {
+        HStack(spacing: 12) {
+            LibrarySectionHeading(title: title, subtitle: subtitle, systemImage: systemImage)
+            Spacer(minLength: 4)
+            if isLoading {
+                ProgressView().controlSize(.small)
+            }
+            Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(Color.accentColor)
+                .accessibilityHidden(true)
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, minHeight: 64, alignment: .leading)
+        .background(Color.accentColor.opacity(0.05), in: RoundedRectangle(cornerRadius: 14))
+        .overlay {
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(Color.accentColor.opacity(0.25), lineWidth: 1)
+        }
+        .contentShape(Rectangle())
+    }
+}
+
 struct PlaylistsSectionView: View {
     let store: LibraryStore
     @Environment(UserLibraryViewModel.self) private var userContent: UserLibraryViewModel?
@@ -44,20 +100,19 @@ struct PlaylistsSectionView: View {
                 Button {
                     userContent.isPlaylistsExpanded.toggle()
                 } label: {
-                    HStack {
-                        Text("Playlists")
-                            .font(.headline)
-                        Spacer()
-                        Image(systemName: userContent.isPlaylistsExpanded ? "chevron.up" : "chevron.down")
-                            .accessibilityHidden(true)
-                    }
-                    .frame(maxWidth: .infinity, minHeight: 44)
-                    .contentShape(Rectangle())
+                    LibrarySectionLabel(
+                        title: "Playlists",
+                        subtitle: "Favorites and saved songs",
+                        systemImage: "rectangle.stack",
+                        isExpanded: userContent.isPlaylistsExpanded
+                    )
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(userContent.isPlaylistsExpanded ? "Collapse Playlists" : "Expand Playlists")
                 .accessibilityValue(userContent.isPlaylistsExpanded ? "Expanded" : "Collapsed")
                 .accessibilityIdentifier("playlists.header")
+                .listRowSeparator(.hidden)
+                .listRowInsets(EdgeInsets(top: 12, leading: 16, bottom: 8, trailing: 16))
 
                 if userContent.isPlaylistsExpanded {
                     playlistContent(userContent)
@@ -115,23 +170,36 @@ private struct PlaylistAccordionRow: View {
         } label: {
             HStack(spacing: 10) {
                 Text(summary.name)
+                    .font(.subheadline.weight(.medium))
                     .foregroundStyle(.primary)
                 Spacer()
                 Text(summary.count.formatted())
+                    .font(.caption.weight(.medium))
                     .foregroundStyle(.secondary)
                     .monospacedDigit()
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(.secondary.opacity(0.08), in: Capsule())
                 Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .accessibilityHidden(true)
             }
+            .padding(.horizontal, 10)
             .frame(maxWidth: .infinity, minHeight: 44)
+            .background(.secondary.opacity(0.04), in: RoundedRectangle(cornerRadius: 10))
+            .overlay {
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .stroke(.secondary.opacity(0.25), lineWidth: 1)
+            }
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .accessibilityLabel(isExpanded ? "Collapse \(summary.name)" : "Expand \(summary.name)")
         .accessibilityValue("\(summary.count) songs")
         .accessibilityIdentifier("playlist.\(summary.id)")
+        .listRowSeparator(.hidden)
+        .listRowInsets(EdgeInsets(top: 4, leading: 24, bottom: 4, trailing: 16))
 
         if isExpanded {
             PlaylistSongRows(
