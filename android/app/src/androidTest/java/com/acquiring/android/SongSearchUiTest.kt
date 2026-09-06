@@ -121,6 +121,7 @@ class SongSearchUiTest {
         composeRule.onNodeWithTag(QUIZ_INFO_BUTTON_TEST_TAG).assertDoesNotExist()
     }
 
+
     private fun searchAndOpenSong(label: String, query: String, button: String, count: Int) {
         val session = TessituraSessionViewModel()
         composeRule.setContent {
