@@ -368,10 +368,24 @@ Sibling race to BUG-005, different failure mode:
   using bundletool 1.18.3 and installed over wireless ADB. Three cold launches
   survived with no new test-app crash. The original Play installation/data stayed
   intact; the production package still needs its normal Play-track update.
+<<<<<<< HEAD
 - **Release handling:** The Play upload key is configured only through the protected
   release pipeline. Local signing paths, aliases and release artifacts are not
   recorded in this public repository. Upload/Play distribution was not performed
   as part of the local reproduction; it is covered by the testing-track release.
+=======
+- **Signing:** Use Android Studio's saved Generate Signed App Bundle setup,
+  keystore `B:\iDrive_backup\android_keystores`, alias `acquiring-upload`.
+  Its SHA-256 certificate fingerprint is
+  `2F:15:F5:A3:B0:CD:17:83:74:6D:34:EC:E4:81:DA:A9:A7:2C:B8:CF:93:B3:6C:6D:60:19:89:54:A1:1C:EA:20`,
+  matching release 4. The workstation's global Gradle signing properties point
+  to a different key, so a plain command-line bundle is not the approved upload
+  artifact. No passwords or signing configuration were changed.
+- **Artifact:** `H:\Desktop\acquiring_app_releases\release\acquiring-1.0-beta-v5-crashfix.aab`.
+  Signature verification and bundletool validation passed. Exact commands and
+  results are in the adjacent `v5-crashfix-verification.md`; evidence is in
+  `v5-crashfix-evidence`. Upload/Play distribution was not performed.
+>>>>>>> codex/fix-android-song-search
 
 ---
 
@@ -403,6 +417,14 @@ Sibling race to BUG-005, different failure mode:
   preserved during the update. Original Play version 4/data remain installed.
   Use Acquiring Test for local validation; updating the original package requires
   the normal signed production AAB and Play-track update (not performed here).
+<<<<<<< HEAD
 - **Artifacts:** The local test APK and diagnostic evidence remain outside the
   repository. The test APK uses a debug certificate only; Play uploads use the
   protected release pipeline described in BUG-007.
+=======
+- **Artifacts:** `H:\Desktop\acquiring_app_releases\test-v6\Acquiring-Test-v6.apk`
+  and adjacent `verification.md` contain the test build, exact validation commands,
+  and UI-element/log evidence. The APK uses the local debug certificate solely for
+  the separate test package; it is not a Play upload artifact. See BUG-007 for the
+  saved production upload-key setup.
+>>>>>>> codex/fix-android-song-search
