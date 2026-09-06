@@ -1156,24 +1156,25 @@ final class AcquiringTests: XCTestCase {
     }
 
     @MainActor
-    func testBlankSearchShowsRecentsOnlyAfterTheCurrentScopeReceivesFocus() throws {
+    func testBlankSearchKeepsRecentsVisibleWhenKeyboardIsDismissed() throws {
         let fixture = try makeLibraryStore(maintenance: ScriptedCatalogMaintenanceService())
         defer { fixture.cleanup() }
 
-        XCTAssertFalse(fixture.store.shouldShowRecentContent)
+        for scope in SearchScope.allCases {
+            fixture.store.searchScope = scope
+            XCTAssertTrue(fixture.store.shouldShowRecentContent)
+            fixture.store.setSearchFocused(true, for: scope)
+            XCTAssertTrue(fixture.store.shouldShowRecentContent)
+            fixture.store.setSearchFocused(false, for: scope)
+            XCTAssertTrue(fixture.store.shouldShowRecentContent)
 
-        fixture.store.setSearchFocused(true, for: .songs)
-        XCTAssertTrue(fixture.store.shouldShowRecentContent)
-
-        fixture.store.searchScope = .artists
-        XCTAssertFalse(fixture.store.shouldShowRecentContent)
-        fixture.store.setSearchFocused(true, for: .artists)
-        XCTAssertTrue(fixture.store.shouldShowRecentContent)
-
-        fixture.store.query = "Miles"
-        XCTAssertFalse(fixture.store.shouldShowRecentContent)
-        fixture.store.query = ""
-        XCTAssertTrue(fixture.store.shouldShowRecentContent)
+            fixture.store.query = "Miles"
+            XCTAssertFalse(fixture.store.shouldShowRecentContent)
+            fixture.store.query = "   "
+            XCTAssertTrue(fixture.store.shouldShowRecentContent)
+            fixture.store.query = ""
+            XCTAssertTrue(fixture.store.shouldShowRecentContent)
+        }
     }
 
     @MainActor
