@@ -802,8 +802,6 @@ private struct TimelineRenderingSettingsSection: View {
             .accessibilityHint("Controls visual smoothness, not song tempo")
         } header: {
             Text("Display")
-        } footer: {
-            Text("Both tracks refresh together, synchronized with the display. 60 fps is the default; Maximum requests your display’s highest supported rate and may use more battery. iOS may reduce the rate to save power or manage temperature. Reduce Motion disables smooth interpolation. Audio speed is unchanged.")
         }
     }
 }
