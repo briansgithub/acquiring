@@ -382,11 +382,11 @@ final class AcquiringUITests: XCTestCase {
         let defaultInstrument = app.descendants(matching: .any)["settings.defaultInstrument"]
         XCTAssertTrue(defaultInstrument.waitForExistence(timeout: 5))
         defaultInstrument.tap()
-        let flute = app.buttons["Flute"]
+        let flute = app.buttons["Synth Flute"]
         XCTAssertTrue(flute.waitForExistence(timeout: 5))
         flute.tap()
         XCTAssertTrue(
-            waitForValue(defaultInstrument, equalTo: "Flute", timeout: 5),
+            waitForValue(defaultInstrument, equalTo: "Synth Flute", timeout: 5),
             "The Settings selection must update the saved default"
         )
         app.navigationBars["Settings"].buttons.element(boundBy: 0).tap()
@@ -398,7 +398,7 @@ final class AcquiringUITests: XCTestCase {
             navigationTitle: Fixture.fiveHundredMilesQuizTitle
         )
         let instrument = app.buttons["quiz.instrument"]
-        XCTAssertTrue(waitForValue(instrument, equalTo: "Flute", timeout: 5))
+        XCTAssertTrue(waitForValue(instrument, equalTo: "Synth Flute", timeout: 5))
 
         let timeline = app.descendants(matching: .any)["quiz.timeline"]
         let play = app.buttons["quiz.play"]
@@ -451,7 +451,7 @@ final class AcquiringUITests: XCTestCase {
         openCatalogSettings(app)
         let unchangedDefault = app.descendants(matching: .any)["settings.defaultInstrument"]
         XCTAssertTrue(
-            waitForValue(unchangedDefault, equalTo: "Flute", timeout: 5),
+            waitForValue(unchangedDefault, equalTo: "Synth Flute", timeout: 5),
             "A Quiz selection must not overwrite the saved default"
         )
 
@@ -461,7 +461,7 @@ final class AcquiringUITests: XCTestCase {
         openCatalogSettings(app)
         let relaunchedDefault = app.descendants(matching: .any)["settings.defaultInstrument"]
         XCTAssertTrue(
-            waitForValue(relaunchedDefault, equalTo: "Flute", timeout: 5),
+            waitForValue(relaunchedDefault, equalTo: "Synth Flute", timeout: 5),
             "The saved default must survive process relaunch"
         )
         app.navigationBars["Settings"].buttons.element(boundBy: 0).tap()
@@ -472,7 +472,7 @@ final class AcquiringUITests: XCTestCase {
             navigationTitle: Fixture.fiveHundredMilesQuizTitle
         )
         XCTAssertTrue(
-            waitForValue(app.buttons["quiz.instrument"], equalTo: "Flute", timeout: 5),
+            waitForValue(app.buttons["quiz.instrument"], equalTo: "Synth Flute", timeout: 5),
             "A new session must initialize from the saved default"
         )
     }

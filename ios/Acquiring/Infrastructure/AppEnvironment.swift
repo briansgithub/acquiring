@@ -294,7 +294,7 @@ struct QuizInstrumentPreferences {
         get {
             guard let rawValue = defaults.string(forKey: Self.defaultsKey),
                   let waveform = SynthWaveform(rawValue: rawValue)
-            else { return .sawtooth }
+            else { return .clarinet }
             return waveform
         }
         nonmutating set {
