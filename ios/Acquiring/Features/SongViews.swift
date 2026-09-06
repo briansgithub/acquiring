@@ -212,7 +212,7 @@ struct SongDetailView: View {
                         duration: .milliseconds(450),
                         arpeggiates: arpeggiates,
                         arpeggioStep: .milliseconds(arpeggioStepMilliseconds),
-                        waveform: .sawtooth
+                        waveform: .clarinet
                     )
                 )
             } catch is CancellationError {
@@ -1997,7 +1997,7 @@ struct QuizView: View {
                 onsetSeconds: max((onset - PlaybackTiming.firstBeat) / beatsPerSecond, 0),
                 durationSeconds: note.duration / beatsPerSecond,
                 frequenciesHz: [MusicTheory.frequency(midi: Double(midi))],
-                waveform: .sawtooth,
+                waveform: .clarinet,
                 gain: 1,
                 channel: .melody
             )
@@ -2017,7 +2017,7 @@ struct QuizView: View {
                 onsetSeconds: max((onset - PlaybackTiming.firstBeat) / beatsPerSecond, 0),
                 durationSeconds: duration / beatsPerSecond,
                 frequenciesHz: notes.map { MusicTheory.frequency(midi: Double($0)) },
-                waveform: .sawtooth,
+                waveform: .clarinet,
                 gain: 1,
                 channel: .chord,
                 rootFrequencyHz: resolvedRoot.map {
