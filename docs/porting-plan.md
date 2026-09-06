@@ -1409,3 +1409,53 @@ home layout, inline All Songs, independent HookTheory search, automatic catalog
 setup, an optional 500 Miles check, and the known keyboard limitation. App Store
 Connect showed Saved. External submission remains blocked by the existing version
 1.0 review, which was preserved. No extra invitations or Notify Testers action sent.
+
+### Completed-work integration, phase one — 2026-09-05
+
+User requested chronological integration of completed work into main, with dirty
+worktrees deferred to a second phase. Runtime: GPT-6; exact runtime identifier
+unavailable. Integration used the existing clean main checkout because the primary
+checkout contains unrelated uncommitted changes. No dirty files were staged,
+stashed, restored, or copied into the integration.
+
+Merged completed branch checkpoints in order: Library/catalog release
+`59c1da90`, Quiz plan `8e24162e`, iOS instrument refresh `dd733c3b`, combined
+Android/iOS refresh `7d901a8d`, and keyboard dismissal/Recents `379f1113`.
+The keyboard branch's committed work was included; its dirty worktree is retained.
+Main's previously merged global singing dock and cents-only feedback are retained.
+Documentation conflicts preserved both task records. Keyboard integration adapts
+the outside-tap handler to Library's newer multi-control focus state and preserves
+both the catalog tests and updated Recents test.
+
+Exact integration checks (working directory: the clean main checkout):
+
+```sh
+git diff --check main..HEAD --
+xcrun swiftc -frontend -parse ios/Acquiring/Features/LibraryViews.swift ios/Acquiring/Features/LibraryStore.swift ios/AcquiringTests/AcquiringTests.swift ios/AcquiringUITests/AcquiringUITests.swift
+python3 android/scripts/compact_check.py --name phase-one-ios-integration --keep-success-log -- xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -derivedDataPath /tmp/acquiring-interval-singing-release-build -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 120 -only-testing:AcquiringTests/AcquiringTests/testBlankSearchKeepsRecentsVisibleWhenKeyboardIsDismissed -only-testing:AcquiringTests/AcquiringTests/testEmptyCatalogAutomaticallyInstallsOnlyOncePerStore -only-testing:AcquiringUITests/AcquiringUITests/testSearchKeyboardDismissesOutsideAndReopensInside -only-testing:AcquiringUITests/AcquiringUITests/testFirstLaunchDownloadsCatalogAutomatically -only-testing:AcquiringUITests/QuizCoverageTests/testVocalPracticeDockStaysSingleFromLibraryThroughQuizAndOpens test CODE_SIGNING_ALLOWED=NO
+```
+
+All passed. Xcode result: five passed, zero failed/skipped, confirmed with
+`xcrun xcresulttool get test-results summary --path /tmp/acquiring-interval-singing-release-build/Logs/Test/Test-Acquiring-2026.09.05_21-43-25--0400.xcresult --compact`.
+The incremental build/test command took 305.6 seconds. The log is
+`/private/var/folders/zp/zqxv_w6x5fq_g2c_p38f8k1h0000gp/T/ai-agent-checks/acquiring-interval-singing-release/20260905-214308-663849-phase-one-ios-integration.log`.
+
+From that checkout's `android/` directory:
+
+```sh
+env JAVA_HOME=/Users/brian/.gradle/jdks/eclipse_adoptium-21-x86_64-os_x.2/jdk-21.0.12.1+1/Contents/Home ANDROID_HOME=/Users/brian/Library/Android/sdk python3 scripts/compact_check.py --name phase-one-android-build --keep-success-log -- ./gradlew assembleDebug --console=plain
+```
+
+Passed, 109.0 seconds. Android SDK availability supersedes the earlier missing-SDK
+blocker. No full-app suite or release was run. The clean Quiz bundle remains
+deferred pending disposition of its unverified iOS default-instrument relaunch
+check; the corrected test navigation is committed at `9b7aafcd`. That test failure
+does not demonstrate a product persistence failure. The earlier return-to-Library
+keyboard restoration limitation was not rerun or declared fixed in this phase.
+
+Before cleanup, all 22 source worktrees other than the integration checkout
+matched their starting dirty-state/content signatures. Only clean, integrated
+Library release, instrument-refresh, instrument-refresh-ios, and Quiz-plan
+worktrees are eligible for phase-one removal; dirty worktrees and the deferred
+Quiz implementation worktrees remain for phase two. Remote branches and releases
+are outside this local integration.
