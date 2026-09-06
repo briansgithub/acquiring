@@ -1769,3 +1769,75 @@ and attach the diagnostic JSON plus whether sound returned. Build-number and
 release-receipt changes are committed/pushed under the owner's instruction to
 commit all outstanding changes and push. Prior simulator checks remain the
 validation evidence; no new broad test suites were run for this release.
+
+### Playback engine poisoned by the microphone input node — 2026-09-06
+
+Root cause of the build 11/12 iPhone 14 Pro failure, confirmed from the tester's
+exported report plus a reproduced recovery. Implemented on
+`claude/audio-engine-playback-fix` off `d61593de`. Runtime model: Claude Opus 5.
+One implementer; four analysis and two design subagents contributed, and the
+review subagents were cut short by a session limit (see Validation).
+
+The report showed `quiz.engineStart.failed`, domain `com.apple.coreaudio.avfaudio`,
+code `2003329396` = `'what'` (`kAudioSessionUnspecifiedError`), under category
+`Playback` with an empty input route, thrown 10 ms after `quiz.engineStart.begin`.
+Two independent facts pin the cause. The session holds exactly two
+`quiz.engineStart.begin` events: the one before any microphone use succeeded, and
+the first one after it failed. And the owner confirmed Reset Audio and Retry
+restores sound — that path rebuilds, bounces the session, and retries, but the
+session had already completed a full deactivate/activate cycle before the failure
+(`deactivateAfterCapture` at +1126.94, a fresh `activate` 10 ms before the throw),
+so the replacement engine is the operative step, not the bounce.
+
+Reading `engine.inputNode` instantiates it into that `AVAudioEngine` permanently
+and AVAudioEngine cannot detach one, so an engine that has been used for capture
+can never start again while the category is `.playback`. The failure is therefore
+deterministic once the singing feature has been used, not intermittent. The
+teardown paths called `removeTap` unconditionally, so even a cancelled acquisition
+that never installed a tap poisoned the engine. `recordAudioEvent` already guarded
+its own input-node reads for exactly this reason; that invariant is now enforced
+file-wide.
+
+- `engine.inputNode` may now be named in one place only, `instantiatedInputNode()`,
+  which records the transition in `engineHasInputNode`; `rebuildAudioEngine()` is
+  the only thing that clears it. Teardown goes through
+  `removeMicrophoneTapIfInstalled()`, a no-op on a graph with no input node.
+- `startEngineIfNeeded` replaces a poisoned graph before starting, and on any
+  unexplained start failure rebuilds and retries exactly once — straight-line, no
+  self-call, no loop, so a third attempt is unreachable by construction. The retry
+  is refused while the explicit reset owns recovery, while a microphone is pending
+  or active, and while the app is inactive. The first error is what surfaces.
+- `schedulePreview` now starts the engine before scheduling the buffer. Queuing
+  first would have let a rebuild discard the buffer with the outgoing player.
+- Capture's 16 kHz preference is undone on the next `.playback` configure, armed
+  only by an actual capture so a user who never sings sees no extra session calls.
+- Foregrounding retires a stale `shouldResumeAfterInterruption`. This is hygiene,
+  not a behavior change: `pauseForAppInactivity()` already clears the latch and the
+  playback request on every route out of active, which is why the field log shows
+  the latch computed as false. It deliberately does not resume; the original plan
+  to resume on foreground was dropped as wrong once the source was read.
+- Reports gain `engineInputNodeInstantiated` and `preferredIOBufferDuration`.
+  `schemaVersion` stays 1.
+
+The DEBUG start-failure injection became a countdown sized from
+`automaticEngineStartRetries`, because a single injected failure is now swallowed
+by the automatic retry and `testAudioDiagnosticsResetAndSettingsShareSheet` needs
+the alert to reach the Reset button. That test is unchanged. A persistent
+injection was rejected: it would have broken the same test's `Pause` expectation.
+A new `--ui-testing-audio-start-failure-once` flag backs
+`testSingleAudioStartFailureRecoversWithoutAnAlert`. Two existing unit tests moved
+from 2 to 3 starts, each with a comment naming what its number accounts for.
+
+Validation: **none of the Swift was compiled or run.** This work was done on
+Windows 11, where there is no Xcode, no `xcodebuild`, no simulator and no Swift
+toolchain; Docker was started to attempt a parse-only check under `swift:6.1` but
+the daemon never came up. What was checked: the single-accessor invariant, by
+`grep -n 'engine\.inputNode' ios/Acquiring/Infrastructure/AudioSystem.swift`
+returning exactly one code line; and a line-by-line self-review of the diff
+against the surrounding call sites. The planned multi-agent adversarial review did
+not run — the workflow reached its design phase and then hit a session limit. No
+claim is made that any test passes.
+
+Next: build and run `AudioDiagnosticsTests` plus both UI tests on the Mac, then
+reproduce on the phone — use the singing tool, stop it, press Play — and confirm
+sound with no alert. The build number is deliberately not bumped.
