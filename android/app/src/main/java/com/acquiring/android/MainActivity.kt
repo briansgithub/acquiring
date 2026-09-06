@@ -2158,8 +2158,8 @@ fun QuizTab(
         AudioEngine.stopPreviewPlayback()
         val retainedScrubBeat = if (isScrubbing) {
             scrubBeat.also {
-            isScrubbing = false
-            wasPlayingBeforeScrub = false
+                isScrubbing = false
+                wasPlayingBeforeScrub = false
             }
         } else {
             null
