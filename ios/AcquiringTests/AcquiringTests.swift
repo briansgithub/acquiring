@@ -349,7 +349,18 @@ final class AcquiringTests: XCTestCase {
         XCTAssertEqual(presentation.visuals.map(\.sourceIndex), [0, 2, 3, 4])
         XCTAssertEqual(presentation.visuals.map(\.onset), [1, 4, 3, 4])
         XCTAssertEqual(presentation.visuals.map(\.staffDegree), [1, 11, 5, 6])
-        XCTAssertEqual(presentation.noteHeight, 5)
+        XCTAssertEqual(
+            presentation.noteHeight,
+            MelodyTimelinePresentation.laneHeight / 28,
+            accuracy: 0.0001
+        )
+        // Android's lane spans 28 staff steps (+/-2 octaves around degree 0);
+        // staffDegree 14 must still land inside the lane, not above its top edge.
+        XCTAssertGreaterThanOrEqual(
+            MelodyTimelinePresentation.laneHeight / 2 - 14 * presentation.noteHeight,
+            0,
+            "the melody lane must show the same +/-14 staff-step window as Android"
+        )
         XCTAssertEqual(presentation.localX(for: presentation.visuals[1]), 180)
         XCTAssertEqual(presentation.width(for: presentation.visuals[1]), 30)
         XCTAssertLessThan(
