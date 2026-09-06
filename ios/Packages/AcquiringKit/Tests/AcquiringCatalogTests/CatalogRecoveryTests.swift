@@ -170,7 +170,11 @@ private final class Gate: @unchecked Sendable {
 /// Serves a local file as though it had been downloaded. Avoids URLSession
 /// entirely, so the install pipeline is exercised on every platform and the
 /// timing of cancellation is controlled by the test rather than the network.
-private func fileArchiveFetch(payloadURL: URL, gate: Gate? = nil) -> CatalogArchiveFetch {
+private func fileArchiveFetch(
+    payloadURL: URL,
+    gate: Gate? = nil,
+    headers: [String: String]? = nil
+) -> CatalogArchiveFetch {
     { url in
         if let gate {
             gate.markEntered()
@@ -183,7 +187,12 @@ private func fileArchiveFetch(payloadURL: URL, gate: Gate? = nil) -> CatalogArch
         let destination = FileManager.default.temporaryDirectory
             .appending(path: UUID().uuidString + ".archive")
         try FileManager.default.copyItem(at: payloadURL, to: destination)
-        let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: nil)!
+        let response = HTTPURLResponse(
+            url: url,
+            statusCode: 200,
+            httpVersion: "HTTP/1.1",
+            headerFields: headers
+        )!
         return (destination, response)
     }
 }
@@ -695,11 +704,25 @@ final class CatalogRecoveryTests: XCTestCase {
         let configuration = makeConfiguration(directory: directory)
         let coordinator = CatalogCoordinator(configuration: configuration)
         try await coordinator.prepare()
+        let assetMetadata = CatalogAssetMetadataTracker(configuration: configuration)
+        let installedIdentity = CatalogAssetIdentity(
+            eTag: "\"release-2\"",
+            lastModified: "Sat, 05 Sep 2026 12:00:00 GMT",
+            contentLength: 4_096
+        )
 
         let service = DefaultCatalogMaintenanceService(
             coordinator: coordinator,
             configuration: configuration,
-            fetchArchive: fileArchiveFetch(payloadURL: payloadURL)
+            assetMetadata: assetMetadata,
+            fetchArchive: fileArchiveFetch(
+                payloadURL: payloadURL,
+                headers: [
+                    "ETag": installedIdentity.eTag!,
+                    "Last-Modified": installedIdentity.lastModified!,
+                    "Content-Length": String(installedIdentity.contentLength!)
+                ]
+            )
         )
 
         var progress: [CatalogProgress] = []
@@ -727,6 +750,50 @@ final class CatalogRecoveryTests: XCTestCase {
             "validation must complete before the live pool is closed for installation"
         )
         assertNoStagingArtifacts(in: directory)
+
+        let recreatedTracker = CatalogAssetMetadataTracker(configuration: configuration)
+        let persistedIdentity = await recreatedTracker.installedAssetIdentity()
+        XCTAssertEqual(persistedIdentity, installedIdentity)
+
+        let serviceWithoutIdentity = DefaultCatalogMaintenanceService(
+            coordinator: coordinator,
+            configuration: configuration,
+            assetMetadata: recreatedTracker,
+            fetchArchive: fileArchiveFetch(payloadURL: payloadURL)
+        )
+        for try await _ in serviceWithoutIdentity.downloadAndInstall().events {}
+        let clearedIdentity = await recreatedTracker.installedAssetIdentity()
+        XCTAssertNil(clearedIdentity)
+    }
+
+    func testFailedInstallPreservesPriorAssetIdentity() async throws {
+        let directory = try makeDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let configuration = makeConfiguration(directory: directory)
+        let coordinator = CatalogCoordinator(configuration: configuration)
+        try await coordinator.prepare()
+        let assetMetadata = CatalogAssetMetadataTracker(configuration: configuration)
+        let priorIdentity = CatalogAssetIdentity(
+            eTag: "\"release-1\"",
+            lastModified: nil,
+            contentLength: 2_048
+        )
+        try await assetMetadata.recordInstalledAsset(priorIdentity)
+        let service = DefaultCatalogMaintenanceService(
+            coordinator: coordinator,
+            configuration: configuration,
+            assetMetadata: assetMetadata,
+            fetchArchive: { _ in throw CatalogError.http(503) }
+        )
+
+        do {
+            for try await _ in service.downloadAndInstall().events {}
+            XCTFail("Expected the download to fail")
+        } catch {
+            XCTAssertEqual(error as? CatalogError, .http(503))
+        }
+        let identityAfterFailure = await assetMetadata.installedAssetIdentity()
+        XCTAssertEqual(identityAfterFailure, priorIdentity)
     }
 
     func testCancelledInstallLeavesLiveQueryableAndCleansArtifacts() async throws {
@@ -742,6 +809,13 @@ final class CatalogRecoveryTests: XCTestCase {
         let configuration = makeConfiguration(directory: directory)
         let coordinator = CatalogCoordinator(configuration: configuration)
         try await coordinator.prepare()
+        let assetMetadata = CatalogAssetMetadataTracker(configuration: configuration)
+        let priorIdentity = CatalogAssetIdentity(
+            eTag: "\"release-1\"",
+            lastModified: nil,
+            contentLength: 2_048
+        )
+        try await assetMetadata.recordInstalledAsset(priorIdentity)
 
         // Park the fetch so cancellation lands before the commit boundary on
         // every run, rather than racing it.
@@ -749,6 +823,7 @@ final class CatalogRecoveryTests: XCTestCase {
         let service = DefaultCatalogMaintenanceService(
             coordinator: coordinator,
             configuration: configuration,
+            assetMetadata: assetMetadata,
             fetchArchive: fileArchiveFetch(payloadURL: payloadURL, gate: gate)
         )
 
@@ -767,6 +842,8 @@ final class CatalogRecoveryTests: XCTestCase {
         try await assertCatalogIntact(coordinator, expectedCount: 2, knownSlug: "original-a")
         let absent = try await coordinator.song(id: "never-installed")
         XCTAssertNil(absent)
+        let identityAfterCancellation = await assetMetadata.installedAssetIdentity()
+        XCTAssertEqual(identityAfterCancellation, priorIdentity)
     }
 
     func testAcceptedCancellationNormalizesURLSessionCancellationError() async throws {

@@ -868,6 +868,109 @@ final class AcquiringTests: XCTestCase {
     }
 
     @MainActor
+    func testEmptyCatalogAutomaticallyInstallsOnlyOncePerStore() async throws {
+        let maintenance = ScriptedCatalogMaintenanceService(downloads: [
+            { failureStream(TestCatalogFailure()) }
+        ])
+        let fixture = try makeLibraryStore(maintenance: maintenance)
+        defer { fixture.cleanup() }
+
+        await fixture.store.load()
+        await fixture.store.waitForMaintenance()
+        XCTAssertEqual(maintenance.downloadCallCount, 1)
+        XCTAssertEqual(
+            fixture.store.maintenanceState,
+            .failed(operation: .downloadAndInstall, message: "Test catalog failure.")
+        )
+
+        await fixture.store.load()
+        XCTAssertEqual(maintenance.downloadCallCount, 1)
+    }
+
+    @MainActor
+    func testReadyCatalogDoesNotDownloadOnLaunch() async throws {
+        let maintenance = ScriptedCatalogMaintenanceService()
+        let fixture = try makeLibraryStore(maintenance: maintenance, catalogCount: 7)
+        defer { fixture.cleanup() }
+
+        await fixture.store.load()
+
+        XCTAssertEqual(maintenance.downloadCallCount, 0)
+        XCTAssertEqual(fixture.store.catalogState, .content(7))
+    }
+
+    @MainActor
+    func testCatalogUpdateCheckDistinguishesCurrentAvailableAndUnknownInstalls() async throws {
+        let current = CatalogAssetIdentity(eTag: "\"current\"", lastModified: nil, contentLength: 100)
+        let newer = CatalogAssetIdentity(eTag: "\"newer\"", lastModified: nil, contentLength: 100)
+
+        let currentFixture = try makeLibraryStore(
+            maintenance: ScriptedCatalogMaintenanceService(),
+            assetMetadata: StubCatalogAssetMetadataService(remote: current, installed: current),
+            catalogCount: 7
+        )
+        defer { currentFixture.cleanup() }
+        currentFixture.store.maintenanceState = .running(operation: .downloadAndInstall, progress: .installing)
+        await currentFixture.store.checkForCatalogUpdate()
+        XCTAssertEqual(currentFixture.store.catalogUpdateState, .idle)
+        currentFixture.store.maintenanceState = .idle
+        await currentFixture.store.checkForCatalogUpdate()
+        XCTAssertEqual(currentFixture.store.catalogUpdateState, .current)
+
+        let updateFixture = try makeLibraryStore(
+            maintenance: ScriptedCatalogMaintenanceService(),
+            assetMetadata: StubCatalogAssetMetadataService(remote: newer, installed: current),
+            catalogCount: 7
+        )
+        defer { updateFixture.cleanup() }
+        await updateFixture.store.checkForCatalogUpdate()
+        XCTAssertEqual(updateFixture.store.catalogUpdateState, .updateAvailable)
+
+        let legacyFixture = try makeLibraryStore(
+            maintenance: ScriptedCatalogMaintenanceService(),
+            assetMetadata: StubCatalogAssetMetadataService(remote: newer, installed: nil),
+            catalogCount: 7
+        )
+        defer { legacyFixture.cleanup() }
+        await legacyFixture.store.checkForCatalogUpdate()
+        XCTAssertEqual(legacyFixture.store.catalogUpdateState, .unknown)
+    }
+
+    @MainActor
+    func testCatalogInstallSupersedesAnInFlightUpdateCheck() async throws {
+        let started = AsyncStream<Void>.makeStream()
+        let release = AsyncStream<Void>.makeStream()
+        let oldIdentity = CatalogAssetIdentity(eTag: "\"old\"", lastModified: nil, contentLength: 100)
+        let remoteIdentity = CatalogAssetIdentity(eTag: "\"new\"", lastModified: nil, contentLength: 200)
+        let metadata = BlockingCatalogAssetMetadataService(
+            remote: remoteIdentity,
+            installed: oldIdentity,
+            started: started.continuation,
+            release: release.stream
+        )
+        let maintenance = ScriptedCatalogMaintenanceService(downloads: [
+            { progressStream([.completed(songCount: 7)]) }
+        ])
+        let fixture = try makeLibraryStore(
+            maintenance: maintenance,
+            assetMetadata: metadata,
+            catalogCount: 7
+        )
+        defer { fixture.cleanup() }
+        var startedIterator = started.stream.makeAsyncIterator()
+
+        let check = Task { await fixture.store.checkForCatalogUpdate() }
+        _ = await startedIterator.next()
+        fixture.store.installCatalog()
+        await fixture.store.waitForMaintenance()
+        release.continuation.yield(())
+        release.continuation.finish()
+        await check.value
+
+        XCTAssertEqual(fixture.store.catalogUpdateState, .current)
+    }
+
+    @MainActor
     func testBlankSearchShowsRecentsOnlyAfterTheCurrentScopeReceivesFocus() throws {
         let fixture = try makeLibraryStore(maintenance: ScriptedCatalogMaintenanceService())
         defer { fixture.cleanup() }
@@ -1049,6 +1152,7 @@ final class AcquiringTests: XCTestCase {
     @MainActor
     private func makeLibraryStore(
         maintenance: any CatalogMaintenanceService,
+        assetMetadata: any CatalogAssetMetadataService = StubCatalogAssetMetadataService(),
         catalogCount: Int = 0,
         catalogCountThrows: Bool = false,
         failingSongSuggestionOffset: Int? = nil,
@@ -1077,6 +1181,7 @@ final class AcquiringTests: XCTestCase {
         let store = LibraryStore(
             catalog: catalog,
             maintenance: maintenance,
+            assetMetadata: assetMetadata,
             history: history,
             userLibrary: userLibrary,
             prepareCatalog: prepareCatalog
@@ -1096,6 +1201,62 @@ final class AcquiringTests: XCTestCase {
 
 private struct TestCatalogFailure: LocalizedError, Sendable {
     var errorDescription: String? { "Test catalog failure." }
+}
+
+private actor StubCatalogAssetMetadataService: CatalogAssetMetadataService {
+    private let remoteIdentity: CatalogAssetIdentity?
+    private var installedIdentity: CatalogAssetIdentity?
+
+    init(remote: CatalogAssetIdentity? = nil, installed: CatalogAssetIdentity? = nil) {
+        remoteIdentity = remote
+        installedIdentity = installed
+    }
+
+    func remoteAsset() -> CatalogAssetMetadata {
+        CatalogAssetMetadata(identity: remoteIdentity, byteCount: remoteIdentity?.contentLength)
+    }
+
+    func installedAssetIdentity() -> CatalogAssetIdentity? {
+        installedIdentity
+    }
+
+    func recordInstalledAsset(_ identity: CatalogAssetIdentity?) {
+        installedIdentity = identity
+    }
+}
+
+private actor BlockingCatalogAssetMetadataService: CatalogAssetMetadataService {
+    private let remoteIdentity: CatalogAssetIdentity
+    private var installedIdentity: CatalogAssetIdentity?
+    private let started: AsyncStream<Void>.Continuation
+    private let release: AsyncStream<Void>
+
+    init(
+        remote: CatalogAssetIdentity,
+        installed: CatalogAssetIdentity?,
+        started: AsyncStream<Void>.Continuation,
+        release: AsyncStream<Void>
+    ) {
+        remoteIdentity = remote
+        installedIdentity = installed
+        self.started = started
+        self.release = release
+    }
+
+    func remoteAsset() async -> CatalogAssetMetadata {
+        started.yield(())
+        var iterator = release.makeAsyncIterator()
+        _ = await iterator.next()
+        return CatalogAssetMetadata(identity: remoteIdentity, byteCount: remoteIdentity.contentLength)
+    }
+
+    func installedAssetIdentity() -> CatalogAssetIdentity? {
+        installedIdentity
+    }
+
+    func recordInstalledAsset(_ identity: CatalogAssetIdentity?) {
+        installedIdentity = identity
+    }
 }
 
 private final class TestMaintenanceRunController: @unchecked Sendable {
