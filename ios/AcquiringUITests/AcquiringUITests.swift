@@ -58,7 +58,21 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertFalse(app.textFields["library.search.field"].exists)
         XCTAssertFalse(app.keyboards.firstMatch.exists)
         XCTAssertEqual(app.progressIndicators.count, 0)
-        app.buttons["introduction.continue"].tap()
+        let continueButton = app.buttons["introduction.continue"]
+        XCTAssertTrue(continueButton.isEnabled)
+        let orderedHeadings = [
+            "Train your ear with real songs",
+            "From a circle to Acquiring",
+            "Three ways to use a card",
+            "Find your comfortable range"
+        ]
+        for title in orderedHeadings {
+            scrollToHittable(app.staticTexts[title], in: app)
+        }
+        XCTAssertTrue(app.staticTexts["White dot: Original octave."].exists)
+        XCTAssertTrue(app.staticTexts["Gray dot: Comfortable pitch set."].exists)
+        XCTAssertTrue(continueButton.isHittable)
+        continueButton.tap()
         XCTAssertTrue(app.textFields["library.search.field"].waitForExistence(timeout: 5))
 
         app.terminate()
@@ -69,6 +83,9 @@ final class AcquiringUITests: XCTestCase {
         app.buttons["settings.introduction"].tap()
         XCTAssertTrue(app.navigationBars["Introduction"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["introduction.continue"].exists)
+        XCTAssertTrue(app.staticTexts["Train your ear with real songs"].exists)
+        scrollToHittable(app.staticTexts["Find your comfortable range"], in: app)
+        XCTAssertTrue(app.buttons["introduction.done"].isHittable)
         app.buttons["introduction.done"].tap()
         XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 5))
     }
