@@ -273,6 +273,7 @@ struct QuizPlaybackConfiguration: Equatable {
 final class AppEnvironment {
     let catalog: CatalogCoordinator
     let maintenance: any CatalogMaintenanceService
+    let catalogAssetMetadata: any CatalogAssetMetadataService
     let history: HistoryStore
     let userLibrary: UserLibraryStore
     let audio: AppAudioSystem
@@ -318,10 +319,20 @@ final class AppEnvironment {
         catalog = coordinator
         catalogConfiguration = configuration
 #if DEBUG
+        let selectedAssetMetadata: any CatalogAssetMetadataService
+        if isUITesting {
+            selectedAssetMetadata = CatalogAssetMetadataUITestService(
+                hasInstalledCatalog: seedsUITestCatalog,
+                updateAvailable: arguments.contains("--ui-testing-catalog-update-available")
+            )
+        } else {
+            selectedAssetMetadata = CatalogAssetMetadataTracker(configuration: configuration)
+        }
         let selectedMaintenance: any CatalogMaintenanceService
         if isUITesting, let scenario = CatalogMaintenanceUITestScenario(arguments: arguments) {
             selectedMaintenance = CatalogMaintenanceUITestService(
                 scenario: scenario,
+                assetMetadata: selectedAssetMetadata,
                 installFixture: { try await Self.installUITestCatalog(into: coordinator) }
             )
         } else {
@@ -331,11 +342,15 @@ final class AppEnvironment {
             )
         }
 #else
+        let selectedAssetMetadata: any CatalogAssetMetadataService = CatalogAssetMetadataTracker(
+            configuration: configuration
+        )
         let selectedMaintenance: any CatalogMaintenanceService = DefaultCatalogMaintenanceService(
             coordinator: coordinator,
             configuration: configuration
         )
 #endif
+        catalogAssetMetadata = selectedAssetMetadata
         maintenance = ExclusiveCatalogMaintenanceService(base: selectedMaintenance)
         history = HistoryStore(suiteName: uiTestSession?.historySuiteName)
         userLibrary = try UserLibraryStore(context: modelContext)
@@ -475,6 +490,39 @@ private enum CatalogMaintenanceUITestScenario: Equatable, Sendable {
     }
 }
 
+private actor CatalogAssetMetadataUITestService: CatalogAssetMetadataService {
+    private static let currentIdentity = CatalogAssetIdentity(
+        eTag: "\"ui-test-current\"",
+        lastModified: "Sat, 05 Sep 2026 12:00:00 GMT",
+        contentLength: 1_024
+    )
+    private let remoteIdentity: CatalogAssetIdentity
+    private var installedIdentity: CatalogAssetIdentity?
+
+    init(hasInstalledCatalog: Bool, updateAvailable: Bool) {
+        installedIdentity = hasInstalledCatalog ? Self.currentIdentity : nil
+        remoteIdentity = updateAvailable
+            ? CatalogAssetIdentity(
+                eTag: "\"ui-test-update\"",
+                lastModified: "Sat, 05 Sep 2026 13:00:00 GMT",
+                contentLength: 2_048
+            )
+            : Self.currentIdentity
+    }
+
+    func remoteAsset() -> CatalogAssetMetadata {
+        CatalogAssetMetadata(identity: remoteIdentity, byteCount: remoteIdentity.contentLength)
+    }
+
+    func installedAssetIdentity() -> CatalogAssetIdentity? {
+        installedIdentity
+    }
+
+    func recordInstalledAsset(_ identity: CatalogAssetIdentity?) {
+        installedIdentity = identity
+    }
+}
+
 private final class UITestMaintenanceRunController: @unchecked Sendable {
     private enum Phase {
         case starting
@@ -538,14 +586,20 @@ private final class CatalogMaintenanceUITestService: CatalogMaintenanceService, 
     typealias Stream = AsyncThrowingStream<CatalogProgress, any Error>
 
     let scenario: CatalogMaintenanceUITestScenario
+    let assetMetadata: any CatalogAssetMetadataService
     let installFixture: InstallFixture
     private let lock = NSLock()
     private var downloadAttempts = 0
     private var harvestAttempts = 0
     private var firstHarvestURL: URL?
 
-    init(scenario: CatalogMaintenanceUITestScenario, installFixture: @escaping InstallFixture) {
+    init(
+        scenario: CatalogMaintenanceUITestScenario,
+        assetMetadata: any CatalogAssetMetadataService,
+        installFixture: @escaping InstallFixture
+    ) {
         self.scenario = scenario
+        self.assetMetadata = assetMetadata
         self.installFixture = installFixture
     }
 
@@ -591,6 +645,8 @@ private final class CatalogMaintenanceUITestService: CatalogMaintenanceService, 
                         guard controller.beginCommit() else { throw CancellationError() }
                         continuation.yield(.installing)
                         let count = try await self.installFixture()
+                        let remoteAsset = try await self.assetMetadata.remoteAsset()
+                        try await self.assetMetadata.recordInstalledAsset(remoteAsset.identity)
                         controller.finish()
                         continuation.yield(.completed(songCount: count))
                         continuation.finish()
