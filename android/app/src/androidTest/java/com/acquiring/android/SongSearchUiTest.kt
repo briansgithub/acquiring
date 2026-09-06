@@ -30,6 +30,7 @@ class SongSearchUiTest {
     fun setUp() = runBlocking {
         val context = ApplicationProvider.getApplicationContext<Context>()
         AppAudioOutput.initialize(context)
+        AppInstrumentSession.initialize(context)
         QuizPlaybackController.initialize(context)
         db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
         userDb = Room.inMemoryDatabaseBuilder(context, UserDataDatabase::class.java).build()
