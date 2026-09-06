@@ -365,9 +365,17 @@ final class AcquiringUITests: XCTestCase {
             "The playback clock must keep advancing while the instrument menu commits"
         )
 
-        let tempo = app.sliders["quiz.tempo"]
+        let tempo = app.descendants(matching: .any)["quiz.tempo"]
         XCTAssertTrue(tempo.waitForExistence(timeout: 5))
-        tempo.adjust(toNormalizedSliderPosition: 0.85)
+        let tempoBefore = tempo.value as? String
+        tempo.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.85)).press(
+            forDuration: 0.1,
+            thenDragTo: tempo.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.44))
+        )
+        XCTAssertTrue(waitForValueChange(tempo, from: tempoBefore, timeout: 5))
+        let fasterPercent = (tempo.value as? String)
+            .flatMap { Int($0.split(separator: " ").first ?? "") }
+        XCTAssertGreaterThan(fasterPercent ?? 0, 100, "The production knob must set a faster playback tempo")
 
         let mode = app.descendants(matching: .any)["quiz.mode"]
         XCTAssertTrue(mode.waitForExistence(timeout: 5))
@@ -385,7 +393,7 @@ final class AcquiringUITests: XCTestCase {
         wait(for: [modeApplied], timeout: 5)
         XCTAssertTrue(
             waitForValueChange(timeline, from: beatBeforeMode, timeout: 5),
-            "The faster playback clock must keep advancing while the mode menu commits"
+            "The playback clock must keep advancing while the mode menu commits"
         )
 
         let beatBeforeSecondInstrument = timeline.value as? String
@@ -431,7 +439,7 @@ final class AcquiringUITests: XCTestCase {
         wait(for: [ready], timeout: 90)
         let initialBeat = timeline.value as? String
         play.tap()
-        XCTAssertTrue(waitForValue(play, equalTo: "Pause", timeout: 90))
+        XCTAssertTrue(waitForLabel(play, equalTo: "Pause", timeout: 90))
 
         instrument.tap()
         let sine = app.buttons["Sine"]
@@ -446,7 +454,7 @@ final class AcquiringUITests: XCTestCase {
         XCUIDevice.shared.press(.home)
         app.activate()
         XCTAssertTrue(
-            waitForValue(play, equalTo: "Play", timeout: 10),
+            waitForLabel(play, equalTo: "Play", timeout: 10),
             "Returning from the background must require explicit Play"
         )
         let retainedBeat = timeline.value as? String
@@ -1182,6 +1190,19 @@ final class AcquiringUITests: XCTestCase {
             usleep(100_000)
         }
         return element.value as? String == expectedValue
+    }
+
+    private func waitForLabel(
+        _ element: XCUIElement,
+        equalTo expectedLabel: String,
+        timeout: TimeInterval
+    ) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if element.label == expectedLabel { return true }
+            usleep(100_000)
+        }
+        return element.label == expectedLabel
     }
 
     private func openQuiz(
