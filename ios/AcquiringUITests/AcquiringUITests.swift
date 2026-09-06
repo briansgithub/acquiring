@@ -7,6 +7,7 @@ final class AcquiringUITests: XCTestCase {
         static let fiveHundredMiles = "500 Miles, by the-proclaimers"
         static let fiveHundredMilesQuizTitle = "500 Miles by the-proclaimers"
         static let badRomance = "Bad Romance, by lady-gaga"
+        static let badRomanceQuizTitle = "Bad Romance by lady-gaga"
         static let bohemianRhapsody = "Bohemian Rhapsody, by queen"
         static let gladiolusRag = "Gladiolus Rag, by scott-joplin"
         static let theEntertainer = "The Entertainer, by scott-joplin"
@@ -48,37 +49,69 @@ final class AcquiringUITests: XCTestCase {
 
     func testLibraryLoadingState() {
         let app = launchApp(scenario: .loading)
-
-        XCTAssertTrue(app.navigationBars["Library"].waitForExistence(timeout: 5))
-        let loadingStatus = app.descendants(matching: .any)["catalog.status.loading"]
-        XCTAssertTrue(loadingStatus.waitForExistence(timeout: 5))
-        XCTAssertEqual(loadingStatus.label, "Opening catalog")
+        XCTAssertTrue(app.textFields["library.search.field"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.descendants(matching: .any)["catalog.status.loading"].exists)
+        XCTAssertFalse(app.staticTexts["library.catalog.unavailable"].exists)
         XCTAssertFalse(app.buttons["catalog.download"].exists)
-        XCTAssertFalse(app.textFields["library.search.field"].exists)
-        XCTAssertTrue(app.buttons["catalog.settings"].exists)
-        attachScreenshot(of: app, named: "checkpoint-1.1-library-loading")
+        XCTAssertFalse(app.keyboards.firstMatch.exists)
     }
 
-    func testFirstLaunchShowsPassiveSetupAndSettingsOwnsCancellation() {
+    func testAutomaticCatalogSetupStaysSilentOnHomeAndInSettings() {
         let app = launchApp(scenario: .empty, arguments: [
             "--ui-testing-catalog-empty",
             "--ui-testing-catalog-install-cancellable"
         ])
-
-        XCTAssertTrue(app.navigationBars["Library"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.descendants(matching: .any)["catalog.status.loading"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.textFields["library.search.field"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.descendants(matching: .any)["catalog.status.loading"].exists)
+        XCTAssertFalse(app.staticTexts["library.catalog.unavailable"].exists)
         XCTAssertFalse(app.buttons["catalog.download"].exists)
         XCTAssertFalse(app.buttons["catalog.cancel"].exists)
-        XCTAssertFalse(app.textFields["library.search.field"].exists)
-        XCTAssertFalse(app.textFields["catalog.harvest.url"].exists)
         XCTAssertFalse(app.keyboards.firstMatch.exists)
+
         openCatalogSettings(app)
-        let cancel = app.buttons["catalog.cancel"]
-        scrollToHittable(cancel, in: app)
-        cancel.tap()
-        XCTAssertTrue(app.staticTexts["catalog.maintenance.cancelled"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.buttons.matching(identifier: "catalog.retry").count, 1)
-        XCTAssertFalse(app.textFields["catalog.harvest.url"].exists)
+        XCTAssertFalse(app.buttons["catalog.download"].exists)
+        XCTAssertFalse(app.buttons["catalog.cancel"].exists)
+        XCTAssertFalse(app.staticTexts["catalog.settings.status.empty"].exists)
+        XCTAssertFalse(app.staticTexts["catalog.maintenance.failed"].exists)
+        XCTAssertEqual(app.progressIndicators.count, 0)
+    }
+
+    func testIntroductionAppearsOnceAndCanBeReopenedFromSettings() {
+        let app = launchApp(scenario: .ready, arguments: ["--ui-testing-introduction"])
+        XCTAssertTrue(app.navigationBars["Introduction"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.textFields["library.search.field"].exists)
+        XCTAssertFalse(app.keyboards.firstMatch.exists)
+        XCTAssertEqual(app.progressIndicators.count, 0)
+        let continueButton = app.buttons["introduction.continue"]
+        XCTAssertTrue(continueButton.isEnabled)
+        let orderedHeadings = [
+            "Train your ear with real songs",
+            "From a circle to Acquiring",
+            "Three ways to use a card",
+            "Find your comfortable range"
+        ]
+        for title in orderedHeadings {
+            scrollToHittable(app.staticTexts[title], in: app)
+        }
+        XCTAssertTrue(app.staticTexts["White dot: Original octave."].exists)
+        XCTAssertTrue(app.staticTexts["Gray dot: Comfortable pitch set."].exists)
+        XCTAssertTrue(continueButton.isHittable)
+        continueButton.tap()
+        XCTAssertTrue(app.textFields["library.search.field"].waitForExistence(timeout: 5))
+
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(app.textFields["library.search.field"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["introduction.continue"].exists)
+        openCatalogSettings(app)
+        app.buttons["settings.introduction"].tap()
+        XCTAssertTrue(app.navigationBars["Introduction"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["introduction.continue"].exists)
+        XCTAssertTrue(app.staticTexts["Train your ear with real songs"].exists)
+        scrollToHittable(app.staticTexts["Find your comfortable range"], in: app)
+        XCTAssertTrue(app.buttons["introduction.done"].isHittable)
+        app.buttons["introduction.done"].tap()
+        XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 5))
     }
 
     func testLibraryReadyState() {
@@ -103,14 +136,8 @@ final class AcquiringUITests: XCTestCase {
         let app = launchApp(scenario: .failureThenReady)
 
         XCTAssertTrue(app.navigationBars["Library"].waitForExistence(timeout: 5))
-        XCTAssertTrue(
-            app.descendants(matching: .any)["catalog.status.failure"]
-                .waitForExistence(timeout: 5)
-        )
-        XCTAssertTrue(
-            app.staticTexts["The test catalog could not be opened."]
-                .waitForExistence(timeout: 5)
-        )
+        XCTAssertTrue(app.staticTexts["library.catalog.unavailable"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["The test catalog could not be opened."].exists)
         XCTAssertFalse(app.buttons["catalog.retry"].exists)
         openCatalogSettings(app)
         let retryButton = app.buttons["catalog.retry"]
@@ -214,16 +241,19 @@ final class AcquiringUITests: XCTestCase {
 
         let transpose = app.buttons["quiz.transpose"]
         XCTAssertTrue(transpose.isHittable, "Transpose should be visible without scrolling")
-        let transposeUp = app.buttons["quiz.transpose.up"]
-        let transposeReady = expectation(for: NSPredicate(format: "hittable == true"), evaluatedWith: transposeUp)
-        wait(for: [transposeReady], timeout: 5)
         XCTAssertFalse(app.alerts["Audio"].exists)
-        transposeUp.tap()
+        transpose.tap()
+        let plusOne = app.buttons["+1 semitones"]
+        XCTAssertTrue(plusOne.waitForExistence(timeout: 5))
+        plusOne.tap()
         let transposeApplied = expectation(
             for: NSPredicate(format: "value == %@", "+1 semitones"), evaluatedWith: transpose
         )
         wait(for: [transposeApplied], timeout: 5)
-        app.buttons["quiz.transpose.down"].tap()
+        transpose.tap()
+        let originalKey = app.buttons["0 semitones"]
+        XCTAssertTrue(originalKey.waitForExistence(timeout: 5))
+        originalKey.tap()
         let transposeReset = expectation(
             for: NSPredicate(format: "value == %@", "0 semitones"), evaluatedWith: transpose
         )
@@ -315,9 +345,12 @@ final class AcquiringUITests: XCTestCase {
         play.tap()
         let playing = expectation(for: NSPredicate(format: "label == %@", "Pause"), evaluatedWith: play)
         wait(for: [playing], timeout: 90)
+        let timeline = app.descendants(matching: .any)["quiz.timeline"]
+        XCTAssertTrue(timeline.waitForExistence(timeout: 5))
 
         let instrument = app.descendants(matching: .any)["quiz.instrument"]
         XCTAssertTrue(instrument.waitForExistence(timeout: 5))
+        let beatBeforeInstrument = timeline.value as? String
         instrument.tap()
         let sine = app.buttons["Sine"]
         XCTAssertTrue(sine.waitForExistence(timeout: 5))
@@ -327,6 +360,22 @@ final class AcquiringUITests: XCTestCase {
             evaluatedWith: instrument
         )
         wait(for: [instrumentApplied], timeout: 5)
+        XCTAssertTrue(
+            waitForValueChange(timeline, from: beatBeforeInstrument, timeout: 5),
+            "The playback clock must keep advancing while the instrument menu commits"
+        )
+
+        let tempo = app.otherElements["quiz.tempo"]
+        XCTAssertTrue(tempo.waitForExistence(timeout: 5))
+        let tempoBefore = tempo.value as? String
+        tempo.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.85)).press(
+            forDuration: 0.1,
+            thenDragTo: tempo.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.44))
+        )
+        XCTAssertTrue(waitForValueChange(tempo, from: tempoBefore, timeout: 5))
+        let fasterPercent = (tempo.value as? String)
+            .flatMap { Int($0.split(separator: " ").first ?? "") }
+        XCTAssertGreaterThan(fasterPercent ?? 0, 100, "The production knob must set a faster playback tempo")
 
         let mode = app.descendants(matching: .any)["quiz.mode"]
         XCTAssertTrue(mode.waitForExistence(timeout: 5))
@@ -341,6 +390,129 @@ final class AcquiringUITests: XCTestCase {
             evaluatedWith: mode
         )
         wait(for: [modeApplied], timeout: 5)
+        let rootTimeline = app.sliders["quiz.rootSeek"]
+        XCTAssertTrue(rootTimeline.waitForExistence(timeout: 5))
+        let beatAfterMode = rootTimeline.value as? String
+        XCTAssertTrue(
+            waitForValueChange(rootTimeline, from: beatAfterMode, timeout: 5),
+            "The playback clock must keep advancing while the mode menu commits"
+        )
+
+        let beatBeforeSecondInstrument = rootTimeline.value as? String
+        instrument.tap()
+        let square = app.buttons["Square"]
+        XCTAssertTrue(square.waitForExistence(timeout: 5))
+        square.tap()
+        XCTAssertTrue(
+            waitForValueChange(rootTimeline, from: beatBeforeSecondInstrument, timeout: 5),
+            "The menu must remain responsive across repeated playback selections"
+        )
+    }
+
+    func testInstrumentDefaultSessionAndForegroundPlaybackLifecycle() {
+        let app = launchApp(scenario: .ready)
+        openCatalogSettings(app)
+        let defaultInstrument = app.descendants(matching: .any)["settings.defaultInstrument"]
+        XCTAssertTrue(defaultInstrument.waitForExistence(timeout: 5))
+        defaultInstrument.tap()
+        let flute = app.buttons["Synth Flute"]
+        XCTAssertTrue(flute.waitForExistence(timeout: 5))
+        flute.tap()
+        XCTAssertTrue(
+            waitForValue(defaultInstrument, equalTo: "Synth Flute", timeout: 5),
+            "The Settings selection must update the saved default"
+        )
+        app.navigationBars["Settings"].buttons.element(boundBy: 0).tap()
+
+        openQuiz(
+            app,
+            searchText: "500 Miles",
+            songButton: Fixture.fiveHundredMiles,
+            navigationTitle: Fixture.fiveHundredMilesQuizTitle
+        )
+        let instrument = app.buttons["quiz.instrument"]
+        XCTAssertTrue(instrument.waitForExistence(timeout: 90))
+        XCTAssertTrue(waitForValue(instrument, equalTo: "Synth Flute", timeout: 5))
+
+        let timeline = app.descendants(matching: .any)["quiz.timeline"]
+        let play = app.buttons["quiz.play"]
+        XCTAssertTrue(timeline.waitForExistence(timeout: 5))
+        XCTAssertTrue(play.waitForExistence(timeout: 5))
+        let ready = expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: play)
+        wait(for: [ready], timeout: 90)
+        let initialBeat = timeline.value as? String
+        play.tap()
+        XCTAssertTrue(waitForLabel(play, equalTo: "Pause", timeout: 90))
+
+        instrument.tap()
+        let sine = app.buttons["Sine"]
+        XCTAssertTrue(sine.waitForExistence(timeout: 5))
+        sine.tap()
+        XCTAssertTrue(waitForValue(instrument, equalTo: "Sine", timeout: 5))
+        XCTAssertTrue(
+            waitForValueChange(timeline, from: initialBeat, timeout: 5),
+            "Playback must advance while the session instrument changes"
+        )
+
+        XCUIDevice.shared.press(.home)
+        app.activate()
+        XCTAssertTrue(
+            waitForLabel(play, equalTo: "Play", timeout: 10),
+            "Returning from the background must require explicit Play"
+        )
+        let retainedBeat = timeline.value as? String
+        usleep(500_000)
+        XCTAssertEqual(timeline.value as? String, retainedBeat, "The paused beat must remain retained")
+
+        app.navigationBars[Fixture.fiveHundredMilesQuizTitle].buttons.element(boundBy: 0).tap()
+        XCTAssertTrue(app.navigationBars["Song"].waitForExistence(timeout: 5))
+        app.navigationBars["Song"].buttons.element(boundBy: 0).tap()
+        let search = app.textFields["library.search.field"]
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        let clear = app.buttons["library.search.clear"]
+        if clear.exists { clear.tap() }
+        search.tap()
+        search.typeText("Bad Romance")
+        let badRomance = app.buttons[Fixture.badRomance]
+        XCTAssertTrue(badRomance.waitForExistence(timeout: 5))
+        badRomance.tap()
+        XCTAssertTrue(app.navigationBars[Fixture.badRomanceQuizTitle].waitForExistence(timeout: 5))
+        let nextSongInstrument = app.buttons["quiz.instrument"]
+        XCTAssertTrue(
+            waitForValue(nextSongInstrument, equalTo: "Sine", timeout: 5),
+            "A Quiz selection must survive a song change in the current session"
+        )
+
+        app.navigationBars[Fixture.badRomanceQuizTitle].buttons.element(boundBy: 0).tap()
+        XCTAssertTrue(app.navigationBars["Song"].waitForExistence(timeout: 5))
+        app.navigationBars["Song"].buttons.element(boundBy: 0).tap()
+        openCatalogSettings(app)
+        let unchangedDefault = app.descendants(matching: .any)["settings.defaultInstrument"]
+        XCTAssertTrue(
+            waitForValue(unchangedDefault, equalTo: "Synth Flute", timeout: 5),
+            "A Quiz selection must not overwrite the saved default"
+        )
+
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(app.navigationBars["Library"].waitForExistence(timeout: 10))
+        openCatalogSettings(app)
+        let relaunchedDefault = app.descendants(matching: .any)["settings.defaultInstrument"]
+        XCTAssertTrue(
+            waitForValue(relaunchedDefault, equalTo: "Synth Flute", timeout: 5),
+            "The saved default must survive process relaunch"
+        )
+        app.navigationBars["Settings"].buttons.element(boundBy: 0).tap()
+        openQuiz(
+            app,
+            searchText: "500 Miles",
+            songButton: Fixture.fiveHundredMiles,
+            navigationTitle: Fixture.fiveHundredMilesQuizTitle
+        )
+        XCTAssertTrue(
+            waitForValue(app.buttons["quiz.instrument"], equalTo: "Synth Flute", timeout: 5),
+            "A new session must initialize from the saved default"
+        )
     }
 
     func testQuizCardPreviewsDoNotCrashAndMelodyCardsUseCompactHeights() {
@@ -847,10 +1019,14 @@ final class AcquiringUITests: XCTestCase {
 
     func testFirstLaunchDownloadsCatalogAutomatically() {
         let app = launchApp(scenario: .empty, arguments: [
+            "--ui-testing-introduction",
             "--ui-testing-catalog-empty",
             "--ui-testing-catalog-install-success"
         ])
 
+        XCTAssertTrue(app.navigationBars["Introduction"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.progressIndicators.count, 0)
+        app.buttons["introduction.continue"].tap()
         let search = app.textFields["library.search.field"]
         XCTAssertTrue(search.waitForExistence(timeout: 10))
         XCTAssertFalse(app.keyboards.firstMatch.exists)
@@ -891,19 +1067,32 @@ final class AcquiringUITests: XCTestCase {
 
     func testFirstLaunchDownloadFailureRetriesOnlyInSettings() {
         let app = launchApp(scenario: .empty, arguments: [
+            "--ui-testing-introduction",
             "--ui-testing-catalog-empty",
             "--ui-testing-catalog-install-failure"
         ])
-        XCTAssertTrue(app.descendants(matching: .any)["catalog.status.failure"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.navigationBars["Introduction"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["catalog.maintenance.failed"].exists)
+        app.buttons["introduction.continue"].tap()
+        XCTAssertTrue(app.textFields["library.search.field"].waitForExistence(timeout: 5))
+        let notice = app.staticTexts["library.catalog.unavailable"]
+        XCTAssertTrue(notice.waitForExistence(timeout: 5))
+        XCTAssertEqual(notice.label, "Database not downloaded. Download in Settings.")
         XCTAssertFalse(app.buttons["catalog.download"].exists)
         XCTAssertFalse(app.buttons["catalog.retry"].exists)
-        XCTAssertFalse(app.textFields["catalog.harvest.url"].exists)
+        XCTAssertFalse(app.staticTexts["catalog.maintenance.failed"].exists)
+
         openCatalogSettings(app)
-        let retry = app.buttons["catalog.retry"]
-        scrollToHittable(retry, in: app)
-        retry.tap()
+        let download = app.buttons["catalog.download"]
+        scrollToHittable(download, in: app)
+        XCTAssertEqual(download.label, "Download Database")
+        XCTAssertFalse(app.staticTexts["catalog.maintenance.failed"].exists)
+        download.tap()
         XCTAssertTrue(app.descendants(matching: .any)["catalog.settings.status.ready"].waitForExistence(timeout: 10))
         XCTAssertFalse(app.buttons["catalog.cancel"].exists)
+        app.navigationBars["Settings"].buttons.element(boundBy: 0).tap()
+        XCTAssertTrue(app.textFields["library.search.field"].waitForExistence(timeout: 5))
+        XCTAssertFalse(notice.exists)
     }
 
     func testSongHarvestFailureCanRetryToCompletion() throws {
@@ -982,6 +1171,61 @@ final class AcquiringUITests: XCTestCase {
             _ = element.waitForExistence(timeout: 0.2)
         }
         return !element.exists
+    }
+
+    private func waitForValueChange(
+        _ element: XCUIElement,
+        from originalValue: String?,
+        timeout: TimeInterval
+    ) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if element.value as? String != originalValue { return true }
+            usleep(100_000)
+        }
+        return element.value as? String != originalValue
+    }
+
+    private func waitForValue(
+        _ element: XCUIElement,
+        equalTo expectedValue: String,
+        timeout: TimeInterval
+    ) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if element.value as? String == expectedValue { return true }
+            usleep(100_000)
+        }
+        return element.value as? String == expectedValue
+    }
+
+    private func waitForLabel(
+        _ element: XCUIElement,
+        equalTo expectedLabel: String,
+        timeout: TimeInterval
+    ) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if element.label == expectedLabel { return true }
+            usleep(100_000)
+        }
+        return element.label == expectedLabel
+    }
+
+    private func openQuiz(
+        _ app: XCUIApplication,
+        searchText: String,
+        songButton: String,
+        navigationTitle: String
+    ) {
+        let search = app.textFields["library.search.field"]
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        search.tap()
+        search.typeText(searchText)
+        let song = app.buttons[songButton]
+        XCTAssertTrue(song.waitForExistence(timeout: 5))
+        song.tap()
+        XCTAssertTrue(app.navigationBars[navigationTitle].waitForExistence(timeout: 5))
     }
 
     private func launchApp(
