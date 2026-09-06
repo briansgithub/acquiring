@@ -120,13 +120,12 @@ private struct LibraryView: View {
 
 private struct IntroductionView: View {
     var continueToLibrary: (() -> Void)? = nil
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 IntroductionSection(
-                    title: "Train your ear with real songs",
+                    title: "Objective:",
                     identifier: "introduction.objective"
                 ) {
                     Text("Learn intervals and harmony through catchy songs and real-world examples.")
@@ -134,25 +133,7 @@ private struct IntroductionView: View {
                 }
 
                 IntroductionSection(
-                    title: "From a circle to Acquiring",
-                    identifier: "introduction.story"
-                ) {
-                    Text("It started with diatonic scale degrees arranged in a circle. Next came “Inquiring”—asking questions about songs. Finally, “Acquiring,” because I wanted to find my app faster in the app list.")
-                        .foregroundStyle(.secondary)
-
-                    let layout = dynamicTypeSize.isAccessibilitySize
-                        ? AnyLayout(VStackLayout(alignment: .leading, spacing: 14))
-                        : AnyLayout(HStackLayout(alignment: .center, spacing: 18))
-                    layout {
-                        ScaleDegreeCircle()
-                        IntroductionNameProgression()
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .padding(.top, 2)
-                }
-
-                IntroductionSection(
-                    title: "Three ways to use a card",
+                    title: "Tapping on Notes/Intervals/Chords",
                     identifier: "introduction.gestures"
                 ) {
                     VStack(spacing: 10) {
@@ -163,7 +144,7 @@ private struct IntroductionView: View {
                         )
                         IntroductionGestureRow(
                             action: "Double-tap",
-                            detail: "Open the interval singing queue.",
+                            detail: "Open the Singing Tool.",
                             systemImage: "hand.tap.fill"
                         )
                         IntroductionGestureRow(
@@ -175,33 +156,15 @@ private struct IntroductionView: View {
                 }
 
                 IntroductionSection(
-                    title: "Find your comfortable range",
+                    title: "Tessitura",
                     identifier: "introduction.tessitura"
                 ) {
-                    Text("Tessitura is your comfortable singing range. Set a comfortable pitch so singing targets can shift by octaves to suit your voice.")
+                    Text("The tessitura function shifts the target note of the Interval Singing Tool to a more comfortable octave for you.")
                         .foregroundStyle(.secondary)
 
-                    ViewThatFits(in: .horizontal) {
-                        HStack(spacing: 12) {
-                            PitchHintExample(
-                                title: "White dot: Original octave.",
-                                isAdjusted: false
-                            )
-                            PitchHintExample(
-                                title: "Gray dot: Comfortable pitch set.",
-                                isAdjusted: true
-                            )
-                        }
-                        VStack(spacing: 10) {
-                            PitchHintExample(
-                                title: "White dot: Original octave.",
-                                isAdjusted: false
-                            )
-                            PitchHintExample(
-                                title: "Gray dot: Comfortable pitch set.",
-                                isAdjusted: true
-                            )
-                        }
+                    VStack(alignment: .leading, spacing: 8) {
+                        pitchHintRow("White dot: original octave", isAdjusted: false)
+                        pitchHintRow("Gray dot: more comfortable octave", isAdjusted: true)
                     }
 
                     Text("Open a song, then choose “Calibrate comfortable pitch” in the singing tool’s menu and hum an easy note.")
@@ -236,6 +199,14 @@ private struct IntroductionView: View {
             }
         }
     }
+
+    private func pitchHintRow(_ title: String, isAdjusted: Bool) -> some View {
+        HStack(spacing: 6) {
+            PitchHintDot(isAdjusted: isAdjusted)
+            Text(title)
+        }
+        .accessibilityElement(children: .combine)
+    }
 }
 
 private struct IntroductionSection<Content: View>: View {
@@ -262,61 +233,6 @@ private struct IntroductionSection<Content: View>: View {
     }
 }
 
-private struct ScaleDegreeCircle: View {
-    private let degrees = ["1", "2", "3", "4", "5", "6", "7"]
-
-    var body: some View {
-        ZStack {
-            Circle()
-                .fill(Color.accentColor.opacity(0.12))
-            Circle()
-                .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
-            ForEach(Array(degrees.enumerated()), id: \.offset) { index, degree in
-                let angle = Angle.degrees(Double(index) / Double(degrees.count) * 360 - 90)
-                Text(degree)
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundStyle(index == 0 ? Color.accentColor : .primary)
-                    .offset(x: cos(angle.radians) * 32, y: sin(angle.radians) * 32)
-            }
-            Image(systemName: "music.note")
-                .font(.system(size: 12, weight: .bold))
-                .foregroundStyle(Color.accentColor)
-        }
-        .frame(width: 92, height: 92)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Scale degrees arranged in a circle")
-    }
-}
-
-private struct IntroductionNameProgression: View {
-    var body: some View {
-        ViewThatFits(in: .horizontal) {
-            HStack(spacing: 6) {
-                progressionLabel("Circle")
-                Image(systemName: "chevron.right")
-                progressionLabel("Inquiring")
-                Image(systemName: "chevron.right")
-                progressionLabel("Acquiring", emphasized: true)
-            }
-            VStack(alignment: .leading, spacing: 4) {
-                progressionLabel("Circle")
-                progressionLabel("Inquiring")
-                progressionLabel("Acquiring", emphasized: true)
-            }
-        }
-        .font(.caption.weight(.semibold))
-        .foregroundStyle(.secondary)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Circle, then Inquiring, then Acquiring")
-    }
-
-    private func progressionLabel(_ text: String, emphasized: Bool = false) -> some View {
-        Text(text)
-            .foregroundStyle(emphasized ? Color.accentColor : .secondary)
-            .fixedSize(horizontal: false, vertical: true)
-    }
-}
-
 private struct IntroductionGestureRow: View {
     let action: String
     let detail: String
@@ -331,38 +247,6 @@ private struct IntroductionGestureRow: View {
             Text(action).fontWeight(.semibold) + Text(" — \(detail)")
         }
         .frame(maxWidth: .infinity, minHeight: 28, alignment: .leading)
-    }
-}
-
-private struct PitchHintExample: View {
-    let title: String
-    let isAdjusted: Bool
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 6) {
-                Image(systemName: "music.note")
-                    .font(.caption.weight(.bold))
-                RoundedRectangle(cornerRadius: 3, style: .continuous)
-                    .fill(.white.opacity(0.72))
-                    .frame(width: 30, height: 5)
-                Spacer(minLength: 0)
-            }
-            .foregroundStyle(.white)
-            .accessibilityHidden(true)
-            Text(title)
-                .font(.caption.weight(.medium))
-                .foregroundStyle(.primary)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding(12)
-        .frame(maxWidth: .infinity, minHeight: 82, alignment: .leading)
-        .background(Color.accentColor.opacity(0.82), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .overlay(alignment: .topTrailing) {
-            PitchHintDot(isAdjusted: isAdjusted)
-                .padding(7)
-        }
-        .accessibilityElement(children: .combine)
     }
 }
 
