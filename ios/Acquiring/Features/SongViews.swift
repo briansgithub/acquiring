@@ -18,6 +18,8 @@ struct SongDetailView: View {
     @State private var arpeggiatesChords = false
     @State private var arpeggioStepMilliseconds = 80.0
     @State private var audioError: String?
+    @State private var showsAudioDiagnostics = false
+    @State private var audioRecoveryTask: Task<Void, Never>?
 
     var body: some View {
         Group {
@@ -69,13 +71,27 @@ struct SongDetailView: View {
             synchronizeRememberedSection()
         }
         .onDisappear {
+            audioRecoveryTask?.cancel()
             environment.vocalPractice.cancelActivity()
             Task { await environment.audio.stop(channel: .preview) }
         }
         .alert("Audio", isPresented: audioAlertBinding) {
-            Button("OK") { audioError = nil }
+            Button("Share Audio Diagnostics") { showsAudioDiagnostics = true }
+            Button("Reset Audio and Retry") {
+                audioError = nil
+                audioRecoveryTask?.cancel()
+                audioRecoveryTask = Task { @MainActor in
+                    do { try await environment.audio.resetAudioAndRetryPreview() }
+                    catch is CancellationError { }
+                    catch { audioError = error.localizedDescription }
+                }
+            }
+            Button("OK", role: .cancel) { audioError = nil }
         } message: {
-            Text(audioError ?? "")
+            Text([audioError, environment.audio.diagnostics.persistenceError].compactMap { $0 }.joined(separator: "\n"))
+        }
+        .sheet(isPresented: $showsAudioDiagnostics) {
+            AudioDiagnosticsSheet(audio: environment.audio)
         }
     }
 
@@ -801,6 +817,7 @@ struct QuizView: View {
     @State private var timelineInertiaTask: Task<Void, Never>?
     @State private var timelineInertiaGeneration = 0
     @State private var error: String?
+    @State private var showsAudioDiagnostics = false
     @State private var usesRelativeIonianContext = false
     @State private var tempoPercent = 100.0
     @State private var soundConfiguration = QuizSoundConfiguration()
@@ -899,8 +916,15 @@ struct QuizView: View {
         }
         .onChange(of: transportPhase) { _, _ in updatePracticeContext() }
         .alert("Audio", isPresented: errorAlertBinding) {
-            Button("OK") { error = nil }
-        } message: { Text(error ?? "") }
+            Button("Share Audio Diagnostics") { showsAudioDiagnostics = true }
+            Button("Reset Audio and Retry") { requestAudioRecovery() }
+            Button("OK", role: .cancel) { error = nil }
+        } message: {
+            Text([error, environment.audio.diagnostics.persistenceError].compactMap { $0 }.joined(separator: "\n"))
+        }
+        .sheet(isPresented: $showsAudioDiagnostics) {
+            AudioDiagnosticsSheet(audio: environment.audio)
+        }
     }
 
     private var errorAlertBinding: Binding<Bool> {
@@ -1758,6 +1782,23 @@ struct QuizView: View {
             )
         }
         return PlaybackTiming.endBeat(metadata: section.endBeat, audibleEnds: melodyEnds + chordEnds)
+    }
+
+    private func requestAudioRecovery() {
+        guard scenePhase == .active, sectionLoadStatus.isReady,
+              let revision = activeQuizRevision, let playbackOwner else { return }
+        error = nil
+        cancelPlaybackCommand()
+        playbackCommandPending = true
+        playbackCommandTask = Task { @MainActor in
+            defer {
+                playbackCommandPending = false
+                playbackCommandTask = nil
+            }
+            do { try await environment.audio.resetAudioAndRetryQuiz(revision: revision, owner: playbackOwner) }
+            catch is CancellationError { }
+            catch { self.error = error.localizedDescription }
+        }
     }
 
     private func requestPlaybackToggle() {

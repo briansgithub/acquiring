@@ -1685,3 +1685,59 @@ label inspection only; no new UI test or screenshot inspection for this layout e
 Review: (1) open `500 Miles` → Quiz and check the two separate buttons alongside
 the centered key; (2) toggle Favorite and open information to check both actions.
 Earlier review statuses remain pending.
+
+### iPhone 14 Pro audio diagnostics and explicit recovery — 2026-09-06
+
+Implemented on `codex/audio-diagnostics`, based on the completed UI consolidation.
+Build 11 remains the reported failing baseline. The user's iPhone 14 Pro is on
+ iOS 26.6.1 according to TestFlight; simulator checks are not device acceptance.
+Runtime model: unknown. One implementer; no delegated agents.
+
+- Audio operations now retain original error domain/code and bounded underlying
+  errors before display wrapping. Local reports include device model/OS/build,
+  audio formats, session/route types, lifecycle and microphone transitions.
+  No microphone samples, song contents, route names or device/user identifiers
+  are collected. The latest failure, preceding events, and latest reset experiment
+  survive restarts; sharing is explicitly initiated through the iOS share sheet.
+- Audio alerts offer Share Audio Diagnostics and Reset Audio and Retry. Settings
+  also offers sharing after dismissal/relaunch. Reset cancels previews/capture,
+  removes the existing microphone tap, stops/deactivates, rebuilds/reactivates,
+  and retries once, preserving the Quiz renderer position/settings. Navigation,
+  cancellation, inactivity, disconnection and interruption prevent late retries.
+- Debug UI tests can inject a single startup failure with
+  `--ui-testing --ui-testing-audio-start-failure`. Release builds exclude this hook.
+  No automatic retry or claim of a confirmed device fix was added.
+
+Verification (from `/Users/brian/Desktop/acquiring-audio-diagnostics`):
+`xcrun swiftc -frontend -parse` on the changed audio/UI/test sources passed;
+`plutil -lint ios/Acquiring.xcodeproj/project.pbxproj` and `git diff --check` passed.
+Incremental Debug build passed. Eight focused diagnostic tests plus the reset/share
+UI test passed in the final run. A separate existing Quiz lifecycle/position test
+also passed. Tests cover original/underlying error preservation, privacy, bounded
+history and persistence, engine replacement, retained position/settings, repeated
+failure without loops, pending microphone cleanup, cancellation, inactivity and
+navigation. Actual active-microphone hardware recovery still needs phone testing.
+The initial UI check exposed a Settings sheet attached to a Form Section; moving
+presentation to its button fixed it. The next assertion was corrected to query
+Copy/Save to Files as the system's accessibility cells. No screenshots were read.
+
+Exact final command (through `python3 android/scripts/compact_check.py --name
+ audio-diagnostics-final --keep-success-log --`):
+```sh
+xcodebuild -quiet test -project ios/Acquiring.xcodeproj -scheme Acquiring -derivedDataPath /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 90 -only-testing:AcquiringTests/AudioDiagnosticsTests -only-testing:AcquiringUITests/AcquiringUITests/testAudioDiagnosticsResetAndSettingsShareSheet CODE_SIGNING_ALLOWED=NO
+```
+Result: PASS (57.9 s). Log:
+`/private/var/folders/zp/zqxv_w6x5fq_g2c_p38f8k1h0000gp/T/ai-agent-checks/acquiring-audio-diagnostics/20260906-010341-446552-audio-diagnostics-final.log`.
+The separate lifecycle check used `-only-testing:AcquiringTests/AcquiringTests/testLifecycleInvalidatesQueuedQuizOwnerAndRetainsPositionForReentry`.
+Prior Android and All Songs/menu verification limits remain unchanged.
+
+Delivery: user authorized committing all pending work, pushing and TestFlight
+release, then accepted using the existing Acquiring Internal Testers group.
+App Store Connect inspection found exactly one tester (the owner), build 11
+installed, and Automatic for Xcode Builds. No additional group/tester changes are
+needed. Build 12 release preparation follows; exact What to Test notes still
+require owner approval before upload because automatic distribution is enabled.
+Next: reproduce on the phone, export a report, use Reset Audio and Retry, and
+export the result from Settings with an explicit report of whether sound returned.
+Compare full force-quit/relaunch separately. Use that evidence to choose a targeted
+fix; the underlying intermittent failure remains unconfirmed.
