@@ -3,7 +3,6 @@ package com.acquiring.android
 import android.content.Context
 import android.content.Intent
 import android.content.ActivityNotFoundException
-import android.content.pm.PackageManager
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.net.Uri
@@ -13,7 +12,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ScrollState
@@ -56,13 +54,10 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.layout
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalFocusManager
@@ -86,10 +81,10 @@ import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.input.pointer.util.addPointerInputChange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.dp
 import androidx.room.Room
@@ -112,6 +107,7 @@ private enum class SongParentPage {
 
 private const val ROOT_INTERVAL_PREVIEW_DURATION_MS = 450
 private const val ALL_SONGS_STATE_KEY = "all-songs"
+internal const val LIBRARY_TITLE_SEARCH_TEST_TAG = "LibraryTitleSearch"
 // This is an external handoff, not an in-app update check. Keep the destination
 // isolated until the app adopts the Play In-App Updates API.
 private const val UPDATE_DISTRIBUTION_URL =
@@ -184,6 +180,138 @@ private fun Modifier.dropdownScrollbar(
 
 /** Row height for the transpose menu's single-number entries. */
 private val QUIZ_TRANSPOSE_ITEM_HEIGHT = 32.dp
+internal const val QUIZ_INSTRUMENT_BUTTON_TEST_TAG = "QuizInstrumentButton"
+internal const val QUIZ_TRANSPOSE_BUTTON_TEST_TAG = "QuizTransposeButton"
+
+@Composable
+internal fun QuizInstrumentMenu(
+    selectedInstrument: AudioEngine.Waveform,
+    onInstrumentSelected: (AudioEngine.Waveform) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    val selectedLabel = selectedInstrument.displayName
+
+    Box(modifier) {
+        FilledTonalIconButton(
+            onClick = { expanded = true },
+            modifier = Modifier
+                .size(56.dp)
+                .testTag(QUIZ_INSTRUMENT_BUTTON_TEST_TAG)
+                .semantics {
+                    contentDescription = "Instrument"
+                    stateDescription = selectedLabel
+                }
+        ) {
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_piano),
+                contentDescription = null,
+                modifier = Modifier.size(28.dp)
+            )
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.width(220.dp)
+        ) {
+            AudioEngine.Waveform.entries.groupBy(AudioEngine.Waveform::categoryName)
+                .forEach { (category, instruments) ->
+                    Text(
+                        text = category,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            .semantics { heading() }
+                    )
+                    instruments.forEach { instrument ->
+                        DropdownMenuItem(
+                            text = { Text(instrument.displayName, maxLines = 1) },
+                            leadingIcon = {
+                                RadioButton(
+                                    selected = instrument == selectedInstrument,
+                                    onClick = null
+                                )
+                            },
+                            onClick = {
+                                onInstrumentSelected(instrument)
+                                expanded = false
+                            },
+                            modifier = Modifier.testTag("QuizInstrument-${instrument.name}")
+                        )
+                    }
+                }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun QuizTransposeMenu(
+    transpose: Int,
+    onTransposeSelected: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    val transposeText = if (transpose > 0) "+$transpose" else "$transpose"
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded },
+        modifier = modifier.width(108.dp)
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .menuAnchor()
+                .testTag(QUIZ_TRANSPOSE_BUTTON_TEST_TAG)
+                .semantics {
+                    contentDescription = "Transpose"
+                    stateDescription = transposeText
+                    role = Role.Button
+                },
+            shape = RoundedCornerShape(28.dp),
+            color = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            tonalElevation = 1.dp
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text("Transpose", style = MaterialTheme.typography.labelSmall, maxLines = 1)
+                Text(transposeText, fontWeight = FontWeight.Bold)
+            }
+        }
+        ExposedDropdownMenuWithScrollbar(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            centerScrollOnExpand = true
+        ) {
+            (-12..12).forEach { option ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = if (option > 0) "+$option" else "$option",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    },
+                    onClick = {
+                        onTransposeSelected(option)
+                        expanded = false
+                    },
+                    modifier = Modifier
+                        .height(QUIZ_TRANSPOSE_ITEM_HEIGHT)
+                        .testTag("QuizTranspose-$option"),
+                    contentPadding = PaddingValues(horizontal = 8.dp)
+                )
+            }
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -246,26 +374,13 @@ class MainActivity : ComponentActivity() {
     private lateinit var userDb: UserDataDatabase
     private val tessituraSessionViewModel by viewModels<TessituraSessionViewModel>()
 
-    /**
-     * The media notification is the only surface that can reach the transport once the
-     * app is in the background, so ask for it. A refusal is not fatal: playback and its
-     * foreground service still run, the tray entry is just missing.
-     */
-    private val notificationPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         AppAudioOutput.initialize(this)
         QuizPlaybackController.initialize(this)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) !=
-            PackageManager.PERMISSION_GRANTED
-        ) {
-            notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
-        }
+        AppInstrumentSession.initialize(this)
 
         db = Room.databaseBuilder(
             applicationContext,
@@ -313,6 +428,12 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onPause() {
+        QuizPlaybackController.pauseForAppInactive()
+        AudioEngine.stopAllPlayback()
+        super.onPause()
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -359,7 +480,8 @@ internal fun MainScreen(
     }
     var isShowingRecent by remember { mutableStateOf(false) }
     var isShowingRecentArtists by remember { mutableStateOf(false) }
-    var currentWaveform by remember { mutableStateOf(AudioEngine.currentWaveform) }
+    val currentWaveform by AppInstrumentSession.sessionInstrument.collectAsState()
+    val defaultInstrument by AppInstrumentSession.defaultInstrument.collectAsState()
     var globalTranspose by remember { mutableStateOf(AudioEngine.globalTranspose) }
     var quizPlayButtonXFraction by rememberSaveable { mutableStateOf(Float.NaN) }
     var quizPlayButtonYFraction by rememberSaveable { mutableStateOf(Float.NaN) }
@@ -701,6 +823,8 @@ internal fun MainScreen(
                     AppSettingsMenu(
                         catalogStatus = catalogStatus,
                         updateStatus = updateStatus,
+                        defaultInstrument = defaultInstrument,
+                        onDefaultInstrumentChange = AppInstrumentSession::selectAsDefault,
                         onDownloadCatalog = downloadCatalog,
                         onCheckForUpdates = {
                             updateStatus = openUpdateDistribution(context)
@@ -898,8 +1022,7 @@ internal fun MainScreen(
                     onArpeggioStepMsChange = { arpeggioStepMs = it },
                     currentWaveform = currentWaveform,
                     onWaveformChange = { 
-                        currentWaveform = it
-                        AudioEngine.currentWaveform = it
+                        AppInstrumentSession.selectForSession(it)
                     },
                     globalTranspose = globalTranspose,
                     quizTempoPercent = quizTempoPercent,
@@ -968,6 +1091,8 @@ internal fun MainScreen(
 private fun AppSettingsMenu(
     catalogStatus: String,
     updateStatus: String,
+    defaultInstrument: AudioEngine.Waveform,
+    onDefaultInstrumentChange: (AudioEngine.Waveform) -> Unit,
     onDownloadCatalog: () -> Unit,
     onCheckForUpdates: () -> Unit
 ) {
@@ -985,6 +1110,47 @@ private fun AppSettingsMenu(
             onDismissRequest = { isExpanded = false },
             modifier = Modifier.semantics { contentDescription = "Settings menu" }
         ) {
+            Text(
+                text = "Default Instrument",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                    .semantics { heading() }
+            )
+            AudioEngine.Waveform.entries.groupBy(AudioEngine.Waveform::categoryName)
+                .forEach { (category, instruments) ->
+                    Text(
+                        text = category,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                    )
+                    instruments.forEach { instrument ->
+                        DropdownMenuItem(
+                            text = { Text(instrument.displayName) },
+                            leadingIcon = {
+                                RadioButton(
+                                    selected = instrument == defaultInstrument,
+                                    onClick = null
+                                )
+                            },
+                            onClick = {
+                                onDefaultInstrumentChange(instrument)
+                                isExpanded = false
+                            },
+                            modifier = Modifier.semantics {
+                                contentDescription = "Default instrument: ${instrument.displayName}"
+                                stateDescription = if (instrument == defaultInstrument) {
+                                    "Selected"
+                                } else {
+                                    "Not selected"
+                                }
+                            }
+                        )
+                    }
+                }
+
+            Divider(modifier = Modifier.padding(vertical = 4.dp))
             DropdownMenuItem(
                 text = { Text("Check for Updates") },
                 onClick = onCheckForUpdates,
@@ -1113,6 +1279,7 @@ fun LibraryView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .menuAnchor()
+                    .testTag(LIBRARY_TITLE_SEARCH_TEST_TAG)
                     .onFocusChanged { onSearchTitleFocusChanged(it.isFocused) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
@@ -1330,6 +1497,9 @@ fun LibraryView(
 }
 
 internal const val QUIZ_FAVORITE_STAR_TEST_TAG = "QuizFavoriteStar"
+internal const val QUIZ_SECTION_BUTTON_TEST_TAG = "QuizSectionButton"
+internal const val QUIZ_MODE_SWITCH_TEST_TAG = "QuizModeSwitch"
+internal const val QUIZ_TEMPO_DIAL_TEST_TAG = "QuizTempoDial"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -1376,7 +1546,6 @@ fun SongDetailView(
         ?: sections.keys.firstOrNull()
     val selectedSection = sections[selectedSectionKey] ?: sectionsInSongOrder.firstOrNull()?.value ?: sections.values.first()
     var isSectionExpanded by remember { mutableStateOf(false) }
-    var isTransposeExpanded by remember { mutableStateOf(false) }
     var isSimpleMode by remember { mutableStateOf(false) }
     var useRelativeIonianContext by remember { mutableStateOf(false) }
     // The quiz's key/scale readout is rendered by the song header rather than by
@@ -1386,100 +1555,7 @@ fun SongDetailView(
     val uriHandler = LocalUriHandler.current
 
     val transposePickerComposable: @Composable () -> Unit = {
-        val transposeText = if (globalTranspose > 0) "+$globalTranspose" else "$globalTranspose"
-        ExposedDropdownMenuBox(
-            expanded = isTransposeExpanded,
-            onExpandedChange = { isTransposeExpanded = !isTransposeExpanded },
-            modifier = Modifier.width(172.dp)
-        ) {
-            Surface(
-                modifier = Modifier
-                    .menuAnchor()
-                    .semantics { contentDescription = "Transpose: $transposeText" },
-                shape = RoundedCornerShape(50),
-                color = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                tonalElevation = 2.dp,
-                shadowElevation = 1.dp
-            ) {
-                Row(
-                    modifier = Modifier
-                        .height(QUIZ_HEADER_CONTROL_HEIGHT)
-                        .padding(horizontal = 2.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(
-                        modifier = Modifier.padding(start = 12.dp, end = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            "Transpose",
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 0.5.sp
-                        )
-                    }
-
-                    // Subtle vertical divider
-                    Box(
-                        modifier = Modifier
-                            .width(1.dp)
-                            .height(24.dp)
-                            .background(MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.15f))
-                    )
-
-                    Row(
-                        modifier = Modifier.padding(start = 8.dp, end = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = transposeText,
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Black,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.widthIn(min = 32.dp)
-                        )
-                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = isTransposeExpanded)
-                    }
-                }
-            }
-
-            ExposedDropdownMenuWithScrollbar(
-                expanded = isTransposeExpanded,
-                onDismissRequest = { isTransposeExpanded = false },
-                centerScrollOnExpand = true
-            ) {
-                (-12..12).forEach { transpose ->
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = if (transpose > 0) "+$transpose" else "$transpose",
-                                modifier = Modifier.fillMaxWidth(),
-                                style = MaterialTheme.typography.bodyMedium,
-                                textAlign = TextAlign.Center
-                            )
-                        },
-                        onClick = {
-                            onTransposeChange(transpose)
-                            isTransposeExpanded = false
-                        },
-                        // Material's 48dp default row turns 25 semitones into a very long
-                        // menu; a short row keeps the useful range on screen at once.
-                        modifier = Modifier.height(QUIZ_TRANSPOSE_ITEM_HEIGHT),
-                        contentPadding = PaddingValues(horizontal = 8.dp)
-                    )
-                }
-            }
-        }
+        QuizTransposeMenu(globalTranspose, onTransposeChange)
     }
 
     val sectionPickerComposable: @Composable () -> Unit = {
@@ -1496,7 +1572,11 @@ fun SongDetailView(
                     label = { Text("Section") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isSectionExpanded) },
                     colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                    modifier = Modifier.fillMaxWidth().height(64.dp).menuAnchor()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(64.dp)
+                        .menuAnchor()
+                        .testTag(QUIZ_SECTION_BUTTON_TEST_TAG)
                 )
 
                 ExposedDropdownMenuWithScrollbar(
@@ -1509,7 +1589,8 @@ fun SongDetailView(
                             onClick = {
                                 onSectionChange(id)
                                 isSectionExpanded = false
-                            }
+                            },
+                            modifier = Modifier.testTag("QuizSection-$id")
                         )
                     }
                 }
@@ -1680,20 +1761,6 @@ fun SongDetailView(
             }
         }
 
-        // Names the loaded section for the media notification and the lock screen.
-        // Kept out of the tab switch: what is loaded does not change with the tab.
-        LaunchedEffect(song.slug, song.title, song.artist, selectedSection) {
-            QuizPlaybackController.setNowPlaying(
-                QuizNowPlaying(
-                    title = song.title?.takeIf { it.isNotBlank() } ?: song.slug,
-                    artist = song.artist.orEmpty(),
-                    // The section's own name, as the picker shows it. The map key is an
-                    // opaque Hooktheory id and reads as noise on the lock screen.
-                    sectionLabel = selectedSection.safeSectionName
-                )
-            )
-        }
-
         when (currentTab) {
             0 -> InfoTab(song, selectedSection, sections, selectedSectionKey, onSectionChange)
             1 -> ChordsTab(
@@ -1761,42 +1828,13 @@ data class QuizKeyDisplay(
  */
 private val QUIZ_ROW_LABEL_WIDTH = 44.dp
 
-/**
- * Cross-axis width of the balance slider. Kept just wide enough for the 20dp thumb:
- * the Slider centres its track in whatever cross-axis space it is given, so surplus
- * width reads as margin either side of the fader.
- */
-private val QUIZ_BALANCE_FADER_WIDTH = 28.dp
-
-/**
- * Half the Material thumb width. A Slider insets its track by this much at each end to
- * leave the thumb room, so the fader is measured this much longer than the space it
- * occupies and hangs the surplus off both ends, putting the drawn track flush with the
- * top and bottom of the card stack.
- */
-private val QUIZ_BALANCE_FADER_TRACK_INSET = 10.dp
-
-/** Fixed fader length used in simple mode, which has no melody/chord-tone rows. */
-private val QUIZ_SIMPLE_MODE_FADER_HEIGHT = 200.dp
-
 // The full-quiz card stack. Every row keeps its height whether or not it currently has
-// cards, so the stack never shifts under the reader and the fader beside it can be one
-// fixed length that ends level with the bottom of the chord-tone cards.
+// cards, so the stack never shifts under the reader.
 private val QUIZ_CARD_STACK_TOP_INSET = 8.dp
 private val QUIZ_CARD_ROW_SPACING = 8.dp
 private val QUIZ_MELODY_ROW_HEIGHT = 64.dp
 private val QUIZ_CHORD_ROW_HEIGHT = 60.dp
 private val QUIZ_CHORD_TONE_ROW_HEIGHT = 54.dp
-/**
- * Melody row's top edge down to the chord-tone row's bottom edge: the span the balance
- * fader is drawn against. It excludes [QUIZ_CARD_STACK_TOP_INSET], which sits above the
- * melody row and is not part of any card.
- */
-private val QUIZ_CARD_STACK_SPAN = QUIZ_MELODY_ROW_HEIGHT + QUIZ_CARD_ROW_SPACING +
-    QUIZ_CHORD_ROW_HEIGHT + QUIZ_CARD_ROW_SPACING +
-    QUIZ_CHORD_TONE_ROW_HEIGHT
-
-
 /** Row caption in the quiz's left gutter. Pass a blank label to hold the space only. */
 @Composable
 private fun QuizRowLabel(text: String, modifier: Modifier = Modifier) {
@@ -1811,70 +1849,6 @@ private fun QuizRowLabel(text: String, modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.labelSmall.copy(lineHeight = 12.sp),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 2
-        )
-    }
-}
-
-/**
- * Melody/chord balance as a vertical fader spanning the card stack: up favours the
- * melody, down the chords. A stacked "Volume Mix" caption names the axis beside it —
- * one letter per line so each stays upright rather than turned on its side.
- *
- * Compose ships no vertical Slider, so the horizontal one is measured with its
- * constraints swapped and drawn a quarter turn counter-clockwise. That puts the
- * slider's minimum (all chord) at the bottom and its maximum (all melody) at the
- * top, which is the orientation a mixing fader is read in.
- */
-@Composable
-private fun MelodyChordBalanceFader(
-    value: Float,
-    onValueChange: (Float) -> Unit,
-    trackLength: Dp,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Slider(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = Modifier
-                .width(QUIZ_BALANCE_FADER_WIDTH)
-                .height(trackLength)
-                .semantics {
-                    contentDescription =
-                        "Chord and melody volume balance. Raise for melody, lower for chords."
-                }
-                .graphicsLayer {
-                    rotationZ = 270f
-                    transformOrigin = TransformOrigin(0f, 0f)
-                }
-                .layout { measurable, constraints ->
-                    // Measure the slider a thumb-radius longer at each end than the length
-                    // it reports, so the part of it that reads as the track covers exactly
-                    // the requested span and the overshoot falls outside.
-                    val overshoot = QUIZ_BALANCE_FADER_TRACK_INSET.roundToPx()
-                    val reportedLength = constraints.maxHeight
-                    val measuredLength = reportedLength + overshoot * 2
-                    val placeable = measurable.measure(
-                        Constraints(
-                            minWidth = measuredLength,
-                            maxWidth = measuredLength,
-                            minHeight = constraints.minWidth,
-                            maxHeight = constraints.maxWidth
-                        )
-                    )
-                    layout(placeable.height, reportedLength) {
-                        placeable.place(-(reportedLength + overshoot), 0)
-                    }
-                }
-        )
-        Text(
-            text = "Volume Mix".toCharArray().joinToString("\n"),
-            style = MaterialTheme.typography.labelSmall.copy(lineHeight = 12.sp),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center
         )
     }
 }
@@ -2080,7 +2054,6 @@ fun QuizTab(
     var wasPlayingBeforeScrub by remember { mutableStateOf(false) }
     var scrubBeat by remember(section) { mutableStateOf(1.0) }
     var intervalPreviewJob by remember { mutableStateOf<Job?>(null) }
-    var isWaveformExpanded by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     val endBeat = remember(section, melody) {
@@ -2111,11 +2084,7 @@ fun QuizTab(
         chordGain = chordVolume,
         arpeggiateCycles = arpeggiateCycles
     )
-    // The transport outlives this composable. It belongs to QuizPlaybackController,
-    // which QuizPlaybackService publishes as a media session, so a section keeps its
-    // place when the tab goes away and can be driven from the notification tray.
-    // Configuring here rather than further down keeps the engine built before the
-    // timeline effect below tries to load into it.
+    // Configuring here keeps the engine built before the timeline effect loads it.
     LaunchedEffect(playbackConfig) {
         QuizPlaybackController.configure(playbackConfig)
     }
@@ -2180,6 +2149,47 @@ fun QuizTab(
         QuizPlaybackController.seek(targetBeat, resume = shouldResume)
     }
 
+    val quizPlaybackOwner = remember { Any() }
+    val quizLifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
+    val latestPauseVisibleQuiz by rememberUpdatedState {
+        cancelInertia()
+        intervalPreviewJob?.cancel()
+        intervalPreviewJob = null
+        AudioEngine.stopPreviewPlayback()
+        val retainedScrubBeat = if (isScrubbing) {
+            scrubBeat.also {
+            isScrubbing = false
+            wasPlayingBeforeScrub = false
+            }
+        } else {
+            null
+        }
+        QuizPlaybackController.detachQuiz(quizPlaybackOwner, retainedScrubBeat)
+    }
+
+    DisposableEffect(quizLifecycleOwner, quizPlaybackOwner) {
+        if (quizLifecycleOwner.lifecycle.currentState.isAtLeast(
+                androidx.lifecycle.Lifecycle.State.RESUMED
+            )
+        ) {
+            QuizPlaybackController.attachQuiz(quizPlaybackOwner)
+        }
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            when (event) {
+                androidx.lifecycle.Lifecycle.Event.ON_RESUME ->
+                    QuizPlaybackController.attachQuiz(quizPlaybackOwner)
+                androidx.lifecycle.Lifecycle.Event.ON_PAUSE,
+                androidx.lifecycle.Lifecycle.Event.ON_STOP -> latestPauseVisibleQuiz()
+                else -> Unit
+            }
+        }
+        quizLifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            quizLifecycleOwner.lifecycle.removeObserver(observer)
+            latestPauseVisibleQuiz()
+        }
+    }
+
     fun skipBack(seconds: Double) {
         cancelInertia()
         if (isScrubbing || bpm <= 0.0) return
@@ -2189,7 +2199,7 @@ fun QuizTab(
         QuizPlaybackController.seek(playbackBeat() - beatsToSkip, resume = isPlaying)
     }
 
-    LaunchedEffect(timeline) {
+    LaunchedEffect(timeline, sessionKey) {
         cancelInertia()
         intervalPreviewJob?.cancel()
         AudioEngine.stopPreviewPlayback()
@@ -2204,60 +2214,17 @@ fun QuizTab(
         wasPlayingBeforeScrub = false
         scrubBeat = timeline.startBeat
         QuizPlaybackController.load(
-            timeline,
-            metadata = null,
+            identity = sessionKey,
+            newTimeline = timeline,
             continuePlaying = continuePlaying
         )
     }
 
     DisposableEffect(Unit) {
         onDispose {
-            // Card previews are tied to the cards on screen, so they go. The section
-            // transport does not: leaving the tab is not a request to stop the music.
+            // Card previews are tied to the cards on screen.
             intervalPreviewJob?.cancel()
             AudioEngine.stopPreviewPlayback()
-        }
-    }
-
-    val waveformPickerComposable: @Composable () -> Unit = {
-        val waveformLabel = currentWaveform.displayName
-        ExposedDropdownMenuBox(expanded = isWaveformExpanded, onExpandedChange = { isWaveformExpanded = !isWaveformExpanded }, modifier = Modifier.width(128.dp)) {
-            Box(modifier = Modifier.fillMaxWidth().height(48.dp).border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(4.dp)).menuAnchor().semantics { contentDescription = "Sound: $waveformLabel" }, contentAlignment = Alignment.Center) {
-                Text(text = waveformLabel, maxLines = 1, textAlign = TextAlign.Center, style = MaterialTheme.typography.labelSmall.copy(lineHeight = 12.sp, platformStyle = PlatformTextStyle(includeFontPadding = false)), modifier = Modifier.fillMaxWidth())
-                Box(modifier = Modifier.align(Alignment.CenterEnd)) { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isWaveformExpanded) }
-            }
-            ExposedDropdownMenuWithScrollbar(expanded = isWaveformExpanded, onDismissRequest = { isWaveformExpanded = false }) {
-                AudioEngine.Waveform.entries.groupBy { waveform ->
-                    when (waveform) {
-                        AudioEngine.Waveform.SINE,
-                        AudioEngine.Waveform.SQUARE,
-                        AudioEngine.Waveform.SAWTOOTH,
-                        AudioEngine.Waveform.TRIANGLE -> "Waveforms"
-                        else -> "Synths"
-                    }
-                }.forEach { (category, waveforms) ->
-                    Text(
-                        text = category,
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                            .semantics { heading() }
-                    )
-                    waveforms.forEach { waveform ->
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    waveform.displayName,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    maxLines = 1
-                                )
-                            },
-                            onClick = { onWaveformChange(waveform); isWaveformExpanded = false }
-                        )
-                    }
-                }
-            }
         }
     }
 
@@ -2813,35 +2780,14 @@ fun QuizTab(
                     onDispose { latestOnKeyDisplayChange(null) }
                 }
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    // "Lock in Major" sits beside the key/scale readout in the song
-                    // header; Tessitura and Transpose share this line, and the
-                    // melody/chord balance moved to the fader beside the card rows.
+                    // Tessitura stays near the pitch tools. Transport choices are in
+                    // the bottom tool row with Play, Reset, and Section.
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         tessituraControl()
-                        if (!isSimpleMode) {
-                            Spacer(modifier = Modifier.width(8.dp))
-                            transposePicker()
-                        }
-                    }
-                    if (isSimpleMode) {
-                        Row(modifier = Modifier.height(34.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Text("Tempo", style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Start, maxLines = 1, modifier = Modifier.width(40.dp))
-                            Text(text = "${tempoPercent.roundToInt()}%", style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center, maxLines = 1, modifier = Modifier.width(44.dp))
-                            Box(
-                                modifier = Modifier
-                                    .size(20.dp)
-                                    .clickable { onTempoPercentChange(100f) }
-                                    .semantics { contentDescription = "Reset tempo to 100%" },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(imageVector = Icons.Filled.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
-                            }
-                            Slider(value = tempoPercent, onValueChange = onTempoPercentChange, valueRange = 0f..200f, modifier = Modifier.weight(1f))
-                        }
                     }
                 }
 
@@ -3256,23 +3202,9 @@ fun QuizTab(
                         .padding(bottom = 96.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // The full quiz always shows all three card rows, so the fader is a
-                    // fixed length running from the melody row's top edge down to the
-                    // bottom of the chord-tone cards. The card column is pushed down by
-                    // QUIZ_CARD_STACK_TOP_INSET, so the fader takes the same offset
-                    // below rather than starting level with the row that holds them.
-                    val balanceFaderHeight = if (isSimpleMode) {
-                        QUIZ_SIMPLE_MODE_FADER_HEIGHT
-                    } else {
-                        QUIZ_CARD_STACK_SPAN
-                    }
-
-                    // The fader sits outside the card block so it holds the same spot
-                    // on screen whether simple mode is on or off.
-                    Row(modifier = Modifier.fillMaxWidth()) {
                     Box(
                         modifier = Modifier
-                            .weight(1f)
+                            .fillMaxWidth()
                             .wrapContentHeight(),
                         contentAlignment = if (isSimpleMode) Alignment.Center else Alignment.TopCenter
                     ) {
@@ -3732,24 +3664,11 @@ fun QuizTab(
                         }
                     }
 
-                    MelodyChordBalanceFader(
-                        value = melodyChordBalance,
-                        onValueChange = { melodyChordBalance = it },
-                        trackLength = balanceFaderHeight,
-                        modifier = if (isSimpleMode) {
-                            Modifier
-                        } else {
-                            Modifier.padding(top = QUIZ_CARD_STACK_TOP_INSET)
-                        }
-                    )
-                    }
-
-                    if (!isSimpleMode) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly,
-                            verticalAlignment = Alignment.Top
-                        ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.Top
+                    ) {
                             QuizDial(
                                 label = "Tempo",
                                 valueLabel = "${tempoPercent.roundToInt()}%",
@@ -3758,7 +3677,7 @@ fun QuizTab(
                                 valueRange = 0f..200f,
                                 steps = 200,
                                 onTap = { onTempoPercentChange(100f) },
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f).testTag(QUIZ_TEMPO_DIAL_TEST_TAG)
                             )
                             QuizDial(
                                 label = "Arpeggiate",
@@ -3777,8 +3696,20 @@ fun QuizTab(
                                 },
                                 modifier = Modifier.weight(1f)
                             )
+                            val melodyPercent = (melodyChordBalance * 100f).roundToInt()
+                            val chordPercent = 100 - melodyPercent
+                            QuizDial(
+                                label = "Melody / Chord Mix",
+                                valueLabel = "$melodyPercent% / $chordPercent%",
+                                value = melodyChordBalance,
+                                onValueChange = { melodyChordBalance = it },
+                                valueRange = 0f..1f,
+                                steps = 100,
+                                ringLabels = listOf("Chord", "Equal", "Melody"),
+                                onTap = { melodyChordBalance = 0.5f },
+                                modifier = Modifier.weight(1f)
+                            )
                         }
-                    }
 
                     Spacer(modifier = Modifier.weight(1f))
 
@@ -3801,9 +3732,11 @@ fun QuizTab(
             }
 
         Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-            Box(modifier = Modifier.align(Alignment.BottomStart).offset(x = (-8).dp, y = (-88).dp)) { waveformPickerComposable() }
-            
-            Column(modifier = Modifier.align(Alignment.BottomEnd), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(
+                modifier = Modifier.align(Alignment.BottomStart).fillMaxWidth().zIndex(2f),
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 persistentPitchController.errorMessage?.let { message ->
                     Text(
                         text = message,
@@ -3818,7 +3751,16 @@ fun QuizTab(
                         style = MaterialTheme.typography.labelSmall
                     )
                 }
-                Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    QuizInstrumentMenu(
+                        selectedInstrument = currentWaveform,
+                        onInstrumentSelected = onWaveformChange
+                    )
+                    transposePicker()
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(text = "Root Only", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Switch(
@@ -3826,7 +3768,8 @@ fun QuizTab(
                             onCheckedChange = {
                                 persistentPitchController.cancel()
                                 onSimpleModeChange(it)
-                            }
+                            },
+                            modifier = Modifier.testTag(QUIZ_MODE_SWITCH_TEST_TAG)
                         )
                     }
                     FilledTonalButton(
@@ -3867,7 +3810,7 @@ fun QuizTab(
                         if (isPlaying) QuizPlaybackController.pause() else QuizPlaybackController.play()
                     }
                 },
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize().zIndex(1f)
             )
         }
     }

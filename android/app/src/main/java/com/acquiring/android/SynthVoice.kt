@@ -21,7 +21,7 @@ internal class SynthVoice(
         AudioEngine.Waveform.STRINGS -> 1.33
         AudioEngine.Waveform.ELECTRIC_PIANO -> 0.61
         AudioEngine.Waveform.WARM_ORGAN -> 1.22
-        AudioEngine.Waveform.CHURCH_ORGAN -> 1.00
+        AudioEngine.Waveform.CHURCH_ORGAN -> 1.57
         AudioEngine.Waveform.CLARINET -> 1.13
         AudioEngine.Waveform.REED_ORGAN -> 1.26
         AudioEngine.Waveform.MARIMBA -> 1.31
