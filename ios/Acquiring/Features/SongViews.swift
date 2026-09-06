@@ -1446,6 +1446,7 @@ struct QuizView: View {
             step: 0.01,
             valueLabel: balanceLabel(soundConfiguration.melodyChordBalance),
             accessibilityValue: balanceAccessibilityValue(soundConfiguration.melodyChordBalance),
+            ringLabels: ["Chords", "Equal", "Melody"],
             resetValue: 0.5,
             identifier: "quiz.balance",
             compact: true
