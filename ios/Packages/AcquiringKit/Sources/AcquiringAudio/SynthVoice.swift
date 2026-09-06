@@ -6,14 +6,28 @@ final class SynthVoice {
     private let sampleRate: Double
     private var phase = 0.0
     private var modulationPhase = 0.0
-    private var filterState = 0.0
     private var delayLine: [Double]
     private var delayPointer = 0
+    private let activeChurchOrganPartials: [(ratio: Double, weight: Double)]
 
     init(frequencyHz: Double, waveform: SynthWaveform, sampleRate: Double) {
         self.frequencyHz = frequencyHz
         self.waveform = waveform
         self.sampleRate = sampleRate
+        if waveform == .churchOrgan {
+            let nyquist = sampleRate * 0.5
+            activeChurchOrganPartials = [
+                (ratio: 1, weight: 0.16),
+                (ratio: 2, weight: 0.44),
+                (ratio: 4, weight: 0.18),
+                (ratio: 6, weight: 0.10),
+                (ratio: 8, weight: 0.07),
+                (ratio: 12, weight: 0.035),
+                (ratio: 16, weight: 0.015),
+            ].filter { frequencyHz * 0.5 * $0.ratio < nyquist }
+        } else {
+            activeChurchOrganPartials = []
+        }
         let period = max(Int(sampleRate / frequencyHz), 2)
         switch waveform {
         case .strings, .nylonGuitar:
@@ -34,7 +48,6 @@ final class SynthVoice {
         let replacement = SynthVoice(frequencyHz: frequencyHz, waveform: waveform, sampleRate: sampleRate)
         replacement.phase = phase
         replacement.modulationPhase = modulationPhase
-        replacement.filterState = filterState
         return replacement
     }
 
@@ -83,22 +96,14 @@ final class SynthVoice {
             let radians = 2 * Double.pi * phase
             wave = 0.54 * sin(radians) + 0.25 * sin(radians * 2)
                 + 0.14 * sin(radians * 3) + 0.07 * sin(radians * 4)
-        case .brass:
-            let radians = 2 * Double.pi * phase
-            let brightness = 0.55 + 0.45 * envelope
-            wave = 0.62 * sin(radians) + brightness * (
-                0.22 * sin(radians * 2) + 0.11 * sin(radians * 3) + 0.05 * sin(radians * 4)
-            )
-        case .bell:
-            let ring = exp(-0.42 * elapsedSeconds)
-            let index = 2.1 * exp(-1.1 * elapsedSeconds)
-            wave = sin(2 * .pi * phase + sin(2 * .pi * modulationPhase) * index) * ring
-            modulationPhase = wrap(modulationPhase + frequencyHz * 2.71 / sampleRate)
-        case .synthBass:
-            let raw = 0.68 * (phase * 2 - 1) + 0.32 * (phase < 0.5 ? 1.0 : -1.0)
-            let cutoff = min(max(frequencyHz * 5 / sampleRate, 0.02), 0.35)
-            filterState += (raw - filterState) * cutoff
-            wave = filterState
+        case .churchOrgan:
+            let radians = 2 * Double.pi * modulationPhase
+            var organ = 0.0
+            for partial in activeChurchOrganPartials {
+                organ += partial.weight * sin(radians * partial.ratio)
+            }
+            wave = organ
+            modulationPhase = wrap(modulationPhase + frequencyHz * 0.5 / sampleRate)
         }
         phase = wrap(phase + frequencyHz / sampleRate)
         return wave
