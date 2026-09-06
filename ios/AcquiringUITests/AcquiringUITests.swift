@@ -168,7 +168,7 @@ final class AcquiringUITests: XCTestCase {
         fiveHundredMiles.tap()
         XCTAssertTrue(app.navigationBars[Fixture.fiveHundredMilesQuizTitle].waitForExistence(timeout: 5))
 
-        app.navigationBars[Fixture.fiveHundredMilesQuizTitle].buttons.element(boundBy: 0).tap()
+        app.buttons["quiz.info"].tap()
         XCTAssertTrue(app.navigationBars["Song"].waitForExistence(timeout: 5))
         XCTAssertTrue(
             app.descendants(matching: .any)["songDetail.info"].waitForExistence(timeout: 5)
@@ -199,12 +199,14 @@ final class AcquiringUITests: XCTestCase {
         attachScreenshot(of: app, named: "phase-2-song-detail-chords")
 
         app.navigationBars["Song"].buttons.element(boundBy: 0).tap()
+        XCTAssertTrue(app.navigationBars[Fixture.fiveHundredMilesQuizTitle].waitForExistence(timeout: 5))
+        app.navigationBars[Fixture.fiveHundredMilesQuizTitle].buttons.element(boundBy: 0).tap()
         XCTAssertTrue(searchField.waitForExistence(timeout: 5))
         let clear = app.buttons["library.search.clear"]
         XCTAssertTrue(clear.waitForExistence(timeout: 5))
         clear.tap()
         searchField.tap()
-        XCTAssertTrue(app.staticTexts["Recent Songs"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Recent:"].waitForExistence(timeout: 5))
         XCTAssertTrue(fiveHundredMiles.waitForExistence(timeout: 5))
     }
 
@@ -464,8 +466,6 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertEqual(timeline.value as? String, retainedBeat, "The paused beat must remain retained")
 
         app.navigationBars[Fixture.fiveHundredMilesQuizTitle].buttons.element(boundBy: 0).tap()
-        XCTAssertTrue(app.navigationBars["Song"].waitForExistence(timeout: 5))
-        app.navigationBars["Song"].buttons.element(boundBy: 0).tap()
         let search = app.textFields["library.search.field"]
         XCTAssertTrue(search.waitForExistence(timeout: 5))
         let clear = app.buttons["library.search.clear"]
@@ -483,8 +483,6 @@ final class AcquiringUITests: XCTestCase {
         )
 
         app.navigationBars[Fixture.badRomanceQuizTitle].buttons.element(boundBy: 0).tap()
-        XCTAssertTrue(app.navigationBars["Song"].waitForExistence(timeout: 5))
-        app.navigationBars["Song"].buttons.element(boundBy: 0).tap()
         openCatalogSettings(app)
         let unchangedDefault = app.descendants(matching: .any)["settings.defaultInstrument"]
         XCTAssertTrue(
@@ -641,7 +639,7 @@ final class AcquiringUITests: XCTestCase {
         )
         attachScreenshot(of: app, named: "phase-3-quiz-root-only")
 
-        app.navigationBars[Fixture.fiveHundredMilesQuizTitle].buttons.element(boundBy: 0).tap()
+        app.buttons["quiz.info"].tap()
         XCTAssertTrue(app.navigationBars["Song"].waitForExistence(timeout: 5))
         XCTAssertTrue(
             app.descendants(matching: .any)["songDetail.info"].waitForExistence(timeout: 5)
@@ -651,6 +649,8 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(hooktheory.exists)
 
         app.navigationBars["Song"].buttons.element(boundBy: 0).tap()
+        XCTAssertTrue(app.navigationBars[Fixture.fiveHundredMilesQuizTitle].waitForExistence(timeout: 5))
+        app.navigationBars[Fixture.fiveHundredMilesQuizTitle].buttons.element(boundBy: 0).tap()
         XCTAssertTrue(searchField.waitForExistence(timeout: 5))
     }
 
@@ -768,12 +768,10 @@ final class AcquiringUITests: XCTestCase {
         add(shot)
 
         app.navigationBars[Fixture.fiveHundredMilesQuizTitle].buttons.element(boundBy: 0).tap()
-        XCTAssertTrue(app.navigationBars["Song"].waitForExistence(timeout: 5))
-        app.navigationBars["Song"].buttons.element(boundBy: 0).tap()
         XCTAssertTrue(app.textFields["library.search.field"].waitForExistence(timeout: 5))
 
         app.buttons["library.search.clear"].tap()
-        XCTAssertTrue(app.staticTexts["Recent Songs"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Recent:"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons[Fixture.fiveHundredMiles].waitForExistence(timeout: 5))
     }
 
@@ -855,6 +853,28 @@ final class AcquiringUITests: XCTestCase {
         filter.tap()
         filter.typeText("500 Miles")
         XCTAssertEqual(filter.value as? String, "500 Miles")
+        let group = app.descendants(matching: .any)["allSongs.group.5"]
+        let index = app.scrollViews["allSongs.index"]
+        let jump = app.buttons["Jump to 5"]
+        scrollToHittable(index, in: app)
+        for _ in 0..<8 where !jump.isHittable { index.swipeLeft() }
+        jump.tap()
+        XCTAssertTrue(group.waitForExistence(timeout: 5))
+        group.tap()
+        let expanded = expectation(
+            for: NSPredicate(format: "value CONTAINS %@", "Expanded"), evaluatedWith: group
+        )
+        wait(for: [expanded], timeout: 5)
+        let song = app.buttons[Fixture.fiveHundredMiles]
+        for _ in 0..<3 where !song.waitForExistence(timeout: 2) { list.swipeUp() }
+        if !song.exists { print("QUIZ-NAV-ALL-SONGS\n\(list.debugDescription)") }
+        XCTAssertTrue(song.waitForExistence(timeout: 10))
+        song.tap()
+        XCTAssertTrue(app.buttons["quiz.info"].waitForExistence(timeout: 10))
+        app.navigationBars.buttons["BackButton"].firstMatch.tap()
+        XCTAssertTrue(list.waitForExistence(timeout: 5))
+        XCTAssertEqual(filter.value as? String, "500 Miles")
+        XCTAssertTrue(song.exists)
 
         scrollBackToHittable(disclosure, in: app)
         disclosure.tap()
@@ -1046,7 +1066,7 @@ final class AcquiringUITests: XCTestCase {
         let search = app.textFields["library.search.field"]
         XCTAssertTrue(search.waitForExistence(timeout: 5))
         XCTAssertFalse(app.keyboards.firstMatch.waitForExistence(timeout: 2))
-        XCTAssertFalse(app.staticTexts["Recent Songs"].exists)
+        XCTAssertFalse(app.staticTexts["Recent:"].exists)
 
         search.tap()
         XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 3))
@@ -1056,12 +1076,19 @@ final class AcquiringUITests: XCTestCase {
         song.tap()
         XCTAssertTrue(app.navigationBars[Fixture.fiveHundredMilesQuizTitle].waitForExistence(timeout: 5))
         app.navigationBars[Fixture.fiveHundredMilesQuizTitle].buttons.element(boundBy: 0).tap()
-        XCTAssertTrue(app.navigationBars["Song"].waitForExistence(timeout: 5))
-        app.navigationBars["Song"].buttons.element(boundBy: 0).tap()
         XCTAssertTrue(search.waitForExistence(timeout: 5))
         XCTAssertFalse(app.keyboards.firstMatch.waitForExistence(timeout: 2))
+        XCTAssertFalse(app.staticTexts["Recent:"].exists)
         search.tap()
         XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 3))
+        app.buttons["library.search.clear"].tap()
+        XCTAssertTrue(app.staticTexts["Recent:"].waitForExistence(timeout: 5))
+        let searchCard = app.cells.containing(.textField, identifier: "library.search.field").firstMatch
+        XCTAssertTrue(searchCard.staticTexts["Recent:"].exists)
+        XCTAssertTrue(searchCard.buttons[Fixture.fiveHundredMiles].exists)
+        XCTAssertGreaterThanOrEqual(song.frame.height, 44)
+        song.tap()
+        XCTAssertTrue(app.navigationBars[Fixture.fiveHundredMilesQuizTitle].waitForExistence(timeout: 5))
     }
 
     func testFirstLaunchDownloadFailureRetriesOnlyInSettings() {

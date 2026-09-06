@@ -82,6 +82,7 @@ import androidx.compose.ui.input.pointer.util.addPointerInputChange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.zIndex
@@ -638,10 +639,9 @@ internal fun MainScreen(
             // Close the artist detail page.
             selectedArtistName = null
             selectedArtistSongs = null
-        } else if (selectedSongSections != null && currentTab == 2) {
-            // The quiz always hands back to this song's info page, however it
-            // was opened.
-            currentTab = 0
+        } else if (selectedSongSections != null && currentTab != 2) {
+            // Song information is a detour from the quiz.
+            currentTab = 2
         } else if (selectedSongSections != null) {
             // Return to the page that opened the song.
             tessituraSessionViewModel.clearSession()
@@ -1508,6 +1508,7 @@ fun LibraryView(
 }
 
 internal const val QUIZ_FAVORITE_STAR_TEST_TAG = "QuizFavoriteStar"
+internal const val QUIZ_INFO_BUTTON_TEST_TAG = "QuizInfoButton"
 internal const val QUIZ_SECTION_BUTTON_TEST_TAG = "QuizSectionButton"
 internal const val QUIZ_MODE_SWITCH_TEST_TAG = "QuizModeSwitch"
 internal const val QUIZ_TEMPO_DIAL_TEST_TAG = "QuizTempoDial"
@@ -1623,8 +1624,7 @@ fun SongDetailView(
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.weight(1f).padding(start = 8.dp)
                 )
-                // The source link lives on the song info page only; the quiz header
-                // stays clear of navigation.
+                // The source link lives on the song info page only.
                 if (currentTab == 0) {
                     TextButton(onClick = { uriHandler.openUri(song.url) }) { Text("URL") }
                 }
@@ -1639,19 +1639,19 @@ fun SongDetailView(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(36.dp)
+                        .height(48.dp)
                         .padding(horizontal = 8.dp)
                 ) {
                     TextButton(
                         onClick = onBack,
                         contentPadding = PaddingValues(horizontal = 8.dp),
-                        modifier = Modifier.align(Alignment.CenterStart).height(32.dp)
+                        modifier = Modifier.align(Alignment.CenterStart).height(48.dp)
                     ) { Text("< Back") }
 
                     Row(
                         // Symmetric inset keeps the string centred on the screen
-                        // while stopping a long title from running under Back.
-                        modifier = Modifier.align(Alignment.Center).padding(horizontal = 72.dp),
+                        // while stopping a long title from running under the buttons.
+                        modifier = Modifier.align(Alignment.Center).padding(horizontal = 96.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         if (!isSimpleMode) {
@@ -1673,40 +1673,47 @@ fun SongDetailView(
                         }
                     }
 
-                    // Mirrors the URL button's slot on the other tabs, and sits
-                    // inside the 72.dp the centred title already keeps clear.
-                    // Sized down from the 48.dp IconButton default so it fits
-                    // this 36.dp row.
-                    IconButton(
-                        onClick = onToggleFavorite,
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .size(36.dp)
-                            .testTag(QUIZ_FAVORITE_STAR_TEST_TAG)
-                            .semantics {
-                                contentDescription = if (isFavorite) {
-                                    "Remove from ${PlaylistIds.FAVORITES_NAME}"
-                                } else {
-                                    "Add to ${PlaylistIds.FAVORITES_NAME}"
+                    Row(modifier = Modifier.align(Alignment.CenterEnd)) {
+                        IconButton(
+                            onClick = { onTabChange(0) },
+                            modifier = Modifier.size(48.dp).testTag(QUIZ_INFO_BUTTON_TEST_TAG)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Info,
+                                contentDescription = "Song information",
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        IconButton(
+                            onClick = onToggleFavorite,
+                            modifier = Modifier
+                                .size(48.dp)
+                                .testTag(QUIZ_FAVORITE_STAR_TEST_TAG)
+                                .semantics {
+                                    contentDescription = if (isFavorite) {
+                                        "Remove from ${PlaylistIds.FAVORITES_NAME}"
+                                    } else {
+                                        "Add to ${PlaylistIds.FAVORITES_NAME}"
+                                    }
+                                    stateDescription = if (isFavorite) "Favorited" else "Not favorited"
+                                    role = Role.Button
                                 }
-                                stateDescription = if (isFavorite) "Favorited" else "Not favorited"
-                                role = Role.Button
-                            }
-                    ) {
-                        Icon(
-                            imageVector = if (isFavorite) {
-                                Icons.Filled.Star
-                            } else {
-                                ImageVector.vectorResource(R.drawable.ic_star_outline)
-                            },
-                            contentDescription = null,
-                            tint = if (isFavorite) {
-                                MaterialTheme.colorScheme.primary
-                            } else {
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                            },
-                            modifier = Modifier.size(20.dp)
-                        )
+                        ) {
+                            Icon(
+                                imageVector = if (isFavorite) {
+                                    Icons.Filled.Star
+                                } else {
+                                    ImageVector.vectorResource(R.drawable.ic_star_outline)
+                                },
+                                contentDescription = null,
+                                tint = if (isFavorite) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                },
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
                 }
                 Box(

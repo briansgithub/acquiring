@@ -10,6 +10,7 @@ struct SongDetailView: View {
     let songID: String
     let onOpenArtist: (CatalogSong) -> Void
     @Environment(AppEnvironment.self) private var environment
+    @Environment(\.dismiss) private var dismiss
     @State private var state: FeatureState<SongDocument> = .loading
     @State private var tab: SongDetailTab = .info
     @State private var selectedSectionID: String?
@@ -55,7 +56,7 @@ struct SongDetailView: View {
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
-                NavigationLink(value: AppRoute.quiz(songID)) {
+                Button { dismiss() } label: {
                     Label("Quiz", systemImage: "questionmark.music.note")
                 }
                 .accessibilityIdentifier("songDetail.quiz")
@@ -778,6 +779,8 @@ struct QuizView: View {
     let onOpenArtist: (CatalogSong) -> Void
     @Environment(AppEnvironment.self) private var environment
     @Environment(\.scenePhase) private var scenePhase
+    @AppStorage(QuizNavigationPreference.edgeSwipeBackKey, store: QuizNavigationPreference.defaults)
+    private var enablesEdgeSwipeBack = false
     @State private var state: FeatureState<SongDocument> = .loading
     @State private var selectedSectionID: String?
     @State private var sectionLoadTask: Task<Void, Never>?
@@ -839,9 +842,18 @@ struct QuizView: View {
         }
         .navigationTitle(navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
-        .background(QuizNavigationGestureGuard())
+        .background(QuizNavigationGestureGuard(enablesEdgeSwipeBack: enablesEdgeSwipeBack))
         .quizNotationFontStyle(notationFontStyle)
         .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink(value: AppRoute.songDetail(songID)) {
+                    Image(systemName: "info.circle")
+                        .frame(minWidth: 44, minHeight: 44)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Song information")
+                .accessibilityIdentifier("quiz.info")
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 if showsFontSampler, case .content = state {
                     QuizFontSamplerMenu(selection: $notationFontStyle)
@@ -2414,10 +2426,20 @@ private struct QuizHeader: View {
 }
 
 /// Only Quiz owns these recognizers, and it restores their previous state when
-/// leaving. Timeline seeking and knob gestures must never become navigation.
+/// leaving. Edge Back is opt-in; timeline and knob gestures are always protected
+/// from full-screen swipe navigation.
 private struct QuizNavigationGestureGuard: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> Controller { Controller() }
-    func updateUIViewController(_ controller: Controller, context: Context) {}
+    let enablesEdgeSwipeBack: Bool
+
+    func makeUIViewController(context: Context) -> Controller {
+        let controller = Controller()
+        controller.enablesEdgeSwipeBack = enablesEdgeSwipeBack
+        return controller
+    }
+
+    func updateUIViewController(_ controller: Controller, context: Context) {
+        controller.enablesEdgeSwipeBack = enablesEdgeSwipeBack
+    }
 
     static func dismantleUIViewController(_ controller: Controller, coordinator: ()) {
         controller.restoreNavigationGestures()
@@ -2425,6 +2447,12 @@ private struct QuizNavigationGestureGuard: UIViewControllerRepresentable {
 
     final class Controller: UIViewController {
         private var savedGestures: [(UIGestureRecognizer, Bool)] = []
+        var enablesEdgeSwipeBack = false {
+            didSet {
+                guard !savedGestures.isEmpty else { return }
+                navigationController?.interactivePopGestureRecognizer?.isEnabled = enablesEdgeSwipeBack
+            }
+        }
 
         override func viewDidAppear(_ animated: Bool) {
             super.viewDidAppear(animated)
@@ -2434,7 +2462,10 @@ private struct QuizNavigationGestureGuard: UIViewControllerRepresentable {
                 gestures.append(contentPop)
             }
             savedGestures = gestures.map { ($0, $0.isEnabled) }
-            gestures.forEach { $0.isEnabled = false }
+            navigationController.interactivePopGestureRecognizer?.isEnabled = enablesEdgeSwipeBack
+            if #available(iOS 26.0, *) {
+                navigationController.interactiveContentPopGestureRecognizer?.isEnabled = false
+            }
         }
 
         override func viewWillDisappear(_ animated: Bool) {
