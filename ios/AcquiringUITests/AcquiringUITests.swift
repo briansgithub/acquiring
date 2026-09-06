@@ -484,6 +484,8 @@ final class AcquiringUITests: XCTestCase {
         )
 
         app.navigationBars[Fixture.badRomanceQuizTitle].buttons.element(boundBy: 0).tap()
+        XCTAssertTrue(app.navigationBars["Song"].waitForExistence(timeout: 5))
+        app.navigationBars["Song"].buttons.element(boundBy: 0).tap()
         openCatalogSettings(app)
         let unchangedDefault = app.descendants(matching: .any)["settings.defaultInstrument"]
         XCTAssertTrue(
