@@ -243,7 +243,7 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(transpose.isHittable, "Transpose should be visible without scrolling")
         XCTAssertFalse(app.alerts["Audio"].exists)
         transpose.tap()
-        let plusOne = app.buttons["+1 semitones"]
+        let plusOne = app.buttons["+1"]
         XCTAssertTrue(plusOne.waitForExistence(timeout: 5))
         plusOne.tap()
         let transposeApplied = expectation(
@@ -251,7 +251,7 @@ final class AcquiringUITests: XCTestCase {
         )
         wait(for: [transposeApplied], timeout: 5)
         transpose.tap()
-        let originalKey = app.buttons["0 semitones"]
+        let originalKey = app.buttons["0"]
         XCTAssertTrue(originalKey.waitForExistence(timeout: 5))
         originalKey.tap()
         let transposeReset = expectation(
