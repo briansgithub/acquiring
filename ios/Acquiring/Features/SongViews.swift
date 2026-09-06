@@ -939,20 +939,23 @@ struct QuizView: View {
                 .frame(maxWidth: 760)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
-            .safeAreaInset(edge: .bottom, spacing: 4) {
-                if let selected {
-                    HStack {
-                        Spacer(minLength: 0)
-                        transportControls(sectionID: selected.id, sections: sections)
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.bottom, 12)
-                    .frame(maxWidth: 760)
-                    .frame(maxWidth: .infinity)
-                    .background(.bar)
-                }
-            }
             .dynamicTypeSize(...maximumControlType)
+        }
+        // Reserve the visible transport rows before measuring the dashboard viewport.
+        // The parent scene reserves the separate, expandable singing dock.
+        .safeAreaInset(edge: .bottom, spacing: 4) {
+            if let selected {
+                HStack {
+                    Spacer(minLength: 0)
+                    transportControls(sectionID: selected.id, sections: sections)
+                }
+                .padding(.horizontal, 12)
+                .padding(.bottom, 12)
+                .frame(maxWidth: 760)
+                .frame(maxWidth: .infinity)
+                .background(.bar)
+                .dynamicTypeSize(...DynamicTypeSize.large)
+            }
         }
     }
 
@@ -1079,8 +1082,31 @@ struct QuizView: View {
     }
 
     private func transportControls(sectionID: String, sections: [QuizSection]) -> some View {
-        VStack(spacing: 4) {
+        VStack(alignment: .trailing, spacing: 4) {
             HStack(spacing: 4) {
+                Spacer(minLength: 0)
+                instrumentSelector(sectionID: sectionID)
+                transposeSelector(sectionID: sectionID)
+                Button(action: requestPlaybackReset) {
+                    Image(systemName: "arrow.counterclockwise").frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .disabled(!sectionLoadStatus.isReady || playbackCommandPending || transportPhase == .buffering)
+                .accessibilityIdentifier("quiz.reset")
+                .accessibilityLabel("Reset quiz playback")
+                .accessibilityHint("Stops playback and returns to the beginning")
+
+                QuizTransportButton(
+                    phase: transportPhase,
+                    isReady: sectionLoadStatus.isReady,
+                    isPlaybackEnabled: tempoPercent > 0,
+                    commandPending: playbackCommandPending || timelineScrub != nil,
+                    action: requestPlaybackToggle,
+                    compact: true
+                )
+            }
+            if !environment.vocalPractice.isExpanded {
+                HStack(spacing: 4) {
                     QuizSelectorMenu(
                         identityContext: "\(songID):\(sectionID):mode",
                         options: QuizDisplayMode.allCases.map {
@@ -1101,15 +1127,6 @@ struct QuizView: View {
                             setMode(selectedMode, sectionID: sectionID)
                         }
                     )
-                    Button(action: requestPlaybackReset) {
-                        Image(systemName: "arrow.counterclockwise").frame(width: 44, height: 44)
-                            .contentShape(Rectangle())
-                    }
-                    .disabled(!sectionLoadStatus.isReady || playbackCommandPending || transportPhase == .buffering)
-                    .accessibilityIdentifier("quiz.reset")
-                    .accessibilityLabel("Reset quiz playback")
-                    .accessibilityHint("Stops playback and returns to the beginning")
-
                     QuizSelectorMenu(
                         identityContext: "\(songID):section",
                         options: sections.map {
@@ -1129,23 +1146,11 @@ struct QuizView: View {
                     )
                     // Bottom-anchored menus otherwise place the first section nearest the trigger.
                     .menuOrder(.fixed)
-
-                    QuizTransportButton(
-                        phase: transportPhase,
-                        isReady: sectionLoadStatus.isReady,
-                        isPlaybackEnabled: tempoPercent > 0,
-                        commandPending: playbackCommandPending || timelineScrub != nil,
-                        action: requestPlaybackToggle,
-                        compact: true
-                    )
-            }
-            HStack(spacing: 4) {
-                Spacer(minLength: 0)
-                instrumentSelector(sectionID: sectionID)
-                transposeSelector(sectionID: sectionID)
+                }
             }
         }
         .buttonStyle(.plain)
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     private func rootOnlySeekControl(section: ExtractedSection, sectionID: String) -> some View {
@@ -1313,11 +1318,11 @@ struct QuizView: View {
         QuizSelectorMenu(
             identityContext: "\(songID):\(sectionID):transpose",
             options: (-12...12).map { semitones in
-                QuizSelectorOption(id: String(semitones), title: transposeLabel(semitones))
+                QuizSelectorOption(id: String(semitones), title: transposeNumber(semitones))
             },
             selectedID: String(soundConfiguration.transposeSemitones),
             caption: "Transpose",
-            selectedDisplayTitle: soundConfiguration.transposeSemitones.formatted(.number.sign(strategy: .always())),
+            selectedDisplayTitle: transposeNumber(soundConfiguration.transposeSemitones),
             selectedAccessibilityValue: transposeLabel(soundConfiguration.transposeSemitones),
             usesSubheadline: false,
             width: 72,
@@ -1494,8 +1499,12 @@ struct QuizView: View {
         }
     }
 
+    private func transposeNumber(_ semitones: Int) -> String {
+        semitones > 0 ? "+\(semitones)" : "\(semitones)"
+    }
+
     private func transposeLabel(_ semitones: Int) -> String {
-        semitones > 0 ? "+\(semitones) semitones" : "\(semitones) semitones"
+        "\(transposeNumber(semitones)) semitones"
     }
 
     private func currentBeat(in section: ExtractedSection) -> Double {
@@ -2222,21 +2231,37 @@ private struct StableQuizMenuButton: UIViewRepresentable {
         button.accessibilityValue = selectedAccessibilityValue
 
         var configuration = UIButton.Configuration.plain()
-        configuration.title = selectedTitle
-        configuration.subtitle = caption
+        configuration.title = caption ?? selectedTitle
+        configuration.subtitle = caption == nil ? nil : selectedTitle
         configuration.image = UIImage(systemName: systemImage ?? "chevron.down")
         configuration.imagePlacement = systemImage == nil ? .trailing : .leading
-        configuration.imagePadding = 5
+        configuration.imagePadding = caption == nil ? 5 : 3
         configuration.titleAlignment = .center
+        if caption != nil {
+            configuration.titlePadding = 0
+            configuration.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(pointSize: 9)
+            configuration.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+                var outgoing = incoming
+                outgoing.font = .preferredFont(forTextStyle: .caption2)
+                return outgoing
+            }
+            configuration.subtitleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+                var outgoing = incoming
+                outgoing.font = .preferredFont(forTextStyle: .caption1)
+                return outgoing
+            }
+        }
         configuration.contentInsets = NSDirectionalEdgeInsets(top: 4, leading: 6, bottom: 4, trailing: 6)
         configuration.baseForegroundColor = .label
         configuration.background.strokeColor = UIColor.secondaryLabel.withAlphaComponent(0.45)
         configuration.background.strokeWidth = 1
         configuration.background.cornerRadius = 8
         button.configuration = configuration
-        button.titleLabel?.font = usesSubheadline
-            ? .preferredFont(forTextStyle: .subheadline)
-            : .preferredFont(forTextStyle: .caption1)
+        if caption == nil {
+            button.titleLabel?.font = usesSubheadline
+                ? .preferredFont(forTextStyle: .subheadline)
+                : .preferredFont(forTextStyle: .caption1)
+        }
 
         let signature = ([identityContext, selectedID] + options.flatMap {
             [$0.id, $0.title, $0.groupTitle ?? ""]

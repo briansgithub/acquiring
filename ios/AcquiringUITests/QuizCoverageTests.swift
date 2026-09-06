@@ -321,6 +321,7 @@ final class QuizCoverageTests: XCTestCase {
         let toggle = app.buttons["vocal.practice.expand"]
         let first = app.descendants(matching: .any)["vocal.practice.slot.1"].firstMatch
         let section = app.descendants(matching: .any)["quiz.section"]
+        let mode = app.buttons["quiz.mode"]
         XCTAssertTrue(toggle.waitForExistence(timeout: 10))
         XCTAssertEqual(app.descendants(matching: .any).matching(identifier: "vocal.practice.dock").count, 1)
         XCTAssertFalse(first.exists)
@@ -340,38 +341,67 @@ final class QuizCoverageTests: XCTestCase {
         XCTAssertTrue(app.navigationBars[Fixture.quizTitle].waitForExistence(timeout: 10))
         XCTAssertEqual(app.descendants(matching: .any).matching(identifier: "vocal.practice.dock").count, 1)
 
-        toggle.tap()
-        XCTAssertTrue(first.waitForExistence(timeout: 5))
         XCTAssertTrue(
             poll(timeout: 5) { section.exists && section.isEnabled && section.isHittable },
             "Quiz section selector must be ready before opening its native menu"
         )
-        XCTAssertTrue(app.buttons["quiz.play"].isHittable)
-        XCTAssertFalse(app.alerts.element.exists, "Expanding must not request microphone access")
-        let dock = app.descendants(matching: .any)["vocal.practice.dock"].firstMatch
-        for identifier in ["quiz.mode", "quiz.reset", "quiz.section", "quiz.play"] {
-            let control = app.descendants(matching: .any)[identifier].firstMatch
-            // The dock container includes 8 pt of decorative top padding.
-            XCTAssertLessThanOrEqual(control.frame.maxY, dock.frame.minY + 8 + 0.5,
-                                     "\(identifier) must stay above the expanded singing dock content")
-        }
-        let footerTop = app.buttons["quiz.reset"].frame.minY
-        for identifier in ["quiz.tempo", "quiz.arpeggio", "quiz.instrument", "quiz.transpose"] {
-            let control = app.descendants(matching: .any)[identifier].firstMatch
-            XCTAssertTrue(control.isHittable, "\(identifier) must stay reachable with practice expanded")
-            XCTAssertLessThanOrEqual(control.frame.maxY, footerTop + 0.5,
-                                     "\(identifier) must not overlap the transport row")
-        }
         section.tap()
         let chorus = app.buttons["Chorus"]
         XCTAssertTrue(chorus.waitForExistence(timeout: 5))
         chorus.tap()
         XCTAssertTrue(waitForValue(section, "Chorus", timeout: 5))
-        XCTAssertTrue(first.isHittable, "Changing section must not close the dock")
-        toggle.tap()
-        XCTAssertFalse(first.exists)
+        XCTAssertTrue(waitForEnabled(mode, timeout: 30))
+        let selectedMode = mode.value as? String
+
         toggle.tap()
         XCTAssertTrue(first.waitForExistence(timeout: 5))
+        XCTAssertTrue(poll(timeout: 5) { !mode.exists && !section.exists },
+                      "Mode and section must leave the layout while practice is expanded")
+        XCTAssertTrue(app.buttons["quiz.play"].isHittable)
+        XCTAssertFalse(app.alerts.element.exists, "Expanding must not request microphone access")
+        let dock = app.descendants(matching: .any)["vocal.practice.dock"].firstMatch
+        let firstRow = ["quiz.instrument", "quiz.transpose", "quiz.reset", "quiz.play"]
+        for identifier in firstRow {
+            let control = app.descendants(matching: .any)[identifier].firstMatch
+            XCTAssertTrue(control.isHittable, "\(identifier) must stay reachable with practice expanded")
+            // The dock container includes 8 pt of decorative top padding.
+            XCTAssertLessThanOrEqual(control.frame.maxY, dock.frame.minY + 8 + 0.5,
+                                     "\(identifier) must stay above the expanded singing dock content")
+        }
+        let footerTop = app.buttons["quiz.reset"].frame.minY
+        for identifier in ["quiz.tempo", "quiz.arpeggio", "quiz.balance"] {
+            let control = app.descendants(matching: .any)[identifier].firstMatch
+            XCTAssertTrue(control.isHittable, "\(identifier) must stay reachable with practice expanded")
+            XCTAssertLessThanOrEqual(control.frame.maxY, footerTop + 0.5,
+                                     "\(identifier) must not overlap the transport row")
+        }
+        toggle.tap()
+        XCTAssertFalse(first.exists)
+        XCTAssertTrue(poll(timeout: 5) { mode.isHittable && section.isHittable },
+                      "Mode and section must return when practice collapses")
+        XCTAssertEqual(mode.value as? String, selectedMode, "Collapsing must preserve the selected mode")
+        XCTAssertEqual(section.value as? String, "Chorus", "Collapsing must preserve the selected section")
+        let transportTopRowBottom = firstRow
+            .map { app.descendants(matching: .any)[$0].firstMatch.frame.maxY }
+            .max()!
+        for identifier in ["quiz.mode", "quiz.section"] {
+            let control = app.descendants(matching: .any)[identifier].firstMatch
+            XCTAssertGreaterThanOrEqual(control.frame.minY, transportTopRowBottom - 0.5,
+                                        "\(identifier) must stay in the second transport row")
+        }
+        for row in [firstRow, ["quiz.mode", "quiz.section"]] {
+            for (left, right) in zip(row, row.dropFirst()) {
+                let leftControl = app.descendants(matching: .any)[left].firstMatch
+                let rightControl = app.descendants(matching: .any)[right].firstMatch
+                XCTAssertLessThanOrEqual(leftControl.frame.maxX, rightControl.frame.minX + 0.5,
+                                         "\(left) must be left of \(right)")
+                XCTAssertEqual(leftControl.frame.midY, rightControl.frame.midY, accuracy: 0.5,
+                               "\(left) and \(right) must share a transport row")
+            }
+        }
+        toggle.tap()
+        XCTAssertTrue(first.waitForExistence(timeout: 5))
+        XCTAssertTrue(poll(timeout: 5) { !mode.exists && !section.exists })
         XCTAssertEqual(app.state, .runningForeground)
     }
 
@@ -538,7 +568,7 @@ final class QuizCoverageTests: XCTestCase {
         let footerTop = ["quiz.reset", "quiz.section", "quiz.play"].map {
             app.descendants(matching: .any)[$0].frame.minY
         }.min() ?? screen.maxY
-        for identifier in ["quiz.tempo", "quiz.arpeggio", "quiz.instrument", "quiz.transpose"] {
+        for identifier in ["quiz.tempo", "quiz.arpeggio", "quiz.balance"] {
             let frame = app.descendants(matching: .any)[identifier].frame
             XCTAssertLessThanOrEqual(
                 frame.maxY, footerTop + 0.5,

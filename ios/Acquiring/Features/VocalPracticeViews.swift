@@ -59,33 +59,24 @@ struct IntervalSingingTool: View {
                             .accessibilityIdentifier("vocal.practice.stop")
                     }
                     Menu {
-                        Button("Reset recordings") {
-                            model.resetManualPractice()
-                        }
-                        Button("Calibrate comfortable pitch") { model.startCalibration() }
+                        Button("Set") { model.startCalibration() }
                             .disabled(!model.canCalibrateComfortablePitch)
+                            .accessibilityLabel("Calibrate comfortable pitch")
                             .accessibilityHint(
                                 model.canCalibrateComfortablePitch ? "" : "Open a song to calibrate"
                             )
-                        Section(model.comfortablePitchLabel.map { "Comfortable pitch: \($0)" } ?? "Comfortable pitch not set") {
-                            Button("Lower comfortable pitch one semitone") { model.adjustComfortablePitch(semitones: -1) }
-                            Button("Raise comfortable pitch one semitone") { model.adjustComfortablePitch(semitones: 1) }
-                            Button("Lower comfortable pitch one octave") { model.adjustComfortablePitch(semitones: -12) }
-                            Button("Raise comfortable pitch one octave") { model.adjustComfortablePitch(semitones: 12) }
-                            Button("Clear comfortable pitch") { model.clearTessituraAdjustment() }
-                        }
-                        .disabled(model.comfortablePitchMIDI == nil)
-                        if model.persistentSelection != nil {
-                            Button(showsPersistentDetails ? "Show interval recordings" : "Show persistent feedback details") {
-                                showsPersistentDetails.toggle()
-                            }
-                        }
+                        Button("Clear") { model.clearTessituraAdjustment() }
+                            .disabled(model.comfortablePitchMIDI == nil)
+                            .accessibilityHint("Clears comfortable pitch; keeps recordings")
                     } label: {
-                        Image(systemName: "ellipsis")
+                        Image(systemName: "tuningfork")
+                            .font(.caption.weight(.semibold))
                             .frame(minWidth: 44, minHeight: 44)
                             .contentShape(Rectangle())
                     }
-                    .accessibilityLabel("Interval singing options")
+                    .accessibilityLabel("Tessitura")
+                    .accessibilityValue(model.comfortablePitchLabel ?? "Comfortable pitch not set")
+                    .accessibilityIdentifier("vocal.practice.tessitura")
                     Button { model.minimize() } label: {
                         Label("Collapse", systemImage: "chevron.down")
                             .font(.caption.weight(.semibold))
