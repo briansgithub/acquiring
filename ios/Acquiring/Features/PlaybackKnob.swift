@@ -9,6 +9,7 @@ struct PlaybackKnob: View {
     private let valueLabel: String
     private let accessibilityValue: String
     private let ringLabels: [String]
+    private let ringLabelRadius: Double
     private let resetValue: Double
     private let identifier: String
     /// Uses the smaller dial and type scale intended for the single-screen quiz controls.
@@ -23,6 +24,7 @@ struct PlaybackKnob: View {
         valueLabel: String,
         accessibilityValue: String,
         ringLabels: [String] = [],
+        ringLabelRadius: Double = 0.45,
         resetValue: Double,
         identifier: String,
         compact: Bool = false
@@ -34,6 +36,7 @@ struct PlaybackKnob: View {
         self.valueLabel = valueLabel
         self.accessibilityValue = accessibilityValue
         self.ringLabels = ringLabels
+        self.ringLabelRadius = ringLabelRadius
         self.resetValue = resetValue
         self.identifier = identifier
         self.compact = compact
@@ -44,7 +47,8 @@ struct PlaybackKnob: View {
             Text(title)
                 .font(compact ? .caption.weight(.semibold) : .headline)
                 .multilineTextAlignment(.center)
-                .lineLimit(2, reservesSpace: compact)
+                .lineLimit(compact ? 1 : 2, reservesSpace: compact)
+                .minimumScaleFactor(compact ? 0.8 : 1)
 
             Text(valueLabel)
                 .font(compact ? .caption2 : .subheadline)
@@ -54,12 +58,18 @@ struct PlaybackKnob: View {
                 .minimumScaleFactor(0.75)
 
             dial
+                // Keep the top arpeggio label clear of the value above the dial.
+                .padding(.top, compact ? 6 : 0)
         }
         .frame(minWidth: compact ? 96 : 132)
     }
 
     private var dialDiameter: CGFloat {
-        compact ? 72 : 120
+        compact ? 80 : 120
+    }
+
+    private var knobDiameter: CGFloat {
+        compact ? 52 : 72
     }
 
     private var dialCenter: CGFloat {
@@ -98,7 +108,7 @@ struct PlaybackKnob: View {
                 .overlay {
                     Circle().strokeBorder(.white.opacity(0.25), lineWidth: 1)
                 }
-                .frame(width: compact ? 44 : 72, height: compact ? 44 : 72)
+                .frame(width: knobDiameter, height: knobDiameter)
                 .shadow(color: .black.opacity(0.16), radius: 2, y: 2)
 
             indicator(at: fraction)
@@ -150,8 +160,8 @@ struct PlaybackKnob: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.65)
                 .position(
-                    x: dialCenter + CGFloat(Double(dialDiameter) * 0.45 * cos(angle)),
-                    y: dialCenter + CGFloat(Double(dialDiameter) * 0.45 * sin(angle))
+                    x: dialCenter + CGFloat(Double(dialDiameter) * ringLabelRadius * cos(angle)),
+                    y: dialCenter + CGFloat(Double(dialDiameter) * ringLabelRadius * sin(angle))
                 )
         }
     }
@@ -178,9 +188,9 @@ struct PlaybackKnob: View {
 
     private var interactionAccessibilityHint: String {
         if ringLabels.count > 1 {
-            return "Tap a ring label to select it. Drag around the dial to adjust. Double-tap the center to reset, or swipe up or down to adjust one step."
+            return "Tap a ring label to select it. Drag around the dial to adjust. Tap the center to reset, or swipe up or down to adjust one step."
         }
-        return "Drag around the dial to adjust. Double-tap to reset, or swipe up or down to adjust one step."
+        return "Tap to reset. Drag around the dial to adjust, or swipe up or down to adjust one step."
     }
 
     private func update(for location: CGPoint) {
@@ -201,7 +211,7 @@ struct PlaybackKnob: View {
     private func isOutsideCenter(at location: CGPoint) -> Bool {
         let dx = location.x - dialCenter
         let dy = location.y - dialCenter
-        let centerRadius = compact ? 22.0 : 36.0
+        let centerRadius = knobDiameter / 2
         return dx * dx + dy * dy > centerRadius * centerRadius
     }
 

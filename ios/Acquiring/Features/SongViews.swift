@@ -1406,6 +1406,7 @@ struct QuizView: View {
                 ? "Off" : "\(soundConfiguration.arpeggioOption.displayName) cycles / beat",
             accessibilityValue: arpeggioAccessibilityValue(soundConfiguration.arpeggioOption),
             ringLabels: options.map { $0 == .off ? "Off" : $0.displayName },
+            ringLabelRadius: 0.5,
             resetValue: Double(options.firstIndex(of: .off) ?? 3),
             identifier: "quiz.arpeggio",
             compact: true
@@ -1414,7 +1415,7 @@ struct QuizView: View {
 
     private func mixKnob(sectionID: String) -> some View {
         PlaybackKnob(
-            title: "Melody / Chord Mix",
+            title: "Mel. / Chord Mix",
             value: Binding(
                 get: { soundConfiguration.melodyChordBalance },
                 set: { balance in
@@ -1434,7 +1435,6 @@ struct QuizView: View {
             step: 0.01,
             valueLabel: balanceLabel(soundConfiguration.melodyChordBalance),
             accessibilityValue: balanceAccessibilityValue(soundConfiguration.melodyChordBalance),
-            ringLabels: ["Chords", "Equal", "Melody"],
             resetValue: 0.5,
             identifier: "quiz.balance",
             compact: true
