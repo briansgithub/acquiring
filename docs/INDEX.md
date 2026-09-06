@@ -6,6 +6,7 @@
 | --- | --- |
 | [Product architecture](./architecture.md) | You need the web, Android, iOS, contract, data, or release boundaries. |
 | [iOS porting plan](./porting-plan.md) | You are implementing the Swift/SwiftUI application; this is the sole active execution order and review contract. |
+| [iOS beta-release policy](./ios-beta-releases.md) | You are preparing or publishing an iOS TestFlight beta build or its What to Test notes. |
 | [Feature parity](./feature-parity.md) | You need the stable F001–F055 capability inventory or current cross-platform implementation status. |
 | [Android app analysis](./android-app-analysis.md) | You need the audited final Android behavior or source references behind a parity capability. |
 | [Web architecture](./web-architecture.md) | You need the detailed web engine, catalog, and oracle design. |

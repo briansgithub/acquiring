@@ -27,6 +27,7 @@ Follow the least-context, risk-proportional procedure below when working in `ios
 
 - Direct USB installs (Xcode Run to device, wireless debugging, Apple Configurator, sideloading) do not work on this development Mac: `usbmuxd` rejects the iPhone at the pairing layer (`deviceRequiresMuxConfiguration: kCDCDoNotMatchThisDevice is NULL`), reproduced identically across a clean reboot. This is a structural issue tied to running a root-patched/unsupported macOS install on 2014 hardware, not a transient state — do not re-diagnose it from scratch each session.
 - The only path to the physical device is `ios/scripts/deploy-testflight.sh` (archive → local export + `codesign --verify` → upload to App Store Connect). Run it only when the user asks to ship a build; it uploads to a shared external system.
+- Before publishing or assigning an iOS beta build to any TestFlight testing track or group, draft the final **What to Test** notes and present their exact text to the user. Do not publish, assign, submit, or otherwise make that build available until the user has personally reviewed and explicitly approved those notes for that release. Generated notes must be terse: one to three short bullets, targeted to user-visible changes, a required check, or a material known limitation; keep them within 350 characters unless the user requests otherwise. See `../docs/ios-beta-releases.md`.
 - After a real upload, `ios/.testflight-build-number` is updated — leave that change for the user to commit rather than committing it yourself unless asked.
 
 ## Simulator inventory
