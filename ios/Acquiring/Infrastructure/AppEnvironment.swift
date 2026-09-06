@@ -91,6 +91,7 @@ struct UITestSession {
     }
 
     var historySuiteName: String { "AcquiringUITests.\(identifier)" }
+    var instrumentPreferencesSuiteName: String { "AcquiringUITests.\(identifier).QuizInstrument" }
 
     static func current(processInfo: ProcessInfo = .processInfo) -> Self? {
 #if DEBUG
@@ -359,7 +360,7 @@ final class AppEnvironment {
     init(
         modelContext: ModelContext,
         uiTestSession: UITestSession? = UITestSession.current(),
-        quizInstrumentDefaults: UserDefaults = .standard
+        quizInstrumentDefaults: UserDefaults? = nil
     ) throws {
         let arguments = ProcessInfo.processInfo.arguments
         let isUITesting = uiTestSession != nil
@@ -416,8 +417,11 @@ final class AppEnvironment {
         userLibrary = try UserLibraryStore(context: modelContext)
         let audioSystem = AppAudioSystem()
         audio = audioSystem
+        let instrumentDefaults = quizInstrumentDefaults
+            ?? uiTestSession.flatMap { UserDefaults(suiteName: $0.instrumentPreferencesSuiteName) }
+            ?? .standard
         quizInstrument = QuizInstrumentSession(
-            preferences: QuizInstrumentPreferences(defaults: quizInstrumentDefaults),
+            preferences: QuizInstrumentPreferences(defaults: instrumentDefaults),
             applyToAudio: { [weak audioSystem] waveform in
                 audioSystem?.setSessionInstrument(waveform)
             }
