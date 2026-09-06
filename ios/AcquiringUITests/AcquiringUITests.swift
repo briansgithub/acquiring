@@ -185,16 +185,19 @@ final class AcquiringUITests: XCTestCase {
 
         let transpose = app.buttons["quiz.transpose"]
         XCTAssertTrue(transpose.isHittable, "Transpose should be visible without scrolling")
-        let transposeUp = app.buttons["quiz.transpose.up"]
-        let transposeReady = expectation(for: NSPredicate(format: "hittable == true"), evaluatedWith: transposeUp)
-        wait(for: [transposeReady], timeout: 5)
         XCTAssertFalse(app.alerts["Audio"].exists)
-        transposeUp.tap()
+        transpose.tap()
+        let plusOne = app.buttons["+1 semitones"]
+        XCTAssertTrue(plusOne.waitForExistence(timeout: 5))
+        plusOne.tap()
         let transposeApplied = expectation(
             for: NSPredicate(format: "value == %@", "+1 semitones"), evaluatedWith: transpose
         )
         wait(for: [transposeApplied], timeout: 5)
-        app.buttons["quiz.transpose.down"].tap()
+        transpose.tap()
+        let originalKey = app.buttons["0 semitones"]
+        XCTAssertTrue(originalKey.waitForExistence(timeout: 5))
+        originalKey.tap()
         let transposeReset = expectation(
             for: NSPredicate(format: "value == %@", "0 semitones"), evaluatedWith: transpose
         )

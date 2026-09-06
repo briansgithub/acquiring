@@ -371,6 +371,7 @@ private struct CatalogSettingsView: View {
 
     var body: some View {
         Form {
+            InstrumentSettingsSection()
             AppUpdateSettingsSection()
             TimelineRenderingSettingsSection()
 
