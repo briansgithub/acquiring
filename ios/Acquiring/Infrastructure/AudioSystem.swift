@@ -60,10 +60,10 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     /// `start()` throws 'what' (2003329396) for the life of that instance. Track
     /// the transition explicitly so the graph can be replaced before it is needed.
     private var engineHasInputNode = false
-    /// Capture leaves a 16 kHz preference on the shared session. Arm the cleanup
-    /// only when capture actually set one, so a user who never sings pays no extra
-    /// session calls and no extra diagnostic events.
-    private var needsPlaybackSampleRateReset = false
+    /// Capture leaves a 16 kHz sample rate and a hop-sized IO buffer duration on
+    /// the shared session. Arm the cleanup only when capture actually set them, so
+    /// a user who never sings pays no extra session calls and no extra events.
+    private var needsPlaybackCapturePreferenceReset = false
     /// Guards against a seam re-entering the automatic retry from inside itself.
     private var isRetryingEngineStart = false
 
@@ -950,7 +950,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
             let profile = captureProfile ?? activeMicrophone?.profile ?? .standard
             // Capture is about to leave preferences on the session that only make
             // sense for capture; arm the cleanup that playback performs later.
-            needsPlaybackSampleRateReset = true
+            needsPlaybackCapturePreferenceReset = true
             do {
                 // These are preferences, not assumptions. The tap's resolved format
                 // is always converted to the Android-equivalent 16 kHz analysis stream.
@@ -966,17 +966,26 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
                     "Audio capture preference was unavailable; using resolved hardware format: \(error.localizedDescription, privacy: .public)"
                 )
             }
-        } else if category == .playback, needsPlaybackSampleRateReset {
+        } else if category == .playback, needsPlaybackCapturePreferenceReset {
             // A field report showed a 16 kHz capture preference still standing on a
-            // playback session hours later. Zero restores the system default. Disarm
-            // first so a device that refuses the request cannot re-record the attempt
-            // on every later playback start.
-            needsPlaybackSampleRateReset = false
+            // playback session hours later. Zero restores the system default for
+            // both preferences capture set. Disarm first so a device that refuses
+            // the request cannot re-record the attempt on every later playback
+            // start, and attempt each independently so one refusal cannot strand
+            // the other.
+            needsPlaybackCapturePreferenceReset = false
             do {
                 try audioOperation("session.resetPlaybackSampleRate") { try session.setPreferredSampleRate(0) }
             } catch {
                 logger.info(
                     "Playback sample rate reset was unavailable; using resolved hardware format: \(error.localizedDescription, privacy: .public)"
+                )
+            }
+            do {
+                try audioOperation("session.resetPlaybackIOBufferDuration") { try session.setPreferredIOBufferDuration(0) }
+            } catch {
+                logger.info(
+                    "Playback IO buffer reset was unavailable; using resolved hardware duration: \(error.localizedDescription, privacy: .public)"
                 )
             }
         }
@@ -1472,6 +1481,13 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     /// caller has already established that the engine is stopped, and a stopped
     /// engine cannot be rendering, so replacing it can never cut audible audio. An
     /// eager rebuild at release time would run while a preview was still playing.
+    ///
+    /// Unlike `canRetryEngineStartAfterRebuild()`, this deliberately does not test
+    /// whether the app is active. That guard exists to stop a *reactive* rebuild
+    /// from racing a session the system is already tearing down, after a start has
+    /// failed. This one runs before a start that a poisoned graph would fail
+    /// anyway, on an engine that is already stopped, so refusing it here would only
+    /// convert a start that could have succeeded into a user-visible alert.
     private func replaceEngineIfInputNodeBlocksPlayback() {
         guard engineHasInputNode else { return }
         // Capture still owns the graph it is settling into; replacing it here would
@@ -1501,7 +1517,17 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
             // construction rather than by a counter that could drift.
             guard canRetryEngineStartAfterRebuild() else { throw startFailure }
             isRetryingEngineStart = true
-            defer { isRetryingEngineStart = false }
+            // The retry's own failure must not displace the report. `record`
+            // latches any non-recovery error event as the new failure, wiping
+            // `subsequentEvents`, so without this the exported report would head
+            // itself with a graph rebuilt milliseconds earlier -- whose
+            // `engineInputNodeInstantiated` is false by construction -- and lose
+            // the first failure, the only one that describes what went wrong.
+            diagnostics.isRetrying = true
+            defer {
+                isRetryingEngineStart = false
+                diagnostics.isRetrying = false
+            }
             rebuildAudioEngine()
             do {
                 try audioOperation(operation + ".retryAfterRebuild") {
@@ -1573,10 +1599,16 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
             "engineInputNodeInstantiated": String(engineHasInputNode),
             "preferredIOBufferDuration": String(session.preferredIOBufferDuration)
         ]
-        // Avoid instantiating the lazy input node during ordinary playback.
-        if activeMicrophone != nil {
-            let input = instantiatedInputNode().inputFormat(forBus: 0)
-            let tap = instantiatedInputNode().outputFormat(forBus: 0)
+        // Read the input node only on a graph that already has one. Testing
+        // `engineHasInputNode` too is what keeps recording an event from being
+        // the thing that poisons a graph: `rebuildAudioEngine` clears the flag
+        // and then records `engine.rebuild.succeeded`, so an active microphone
+        // here would otherwise re-instantiate the node on the replacement and
+        // set the flag straight back to true.
+        if activeMicrophone != nil, engineHasInputNode {
+            let inputNode = instantiatedInputNode()
+            let input = inputNode.inputFormat(forBus: 0)
+            let tap = inputNode.outputFormat(forBus: 0)
             state["inputSampleRate"] = String(input.sampleRate)
             state["inputChannels"] = String(input.channelCount)
             state["tapSampleRate"] = String(tap.sampleRate)
