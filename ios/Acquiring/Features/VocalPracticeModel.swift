@@ -54,7 +54,6 @@ final class VocalPracticeModel {
     private(set) var comfortablePitchMIDI: Double?
     private(set) var persistentSelection: PersistentPitchSelection?
     private(set) var persistentPhase: VocalPersistentPhase = .idle
-    private(set) var persistentMeasuredMIDI: Double?
     private(set) var liveCentsError: Double?
     /// [liveCentsError] refreshed on a readable cadence, for the printed percentage. The
     /// marker itself keeps following the unsampled value.
@@ -69,9 +68,13 @@ final class VocalPracticeModel {
     private var rootTarget: QuizPitchCardTarget?
     private var melodyTarget: QuizPitchCardTarget?
     private var chordToneTargets: [QuizPitchCardTarget] = []
-    private var currentMelodyRun: MelodyTimelinePitchRun?
+    private var melodyRuns: [MelodyTimelinePitchRun] = []
+    @ObservationIgnored private var anchorBeat = PlaybackTiming.firstBeat
+    @ObservationIgnored private var anchorInstant: ContinuousClock.Instant?
+    @ObservationIgnored private var beatsPerSecond = 0.0
+    @ObservationIgnored private var sectionEndBeat = PlaybackTiming.fallbackEndBeat
     private var isTransportPlaying = false
-    @ObservationIgnored private var currentBeat = 0.0
+
 
     @ObservationIgnored private var microphoneTask: Task<Void, Never>?
     @ObservationIgnored private var previewTask: Task<Void, Never>?
@@ -90,6 +93,10 @@ final class VocalPracticeModel {
     @ObservationIgnored private var scoringRunSourceMIDI: Int?
     @ObservationIgnored private var scoringRunTargetMIDI: Int?
     @ObservationIgnored private var lastScoredReadingSequence: UInt64 = 0
+    @ObservationIgnored private var isScrubbing = false
+    /// How long the current attempt has had no voiced frame. Only meaningful while paused,
+    /// where a run boundary can no longer separate one attempt from the next.
+    @ObservationIgnored private var silentMillisecondsInRun = 0
     @ObservationIgnored private var livePercentageSampler = LivePitchErrorSampler()
 
     init(audio: AppAudioSystem) {
@@ -132,8 +139,36 @@ final class VocalPracticeModel {
         )
     }
 
-    var persistentFeedbackBand: PitchFeedbackBand? {
-        liveCentsError.map(PersistentPitchFeedback.band)
+    /// Which card, if any, should be wearing the live pitch gauge right now.
+    ///
+    /// Deliberately the only practice value the card stack reads. It changes when the
+    /// selection or the sounding event changes - never at frame rate - so reading it cannot
+    /// pull `QuizCardsView` into the 16 ms redraw the gauge itself lives on.
+    var gaugePosition: PersistentPitchCardPosition? {
+        guard persistentPhase == .listening else { return nil }
+        return persistentTarget?.position
+    }
+
+    /// Where the playhead is right now, projected forward from the last transport sample.
+    ///
+    /// The transport publishes every 50 ms. Choosing the run to score straight from that
+    /// sample quantises every note boundary to 50 ms, so up to a fiftieth of a second of the
+    /// next note's audio lands in the previous note's score. Projecting between samples puts
+    /// the boundary where the audio clock actually has it.
+    ///
+    /// Deliberately a plain projection with no drift smoothing: the timeline smooths because a
+    /// playhead that jitters is unpleasant to watch, whereas scoring wants the audio clock's
+    /// own answer and re-anchors from it every 50 ms anyway.
+    private var projectedBeat: Double {
+        guard isTransportPlaying, beatsPerSecond > 0, let anchorInstant else { return anchorBeat }
+        return PlaybackTiming.wrappedBeat(
+            anchorBeat + max(seconds(anchorInstant.duration(to: clock.now)), 0) * beatsPerSecond,
+            span: sectionEndBeat - PlaybackTiming.firstBeat
+        )
+    }
+
+    private var activeMelodyRun: MelodyTimelinePitchRun? {
+        MelodyTimelinePitchRuns.run(at: projectedBeat, in: melodyRuns)
     }
 
     /// A finite, bounded offset for timeline renderers. The view performs its final
@@ -144,17 +179,18 @@ final class VocalPracticeModel {
         }
     }
 
-    var persistentLiveMarkerStaffSteps: Double? { liveMarkerStaffSteps }
-
-    var persistentLivePercentageText: String? {
-        guard let liveCentsError,
-              PersistentPitchFeedback.showsLiveErrorPercentage(centsError: liveCentsError)
-        else { return nil }
-        return PersistentPitchFeedback.formatLiveErrorPercentage(centsError: liveCentsError)
-    }
-
     var sampledFeedbackBand: PitchFeedbackBand? {
         sampledLiveCentsError.map(PersistentPitchFeedback.band)
+    }
+
+    /// The measured pitch on the readout's cadence rather than the detector's.
+    ///
+    /// Reconstructed from the sampled cents error and the note it was measured against - the
+    /// exact inverse of how `liveCentsError` was formed - so the printed pitch and the printed
+    /// percentage can never describe different instants. Sampling it separately would let them.
+    var sampledMeasuredMIDI: Double? {
+        guard let sampledLiveCentsError, let targetMIDI = persistentTargetMIDI else { return nil }
+        return Double(targetMIDI) + sampledLiveCentsError / 100
     }
 
     /// The percentage printed beside the timeline marker, or nil when nothing voiced is
@@ -473,10 +509,29 @@ final class VocalPracticeModel {
                     self.releaseIfOwned(lease)
                 }
 
+                let interval = Duration.milliseconds(MelodyRunScoringSession.sampleIntervalMilliseconds)
+                var nextTick = self.clock.now
+                var previousTick = self.clock.now
                 while self.isCurrent(generation), !self.microphoneStreamEnded {
                     try Task.checkCancellation()
-                    self.updatePersistentReadingAndScore()
-                    try await Task.sleep(for: .milliseconds(MelodyRunScoringSession.sampleIntervalMilliseconds))
+                    let now = self.clock.now
+                    self.updatePersistentReadingAndScore(
+                        elapsedMilliseconds: self.milliseconds(previousTick.duration(to: now))
+                    )
+                    previousTick = now
+                    // `Task.sleep(for:)` is a floor, so sleeping a fixed interval makes every
+                    // tick a little late and the lateness compounds. The scoring session counts
+                    // elapsed audio in fixed 16 ms steps, so a loop that really runs at 20 ms
+                    // would open the settle window at 187 ms of audio rather than 150 ms and
+                    // cap it at 625 ms rather than 500 ms - the singer measured late, and short
+                    // notes never scored at all. Holding the deadline against the clock keeps
+                    // the nominal count and the wall clock together.
+                    nextTick = nextTick.advanced(by: interval)
+                    // More than one interval behind is a stall, not jitter. Re-base rather than
+                    // burn through a backlog of instant ticks that would race the settle clock
+                    // ahead of the audio it is supposed to describe.
+                    if nextTick < now { nextTick = now.advanced(by: interval) }
+                    try await Task.sleep(until: nextTick, clock: self.clock)
                 }
                 guard self.isCurrent(generation) else { return }
                 if let microphoneStreamError = self.microphoneStreamError {
@@ -509,13 +564,14 @@ final class VocalPracticeModel {
         root: QuizPitchCardTarget?,
         melody: QuizPitchCardTarget?,
         chordTones: [QuizPitchCardTarget],
-        melodyRun: MelodyTimelinePitchRun?,
+        melodyRuns: [MelodyTimelinePitchRun],
         isPlaying: Bool,
-        beat: Double
+        isScrubbing: Bool,
+        beat: Double,
+        beatsPerSecond: Double,
+        endBeat: Double
     ) {
         enterSong(songID: songID, sectionID: sectionID)
-        let pausedThisUpdate = isTransportPlaying && !isPlaying
-        let runChanged = currentMelodyRun?.id != melodyRun?.id
         let selectedTargetChanged: Bool = switch persistentSelection {
         case .simpleRoot:
             rootTarget != root
@@ -537,20 +593,28 @@ final class VocalPracticeModel {
             false
         }
         let targetInputsChanged = self.transpose != transpose || selectedTargetChanged
-        if pausedThisUpdate {
-            discardActiveScore()
-        } else if isTransportPlaying, isPlaying, runChanged {
-            // Finish while the outgoing source/target are still installed. A rest is
-            // a real run boundary; explicit seeks call handleTransportDiscontinuity first.
-            finishActiveScore()
-        }
+        // A drag or a coast sweeps the playhead across runs the singer never sang. Crossing
+        // them must bank nothing, so scrubbing ends the active session and blocks the next
+        // one from starting. Pausing does not: holding the playhead on a note to drill it is
+        // the whole point of scoring while stopped.
+        if isScrubbing, !self.isScrubbing { discardActiveScore() }
+        self.isScrubbing = isScrubbing
         self.transpose = transpose
         rootTarget = root
         melodyTarget = melody
         chordToneTargets = chordTones
-        currentMelodyRun = melodyRun
+        self.melodyRuns = melodyRuns
         isTransportPlaying = isPlaying
-        currentBeat = beat
+        self.beatsPerSecond = beatsPerSecond.isFinite ? max(beatsPerSecond, 0) : 0
+        sectionEndBeat = max(endBeat.isFinite ? endBeat : PlaybackTiming.fallbackEndBeat,
+                             PlaybackTiming.firstBeat)
+        // Re-anchor from the authoritative audio sample every time one lands.
+        anchorBeat = min(max(beat, PlaybackTiming.firstBeat), sectionEndBeat)
+        anchorInstant = clock.now
+        // A run that is about to change gets a fresh scoring session from
+        // `synchronizeScoringRun` regardless, so re-aiming it here as well would drop the
+        // same samples twice.
+        let runChanged = scoringRun?.id != activeMelodyRun?.id
         refreshPersistentTarget(resetScoreForCurrentRun: targetInputsChanged && !runChanged)
         synchronizeScoringRun()
     }
@@ -582,7 +646,6 @@ final class VocalPracticeModel {
         discardActiveScore()
         liveCentsError = nil
         resetLivePercentageSampling()
-        persistentMeasuredMIDI = nil
     }
 
     /// Stops microphone and preview activity while retaining the song's tessitura anchor,
@@ -623,8 +686,19 @@ final class VocalPracticeModel {
         rootTarget = nil
         melodyTarget = nil
         chordToneTargets = []
-        currentMelodyRun = nil
+        melodyRuns = []
+        anchorInstant = nil
+        beatsPerSecond = 0
         isTransportPlaying = false
+    }
+
+    /// Drops every banked run score without touching the microphone or the selection.
+    ///
+    /// Ordering matters at the call site: discard the session in flight first, or its own
+    /// dispose banks a score straight back into the map that was just emptied.
+    func clearMelodyRunScores() {
+        discardActiveScore()
+        melodyRunScores.removeAll()
     }
 
     func clearError() {
@@ -888,10 +962,10 @@ final class VocalPracticeModel {
     private func stopPersistentState() {
         persistentSelection = nil
         persistentPhase = .idle
-        persistentMeasuredMIDI = nil
         liveCentsError = nil
         resetLivePercentageSampling()
         discardActiveScore()
+        melodyRunScores.removeAll()
     }
 
     private func resetLivePercentageSampling() {
@@ -959,7 +1033,6 @@ final class VocalPracticeModel {
     private func refreshPersistentTarget(resetScoreForCurrentRun: Bool) {
         guard persistentSelection != nil else { return }
         if persistentTarget == nil {
-            persistentMeasuredMIDI = nil
             liveCentsError = nil
             resetLivePercentageSampling()
         }
@@ -968,15 +1041,18 @@ final class VocalPracticeModel {
         }
     }
 
-    private func updatePersistentReadingAndScore() {
+    /// - Parameter elapsedMilliseconds: real time since the previous tick. The readout's
+    ///   250 ms cadence is a wall-clock intention; advancing it by the nominal tick length
+    ///   would stretch to whatever the loop actually managed.
+    private func updatePersistentReadingAndScore(elapsedMilliseconds: Int) {
+        synchronizeScoringRun()
         defer {
             sampledLiveCentsError = livePercentageSampler.sample(
                 centsError: liveCentsError,
-                advancingBy: MelodyRunScoringSession.sampleIntervalMilliseconds
+                advancingBy: elapsedMilliseconds
             )
         }
         guard persistentPhase == .listening, let targetMIDI = persistentTargetMIDI else {
-            persistentMeasuredMIDI = nil
             liveCentsError = nil
             if scoringRun != nil { scoringSession.add(measuredMIDI: nil) }
             return
@@ -984,16 +1060,32 @@ final class VocalPracticeModel {
 
         let age = latestReadingInstant.map { $0.duration(to: clock.now) }
         if let age, age <= .milliseconds(200), let latestReading {
-            persistentMeasuredMIDI = latestReading.midi
             liveCentsError = (latestReading.midi - Double(targetMIDI)) * 100
         } else {
-            persistentMeasuredMIDI = nil
             liveCentsError = nil
         }
 
         guard persistentSelection == .melody, scoringRun != nil else { return }
-        if let age, age <= .milliseconds(48), latestReadingSequence != lastScoredReadingSequence,
-           let latestReading {
+        let isVoiced = age.map { $0 <= .milliseconds(48) } == true
+            && latestReadingSequence != lastScoredReadingSequence
+            && latestReading != nil
+
+        // While the transport runs, a run boundary separates one attempt from the next. Paused
+        // on a note there is no boundary, so silence has to do the separating: without this the
+        // session's 500 ms settle cap and 512-sample ceiling would let one median cover the
+        // first eight seconds of however many attempts the singer made, rather than scoring
+        // each on its own. 400 ms is past the 200 ms display hold and the 96 ms settle window,
+        // so it cannot be a consonant or a breath - only a stopped note.
+        if !isTransportPlaying {
+            if isVoiced {
+                if silentMillisecondsInRun >= Self.pausedAttemptGapMilliseconds { restartActiveScore() }
+                silentMillisecondsInRun = 0
+            } else {
+                silentMillisecondsInRun += elapsedMilliseconds
+            }
+        }
+
+        if isVoiced, let latestReading {
             lastScoredReadingSequence = latestReadingSequence
             scoringSession.add(measuredMIDI: latestReading.midi)
         } else {
@@ -1001,10 +1093,13 @@ final class VocalPracticeModel {
         }
     }
 
+    /// Silence that separates one paused attempt at a note from the next.
+    private static let pausedAttemptGapMilliseconds = 400
+
     private func synchronizeScoringRun() {
         let desiredRun = persistentSelection == .melody
             && persistentPhase == .listening
-            && isTransportPlaying ? currentMelodyRun : nil
+            && !isScrubbing ? activeMelodyRun : nil
 
         guard desiredRun?.id != scoringRun?.id else { return }
         finishActiveScore()
@@ -1016,6 +1111,7 @@ final class VocalPracticeModel {
         scoringSession.begin(runID: desiredRun.id, targetMIDI: targetMIDI)
         melodyRunScores.removeValue(forKey: desiredRun.id)
         lastScoredReadingSequence = latestReadingSequence
+        silentMillisecondsInRun = 0
     }
 
     private func restartActiveScore() {
@@ -1029,6 +1125,7 @@ final class VocalPracticeModel {
         scoringSession.begin(runID: scoringRun.id, targetMIDI: targetMIDI)
         melodyRunScores.removeValue(forKey: scoringRun.id)
         lastScoredReadingSequence = latestReadingSequence
+        silentMillisecondsInRun = 0
     }
 
     private func finishActiveScore() {
@@ -1049,6 +1146,11 @@ final class VocalPracticeModel {
         scoringRun = nil
         scoringRunSourceMIDI = nil
         scoringRunTargetMIDI = nil
+    }
+
+    private func seconds(_ duration: Duration) -> Double {
+        let components = duration.components
+        return Double(components.seconds) + Double(components.attoseconds) / 1e18
     }
 
     private func milliseconds(_ duration: Duration) -> Int {
