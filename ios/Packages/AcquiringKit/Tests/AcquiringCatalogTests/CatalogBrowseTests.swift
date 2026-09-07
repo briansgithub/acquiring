@@ -26,6 +26,14 @@ final class CatalogBrowseTests: XCTestCase {
             .browseSongs(group: .mode("dorian"), filter: "").map(\.title)
         let unratedTitles = try await fixture.coordinator
             .browseSongs(group: .complexity(nil), filter: "").map(\.title)
+        let alphabeticalRatings = try await fixture.coordinator
+            .browseSongs(group: .alphabetical("A"), filter: "").map(\.complexityRating)
+        let complexityRatings = try await fixture.coordinator
+            .browseSongs(group: .complexity(1), filter: "").map(\.complexityRating)
+        let unratedRatings = try await fixture.coordinator
+            .browseSongs(group: .complexity(nil), filter: "").map(\.complexityRating)
+        let modeRatings = try await fixture.coordinator
+            .browseSongs(group: .mode("dorian"), filter: "").map(\.complexityRating)
         let complexityCounts = countMap(
             try await fixture.coordinator.browseCounts(mode: .complexity, filter: "")
         )
@@ -39,6 +47,12 @@ final class CatalogBrowseTests: XCTestCase {
         XCTAssertEqual(ionianTitles, ["alpha", "zulu"])
         XCTAssertEqual(dorianTitles, ["Alpha", "zulu"])
         XCTAssertEqual(unratedTitles, ["7 Nation Army"])
+        // Browse rows carry the score itself, not just the bucket, so the list
+        // can label each song when it is grouped by complexity.
+        XCTAssertEqual(alphabeticalRatings, [25, 12])
+        XCTAssertEqual(complexityRatings, [12, 12])
+        XCTAssertEqual(unratedRatings, [nil])
+        XCTAssertEqual(modeRatings, [12, 12])
         XCTAssertEqual(complexityCounts, ["1": 2, "2": 1, BrowseGrouping.unratedKey: 1])
         XCTAssertEqual(modeCounts, ["dorian": 2, "ionian": 2])
         XCTAssertEqual(

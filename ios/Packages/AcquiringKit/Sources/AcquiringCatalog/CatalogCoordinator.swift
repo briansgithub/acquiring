@@ -250,18 +250,18 @@ public actor CatalogCoordinator: CatalogRepository {
         let arguments: StatementArguments
         switch group {
         case let .alphabetical(key):
-            sql = "SELECT entries.slug, entries.artist, entries.title, songs.url, songs.status FROM song_browse_entries entries JOIN songs ON songs.slug = entries.slug WHERE entries.alphaGroup = ? AND \(filterSQL) " + Self.browseOrderSQL
+            sql = "SELECT entries.slug, entries.artist, entries.title, songs.url, songs.status, entries.complexityRating FROM song_browse_entries entries JOIN songs ON songs.slug = entries.slug WHERE entries.alphaGroup = ? AND \(filterSQL) " + Self.browseOrderSQL
             arguments = [key, filter, filter, filter]
         case let .complexity(bucket):
             if let bucket {
-                sql = "SELECT entries.slug, entries.artist, entries.title, songs.url, songs.status FROM song_browse_entries entries JOIN songs ON songs.slug = entries.slug WHERE entries.complexityBucket = ? AND \(filterSQL) " + Self.browseOrderSQL
+                sql = "SELECT entries.slug, entries.artist, entries.title, songs.url, songs.status, entries.complexityRating FROM song_browse_entries entries JOIN songs ON songs.slug = entries.slug WHERE entries.complexityBucket = ? AND \(filterSQL) " + Self.browseOrderSQL
                 arguments = [bucket, filter, filter, filter]
             } else {
-                sql = "SELECT entries.slug, entries.artist, entries.title, songs.url, songs.status FROM song_browse_entries entries JOIN songs ON songs.slug = entries.slug WHERE entries.complexityBucket IS NULL AND \(filterSQL) " + Self.browseOrderSQL
+                sql = "SELECT entries.slug, entries.artist, entries.title, songs.url, songs.status, entries.complexityRating FROM song_browse_entries entries JOIN songs ON songs.slug = entries.slug WHERE entries.complexityBucket IS NULL AND \(filterSQL) " + Self.browseOrderSQL
                 arguments = [filter, filter, filter]
             }
         case let .mode(mode):
-            sql = "SELECT entries.slug, entries.artist, entries.title, songs.url, songs.status FROM song_browse_entries entries JOIN song_browse_modes modes ON modes.slug = entries.slug JOIN songs ON songs.slug = entries.slug WHERE modes.mode = ? AND \(filterSQL) " + Self.browseOrderSQL
+            sql = "SELECT entries.slug, entries.artist, entries.title, songs.url, songs.status, entries.complexityRating FROM song_browse_entries entries JOIN song_browse_modes modes ON modes.slug = entries.slug JOIN songs ON songs.slug = entries.slug WHERE modes.mode = ? AND \(filterSQL) " + Self.browseOrderSQL
             arguments = [mode, filter, filter, filter]
         }
         return try rows(sql: sql, arguments: arguments)
