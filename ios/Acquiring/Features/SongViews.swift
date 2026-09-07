@@ -1425,7 +1425,7 @@ struct QuizView: View {
                     QuizSelectorOption(
                         id: waveform.rawValue,
                         title: waveform.displayName,
-                        groupTitle: [.sine, .square, .sawtooth, .triangle].contains(waveform)
+                        groupTitle: [.sawtooth, .sine, .square, .triangle].contains(waveform)
                             ? "Waveforms"
                             : "Synths"
                     )

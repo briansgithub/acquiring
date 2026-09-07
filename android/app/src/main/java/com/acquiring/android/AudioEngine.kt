@@ -24,20 +24,22 @@ object AudioEngine {
     private const val PREVIEW_FADE_OUT_MS = 24
     private const val TAG = "AudioEngine"
 
+    // Declaration order is the menu order: categories alphabetically (Synths
+    // before Waveforms), and within each category the entries sort by
+    // displayName, not by entry name. The instrument menus render entries as-is.
     enum class Waveform(val displayName: String) {
+        CHURCH_ORGAN("Church Organ"),
+        ELECTRIC_PIANO("Electric Piano"),
+        MARIMBA("Marimba"),
+        REED_ORGAN("Reed Organ"),
+        STRINGS("Strings"),
+        CLARINET("Synth Clarinet"),
+        VIBRAPHONE("Vibraphone"),
+        WARM_ORGAN("Warm Organ"),
+        SAWTOOTH("Sawtooth"),
         SINE("Sine"),
         SQUARE("Square"),
-        SAWTOOTH("Sawtooth"),
-        TRIANGLE("Triangle"),
-        STRINGS("Strings"),
-        ELECTRIC_PIANO("Electric Piano"),
-        WARM_ORGAN("Warm Organ"),
-        CHURCH_ORGAN("Church Organ"),
-        MARIMBA("Marimba"),
-        VIBRAPHONE("Vibraphone"),
-        NYLON_GUITAR("Plucked Zither"),
-        CLARINET("Synth Clarinet"),
-        REED_ORGAN("Reed Organ")
+        TRIANGLE("Triangle")
     }
 
     enum class PlaybackChannel {

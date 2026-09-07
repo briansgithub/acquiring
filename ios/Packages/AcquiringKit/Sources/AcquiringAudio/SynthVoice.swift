@@ -32,13 +32,11 @@ final class SynthVoice {
         }
         let period = max(Int(sampleRate / frequencyHz), 2)
         switch waveform {
-        case .strings, .nylonGuitar:
+        case .strings:
             var generator = LinearCongruentialGenerator(seed: UInt64(frequencyHz.bitPattern))
             var noise = (0..<period).map { _ in generator.nextUnit() * 2 - 1 }
-            if waveform == .nylonGuitar {
-                for index in 1..<noise.count {
-                    noise[index] = noise[index] * 0.35 + noise[index - 1] * 0.65
-                }
+            for index in 1..<noise.count {
+                noise[index] = noise[index] * 0.35 + noise[index - 1] * 0.65
             }
             delayLine = noise
         default:
@@ -65,7 +63,7 @@ final class SynthVoice {
         case .triangle:
             wave = phase < 0.5 ? 4 * phase - 1 : 3 - 4 * phase
         case .strings:
-            wave = pluckedSample(attenuation: arpeggiated ? 0.498 : 0.496)
+            wave = pluckedSample(attenuation: 0.497)
         case .electricPiano:
             let ratio = arpeggiated ? 1.5 : 2
             let index = (arpeggiated ? 3 : 2) * envelope
@@ -84,8 +82,6 @@ final class SynthVoice {
             let index = 1.35 * exp(-1.6 * elapsedSeconds)
             wave = sin(2 * .pi * phase + sin(2 * .pi * modulationPhase) * index) * ring * tremolo
             modulationPhase = wrap(modulationPhase + frequencyHz * 4 / sampleRate)
-        case .nylonGuitar:
-            wave = pluckedSample(attenuation: 0.497)
         case .flute:
             let vibratoPhase = phase + 0.0025 * sin(2 * .pi * modulationPhase)
             let radians = 2 * Double.pi * vibratoPhase
@@ -112,7 +108,7 @@ final class SynthVoice {
     }
 
     /// Perceived-level calibration for reference notes at MIDI pitches 48, 55,
-    /// 60, 64, 69, and 72. Strings, nylon guitar, and marimba use their 100 ms
+    /// 60, 64, 69, and 72. Strings and marimba use their 100 ms
     /// attack/body; other timbres use 300 ms. Values are geometric-mean ratios
     /// to sine after A-weighting.
     private static func outputGain(for waveform: SynthWaveform) -> Double {
@@ -121,12 +117,11 @@ final class SynthVoice {
         case .square: 0.49
         case .sawtooth: 0.74
         case .triangle: 1.18
-        case .strings: 1.33
+        case .strings: 1.74
         case .electricPiano: 0.61
         case .warmOrgan: 1.22
         case .marimba: 1.31
         case .vibraphone: 0.65
-        case .nylonGuitar: 1.74
         case .flute: 1.09
         case .clarinet: 1.13
         case .oboe: 1.26

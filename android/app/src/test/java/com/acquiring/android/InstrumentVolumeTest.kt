@@ -151,7 +151,7 @@ class InstrumentVolumeTest {
     }
 
     private val AudioEngine.Waveform.isPlucked: Boolean
-        get() = this == AudioEngine.Waveform.STRINGS || this == AudioEngine.Waveform.NYLON_GUITAR
+        get() = this == AudioEngine.Waveform.STRINGS
 
     private fun weightedPower(samples: ShortArray): Double {
         // A-weighting at 44.1 kHz, expressed as three stable biquads. Weighting

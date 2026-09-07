@@ -13,13 +13,13 @@ struct InstrumentSettingsSection: View {
                     set: { environment.saveDefaultQuizInstrument($0) }
                 )
             ) {
-                Section("Waveforms") {
-                    ForEach(waveforms, id: \.self) { waveform in
+                Section("Synths") {
+                    ForEach(synths, id: \.self) { waveform in
                         Text(waveform.displayName).tag(waveform)
                     }
                 }
-                Section("Synths") {
-                    ForEach(synths, id: \.self) { waveform in
+                Section("Waveforms") {
+                    ForEach(waveforms, id: \.self) { waveform in
                         Text(waveform.displayName).tag(waveform)
                     }
                 }
@@ -32,7 +32,7 @@ struct InstrumentSettingsSection: View {
     }
 
     private var waveforms: [SynthWaveform] {
-        [.sine, .square, .sawtooth, .triangle]
+        [.sawtooth, .sine, .square, .triangle]
     }
 
     private var synths: [SynthWaveform] {

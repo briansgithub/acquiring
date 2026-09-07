@@ -85,7 +85,7 @@ final class WaveformLoudnessNormalizationTests: XCTestCase {
 
     private func referenceDurationMilliseconds(for waveform: SynthWaveform) -> Int64 {
         switch waveform {
-        case .strings, .marimba, .nylonGuitar: 100
+        case .strings, .marimba: 100
         default: 300
         }
     }
