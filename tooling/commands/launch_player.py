@@ -1,15 +1,58 @@
 """Launch the Hooktheory web player and stop it cleanly (Ctrl+C or Quit in browser)."""
 
 import pathlib
+import shutil
 import signal
 import subprocess
 import sys
 import time
+import urllib.error
+import urllib.request
 import webbrowser
 
 PORT = 3000
+STARTUP_TIMEOUT = 20.0
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SERVER_JS = ROOT / "web" / "server.js"
+NODE_MODULES = ROOT / "node_modules"
+
+
+def ensure_dependencies() -> None:
+    """Install npm dependencies if they are missing (server.js needs better-sqlite3)."""
+    if NODE_MODULES.is_dir():
+        return
+    npm = shutil.which("npm")
+    if npm is None:
+        print("Dependencies are not installed and npm was not found.")
+        print(f"Install Node.js, then run: npm install (in {ROOT})")
+        sys.exit(1)
+    print("Installing dependencies (first run)...")
+    result = subprocess.run(
+        [npm, "install", "--no-audit", "--no-fund"],
+        cwd=ROOT,
+        check=False,
+    )
+    if result.returncode != 0 or not NODE_MODULES.is_dir():
+        print(f"npm install failed. Run it manually in {ROOT}")
+        sys.exit(1)
+
+
+def wait_until_ready(proc: subprocess.Popen, port: int) -> bool:
+    """Poll the health endpoint until the server answers or the process dies."""
+    deadline = time.monotonic() + STARTUP_TIMEOUT
+    while time.monotonic() < deadline:
+        if proc.poll() is not None:
+            return False
+        try:
+            with urllib.request.urlopen(
+                f"http://127.0.0.1:{port}/api/health", timeout=1
+            ) as response:
+                if response.status == 200:
+                    return True
+        except (urllib.error.URLError, OSError):
+            pass
+        time.sleep(0.25)
+    return proc.poll() is None
 
 
 def free_port(port: int) -> None:
@@ -62,6 +105,7 @@ def main() -> None:
         print(f"Missing server: {SERVER_JS}")
         sys.exit(1)
 
+    ensure_dependencies()
     free_port(PORT)
 
     try:
@@ -81,7 +125,12 @@ def main() -> None:
     if hasattr(signal, "SIGTERM"):
         signal.signal(signal.SIGTERM, on_signal)
 
-    time.sleep(0.8)
+    if not wait_until_ready(proc, PORT):
+        code = proc.poll()
+        print(f"Server failed to start (exit code {code}). See the error above.")
+        stop_process(proc)
+        sys.exit(1)
+
     url = f"http://localhost:{PORT}"
     webbrowser.open(url)
 
