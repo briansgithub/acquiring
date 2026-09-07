@@ -6,31 +6,59 @@ final class ChordParityTests: XCTestCase {
     private let abMajor = KeyInfo(tonic: "Ab", scale: "major")
 
     func testSharedChordCorpusMatchesAfterVoicingPort() throws {
-        struct Fixture: Decodable {
-            let id: String
-            let json: String
-            let key: KeyInfo
-            let expectedRoman: String
-            let expectedLetter: String
-            let expectedPcs: [Int]
+        let fixtures = try Self.sharedCorpus()
+        // The corpus is generated from the web player by `npm run parity:export`,
+        // so its size moves whenever the sweep widens. Assert that it is still a
+        // real corpus rather than pinning an exact count.
+        XCTAssertGreaterThan(fixtures.count, 1000)
+
+        var failures: [String] = []
+        var counts: [String: Int] = [:]
+        func record(_ channel: String, _ detail: String) {
+            counts[channel, default: 0] += 1
+            if failures.count < 400 { failures.append("\(channel) \(detail)") }
         }
 
-        let repositoryRoot = URL(fileURLWithPath: #filePath)
-            .deletingLastPathComponent()
-            .deletingLastPathComponent()
-            .deletingLastPathComponent()
-            .deletingLastPathComponent()
-            .deletingLastPathComponent()
-            .deletingLastPathComponent()
-        let fixtureURL = repositoryRoot.appending(path: "contracts/fixtures/corpus_parity.json")
-        let fixtures = try JSONDecoder().decode([Fixture].self, from: Data(contentsOf: fixtureURL))
-        XCTAssertEqual(fixtures.count, 45)
         for fixture in fixtures {
             let value = try decode(fixture.json)
-            XCTAssertEqual(ChordInterpreter.romanSymbol(for: value, key: fixture.key), fixture.expectedRoman, fixture.id)
-            XCTAssertEqual(ChordInterpreter.letterName(for: value, key: fixture.key), fixture.expectedLetter, fixture.id)
-            XCTAssertEqual(Set(ChordInterpreter.chordNotes(for: value, key: fixture.key).map(pitchClass)).sorted(), fixture.expectedPcs, fixture.id)
+            let roman = ChordInterpreter.romanSymbol(for: value, key: fixture.key)
+            let letter = ChordInterpreter.letterName(for: value, key: fixture.key)
+            let notes = ChordInterpreter.chordNotes(for: value, key: fixture.key)
+            let rootMIDI = ChordInterpreter.rootPositionChordNotes(for: value, key: fixture.key).first
+
+            if roman != fixture.expectedRoman {
+                record("roman", "[\(fixture.id)]  expected \(fixture.expectedRoman), got \(roman)")
+            }
+            if letter != fixture.expectedLetter {
+                record("letter", "[\(fixture.id)]  expected \(fixture.expectedLetter), got \(letter)")
+            }
+            if Set(notes.map(pitchClass)).sorted() != fixture.expectedPcs.sorted() {
+                record("pcs", "[\(fixture.id)]  expected \(fixture.expectedPcs), got \(Set(notes.map(pitchClass)).sorted())")
+            }
+            if notes != fixture.expectedMidi {
+                record("midi", "[\(fixture.id)]  expected \(fixture.expectedMidi), got \(notes)")
+            }
+            if rootMIDI != fixture.expectedRootMidi {
+                record("rootMidi", "[\(fixture.id)]  expected \(fixture.expectedRootMidi), got \(String(describing: rootMIDI))")
+            }
+            if let rootMIDI {
+                let labels = notes.map { MusicTheory.relativeMajorDegreeLabel(midi: $0, rootMIDI: rootMIDI) }
+                if labels != fixture.expectedToneLabels {
+                    record("toneLabels", "[\(fixture.id)]  expected \(fixture.expectedToneLabels), got \(labels)")
+                }
+            }
         }
+
+        if let dump = ProcessInfo.processInfo.environment["ACQUIRING_PARITY_DUMP"] {
+            try? failures.joined(separator: "\n").write(toFile: dump, atomically: true, encoding: .utf8)
+        }
+
+        try ParityBaseline.assertWithinBaseline(
+            corpus: "corpus_parity",
+            counts: counts,
+            total: fixtures.count,
+            samples: failures
+        )
     }
 
     func testBlankAndRestChordsDoNotProduceTheoryOrAudio() throws {
@@ -214,6 +242,33 @@ final class ChordParityTests: XCTestCase {
 
     private func decode(_ source: String) throws -> [String: JSONValue] {
         try JSONDecoder().decode([String: JSONValue].self, from: Data(source.utf8))
+    }
+
+    struct CorpusFixture: Decodable {
+        let id: String
+        let json: String
+        let key: KeyInfo
+        let expectedRoman: String
+        let expectedLetter: String
+        let expectedPcs: [Int]
+        let expectedMidi: [Int]
+        let expectedRootMidi: Int
+        let expectedToneLabels: [String]
+    }
+
+    /// The one cross-platform contract, read in place from `contracts/fixtures`.
+    /// Android reads the same file via `test.resources.srcDir` in its gradle
+    /// config; the app test bundle gets a copy through the Xcode target.
+    static func sharedCorpus() throws -> [CorpusFixture] {
+        let repositoryRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let fixtureURL = repositoryRoot.appending(path: "contracts/fixtures/corpus_parity.json")
+        return try JSONDecoder().decode([CorpusFixture].self, from: Data(contentsOf: fixtureURL))
     }
 
     private func pitchClass(_ midi: Int) -> Int { ((midi % 12) + 12) % 12 }
