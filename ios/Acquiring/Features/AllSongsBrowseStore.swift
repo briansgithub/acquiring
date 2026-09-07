@@ -20,6 +20,9 @@ final class AllSongsBrowseStore {
     private(set) var metadataState: FeatureState<BrowseMetadataStatus> = .idle
     private(set) var countsState: FeatureState<[String: Int]> = .idle
     private(set) var songsState: FeatureState<[CatalogSong]> = .idle
+    /// Title-prefix runs for the open group, so a heading holding thousands of
+    /// songs can be scanned and jumped through instead of only dragged.
+    private(set) var songSubgroups: [BrowseSubgroup] = []
 
     /// A stable, row-based restoration point supplied by the scroll view, not
     /// by lazy-row appearance (which can be prefetched off screen). A mounted
@@ -100,6 +103,7 @@ final class AllSongsBrowseStore {
         songsGeneration &+= 1
         if next == nil {
             songsState = .idle
+            songSubgroups = []
             loadedMode = nil
             loadedGroupKey = nil
             loadedFilter = nil
@@ -195,6 +199,7 @@ final class AllSongsBrowseStore {
     private func loadSongsIfNeeded(force: Bool) {
         guard let key = expandedGroupKey else {
             songsState = .idle
+            songSubgroups = []
             return
         }
         let mode = browseMode
@@ -205,6 +210,7 @@ final class AllSongsBrowseStore {
         songsGeneration &+= 1
         let generation = songsGeneration
         songsState = .loading
+        songSubgroups = []
         let group = catalogGroup(mode: mode, key: key)
         songsTask = Task { [weak self] in
             do {
@@ -217,6 +223,7 @@ final class AllSongsBrowseStore {
                       self.appliedFilter == filter
                 else { return }
                 self.songsState = songs.isEmpty ? .empty : .content(songs)
+                self.songSubgroups = BrowseSubgrouping.subgroups(for: songs)
                 self.loadedMode = mode
                 self.loadedGroupKey = key
                 self.loadedFilter = filter
@@ -230,6 +237,7 @@ final class AllSongsBrowseStore {
                       self.appliedFilter == filter
                 else { return }
                 self.songsState = .failure(error.localizedDescription)
+                self.songSubgroups = []
             }
         }
     }
@@ -238,6 +246,7 @@ final class AllSongsBrowseStore {
         songsTask?.cancel()
         songsGeneration &+= 1
         songsState = .idle
+        songSubgroups = []
         loadedMode = nil
         loadedGroupKey = nil
         loadedFilter = nil

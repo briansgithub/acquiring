@@ -135,7 +135,7 @@ private struct IntroductionView: View {
                     title: "Objective:",
                     identifier: "introduction.objective"
                 ) {
-                    Text("Learn intervals and harmony through catchy songs and real-world examples.")
+                    Text("To learn intervals and harmony through catchy songs and real-world examples.")
                         .foregroundStyle(.secondary)
                 }
 
@@ -143,22 +143,25 @@ private struct IntroductionView: View {
                     title: "Tapping on Notes/Intervals/Chords",
                     identifier: "introduction.gestures"
                 ) {
-                    VStack(spacing: 10) {
-                        IntroductionGestureRow(
-                            action: "Tap",
-                            detail: "Play the card.",
-                            systemImage: "hand.tap"
-                        )
-                        IntroductionGestureRow(
-                            action: "Double-tap",
-                            detail: "Open the Singing Tool.",
-                            systemImage: "hand.tap.fill"
-                        )
-                        IntroductionGestureRow(
-                            action: "Press and hold",
-                            detail: "Turn on continuous pitch monitoring.",
-                            systemImage: "hand.point.up.left.fill"
-                        )
+                    VStack(alignment: .leading, spacing: 12) {
+                        exampleCardRow
+                        VStack(spacing: 10) {
+                            IntroductionGestureRow(
+                                action: "Tap",
+                                detail: "Play the card.",
+                                systemImage: "hand.tap"
+                            )
+                            IntroductionGestureRow(
+                                action: "Double-tap",
+                                detail: "Open the Singing Tool.",
+                                systemImage: "hand.tap.fill"
+                            )
+                            IntroductionGestureRow(
+                                action: "Press and hold",
+                                detail: "Turn on continuous pitch monitoring.",
+                                systemImage: "hand.point.up.left.fill"
+                            )
+                        }
                     }
                 }
 
@@ -202,9 +205,44 @@ private struct IntroductionView: View {
         }
     }
 
+    /// The card types the gesture rows below it are talking about, drawn the way the quiz draws
+    /// them. The interval label comes from `IntervalAnalysis` rather than a literal so the example
+    /// cannot drift from the shorthand a real interval card prints.
+    private var exampleCardRow: some View {
+        let low = SpelledPitch.fromMIDI(60)
+        let high = SpelledPitch.fromMIDI(67)
+        let interval = IntervalAnalysis.named(from: low, to: high)
+        return HStack(spacing: 10) {
+            QuizExampleCard(fixedHeight: 56) {
+                FittedScaleDegree("3", maximumFontSize: 28, minimumFontSize: 11, color: .white)
+                    .frame(maxWidth: .infinity, minHeight: 34)
+            }
+            QuizExampleCard(fixedHeight: 56) {
+                VStack(spacing: 3) {
+                    Text(interval.shorthand)
+                        .font(.title3.bold().monospaced())
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.65)
+                    Text("\(low.noteName) → \(high.noteName)")
+                        .font(.caption2)
+                        .lineLimit(1)
+                }
+                .frame(maxWidth: .infinity)
+            }
+        }
+        .frame(maxWidth: 300, alignment: .leading)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Example cards: a scale degree card and an interval card")
+    }
+
+    /// The dot on the card it actually lives on. Alone on the section's background the white dot
+    /// is nearly invisible in light mode, and it does not read as "the dot in a card's corner".
     private func pitchHintRow(_ title: String, isAdjusted: Bool) -> some View {
-        HStack(spacing: 6) {
-            PitchHintDot(isAdjusted: isAdjusted)
+        HStack(spacing: 10) {
+            QuizExampleCard(showsPitchHint: true, isTessituraAdjusted: isAdjusted) {
+                Color.clear
+            }
+            .frame(width: 56)
             Text(title)
         }
         .accessibilityElement(children: .combine)
@@ -594,35 +632,61 @@ private struct SearchCatalogView: View {
 struct SongRow: View {
     let song: CatalogSong
     var isCompact = false
+    /// Trails the row with the song's complexity score, for the browse mode
+    /// that groups by it.
+    var showsComplexity = false
     let action: () -> Void
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         Button(action: action) {
-            Group {
-                if isCompact && !dynamicTypeSize.isAccessibilitySize {
-                    HStack(spacing: 8) {
-                        Text(song.displayTitle)
-                            .font(.subheadline)
-                            .foregroundStyle(.primary)
-                            .lineLimit(1)
-                            .layoutPriority(1)
-                        Text(song.displayArtist)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
+            HStack(spacing: 8) {
+                Group {
+                    if isCompact && !dynamicTypeSize.isAccessibilitySize {
+                        HStack(spacing: 8) {
+                            Text(song.displayTitle)
+                                .font(.subheadline)
+                                .foregroundStyle(.primary)
+                                .lineLimit(1)
+                                .layoutPriority(1)
+                            Text(song.displayArtist)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                        }
+                    } else {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(song.displayTitle).foregroundStyle(.primary)
+                            Text(song.displayArtist).font(.subheadline).foregroundStyle(.secondary)
+                        }
                     }
-                } else {
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text(song.displayTitle).foregroundStyle(.primary)
-                        Text(song.displayArtist).font(.subheadline).foregroundStyle(.secondary)
-                    }
+                }
+
+                if let complexityLabel {
+                    Spacer(minLength: 8)
+                    Text(complexityLabel)
+                        .font(.subheadline.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
                 }
             }
             .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
             .contentShape(Rectangle())
         }
-        .accessibilityLabel("\(song.displayTitle), by \(song.displayArtist)")
+        .accessibilityLabel(accessibilityLabel)
+    }
+
+    /// Nil when the row is not showing scores, or when the song is unrated —
+    /// a whole "Unrated" group of placeholders would be noise.
+    private var complexityLabel: String? {
+        guard showsComplexity, let rating = song.complexityRating else { return nil }
+        return rating.formatted(.number.precision(.fractionLength(0...1)))
+    }
+
+    private var accessibilityLabel: String {
+        let base = "\(song.displayTitle), by \(song.displayArtist)"
+        guard let complexityLabel else { return base }
+        return "\(base), complexity \(complexityLabel) out of 100"
     }
 }
 

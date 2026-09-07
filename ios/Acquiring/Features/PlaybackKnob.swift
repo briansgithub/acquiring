@@ -53,14 +53,16 @@ struct PlaybackKnob: View {
                 .lineLimit(compact ? 1 : 2, reservesSpace: compact)
                 .minimumScaleFactor(compact ? 0.8 : 1)
 
-            if showValueLabel {
-                Text(valueLabel)
-                    .font(compact ? .caption2 : .subheadline)
-                    .foregroundStyle(Color.accentColor)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(compact ? 1 : 2, reservesSpace: compact)
-                    .minimumScaleFactor(0.75)
-            }
+            // A knob without a value label still reserves the label's row, so
+            // its dial stays level with the dials of the knobs beside it.
+            Text(valueLabel)
+                .font(compact ? .caption2 : .subheadline)
+                .foregroundStyle(Color.accentColor)
+                .multilineTextAlignment(.center)
+                .lineLimit(compact ? 1 : 2, reservesSpace: compact)
+                .minimumScaleFactor(0.75)
+                .opacity(showValueLabel ? 1 : 0)
+                .accessibilityHidden(!showValueLabel)
 
             dial
                 // Keep the top arpeggio label clear of the value above the dial.

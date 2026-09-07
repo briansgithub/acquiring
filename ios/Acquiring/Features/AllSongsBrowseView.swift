@@ -12,6 +12,9 @@ struct AllSongsBrowseView: View {
                 controls(browse: $browse)
                 index(groups: browse.groups, proxy: proxy)
                 browseList(browse: $browse)
+                    .overlay(alignment: .trailing) {
+                        scrubber(browse: $browse, proxy: proxy)
+                    }
             }
             .task(id: store.catalogRevision) {
                 await browse.refresh(catalogRevision: store.catalogRevision)
@@ -82,6 +85,23 @@ struct AllSongsBrowseView: View {
             .padding(.bottom, 8)
         }
         .accessibilityIdentifier("allSongs.index")
+    }
+
+    /// A heading like "S" or a mode can hold thousands of songs, so the open
+    /// group gets a fast-scroll track over its title-prefix runs. It rides the
+    /// list rather than the header, staying under the thumb however deep the
+    /// reader has scrolled.
+    @ViewBuilder
+    private func scrubber(browse: Bindable<AllSongsBrowseStore>, proxy: ScrollViewProxy) -> some View {
+        let targets = BrowseSubgrouping.jumpTargets(for: browse.wrappedValue.songSubgroups)
+        if !targets.isEmpty {
+            BrowseScrubber(targets: targets) { subgroup in
+                // No animation: a scrub is a series of jumps, and animating
+                // each one lags behind the thumb.
+                proxy.scrollTo(subheadingID(for: subgroup), anchor: .top)
+            }
+            .padding(.trailing, 3)
+        }
     }
 
     private func browseList(browse: Bindable<AllSongsBrowseStore>) -> some View {
@@ -156,13 +176,57 @@ struct AllSongsBrowseView: View {
         case .failure(let message):
             errorRow(message: message) { browse.wrappedValue.retry() }
         case .content(let songs):
-            ForEach(songs) { song in
-                SongRow(song: song) { store.openSong(song) }
-                    .id(songID(for: song))
-                    .padding(.horizontal)
-                    .padding(.vertical, 4)
+            let subgroups = browse.wrappedValue.songSubgroups
+            if subgroups.isEmpty {
+                songRows(songs: songs, browse: browse)
+            } else {
+                ForEach(subgroups) { subgroup in
+                    subgroupHeader(subgroup)
+                        .id(subheadingID(for: subgroup))
+                    songRows(songs: subgroup.songs, browse: browse)
+                }
             }
         }
+    }
+
+    private func songRows(songs: [CatalogSong], browse: Bindable<AllSongsBrowseStore>) -> some View {
+        ForEach(songs) { song in
+            SongRow(
+                song: song,
+                showsComplexity: browse.wrappedValue.browseMode == .complexity
+            ) { store.openSong(song) }
+                .id(songID(for: song))
+                .padding(.horizontal)
+                .padding(.trailing, scrubberInset(browse: browse))
+                .padding(.vertical, 4)
+        }
+    }
+
+    /// Row content stops short of the scrub track while it is on screen; the
+    /// headings keep their full-width background so nothing scrolls through the
+    /// gap beside a pinned one.
+    private func scrubberInset(browse: Bindable<AllSongsBrowseStore>) -> CGFloat {
+        browse.wrappedValue.songSubgroups.isEmpty ? 0 : BrowseScrubber.touchWidth
+    }
+
+    /// Marks where one prefix run ends and the next begins, so scrolling past a
+    /// waypoint says where you are without a tap.
+    private func subgroupHeader(_ subgroup: BrowseSubgroup) -> some View {
+        HStack {
+            Text(subgroup.label)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+            Spacer()
+            Text(subgroup.songs.count.formatted())
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+        }
+        .padding(.horizontal)
+        .padding(.trailing, BrowseScrubber.touchWidth)
+        .padding(.top, 10)
+        .padding(.bottom, 2)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(subgroup.label), \(subgroup.songs.count) songs")
     }
 
     private func groupHeader(group: BrowseGroupDescriptor, browse: Bindable<AllSongsBrowseStore>) -> some View {
@@ -197,6 +261,7 @@ struct AllSongsBrowseView: View {
         }
         .buttonStyle(.plain)
         .padding(.horizontal)
+        .padding(.trailing, scrubberInset(browse: browse))
         .padding(.vertical, 12)
         .background(.background)
         .accessibilityLabel("\(isExpanded ? "Collapse" : "Expand") \(group.label)")
@@ -219,6 +284,10 @@ struct AllSongsBrowseView: View {
 
     private func headingID(for group: BrowseGroupDescriptor) -> String {
         "allSongs.heading.\(group.key)"
+    }
+
+    private func subheadingID(for subgroup: BrowseSubgroup) -> String {
+        "allSongs.subheading.\(subgroup.id)"
     }
 
     private func songID(for song: CatalogSong) -> String {

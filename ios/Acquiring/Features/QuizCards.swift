@@ -792,6 +792,36 @@ struct ChordToneCardLayout<Card: View>: View {
     }
 }
 
+/// A quiz card drawn purely as a picture: the same tint fill, 14pt continuous radius, white
+/// content and corner pitch-hint dot as `QuizCardButton`, minus every gesture, model read and
+/// accessibility action. The introduction uses it to show what a card is before the learner has
+/// met one, which is why the chrome here is a copy of that card's and not a look-alike.
+struct QuizExampleCard<Content: View>: View {
+    var fixedHeight: CGFloat = 44
+    var showsPitchHint: Bool = true
+    var isTessituraAdjusted: Bool = false
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        content()
+            .foregroundStyle(.white)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 5)
+            .frame(maxWidth: .infinity)
+            .frame(height: fixedHeight)
+            .background(.tint, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .overlay(alignment: .topTrailing) {
+                if showsPitchHint {
+                    PitchHintDot(isAdjusted: isTessituraAdjusted)
+                        .padding(fixedHeight <= 44 ? 3 : 5)
+                }
+            }
+            .allowsHitTesting(false)
+            // Decorative: every call site describes the row it sits in.
+            .accessibilityHidden(true)
+    }
+}
+
 /// Shared decorative singing affordance. Color describes register handling, not microphone activity.
 struct PitchHintDot: View {
     let isAdjusted: Bool
