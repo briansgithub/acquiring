@@ -46,6 +46,13 @@ final class AudioDiagnostics {
     private(set) var report: Report?
     private(set) var persistenceError: String?
     var isRecovering = false
+    /// Set while an automatic rebuild-and-retry is curing a start failure. Like
+    /// `isRecovering`, this stops a second failure from displacing the report:
+    /// the first failure describes the state the retry is trying to cure, while
+    /// the retry's own failure describes a graph rebuilt moments earlier, whose
+    /// `engineInputNodeInstantiated` is false by construction. The retry's
+    /// failure still lands in `subsequentEvents` with its error codes intact.
+    var isRetrying = false
 
     init(fileURL: URL? = nil) {
         self.fileURL = fileURL ?? URL.applicationSupportDirectory
@@ -57,7 +64,7 @@ final class AudioDiagnostics {
     }
 
     func record(_ event: AudioDiagnosticEvent) {
-        if !event.errors.isEmpty, !isRecovering {
+        if !event.errors.isEmpty, !isRecovering, !isRetrying {
             report = Report(schemaVersion: 1, failure: event, precedingEvents: events, subsequentEvents: [])
         } else if report != nil {
             report?.subsequentEvents.append(event)
