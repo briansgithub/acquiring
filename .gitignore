@@ -52,3 +52,10 @@ __pycache__/
 # Xcode per-user workspace state
 xcuserdata/
 *.xcuserstate
+
+# App Store Connect API credentials. Keys belong in ~/.appstoreconnect/, never
+# here; these patterns are a backstop against an accidental copy into the repo.
+*.p8
+AuthKey_*
+.asc-api-key.json
+acquiring-asc.json
