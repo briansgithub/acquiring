@@ -19,6 +19,7 @@ struct SongDetailView: View {
     @State private var audioError: String?
     @State private var showsAudioDiagnostics = false
     @State private var audioRecoveryTask: Task<Void, Never>?
+    @State private var transitionPreviewTask: Task<Void, Never>?
 
     var body: some View {
         Group {
@@ -71,6 +72,7 @@ struct SongDetailView: View {
         }
         .onDisappear {
             audioRecoveryTask?.cancel()
+            transitionPreviewTask?.cancel()
             environment.vocalPractice.cancelActivity()
             Task { await environment.audio.stop(channel: .preview) }
         }
@@ -148,7 +150,10 @@ struct SongDetailView: View {
                         showsLetterNames: $showsLetterNames,
                         arpeggiates: $arpeggiatesChords,
                         onPreview: { chord in preview(chord, arpeggiates: arpeggiatesChords) },
-                        onPreviewTone: { midi in previewTone(midi) }
+                        onPreviewTone: { midi in previewTone(midi) },
+                        onPreviewTransition: { transition in
+                            previewTransition(transition, arpeggiates: arpeggiatesChords)
+                        }
                     )
                 }
             }
@@ -222,6 +227,41 @@ struct SongDetailView: View {
 
     private func previewTone(_ midi: Int) {
         playPreview(midi: [midi])
+    }
+
+    /// Plays a transition as the two chords in order. `AppAudioSystem.play` returns once the buffer
+    /// is scheduled rather than when it finishes, and each call invalidates the previous preview
+    /// generation, so the second chord has to wait out the first — the same shape as
+    /// `playQuizCardPreview`'s note groups.
+    private func previewTransition(_ transition: ChordTransition, arpeggiates: Bool) {
+        let chords = [transition.from, transition.to].filter { !$0.notes.isEmpty }
+        guard !chords.isEmpty else { return }
+        transitionPreviewTask?.cancel()
+        environment.vocalPractice.cancelActivity()
+        let arpeggioStepMilliseconds = 80
+        transitionPreviewTask = Task {
+            do {
+                for (index, chord) in chords.enumerated() {
+                    try Task.checkCancellation()
+                    try await environment.audio.play(
+                        PreviewRequest(
+                            frequenciesHz: chord.notes.map { MusicTheory.frequency(midi: Double($0)) },
+                            duration: .milliseconds(450),
+                            arpeggiates: arpeggiates,
+                            arpeggioStep: .milliseconds(arpeggioStepMilliseconds),
+                            waveform: .clarinet
+                        )
+                    )
+                    if index < chords.count - 1 {
+                        let spread = arpeggiates ? arpeggioStepMilliseconds * max(chord.notes.count - 1, 0) : 0
+                        try await Task.sleep(for: .milliseconds(450 + spread))
+                    }
+                }
+            } catch is CancellationError {
+            } catch {
+                audioError = error.localizedDescription
+            }
+        }
     }
 
     private func playPreview(
@@ -466,7 +506,9 @@ private struct SongChordsView: View {
     @Binding var arpeggiates: Bool
     let onPreview: (SongDetailChord) -> Void
     let onPreviewTone: (Int) -> Void
+    let onPreviewTransition: (ChordTransition) -> Void
     @State private var selectedChordID: String?
+    @State private var rootOnlyTransitions = false
 
     private var chords: [SongDetailChord] { SongDetailPresentation.uniqueChords(in: section) }
     private var key: KeyInfo { section.keys.first?.key ?? KeyInfo(tonic: "C", scale: "major") }
@@ -546,6 +588,13 @@ private struct SongChordsView: View {
                             .accessibilityAddTraits(isSelected ? [.isSelected] : [])
                         }
                     }
+
+                    ChordTransitionsSection(
+                        section: section,
+                        showsLetterNames: showsLetterNames,
+                        rootOnly: $rootOnlyTransitions,
+                        onPlay: onPreviewTransition
+                    )
                 }
             }
             .padding()
@@ -641,7 +690,7 @@ private struct DetailRow: View {
     }
 }
 
-private struct SongDetailChord: Identifiable {
+struct SongDetailChord: Identifiable {
     let id: String
     let source: [String: JSONValue]
     let beat: Double
@@ -654,7 +703,7 @@ private struct SongDetailChord: Identifiable {
     let rootPositionRootMIDI: Int?
 }
 
-private enum SongDetailPresentation {
+enum SongDetailPresentation {
     static func progression(in section: ExtractedSection) -> [SongDetailChord] {
         section.chords.enumerated()
             .sorted {
