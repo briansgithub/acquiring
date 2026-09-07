@@ -15,6 +15,7 @@
     "test:note-order": "node tooling/_Research_testing/verifyNoteOrder.mjs",
     "test:hooktheory-compat": "node tooling/_Research_testing/hooktheoryDataCompatTest.mjs",
     "test:section-order": "node tooling/_Research_testing/sectionOrderTest.cjs",
+    "parity:export": "node tooling/_Decode_oracle/export_parity_corpus.js",
     "test:shared-parity": "node tooling/scripts/sharedParityTest.mjs",
     "test:data-root": "node tooling/scripts/dataRootCompatibilityTest.cjs",
     "validate:catalog": "node tooling/scripts/validateCatalogContract.mjs",
