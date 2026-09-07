@@ -244,7 +244,7 @@ Controls are:
 
 - Tempo from 0–200 percent.
 - Transpose from -12 through +12 semitones in Full mode.
-- Ten timbres: sine, square, sawtooth, triangle, strings, electric piano, warm organ, marimba, vibraphone, and nylon guitar.
+- Twelve timbres: sine, square, sawtooth, triangle, strings, electric piano, warm organ, church organ, marimba, vibraphone, synth clarinet, and reed organ.
 - Chord arpeggiation choices labeled 1/4, 1/3, 1/2, off, 1, 2, 3, and 4, encoded as cycles per beat by `QuizArpeggioOption`.
 - Independent melody/chord balance through a custom vertical dial.
 - Full/Root-only mode, section picker, reset, and a draggable play/pause button whose normalized position is saved.

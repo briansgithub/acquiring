@@ -35,6 +35,30 @@ public enum PlaybackTiming {
         return LoopingPlaybackPosition(beat: startBeat + (tickEndBeat - startBeat).truncatingRemainder(dividingBy: endBeat - startBeat), looped: true)
     }
 
+    /// Folds `beat` back into one pass of a looping section.
+    ///
+    /// Shared by the timeline's display-link projection and by persistent practice's own
+    /// projection, so a marker and the run being scored under it can never disagree about
+    /// where the playhead is after a loop.
+    public static func wrappedBeat(_ beat: Double, span: Double, startBeat: Double = firstBeat) -> Double {
+        guard span > 0, beat.isFinite else { return startBeat }
+        var phase = (beat - startBeat).truncatingRemainder(dividingBy: span)
+        if phase < 0 { phase += span }
+        return startBeat + phase
+    }
+
+    /// The shorter way round a loop from `from` to `to`, signed.
+    ///
+    /// A projection that has run past the end of the section is barely ahead of a sample
+    /// taken just after the wrap, not a whole section behind it.
+    public static func circularDelta(from: Double, to: Double, span: Double) -> Double {
+        guard span > 0 else { return to - from }
+        var delta = (to - from).truncatingRemainder(dividingBy: span)
+        if delta > span / 2 { delta -= span }
+        if delta < -span / 2 { delta += span }
+        return delta
+    }
+
     public static func remainingMilliseconds(eventEndBeat: Double, currentBeat: Double, bpm: Double) -> Int? {
         guard eventEndBeat.isFinite, currentBeat.isFinite, bpm.isFinite, bpm > 0, eventEndBeat > currentBeat else { return nil }
         return max(Int(((eventEndBeat - currentBeat) * 60_000 / bpm).rounded()), 40)

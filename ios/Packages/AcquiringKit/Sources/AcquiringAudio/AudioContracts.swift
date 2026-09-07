@@ -1,38 +1,39 @@
 import AcquiringCore
 import Foundation
 
+/// Declaration order is the menu order: categories alphabetically (Synths before
+/// Waveforms), and within each category the cases sort by `displayName`, not by
+/// case name. The instrument pickers render `allCases` as-is.
 public enum SynthWaveform: String, CaseIterable, Codable, Sendable {
+    case churchOrgan
+    case electricPiano
+    case marimba
+    case oboe
+    case strings
+    case clarinet
+    case flute
+    case vibraphone
+    case warmOrgan
+    case sawtooth
     case sine
     case square
-    case sawtooth
     case triangle
-    case strings
-    case electricPiano
-    case warmOrgan
-    case marimba
-    case vibraphone
-    case nylonGuitar
-    case flute
-    case clarinet
-    case oboe
-    case churchOrgan
 
     public var displayName: String {
         switch self {
+        case .churchOrgan: "Church Organ"
+        case .electricPiano: "Electric Piano"
+        case .marimba: "Marimba"
+        case .oboe: "Reed Organ"
+        case .strings: "Strings"
+        case .clarinet: "Synth Clarinet"
+        case .flute: "Synth Flute"
+        case .vibraphone: "Vibraphone"
+        case .warmOrgan: "Warm Organ"
+        case .sawtooth: "Sawtooth"
         case .sine: "Sine"
         case .square: "Square"
-        case .sawtooth: "Sawtooth"
         case .triangle: "Triangle"
-        case .strings: "Strings"
-        case .electricPiano: "Electric Piano"
-        case .warmOrgan: "Warm Organ"
-        case .marimba: "Marimba"
-        case .vibraphone: "Vibraphone"
-        case .nylonGuitar: "Plucked Zither"
-        case .flute: "Synth Flute"
-        case .clarinet: "Synth Clarinet"
-        case .oboe: "Reed Organ"
-        case .churchOrgan: "Church Organ"
         }
     }
 }

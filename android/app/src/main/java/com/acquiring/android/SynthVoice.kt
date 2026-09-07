@@ -18,7 +18,7 @@ internal class SynthVoice(
         AudioEngine.Waveform.SQUARE -> 0.49
         AudioEngine.Waveform.SAWTOOTH -> 0.74
         AudioEngine.Waveform.TRIANGLE -> 1.18
-        AudioEngine.Waveform.STRINGS -> 1.33
+        AudioEngine.Waveform.STRINGS -> 1.74
         AudioEngine.Waveform.ELECTRIC_PIANO -> 0.61
         AudioEngine.Waveform.WARM_ORGAN -> 1.22
         AudioEngine.Waveform.CHURCH_ORGAN -> 1.57
@@ -26,7 +26,6 @@ internal class SynthVoice(
         AudioEngine.Waveform.REED_ORGAN -> 1.26
         AudioEngine.Waveform.MARIMBA -> 1.31
         AudioEngine.Waveform.VIBRAPHONE -> 0.65
-        AudioEngine.Waveform.NYLON_GUITAR -> 1.74
     }
 
     private var phase = 0.0
@@ -47,15 +46,12 @@ internal class SynthVoice(
     init {
         val period = sampleRate / frequencyHz
         delayLine = when (waveform) {
-            AudioEngine.Waveform.STRINGS,
-            AudioEngine.Waveform.NYLON_GUITAR -> {
+            AudioEngine.Waveform.STRINGS -> {
                 val noise = DoubleArray(period.toInt().coerceAtLeast(2)) {
                     Math.random() * 2.0 - 1.0
                 }
-                if (waveform == AudioEngine.Waveform.NYLON_GUITAR) {
-                    for (index in 1 until noise.size) {
-                        noise[index] = noise[index] * 0.35 + noise[index - 1] * 0.65
-                    }
+                for (index in 1 until noise.size) {
+                    noise[index] = noise[index] * 0.35 + noise[index - 1] * 0.65
                 }
                 noise
             }
@@ -80,8 +76,7 @@ internal class SynthVoice(
             AudioEngine.Waveform.STRINGS -> {
                 val output = delayLine[delayPointer]
                 val next = (delayPointer + 1) % delayLine.size
-                val attenuation = if (arpeggiated) 0.498 else 0.496
-                delayLine[delayPointer] = (output + delayLine[next]) * attenuation
+                delayLine[delayPointer] = (output + delayLine[next]) * 0.497
                 delayPointer = next
                 output
             }
@@ -138,14 +133,6 @@ internal class SynthVoice(
                 val output = sin(2.0 * PI * phase + modulator)
                 modPhase = wrapUnitPhase(modPhase + frequencyHz * 4.0 / sampleRate)
                 output * ring * tremolo
-            }
-
-            AudioEngine.Waveform.NYLON_GUITAR -> {
-                val output = delayLine[delayPointer]
-                val next = (delayPointer + 1) % delayLine.size
-                delayLine[delayPointer] = (output + delayLine[next]) * 0.497
-                delayPointer = next
-                output
             }
         }
 

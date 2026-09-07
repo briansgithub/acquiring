@@ -1724,7 +1724,7 @@ Copy/Save to Files as the system's accessibility cells. No screenshots were read
 Exact final command (through `python3 android/scripts/compact_check.py --name
  audio-diagnostics-final --keep-success-log --`):
 ```sh
-xcodebuild -quiet test -project ios/Acquiring.xcodeproj -scheme Acquiring -derivedDataPath /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 90 -only-testing:AcquiringTests/AudioDiagnosticsTests -only-testing:AcquiringUITests/AcquiringUITests/testAudioDiagnosticsResetAndSettingsShareSheet CODE_SIGNING_ALLOWED=NO
+xcodebuild -quiet test -project ios/Acquiring.xcodeproj -scheme Acquiring -derivedDataPath /Users/brian/Library/Developer/Xcode/DerivedData/Acquiring-eazkahspoqupvxcztyfieevjkroa -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 90 -only-testing:AcquiringTests/AudioDiagnosticsTests -only-testing:AcquiringUITests/AcquiringUITests/testAudioDiagnosticsResetAndHiddenSettingsEntry CODE_SIGNING_ALLOWED=NO
 ```
 Result: PASS (57.9 s). Log:
 `/private/var/folders/zp/zqxv_w6x5fq_g2c_p38f8k1h0000gp/T/ai-agent-checks/acquiring-audio-diagnostics/20260906-010341-446552-audio-diagnostics-final.log`.
@@ -1821,7 +1821,7 @@ file-wide.
 
 The DEBUG start-failure injection became a countdown sized from
 `automaticEngineStartRetries`, because a single injected failure is now swallowed
-by the automatic retry and `testAudioDiagnosticsResetAndSettingsShareSheet` needs
+by the automatic retry and `testAudioDiagnosticsResetAndHiddenSettingsEntry` needs
 the alert to reach the Reset button. That test is unchanged. A persistent
 injection was rejected: it would have broken the same test's `Pause` expectation.
 A new `--ui-testing-audio-start-failure-once` flag backs
