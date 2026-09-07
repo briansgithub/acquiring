@@ -8,6 +8,7 @@ Follow the least-context, risk-proportional procedure below.
 - Use symbols/search/line ranges for source and configuration. For logs/reports, use `context_probe.py tail` then page backward with `chunk`.
 - Run the smallest relevant Gradle/device check. Use `python scripts/compact_check.py --name <label> -- <command>` for noisy output, and allow at most two fix/retest cycles before asking to expand.
 - Ask before optional repository-wide analysis, exhaustive logs, or full validation that materially expands scope.
+- Do not take emulator/device screenshots to verify your own work; verify with the build result, unit tests, and `adb logcat`. If a screenshot is genuinely the only way to answer the question, ask first and take a single scaled-down capture. Describe what the user should look at when visual judgment is needed.
 
 Concurrent agents require separate Git worktrees. Use sibling folders beside the primary checkout, one normal branch per worktree; pushes publish that branch, while an authorized merge/PR from the primary checkout lands it in the default branch. Never overwrite unrelated user work.
 - After an authorized merge, verify the feature tip is reachable from the default branch, then remove the sibling worktree and delete its local branch with `git branch -d`; delete remote branches only after authorization. Preserve dirty or unmerged work and never force-delete another agent's checkout.

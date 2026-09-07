@@ -137,10 +137,18 @@ struct IntervalSingingTool: View {
             isEnabled: !model.isFlipFlopEnabled && !isRecording,
             showsPitchHint: !model.isFlipFlopEnabled && !isRecording,
             isTessituraAdjusted: model.isSingingTargetTessituraAdjusted(slot: slot),
+            anchorMIDI: anchorMIDI(slot: slot),
             play: { model.playSlot(slot) },
             record: { model.toggleRecording(slot: slot) }
         )
         .accessibilityIdentifier("vocal.practice.slot.\(slot)")
+    }
+
+    /// The pitch a recording card's tape shows before the microphone has produced anything:
+    /// the other slot's note when there is one, otherwise the singer's calibrated comfortable
+    /// pitch, otherwise middle C. Only ever a resting place - the first voiced frame replaces it.
+    private func anchorMIDI(slot: Int) -> Double {
+        (slot == 1 ? model.slot2 : model.slot1)?.rawMIDI ?? model.comfortablePitchMIDI ?? 60
     }
 
     private var intervalCard: some View {
@@ -154,7 +162,9 @@ struct IntervalSingingTool: View {
                         .minimumScaleFactor(0.7)
                     Text(PersistentPitchFeedback.formatCentsError(interval.centsDeviation))
                         .font(.caption.monospacedDigit())
-                        .foregroundStyle(abs(interval.centsDeviation) < 15 ? Color.green : Color.secondary)
+                        .foregroundStyle(PersistentPitchFeedback.band(centsError: interval.centsDeviation) == .accurate
+                                         ? Color.pitchFeedback(.accurate)
+                                         : Color.secondary)
                 } else {
                     Text("—").font(.title2).foregroundStyle(.secondary)
                 }
@@ -181,10 +191,10 @@ struct IntervalSingingTool: View {
                 Text(livePitchText)
                     .font(.footnote.monospacedDigit().weight(.semibold))
                     .lineLimit(1)
-                if let cents = model.liveCentsError {
+                if let cents = model.sampledLiveCentsError {
                     Text("\(cents, format: .number.precision(.fractionLength(0)))¢")
                         .font(.caption.monospacedDigit())
-                        .foregroundStyle(centsColor(cents))
+                        .foregroundStyle(Color.pitchFeedback(centsError: cents))
                 }
             }
             .accessibilityElement(children: .combine)
@@ -208,28 +218,17 @@ struct IntervalSingingTool: View {
     }
 
     private var livePitchText: String {
-        guard let midi = model.persistentMeasuredMIDI else { return "Listening…" }
+        guard let midi = model.sampledMeasuredMIDI else { return "Listening…" }
         return "Live \(midi.formatted(.number.precision(.fractionLength(1))))"
     }
 
     private var liveFeedbackAccessibilityLabel: String {
-        guard let cents = model.liveCentsError else {
+        guard let cents = model.sampledLiveCentsError else {
             return "Persistent pitch practice, listening for a voiced pitch"
         }
         return "Persistent pitch practice, \(livePitchText), \(cents.formatted(.number.precision(.fractionLength(0)))) cents from target"
     }
 
-    private func centsColor(_ cents: Double) -> Color {
-        abs(cents) <= 15 ? .green : abs(cents) <= 35 ? .orange : .red
-    }
-}
-
-private func dockPitchColor(_ cents: Double) -> Color {
-    switch PersistentPitchFeedback.band(centsError: cents) {
-    case .accurate: .green
-    case .close: .yellow
-    case .far: .red
-    }
 }
 
 private struct DockPitchCard: View {
@@ -242,6 +241,10 @@ private struct DockPitchCard: View {
     let isEnabled: Bool
     let showsPitchHint: Bool
     let isTessituraAdjusted: Bool
+    /// Where the tape parks while a recording card is still waiting for its first voiced
+    /// frame. The gauge is on screen from the moment recording starts, so there has to be a
+    /// pitch under it before the singer has sung one.
+    let anchorMIDI: Double
     let play: () -> Void
     let record: () -> Void
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -262,19 +265,28 @@ private struct DockPitchCard: View {
             .font(.caption).foregroundStyle(.secondary)
             .padding(.trailing, showsPitchHint ? 16 : 0)
             if let sample {
-                DockPitchTape(midi: sample.rawMIDI, color: isReference ? .secondary : dockPitchColor(sample.centsFromReference))
+                DockPitchTape(midi: sample.rawMIDI, color: isReference ? .secondary : Color.pitchFeedback(centsError: sample.centsFromReference))
                     .animation(reduceMotion ? nil : .linear(duration: 0.1), value: sample.rawMIDI)
                 if isReference {
                     Text("Sing this pitch").font(.system(size: 10)).foregroundStyle(.secondary)
                 } else {
                     Text(errorText(sample.centsFromReference))
                         .font(.system(size: 11, weight: .semibold, design: .monospaced))
-                        .foregroundStyle(dockPitchColor(sample.centsFromReference))
+                        .foregroundStyle(Color.pitchFeedback(centsError: sample.centsFromReference))
                         .lineLimit(1).minimumScaleFactor(0.7)
                 }
+            } else if isActive {
+                // Recording runs straight into the gauge: no "Listening…" interstitial to
+                // read and then lose. The tape sits at `anchorMIDI`, dimmed, until the first
+                // voiced frame takes it over, so the card never changes shape mid-take.
+                DockPitchTape(midi: anchorMIDI, color: .secondary)
+                    .opacity(0.45)
+                Text("—")
+                    .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                    .foregroundStyle(.secondary)
             } else {
                 Spacer(minLength: 0)
-                Text(isActive ? "Listening…" : "Record a pitch")
+                Text("Record a pitch")
                     .font(.caption).foregroundStyle(.secondary)
                 Spacer(minLength: 0)
             }
@@ -317,7 +329,7 @@ private struct DockPitchCard: View {
         .accessibilityElement(children: .ignore)
         .accessibilityAddTraits(.isButton)
         .accessibilityLabel(title)
-        .accessibilityValue("\(sample?.pitchLabel ?? "No pitch"), \(isReference ? "Reference" : sample.map { errorText($0.centsFromReference) } ?? ""), \(status), \(isTessituraAdjusted ? "Tessitura adjusted" : "Original target octave")")
+        .accessibilityValue("\(sample?.pitchLabel ?? (isActive ? "Waiting for a voiced pitch" : "No pitch")), \(isReference ? "Reference" : sample.map { errorText($0.centsFromReference) } ?? ""), \(status), \(isTessituraAdjusted ? "Tessitura adjusted" : "Original target octave")")
         .accessibilityHint(
             isEnabled
                 ? "Single tap replays. Double tap records or stops listening."
@@ -423,12 +435,12 @@ private struct PersistentPracticeStatus: View {
             HStack(alignment: .firstTextBaseline, spacing: 12) {
                 Text(livePitchText)
                     .font(.headline.monospacedDigit())
-                if let cents = model.liveCentsError {
+                if let cents = model.sampledLiveCentsError {
                     Text("\(cents, format: .number.precision(.fractionLength(0)))¢")
                         .font(.subheadline.monospacedDigit())
-                        .foregroundStyle(centsColor(cents))
+                        .foregroundStyle(Color.pitchFeedback(centsError: cents))
                 }
-                if let percentage = model.persistentLivePercentageText {
+                if let percentage = model.sampledLivePercentageText {
                     Text(percentage)
                         .font(.caption.monospacedDigit())
                         .foregroundStyle(.secondary)
@@ -468,7 +480,7 @@ private struct PersistentPracticeStatus: View {
     }
 
     private var livePitchText: String {
-        guard let midi = model.persistentMeasuredMIDI else { return "Listening…" }
+        guard let midi = model.sampledMeasuredMIDI else { return "Listening…" }
         return "Live \(midi.formatted(.number.precision(.fractionLength(1)))) MIDI"
     }
 
@@ -488,7 +500,7 @@ private struct PersistentPracticeStatus: View {
     }
 
     private var feedbackLabel: String {
-        switch model.persistentFeedbackBand {
+        switch model.sampledFeedbackBand {
         case .accurate: "Accurate"
         case .close: "Close"
         case .far: "Off target"
@@ -497,12 +509,8 @@ private struct PersistentPracticeStatus: View {
     }
 
     private var feedbackColor: Color {
-        switch model.persistentFeedbackBand {
-        case .accurate: .green
-        case .close: .orange
-        case .far: .red
-        case nil: .gray
-        }
+        guard let band = model.sampledFeedbackBand else { return .gray }
+        return .pitchFeedback(band)
     }
 
     private func scoreLabel(_ outcome: MelodyRunScoreOutcome) -> String {
@@ -517,10 +525,6 @@ private struct PersistentPracticeStatus: View {
             return "Live pitch marker is waiting for a voiced pitch"
         }
         return "Live pitch marker, \(steps.formatted(.number.precision(.fractionLength(1)))) staff steps from target"
-    }
-
-    private func centsColor(_ cents: Double) -> Color {
-        abs(cents) <= 15 ? .green : abs(cents) <= 35 ? .orange : .red
     }
 
     private struct ScoreBadge: Identifiable {

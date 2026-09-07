@@ -282,7 +282,8 @@ final class AudioDiagnosticsTests: XCTestCase {
         try await audio.playQuiz(revision: revision, owner: owner)
         XCTAssertEqual(attempts, 2)
         var states = (await audio.states()).makeAsyncIterator()
-        XCTAssertEqual(await states.next()?.phase, .playing)
+        let state = await states.next()
+        XCTAssertEqual(state?.phase, .playing)
         let operations = diagnostics.report?.subsequentEvents.map(\.operation) ?? []
         XCTAssertTrue(operations.contains("quiz.engineStart.retryAfterRebuild.succeeded"))
         await audio.stop()
@@ -355,7 +356,8 @@ final class AudioDiagnosticsTests: XCTestCase {
         XCTAssertTrue(operations.contains("session.staleResumeRetired"))
         var states = (await audio.states()).makeAsyncIterator()
         // Retiring the latch must not double as a resume.
-        XCTAssertEqual(await states.next()?.phase, .paused)
+        let state = await states.next()
+        XCTAssertEqual(state?.phase, .paused)
         await audio.stop()
     }
 

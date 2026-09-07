@@ -23,17 +23,45 @@ LOCAL_EXPORT_DIR="$BUILD_DIR/export-local"
 UPLOAD_EXPORT_DIR="$BUILD_DIR/export-upload"
 BUILD_NUMBER_FILE="$IOS_DIR/.testflight-build-number"
 
+ASC_SCRIPT="$IOS_DIR/scripts/asc_api.py"
+ASC_CONFIG="$HOME/.appstoreconnect/acquiring-asc.json"
+ASC_KEY_DIR="$HOME/.appstoreconnect/private_keys"
+
 BUILD_NUMBER=""
 SKIP_UPLOAD=false
+NOTES=""
+NOTES_FILE=""
+TRACK=""
+GROUP=""
 
 usage() {
   cat <<EOF
-Usage: $(basename "$0") [--build N] [--skip-upload]
+Usage: $(basename "$0") [--build N] [--skip-upload] [--notes TEXT | --notes-file PATH]
 
-  --build N       Use build number N (default: last recorded build + 1)
-  --skip-upload   Archive and locally export/verify only; do not upload to
-                  App Store Connect and do not advance the recorded build
-                  number. Use this to sanity-check a build before shipping it.
+  --build N          Use build number N (default: last recorded build + 1)
+  --skip-upload      Archive and locally export/verify only; do not upload to
+                     App Store Connect and do not advance the recorded build
+                     number. Use this to sanity-check a build before shipping it.
+  --notes TEXT       What to Test notes to attach once the build is processed.
+  --notes-file PATH  Read those notes from a file instead.
+  --external         Also release to the external tester group once processed.
+                     Fails if more than one external group exists — name it with
+                     --group instead of guessing which testers get the build.
+  --group NAME       Release to this exact group. Overrides --external.
+
+The internal group auto-distributes on upload, so it needs no flag. --external
+covers people outside the team, including anyone holding the group's public
+link; the script reports whether that assignment entered beta app review.
+
+Authentication:
+  Signing and upload use the Xcode-stored session. The post-upload metadata
+  steps use an App Store Connect API key ($ASC_CONFIG
+  plus AuthKey_<KEYID>.p8 in $ASC_KEY_DIR); without
+  one, notes and group assignment must be done by hand in App Store Connect.
+  See scripts/README-asc-api.md.
+
+  This script never submits anything for review. Beta app review and App Store
+  submission stay manual by design; see ../docs/ios-beta-releases.md.
 
 Every successful upload records its build number in:
   $BUILD_NUMBER_FILE
@@ -51,6 +79,22 @@ while [[ $# -gt 0 ]]; do
       SKIP_UPLOAD=true
       shift
       ;;
+    --notes)
+      NOTES="$2"
+      shift 2
+      ;;
+    --notes-file)
+      NOTES_FILE="$2"
+      shift 2
+      ;;
+    --external)
+      TRACK="external"
+      shift
+      ;;
+    --group)
+      GROUP="$2"
+      shift 2
+      ;;
     -h|--help)
       usage
       exit 0
@@ -63,6 +107,15 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+if [[ -n "$NOTES" && -n "$NOTES_FILE" ]]; then
+  echo "error: pass --notes or --notes-file, not both." >&2
+  exit 1
+fi
+if [[ -n "$NOTES_FILE" && ! -f "$NOTES_FILE" ]]; then
+  echo "error: notes file not found: $NOTES_FILE" >&2
+  exit 1
+fi
+
 if [[ -z "$BUILD_NUMBER" ]]; then
   LAST=0
   if [[ -f "$BUILD_NUMBER_FILE" ]]; then
@@ -71,7 +124,39 @@ if [[ -z "$BUILD_NUMBER" ]]; then
   BUILD_NUMBER=$((LAST + 1))
 fi
 
+# The API key drives the post-upload metadata steps. Resolve it up front so a
+# misconfigured key is reported before spending minutes archiving.
+#
+# Do NOT pass this key to xcodebuild via -authenticationKeyPath/-ID/-IssuerID.
+# Doing so makes xcodebuild authenticate as the key instead of the Xcode-stored
+# account, and an App Manager key cannot reach signing certificates, so the
+# export dies with "Cloud signing permission error / No signing certificate
+# 'iOS Distribution' found". Signing stays on the Xcode session; the key does
+# metadata. Granting the key Admin would trade a real privilege increase for a
+# capability the session already provides.
+HAVE_ASC_KEY=false
+if [[ -n "${ASC_KEY_ID:-}" && -n "${ASC_ISSUER_ID:-}" ]]; then
+  ASC_RESOLVED_KEY_ID="$ASC_KEY_ID"
+  ASC_RESOLVED_ISSUER_ID="$ASC_ISSUER_ID"
+elif [[ -f "$ASC_CONFIG" ]]; then
+  ASC_RESOLVED_KEY_ID="$(/usr/bin/python3 -c 'import json,sys;print(json.load(open(sys.argv[1])).get("key_id",""))' "$ASC_CONFIG")"
+  ASC_RESOLVED_ISSUER_ID="$(/usr/bin/python3 -c 'import json,sys;print(json.load(open(sys.argv[1])).get("issuer_id",""))' "$ASC_CONFIG")"
+else
+  ASC_RESOLVED_KEY_ID=""
+  ASC_RESOLVED_ISSUER_ID=""
+fi
+
+ASC_KEY_PATH="${ASC_KEY_PATH:-$ASC_KEY_DIR/AuthKey_${ASC_RESOLVED_KEY_ID}.p8}"
+if [[ -n "$ASC_RESOLVED_KEY_ID" && -n "$ASC_RESOLVED_ISSUER_ID" && -f "$ASC_KEY_PATH" ]]; then
+  HAVE_ASC_KEY=true
+fi
+
 echo "==> Acquiring iOS — build $BUILD_NUMBER"
+if [[ "$HAVE_ASC_KEY" == true ]]; then
+  echo "    signing/upload: Xcode-stored session; metadata: API key $ASC_RESOLVED_KEY_ID"
+else
+  echo "    auth: Xcode-stored session (no API key configured; notes must be set by hand)"
+fi
 
 rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
@@ -123,6 +208,46 @@ xcodebuild -exportArchive \
   -allowProvisioningUpdates
 
 echo "$BUILD_NUMBER" > "$BUILD_NUMBER_FILE"
+
+# The internal group distributes automatically, so the build is already reaching
+# testers by now. Attaching the notes is a race against them opening it — wait
+# for processing and set the notes immediately rather than leaving it for later.
+# External release waits on the same processing, so do both behind one wait.
+if [[ -n "$NOTES" || -n "$NOTES_FILE" || -n "$TRACK" || -n "$GROUP" ]]; then
+  if [[ "$HAVE_ASC_KEY" != true ]]; then
+    echo "warning: post-upload steps need an API key; none configured. Do them by hand." >&2
+  else
+    echo "==> Waiting for Apple to finish processing build $BUILD_NUMBER"
+    if /usr/bin/env python3 "$ASC_SCRIPT" wait --version "$BUILD_NUMBER"; then
+      # Notes first: an external group notifies its testers on assignment, and
+      # they should have the notes before that notification goes out.
+      if [[ -n "$NOTES" || -n "$NOTES_FILE" ]]; then
+        echo "==> Setting What to Test notes"
+        if [[ -n "$NOTES_FILE" ]]; then
+          /usr/bin/env python3 "$ASC_SCRIPT" set-notes --version "$BUILD_NUMBER" --notes-file "$NOTES_FILE"
+        else
+          /usr/bin/env python3 "$ASC_SCRIPT" set-notes --version "$BUILD_NUMBER" --notes "$NOTES"
+        fi
+      fi
+
+      if [[ -n "$GROUP" ]]; then
+        echo "==> Releasing to group $GROUP"
+        /usr/bin/env python3 "$ASC_SCRIPT" assign --version "$BUILD_NUMBER" --group "$GROUP"
+      elif [[ -n "$TRACK" ]]; then
+        echo "==> Releasing to the $TRACK tester group"
+        /usr/bin/env python3 "$ASC_SCRIPT" assign --version "$BUILD_NUMBER" --track "$TRACK"
+      fi
+    else
+      # The build is already uploaded and, for the internal group, already
+      # distributing. Exiting non-zero is the only way the caller learns the
+      # notes never landed — a warning buried in build output does not carry.
+      echo "error: build did not reach a processed state; no notes set, nothing released." >&2
+      echo "       The upload itself succeeded. Set the notes once processing finishes:" >&2
+      echo "       python3 $ASC_SCRIPT set-notes --version $BUILD_NUMBER --notes-file ..." >&2
+      exit 1
+    fi
+  fi
+fi
 
 cat <<EOF
 ==> Done. Build $BUILD_NUMBER uploaded.

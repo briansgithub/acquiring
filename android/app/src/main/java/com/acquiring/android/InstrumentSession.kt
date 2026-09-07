@@ -98,9 +98,9 @@ internal object AppInstrumentSession {
 }
 
 internal fun AudioEngine.Waveform.categoryName(): String = when (this) {
+    AudioEngine.Waveform.SAWTOOTH,
     AudioEngine.Waveform.SINE,
     AudioEngine.Waveform.SQUARE,
-    AudioEngine.Waveform.SAWTOOTH,
     AudioEngine.Waveform.TRIANGLE -> "Waveforms"
     else -> "Synths"
 }
