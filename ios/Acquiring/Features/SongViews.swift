@@ -1023,6 +1023,10 @@ struct QuizView: View {
             )
         }
         .onChange(of: transportPhase) { _, _ in updatePracticeContext() }
+        // Scrub start and end have to reach the practice model the moment they happen: a drag
+        // sweeps the playhead across runs the singer never sang, and the model suppresses
+        // scoring only while it knows a scrub is in progress.
+        .onChange(of: timelineScrub != nil) { _, _ in updatePracticeContext() }
         .alert("Audio", isPresented: errorAlertBinding) {
             Button("Share Audio Diagnostics") { showsAudioDiagnostics = true }
             Button("Reset Audio and Retry") { requestAudioRecovery() }
@@ -1110,6 +1114,7 @@ struct QuizView: View {
               selectedSectionID == sectionID
         else { return }
         cancelQuizCardPreview()
+        environment.vocalPractice.stopPersistentPractice()
         environment.vocalPractice.handleTransportDiscontinuity()
         let configuration = QuizSoundConfiguration(
             waveform: soundConfiguration.waveform,
@@ -1389,9 +1394,14 @@ struct QuizView: View {
             root: targets.root,
             melody: targets.melody,
             chordTones: targets.chordTones,
-            melodyRun: targets.melodyRun,
+            melodyRuns: targets.melodyRuns,
             isPlaying: transportPhase == .playing && timelineScrub == nil,
-            beat: currentBeat(in: section)
+            isScrubbing: timelineScrub != nil,
+            beat: currentBeat(in: section),
+            // The same rate the timeline projects its playhead with, so the marker and the
+            // run being scored underneath it advance together.
+            beatsPerSecond: max(section.bpm, 1) / 60 * max(tempoPercent, 0) / 100,
+            endBeat: playbackEndBeat(in: section)
         )
     }
 
@@ -1947,6 +1957,7 @@ struct QuizView: View {
               let playbackOwner else { return }
         cancelQuizCardPreview()
         environment.vocalPractice.handleTransportDiscontinuity()
+        environment.vocalPractice.clearMelodyRunScores()
         finishTimelineScrub(resumingIfNeeded: false)
         playbackCommandPending = true
         playbackCommandTask = Task { @MainActor in
@@ -3141,7 +3152,7 @@ private final class QuizTimelineDisplayModel: ObservableObject {
         let rateChanged = abs(self.beatsPerSecond - normalizedRate) > 0.000_001
         let phaseChanged = self.isPlaying != isPlaying
         let boundsChanged = abs(previousSpan - span) > 0.000_001
-        let drift = circularDelta(from: previousPrediction, to: boundedBeat, span: span)
+        let drift = PlaybackTiming.circularDelta(from: previousPrediction, to: boundedBeat, span: span)
         let driftLimit = max(0.2, normalizedRate * 0.15)
         let shouldSnap = forceSnap || sourceWrapped || rateChanged || phaseChanged
             || boundsChanged || abs(drift) > driftLimit
@@ -3160,7 +3171,7 @@ private final class QuizTimelineDisplayModel: ObservableObject {
             // The audio sample remains authoritative, but a tiny late sample
             // must not tug the playhead backward every polling interval.
             // Positive error is caught up gradually; meaningful error snaps.
-            anchorBeat = wrappedBeat(
+            anchorBeat = PlaybackTiming.wrappedBeat(
                 previousPrediction + max(drift, 0) * 0.25,
                 span: span
             )
@@ -3190,22 +3201,7 @@ private final class QuizTimelineDisplayModel: ObservableObject {
     private func projectedBeat(at timestamp: CFTimeInterval) -> Double {
         guard isPlaying, beatsPerSecond > 0 else { return sourceBeat }
         let elapsed = max(timestamp - anchorTimestamp, 0)
-        return wrappedBeat(anchorBeat + elapsed * beatsPerSecond, span: endBeat - PlaybackTiming.firstBeat)
-    }
-
-    private func wrappedBeat(_ beat: Double, span: Double) -> Double {
-        guard span > 0 else { return PlaybackTiming.firstBeat }
-        var phase = (beat - PlaybackTiming.firstBeat).truncatingRemainder(dividingBy: span)
-        if phase < 0 { phase += span }
-        return PlaybackTiming.firstBeat + phase
-    }
-
-    private func circularDelta(from: Double, to: Double, span: Double) -> Double {
-        guard span > 0 else { return to - from }
-        var delta = (to - from).truncatingRemainder(dividingBy: span)
-        if delta > span / 2 { delta -= span }
-        if delta < -span / 2 { delta += span }
-        return delta
+        return PlaybackTiming.wrappedBeat(anchorBeat + elapsed * beatsPerSecond, span: endBeat - PlaybackTiming.firstBeat)
     }
 
     private func updateDisplayLinkState() {
@@ -3262,12 +3258,6 @@ private struct MelodyTimelineView: View {
     @Environment(VocalPracticeModel.self) private var vocalPractice: VocalPracticeModel?
     @State private var dragIsActive = false
     @GestureState private var dragGestureIsRecognized = false
-
-    private static let liveMarkerDiameter: CGFloat = 11
-    /// Clearance between the readout pill and the playhead line it sits left of.
-    private static let liveReadoutGap: CGFloat = 8
-    /// Half the pill's rendered height, used only to keep it clear of the lane edges.
-    private static let liveReadoutHalfHeight: CGFloat = 9
 
     init(
         presentation: MelodyTimelinePresentation,
@@ -3443,43 +3433,15 @@ private struct MelodyTimelineView: View {
                 }
             }
 
-            if let active = presentation.activeVisual(at: currentBeat),
-               let cents = vocalPractice.liveCentsError,
-               let steps = vocalPractice.liveMarkerStaffSteps,
-               steps.isFinite,
-               abs(steps) <= 7 {
-                let markerY = liveMarkerY(for: active, staffSteps: steps)
-                let markerCenterY = markerY + Self.liveMarkerDiameter / 2
-
-                Circle()
-                    .fill(Color.pitchFeedback(PersistentPitchFeedback.band(centsError: cents)))
-                    .overlay(Circle().stroke(.white.opacity(0.8), lineWidth: 1))
-                    .frame(width: Self.liveMarkerDiameter, height: Self.liveMarkerDiameter)
-                    .offset(
-                        x: containerWidth / 2 - Self.liveMarkerDiameter / 2,
-                        y: markerY
-                    )
-                    .accessibilityHidden(true)
-
-                if let percentage = vocalPractice.sampledLivePercentageText,
-                   let band = vocalPractice.sampledFeedbackBand {
-                    // A zero-height rail ending short of the playhead: a trailing overlay on
-                    // it centres the pill on the marker without this view having to know how
-                    // tall the pill renders.
-                    Color.clear
-                        .frame(
-                            width: max(containerWidth / 2 - Self.liveReadoutGap, 0),
-                            height: 0
-                        )
-                        .overlay(alignment: .trailing) {
-                            LivePitchErrorReadout(
-                                text: percentage,
-                                color: Color.pitchFeedback(band)
-                            )
-                        }
-                        .offset(y: liveReadoutCenterY(markerCenterY: markerCenterY))
-                        .accessibilityHidden(true)
-                }
+            if let active = presentation.activeVisual(at: currentBeat) {
+                // Its own view, and not by preference: the marker follows `liveCentsError`,
+                // which changes every 16 ms. Read here, that would re-evaluate this lane -
+                // every note rectangle in it - sixty times a second for the sake of one dot.
+                MelodyLiveMarkerOverlay(
+                    targetCentreY: presentation.y(for: active) + presentation.noteHeight / 2,
+                    noteHeight: presentation.noteHeight,
+                    containerWidth: containerWidth
+                )
             }
         }
     }
@@ -3494,20 +3456,6 @@ private struct MelodyTimelineView: View {
             MelodyTimelinePresentation.laneHeight / 2 - CGFloat(run.staffDegree) * presentation.noteHeight - 19,
             2
         ), MelodyTimelinePresentation.laneHeight - 19)
-    }
-
-    private func liveMarkerY(for active: MelodyTimelineVisual, staffSteps: Double) -> CGFloat {
-        min(max(
-            presentation.y(for: active) - CGFloat(staffSteps) * presentation.noteHeight - 1,
-            1
-        ), MelodyTimelinePresentation.laneHeight - 12)
-    }
-
-    /// Keeps the readout pill inside the lane. The marker may sit within half a pill of the
-    /// lane edge, where centring on it alone would push the number under the rounded clip.
-    private func liveReadoutCenterY(markerCenterY: CGFloat) -> CGFloat {
-        min(max(markerCenterY, Self.liveReadoutHalfHeight),
-            MelodyTimelinePresentation.laneHeight - Self.liveReadoutHalfHeight)
     }
 
     private var practiceAccessibilitySummary: String {
@@ -3528,34 +3476,85 @@ private struct MelodyTimelineView: View {
     }
 }
 
-/// The live cents-off readout riding beside the melody marker: how far the sung pitch sits
-/// from the target note, signed sharp or flat. A dark pill keeps the number legible over the
-/// note bars, and the accuracy band is carried by the text colour so it reads as one object
-/// with the marker it labels.
-private struct LivePitchErrorReadout: View {
-    let text: String
-    let color: Color
+/// The live pitch marker riding the melody lane, and the signed percentage beside it.
+///
+/// Split out of `MelodyTimelineView` on purpose. It follows `liveCentsError`, which changes
+/// every 16 ms; read from the lane's own body that would re-evaluate every note rectangle in
+/// the lane sixty times a second. `@Observable` tracks reads per-`body`, so owning the read
+/// here confines the invalidation to one dot and one pill.
+private struct MelodyLiveMarkerOverlay: View {
+    /// Vertical centre of the note being sung, in lane coordinates.
+    let targetCentreY: CGFloat
+    let noteHeight: CGFloat
+    let containerWidth: CGFloat
+
+    @Environment(VocalPracticeModel.self) private var vocalPractice: VocalPracticeModel?
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    /// A soft halo behind a small solid dot: the dot is precise enough to read against a
+    /// 3pt note bar, the halo is what the eye actually catches while the timeline scrolls.
+    private static let haloDiameter: CGFloat = 12
+    private static let dotDiameter: CGFloat = 5
+    /// Clearance between the readout pill and the playhead line it sits left of.
+    private static let readoutGap: CGFloat = 8
+    /// Half the pill's rendered height, used only to keep it clear of the lane edges.
+    private static let readoutHalfHeight: CGFloat = 9
 
     var body: some View {
-        Text(text)
-            .font(.caption2.weight(.bold).monospacedDigit())
-            .foregroundStyle(color)
-            .padding(.horizontal, 5)
-            .padding(.vertical, 2)
-            .background(.black.opacity(0.76), in: Capsule())
-            .fixedSize()
-    }
-}
+        if let cents = vocalPractice?.liveCentsError,
+           let steps = vocalPractice?.liveMarkerStaffSteps,
+           steps.isFinite {
+            let colour = Color.pitchFeedback(centsError: cents)
+            let centreY = markerCentreY(staffSteps: steps)
 
-extension Color {
-    /// The timeline's shared pitch-accuracy palette, so the live marker, its readout, and the
-    /// banked run scores never disagree about what "close" looks like.
-    static func pitchFeedback(_ band: PitchFeedbackBand) -> Color {
-        switch band {
-        case .accurate: .green
-        case .close: .orange
-        case .far: .red
+            ZStack {
+                Circle()
+                    .fill(colour.opacity(0.28))
+                    .frame(width: Self.haloDiameter, height: Self.haloDiameter)
+                Circle()
+                    .fill(colour)
+                    .frame(width: Self.dotDiameter, height: Self.dotDiameter)
+            }
+            .offset(
+                x: containerWidth / 2 - Self.haloDiameter / 2,
+                y: centreY - Self.haloDiameter / 2
+            )
+            // 32 ms linear, matching Android: attached to the voice, but with the raw
+            // detector's frame-to-frame jitter taken off. Never a spring - overshoot here
+            // would draw a pitch the singer did not sing.
+            .animation(reduceMotion ? nil : .linear(duration: 0.032), value: centreY)
+            .accessibilityHidden(true)
+
+            if let percentage = vocalPractice?.sampledLivePercentageText,
+               let band = vocalPractice?.sampledFeedbackBand {
+                // A zero-height rail ending short of the playhead: a trailing overlay on it
+                // centres the pill on the marker without this view having to know how tall
+                // the pill renders.
+                Color.clear
+                    .frame(width: max(containerWidth / 2 - Self.readoutGap, 0), height: 0)
+                    .overlay(alignment: .trailing) {
+                        LivePitchErrorReadout(text: percentage, color: .pitchFeedback(band))
+                    }
+                    .offset(y: readoutCentreY(markerCentreY: centreY))
+                    .accessibilityHidden(true)
+            }
         }
+    }
+
+    /// Android clamps the marker into the lane and keeps drawing rather than hiding it once
+    /// the singer is more than an octave out: a pinned marker still says "far, and in this
+    /// direction", which is exactly what someone that far off needs to see.
+    private func markerCentreY(staffSteps: Double) -> CGFloat {
+        let raw = targetCentreY - CGFloat(staffSteps) * noteHeight
+        let radius = Self.haloDiameter / 2
+        return min(max(raw, radius), max(MelodyTimelinePresentation.laneHeight - radius, radius))
+    }
+
+    /// Keeps the readout pill inside the lane. The marker may sit within half a pill of the
+    /// lane edge, where centring on it alone would push the number under the rounded clip.
+    private func readoutCentreY(markerCentreY: CGFloat) -> CGFloat {
+        min(max(markerCentreY, Self.readoutHalfHeight),
+            MelodyTimelinePresentation.laneHeight - Self.readoutHalfHeight)
     }
 }
 
