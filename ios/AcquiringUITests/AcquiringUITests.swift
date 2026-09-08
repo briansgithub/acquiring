@@ -4,13 +4,13 @@ import XCTest
 @MainActor
 final class AcquiringUITests: XCTestCase {
     private enum Fixture {
-        static let fiveHundredMiles = "500 Miles, by the-proclaimers"
-        static let fiveHundredMilesQuizTitle = "500 Miles by the-proclaimers"
-        static let badRomance = "Bad Romance, by lady-gaga"
-        static let badRomanceQuizTitle = "Bad Romance by lady-gaga"
+        static let fiveHundredMiles = "500 Miles, by The Proclaimers"
+        static let fiveHundredMilesQuizTitle = "500 Miles by The Proclaimers"
+        static let badRomance = "Bad Romance, by Lady Gaga"
+        static let badRomanceQuizTitle = "Bad Romance by Lady Gaga"
         static let bohemianRhapsody = "Bohemian Rhapsody, by queen"
-        static let gladiolusRag = "Gladiolus Rag, by scott-joplin"
-        static let theEntertainer = "The Entertainer, by scott-joplin"
+        static let gladiolusRag = "Gladiolus Rag, by Scott Joplin"
+        static let theEntertainer = "The Entertainer, by Scott Joplin"
     }
 
     private enum LibraryScenario: String {
@@ -22,6 +22,35 @@ final class AcquiringUITests: XCTestCase {
 
     override func setUpWithError() throws {
         continueAfterFailure = false
+    }
+
+    func testQuizSongInformationRetainsModeAndPlayback() {
+        let app = launchApp(scenario: .ready)
+        openQuiz(app, searchText: "500 Miles", songButton: Fixture.fiveHundredMiles, navigationTitle: Fixture.fiveHundredMilesQuizTitle)
+        let modePicker = app.descendants(matching: .any)["quiz.mode"]
+        modePicker.tap()
+        app.buttons["Root-only"].tap()
+        let sectionPicker = app.descendants(matching: .any)["quiz.section"]
+        let selectedSection = sectionPicker.value as? String
+        let play = app.buttons["quiz.play"]
+        play.tap()
+        let playing = expectation(for: NSPredicate(format: "label == %@", "Pause"), evaluatedWith: play)
+        wait(for: [playing], timeout: 10)
+
+        let heading = app.buttons["quiz.songInformation"]
+        XCTAssertEqual(heading.label, Fixture.fiveHundredMilesQuizTitle)
+        heading.tap()
+        let title = app.staticTexts["quiz.songInformation.title"]
+        XCTAssertTrue(title.waitForExistence(timeout: 5))
+        XCTAssertEqual(title.label, "500 Miles")
+        XCTAssertEqual(app.staticTexts["quiz.songInformation.artist"].label, "by The Proclaimers")
+        app.buttons["quiz.songInformation.done"].tap()
+
+        XCTAssertTrue(heading.waitForExistence(timeout: 5))
+        XCTAssertEqual(modePicker.value as? String, "Root-only")
+        XCTAssertEqual(sectionPicker.value as? String, selectedSection)
+        XCTAssertEqual(play.label, "Pause", "Reading the song name must not pause playback")
+        play.tap()
     }
 
     func testAudioDiagnosticsResetAndHiddenSettingsEntry() {
@@ -64,14 +93,34 @@ final class AcquiringUITests: XCTestCase {
     func testSearchKeyboardDismissesOutsideAndReopensInside() {
         let app = launchApp(scenario: .ready)
         let search = app.textFields["library.search.field"]
+        let playlists = app.buttons["playlists.header"]
+        let searchHeading = app.descendants(matching: .any)["library.search.heading"]
         XCTAssertTrue(search.waitForExistence(timeout: 5))
+        XCTAssertTrue(playlists.waitForExistence(timeout: 5))
+        XCTAssertTrue(searchHeading.exists)
         search.tap()
-        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 3))
-        search.typeText("500 Miles")
+        let keyboard = app.keyboards.firstMatch
+        XCTAssertTrue(keyboard.waitForExistence(timeout: 3))
+        XCTAssertTrue(playlists.waitForNonExistence(timeout: 3))
+        XCTAssertTrue(searchHeading.waitForNonExistence(timeout: 3))
+        XCTAssertFalse(app.buttons["library.hooktheory.toggle"].exists)
+        XCTAssertFalse(app.buttons["library.allSongs"].exists)
+        search.typeText("B")
+
+        let badRomance = app.buttons[Fixture.badRomance]
+        let bohemianRhapsody = app.buttons[Fixture.bohemianRhapsody]
+        XCTAssertTrue(badRomance.waitForExistence(timeout: 5))
+        XCTAssertTrue(bohemianRhapsody.waitForExistence(timeout: 5))
+        XCTAssertTrue(badRomance.isHittable)
+        XCTAssertTrue(bohemianRhapsody.isHittable)
+        XCTAssertLessThanOrEqual(badRomance.frame.maxY, keyboard.frame.minY)
+        XCTAssertLessThanOrEqual(bohemianRhapsody.frame.maxY, keyboard.frame.minY)
 
         app.navigationBars["Library"].staticTexts["Library"].firstMatch.tap()
         XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 3))
-        XCTAssertEqual(search.value as? String, "500 Miles")
+        XCTAssertEqual(search.value as? String, "B")
+        XCTAssertTrue(playlists.waitForExistence(timeout: 3))
+        XCTAssertTrue(searchHeading.waitForExistence(timeout: 3))
 
         search.tap()
         XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 3))
@@ -113,7 +162,7 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertEqual(app.progressIndicators.count, 0)
     }
 
-    func testIntroductionAppearsOnceAndCanBeReopenedFromSettings() {
+    func testIntroductionAppearsOnceAndSettingsOpensNotationHelp() {
         let app = launchApp(scenario: .ready, arguments: ["--ui-testing-introduction"])
         XCTAssertTrue(app.navigationBars["Introduction"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.textFields["library.search.field"].exists)
@@ -140,13 +189,19 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(app.textFields["library.search.field"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["introduction.continue"].exists)
         openCatalogSettings(app)
-        app.buttons["settings.introduction"].tap()
-        XCTAssertTrue(app.navigationBars["Introduction"].waitForExistence(timeout: 5))
+        app.buttons["settings.help"].tap()
+        XCTAssertTrue(app.navigationBars["Help"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["introduction.continue"].exists)
-        XCTAssertTrue(app.staticTexts["Objective:"].exists)
-        scrollToHittable(app.staticTexts["Tessitura"], in: app)
-        XCTAssertTrue(app.buttons["introduction.done"].isHittable)
-        app.buttons["introduction.done"].tap()
+        for topic in ["scaleDegrees", "intervals", "romanNumerals", "modes", "tessitura"] {
+            let link = app.buttons["help.topic.\(topic)"]
+            scrollToHittable(link, in: app)
+            link.tap()
+            XCTAssertTrue(app.scrollViews["help.topic.\(topic)"].waitForExistence(timeout: 5))
+            app.navigationBars.buttons.element(boundBy: 0).tap()
+            XCTAssertTrue(app.navigationBars["Help"].waitForExistence(timeout: 5))
+        }
+        XCTAssertTrue(app.buttons["help.done"].isHittable)
+        app.buttons["help.done"].tap()
         XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 5))
     }
 
@@ -226,11 +281,6 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(letters.waitForExistence(timeout: 5))
         letters.tap()
         XCTAssertEqual(letters.value as? String, "1")
-
-        let arpeggiate = app.switches["songDetail.chords.arpeggiate"]
-        XCTAssertTrue(arpeggiate.waitForExistence(timeout: 5))
-        arpeggiate.tap()
-        XCTAssertEqual(arpeggiate.value as? String, "1")
 
         // The tone row replaced the arpeggio-speed knob and is populated before any tap.
         XCTAssertTrue(
@@ -435,8 +485,14 @@ final class AcquiringUITests: XCTestCase {
 
         let mode = app.descendants(matching: .any)["quiz.mode"]
         XCTAssertTrue(mode.waitForExistence(timeout: 5))
-        XCTAssertEqual(mode.frame.midY, app.buttons["quiz.reset"].frame.midY, accuracy: 2,
-                       "Full/Root-only belongs in the transport row")
+        let fullSeek = app.sliders["quiz.seek"]
+        XCTAssertTrue(fullSeek.waitForExistence(timeout: 5))
+        XCTAssertGreaterThanOrEqual(fullSeek.frame.minY, tempo.frame.maxY,
+                                    "Full mode keeps its scrubber below the knobs")
+        XCTAssertGreaterThanOrEqual(play.frame.minY, fullSeek.frame.maxY,
+                                    "Playback controls sit below the scrubber")
+        XCTAssertEqual(play.frame.midX, app.frame.midX, accuracy: 2,
+                       "Play/pause stays centered on the screen")
         mode.tap()
         let roots = app.buttons["Root-only"]
         XCTAssertTrue(roots.waitForExistence(timeout: 5))
@@ -448,6 +504,10 @@ final class AcquiringUITests: XCTestCase {
         wait(for: [modeApplied], timeout: 5)
         let rootTimeline = app.sliders["quiz.rootSeek"]
         XCTAssertTrue(rootTimeline.waitForExistence(timeout: 5))
+        XCTAssertGreaterThanOrEqual(rootTimeline.frame.minY, tempo.frame.maxY,
+                                    "Root-only keeps its scrubber below the knobs")
+        XCTAssertGreaterThanOrEqual(play.frame.minY, rootTimeline.frame.maxY,
+                                    "Both modes use the same scrub/transport layout")
         let beatAfterMode = rootTimeline.value as? String
         XCTAssertTrue(
             waitForValueChange(rootTimeline, from: beatAfterMode, timeout: 5),
@@ -765,11 +825,11 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(scope.waitForExistence(timeout: 5))
         scope.buttons["Artists"].tap()
 
-        let artist = app.buttons["scott joplin"]
+        let artist = app.buttons["Scott Joplin"]
         XCTAssertTrue(artist.waitForExistence(timeout: 5))
         artist.tap()
 
-        XCTAssertTrue(app.navigationBars["scott joplin"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.navigationBars["Scott Joplin"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons[Fixture.gladiolusRag].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons[Fixture.theEntertainer].waitForExistence(timeout: 5))
         attachScreenshot(of: app, named: "phase-2-artist-results")

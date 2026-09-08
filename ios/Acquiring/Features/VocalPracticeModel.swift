@@ -227,6 +227,13 @@ final class VocalPracticeModel {
         isExpanded = true
     }
 
+    /// Help reveals the controls without discarding a practice session, including
+    /// when it is opened during the dock's delayed collapse cleanup.
+    func expandForHelp() {
+        cancelPendingCollapseClear()
+        isExpanded = true
+    }
+
     func minimize() {
         cancelPendingCollapseClear()
         cancelPreview()
@@ -713,11 +720,6 @@ final class VocalPracticeModel {
 
     private func targetNote(for slot: Int) -> SingingTargetNote? {
         slot == 1 ? targetRequest?.first : targetRequest?.second
-    }
-
-    func isSingingTargetTessituraAdjusted(slot: Int) -> Bool {
-        guard let target = targetNote(for: slot), let resolved = resolvedTargetMIDI(for: slot) else { return false }
-        return resolved != target.sourceMIDI + transpose
     }
 
     private func resolvedTargetMIDI(for slot: Int) -> Int? {

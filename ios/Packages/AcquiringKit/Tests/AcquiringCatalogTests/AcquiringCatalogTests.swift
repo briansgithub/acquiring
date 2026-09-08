@@ -96,6 +96,39 @@ final class AcquiringCatalogTests: XCTestCase {
         )
     }
 
+    func testHooktheoryDisplayMetadataRetainsSourceNames() throws {
+        let html = "<title>500 Miles by The Proclaimers Chords, Melody, and Music Theory Analysis - Hooktheory</title>"
+        XCTAssertEqual(
+            try HooktheoryHarvester.displayMetadata(html: html, songID: "the-proclaimers__500-miles"),
+            HooktheoryDisplayMetadata(title: "500 Miles", artist: "The Proclaimers")
+        )
+        let entities = "<title>Rock &amp; Roll by Simon &amp; Garfunkel Chords, Melody, and Music Theory Analysis - Hooktheory</title>"
+        XCTAssertEqual(
+            try HooktheoryHarvester.displayMetadata(html: entities, songID: "simon-and-garfunkel__rock-and-roll"),
+            HooktheoryDisplayMetadata(title: "Rock & Roll", artist: "Simon & Garfunkel")
+        )
+        let styling = "<title>Don’t Stop by AC/DC Chords, Melody, and Music Theory Analysis - Hooktheory</title>"
+        XCTAssertEqual(
+            try HooktheoryHarvester.displayMetadata(html: styling, songID: "ac-slash-dc__dont-stop"),
+            HooktheoryDisplayMetadata(title: "Don’t Stop", artist: "AC/DC")
+        )
+    }
+
+    func testHooktheoryDisplayMetadataChecksSongIdentityAndAmbiguousSeparators() throws {
+        let html = "<title>Stand by Me by Ben E. King Chords, Melody, and Music Theory Analysis - Hooktheory</title>"
+        XCTAssertEqual(
+            try HooktheoryHarvester.displayMetadata(html: html, songID: "ben-e-king__stand-by-me"),
+            HooktheoryDisplayMetadata(title: "Stand by Me", artist: "Ben E. King")
+        )
+        XCTAssertNil(try HooktheoryHarvester.displayMetadata(html: html, songID: "other-artist__stand-by-me"))
+        XCTAssertNil(try HooktheoryHarvester.displayMetadata(html: html, songID: "ben-e-king__other-song"))
+        XCTAssertNil(try HooktheoryHarvester.displayMetadata(html: "<title>Hooktheory - Page not found</title>", songID: "ben-e-king__stand-by-me"))
+        XCTAssertEqual(
+            try HooktheoryHarvester.displayMetadata(html: html, songID: "ben-e-king__older-title", apiTitle: "Stand by Me")?.title,
+            "Stand by Me"
+        )
+    }
+
     private func miniatureContract(minimumRows: Int) -> CatalogContract {
         CatalogContract(
             name: "test",

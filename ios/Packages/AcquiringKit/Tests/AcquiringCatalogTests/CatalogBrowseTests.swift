@@ -148,6 +148,88 @@ final class CatalogBrowseTests: XCTestCase {
         XCTAssertEqual(ionianSongs, [])
     }
 
+    func testRestoredPunctuationAndLegacySlugsRemainSearchable() async throws {
+        let fixture = try await makeFixture([
+            .init(slug: "journey__dont-stop-believin", title: "Don’t Stop Believin’", artist: "Journey", complexity: 12),
+            .init(slug: "simon-and-garfunkel__the-sound-of-silence", title: "The Sound of Silence", artist: "Simon & Garfunkel", complexity: 12),
+            .init(slug: "beyonce__deja-vu", title: "Déjà Vu", artist: "Beyoncé", complexity: nil)
+        ])
+        defer { fixture.cleanup() }
+
+        let legacyTitle = try await fixture.coordinator.searchSongs(title: "dont-stop-believin").map(\.id)
+        let readableTitle = try await fixture.coordinator.searchSongs(title: "Don't Stop Believin'").map(\.id)
+        let accentTitle = try await fixture.coordinator.searchSongs(title: "deja vu").map(\.id)
+        let legacyArtist = try await fixture.coordinator.songSuggestions(query: "simon-and-garfunkel").map(\.id)
+        let artists = try await fixture.coordinator.artistSuggestions(query: "simon-and-garfunkel")
+        let browsed = try await fixture.coordinator.browseSongs(group: .alphabetical("D"), filter: "DONT_stop_BELIEVIN").map(\.id)
+        let counts = try await fixture.coordinator.browseCounts(mode: .alphabetical, filter: "simon-and-garfunkel")
+
+        XCTAssertEqual(legacyTitle, ["journey__dont-stop-believin"])
+        XCTAssertEqual(readableTitle, legacyTitle)
+        XCTAssertEqual(accentTitle, ["beyonce__deja-vu"])
+        XCTAssertEqual(legacyArtist, ["simon-and-garfunkel__the-sound-of-silence"])
+        XCTAssertEqual(artists, ["Simon & Garfunkel"])
+        XCTAssertEqual(browsed, legacyTitle)
+        XCTAssertEqual(countMap(counts), ["T": 1])
+    }
+
+    func testArtistHistoryUsesStableIdentityAndPreservesDistinctSourceNames() async throws {
+        let fixture = try await makeFixture([
+            .init(slug: "puff-daddy__song", title: "Song", artist: "Diddy", complexity: nil),
+            .init(slug: "ac-slash-dc__thunderstruck", title: "Thunderstruck", artist: "AC/DC", complexity: nil),
+            .init(slug: "ac-dc__another-song", title: "Another Song", artist: "AC-DC", complexity: nil)
+        ])
+        defer { fixture.cleanup() }
+
+        let resolved = try await fixture.coordinator.resolvedArtistName("puff daddy")
+        let legacySongs = try await fixture.coordinator.songs(artist: "puff-daddy").map(\.id)
+        let exactSongs = try await fixture.coordinator.songs(artist: "AC/DC").map(\.id)
+        let hyphenatedSongs = try await fixture.coordinator.songs(artist: "AC-DC").map(\.id)
+        let sourceNames = try await fixture.coordinator.artistSuggestions(query: "ac")
+
+        XCTAssertEqual(resolved, "Diddy")
+        XCTAssertEqual(legacySongs, ["puff-daddy__song"])
+        XCTAssertEqual(exactSongs, ["ac-slash-dc__thunderstruck"])
+        XCTAssertEqual(hyphenatedSongs, ["ac-dc__another-song"])
+        XCTAssertEqual(sourceNames, ["AC-DC", "AC/DC"])
+    }
+
+    func testAmbiguousLegacyArtistNameDoesNotOpenAnArbitraryArtist() async throws {
+        let fixture = try await makeFixture([
+            .init(slug: "first__song", title: "Song", artist: "A.B.", complexity: nil),
+            .init(slug: "second__song", title: "Song", artist: "A B", complexity: nil)
+        ])
+        defer { fixture.cleanup() }
+        let resolved = try await fixture.coordinator.resolvedArtistName("a-b")
+        let songs = try await fixture.coordinator.songs(artist: "a-b")
+        XCTAssertNil(resolved)
+        XCTAssertTrue(songs.isEmpty)
+    }
+
+    func testReharvestFallbackKeepsExistingNamesAndBrowseGroup() async throws {
+        let fixture = try await makeFixture([
+            .init(slug: "source-artist__old-title", title: "A Source Title", artist: "Source Artist", complexity: 12)
+        ])
+        defer { fixture.cleanup() }
+        let fallback = CatalogSong(id: "source-artist__old-title", artist: "source-artist", title: "old-title", status: "enriched")
+        try await fixture.coordinator.writeHarvested(
+            song: fallback,
+            payload: Data("{}".utf8),
+            alphaGroup: "O",
+            modes: [],
+            preserveExistingTitle: true,
+            preserveExistingArtist: true
+        )
+        let song = try await fixture.coordinator.song(id: fallback.id)
+        let browsed = try await fixture.coordinator.browseSongs(group: .alphabetical("A"), filter: "")
+        XCTAssertEqual(song?.title, "A Source Title")
+        XCTAssertEqual(song?.artist, "Source Artist")
+        XCTAssertEqual(browsed.map(\.id), [fallback.id])
+        XCTAssertEqual(browsed.first?.title, song?.title)
+        XCTAssertEqual(browsed.first?.artist, song?.artist)
+        XCTAssertEqual(browsed.first?.complexityRating, 12)
+    }
+
     private func countMap(_ counts: [BrowseGroupCount]) -> [String: Int] {
         Dictionary(uniqueKeysWithValues: counts.map { ($0.key, $0.count) })
     }

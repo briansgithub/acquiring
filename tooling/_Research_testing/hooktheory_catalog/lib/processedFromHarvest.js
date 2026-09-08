@@ -8,12 +8,13 @@ const CacheManager = require('../../../lib/cache/cacheManager');
 const { extractArtistAndSongFromUrl } = require('../../../lib/parser/urlParser');
 const { commitProcessedCache } = require('./cacheSync');
 const { nowIso } = require('./db');
+const { normalizeDisplayText, preferDisplayName } = require('./catalogDisplayNames');
 
 function songTitleFromHarvest(scrape) {
   for (const sec of scrape.sections || []) {
     if (sec.json?.songInfo) return sec.json.songInfo;
   }
-  return scrape.title?.split(' Chords')[0]?.trim() || null;
+  return scrape.songTitle || scrape.title?.split(' Chords')[0]?.trim() || null;
 }
 
 async function writeSectionFile(songDir, sectionName, numericId, stringSongId, sectionData) {
@@ -81,10 +82,16 @@ async function writeProcessedCacheFromHarvest(harvest) {
   }
 
   const metadataPath = path.join(songDir, '_metadata.json');
+  let previousMetadata = {};
+  try {
+    previousMetadata = JSON.parse(await fs.readFile(metadataPath, 'utf8'));
+  } catch (_) {
+    // New cache folders have no previous metadata to preserve.
+  }
   await fs.writeFile(metadataPath, JSON.stringify({
     url,
-    songTitle,
-    artist,
+    songTitle: preferDisplayName(previousMetadata.songTitle, normalizeDisplayText(songTitle)),
+    artist: preferDisplayName(previousMetadata.artist, scrape.artist || artist, artist),
     timestamp: new Date().toISOString(),
     songIds,
     sectionMapping,
