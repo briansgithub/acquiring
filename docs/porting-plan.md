@@ -1841,3 +1841,27 @@ claim is made that any test passes.
 Next: build and run `AudioDiagnosticsTests` plus both UI tests on the Mac, then
 reproduce on the phone — use the singing tool, stop it, press Play — and confirm
 sound with no alert. The build number is deliberately not bumped.
+
+## 2026-09-08 — Root cards and shared quiz transport (Mac review pending)
+
+Implemented the user's selected UI refinements only: Root-only now has bottom-aligned
+40/60 previous/current cards at 128/162pt, labeled `Previous` and `Current root`.
+Scale degrees still use `FittedScaleDegree` for their hats; note letters are not shown.
+The existing abbreviated interval action is centered below the pair, with its row
+reserved even before an interval is available. Full and Root-only share a scrubber,
+beat position, previous/next chord controls, and centered circular play/pause below
+the unchanged knobs. Existing auxiliary controls, card gestures, and pitch feedback
+remain. Other concept changes were excluded. UI implementation: GPT-5.6 Terra/high.
+
+Updated `testQuizInstrumentAndModeMenusApplyWhilePlaying` to check the shared bar's
+placement while retaining its playback/menu continuity checks. Source review and
+`git diff --check -- ios/Acquiring/Features/QuizCards.swift ios/Acquiring/Features/SongViews.swift ios/AcquiringUITests/AcquiringUITests.swift docs/porting-plan.md`
+passed. Swift compilation, simulator launch, and the UI test remain unrun: this
+Windows host has no Xcode/Swift toolchain, and configured remote connections were
+unreachable. Prior pending review and testing statuses are unchanged.
+
+Next on the Mac: run one incremental Debug build and the updated focused UI test;
+terminate/install/launch on the existing iPhone 17 simulator. Review `500 Miles`:
+check first/subsequent root cards, hats, labels, and centered interval; in both modes,
+check the below-knob controls fit and that scrubbing, chord stepping, and play/pause
+work. Human visual review remains pending.
