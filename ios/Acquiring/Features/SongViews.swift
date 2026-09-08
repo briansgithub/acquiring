@@ -1104,7 +1104,8 @@ struct QuizView: View {
                             initialKey: selected.section.key(at: PlaybackTiming.firstBeat),
                             currentKey: selected.section.key(at: currentBeat(in: selected.section)),
                             usesRelativeIonianContext: $usesRelativeIonianContext,
-                            quizHelp: quizHelp
+                            quizHelp: quizHelp,
+                            monitoringSelection: mode == .rootOnly ? .simpleRoot : .melody
                         )
 
                         ViewThatFits(in: .vertical) {
@@ -1259,10 +1260,6 @@ struct QuizView: View {
                     cancelPlaybackCommand()
                     finishTimelineScrub(resumingIfNeeded: false)
                     environment.vocalPractice.requestSingBack(request)
-                },
-                onPersistentPractice: { selection in
-                    cancelQuizCardPreview()
-                    environment.vocalPractice.togglePersistent(selection)
                 },
                 onPracticeContext: { targets in
                     practiceTargets = targets
@@ -2650,6 +2647,10 @@ private struct QuizHeader: View {
     let currentKey: KeyInfo
     @Binding var usesRelativeIonianContext: Bool
     let quizHelp: QuizHelpState?
+    /// What the microphone button monitors in this quiz mode: the melody in Full, the
+    /// current root in Root-only - the card each interface is actually built around.
+    let monitoringSelection: PersistentPitchSelection
+    @Environment(VocalPracticeModel.self) private var vocalPractice: VocalPracticeModel?
     @AccessibilityFocusState private var helpButtonIsFocused: Bool
 
     private var displayedKey: KeyInfo {
@@ -2677,6 +2678,7 @@ private struct QuizHeader: View {
             .offset(x: -QuizTransportLayout.controlSize / 2)
             HStack(spacing: 8) {
                 Spacer(minLength: 0)
+                monitorButton
                 helpButton
             }
         }
@@ -2721,6 +2723,23 @@ private struct QuizHeader: View {
             .accessibilityHint("Updates key, card degrees, and practice targets to the relative major key")
             .accessibilityIdentifier("quiz.lockInMajor")
             .quizHelpTarget(.quizRelativeKey)
+    }
+
+    /// Persistent pitch monitoring's only entry point, sitting beside Help because both are
+    /// screen-wide modes rather than actions on one card. It is deliberately not per-card:
+    /// each quiz mode has exactly one thing worth singing against.
+    private var monitorButton: some View {
+        let isMonitoring = vocalPractice?.persistentSelection == monitoringSelection
+        return Button {
+            vocalPractice?.togglePersistent(monitoringSelection)
+        } label: {
+            Image(systemName: isMonitoring ? "mic.fill" : "mic")
+        }
+        .buttonStyle(QuizIconButtonStyle(isProminent: isMonitoring))
+        .accessibilityLabel("Pitch monitoring")
+        .accessibilityValue(isMonitoring ? "On" : "Off")
+        .accessibilityHint("Listens while you sing and marks how far off the target you are")
+        .accessibilityIdentifier("quiz.monitorPitch")
     }
 
     private var helpButton: some View {
@@ -3581,7 +3600,7 @@ private struct MelodyTimelineView: View {
               vocalPractice.persistentSelection == .melody
         else { return "" }
         let scored = presentation.pitchRuns.compactMap { vocalPractice.score(forRunID: $0.id) }.count
-        if let live = vocalPractice.sampledLivePercentageText {
+        if let live = vocalPractice.sampledLiveCentsText {
             return "Persistent melody practice is on, live pitch \(live), \(scored) completed run scores."
         }
         return "Persistent melody practice is on, waiting for a voiced pitch, \(scored) completed run scores."
@@ -3594,7 +3613,7 @@ private struct MelodyTimelineView: View {
     }
 }
 
-/// The live pitch marker riding the melody lane, and the signed percentage beside it.
+/// The live pitch marker riding the melody lane, and the signed cents readout beside it.
 ///
 /// Split out of `MelodyTimelineView` on purpose. It follows `liveCentsError`, which changes
 /// every 16 ms; read from the lane's own body that would re-evaluate every note rectangle in
@@ -3643,7 +3662,7 @@ private struct MelodyLiveMarkerOverlay: View {
             .animation(reduceMotion ? nil : .linear(duration: 0.032), value: centreY)
             .accessibilityHidden(true)
 
-            if let percentage = vocalPractice?.sampledLivePercentageText,
+            if let centsText = vocalPractice?.sampledLiveCentsText,
                let band = vocalPractice?.sampledFeedbackBand {
                 // A zero-height rail ending short of the playhead: a trailing overlay on it
                 // centres the pill on the marker without this view having to know how tall
@@ -3651,7 +3670,7 @@ private struct MelodyLiveMarkerOverlay: View {
                 Color.clear
                     .frame(width: max(containerWidth / 2 - Self.readoutGap, 0), height: 0)
                     .overlay(alignment: .trailing) {
-                        LivePitchErrorReadout(text: percentage, color: .pitchFeedback(band))
+                        LivePitchErrorReadout(text: centsText, color: .pitchFeedback(band))
                     }
                     .offset(y: readoutCentreY(markerCentreY: centreY))
                     .accessibilityHidden(true)
