@@ -435,8 +435,14 @@ final class AcquiringUITests: XCTestCase {
 
         let mode = app.descendants(matching: .any)["quiz.mode"]
         XCTAssertTrue(mode.waitForExistence(timeout: 5))
-        XCTAssertEqual(mode.frame.midY, app.buttons["quiz.reset"].frame.midY, accuracy: 2,
-                       "Full/Root-only belongs in the transport row")
+        let fullSeek = app.sliders["quiz.seek"]
+        XCTAssertTrue(fullSeek.waitForExistence(timeout: 5))
+        XCTAssertGreaterThanOrEqual(fullSeek.frame.minY, tempo.frame.maxY,
+                                    "Full mode keeps its scrubber below the knobs")
+        XCTAssertGreaterThanOrEqual(play.frame.minY, fullSeek.frame.maxY,
+                                    "Playback controls sit below the scrubber")
+        XCTAssertEqual(play.frame.midX, app.frame.midX, accuracy: 2,
+                       "Play/pause stays centered on the screen")
         mode.tap()
         let roots = app.buttons["Root-only"]
         XCTAssertTrue(roots.waitForExistence(timeout: 5))
@@ -448,6 +454,10 @@ final class AcquiringUITests: XCTestCase {
         wait(for: [modeApplied], timeout: 5)
         let rootTimeline = app.sliders["quiz.rootSeek"]
         XCTAssertTrue(rootTimeline.waitForExistence(timeout: 5))
+        XCTAssertGreaterThanOrEqual(rootTimeline.frame.minY, tempo.frame.maxY,
+                                    "Root-only keeps its scrubber below the knobs")
+        XCTAssertGreaterThanOrEqual(play.frame.minY, rootTimeline.frame.maxY,
+                                    "Both modes use the same scrub/transport layout")
         let beatAfterMode = rootTimeline.value as? String
         XCTAssertTrue(
             waitForValueChange(rootTimeline, from: beatAfterMode, timeout: 5),
