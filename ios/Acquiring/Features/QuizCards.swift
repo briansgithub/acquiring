@@ -18,12 +18,11 @@ struct QuizCardsView: View {
         static let singleOrIntervalHeight: CGFloat = 88
     }
 
-    /// Root-only keeps the previous/current roots in their own stable columns. This
-    /// gives the current root the same place before and after a predecessor appears.
+    /// Root-only keeps the previous root, interval, and current root in three stable,
+    /// equally sized columns so their relationship reads from left to right.
     private enum RootCardLayout {
-        static let previousHeight: CGFloat = 128
-        static let currentHeight: CGFloat = 162
-        static let columnGap: CGFloat = 14
+        static let cardHeight: CGFloat = 128
+        static let columnGap: CGFloat = 8
     }
 
     let section: ExtractedSection
@@ -114,8 +113,6 @@ struct QuizCardsView: View {
 
     @ViewBuilder
     private func rootOnlyCards(rootState: ChordRootIntervalState?) -> some View {
-        // Unlike the three compact Full-mode sections, the root pair and its interval
-        // need the whole screen width so the shorthand is actually centered.
         VStack(spacing: compact ? 3 : 5) {
             let previous = rootState?.previousIntervalPitch
             let current = rootState?.currentIntervalPitch
@@ -132,37 +129,17 @@ struct QuizCardsView: View {
             } ?? ""
 
             GeometryReader { row in
-                let availableWidth = max(0, row.size.width - RootCardLayout.columnGap)
-                let previousWidth = availableWidth * 0.4
-                let currentWidth = availableWidth * 0.6
-                HStack(alignment: .bottom, spacing: RootCardLayout.columnGap) {
+                let cardWidth = max(0, (row.size.width - RootCardLayout.columnGap * 2) / 3)
+                HStack(spacing: RootCardLayout.columnGap) {
                     rootOnlyRootCard(
                         title: "Previous",
                         accessibilityTitle: "Previous root",
                         pitch: previous,
                         degree: previousLabel,
                         identifier: "quiz.root.previous",
-                        fixedHeight: RootCardLayout.previousHeight
+                        fixedHeight: RootCardLayout.cardHeight
                     )
-                    .frame(width: previousWidth)
-                    rootOnlyRootCard(
-                        title: "Current root",
-                        accessibilityTitle: "Current root",
-                        pitch: current,
-                        degree: currentLabel,
-                        identifier: "quiz.root.current",
-                        fixedHeight: RootCardLayout.currentHeight,
-                        showsPitchGauge: showsPitchGauge(.simpleRoot)
-                    )
-                    .frame(width: currentWidth)
-                }
-            }
-            .frame(height: RootCardLayout.currentHeight)
-
-            GeometryReader { row in
-                let cardWidth = max(0, (row.size.width - 8) / 2)
-                HStack(spacing: 0) {
-                    Spacer(minLength: 0)
+                    .frame(width: cardWidth)
                     if let previous, let current, let interval, previous != current {
                         intervalCard(
                             title: "Root interval",
@@ -171,17 +148,26 @@ struct QuizCardsView: View {
                             interval: interval,
                             identifier: "quiz.root.interval",
                             labels: [previousLabel, currentLabel],
-                            fixedHeight: 44
+                            fixedHeight: RootCardLayout.cardHeight
                         )
                         .frame(width: cardWidth)
                     } else {
-                        Color.clear
-                            .frame(width: cardWidth, height: 44)
+                        QuizEmptyCardSlot(fixedHeight: RootCardLayout.cardHeight)
+                            .frame(width: cardWidth)
                     }
-                    Spacer(minLength: 0)
+                    rootOnlyRootCard(
+                        title: "Current root",
+                        accessibilityTitle: "Current root",
+                        pitch: current,
+                        degree: currentLabel,
+                        identifier: "quiz.root.current",
+                        fixedHeight: RootCardLayout.cardHeight,
+                        showsPitchGauge: showsPitchGauge(.simpleRoot)
+                    )
+                    .frame(width: cardWidth)
                 }
             }
-            .frame(height: 44)
+            .frame(height: RootCardLayout.cardHeight)
         }
         .quizHelpTarget(.quizNotes)
     }
@@ -217,7 +203,7 @@ struct QuizCardsView: View {
                         .foregroundStyle(.white.opacity(0.78))
                     FittedScaleDegree(
                         degree,
-                        maximumFontSize: title == "Current root" ? 52 : 42,
+                        maximumFontSize: 42,
                         minimumFontSize: 13,
                         color: .white
                     )
