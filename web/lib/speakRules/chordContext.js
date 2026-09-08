@@ -19,6 +19,7 @@ import {
   ROMAN_NUMERALS_PHRYGIAN_DOMINANT,
 } from '../scales.js';
 import { getNoteLabel } from '../music.js';
+import { resolveAppliedChordContext } from '../appliedChordContext.js';
 
 const MAJOR_OFFSETS = [0, 2, 4, 5, 7, 9, 11];
 const BORROWED_TAG = {
@@ -156,16 +157,27 @@ export function resolveChordContext(chord, key) {
   };
 
   if (chord.applied && chord.applied >= 1 && chord.applied <= 7) {
+    const target = resolveAppliedChordContext(chord, key);
+    const triSub = chord.applied === 5 && chord.substitutions?.includes('tri');
     ctx.isApplied = true;
-    ctx.appliedDegree = chord.applied;
+    ctx.appliedDegree = triSub ? 2 : chord.applied;
     ctx.denominatorDegree = chord.root;
-    ctx.degree = chord.applied;
-    ctx.quality = MAJOR_SCALE_CHORD_QUALITIES[chord.applied - 1];
+    ctx.denominatorQuality = target.quality;
+    ctx.denominatorTonic = target.targetTonic;
+    ctx.denominatorPrefix = target.denominator.match(/^[♭♯]*/)?.[0] || '';
+    ctx.degree = ctx.appliedDegree;
+    ctx.prefix = triSub ? '♭' : '';
+    ctx.quality = triSub ? 'major' : MAJOR_SCALE_CHORD_QUALITIES[chord.applied - 1];
     ctx.fullyDiminished = chord.applied === 7;
-    const targetTonic = getNoteLabel(chord.root, key);
-    const numeratorKey = { tonic: targetTonic, scale: 'major' };
-    ctx.majorSeventh = chord.type >= 7 && isMajorSeventh(chord.applied, numeratorKey);
-    ctx.denominatorQuality = getChordQualitiesForScale(key.scale)[chord.root - 1] || 'major';
+    const numeratorKey = { tonic: target.targetTonic, scale: 'major' };
+    ctx.majorSeventh = !triSub && chord.type >= 7 && isMajorSeventh(chord.applied, numeratorKey);
+    if (Array.isArray(chord.borrowed)) {
+      ctx.isCustomBorrowed = true;
+      ctx.borrowedTag = 'bor';
+    } else if (BORROWED_TAG[chord.borrowed]) {
+      ctx.borrowedMode = chord.borrowed;
+      ctx.borrowedTag = BORROWED_TAG[chord.borrowed];
+    }
     return ctx;
   }
 

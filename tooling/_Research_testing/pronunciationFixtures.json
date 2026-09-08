@@ -614,14 +614,14 @@
       "tonic": "B",
       "scale": "harmonicMinor"
     },
-    "analytic": "five seven of five",
-    "functional": "five seven secondary dominant resolving to five",
+    "analytic": "five seven of flat five borrowed from locrian",
+    "functional": "five seven secondary dominant resolving to flat five borrowed from locrian",
     "letter": "C seven",
-    "functionalLetter": "C sharp seven secondary dominant resolving to F sharp",
-    "colloquial": "five seven of five",
-    "academic": "five seven secondary dominant resolving to five",
+    "functionalLetter": "C seven secondary dominant resolving to F borrowed from locrian",
+    "colloquial": "five seven of flat five borrowed from locrian",
+    "academic": "five seven secondary dominant resolving to flat five borrowed from locrian",
     "colloquialLetter": "C seven",
-    "academicLetter": "C sharp seven secondary dominant resolving to F sharp"
+    "academicLetter": "C seven secondary dominant resolving to F borrowed from locrian"
   },
   {
     "id": "borrowed=lydian",
@@ -2084,14 +2084,14 @@
       "tonic": "E",
       "scale": "major"
     },
-    "analytic": "five seven flat nine flat thirteen of five",
-    "functional": "five seven flat nine flat thirteen secondary dominant resolving to five",
+    "analytic": "five seven flat nine flat thirteen of five borrowed from lydian",
+    "functional": "five seven flat nine flat thirteen secondary dominant resolving to five borrowed from lydian",
     "letter": "F sharp seven flat 9 flat 13",
-    "functionalLetter": "F sharp seven flat nine flat thirteen secondary dominant resolving to B",
-    "colloquial": "five seven flat nine flat thirteen of five",
-    "academic": "five seven flat nine flat thirteen secondary dominant resolving to five",
+    "functionalLetter": "F sharp seven flat nine flat thirteen secondary dominant resolving to B borrowed from lydian",
+    "colloquial": "five seven flat nine flat thirteen of five borrowed from lydian",
+    "academic": "five seven flat nine flat thirteen secondary dominant resolving to five borrowed from lydian",
     "colloquialLetter": "F sharp seven flat 9 flat 13",
-    "academicLetter": "F sharp seven flat nine flat thirteen secondary dominant resolving to B"
+    "academicLetter": "F sharp seven flat nine flat thirteen secondary dominant resolving to B borrowed from lydian"
   },
   {
     "id": "omits=5+3",
@@ -2699,5 +2699,136 @@
     },
     "letter": "C minor major seven",
     "colloquialLetter": "C minor major seven"
+  },
+  {
+    "id": "applied-borrowed-minor-flat-six",
+    "chord": {
+      "root": 6,
+      "type": 7,
+      "applied": 5,
+      "borrowed": "minor"
+    },
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "colloquial": "five seven of flat six borrowed from minor",
+    "academic": "five seven secondary dominant resolving to flat six borrowed from minor",
+    "colloquialLetter": "E flat seven",
+    "academicLetter": "E flat seven secondary dominant resolving to A flat borrowed from minor",
+    "analytic": "five seven of flat six borrowed from minor",
+    "functional": "five seven secondary dominant resolving to flat six borrowed from minor",
+    "letter": "E flat seven",
+    "functionalLetter": "E flat seven secondary dominant resolving to A flat borrowed from minor"
+  },
+  {
+    "id": "applied-custom-flat-three-major-target",
+    "chord": {
+      "root": 3,
+      "type": 7,
+      "applied": 5,
+      "borrowed": [
+        0,
+        2,
+        3,
+        5,
+        7,
+        8,
+        10
+      ]
+    },
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "colloquial": "five seven of flat three borrowed from custom scale",
+    "academic": "five seven secondary dominant resolving to flat three borrowed from custom scale",
+    "colloquialLetter": "B flat seven",
+    "academicLetter": "B flat seven secondary dominant resolving to E flat borrowed from custom scale",
+    "analytic": "five seven of flat three borrowed from custom scale",
+    "functional": "five seven secondary dominant resolving to flat three borrowed from custom scale",
+    "letter": "B flat seven",
+    "functionalLetter": "B flat seven secondary dominant resolving to E flat borrowed from custom scale"
+  },
+  {
+    "id": "applied-custom-two-diminished-target",
+    "chord": {
+      "root": 2,
+      "type": 7,
+      "applied": 5,
+      "borrowed": [
+        0,
+        2,
+        3,
+        5,
+        7,
+        8,
+        10
+      ]
+    },
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "colloquial": "five seven of two diminished borrowed from custom scale",
+    "academic": "five seven secondary dominant resolving to two diminished borrowed from custom scale",
+    "colloquialLetter": "A seven",
+    "academicLetter": "A seven secondary dominant resolving to D diminished borrowed from custom scale",
+    "analytic": "five seven of two diminished borrowed from custom scale",
+    "functional": "five seven secondary dominant resolving to two diminished borrowed from custom scale",
+    "letter": "A seven",
+    "functionalLetter": "A seven secondary dominant resolving to D diminished borrowed from custom scale"
+  },
+  {
+    "id": "tritone-applied-borrowed-flat-six",
+    "chord": {
+      "root": 6,
+      "type": 7,
+      "applied": 5,
+      "borrowed": "minor",
+      "substitutions": [
+        "tri"
+      ]
+    },
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "colloquial": "flat two seven tritone substitution of flat six borrowed from minor",
+    "academic": "flat two seven tritone substitution secondary dominant resolving to flat six borrowed from minor",
+    "colloquialLetter": "B flat flat seven",
+    "academicLetter": "B flat flat seven tritone substitution secondary dominant resolving to A flat borrowed from minor",
+    "analytic": "flat two seven tritone substitution of flat six borrowed from minor",
+    "functional": "flat two seven tritone substitution secondary dominant resolving to flat six borrowed from minor",
+    "letter": "B flat flat seven",
+    "functionalLetter": "B flat flat seven tritone substitution secondary dominant resolving to A flat borrowed from minor"
+  },
+  {
+    "id": "custom-root-academic-letter-spelling",
+    "chord": {
+      "root": 3,
+      "type": 7,
+      "borrowed": [
+        0,
+        2,
+        3,
+        5,
+        7,
+        8,
+        10
+      ]
+    },
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "colloquial": "flat three major seven custom scale",
+    "academic": "flat three major seven borrowed from custom scale",
+    "colloquialLetter": "E flat major seven",
+    "academicLetter": "E flat major seven borrowed from custom scale",
+    "analytic": "flat three major seven custom scale",
+    "functional": "flat three major seven borrowed from custom scale",
+    "letter": "E flat major seven",
+    "functionalLetter": "E flat major seven borrowed from custom scale"
   }
 ]
