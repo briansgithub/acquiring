@@ -84,6 +84,55 @@ object ChordInterpreter {
         }
     }
 
+    /**
+     * The raw `borrowed` array as authored, before the 7-slot/mod-12 normalisation
+     * customBorrowedIntervals applies. Hooktheory writes offsets like -1 for a
+     * flattened tonic, and the accidental prefix below is a raw subtraction, so it
+     * has to see the -1 rather than the 11 it normalises to.
+     */
+    private fun rawCustomBorrowedIntervals(element: JsonElement?): List<Int>? {
+        val borrowed = element as? JsonArray ?: return null
+        val values = borrowed.mapNotNull { (it as? JsonPrimitive)?.intOrNull }
+        return if (values.size >= 7) values else null
+    }
+
+    /**
+     * Triad quality read straight off a custom borrowed scale, ported from
+     * jsonToSymbol.js's customArrayTriadQuality. Deliberately separate from
+     * customChordQualities, which the note builder uses: web keeps the two apart
+     * as well, and their fallbacks differ.
+     */
+    private fun customArrayTriadQuality(intervals: List<Int>, degree: Int): String {
+        fun at(index: Int) = intervals[Math.floorMod(index - 1, 7)]
+        val root = at(degree)
+        val third = Math.floorMod(at(degree + 2) - root, 12)
+        val fifth = Math.floorMod(at(degree + 4) - root, 12)
+        return when {
+            third == 4 && fifth == 7 -> "major"
+            third == 3 && fifth == 7 -> "minor"
+            third == 3 && fifth == 6 -> "diminished"
+            third == 4 && fifth == 8 -> "augmented"
+            third <= 3 -> "minor"
+            else -> "major"
+        }
+    }
+
+    private fun customArrayPrefix(intervals: List<Int>, degree: Int, key: KeyInfo): String {
+        val reference = MusicTheory.SCALE_INTERVALS[key.scale] ?: MusicTheory.SCALE_INTERVALS["major"]!!
+        return when (intervals[degree - 1] - reference[degree - 1]) {
+            -2 -> "♭♭"
+            -1 -> "♭"
+            1 -> "♯"
+            2 -> "♯♯"
+            else -> ""
+        }
+    }
+
+    private fun customArraySeventhMajor(intervals: List<Int>, degree: Int): Boolean {
+        fun at(index: Int) = intervals[Math.floorMod(index - 1, 7)]
+        return Math.floorMod(at(degree + 6) - at(degree), 12) == 11
+    }
+
     private fun midiOctave(midi: Int): Int = (midi / 12) - 1
 
     /** Mirrors buildChordFromNoteName/finalizeVoicing in the web player. */
@@ -573,6 +622,29 @@ object ChordInterpreter {
             return "$numerator/$denominator$denomTag$subTag"
         }
 
+        // A custom borrowed scale arrives as an array of absolute semitone offsets.
+        // Its quality and accidental come from the array itself, never from the
+        // song key's scale (web/lib/jsonToSymbol.js, the Array.isArray branch).
+        rawCustomBorrowedIntervals(chordJson["borrowed"])?.let { raw ->
+            val type = safeInt(chordJson["type"], 5)
+            val quality = triadQualityWithAlts(customArrayTriadQuality(raw, root), chordJson)
+            val hasAdds = (chordJson["adds"] as? JsonArray)?.isNotEmpty() ?: false
+            val opts = mutableMapOf<String, Any>(
+                "quality" to quality,
+                "majorSeventh" to (type >= 7 && customArraySeventhMajor(raw, root)),
+                "fullyDiminished" to (quality == "diminished" && type >= 7)
+            )
+            if (hasAdds) opts["borrowedTag"] = "(bor)"
+            val numeral = buildNumeral(
+                root,
+                MusicTheory.CHORD_QUALITIES["major"]!!,
+                chordJson,
+                customArrayPrefix(raw, root, key),
+                opts
+            )
+            return numeral + (if (hasAdds) "" else "(bor)")
+        }
+
         var scale = key.scale
         var tag = ""
         var prefix = ""
@@ -714,12 +786,14 @@ object ChordInterpreter {
 
         val applied = safeInt(chordJson["applied"])
         val borrowed = safeString(chordJson["borrowed"])
+        val rawCustom = rawCustomBorrowedIntervals(chordJson["borrowed"])
+        val customIntervals = if (rawCustom != null) customBorrowedIntervals(chordJson["borrowed"]) else null
         val type = (chordJson["type"] as? JsonPrimitive)?.intOrNull ?: 5
         val inversion = safeInt(chordJson["inversion"])
         val suspensions = (chordJson["suspensions"] as? JsonArray)?.mapNotNull { (it as? JsonPrimitive)?.intOrNull } ?: emptyList()
         val alterations = (chordJson["alterations"] as? JsonArray)?.mapNotNull { (it as? JsonPrimitive)?.contentOrNull } ?: emptyList()
         val omits = (chordJson["omits"] as? JsonArray)?.mapNotNull { (it as? JsonPrimitive)?.intOrNull } ?: emptyList()
-        
+
         var effKey = key
         var degree = root
         
@@ -737,19 +811,24 @@ object ChordInterpreter {
                 effKey = KeyInfo(targetTonic, "major")
                 degree = applied
             }
+        } else if (rawCustom != null) {
+            // Custom borrowed scale: spellings and quality come from the array.
+            effKey = KeyInfo(key.tonic, "custom")
         } else if (borrowed.isNotEmpty()) {
             if (BORROWED_TAG.containsKey(borrowed)) {
                 effKey = KeyInfo(key.tonic, borrowed)
-            } else if (borrowed.startsWith("[")) {
-                effKey = KeyInfo(key.tonic, "custom")
             }
         }
-        
+
         val qualities = MusicTheory.CHORD_QUALITIES[effKey.scale] ?: MusicTheory.CHORD_QUALITIES["major"]!!
-        val baseQuality = qualities.getOrElse(((degree - 1) % 7 + 7) % 7) { "major" }
+        val baseQuality = if (rawCustom != null && applied !in 1..7) {
+            customArrayTriadQuality(rawCustom, degree)
+        } else {
+            qualities.getOrElse(((degree - 1) % 7 + 7) % 7) { "major" }
+        }
         val quality = if (alterations.contains("b5") && baseQuality == "minor") "diminished" else baseQuality
-        
-        val rootNoteName = MusicTheory.getNoteLabel(degree, effKey.tonic, effKey.scale)
+
+        val rootNoteName = MusicTheory.getNoteLabel(degree, effKey.tonic, effKey.scale, customIntervals)
         val augmented = quality == "augmented"
         val triSub = isTriSubApplied(chordJson)
         val sharp5 = alterations.contains("#5")
@@ -764,6 +843,8 @@ object ChordInterpreter {
                     majorSeventh = quality == "major" && applied != 5 && !suspended
                         && isMajorSeventh(applied, KeyInfo(targetTonic, "major"))
                 }
+            } else if (rawCustom != null) {
+                majorSeventh = customArraySeventhMajor(rawCustom, degree)
             } else {
                 majorSeventh = isMajorSeventh(degree, effKey)
             }
@@ -816,7 +897,7 @@ object ChordInterpreter {
                 else -> 0
             }
             val bassDegree = ((degree - 1 + bassOffset) % 7 + 7) % 7 + 1
-            val bassNoteName = MusicTheory.getNoteLabel(bassDegree, effKey.tonic, effKey.scale)
+            val bassNoteName = MusicTheory.getNoteLabel(bassDegree, effKey.tonic, effKey.scale, customIntervals)
             return "$rootNoteName$suffix/$bassNoteName"
         }
 
@@ -995,8 +1076,11 @@ object ChordInterpreter {
             }
         }
         if (type >= 9) degrees[9] = 14
+        // The chord's own eleventh sits a fourth above the root, not a compound
+        // fourth: web builds it as shiftNoteBySemitones(root, 5). An *added*
+        // eleventh (adds: [11], below) is the compound one at +17.
         if (type >= 11) {
-             degrees[11] = if (degrees.containsKey(11)) degrees[11]!! else 17
+             degrees[11] = if (degrees.containsKey(11)) degrees[11]!! else 5
         }
         if (type >= 13) degrees[13] = 21
 
@@ -1017,7 +1101,9 @@ object ChordInterpreter {
                 "#5", "♯5" -> degrees[5] = 8
                 "b9", "♭9" -> degrees[9] = 13
                 "#9", "♯9" -> degrees[9] = 15
-                "#11", "♯11" -> degrees[11] = 18
+                // Raise the chord's own eleventh where it exists; otherwise introduce
+                // a compound #4 (web: rule {src: 5, delta: 1} with addSd "#4").
+                "#11", "♯11" -> degrees[11] = if (degrees.containsKey(11)) 6 else 18
                 "b13", "♭13" -> degrees[13] = 20
             }
         }
@@ -1036,6 +1122,11 @@ object ChordInterpreter {
         // unaltered perfect fifth when no explicit omit was supplied. This
         // keeps the root, suspension, seventh, and extension tones while
         // preserving explicit omissions and altered fifths.
+        // Hooktheory voices an added sixth on a triad without its fifth, unless a
+        // ninth is also added (web/lib/chordAdds.js). Only an unaltered perfect
+        // fifth is dropped.
+        if (adds.contains(6) && type < 7 && !adds.contains(9) && degrees[5] == 7) degrees.remove(5)
+
         val hasAlteredFifth = alterations.any { it == "b5" || it == "#5" || it == "♭5" || it == "♯5" }
         if (type >= 9 && suspensions.isNotEmpty() && !omits.contains(5) && !hasAlteredFifth && degrees[5] == 7) {
             degrees.remove(5)
@@ -1055,9 +1146,12 @@ object ChordInterpreter {
         }
 
         val pitches = rootPositionPitches.toMutableList()
-        
-        // Fix 031: Sort pitches ascending for inversion 0
-        pitches.sort()
+
+        // Web sorts a voicing into pitch order only in root position; an inverted
+        // chord rotates the degree-order stack as built. The two agree for every
+        // chord whose offsets ascend, and differ exactly when an eleventh sits
+        // below the fifth.
+        if (inversion <= 0) pitches.sort()
 
         // Apply inversion rotation
         if (inversion > 0 && inversion < pitches.size) {

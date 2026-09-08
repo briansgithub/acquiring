@@ -251,26 +251,50 @@ final class AcquiringTests: XCTestCase {
         XCTAssertNotNil(cases.first?["expectedPcs"])
     }
 
-    func testSharedChordCorpusMatchesAndroid() throws {
+    /// The app bundle only needs to prove the shipped contract is present and
+    /// decodable, plus a few named chords. Scoring the whole corpus against the
+    /// web reference is the SPM suite's job (ChordParityTests), which reads the
+    /// same file from contracts/fixtures and ratchets against parity_baseline.json.
+    func testSharedChordCorpusRegressionCases() throws {
         struct Fixture: Decodable {
             let id: String
             let json: String
             let key: KeyInfo
             let expectedRoman: String
             let expectedLetter: String
-            let expectedPcs: [Int]
+            let expectedMidi: [Int]
+            let expectedToneLabels: [String]
         }
         let fixtureURL = try XCTUnwrap(
             Bundle(for: AcquiringTests.self).url(forResource: "corpus_parity", withExtension: "json")
         )
         let fixtures = try JSONDecoder().decode([Fixture].self, from: Data(contentsOf: fixtureURL))
-        for fixture in fixtures {
+        XCTAssertGreaterThan(fixtures.count, 1000)
+
+        // Named cases only: the borrowed-seventh pair from "Honesty" plus the
+        // original hand-written benchmark, which the shipped engine must render
+        // exactly.
+        let named = Set([
+            "Honesty i42(min) in Bb major", "Honesty bVI△7(min) in Bb major",
+            "C Major I", "C Major V7", "C Major vii°7", "V7(∆-sub)",
+            "iv(min) in C major", "bVII(mix) in C major", "III+△7 (HM)"
+        ])
+        var checked = 0
+        for fixture in fixtures where named.contains(fixture.id) {
+            checked += 1
             let chord = try JSONDecoder().decode([String: JSONValue].self, from: Data(fixture.json.utf8))
             XCTAssertEqual(ChordInterpreter.romanSymbol(for: chord, key: fixture.key), fixture.expectedRoman, fixture.id)
             XCTAssertEqual(ChordInterpreter.letterName(for: chord, key: fixture.key), fixture.expectedLetter, fixture.id)
-            let pitchClasses = Set(ChordInterpreter.chordNotes(for: chord, key: fixture.key).map { (($0 % 12) + 12) % 12 }).sorted()
-            XCTAssertEqual(pitchClasses, fixture.expectedPcs, fixture.id)
+            let notes = ChordInterpreter.chordNotes(for: chord, key: fixture.key)
+            XCTAssertEqual(notes, fixture.expectedMidi, fixture.id)
+            let rootMIDI = try XCTUnwrap(ChordInterpreter.rootPositionChordNotes(for: chord, key: fixture.key).first, fixture.id)
+            XCTAssertEqual(
+                notes.map { MusicTheory.relativeMajorDegreeLabel(midi: $0, rootMIDI: rootMIDI) },
+                fixture.expectedToneLabels,
+                fixture.id
+            )
         }
+        XCTAssertEqual(checked, named.count, "corpus lost a named regression case")
     }
 
     func testChordTimelinePresentationKeepsAndroidTimelineSemantics() {

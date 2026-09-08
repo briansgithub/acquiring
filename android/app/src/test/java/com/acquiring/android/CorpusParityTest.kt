@@ -3,7 +3,7 @@ package com.acquiring.android
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
-import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 @Serializable
@@ -13,9 +13,18 @@ data class ParityTestCase(
     val key: KeyInfo,
     val expectedRoman: String,
     val expectedLetter: String,
-    val expectedPcs: List<Int>
+    val expectedPcs: List<Int>,
+    val expectedMidi: List<Int>,
+    val expectedRootMidi: Int,
+    val expectedToneLabels: List<String>
 )
 
+/**
+ * The cross-platform chord-decoding contract. The fixture is generated from the
+ * web player (`npm run parity:export`) and read in place from contracts/fixtures
+ * via the test.resources.srcDir wired up in app/build.gradle, so web, Android and
+ * iOS all assert against the identical file.
+ */
 class CorpusParityTest {
 
     private val jsonParser = Json { ignoreUnknownKeys = true }
@@ -26,60 +35,61 @@ class CorpusParityTest {
             ?: throw IllegalStateException("Could not find corpus_parity.json in test resources")
         val jsonText = resourceStream.bufferedReader().use { it.readText() }
         val testCases = jsonParser.decodeFromString<List<ParityTestCase>>(jsonText)
+        assertTrue("Corpus should not be trivially small", testCases.size > 1000)
 
-        var romanPassed = 0
-        var letterPassed = 0
-        var pcsPassed = 0
-        val total = testCases.size
-
-        val romanFailures = mutableListOf<String>()
-        val letterFailures = mutableListOf<String>()
-        val pcsFailures = mutableListOf<String>()
+        val failures = linkedMapOf<String, MutableList<String>>(
+            "roman" to mutableListOf(),
+            "letter" to mutableListOf(),
+            "pcs" to mutableListOf(),
+            "midi" to mutableListOf(),
+            "rootMidi" to mutableListOf(),
+            "toneLabels" to mutableListOf()
+        )
 
         for (tc in testCases) {
             val chordJson = jsonParser.decodeFromString<JsonObject>(tc.json)
             val roman = ChordInterpreter.getRomanSymbol(chordJson, tc.key)
             val letter = ChordInterpreter.getLetterName(chordJson, tc.key)
             val notes = ChordInterpreter.getChordNotes(chordJson, tc.key)
+            val rootMidi = ChordInterpreter.getRootPositionChordNotes(chordJson, tc.key).firstOrNull()
             val pcs = notes.map { ((it % 12) + 12) % 12 }.toSet().sorted()
 
-            val expectedPcsSorted = tc.expectedPcs.sorted()
-
-            if (roman == tc.expectedRoman) romanPassed++
-            else romanFailures.add("[${tc.id}] Expected Roman: '${tc.expectedRoman}', Actual: '$roman'")
-
-            if (letter == tc.expectedLetter) letterPassed++
-            else letterFailures.add("[${tc.id}] Expected Letter: '${tc.expectedLetter}', Actual: '$letter'")
-
-            if (pcs == expectedPcsSorted) pcsPassed++
-            else pcsFailures.add("[${tc.id}] Expected PCs: $expectedPcsSorted, Actual: $pcs")
+            if (roman != tc.expectedRoman) {
+                failures["roman"]!!.add("[${tc.id}] expected '${tc.expectedRoman}', got '$roman'")
+            }
+            if (letter != tc.expectedLetter) {
+                failures["letter"]!!.add("[${tc.id}] expected '${tc.expectedLetter}', got '$letter'")
+            }
+            if (pcs != tc.expectedPcs.sorted()) {
+                failures["pcs"]!!.add("[${tc.id}] expected ${tc.expectedPcs}, got $pcs")
+            }
+            if (notes != tc.expectedMidi) {
+                failures["midi"]!!.add("[${tc.id}] expected ${tc.expectedMidi}, got $notes")
+            }
+            if (rootMidi != tc.expectedRootMidi) {
+                failures["rootMidi"]!!.add("[${tc.id}] expected ${tc.expectedRootMidi}, got $rootMidi")
+            }
+            if (rootMidi != null) {
+                val labels = notes.map { MusicTheory.getRelativeDegreeLabel(it, rootMidi) }
+                if (labels != tc.expectedToneLabels) {
+                    failures["toneLabels"]!!.add("[${tc.id}] expected ${tc.expectedToneLabels}, got $labels")
+                }
+            }
         }
 
-        println("================ PARITY BENCHMARK REPORT ================")
-        println("Total Benchmark Test Cases: $total")
-        println("Roman Numeral Parity: $romanPassed / $total (${String.format("%.1f", romanPassed * 100.0 / total)}%)")
-        println("Letter Name Parity:    $letterPassed / $total (${String.format("%.1f", letterPassed * 100.0 / total)}%)")
-        println("Pitch-Class Set Parity: $pcsPassed / $total (${String.format("%.1f", pcsPassed * 100.0 / total)}%)")
-        println("=========================================================")
-
-        if (romanFailures.isNotEmpty()) {
-            println("\n--- ROMAN NUMERAL DISCREPANCIES (${romanFailures.size}) ---")
-            romanFailures.forEach { println("  - $it") }
+        val total = testCases.size
+        System.getenv("ACQUIRING_PARITY_DUMP")?.let { path ->
+            java.io.File(path).writeText(
+                failures.entries.flatMap { (channel, list) -> list.map { "$channel $it" } }
+                    .joinToString("\n")
+            )
         }
 
-        if (letterFailures.isNotEmpty()) {
-            println("\n--- LETTER NAME DISCREPANCIES (${letterFailures.size}) ---")
-            letterFailures.forEach { println("  - $it") }
-        }
-
-        if (pcsFailures.isNotEmpty()) {
-            println("\n--- PITCH CLASS DISCREPANCIES (${pcsFailures.size}) ---")
-            pcsFailures.forEach { println("  - $it") }
-        }
-
-        // Assert 100% parity across all dimensions
-        assertEquals("Roman Symbol Failures:\n" + romanFailures.joinToString("\n"), 0, romanFailures.size)
-        assertEquals("Letter Name Failures:\n" + letterFailures.joinToString("\n"), 0, letterFailures.size)
-        assertEquals("Pitch Class Failures:\n" + pcsFailures.joinToString("\n"), 0, pcsFailures.size)
+        ParityBaseline.assertWithinBaseline(
+            corpus = "corpus_parity",
+            counts = failures.mapValues { it.value.size },
+            total = total,
+            samples = failures.values.flatten()
+        )
     }
 }
