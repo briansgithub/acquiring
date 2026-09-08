@@ -757,6 +757,54 @@ Incremental build passed (no full/UI suites run):
 Log: `/tmp/acquiring-palatino.6Ak8Qd/build.log`. Human review: open 500 Miles and
 check the Palatino numeral/degree cards; confirm Aa is absent. No release/commit.
 
+### Quiz pitch monitoring entry point, melody row and readouts — 2026-09-08
+
+Implemented by the current agent (Opus 5), without delegation. User requested the
+header microphone entry point, the melody row rework, timeline-only feedback and
+the selector/card wording.
+
+- Persistent pitch monitoring is entered from a microphone button beside Help in
+  `QuizHeader` (`quiz.monitorPitch`, `music.mic`), monitoring the melody in Full and
+  the current root in Root-only. Card long press is removed, and with it the
+  gesture chain, the named VoiceOver practice action, and the only route to
+  chord-tone practice - `PersistentPitchTargets` still resolves and clamps
+  `.chordTone` and its tests still run, but no control names a tone. Starting no
+  longer requires a target to resolve that instant, so the button latches through
+  a rest and picks the target up when one arrives.
+- Monitoring and the interval singing tool are mutually exclusive in both
+  directions: starting monitoring collapses the tool so its Stop button is
+  reachable, and expanding the tool - including for Help - stops monitoring. The
+  tool carries no reading of its own. The model observes `didEnterBackground` and
+  `willTerminate` itself rather than relying on a scene-phase hop through the view
+  tree, so monitoring cannot outlive the app being put away.
+- The melody row is one fixed two-column shape in every state: a 44pt note pair on
+  the left, an 88pt interval card on the right, both drawn through rests, unisons
+  and first notes. A repeated note or a first note with no predecessor keeps the
+  pair's current column and centres between the high and low contour positions
+  rather than borrowing the interval card. That card is reserved for interval
+  strings; with none it is the picture-only card, not a disabled button, so its
+  tint and opacity never change as the melody gains and loses a predecessor.
+- Full-mode pitch feedback is the timeline marker alone - no melody, interval or
+  chord-tone card draws a gauge - and the marker is drawn whenever monitoring is
+  listening, parking on the target line in neutral white with no voiced frame. Its
+  pill and the card gauge both print signed cents rather than a percentage, which
+  retires the semitone cutoff that withheld the saturating figure. Root-only keeps
+  its on-card gauge because it has no timeline to carry a reading.
+- Wording and fit: the mode selector reads "Full"/"Root" collapsed and "Full
+  Chords"/"Root Only" in the menu, on a width constant of its own (84pt) so the
+  transpose selector and transport-row sizing are untouched; Root-only cards are
+  captioned "Previous Root" and "Current Root", the narrow previous card scaling
+  its caption rather than wrapping.
+
+Build passed on the iPhone 17 simulator, with install and relaunch after each step.
+Rules 10, 16 and 18 of the card contract below, F035/F046/F047 in the parity
+inventory, and the F036/F041/F046/F047 rows plus H02/H17 in the testing prompts are
+updated to match; the divergences from Android are recorded as deliberate. The UI
+tests asserting the renamed selector strings and the single-note melody geometry
+moved with the behavior, but were not run - no full suite, screenshots,
+physical-device checks or TestFlight upload. `android-app-analysis.md` and the
+dated autonomous test report are deliberately untouched.
+
 ### Roboto melody intervals, empty rest slots, and row captions — 2026-09-05
 
 Implemented by the current agent (runtime model identity unavailable), without

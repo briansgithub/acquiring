@@ -1308,10 +1308,10 @@ struct QuizView: View {
                         },
                         selectedID: mode.rawValue,
                         caption: nil,
-                        selectedDisplayTitle: mode == .full ? "Full" : "Roots",
+                        selectedDisplayTitle: mode == .full ? "Full" : "Root",
                         selectedAccessibilityValue: mode.title,
                         usesSubheadline: false,
-                        width: QuizTransportLayout.selectorWidth,
+                        width: QuizTransportLayout.modeSelectorWidth,
                         expandsToAvailableWidth: false,
                         accessibilityIdentifier: "quiz.mode",
                         accessibilityLabel: "Quiz mode",
@@ -2295,6 +2295,9 @@ private enum QuizSectionLoadStatus: Equatable {
 private enum QuizTransportLayout {
     static let controlSize: CGFloat = 44
     static let selectorWidth: CGFloat = 72
+    /// The mode selector alone, because "Root" sets wider than the transpose readout the
+    /// shared width was sized for and would otherwise crowd its chevron.
+    static let modeSelectorWidth: CGFloat = 84
     static let spacing: CGFloat = 8
     /// Play is the row's primary action, so it reads at double an icon button.
     /// The row has no slack, so the bar's own width absorbs the difference.
@@ -2733,7 +2736,12 @@ private struct QuizHeader: View {
         return Button {
             vocalPractice?.togglePersistent(monitoringSelection)
         } label: {
-            Image(systemName: isMonitoring ? "mic.fill" : "mic")
+            // The handheld stage mic rather than the condenser `mic`, to read like the
+            // microphone emoji. It is a solid glyph with no outline counterpart, so on/off
+            // is carried entirely by the prominent fill rather than by the glyph's weight.
+            // `music.mic` deliberately over its 2024 rename `music.microphone`: the old name
+            // still resolves and this app deploys back to iOS 17.
+            Image(systemName: "music.mic")
         }
         .buttonStyle(QuizIconButtonStyle(isProminent: isMonitoring))
         .accessibilityLabel("Pitch monitoring")
@@ -3638,11 +3646,15 @@ private struct MelodyLiveMarkerOverlay: View {
     private static let readoutHalfHeight: CGFloat = 9
 
     var body: some View {
-        if let cents = vocalPractice?.liveCentsError,
-           let steps = vocalPractice?.liveMarkerStaffSteps,
-           steps.isFinite {
-            let colour = Color.pitchFeedback(centsError: cents)
-            let centreY = markerCentreY(staffSteps: steps)
+        if vocalPractice?.persistentPhase == .listening {
+            // The dot stands for monitoring being on, not for a pitch having been heard, so it
+            // is drawn whether or not anything is arriving. With no voiced frame it parks on
+            // the target line in neutral white: a pitch colour there would claim an accuracy
+            // nothing measured.
+            let cents = vocalPractice?.liveCentsError
+            let steps = vocalPractice?.liveMarkerStaffSteps
+            let colour = cents.map { Color.pitchFeedback(centsError: $0) } ?? .white
+            let centreY = markerCentreY(staffSteps: steps.map { $0.isFinite ? $0 : 0 } ?? 0)
 
             ZStack {
                 Circle()

@@ -103,10 +103,9 @@ struct QuizCardsView: View {
         RelativeIonianContext.key(for: section.key(at: PlaybackTiming.firstBeat))
     }
 
-    /// Mirrors Android: the gauge rides the card whose pitch is actually being measured. The
-    /// paired 44pt melody cards and both root/melody interval partners never wear it, so the
-    /// singer's feedback stays in one place on screen as the melody moves in and out of
-    /// having a predecessor.
+    /// Root-only is the one interface that still wears the on-card gauge, because it has no
+    /// melody timeline to carry the reading. In Full the marker on the timeline is the whole
+    /// of the feedback, so no melody, interval or chord-tone card draws a gauge.
     private func showsPitchGauge(_ position: PersistentPitchCardPosition) -> Bool {
         vocalPractice?.gaugePosition == position
     }
@@ -134,7 +133,7 @@ struct QuizCardsView: View {
                 let featuredWidth = (availableWidth - previousWidth) / 2
                 HStack(alignment: .bottom, spacing: RootCardLayout.columnGap) {
                     rootOnlyRootCard(
-                        title: "Previous",
+                        title: "Previous Root",
                         accessibilityTitle: "Previous root",
                         pitch: previous,
                         degree: previousLabel,
@@ -143,7 +142,7 @@ struct QuizCardsView: View {
                     )
                     .frame(width: previousWidth)
                     rootOnlyRootCard(
-                        title: "Current root",
+                        title: "Current Root",
                         accessibilityTitle: "Current root",
                         pitch: current,
                         degree: currentLabel,
@@ -203,6 +202,8 @@ struct QuizCardsView: View {
                     Text(title)
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.white.opacity(0.78))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
                     FittedScaleDegree(
                         degree,
                         maximumFontSize: maximumDegreeFontSize,
@@ -219,96 +220,125 @@ struct QuizCardsView: View {
         }
     }
 
-    @ViewBuilder
+    /// The melody row is always the same two columns: the note pair on the left, the melody
+    /// interval on the right. Both columns are fixtures - present through rests, unisons and
+    /// first notes alike - so the row never reflows and the eye always finds the interval in
+    /// one place. Only the strings inside the cards come and go.
     private func melodyCards(active: MelodyNote?, state: MelodyIntervalState?) -> some View {
         QuizCardSection("Melody", compact: compact) {
-            if let active,
-               !active.isRest,
-               active.duration > 0,
-               let current = melodyPitch(for: active) {
-
-                let currentLabel = degreeLabel(
-                    for: current,
-                    sourceKey: section.key(at: PlaybackTiming.normalize(beat: active.beat))
-                )
-            switch QuizIntervals.melodyPitchCardDisplayMode(currentPitch: current, intervalState: state) {
-            case .hidden:
-                QuizEmptyCardSlot(
-                    fixedHeight: MelodyCardLayout.singleOrIntervalHeight
-                )
-            case .single:
-                GeometryReader { row in
-                    let halfWidth = max(0, (row.size.width - 8) / 2)
-                    pitchCard(
-                        title: "Current melody note",
-                        pitch: current,
-                        degree: currentLabel,
-                        identifier: "quiz.melody.current",
-                        fixedHeight: MelodyCardLayout.singleOrIntervalHeight,
-                        showsPitchGauge: showsPitchGauge(.melodyCurrent)
-                    )
-                    .frame(width: halfWidth)
-                    .offset(x: halfWidth + 8)
+            GeometryReader { row in
+                let halfWidth = max(0, (row.size.width - 8) / 2)
+                HStack(alignment: .center, spacing: 8) {
+                    melodyPairColumn(active: active, state: state)
+                        .frame(width: halfWidth)
+                    melodyIntervalColumn(active: active, state: state)
+                        .frame(width: halfWidth)
                 }
-                .frame(height: MelodyCardLayout.singleOrIntervalHeight)
-            case .interval:
+            }
+            .frame(height: MelodyCardLayout.singleOrIntervalHeight)
+        }
+    }
+
+    /// The sounding melody note and its degree label, or nil through rests and gaps. Resolved
+    /// in one place so the pair and the interval card can never disagree about what is playing.
+    private func soundingMelody(_ active: MelodyNote?) -> (pitch: SpelledPitch, label: String)? {
+        guard let active, !active.isRest, active.duration > 0, let pitch = melodyPitch(for: active) else {
+            return nil
+        }
+        return (
+            pitch,
+            degreeLabel(for: pitch, sourceKey: section.key(at: PlaybackTiming.normalize(beat: active.beat)))
+        )
+    }
+
+    private func melodyIntervalLabels(_ state: MelodyIntervalState, currentLabel: String) -> [String] {
+        [
+            usesRelativeIonianContext
+                ? RelativeIonianContext.degreeLabel(for: state.previous, contextKey: ionianContextKey)
+                : state.previousDegreeLabel,
+            currentLabel
+        ]
+    }
+
+    /// Previous note on the left, current note on the right, each 44pt inside the 88pt row.
+    /// With an interval the two sit high and low to draw its direction; without one - a
+    /// repeated note, or a first note with no predecessor - the current note stays in its own
+    /// column and centres between those two positions, so gaining a predecessor slides the
+    /// card rather than throwing it across the row.
+    @ViewBuilder
+    private func melodyPairColumn(active: MelodyNote?, state: MelodyIntervalState?) -> some View {
+        HStack(spacing: 8) {
+            if let sounding = soundingMelody(active) {
                 let cards = state.map {
                     QuizIntervals.melodyPitchCards(
                         for: $0,
                         previousLabel: usesRelativeIonianContext
                             ? RelativeIonianContext.degreeLabel(for: $0.previous, contextKey: ionianContextKey)
                             : $0.previousDegreeLabel,
-                        currentLabel: currentLabel
+                        currentLabel: sounding.label
                     )
                 } ?? []
-                GeometryReader { row in
-                    let halfWidth = max(0, (row.size.width - 8) / 2)
-                    HStack(alignment: .center, spacing: 8) {
-                        HStack(spacing: 8) {
-                            if let previous = cards.first(where: { $0.role == .previous }) {
-                                positionedPitchCard(previous, title: "Previous melody note", identifier: "quiz.melody.previous")
-                            } else {
-                                QuizEmptyCardSlot(
-                                    fixedHeight: MelodyCardLayout.pairHeight
-                                )
-                                .frame(height: MelodyCardLayout.singleOrIntervalHeight, alignment: .bottom)
-                            }
-                            if let currentCard = cards.first(where: { $0.role == .current }) {
-                                positionedPitchCard(currentCard, title: "Current melody note", identifier: "quiz.melody.current")
-                            } else {
-                                QuizEmptyCardSlot(
-                                    fixedHeight: MelodyCardLayout.pairHeight
-                                )
-                                .frame(height: MelodyCardLayout.singleOrIntervalHeight, alignment: .top)
-                            }
-                        }
-                        .frame(width: halfWidth)
-                        intervalCard(
-                            title: "Melody interval",
-                            previous: state?.previous,
-                            current: state?.current,
-                            interval: state?.interval,
-                            identifier: "quiz.melody.interval",
-                            labels: [
-                                state.map {
-                                    usesRelativeIonianContext
-                                        ? RelativeIonianContext.degreeLabel(for: $0.previous, contextKey: ionianContextKey)
-                                        : $0.previousDegreeLabel
-                                } ?? "",
-                                currentLabel
-                            ],
-                            fixedHeight: MelodyCardLayout.singleOrIntervalHeight,
-                            showsPitchGauge: showsPitchGauge(.melodyCurrent)
-                        )
-                        .frame(width: halfWidth)
-                    }
+                if QuizIntervals.melodyPitchCardDisplayMode(
+                    currentPitch: sounding.pitch,
+                    intervalState: state
+                ) == .interval, let previous = cards.first(where: { $0.role == .previous }),
+                   let currentCard = cards.first(where: { $0.role == .current }) {
+                    positionedPitchCard(previous, title: "Previous melody note", identifier: "quiz.melody.previous")
+                    positionedPitchCard(currentCard, title: "Current melody note", identifier: "quiz.melody.current")
+                } else {
+                    melodyPairPlaceholder
+                    pitchCard(
+                        title: "Current melody note",
+                        pitch: sounding.pitch,
+                        degree: sounding.label,
+                        identifier: "quiz.melody.current",
+                        fixedHeight: MelodyCardLayout.pairHeight
+                    )
+                    .frame(height: MelodyCardLayout.singleOrIntervalHeight, alignment: .center)
                 }
-                .frame(height: MelodyCardLayout.singleOrIntervalHeight)
-            }
             } else {
-                QuizEmptyCardSlot(
-                    fixedHeight: MelodyCardLayout.singleOrIntervalHeight
-                )
+                melodyPairPlaceholder
+                melodyPairPlaceholder
+            }
+        }
+    }
+
+    private var melodyPairPlaceholder: some View {
+        QuizEmptyCardSlot(fixedHeight: MelodyCardLayout.pairHeight)
+            .frame(height: MelodyCardLayout.singleOrIntervalHeight)
+    }
+
+    /// The interval card. Always drawn, and always the same card: identical tint, size and
+    /// opacity whether a note, a rest or nothing at all is playing. The only thing that comes
+    /// and goes is the interval string, so the card reads as the one place an interval lives
+    /// rather than as something appearing and disappearing. It never wears the pitch gauge -
+    /// that rides the current note's own card, which is the pitch being measured.
+    @ViewBuilder
+    private func melodyIntervalColumn(active: MelodyNote?, state: MelodyIntervalState?) -> some View {
+        if let sounding = soundingMelody(active),
+           let state,
+           QuizIntervals.melodyPitchCardDisplayMode(
+               currentPitch: sounding.pitch,
+               intervalState: state
+           ) == .interval {
+            intervalCard(
+                title: "Melody interval",
+                previous: state.previous,
+                current: state.current,
+                interval: state.interval,
+                identifier: "quiz.melody.interval",
+                labels: melodyIntervalLabels(state, currentLabel: sounding.label),
+                fixedHeight: MelodyCardLayout.singleOrIntervalHeight
+            )
+        } else {
+            // Deliberately the picture-only card rather than a disabled `QuizCardButton`:
+            // disabling dims to 45%, which would make the card change shade as the melody
+            // moves in and out of having an interval.
+            QuizExampleCard(
+                fixedHeight: MelodyCardLayout.singleOrIntervalHeight,
+                showsPitchHint: false
+            ) {
+                Color.clear
             }
         }
     }
@@ -393,7 +423,6 @@ struct QuizCardsView: View {
             doubleTapAction: singBackAction([preview], labels: [label]),
             doubleTapActionName: "Sing Back",
             isTessituraEnabled: isTessituraEnabled,
-            showsPitchGauge: showsPitchGauge(.chordTone(displayedIndex: index)),
             fixedHeight: compact ? 44 : nil
         ) {
             FittedScaleDegree(label, maximumFontSize: 28, minimumFontSize: 11, color: .white)
@@ -408,8 +437,7 @@ struct QuizCardsView: View {
         pitch: SpelledPitch,
         degree: String,
         identifier: String,
-        fixedHeight: CGFloat? = nil,
-        showsPitchGauge: Bool = false
+        fixedHeight: CGFloat? = nil
     ) -> some View {
         QuizCardButton(
             title: "Play \(title) \(pitch.displayName), scale degree \(degree)",
@@ -419,7 +447,6 @@ struct QuizCardsView: View {
             doubleTapAction: singBackAction([previewMIDI(for: pitch)], labels: [degree]),
             doubleTapActionName: "Sing Back",
             isTessituraEnabled: isTessituraEnabled,
-            showsPitchGauge: showsPitchGauge,
             fixedHeight: fixedHeight
         ) {
             FittedScaleDegree(degree, maximumFontSize: 32, minimumFontSize: 11, color: .white)
@@ -455,8 +482,7 @@ struct QuizCardsView: View {
         interval: NamedInterval?,
         identifier: String,
         labels: [String],
-        fixedHeight: CGFloat? = nil,
-        showsPitchGauge: Bool = false
+        fixedHeight: CGFloat? = nil
     ) -> some View {
         if let previous, let current, let interval {
             QuizCardButton(
@@ -468,7 +494,6 @@ struct QuizCardsView: View {
                 previewActionName: "Preview sequence and together",
                 doubleTapActionName: "Sing Back Interval",
                 isTessituraEnabled: isTessituraEnabled,
-                showsPitchGauge: showsPitchGauge,
                 fixedHeight: fixedHeight
             ) {
                 // The shorthand already carries the direction arrow; the note letters
