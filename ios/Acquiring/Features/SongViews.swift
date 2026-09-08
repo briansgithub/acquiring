@@ -1172,6 +1172,7 @@ struct QuizView: View {
                     onDragEnd: endTimelineDrag,
                     onDragCancel: cancelTimelineDrag
                     )
+                    .environment(\.quizLaneTint, laneTint(in: section, at: beat))
                 }
                 quizCards(section: section, sectionID: sectionID, beat: beat)
                 // Root-only puts its scrub bar under the cards, where the full-mode
@@ -1183,6 +1184,13 @@ struct QuizView: View {
                 Spacer(minLength: 0)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+    }
+
+    /// The lanes are a lighter wash of whatever color the key readout above them is
+    /// wearing. Locking in major retunes the readout's own reference key, so the
+    /// lanes follow major rather than the source mode they were written in.
+    private func laneTint(in section: ExtractedSection, at beat: Double) -> Color {
+        QuizModeColor.lane(for: usesRelativeIonianContext ? "major" : section.key(at: beat).scale)
     }
 
     private func quizCards(
@@ -2614,13 +2622,14 @@ private struct QuizHeader: View {
 
     var body: some View {
         ZStack {
-            // The lock reads as a prefix on the key, so the pair centers as one unit;
-            // reserve the trailing help button's width on both sides to keep it centered.
+            // The lock hangs off the key as a prefix, but the key alone owns the
+            // screen's center line: the pair's own center sits half a lock's width
+            // to the left of the key's, so shift it back by exactly that much.
             HStack(spacing: 0) {
                 majorToggle
                 keyLabel
             }
-            .padding(.horizontal, 44)
+            .offset(x: -QuizTransportLayout.controlSize / 2)
             HStack(spacing: 8) {
                 Spacer(minLength: 0)
                 helpButton
@@ -2681,22 +2690,55 @@ private struct QuizHeader: View {
     // Android's key readout keeps the current source mode's color even when the
     // label is locked to the initial relative major; the red border marks locking.
     private var modeColor: Color {
-        let rgb: UInt32
-        switch currentKey.scale {
-        case "major", "ionian": rgb = 0xFF0000
-        case "dorian": rgb = 0xFFB014
-        case "phrygian", "phrygianDominant": rgb = 0xEFE600
-        case "lydian": rgb = 0x00D300
-        case "mixolydian": rgb = 0x4800FF
-        case "minor", "aeolian", "harmonicMinor": rgb = 0xB800E5
-        case "locrian": rgb = 0xFF00CB
-        default: rgb = 0xE6E1E5
+        QuizModeColor.readout(for: currentKey.scale)
+    }
+}
+
+/// The mode colors the quiz key readout is drawn in, and the lighter wash the
+/// timeline lanes take from it so the two read as one thing.
+enum QuizModeColor {
+    static func readout(for scale: String) -> Color {
+        color(rgb(for: scale))
+    }
+
+    /// The same hue as the readout, mixed toward white. The lanes sit under the
+    /// readout and behind white note text, so they lift rather than re-saturate.
+    static func lane(for scale: String) -> Color {
+        color(rgb(for: scale), mixedTowardWhite: 0.3)
+    }
+
+    private static func rgb(for scale: String) -> UInt32 {
+        switch scale {
+        case "major", "ionian": 0xFF0000
+        case "dorian": 0xFFB014
+        case "phrygian", "phrygianDominant": 0xEFE600
+        case "lydian": 0x00D300
+        case "mixolydian": 0x4800FF
+        case "minor", "aeolian", "harmonicMinor": 0xB800E5
+        case "locrian": 0xFF00CB
+        default: 0xE6E1E5
         }
-        return Color(
-            red: Double((rgb >> 16) & 0xFF) / 255,
-            green: Double((rgb >> 8) & 0xFF) / 255,
-            blue: Double(rgb & 0xFF) / 255
-        )
+    }
+
+    private static func color(_ rgb: UInt32, mixedTowardWhite mix: Double = 0) -> Color {
+        func channel(_ shift: UInt32) -> Double {
+            let value = Double((rgb >> shift) & 0xFF) / 255
+            return value + (1 - value) * mix
+        }
+        return Color(red: channel(16), green: channel(8), blue: channel(0))
+    }
+}
+
+private struct QuizLaneTintKey: EnvironmentKey {
+    // The preview fixtures are in major, so the unset value is major's own lane.
+    static let defaultValue = QuizModeColor.lane(for: "major")
+}
+
+extension EnvironmentValues {
+    /// The color the melody and chord lanes draw their events in.
+    var quizLaneTint: Color {
+        get { self[QuizLaneTintKey.self] }
+        set { self[QuizLaneTintKey.self] = newValue }
     }
 }
 
@@ -3281,6 +3323,7 @@ private struct MelodyTimelineView: View {
     let onDragEnd: () -> Void
     let onDragCancel: () -> Void
     @Environment(VocalPracticeModel.self) private var vocalPractice: VocalPracticeModel?
+    @Environment(\.quizLaneTint) private var laneTint
     @State private var dragIsActive = false
     @GestureState private var dragGestureIsRecognized = false
 
@@ -3321,8 +3364,8 @@ private struct MelodyTimelineView: View {
                             Rectangle()
                                 .fill(
                                     visual.isActive(at: visualBeat)
-                                        ? Color.indigo
-                                        : Color.indigo.opacity(0.6)
+                                        ? laneTint
+                                        : laneTint.opacity(0.6)
                                 )
                                 .frame(
                                     width: presentation.width(for: visual),
@@ -3706,6 +3749,7 @@ private struct ChordTimelineView: View {
     let onDragChange: (CGFloat, Date) -> Void
     let onDragEnd: () -> Void
     let onDragCancel: () -> Void
+    @Environment(\.quizLaneTint) private var laneTint
     @State private var dragIsActive = false
     @GestureState private var dragGestureIsRecognized = false
 
@@ -3746,7 +3790,7 @@ private struct ChordTimelineView: View {
                         if presentation.width(for: visual) > 0 {
                             let isActive = active?.id == visual.id
                             RoundedRectangle(cornerRadius: 5)
-                                .fill(isActive ? Color.indigo.opacity(0.82) : Color.white.opacity(0.16))
+                                .fill(isActive ? laneTint.opacity(0.82) : Color.white.opacity(0.16))
                                 .overlay {
                                     RoundedRectangle(cornerRadius: 5)
                                         .stroke(
