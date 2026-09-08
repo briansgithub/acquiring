@@ -1914,6 +1914,18 @@ check first/subsequent root cards, hats, labels, and centered interval; in both 
 check the below-knob controls fit and that scrubbing, chord stepping, and play/pause
 work. Human visual review remains pending.
 
+Follow-up on 2026-09-08 superseded the shared transport portion above. Full mode
+again uses only its timeline scrub gestures, while Root-only retains its original
+unlabeled seek slider above the knobs. Play/pause returned to the bottom transport;
+the visible beat counter and chord-step buttons were removed. Root-only now presents
+three equal 128pt cards in `Previous` / abbreviated interval / `Current root` order.
+The root cards still show hatted scale degrees without note-letter captions. The
+bottom transport is leading-aligned so its star and information controls anchor the
+left edge of their respective rows. The focused UI test was restored to the prior
+transport expectations. Implementation: GPT-5. No Swift build, simulator launch,
+or UI-test execution was available on this Windows host; `git diff --check` and
+source inspection are the local checks.
+
 ### Song and artist display names — 2026-09-08, review pending
 
 Runtime model: unknown. Implemented on `codex/ios-song-display-names` in a separate
