@@ -4,12 +4,16 @@ import UIKit
 
 struct FavoriteSongButton: View {
     let songID: String
+    /// Opens the confirmation below the star and anchored to its trailing edge,
+    /// for a toolbar star with the navigation bar above it and the screen edge
+    /// to its right.
     var confirmationBelow = false
     @Environment(UserLibraryViewModel.self) private var userContent: UserLibraryViewModel?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @State private var showsConfirmation = false
     @State private var presentationRevision = 0
+    @State private var confirmationHeight: CGFloat = 0
 
     var body: some View {
         if let userContent {
@@ -36,13 +40,28 @@ struct FavoriteSongButton: View {
             .accessibilityValue(isFavorite ? "Favorite" : "Not favorite")
             .accessibilityHint(userContent.favoriteError ?? "Saves this song in Favorites")
             .accessibilityIdentifier("song.favorite")
-            .overlay(alignment: confirmationBelow ? .bottomTrailing : .topLeading) {
+            // An always-present hidden copy measures the bubble, so the first
+            // confirmation is offset correctly instead of flashing over the star.
+            .background(alignment: confirmationAlignment) {
+                confirmationBubble
+                    .hidden()
+                    .background(
+                        GeometryReader { proxy in
+                            Color.clear
+                                .onAppear { confirmationHeight = proxy.size.height }
+                                .onChange(of: proxy.size.height) { _, height in
+                                    confirmationHeight = height
+                                }
+                        }
+                    )
+                    .accessibilityHidden(true)
+            }
+            .overlay(alignment: confirmationAlignment) {
                 if showsConfirmation {
                     confirmationBubble
-                        .alignmentGuide(confirmationBelow ? .bottom : .top) { dimensions in
-                            confirmationBelow ? dimensions[.top] - 8 : dimensions[.bottom] + 8
-                        }
+                        .offset(y: confirmationOffset)
                         .transition(.opacity)
+                        .zIndex(1)
                 }
             }
             .animation(reduceMotion ? nil : .easeOut(duration: 0.18), value: showsConfirmation)
@@ -68,6 +87,17 @@ struct FavoriteSongButton: View {
                 Text(userContent.favoriteError ?? "Unable to update Favorites.")
             }
         }
+    }
+
+    private var confirmationAlignment: Alignment {
+        confirmationBelow ? .bottomTrailing : .topLeading
+    }
+
+    /// Clears the button entirely: the bubble hangs off the aligned edge, so it
+    /// has to travel its own height plus the gap to sit fully above or below.
+    private var confirmationOffset: CGFloat {
+        let distance = confirmationHeight + 8
+        return confirmationBelow ? distance : -distance
     }
 
     private var confirmationBubble: some View {
@@ -115,7 +145,7 @@ private struct FavoriteConfirmationPointer: Shape {
 /// Shared visual treatment for the primary Library disclosure controls.
 struct LibrarySectionHeading: View {
     let title: String
-    let subtitle: String
+    var subtitle: String?
     let systemImage: String
 
     var body: some View {
@@ -130,9 +160,11 @@ struct LibrarySectionHeading: View {
                 Text(title)
                     .font(.headline)
                     .foregroundStyle(.primary)
-                Text(subtitle)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                if let subtitle {
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
         }
     }

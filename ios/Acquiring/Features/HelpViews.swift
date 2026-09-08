@@ -7,6 +7,11 @@ struct HelpView: View {
         List {
             Section {
                 HelpTopicLink(
+                    id: "help.topic.instructions",
+                    title: "Instructions",
+                    detail: "How to use quiz cards and singing practice"
+                ) { IntroductionView() }
+                HelpTopicLink(
                     id: "help.topic.scaleDegrees",
                     title: "Scale degrees",
                     detail: "Numbers, accidentals, and chord-tone reference"
@@ -14,18 +19,13 @@ struct HelpView: View {
                 HelpTopicLink(
                     id: "help.topic.intervals",
                     title: "Intervals",
-                    detail: "Quality, number, direction, and compound intervals"
+                    detail: "Abbreviations, names, and semitone distances"
                 ) { IntervalsHelpView() }
                 HelpTopicLink(
                     id: "help.topic.romanNumerals",
                     title: "Roman numerals",
                     detail: "Chord quality, figures, alterations, and applied chords"
                 ) { RomanNumeralsHelpView() }
-                HelpTopicLink(
-                    id: "help.topic.modes",
-                    title: "Modes, borrowing & major lock",
-                    detail: "Parallel and relative contexts in a song"
-                ) { ModesHelpView() }
                 HelpTopicLink(
                     id: "help.topic.tessitura",
                     title: "Tessitura",
@@ -163,114 +163,43 @@ private struct ScaleDegreesHelpView: View {
     }
 }
 
-private struct IntervalReference: Identifiable {
-    let number: Int
-    let name: String
-    let qualities: String
-    let family: String
-    var id: Int { number }
-}
-
 private struct IntervalsHelpView: View {
-    private let reference = [
-        IntervalReference(number: 1, name: "unison", qualities: "d1  P1  A1", family: "perfect family"),
-        IntervalReference(number: 2, name: "second", qualities: "d2  m2  M2  A2", family: "major/minor family"),
-        IntervalReference(number: 3, name: "third", qualities: "d3  m3  M3  A3", family: "major/minor family"),
-        IntervalReference(number: 4, name: "fourth", qualities: "d4  P4  A4", family: "perfect family"),
-        IntervalReference(number: 5, name: "fifth", qualities: "d5  P5  A5", family: "perfect family"),
-        IntervalReference(number: 6, name: "sixth", qualities: "d6  m6  M6  A6", family: "major/minor family"),
-        IntervalReference(number: 7, name: "seventh", qualities: "d7  m7  M7  A7", family: "major/minor family"),
-        IntervalReference(number: 8, name: "octave", qualities: "d8  P8  A8", family: "perfect family"),
-        IntervalReference(number: 9, name: "ninth", qualities: "d9  m9  M9  A9", family: "major/minor family"),
-        IntervalReference(number: 10, name: "tenth", qualities: "d10  m10  M10  A10", family: "major/minor family"),
-        IntervalReference(number: 11, name: "eleventh", qualities: "d11  P11  A11", family: "perfect family"),
-        IntervalReference(number: 12, name: "twelfth", qualities: "d12  P12  A12", family: "perfect family"),
-        IntervalReference(number: 13, name: "thirteenth", qualities: "d13  m13  M13  A13", family: "major/minor family"),
-        IntervalReference(number: 14, name: "fourteenth", qualities: "d14  m14  M14  A14", family: "major/minor family"),
-        IntervalReference(number: 15, name: "fifteenth (double octave)", qualities: "d15  P15  A15", family: "perfect family")
+    private let shorthand = [
+        ("P1", "Perfect unison", 0), ("m2", "Minor second", 1),
+        ("M2", "Major second", 2), ("m3", "Minor third", 3),
+        ("M3", "Major third", 4), ("P4", "Perfect fourth", 5),
+        ("A4", "Augmented fourth", 6), ("d5", "Diminished fifth", 6),
+        ("P5", "Perfect fifth", 7), ("m6", "Minor sixth", 8),
+        ("M6", "Major sixth", 9), ("m7", "Minor seventh", 10),
+        ("M7", "Major seventh", 11), ("P8", "Perfect octave", 12)
     ]
 
     var body: some View {
         HelpArticle(title: "Intervals", id: "help.topic.intervals") {
-            HelpSection(title: "Quality + number + direction") {
-                Text("An interval names the distance between two notes. Its number counts note letters, including both ends: C–D–E spans a third. Its quality describes the size more precisely: P is perfect, M major, m minor, A augmented, and d diminished.")
-                Text("For unisons, fourths, fifths, and octaves, augmented is one semitone wider than perfect; diminished is one narrower. For seconds, thirds, sixths, and sevenths, minor is one semitone narrower than major; augmented is one wider than major, and diminished one narrower than minor. AA and dd mean doubly augmented and doubly diminished: one further semitone of change.")
-                intervalExamples
-                Text("↑ is ascending, ↓ is descending, and · is a unison. Numbers can continue beyond 15; each added octave adds 7 to the number and 12 semitones.")
-            }
-            HelpSection(title: "Reference") {
-                Text("The quality family depends on the number. Here is the reference through 15.")
-                VStack(spacing: 6) {
-                    ForEach(reference) { item in
-                        HStack(alignment: .firstTextBaseline, spacing: 10) {
-                            Text("\(item.number)").font(.headline.monospacedDigit()).frame(width: 24, alignment: .trailing)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(item.name.capitalized).font(.subheadline.weight(.semibold))
-                                Text(item.qualities).font(.caption.monospaced()).foregroundStyle(.secondary)
-                            }
-                            Spacer(minLength: 4)
-                            Text(item.family).font(.caption2).foregroundStyle(.secondary).multilineTextAlignment(.trailing)
-                        }
-                        .padding(.vertical, 7).padding(.horizontal, 9)
-                        .background(.quaternary, in: RoundedRectangle(cornerRadius: 9))
-                        .accessibilityLabel("\(item.number), \(item.name): \(item.family); \(expandedQualities(item.qualities))")
+            Text("P = perfect, M = major, m = minor, A = augmented, and d = diminished.")
+                .foregroundStyle(.secondary)
+            Grid(alignment: .leading, horizontalSpacing: 14, verticalSpacing: 8) {
+                GridRow {
+                    Text("Abbrev.").font(.subheadline.weight(.bold))
+                    Text("Meaning").font(.subheadline.weight(.bold))
+                    Text("Semitones").font(.subheadline.weight(.bold))
+                }
+                Divider().gridCellColumns(3)
+                ForEach(shorthand, id: \.0) { interval in
+                    GridRow {
+                        Text(interval.0).font(.body.monospaced().weight(.semibold))
+                        Text(interval.1)
+                        Text("\(interval.2)").monospacedDigit()
                     }
+                    .accessibilityLabel("\(interval.0), \(interval.1), \(interval.2) semitones")
                 }
             }
-            HelpSection(title: "Spelling matters") {
-                Text("A4 and d5 can span the same number of semitones, but they are named differently because their letters differ. Interval names describe both letter distance and chromatic distance.")
-                VStack(spacing: 10) {
-                    intervalNotePair(from: "C4", to: "F♯4", interval: named("C", 0, 4, "F", 1, 4))
-                    intervalNotePair(from: "C4", to: "G♭4", interval: named("C", 0, 4, "G", -1, 4))
-                }
-                .accessibilityElement(children: .ignore)
-                .accessibilityLabel("C4 to F sharp 4 is augmented fourth ascending; C4 to G flat 4 is diminished fifth ascending")
-            }
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(.quaternary, in: RoundedRectangle(cornerRadius: 12))
         }
     }
 
-    private var intervalExamples: some View {
-        VStack(spacing: 8) {
-            intervalNotePair(from: "C4", to: "E4", interval: named("C", 0, 4, "E", 0, 4))
-            intervalNotePair(from: "E4", to: "C4", interval: named("E", 0, 4, "C", 0, 4))
-            intervalNotePair(from: "C4", to: "E♭4", interval: named("C", 0, 4, "E", -1, 4))
-            intervalNotePair(from: "C4", to: "G4", interval: named("C", 0, 4, "G", 0, 4))
-        }
-    }
-
-    private func intervalNotePair(from: String, to: String, interval: NamedInterval) -> some View {
-        HStack(spacing: 10) {
-            Text(from).font(.headline.monospaced())
-            Image(systemName: "arrow.right").foregroundStyle(.secondary).accessibilityHidden(true)
-            Text(to).font(.headline.monospaced())
-            Spacer(minLength: 6)
-            Text(interval.shorthand).font(.headline.monospaced()).foregroundStyle(.tint)
-        }
-        .padding(.vertical, 8).padding(.horizontal, 10)
-        .background(Color.accentColor.opacity(0.10), in: RoundedRectangle(cornerRadius: 10))
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(from) to \(to), \(interval.spokenName)")
-    }
-
-    private func named(_ fromLetter: Character, _ fromAccidental: Int, _ fromOctave: Int, _ toLetter: Character, _ toAccidental: Int, _ toOctave: Int) -> NamedInterval {
-        IntervalAnalysis.named(
-            from: SpelledPitch(letter: DiatonicLetter(character: fromLetter)!, accidental: fromAccidental, octave: fromOctave),
-            to: SpelledPitch(letter: DiatonicLetter(character: toLetter)!, accidental: toAccidental, octave: toOctave)
-        )
-    }
-
-    private func expandedQualities(_ qualities: String) -> String {
-        qualities.split(separator: " ").map { short in
-            let value = String(short)
-            let quality: String
-            if value.hasPrefix("P") { quality = "perfect" }
-            else if value.hasPrefix("M") { quality = "major" }
-            else if value.hasPrefix("m") { quality = "minor" }
-            else if value.hasPrefix("A") { quality = "augmented" }
-            else { quality = "diminished" }
-            return "\(quality) \(value.drop(while: { $0.isLetter }))"
-        }.joined(separator: ", ")
-    }
 }
 
 private struct RomanExample: Identifiable {
@@ -362,81 +291,6 @@ private struct RomanNumeralsHelpView: View {
                 .accessibilityLabel("\(example.symbol): \(example.meaning)")
             }
         }
-    }
-}
-
-private struct ModePattern: Identifiable {
-    let name: String
-    let tag: String
-    let degrees: [String]
-    var id: String { tag }
-}
-
-private struct ModesHelpView: View {
-    private let patterns = [
-        ModePattern(name: "Ionian (major)", tag: "maj", degrees: ["1", "2", "3", "4", "5", "6", "7"]),
-        ModePattern(name: "Dorian", tag: "dor", degrees: ["1", "2", "♭3", "4", "5", "6", "♭7"]),
-        ModePattern(name: "Phrygian", tag: "phr", degrees: ["1", "♭2", "♭3", "4", "5", "♭6", "♭7"]),
-        ModePattern(name: "Lydian", tag: "lyd", degrees: ["1", "2", "3", "♯4", "5", "6", "7"]),
-        ModePattern(name: "Mixolydian", tag: "mix", degrees: ["1", "2", "3", "4", "5", "6", "♭7"]),
-        ModePattern(name: "Aeolian (minor)", tag: "min", degrees: ["1", "2", "♭3", "4", "5", "♭6", "♭7"]),
-        ModePattern(name: "Locrian", tag: "loc", degrees: ["1", "♭2", "♭3", "4", "♭5", "♭6", "♭7"]),
-        ModePattern(name: "Harmonic minor", tag: "hmin", degrees: ["1", "2", "♭3", "4", "5", "♭6", "7"]),
-        ModePattern(name: "Phrygian dominant", tag: "phdm", degrees: ["1", "♭2", "3", "4", "5", "♭6", "♭7"])
-    ]
-
-    var body: some View {
-        HelpArticle(title: "Modes, borrowing & major lock", id: "help.topic.modes") {
-            HelpSection(title: "Modal contexts") {
-                Text("A mode is a scale pattern with its own home note and arrangement of steps. These patterns compare each mode with major on the same tonic. The tag is the abbreviation shown below a borrowed Roman numeral.")
-                VStack(spacing: 8) {
-                    ForEach(patterns) { pattern in modeRow(pattern) }
-                }
-                Text("The flats and sharps above describe differences from major. Within the chosen mode itself, its seven notes are still numbered 1 through 7.")
-                Text("Parallel modes share a tonic: C major and C minor both have C as home. Relative modes share notes but have different home notes: C major and A natural minor. A borrowed chord uses notes from a parallel mode; for example, minor iv in C major borrows F–A♭–C from C minor.")
-            }
-            HelpSection(title: "Major lock") {
-                Text("The lock keeps the section’s initial relative major as the reference, even if the music later changes key. The note and chord labels change to that reference; a minor chord remains minor.")
-                VStack(alignment: .leading, spacing: 8) {
-                    notationComparison(left: "A–C–E in A minor", right: "1–3–5")
-                    notationComparison(left: "A–C–E in locked C major", right: "6–1–3")
-                    notationComparison(left: "i in A minor", right: "vi in C major")
-                }
-                Text("Individual previews can move by an octave to stay playable, so a lock does not promise every register remains unchanged.")
-                    .font(.subheadline).foregroundStyle(.secondary)
-            }
-        }
-    }
-
-    private func notationComparison(left: String, right: String) -> some View {
-        HStack(alignment: .firstTextBaseline) {
-            Text(left).font(.subheadline)
-            Spacer(minLength: 8)
-            Text(right).font(.headline.monospaced()).foregroundStyle(.tint)
-        }
-        .padding(.vertical, 8).padding(.horizontal, 10)
-        .background(.quaternary, in: RoundedRectangle(cornerRadius: 10))
-    }
-
-    private func modeRow(_ pattern: ModePattern) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack {
-                Text(pattern.name).font(.subheadline.weight(.semibold))
-                Spacer()
-                Text("(\(pattern.tag))").font(.caption.monospaced()).foregroundStyle(.secondary)
-            }
-            HStack(spacing: 3) {
-                ForEach(pattern.degrees, id: \.self) { degree in
-                    FittedScaleDegree(degree, maximumFontSize: 20, minimumFontSize: 9)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 28)
-                }
-            }
-        }
-        .padding(.vertical, 7).padding(.horizontal, 9)
-        .background(.quaternary, in: RoundedRectangle(cornerRadius: 9))
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(pattern.name), tag \(pattern.tag): \(pattern.degrees.joined(separator: ", "))")
     }
 }
 
