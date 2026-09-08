@@ -494,8 +494,7 @@ private struct SearchCatalogView: View {
         VStack(alignment: .leading, spacing: 0) {
             if !isDatabaseSearchFocused {
                 LibrarySectionHeading(
-                    title: "Search Database:",
-                    subtitle: "Songs and artists in your library",
+                    title: "Search Library",
                     systemImage: "magnifyingglass"
                 )
                 .padding(.bottom, 12)
