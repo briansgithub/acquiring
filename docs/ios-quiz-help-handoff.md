@@ -22,9 +22,10 @@ test suite, or screenshots are authorized. Preserve pending reviews elsewhere.
   Root-only omits the large chord hint. No dial or timeline hints.
 - Singing hints: tessitura, both pitch cards as one group, and interval card.
   Copy follows Flip-Flop, capture/listening, and presence of two captured notes.
-- Scene-wide overlay supports anchored bubbles and a scrollable fallback with
-  numbered markers. It requests focus back to `?` on dismissal; native VoiceOver isolation/focus
-  remains deferred after the Mac checks below. It closes on route/app inactivity.
+- Scene-wide overlay uses compact translucent bubbles with a thin leader to every
+  individual card sharing a description. It requests focus back to `?` on dismissal;
+  native VoiceOver isolation/focus remains deferred after the Mac checks below.
+  It closes on route/app inactivity.
 - The dock's persistent-detail preference is restored after help closes.
   `expandForHelp()` cancels delayed collapse cleanup without clearing targets.
 - Settings now opens Help, containing only scale degrees/hats, interval notation,
@@ -90,7 +91,7 @@ of the same failure and report before expanding the investigation.
    Check that playback continues and opening help alone requests no microphone.
    Add/remove a favorite in Quiz and Song Detail: check the brief confirmation,
    its placement, and that playback and other controls remain usable.
-2. Check the scrollable fallback, numbered markers, safe-area placement, and
+2. Check compact bubble placement, leaders to every applicable card, safe areas, and
    VoiceOver dismissal/focus. Use larger text and light/dark appearances on the
    same simulator. Confirm the original three equal-width singing cards remain.
    Preference propagation across NavigationStack and tap interception over native
@@ -218,3 +219,26 @@ The clean task worktree and local branch were removed after verifying merge
 reachability. The primary checkout is now the continuation location; retain this
 handoff and the deferred review items above. The remote task branch is removed
 only after successfully pushing `main`.
+
+## September 8: compact tooltip revision
+
+User requested concise text, separate chat-style bubbles, and one shared description
+with lines to every relevant card. The large fallback panel and numbered badges are
+removed. Placement scores nearby whitespace to minimize card coverage and prevents
+bubble overlap. On constrained layouts, individual bubbles can scroll; VoiceOver
+reads the complete hint. A small accessible close button replaces the visible
+dismissal sentence. Any tap still dismisses without performing the underlying action.
+The interval hint now reads "Calculated interval" in both recording states.
+
+Windows validation: `check_sources.py` (in the temporary acquiring-quiz-help-checks
+directory) passed syntax parsing for QuizHelpOverlay.swift and QuizCards.swift and
+Xcode project registration checks; `git diff --check` passed. No Swift type-check,
+simulator run, or screenshots were performed. Runtime model: unknown.
+On Mac, run `bash ios/scripts/run-sim.sh`, then review 500 Miles in both modes at
+normal and larger text sizes. Check that each note/chord-tone/interval card and both
+singing pitch cards have a leader, bubbles minimize label coverage, the concise
+text is readable, and dismissal still preserves playback/practice state.
+
+Merge continuation: integrated the compact tooltip revision into current main, retaining
+the Mac accessibility container and all prior Mac validation/deferred-review notes.
+The revised layout still requires Mac build and visual review.
