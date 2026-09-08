@@ -1,0 +1,21 @@
+{
+  "comment": "Ratchet for cross-platform chord parity. Each number is the MAXIMUM number of fixture cases allowed to diverge from the web reference on that channel. Tests fail when a number is exceeded (a regression) and tell you to lower it when the actual count drops (progress). Generated expectations come from web via `npm run parity:export`; hooktheory_parity.json additionally carries Hooktheory's own scraped ground truth. Lower these, never raise them without a written reason.",
+  "corpus_parity": {
+    "note": "Synthetic sweep of the chord-object space. Divergences here are shared by iOS and Android and are dominated by chord shapes Hooktheory never emits; see hooktheory_parity for the numbers that describe real songs.",
+    "roman": 1,
+    "letter": 445,
+    "pcs": 1125,
+    "midi": 1978,
+    "rootMidi": 347,
+    "toneLabels": 1516
+  },
+  "hooktheory_parity": {
+    "note": "Chord shapes that actually occur across 197 scraped Hooktheory songs. This is the number that matters. Remaining divergences need web's chordPolicy.js / borrowedVoicingRules.js policy layer ported to both mobile clients.",
+    "roman": 10,
+    "letter": 7,
+    "pcs": 20,
+    "midi": 67,
+    "rootMidi": 4,
+    "toneLabels": 57
+  }
+}

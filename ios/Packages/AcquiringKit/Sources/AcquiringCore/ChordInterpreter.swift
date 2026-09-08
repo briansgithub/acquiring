@@ -49,6 +49,30 @@ public struct ResolvedChordRoot: Equatable, Sendable {
     }
 }
 
+/// The chord's tones as an insertion-ordered stack of (scale degree -> semitone
+/// offset from the root). Order matters: an inverted chord rotates this stack as
+/// built, and web appends later additions rather than sorting them into degree
+/// order, so `add4` stacks *after* the fifth. Mirrors the LinkedHashMap the
+/// Android port relies on for the same reason.
+private struct DegreeStack {
+    private var order: [Int] = []
+    private var offsets: [Int: Int] = [:]
+
+    subscript(degree: Int) -> Int? {
+        get { offsets[degree] }
+        set {
+            guard let newValue else {
+                if offsets.removeValue(forKey: degree) != nil { order.removeAll { $0 == degree } }
+                return
+            }
+            if offsets.updateValue(newValue, forKey: degree) == nil { order.append(degree) }
+        }
+    }
+
+    /// Semitone offsets in build order.
+    var pitchOffsets: [Int] { order.compactMap { offsets[$0] } }
+}
+
 public enum ChordInterpreter {
     private static let romanMap = [1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI", 7: "VII"]
     private static let pitchClassNames = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"]
@@ -85,6 +109,25 @@ public enum ChordInterpreter {
             return "\(numerator)/\(denominator)\(denominatorTag)\(tritoneSubstitution ? "(∆-sub)" : "")"
         }
 
+        // A custom borrowed scale arrives as an array of absolute semitone offsets.
+        // Its quality and accidental come from the array itself, never from the
+        // song key's scale (web/lib/jsonToSymbol.js, the Array.isArray branch).
+        if let raw = rawCustomBorrowedIntervals(chord["borrowed"]) {
+            let type = integer(chord, "type", default: 5)
+            let quality = adjustedQuality(customArrayTriadQuality(raw, degree: root), chord: chord)
+            let hasAdds = !integers(chord, "adds").isEmpty
+            let result = buildNumeral(
+                degree: root,
+                quality: quality,
+                chord: chord,
+                prefix: customArrayPrefix(raw, degree: root, key: key),
+                majorSeventh: type >= 7 && customArraySeventhMajor(raw, degree: root),
+                fullyDiminished: quality == "diminished" && type >= 7,
+                borrowedTag: hasAdds ? "(bor)" : ""
+            )
+            return result + (hasAdds ? "" : "(bor)")
+        }
+
         let borrowed = string(chord, "borrowed")
         let scale = borrowedTags[borrowed] == nil ? key.scale : borrowed
         let quality = adjustedQuality(qualities(for: scale)[root - 1], chord: chord)
@@ -99,7 +142,8 @@ public enum ChordInterpreter {
             majorSeventh: integer(chord, "type", default: 5) >= 7
                 && quality != "diminished"
                 && isMajorSeventh(degree: root, key: KeyInfo(tonic: key.tonic, scale: scale)),
-            borrowedTag: hasAdds ? tag : ""
+            borrowedTag: hasAdds ? tag : "",
+            symbolKey: KeyInfo(tonic: key.tonic, scale: scale)
         )
         return result + (hasAdds ? "" : tag)
     }
@@ -116,6 +160,10 @@ public enum ChordInterpreter {
         let omits = integers(chord, "omits")
         var effectiveKey = key
         var degree = root
+        // Set only for a custom borrowed scale, whose note spellings come from the
+        // array rather than from any named scale.
+        var customIntervals: [Int]?
+        var customQuality: String?
 
         if (1...7).contains(applied) {
             let target = MusicTheory.noteLabel(degree: root, tonic: key.tonic, scale: key.scale)
@@ -126,18 +174,34 @@ public enum ChordInterpreter {
                 effectiveKey = KeyInfo(tonic: target, scale: "major")
                 degree = applied
             }
+        } else if let raw = rawCustomBorrowedIntervals(chord["borrowed"]) {
+            customIntervals = customBorrowedIntervals(chord["borrowed"])
+            effectiveKey = KeyInfo(tonic: key.tonic, scale: "custom")
+            customQuality = adjustedQuality(customArrayTriadQuality(raw, degree: root), chord: chord)
         } else if borrowedTags[borrowed] != nil {
             effectiveKey = KeyInfo(tonic: key.tonic, scale: borrowed)
         }
 
-        let quality = adjustedQuality(qualities(for: effectiveKey.scale)[degree - 1], chord: chord)
-        let rootName = MusicTheory.noteLabel(degree: degree, tonic: effectiveKey.tonic, scale: effectiveKey.scale)
+        let quality = customQuality ?? adjustedQuality(qualities(for: effectiveKey.scale)[degree - 1], chord: chord)
+        let rootName = MusicTheory.noteLabel(
+            degree: degree,
+            tonic: effectiveKey.tonic,
+            scale: effectiveKey.scale,
+            customIntervals: customIntervals
+        )
         let augmented = quality == "augmented"
         let sharpFive = alterations.contains("#5")
+        // An applied chord's label ignores `borrowed` entirely, custom arrays
+        // included -- the same rule the Roman-numeral path follows.
+        let customSeventh = (1...7).contains(applied)
+            ? nil
+            : rawCustomBorrowedIntervals(chord["borrowed"]).map { customArraySeventhMajor($0, degree: degree) }
+        let diatonicMajorSeventh = customSeventh
+            ?? isMajorSeventh(degree: degree, key: effectiveKey, customIntervals: customIntervals)
         let majorSeventh = type >= 7 && quality != "diminished" && !augmented && suspensions.isEmpty
             && !isTritoneSubstitution(chord)
-            && isMajorSeventh(degree: degree, key: effectiveKey)
-        let augmentedMajorSeventh = augmented && type >= 7 && isMajorSeventh(degree: degree, key: effectiveKey)
+            && diatonicMajorSeventh
+        let augmentedMajorSeventh = augmented && type >= 7 && diatonicMajorSeventh
 
         var suffix = ""
         if omits.contains(3), !omits.contains(5), type < 7 { suffix = "5" }
@@ -155,7 +219,13 @@ public enum ChordInterpreter {
         else if inversion == 2 { bassOffset = 4 }
         else { bassOffset = 6 }
         let bassDegree = ((degree - 1 + bassOffset) % 7) + 1
-        return "\(rootName)\(suffix)/\(MusicTheory.noteLabel(degree: bassDegree, tonic: effectiveKey.tonic, scale: effectiveKey.scale))"
+        let bassName = MusicTheory.noteLabel(
+            degree: bassDegree,
+            tonic: effectiveKey.tonic,
+            scale: effectiveKey.scale,
+            customIntervals: customIntervals
+        )
+        return "\(rootName)\(suffix)/\(bassName)"
     }
 
     public static func chordNotes(for chord: [String: JSONValue], key: KeyInfo) -> [Int] {
@@ -257,7 +327,10 @@ public enum ChordInterpreter {
             qualityTable = qualities(for: scale)
         }
         let quality = forcedTriadQuality ?? qualityTable[rootIndex]
-        var degrees = [1: 0, 3: 4, 5: 7]
+        var degrees = DegreeStack()
+        degrees[1] = 0
+        degrees[3] = 4
+        degrees[5] = 7
         if quality == "minor" || quality == "diminished" { degrees[3] = 3 }
         if quality == "diminished" { degrees[5] = 6 }
         if quality == "augmented" { degrees[5] = 8 }
@@ -286,8 +359,13 @@ public enum ChordInterpreter {
             } else if isTritoneSubstitution(chord) {
                 degrees[7] = 10
             } else if isMajorSeventh(
+                // The seventh's quality comes from the scale actually in force -
+                // the borrowed mode, or the custom interval array - not from the
+                // song key. `effectiveKey` only tracks the applied-chord tonic, so
+                // reading its scale here would spell a borrowed i7 as a major
+                // seventh. Mirrors ChordInterpreter.kt's KeyInfo(effKey.tonic, scale).
                 degree: effectiveRoot,
-                key: effectiveKey,
+                key: KeyInfo(tonic: effectiveKey.tonic, scale: scale),
                 customIntervals: customIntervals
             ) && suspensions.isEmpty {
                 degrees[7] = 11
@@ -296,7 +374,10 @@ public enum ChordInterpreter {
             }
         }
         if type >= 9 { degrees[9] = 14 }
-        if type >= 11 { degrees[11] = degrees[11] ?? 17 }
+        // The chord's own eleventh sits a fourth above the root, not a compound
+        // fourth: web builds it as shiftNoteBySemitones(root, 5). An *added*
+        // eleventh (adds: [11], below) is the compound one at +17.
+        if type >= 11 { degrees[11] = degrees[11] ?? 5 }
         if type >= 13 { degrees[13] = 21 }
         if (effectiveKey.scale == "minor" || effectiveKey.scale == "harmonicMinor"), effectiveRoot == 5, type >= 13 {
             degrees[9] = 13
@@ -310,7 +391,9 @@ public enum ChordInterpreter {
             case "#5": degrees[5] = 8
             case "b9": degrees[9] = 13
             case "#9": degrees[9] = 15
-            case "#11": degrees[11] = 18
+            // Raise the chord's own eleventh where it exists; otherwise introduce
+            // a compound #4 (web: rule {src: 5, delta: 1} with addSd "#4").
+            case "#11": degrees[11] = degrees[11] == nil ? 18 : 6
             case "b13": degrees[13] = 20
             default: break
             }
@@ -321,10 +404,15 @@ public enum ChordInterpreter {
                 degrees[target] = [2: 2, 4: 5, 6: 9, 9: 14, 11: 17, 13: 21][target] ?? 0
             }
         }
+        // Hooktheory voices an added sixth on a triad without its fifth, unless a
+        // ninth is also added (web/lib/chordAdds.js). Only an unaltered perfect
+        // fifth is dropped.
+        if adds.contains(6), type < 7, !adds.contains(9), degrees[5] == 7 { degrees[5] = nil }
+
         let alteredFifth = alterations.contains { ["b5", "#5", "♭5", "♯5"].contains($0) }
         if type >= 9, !suspensions.isEmpty, !omits.contains(5), !alteredFifth, degrees[5] == 7 { degrees[5] = nil }
 
-        let rootPositionPitches = degrees.keys.sorted().compactMap { degrees[$0] }.map { 48 + rootPitchClass + $0 }
+        let rootPositionPitches = degrees.pitchOffsets.map { 48 + rootPitchClass + $0 }
         if usesAppliedVoicing {
             return voiceAppliedChord(
                 rootPositionPitches,
@@ -334,7 +422,11 @@ public enum ChordInterpreter {
             )
         }
 
-        var pitches = rootPositionPitches.sorted()
+        // Web sorts a voicing into pitch order only in root position; an inverted
+        // chord rotates the degree-order stack as built. The two agree for every
+        // chord whose offsets ascend, and differ exactly when an eleventh sits
+        // below the fifth.
+        var pitches = inversion > 0 ? rootPositionPitches : rootPositionPitches.sorted()
         if inversion > 0, inversion < pitches.count {
             for _ in 0..<inversion { pitches.append(pitches.removeFirst() + 12) }
         }
@@ -578,7 +670,8 @@ public enum ChordInterpreter {
             chord: chord,
             prefix: displayDegree.accidentalPrefix,
             majorSeventh: majorSeventh,
-            borrowedTag: hasAdds ? borrowedTag : ""
+            borrowedTag: hasAdds ? borrowedTag : "",
+            symbolKey: KeyInfo(tonic: sourceKey.tonic, scale: sourceScale)
         )
         return result + (hasAdds ? "" : borrowedTag)
     }
@@ -590,7 +683,8 @@ public enum ChordInterpreter {
         prefix: String,
         majorSeventh: Bool,
         fullyDiminished: Bool = false,
-        borrowedTag: String = ""
+        borrowedTag: String = "",
+        symbolKey: KeyInfo? = nil
     ) -> String {
         var numeral = romanMap[degree] ?? ""
         if quality == "minor" || quality == "diminished" { numeral = numeral.lowercased() }
@@ -599,17 +693,25 @@ public enum ChordInterpreter {
             quality: quality,
             majorSeventh: majorSeventh,
             fullyDiminished: fullyDiminished,
-            borrowedTag: borrowedTag
+            borrowedTag: borrowedTag,
+            symbolKey: symbolKey
         )
     }
 
+    /// The figured-bass and quality suffix, ported from ChordInterpreter.kt's
+    /// buildSuffix. `symbolKey` carries the tonic and the *resolved* scale (the
+    /// borrowed mode where one applies) and is nil on the applied-numerator
+    /// path, mirroring the opts map Android does and does not supply there --
+    /// several of the Hooktheory spellings below key off exactly that absence.
     private static func suffix(
         chord: [String: JSONValue],
         quality: String,
         majorSeventh: Bool,
         fullyDiminished: Bool,
-        borrowedTag: String
+        borrowedTag: String,
+        symbolKey: KeyInfo?
     ) -> String {
+        let root = integer(chord, "root")
         let type = integer(chord, "type", default: 5)
         let inversion = integer(chord, "inversion")
         let suspensions = integers(chord, "suspensions")
@@ -622,50 +724,122 @@ public enum ChordInterpreter {
         let alterationBody = displayAlterations.joined()
         let alterationText = alterationBody.isEmpty ? "" : "(\(alterationBody))"
         let suspensionText = suspensions.map { "sus\($0)" }.joined()
+        let addBody = adds.map { "add\($0 <= 6 && type >= 7 ? $0 + 7 : $0)" }.joined()
+        let omit3Only = omits.contains(3) && !omits.contains(5)
+        let sharpFiveOnly = displayAlterations == ["#5"]
+        // Once a triad is inverted, Hooktheory writes the raised fifth into the
+        // figured bass instead of as a "+" on the numeral.
+        let suppressPlus = type < 7 && sharpFiveOnly && (inversion == 1 || inversion == 2)
+        let suppressDiminished = sharpFiveOnly && quality == "diminished" && inversion == 2 && type < 7
+        // Nil exactly where Android leaves "borrowed" out of its opts map.
+        let borrowedOpt = symbolKey == nil ? nil : string(chord, "borrowed")
+
         var result = ""
         var embeddedAlterations = false
         var placedSuspensions = false
+        var placedOmits = false
 
-        if quality == "augmented" || alterations.contains("#5") { result += "+" }
+        if quality == "augmented" || (alterations.contains("#5") && !suppressPlus) { result += "+" }
         if !suspended {
-            if quality == "diminished" {
+            if quality == "diminished", !suppressDiminished {
                 result += type >= 7 && !fullyDiminished ? "ø" : "°"
                 if majorSeventh && !(type >= 7 && !fullyDiminished) { result += "△" }
             } else if type >= 7 && majorSeventh {
                 result += "△"
             }
         }
+
         switch inversion {
         case 1:
             if suspended && type < 7 {
-                result += "6\(suspensionText)"
+                let sus4Only = suspensions.contains(4) && !suspensions.contains(2)
+                if sus4Only && (borrowedOpt == "lydian" || borrowedTag == "(lyd)") {
+                    result += "sus\(suspensions.map(String.init).joined())6"
+                } else {
+                    result += "6\(suspensionText)"
+                }
                 placedSuspensions = true
             } else if type >= 7 {
                 result += alterationText.isEmpty ? "65" : "6\(alterationText)5"
                 embeddedAlterations = !alterationText.isEmpty
-            } else { result += "6" }
+            } else if !alterationText.isEmpty {
+                result += "6\(alterationText)"
+                embeddedAlterations = true
+            } else {
+                result += "6"
+            }
         case 2:
             if type >= 7 {
                 result += alterationText.isEmpty ? "43" : "4\(alterationText)3"
                 embeddedAlterations = !alterationText.isEmpty
             } else if suspended {
-                result += "4\(suspensionText)6"
+                if !adds.isEmpty {
+                    result += suspensions.contains(4) && suspensions.contains(2)
+                        ? "4\(suspensionText)6(\(addBody))"
+                        : "6(\(addBody))4\(suspensionText)"
+                } else {
+                    result += "4\(suspensionText)6"
+                }
                 placedSuspensions = true
-            } else { result += "64" }
+            } else if sharpFiveOnly {
+                if quality == "minor", root == 1, borrowedOpt == nil {
+                    result += "46\(alterationText)"
+                } else {
+                    result += (quality == "minor" || quality == "diminished" ? "" : "+")
+                        + "6\(alterationText)4"
+                }
+                embeddedAlterations = true
+            } else if omit3Only {
+                let tonic = symbolKey?.tonic ?? ""
+                let use46 = (quality == "minor" && root == 4 && (tonic == "F" || tonic == "B"))
+                    || (quality == "minor" && root == 1 && tonic == "C")
+                    || (root == 7 && symbolKey?.scale == "phrygian")
+                result += use46 ? "46(no3)" : "6(no3)4"
+                placedOmits = true
+            } else if !alterationText.isEmpty {
+                result += "6\(alterationText)4"
+                embeddedAlterations = true
+            } else {
+                result += "64"
+            }
         case 3:
-            result += type >= 7 && implicitHalfDiminished && alterations.contains("b5") ? "4(b5)2" : "42"
-            embeddedAlterations = !alterationText.isEmpty
+            if type >= 7 {
+                result += implicitHalfDiminished && alterations.contains("b5") ? "4(b5)2" : "42"
+                embeddedAlterations = !alterationText.isEmpty
+            } else {
+                result += "42"
+            }
         default: break
         }
+
+        let hasFiguredBass = result.contains(where: \.isNumber)
         if suspended && !placedSuspensions {
-            result += type >= 7 && !result.contains(where: \.isNumber) ? "\(type)\(alterationText)\(suspensionText)" : suspensionText
-            embeddedAlterations = type >= 7 && !alterationText.isEmpty
-        } else if type >= 7 && !result.contains(where: \.isNumber) {
+            if type >= 7 && !hasFiguredBass {
+                if suspensions.count > 1 {
+                    if suspensions[0] < suspensions[1] {
+                        result += "\(suspensionText)\(type)"
+                    } else {
+                        result += "\(type)" + omits.map { "(no\($0))" }.joined() + suspensionText
+                        if !omits.isEmpty { placedOmits = true }
+                    }
+                } else {
+                    result += "\(type)\(alterationText)\(suspensionText)"
+                    embeddedAlterations = !alterationText.isEmpty
+                }
+            } else {
+                result += suspensionText
+            }
+        } else if type >= 7, !hasFiguredBass {
             result += "\(type)"
         }
+
         result += borrowedTag
-        if !adds.isEmpty { result += "(\(adds.map { "add\($0 <= 6 && type >= 7 ? $0 + 7 : $0)" }.joined()))" }
-        result += omits.map { "(no\($0))" }.joined()
+        if !adds.isEmpty { result += "(\(addBody))" }
+        if !omits.isEmpty, !placedOmits {
+            result += omits.contains(3) && omits.contains(5) && quality == "augmented"
+                ? "(no5no3)"
+                : omits.map { "(no\($0))" }.joined()
+        }
         if !displayAlterations.isEmpty && !embeddedAlterations { result += alterationText }
         return result
     }
@@ -683,6 +857,50 @@ public enum ChordInterpreter {
             intervals.append(floorMod(source.indices.contains(index) ? source[index].intValue ?? fallback : fallback, 12))
         }
         return intervals
+    }
+
+    /// The raw `borrowed` array as authored, before the 7-slot/mod-12 normalisation
+    /// `customBorrowedIntervals` applies. Hooktheory writes offsets like -1 for a
+    /// flattened tonic, and the accidental prefix below is a raw subtraction, so it
+    /// has to see the -1 rather than the 11 it normalises to.
+    private static func rawCustomBorrowedIntervals(_ value: JSONValue?) -> [Int]? {
+        guard case let .array(source) = value else { return nil }
+        let intervals = source.compactMap(\.intValue)
+        return intervals.count >= 7 ? intervals : nil
+    }
+
+    /// Triad quality read straight off a custom borrowed scale, ported from
+    /// jsonToSymbol.js's customArrayTriadQuality. Deliberately separate from
+    /// `customChordQualities`, which the note builder uses: web keeps the two
+    /// apart as well, and their fallbacks differ.
+    private static func customArrayTriadQuality(_ intervals: [Int], degree: Int) -> String {
+        func at(_ index: Int) -> Int { intervals[floorMod(index - 1, 7)] }
+        let root = at(degree)
+        let third = floorMod(at(degree + 2) - root, 12)
+        let fifth = floorMod(at(degree + 4) - root, 12)
+        switch (third, fifth) {
+        case (4, 7): return "major"
+        case (3, 7): return "minor"
+        case (3, 6): return "diminished"
+        case (4, 8): return "augmented"
+        default: return third <= 3 ? "minor" : "major"
+        }
+    }
+
+    private static func customArrayPrefix(_ intervals: [Int], degree: Int, key: KeyInfo) -> String {
+        let reference = MusicTheory.scaleIntervals[key.scale] ?? MusicTheory.scaleIntervals["major"]!
+        switch intervals[degree - 1] - reference[degree - 1] {
+        case -2: return "♭♭"
+        case -1: return "♭"
+        case 1: return "♯"
+        case 2: return "♯♯"
+        default: return ""
+        }
+    }
+
+    private static func customArraySeventhMajor(_ intervals: [Int], degree: Int) -> Bool {
+        func at(_ index: Int) -> Int { intervals[floorMod(index - 1, 7)] }
+        return floorMod(at(degree + 6) - at(degree), 12) == 11
     }
 
     private static func customChordQualities(_ intervals: [Int]) -> [String] {
