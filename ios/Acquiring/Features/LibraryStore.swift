@@ -251,7 +251,14 @@ final class LibraryStore {
         do {
             let slugs = await history.songSlugs()
             recentSongs = try await catalog.songs(ids: slugs)
-            recentArtists = await history.artists()
+            var resolvedArtists: [String] = []
+            for artist in await history.artists() {
+                let resolved = try await catalog.resolvedArtistName(artist) ?? artist
+                if !resolvedArtists.contains(where: { $0.caseInsensitiveCompare(resolved) == .orderedSame }) {
+                    resolvedArtists.append(resolved)
+                }
+            }
+            recentArtists = resolvedArtists
             userContentError = nil
         } catch {
             userContentError = error.localizedDescription
@@ -315,7 +322,7 @@ final class LibraryStore {
     }
 
     func openArtist(from song: CatalogSong) async {
-        let artist = Self.canonicalArtistName(song.artist)
+        let artist = song.artist?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         guard !artist.isEmpty else { return }
 
         await history.addArtist(artist)
@@ -330,8 +337,12 @@ final class LibraryStore {
         }
 
         if case let .artist(currentArtist)? = path.last,
-           Self.canonicalArtistName(currentArtist)
-               .caseInsensitiveCompare(artist) == .orderedSame {
+           let resolvedCurrentArtist = try? await catalog.resolvedArtistName(currentArtist),
+           resolvedCurrentArtist.caseInsensitiveCompare(artist) == .orderedSame {
+            return
+        }
+        if case let .artist(currentArtist)? = path.last,
+           currentArtist.caseInsensitiveCompare(artist) == .orderedSame {
             return
         }
         path.append(.artist(artist))
@@ -685,9 +696,4 @@ final class LibraryStore {
         return url
     }
 
-    private static func canonicalArtistName(_ artist: String?) -> String {
-        artist?
-            .replacingOccurrences(of: "-", with: " ")
-            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-    }
 }

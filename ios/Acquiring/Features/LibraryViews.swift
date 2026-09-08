@@ -598,7 +598,7 @@ private struct SearchCatalogView: View {
                 Section("Recent Artists") {
                     ForEach(store.recentArtists, id: \.self) { artist in
                         Button { store.path.append(.artist(artist)) } label: {
-                            Text(artist)
+                            Text(CatalogDisplayName.artist(artist))
                                 .font(.subheadline)
                                 .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
                                 .contentShape(Rectangle())
@@ -610,7 +610,7 @@ private struct SearchCatalogView: View {
         case .loading: ProgressView()
         case let .content(artists):
             ForEach(artists, id: \.self) { artist in
-                Button(artist) { store.path.append(.artist(artist)) }
+                Button(CatalogDisplayName.artist(artist)) { store.path.append(.artist(artist)) }
             }
             pagingErrorRow
             if store.hasMoreArtistSuggestions {
@@ -1172,7 +1172,7 @@ private struct ArtistSongsView: View {
             }
         }
         .listStyle(.plain)
-        .navigationTitle(artist)
+        .navigationTitle(artistDisplayName)
         .task {
             do {
                 let songs = try await environment.catalog.songs(artist: artist)
@@ -1182,6 +1182,13 @@ private struct ArtistSongsView: View {
                 state = .failure(error.localizedDescription)
             }
         }
+    }
+
+    private var artistDisplayName: String {
+        if case let .content(songs) = state, let song = songs.first {
+            return song.displayArtist
+        }
+        return CatalogDisplayName.artist(artist)
     }
 }
 

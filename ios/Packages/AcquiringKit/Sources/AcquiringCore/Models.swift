@@ -25,8 +25,8 @@ public struct CatalogSong: Identifiable, Codable, Equatable, Sendable {
         self.complexityRating = complexityRating
     }
 
-    public var displayTitle: String { title?.nilIfBlank ?? "Unknown Title" }
-    public var displayArtist: String { artist?.nilIfBlank ?? "Unknown Artist" }
+    public var displayTitle: String { CatalogDisplayName.title(title) }
+    public var displayArtist: String { CatalogDisplayName.artist(artist) }
 }
 
 public struct KeyInfo: Codable, Equatable, Sendable {

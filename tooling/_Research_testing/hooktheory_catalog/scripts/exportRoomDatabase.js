@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
 const Database = require('better-sqlite3');
+const { resolveDisplayNames } = require('../lib/catalogDisplayNames');
+const { catalogExportOptions, prepareCatalogOutput } = require('../lib/catalogExportOptions');
 const catalogContractDir = path.resolve(__dirname, '../../../../contracts/catalog');
 const catalogContract = JSON.parse(
     fs.readFileSync(path.join(catalogContractDir, 'contract.json'), 'utf8')
@@ -18,15 +20,16 @@ const {
 // run from a git worktree, which has no android/ and no populated data dir.
 const { getCatalogDir, getAndroidDir } = require('../../../lib/dataRoot');
 
-const sourceDbPath = path.join(getCatalogDir(), 'hooktheory_catalog.db');
-const outputDbPath = path.join(getAndroidDir(), catalogContract.databaseFilename);
-const outputGzPath = path.join(getAndroidDir(), catalogContract.archiveFilename);
-
-if (fs.existsSync(outputDbPath)) fs.unlinkSync(outputDbPath);
-if (fs.existsSync(outputGzPath)) fs.unlinkSync(outputGzPath);
+const exportOptions = catalogExportOptions(process.argv.slice(2), {
+    sourceDbPath: path.join(getCatalogDir(), 'hooktheory_catalog.db'),
+    outputDir: getAndroidDir(),
+    ...catalogContract,
+});
+const { sourceDbPath, outputDbPath, outputGzPath, namesBySlug } = exportOptions;
 
 console.log('Connecting to source catalog DB...');
-const srcDb = new Database(sourceDbPath);
+const srcDb = new Database(sourceDbPath, { readonly: true });
+prepareCatalogOutput(exportOptions);
 
 console.log('Creating Room-compatible SQLite DB at:', outputDbPath);
 const outDb = new Database(outputDbPath);
@@ -34,9 +37,11 @@ const outDb = new Database(outputDbPath);
 outDb.exec(catalogSchema);
 
 const rows = srcDb.prepare(`
-    SELECT s.slug, s.artist, s.title, s.url, s.status, m.complexity_rating
+    SELECT s.slug, s.artist, s.title, s.url, s.status, m.complexity_rating,
+           d.hooktheory_song_name AS source_title
     FROM songs s
     LEFT JOIN song_metrics m ON m.slug = s.slug
+    LEFT JOIN song_details d ON d.slug = s.slug
 `).all();
 
 const modesBySlug = new Map();
@@ -82,18 +87,21 @@ const insertModeStmt = outDb.prepare(`
 
 const insertMany = outDb.transaction((songs) => {
     for (const song of songs) {
+        const names = resolveDisplayNames(song, {
+            namesBySlug, fallback: { title: song.source_title },
+        });
         insertStmt.run(
             song.slug,
-            song.artist || null,
-            song.title || null,
+            names.artist || null,
+            names.title || null,
             song.url,
             song.status || 'pending'
         );
         insertBrowseStmt.run(
             song.slug,
-            song.artist || null,
-            song.title || null,
-            alphabeticalGroup(song.title),
+            names.artist || null,
+            names.title || null,
+            alphabeticalGroup(names.title),
             song.complexity_rating ?? null,
             complexityBucket(song.complexity_rating)
         );

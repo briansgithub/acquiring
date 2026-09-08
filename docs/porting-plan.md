@@ -1841,3 +1841,23 @@ claim is made that any test passes.
 Next: build and run `AudioDiagnosticsTests` plus both UI tests on the Mac, then
 reproduce on the phone — use the singing tool, stop it, press Play — and confirm
 sound with no alert. The build number is deliberately not bumped.
+
+### Song and artist display names — 2026-09-08, review pending
+
+Runtime model: unknown. Implemented on `codex/ios-song-display-names` in a separate
+worktree. Song/artist labels share display formatting; the compact Quiz heading
+opens a selectable full-text sheet. Harvesting and developer discovery preserve
+source names, and catalog queries retain legacy artist/slug compatibility.
+
+The staged catalog retains all 40,979 playable songs with unchanged IDs, URLs,
+musical data, ratings, and modes; 40,315 labels changed. The complete recovery
+assessed 42,196 source/export records, with 39,456 source-backed title/artist pairs
+and explicit unresolved/conflicting-name reports. Existing metadata was reused;
+the only online recovery was a cached, sequential 42-page name-only search pass.
+
+Focused Node enrichment/export/catalog checks and the staged schema contract
+passed. Swift/Xcode and simulator validation remain pending on a Mac. No release,
+publication, screenshot inspection, or full-app test sweep occurred. Earlier
+review statuses are retained. Commands, artifact locations, future scheduled
+update sequence, and the focused review script are in
+[catalog-display-names.md](catalog-display-names.md).

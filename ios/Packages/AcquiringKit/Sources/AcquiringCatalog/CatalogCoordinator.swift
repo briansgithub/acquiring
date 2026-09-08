@@ -146,11 +146,12 @@ public actor CatalogCoordinator: CatalogRepository {
             sql: """
                 SELECT slug, artist, title, url, status FROM songs
                 WHERE dataBlob IS NOT NULL
-                  AND REPLACE(title, '-', ' ') LIKE '%' || REPLACE(?, '-', ' ') || '%'
+                  AND (INSTR(catalog_search_key(title), catalog_search_key(?)) > 0
+                       OR INSTR(catalog_search_key(\(Self.titleIdentitySQL)), catalog_search_key(?)) > 0)
                 ORDER BY CASE WHEN title IS NULL OR TRIM(title) = '' THEN 1 ELSE 0 END,
                          title COLLATE NOCASE, artist COLLATE NOCASE, slug COLLATE NOCASE
                 """,
-            arguments: [query]
+            arguments: [query, query]
         )
     }
 
@@ -159,14 +160,15 @@ public actor CatalogCoordinator: CatalogRepository {
             sql: """
                 SELECT slug, artist, title, url, status FROM songs
                 WHERE dataBlob IS NOT NULL AND (
-                    REPLACE(title, '-', ' ') LIKE '%' || REPLACE(?, '-', ' ') || '%'
-                    OR REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(?, '-', ' ') || '%'
+                    INSTR(catalog_search_key(title), catalog_search_key(?)) > 0
+                    OR INSTR(catalog_search_key(artist), catalog_search_key(?)) > 0
+                    OR INSTR(catalog_search_key(slug), catalog_search_key(?)) > 0
                 )
                 ORDER BY CASE WHEN title IS NULL OR TRIM(title) = '' THEN 1 ELSE 0 END,
                          title COLLATE NOCASE, artist COLLATE NOCASE, slug COLLATE NOCASE
                 LIMIT ? OFFSET ?
                 """,
-            arguments: [query, query, limit, offset]
+            arguments: [query, query, query, limit, offset]
         )
     }
 
@@ -175,25 +177,50 @@ public actor CatalogCoordinator: CatalogRepository {
             try String.fetchAll(
                 db,
                 sql: """
-                    SELECT DISTINCT REPLACE(artist, '-', ' ') FROM songs
+                    SELECT DISTINCT artist FROM songs
                     WHERE dataBlob IS NOT NULL AND artist IS NOT NULL
-                      AND REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(?, '-', ' ') || '%'
+                      AND (INSTR(catalog_search_key(artist), catalog_search_key(?)) > 0
+                           OR INSTR(catalog_search_key(\(Self.artistIdentitySQL)), catalog_search_key(?)) > 0)
+                    ORDER BY artist COLLATE NOCASE
                     LIMIT ? OFFSET ?
                     """,
-                arguments: [query, limit, offset]
+                arguments: [query, query, limit, offset]
             )
         }
     }
 
+    public func resolvedArtistName(_ artist: String) throws -> String? {
+        // A readable source name is authoritative. Only use the legacy lookup
+        // when it does not match, so punctuation-distinct artists stay separate.
+        guard !Self.searchKey(artist).isEmpty else { return nil }
+        return try read { db in
+            let predicates = [
+                "artist = ? COLLATE NOCASE",
+                "catalog_search_key(\(Self.artistIdentitySQL)) = catalog_search_key(?)",
+                "catalog_search_key(artist) = catalog_search_key(?)"
+            ]
+            for predicate in predicates {
+                let matches = try String.fetchAll(
+                    db,
+                    sql: "SELECT DISTINCT artist FROM songs WHERE dataBlob IS NOT NULL AND artist IS NOT NULL AND \(predicate) LIMIT 2",
+                    arguments: [artist]
+                )
+                if !matches.isEmpty { return matches.count == 1 ? matches[0] : nil }
+            }
+            return nil
+        }
+    }
+
     public func songs(artist: String) throws -> [CatalogSong] {
-        try rows(
+        guard let resolvedArtist = try resolvedArtistName(artist) else { return [] }
+        return try rows(
             sql: """
                 SELECT slug, artist, title, url, status FROM songs
-                WHERE dataBlob IS NOT NULL AND REPLACE(artist, '-', ' ') = REPLACE(?, '-', ' ')
+                WHERE dataBlob IS NOT NULL AND artist = ? COLLATE NOCASE
                 ORDER BY CASE WHEN title IS NULL OR TRIM(title) = '' THEN 1 ELSE 0 END,
                          title COLLATE NOCASE, slug COLLATE NOCASE
                 """,
-            arguments: [artist]
+            arguments: [resolvedArtist]
         )
     }
 
@@ -238,7 +265,7 @@ public actor CatalogCoordinator: CatalogRepository {
             sql = "SELECT modes.mode AS groupKey, COUNT(*) AS songCount FROM song_browse_modes modes INNER JOIN song_browse_entries entries ON entries.slug = modes.slug WHERE \(filterSQL) GROUP BY modes.mode"
         }
         return try read { db in
-            try Row.fetchAll(db, sql: sql, arguments: [filter, filter, filter]).map {
+            try Row.fetchAll(db, sql: sql, arguments: [filter, filter, filter, filter]).map {
                 BrowseGroupCount(key: $0["groupKey"], count: $0["songCount"])
             }
         }
@@ -251,18 +278,18 @@ public actor CatalogCoordinator: CatalogRepository {
         switch group {
         case let .alphabetical(key):
             sql = "SELECT entries.slug, entries.artist, entries.title, songs.url, songs.status, entries.complexityRating FROM song_browse_entries entries JOIN songs ON songs.slug = entries.slug WHERE entries.alphaGroup = ? AND \(filterSQL) " + Self.browseOrderSQL
-            arguments = [key, filter, filter, filter]
+            arguments = [key, filter, filter, filter, filter]
         case let .complexity(bucket):
             if let bucket {
                 sql = "SELECT entries.slug, entries.artist, entries.title, songs.url, songs.status, entries.complexityRating FROM song_browse_entries entries JOIN songs ON songs.slug = entries.slug WHERE entries.complexityBucket = ? AND \(filterSQL) " + Self.browseOrderSQL
-                arguments = [bucket, filter, filter, filter]
+                arguments = [bucket, filter, filter, filter, filter]
             } else {
                 sql = "SELECT entries.slug, entries.artist, entries.title, songs.url, songs.status, entries.complexityRating FROM song_browse_entries entries JOIN songs ON songs.slug = entries.slug WHERE entries.complexityBucket IS NULL AND \(filterSQL) " + Self.browseOrderSQL
-                arguments = [filter, filter, filter]
+                arguments = [filter, filter, filter, filter]
             }
         case let .mode(mode):
             sql = "SELECT entries.slug, entries.artist, entries.title, songs.url, songs.status, entries.complexityRating FROM song_browse_entries entries JOIN song_browse_modes modes ON modes.slug = entries.slug JOIN songs ON songs.slug = entries.slug WHERE modes.mode = ? AND \(filterSQL) " + Self.browseOrderSQL
-            arguments = [mode, filter, filter, filter]
+            arguments = [mode, filter, filter, filter, filter]
         }
         return try rows(sql: sql, arguments: arguments)
     }
@@ -271,13 +298,21 @@ public actor CatalogCoordinator: CatalogRepository {
         song: CatalogSong,
         payload: Data,
         alphaGroup: String,
-        modes: Set<String>
+        modes: Set<String>,
+        preserveExistingTitle: Bool = false,
+        preserveExistingArtist: Bool = false
     ) throws {
         guard let pool = databasePool else { throw CatalogError.install("catalog is not prepared") }
         try pool.write { db in
+            let existing = try Row.fetchOne(db, sql: "SELECT title, artist FROM songs WHERE slug = ?", arguments: [song.id])
+            let existingTitle: String? = existing?["title"]
+            let existingArtist: String? = existing?["artist"]
+            let title = preserveExistingTitle ? (existingTitle ?? song.title) : song.title
+            let artist = preserveExistingArtist ? (existingArtist ?? song.artist) : song.artist
+            let resolvedAlphaGroup = title == song.title ? alphaGroup : BrowseGrouping.alphabeticalGroup(for: title)
             try db.execute(
                 sql: "INSERT OR REPLACE INTO songs (slug, artist, title, url, status, dataBlob) VALUES (?, ?, ?, ?, ?, ?)",
-                arguments: [song.id, song.artist, song.title, song.url?.absoluteString ?? "", song.status, payload]
+                arguments: [song.id, artist, title, song.url?.absoluteString ?? "", song.status, payload]
             )
             try db.execute(
                 sql: """
@@ -287,7 +322,7 @@ public actor CatalogCoordinator: CatalogRepository {
                         (SELECT complexityRating FROM song_browse_entries WHERE slug = ?),
                         (SELECT complexityBucket FROM song_browse_entries WHERE slug = ?))
                     """,
-                arguments: [song.id, song.artist, song.title, alphaGroup, song.id, song.id]
+                arguments: [song.id, artist, title, resolvedAlphaGroup, song.id, song.id]
             )
             try db.execute(sql: "DELETE FROM song_browse_modes WHERE slug = ?", arguments: [song.id])
             for mode in modes {
@@ -387,7 +422,12 @@ public actor CatalogCoordinator: CatalogRepository {
     static func openPool(at url: URL) throws -> DatabasePool {
         var configuration = Configuration()
         configuration.label = "AcquiringCatalog"
-        configuration.prepareDatabase { db in try db.execute(sql: "PRAGMA foreign_keys = ON") }
+        configuration.prepareDatabase { db in
+            try db.execute(sql: "PRAGMA foreign_keys = ON")
+            db.add(function: DatabaseFunction("catalog_search_key", argumentCount: 1, pure: true) { values in
+                Self.searchKey(String.fromDatabaseValue(values[0]) ?? "")
+            })
+        }
         return try DatabasePool(path: url.path, configuration: configuration)
     }
 
@@ -406,10 +446,21 @@ public actor CatalogCoordinator: CatalogRepository {
         )
     }
 
+    // This is a query key only: display strings and catalog identities retain
+    // their original punctuation, capitalization, and Unicode spelling.
+    private static func searchKey(_ value: String) -> String {
+        let folded = value.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: Locale(identifier: "en_US_POSIX"))
+        return String(folded.unicodeScalars.filter(CharacterSet.alphanumerics.contains))
+    }
+
+    private static let artistIdentitySQL = "CASE WHEN INSTR(slug, '__') > 0 THEN SUBSTR(slug, 1, INSTR(slug, '__') - 1) ELSE '' END"
+    private static let titleIdentitySQL = "CASE WHEN INSTR(slug, '__') > 0 THEN SUBSTR(slug, INSTR(slug, '__') + 2) ELSE slug END"
+
     private static let browseFilterSQL = """
-        (TRIM(?) = '' OR
-         INSTR(REPLACE(REPLACE(REPLACE(LOWER(COALESCE(entries.title, '')), ' ', ''), '-', ''), '_', ''), REPLACE(REPLACE(REPLACE(LOWER(TRIM(?)), ' ', ''), '-', ''), '_', '')) > 0 OR
-         INSTR(REPLACE(REPLACE(REPLACE(LOWER(COALESCE(entries.artist, '')), ' ', ''), '-', ''), '_', ''), REPLACE(REPLACE(REPLACE(LOWER(TRIM(?)), ' ', ''), '-', ''), '_', '')) > 0)
+        (catalog_search_key(?) = '' OR
+         INSTR(catalog_search_key(entries.title), catalog_search_key(?)) > 0 OR
+         INSTR(catalog_search_key(entries.artist), catalog_search_key(?)) > 0 OR
+         INSTR(catalog_search_key(entries.slug), catalog_search_key(?)) > 0)
         """
 
     private static let browseOrderSQL = """
