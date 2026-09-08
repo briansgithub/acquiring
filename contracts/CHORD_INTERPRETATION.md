@@ -79,3 +79,24 @@ The `Chord interpretation parity` GitHub workflow checks web, Android and the
 Swift package at the same revision and requires all three jobs to succeed.
 Source reports are uploaded even on failure. Swift uses macOS CI; it has not
 been validated locally on Windows.
+
+Validated commands (implementation checkpoint):
+
+- `npm run test:shared-parity`: 17,554 cases, all six channels exact.
+- `npm run test:chord-interpretation`: 22 role/display cases, 36 transposition/inversion cases and quiz pairing checks passed.
+- `npm run test:source-accuracy`: 5,471 captured-source assertions and two independent rule assertions passed; the historical capture and rule boundary above remain explicitly reported.
+- `npm run test:scale-degrees`: all 11 checks passed, including the negative regression detector.
+- `npm run test:roman-symbols`: all rendering checks passed, including 160 diminished/half-diminished samples and all shared cases.
+- `npm run test:pronunciation`: unit fixtures and 5,707 corpus readings passed.
+- `node tooling/scripts/chordLetterFormatTest.mjs` and `node tooling/_Debug_testing/policyRegression.mjs`: passed.
+- `./android/gradlew -p android testDebugUnitTest --tests '*CorpusParityTest' --tests '*HooktheoryRealParityTest' --tests '*ChordRoleContractTest' --tests '*RelativeIonianContextTest' --tests '*ChordInterpreterTest' --tests '*AppliedBorrowedChordTest' --tests '*InversionChordPlaybackTest' --tests '*RomanNumeralTokenizerTest' --tests '*RomanNumeralPainterTest' --tests '*ScaleDegreeRendererTest'`: passed in CI.
+- `swift test --package-path ios/Packages/AcquiringKit`: 217 tests passed on macOS, including both shared corpora and the role contract.
+
+The initial combined validation is recorded in [the successful same-revision CI run](https://github.com/briansgithub/acquiring/actions/runs/34195412283).
+The old `parity_baseline.json` remains historical data; no active check reads its discrepancy allowances.
+
+For a manual spot check, compare a borrowed applied chord across platforms,
+then a suspended or eleventh chord, and finally an inverted chord. Confirm the
+Roman and letter displays agree, the note cards retain suspension/extension
+roles, and the root target stays the harmonic root as the bass changes. This
+check does not require a release or changes to the catalog.
