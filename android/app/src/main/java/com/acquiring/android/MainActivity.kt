@@ -2386,11 +2386,11 @@ fun QuizTab(
             (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true
         if (isRest) return@remember emptyList()
 
-        val notes = ChordInterpreter.getChordNotes(chord, activeKey)
-        val rootMidi = ChordInterpreter.getRootPositionChordNotes(chord, activeKey).firstOrNull()
-            ?: return@remember emptyList()
+        val interpretation = ChordInterpreter.interpret(chord, activeKey)
+        val notes = interpretation.midi
+        if (interpretation.rootMidi == null) return@remember emptyList()
         val spelledRoot = ChordInterpreter.resolveChordRoot(chord, activeKey)?.pitch
-        notes.map { note ->
+        notes.mapIndexed { index, note ->
             val previewNote = if (useRelativeIonianContext) {
                 (spelledRoot?.let { ionianContextPreviewAudioNote(note, it, ionianContextKey) }
                     ?: ionianContextPreviewAudioNote(note, ionianContextKey)) ?: note
@@ -2399,7 +2399,7 @@ fun QuizTab(
             }
             QuizPitchCardTarget(
                 sourceMidi = previewNote,
-                label = MusicTheory.getRelativeDegreeLabel(note, rootMidi)
+                label = interpretation.toneLabels[index]
             )
         }
     }
@@ -3599,8 +3599,9 @@ fun QuizTab(
                                     val symbol = if (useRelativeIonianContext) ChordInterpreter.getRelativeIonianRomanSymbol(chord, activeKey, ionianContextKey) else ChordInterpreter.getRomanSymbol(chord, activeKey)
                                     RomanNumeralDisplay.fromChord(symbol, chord["borrowed"])
                                 }
-                                val notes = soundingChord?.let { ChordInterpreter.getChordNotes(it, activeKey) } ?: emptyList()
-                                val rootMidi = soundingChord?.let { ChordInterpreter.getRootPositionChordNotes(it, activeKey).firstOrNull() } ?: 0
+                                val interpretation = soundingChord?.let { ChordInterpreter.interpret(it, activeKey) }
+                                val notes = interpretation?.midi.orEmpty()
+                                val rootMidi = interpretation?.rootMidi ?: 0
                                 val spelledRoot = soundingChord?.let { ChordInterpreter.resolveChordRoot(it, activeKey)?.pitch }
                                 // The card plays the chord as written, at the song's own
                                 // tempo. The tempo and arpeggio knobs steer the transport,
@@ -3638,7 +3639,7 @@ fun QuizTab(
                                                 // their degrees always stay relative to the effective chord root.
                                                 val cardTarget = currentChordToneTargets.getOrNull(index)
                                                 val internalLabel = cardTarget?.label
-                                                    ?: MusicTheory.getRelativeDegreeLabel(note, rootMidi)
+                                                    ?: interpretation?.toneLabels?.getOrNull(index).orEmpty()
                                                 val previewNote = cardTarget?.sourceMidi
                                                     ?: if (useRelativeIonianContext) (spelledRoot?.let { ionianContextPreviewAudioNote(note, it, ionianContextKey) } ?: ionianContextPreviewAudioNote(note, ionianContextKey)) ?: note else note
                                                 val activeChordToneIndex =

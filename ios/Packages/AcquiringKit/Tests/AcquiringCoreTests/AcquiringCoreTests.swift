@@ -113,7 +113,7 @@ final class AcquiringCoreTests: XCTestCase {
         XCTAssertEqual(ChordInterpreter.relativeIonianRomanSymbol(for: chord(3), key: key), "I")
         XCTAssertEqual(ChordInterpreter.relativeIonianRomanSymbol(for: chord(4), key: key), "ii")
         XCTAssertEqual(ChordInterpreter.relativeIonianRomanSymbol(for: chord(5), key: key), "iii")
-        XCTAssertEqual(ChordInterpreter.relativeIonianRomanSymbol(for: chord(5, applied: 5), key: key), "V/iii")
+        XCTAssertEqual(ChordInterpreter.relativeIonianRomanSymbol(for: chord(5, applied: 5), key: key), "V(maj)/iii")
     }
 
     func testAlteredModalQualitySurvivesRelativeIonianContextChange() {

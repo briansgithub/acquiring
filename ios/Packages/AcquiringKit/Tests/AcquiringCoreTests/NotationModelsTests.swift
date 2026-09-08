@@ -52,6 +52,16 @@ final class NotationModelsTests: XCTestCase {
         )
     }
 
+    func testBorrowedDisplayPreservesAppliedNumeratorModeMarkers() {
+        let minor = RomanNumeralDisplay(symbol: "V7(maj)/♭VI(min)", borrowed: .string("minor"))
+        XCTAssertEqual(minor.symbol, "V7(maj)/♭VI")
+        XCTAssertEqual(minor.borrowedLabel, "(min)")
+        let major = RomanNumeralDisplay(symbol: "V7(maj)/♯iii(maj)", borrowed: .string("major"))
+        XCTAssertEqual(major.symbol, "V7(maj)/♯iii")
+        XCTAssertEqual(major.borrowedLabel, "(maj)")
+        XCTAssertEqual(major.accessibilityLabel, "V7(maj)/♯iii (maj)")
+    }
+
     func testStackSpansKeepInversionsIndependentFromAppliedChords() {
         let parts = RomanNumeralTokenizer.tokenize("V43/ii")
         XCTAssertEqual(parts, [base("V"), superscript("4"), subscriptPart("3"), base("/"), base("ii")])

@@ -109,7 +109,7 @@ const BASELINE = {
   customHalfDim11: {
     chord: { root: 1, type: 11, borrowed: [1, 2, 4, 6, 7, 9, 11], halfDim: true },
     key: { tonic: "A", scale: "minor" },
-    pcs: [1, 4, 7, 10, 11],
+    pcs: [7, 10, 11],
   },
   iio65minor: {
     chord: { root: 2, type: 7, inversion: 1, halfDim: true },
@@ -134,7 +134,7 @@ const BASELINE = {
   customDim11bor: {
     chord: { root: 1, type: 11, borrowed: [0, 1, 3, 4, 6, 8, 9], dimTriad: true, alterations: ["b9", "b11"] },
     key: { tonic: "C", scale: "phrygianDominant" },
-    pcs: [0, 1, 3, 5, 6, 9],
+    pcs: [0, 1, 4, 9],
   },
   hmV13bor: {
     chord: { root: 5, type: 13, borrowed: "harmonicMinor", alterations: ["b9", "b13"] },
@@ -208,7 +208,7 @@ const BASELINE = {
   sus24Inv1: {
     chord: { root: 1, type: 5, inversion: 1, suspensions: [2, 4] },
     key: { tonic: "E", scale: "major" },
-    pcs: [4, 9, 11],
+    pcs: [4, 6, 9, 11],
     roman: "I6sus2sus4",
   },
   dimSharp5Inv2: {
@@ -226,7 +226,7 @@ const BASELINE = {
   sus24Add6Inv2: {
     chord: { root: 1, type: 5, inversion: 2, suspensions: [4, 2], adds: [6] },
     key: { tonic: "C", scale: "minor" },
-    pcs: [0, 5, 9],
+    pcs: [0, 2, 5, 9],
     roman: "i4sus4sus26(add6)",
   },
   lydianSus4Inv1: {
@@ -245,7 +245,7 @@ const BASELINE = {
     chord: { root: 3, type: 7, inversion: 3 },
     key: { tonic: "D", scale: "harmonicMinor" },
     pcs: [1, 4, 5, 9],
-    letter: "F++/E",
+    letter: "F+/E",
     roman: "III+△42",
   },
   appliedIIIM7: {
@@ -259,8 +259,9 @@ const BASELINE = {
     chord: { root: 2, type: 7, inversion: 3, applied: 5, substitutions: ["tri"] },
     key: { tonic: "E", scale: "minor" },
     pcs: [2, 5, 7, 11],
-    letter: "G7/F",
-    roman: "♭ii42/ii°(∆-sub)",
+    letter: "G/F",
+    // Positioned source captures omit implicit (maj) on tritone substitutions.
+    roman: "♭II42(∆-sub)/ii°",
   },
   customBorSharp5M7: {
     chord: { root: 7, type: 7, inversion: 1, alterations: ["#5"], borrowed: [1, 3, 5, 6, 8, 10, 12] },
@@ -279,21 +280,21 @@ const BASELINE = {
     chord: { root: 2, type: 7, inversion: 3 },
     key: { tonic: "D", scale: "harmonicMinor" },
     pcs: [1, 4, 7, 10],
-    letter: "E°7/D",
+    letter: "E°/D",
     roman: "iiø42",
   },
   majorViiHalfDimInv3: {
     chord: { root: 7, type: 7, inversion: 3 },
     key: { tonic: "C", scale: "major" },
     pcs: [2, 5, 8, 11],
-    letter: "B°7/A",
+    letter: "B°/A",
     roman: "viiø42",
   },
   phdmAugOmit35: {
     chord: { root: 6, type: 5, omits: [5, 3] },
     key: { tonic: "F", scale: "phrygianDominant" },
     pcs: [1, 9],
-    letter: "Db++(n°5n3)",
+    letter: "Db+(no5no3)",
     roman: "VI+(no5no3)",
   },
   appliedIV7sus2: {
@@ -306,7 +307,7 @@ const BASELINE = {
   appliedMaj11B13: {
     chord: { root: 5, type: 11, applied: 1, alterations: ["b13"] },
     key: { tonic: "C#", scale: "harmonicMinor" },
-    pcs: [0, 1, 3, 4, 7, 8, 10],
+    pcs: [1, 4, 7, 8, 10],
     letter: "G#maj11(b13)",
     roman: "I△11(b13)/V",
   },
@@ -329,7 +330,7 @@ const BASELINE = {
     chord: { root: 5, type: 7, applied: 7, suspensions: [2] },
     key: { tonic: "C", scale: "major" },
     pcs: [1, 4, 6, 8],
-    letter: "F#7sus2",
+    letter: "F#7susb2",
     roman: "vii7sus2/V",
   },
   vi7Sus4Sharp11: {
@@ -407,7 +408,7 @@ const BASELINE = {
   hmViiDim11: {
     chord: { root: 7, type: 11, borrowed: "harmonicMinor" },
     key: { tonic: "C", scale: "major" },
-    pcs: [0, 2, 4, 5, 8, 11],
+    pcs: [0, 4, 8, 11],
   },
   mixolydianIi13Sharp9: {
     chord: { root: 2, type: 13, borrowed: "mixolydian", alterations: ["#9"] },
@@ -427,7 +428,7 @@ const BASELINE = {
   phdmIiiDim11: {
     chord: { root: 3, type: 11, borrowed: "phrygianDominant" },
     key: { tonic: "G", scale: "major" },
-    pcs: [0, 2, 4, 5, 8, 11],
+    pcs: [0, 4, 8, 11],
   },
   appliedV7Sharp5Sharp9: {
     chord: { root: 6, type: 7, applied: 5, alterations: ["#5", "#9"] },

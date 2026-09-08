@@ -311,9 +311,9 @@ final class AcquiringTests: XCTestCase {
             XCTAssertEqual(ChordInterpreter.letterName(for: chord, key: fixture.key), fixture.expectedLetter, fixture.id)
             let notes = ChordInterpreter.chordNotes(for: chord, key: fixture.key)
             XCTAssertEqual(notes, fixture.expectedMidi, fixture.id)
-            let rootMIDI = try XCTUnwrap(ChordInterpreter.rootPositionChordNotes(for: chord, key: fixture.key).first, fixture.id)
+            _ = try XCTUnwrap(ChordInterpreter.resolvedRootMIDI(for: chord, key: fixture.key), fixture.id)
             XCTAssertEqual(
-                notes.map { MusicTheory.relativeMajorDegreeLabel(midi: $0, rootMIDI: rootMIDI) },
+                ChordInterpreter.chordToneLabels(for: chord, key: fixture.key),
                 fixture.expectedToneLabels,
                 fixture.id
             )

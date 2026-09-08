@@ -599,12 +599,12 @@ private struct SongChordsView: View {
     /// Tap previews one tone; sing-back and persistent practice stay quiz-only.
     @ViewBuilder
     private var chordTones: some View {
-        if let chord = selectedChord, !chord.notes.isEmpty, let rootMIDI = chord.rootPositionRootMIDI {
+        if let chord = selectedChord, !chord.notes.isEmpty {
             VStack(alignment: .leading, spacing: 6) {
                 Text("Chord tones · \(chord.letter.isEmpty ? chord.roman : chord.letter)")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
-                ChordToneCardLayout(tones: chord.notes, rootMIDI: rootMIDI) { index, tone, label in
+                ChordToneCardLayout(tones: chord.notes, labels: chord.toneLabels) { index, tone, label in
                     ChordTonePreviewCard(label: label, index: index) { onPreviewTone(tone) }
                 }
             }
@@ -693,6 +693,7 @@ struct SongDetailChord: Identifiable {
     let notes: [Int]
     /// Reference root for degree labels, so an inverted chord still labels from its root.
     let rootPositionRootMIDI: Int?
+    let toneLabels: [String]
 }
 
 enum SongDetailPresentation {
@@ -792,10 +793,12 @@ enum SongDetailPresentation {
                 roman: isRest ? "Rest" : "—",
                 letter: "",
                 notes: [],
-                rootPositionRootMIDI: nil
+                rootPositionRootMIDI: nil,
+                toneLabels: []
             )
         }
-        let roman = ChordInterpreter.romanSymbol(for: chord, key: key)
+        let interpreted = ChordInterpreter.interpret(chord, key: key)
+        let roman = interpreted.roman
         let displayRoman = roman.isEmpty || roman == "Rest" ? "—" : roman
         return SongDetailChord(
             id: id,
@@ -804,9 +807,10 @@ enum SongDetailPresentation {
             key: key,
             isRest: false,
             roman: displayRoman,
-            letter: ChordInterpreter.letterName(for: chord, key: key),
-            notes: ChordInterpreter.chordNotes(for: chord, key: key),
-            rootPositionRootMIDI: ChordInterpreter.rootPositionChordNotes(for: chord, key: key).first
+            letter: interpreted.letter,
+            notes: interpreted.midi,
+            rootPositionRootMIDI: interpreted.rootMidi,
+            toneLabels: interpreted.toneLabels
         )
     }
 

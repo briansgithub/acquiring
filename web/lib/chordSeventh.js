@@ -45,6 +45,10 @@ export function resolveSeventhDegree({
   if (policy.augMaj7StackVoicing) return "augMaj7Stack";
   if (policy.augMaj7Inv3Voicing) return "7";
   if (policy.halfDimInv1M6Stack) return "m6Stack";
+  // Native phrygian-dominant II42sus2 retains its major seventh on the
+  // source keyboard, alongside the scale's raised suspension.
+  if (policy.phdmIImaj7 && effModifierChord?.suspensions?.includes(2)
+      && !effModifierChord.suspensions.includes(4)) return "7";
   if (useSusFrame || (effModifierChord?.appliedContext?.appliedSD === 5) || (effModifierChord?.applied === 5 && !effModifierChord?.useMaj7)) return "b7";
   if (policy.hmBorrowedMinor7) return "b7";
   if (policy.customBorrowedHalfDim) {
@@ -53,8 +57,15 @@ export function resolveSeventhDegree({
   const hasSharp5 = effModifierChord?.alterations?.includes("#5");
   if ((policy.triadQuality === "diminished" && hasSharp5) || policy.sharp5Minor) return "b7";
   if (effModifierChord?.dimTriad) return "bb7";
-  if (policy.customDimMaj7) return "7";
+  if (policy.customDimMaj7) return diatonicSeventhDegreeStr(chordRootSD, modifiedKey, customScaleIntervals, getNoteLabel);
   if (policy.phdmIImaj7) return "7";
+  // Raw no5 preserves the scale seventh (Dvorak iiø42(no5): C#–D#–F#).
+  // Explicit symbol frames and applied leading tones have separate policies.
+  if (effModifierChord?.omits?.includes(5) && !effModifierChord?.halfDim
+      && !effModifierChord?.dimTriad && !effModifierChord?.appliedContext
+      && effModifierChord?.applied !== 7) {
+    return diatonicSeventhDegreeStr(chordRootSD, modifiedKey, customScaleIntervals, getNoteLabel);
+  }
   return borrowedModeDimSeventhDegree(
     chordRootSD, modifiedKey.scale, chordQuality, 7,
     { halfDim: effModifierChord?.halfDim },
@@ -69,6 +80,10 @@ export function resolveOmitTriad35Seventh({
 }) {
   if (effModifierChord?.halfDim) return "bb7";
   if (useSusFrame) return "b7";
+  if (effModifierChord?.omits?.includes(5) && !effModifierChord?.dimTriad
+      && !effModifierChord?.appliedContext && effModifierChord?.applied !== 7) {
+    return diatonicSeventhDegreeStr(chordRootSD, modifiedKey, customScaleIntervals, getNoteLabel);
+  }
   return borrowedModeDimSeventhDegree(
     chordRootSD, modifiedKey.scale, chordQuality, 7,
     { halfDim: effModifierChord?.halfDim },
@@ -115,7 +130,7 @@ export function applyAugMaj7Stack(toneJSNames, degreeIndices, effModifierChord =
   degreeIndices.push(3);
   if (!effModifierChord?.omits?.includes(5)) {
     toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 7));
-    degreeIndices.push(4);
+    degreeIndices.push(2);
   }
 }
 
@@ -133,7 +148,7 @@ export function applyMixBorrowedM6Voicing(toneJSNames, degreeIndices) {
   }
   if (!hasPc(toneJSNames, sixthPc)) {
     toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 9));
-    degreeIndices.push(3);
+    degreeIndices.push(9);
   }
 }
 

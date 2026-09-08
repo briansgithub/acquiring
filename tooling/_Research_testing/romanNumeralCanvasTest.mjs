@@ -17,6 +17,8 @@ if (symbol !== 'I△7') throw new Error(`expected I△7 got ${symbol}`);
 if (!maj7Tokens || maj7Tokens.text !== '△7') throw new Error('expected super segment △7');
 
 const invCases = [
+  { symbol: 'V7/vii°', expect: [{ kind: 'base', text: 'V' }, { kind: 'super', text: '7' }, { kind: 'base', text: '/' }, { kind: 'base', text: 'vii' }, { kind: 'super', text: '°' }] },
+  { symbol: 'V⁴²', expect: [{ kind: 'base', text: 'V' }, { kind: 'super', text: '4' }, { kind: 'sub', text: '2' }] },
   { symbol: 'i42', expect: [{ kind: 'base', text: 'i' }, { kind: 'super', text: '4' }, { kind: 'sub', text: '2' }] },
   { symbol: 'V64', expect: [{ kind: 'base', text: 'V' }, { kind: 'super', text: '6' }, { kind: 'sub', text: '4' }] },
   { symbol: 'V65', expect: [{ kind: 'base', text: 'V' }, { kind: 'super', text: '6' }, { kind: 'sub', text: '5' }] },
