@@ -198,22 +198,32 @@ public actor CatalogCoordinator: CatalogRepository {
     private func resolveArtistName(_ artist: String) throws -> String? {
         // A readable source name is authoritative. Only use the legacy lookup
         // when it does not match, so punctuation-distinct artists stay separate.
-        guard !Self.searchKey(artist).isEmpty else { return nil }
+        let searchKey = Self.searchKey(artist)
+        guard !searchKey.isEmpty else { return nil }
         return try read { db in
-            let predicates = [
-                "artist = ? COLLATE NOCASE",
-                "catalog_search_key(\(Self.artistIdentitySQL)) = catalog_search_key(?)",
-                "catalog_search_key(artist) = catalog_search_key(?)"
-            ]
-            for predicate in predicates {
-                let matches = try String.fetchAll(
-                    db,
-                    sql: "SELECT DISTINCT artist FROM songs WHERE dataBlob IS NOT NULL AND artist IS NOT NULL AND \(predicate) LIMIT 2",
-                    arguments: [artist]
-                )
-                if !matches.isEmpty { return matches.count == 1 ? matches[0] : nil }
-            }
-            return nil
+            let exactMatches = try String.fetchAll(
+                db,
+                sql: "SELECT DISTINCT artist FROM songs WHERE dataBlob IS NOT NULL AND artist IS NOT NULL AND artist = ? COLLATE NOCASE LIMIT 2",
+                arguments: [artist]
+            )
+            if !exactMatches.isEmpty { return exactMatches.count == 1 ? exactMatches[0] : nil }
+
+            let rows = try Row.fetchAll(
+                db,
+                sql: "SELECT slug, artist FROM songs WHERE dataBlob IS NOT NULL AND artist IS NOT NULL"
+            )
+            let identities = Set(rows.compactMap { row -> String? in
+                let slug: String = row["slug"]
+                let sourceArtist: String = row["artist"]
+                return Self.searchKey(Self.artistIdentity(from: slug)) == searchKey ? sourceArtist : nil
+            })
+            if !identities.isEmpty { return identities.count == 1 ? identities.first : nil }
+
+            let normalizedNames = Set(rows.compactMap { row -> String? in
+                let sourceArtist: String = row["artist"]
+                return Self.searchKey(sourceArtist) == searchKey ? sourceArtist : nil
+            })
+            return normalizedNames.count == 1 ? normalizedNames.first : nil
         }
     }
 
@@ -456,7 +466,14 @@ public actor CatalogCoordinator: CatalogRepository {
     // their original punctuation, capitalization, and Unicode spelling.
     private static func searchKey(_ value: String) -> String {
         let folded = value.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: Locale(identifier: "en_US_POSIX"))
-        return String(folded.unicodeScalars.filter(CharacterSet.alphanumerics.contains))
+        return String(folded.unicodeScalars.filter {
+            $0.properties.isAlphabetic || $0.properties.numericType != nil
+        })
+    }
+
+    private static func artistIdentity(from slug: String) -> String {
+        guard let separator = slug.range(of: "__") else { return "" }
+        return String(slug[..<separator.lowerBound])
     }
 
     private static let artistIdentitySQL = "CASE WHEN INSTR(slug, '__') > 0 THEN SUBSTR(slug, 1, INSTR(slug, '__') - 1) ELSE '' END"

@@ -268,7 +268,7 @@ final class CatalogBrowseTests: XCTestCase {
 
     private func makeFixture(_ rows: [BrowseFixtureRow]) async throws -> BrowseCatalogFixture {
         let directory = FileManager.default.temporaryDirectory
-            .appending(path: "CatalogBrowseTests-(UUID().uuidString)", directoryHint: .isDirectory)
+            .appending(path: "CatalogBrowseTests-\(UUID().uuidString)", directoryHint: .isDirectory)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let configuration = CatalogConfiguration(
             directoryURL: directory,
