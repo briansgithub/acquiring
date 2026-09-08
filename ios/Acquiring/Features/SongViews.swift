@@ -53,7 +53,7 @@ struct SongDetailView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 if case .content = state {
-                    FavoriteSongButton(songID: songID)
+                    FavoriteSongButton(songID: songID, confirmationBelow: true)
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
