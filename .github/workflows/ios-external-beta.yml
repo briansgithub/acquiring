@@ -1,0 +1,77 @@
+name: External iOS beta update metadata
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 * * * *"
+  pull_request:
+    paths:
+      - "ios/scripts/asc_api.py"
+      - "ios/scripts/external_beta.py"
+      - "ios/scripts/test_external_beta.py"
+      - ".github/workflows/ios-external-beta.yml"
+  push:
+    branches: [main, "codex/**"]
+    paths:
+      - "ios/scripts/asc_api.py"
+      - "ios/scripts/external_beta.py"
+      - "ios/scripts/test_external_beta.py"
+      - ".github/workflows/ios-external-beta.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: external-ios-beta-${{ github.event_name == 'pull_request' && github.ref || 'metadata' }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m unittest discover -s ios/scripts -p test_external_beta.py
+
+  refresh:
+    needs: validate
+    if: >-
+      (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') &&
+      github.ref == 'refs/heads/main' &&
+      github.repository == 'briansgithub/acquiring' &&
+      vars.IOS_EXTERNAL_BETA_UPDATES_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    env:
+      ASC_KEY_PATH: ${{ runner.temp }}/acquiring-external-beta.p8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare App Store Connect read credentials
+        env:
+          ASC_PRIVATE_KEY_BASE64: ${{ secrets.ASC_PRIVATE_KEY_BASE64 }}
+        run: |
+          python3 - <<'PY'
+          import base64, os
+          from pathlib import Path
+          encoded = os.environ.get("ASC_PRIVATE_KEY_BASE64", "")
+          if not encoded:
+              raise SystemExit("Configure ASC_PRIVATE_KEY_BASE64 before enabling beta metadata refresh.")
+          key = Path(os.environ["ASC_KEY_PATH"])
+          key.write_bytes(base64.b64decode(encoded, validate=True))
+          key.chmod(0o600)
+          PY
+      - name: Refresh external-only metadata
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          GH_TOKEN: ${{ github.token }}
+        run: python3 ios/scripts/asc_api.py external-update --publish
+      - name: Remove temporary credential
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          Path(os.environ["ASC_KEY_PATH"]).unlink(missing_ok=True)
+          PY

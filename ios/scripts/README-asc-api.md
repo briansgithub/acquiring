@@ -118,6 +118,8 @@ python3 ios/scripts/asc_api.py set-notes --version 13 --notes "..."
 python3 ios/scripts/asc_api.py assign --version 13                      # internal (default)
 python3 ios/scripts/asc_api.py assign --version 13 --track external     # the one external group
 python3 ios/scripts/asc_api.py assign --version 13 --group "Early Access"
+python3 ios/scripts/asc_api.py external-update --output /tmp/latest.json # read-only preview
+python3 ios/scripts/asc_api.py external-update --publish                 # refresh public metadata
 ```
 
 ## External releases
@@ -132,6 +134,62 @@ enters **Waiting for Review**. `assign` prints the resulting
 
 Beta app review is not App Store submission. Nothing here submits to App Review;
 that stays a human step. See `../../docs/ios-beta-releases.md`.
+
+## Home-screen update indicator: external builds only
+
+`external-update` reads Apple's actual external group/build relationships. It
+publishes the newest iOS version/build common to **every external group** only
+when Apple reports `processingState=VALID`, `buildAudienceType=APP_STORE_ELIGIBLE`,
+`externalBuildState=IN_BETA_TESTING`, `expired=false`, and a future expiration.
+Internal groups are excluded. Builds awaiting review, merely approved/ready to
+test, internal-only builds, and builds removed from external groups cannot
+advance the indicator. With several external groups, a release to just one group
+waits until all groups have access. Today the external group is `Early Access`.
+Apple distinguishes [Ready to Test from Testing](https://developer.apple.com/help/app-store-connect/reference/app-uploads/app-build-statuses),
+so this publisher deliberately requires the latter external state.
+
+`deploy-testflight.sh` refreshes this record after an external assignment using
+`assign --publish-update`; an internal assignment returns before publication.
+An external build still in review leaves the previous available build in the
+record. The refresh itself only reads App Store Connect: it never assigns a
+build, notifies testers, starts testing, or submits for review. If publication
+fails after assignment, retry `external-update --publish` instead of uploading
+the app again. Running `assign` manually needs `--publish-update`, or a subsequent
+refresh, to publish immediately.
+
+The app fetches
+`https://github.com/briansgithub/acquiring/releases/download/ios-external-beta/latest.json`.
+This separate GitHub prerelease is explicitly not marked latest, so it does not
+replace the catalog release. Publication uses authenticated `gh` with repository
+contents write access. A local `--output` preview reads Apple without writing to
+GitHub. It contains no Apple credentials or tester details.
+
+The schema is `{schemaVersion: 1, channel: "external", generatedAt, validUntil,
+externalBuild}`. Dates are ISO 8601 UTC seconds. `externalBuild` is either null
+(no available external build), or `{version, build, minimumOSVersion, expiresAt}`.
+The app ignores stale, malformed, incompatible, equal, or older updates.
+
+### Enable ongoing refresh after merging
+
+The workflow `.github/workflows/ios-external-beta.yml` refreshes hourly and can
+also be run manually. It catches later beta-review approvals and withdrawals;
+manifests expire after 24 hours if refreshing stops. GitHub schedules can be
+delayed, so the indicator is advisory rather than an immediate push alert.
+
+1. Add repository Actions secrets `ASC_KEY_ID`, `ASC_ISSUER_ID`, and
+   `ASC_PRIVATE_KEY_BASE64` (base64 of the `.p8` contents). Use a key with access
+   to this app's beta groups/builds. No Apple secret belongs in the app or repo.
+2. Set repository variable `IOS_EXTERNAL_BETA_UPDATES_ENABLED=true`. The workflow
+   is disabled without this explicit setup; pull requests/pushes only run the
+   focused offline tests. Publication runs only from `main` in the source repo.
+3. Run **External iOS beta update metadata** once from `main` and verify its
+   generated release asset. GitHub's workflow token supplies publication access;
+   a separate GitHub token secret is unnecessary.
+
+Keep scheduled refresh enabled even when only shipping internal builds. It will
+continue advertising the existing external build without adopting those newer
+internal builds, and will clear a withdrawn/expired external release. TestFlight
+still decides the signed-in tester's final eligibility.
 
 ## Notes on the implementation
 

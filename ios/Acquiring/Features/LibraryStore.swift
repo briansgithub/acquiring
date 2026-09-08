@@ -17,6 +17,234 @@ enum CatalogUpdateState: Equatable {
     case failed(String)
 }
 
+struct ExternalBetaBuild: Equatable, Sendable {
+    let version: String
+    let build: String
+}
+
+enum ExternalBetaUpdateState: Equatable, Sendable {
+    case idle
+    case checking
+    case current
+    case installedBuildIsNewer
+    case available(ExternalBetaBuild)
+    case noExternalRelease
+    case unsupportedMinimumOS(String)
+    case unknown
+}
+
+struct ExternalBetaUpdateSnapshot: Equatable, Sendable {
+    let state: ExternalBetaUpdateState
+    let validUntil: Date?
+
+    init(_ state: ExternalBetaUpdateState, validUntil: Date? = nil) {
+        self.state = state
+        self.validUntil = validUntil
+    }
+}
+
+protocol ExternalBetaUpdateService: Sendable {
+    func check() async -> ExternalBetaUpdateSnapshot
+}
+
+/// Reads the small, release-tool-produced manifest. The app never talks to App
+/// Store Connect and intentionally treats every transport or validation problem
+/// as unknown rather than making an update claim.
+actor ExternalBetaUpdateManifestService: ExternalBetaUpdateService {
+    static let manifestURL = URL(string: "https://github.com/briansgithub/acquiring/releases/download/ios-external-beta/latest.json")!
+
+    typealias FetchData = @Sendable (URLRequest) async throws -> (Data, URLResponse)
+
+    private let fetchData: FetchData
+    private let installedVersion: String
+    private let installedBuild: String
+    private let operatingSystemVersion: [Int]
+    private let now: @Sendable () -> Date
+
+    init(
+        url: URL = ExternalBetaUpdateManifestService.manifestURL,
+        session: URLSession = .shared,
+        installedVersion: String? = nil,
+        installedBuild: String? = nil,
+        operatingSystemVersion: OperatingSystemVersion = ProcessInfo.processInfo.operatingSystemVersion,
+        now: @escaping @Sendable () -> Date = { Date() }
+    ) {
+        self.init(
+            url: url,
+            fetchData: { request in try await session.data(for: request) },
+            installedVersion: installedVersion ?? Self.bundleValue("CFBundleShortVersionString"),
+            installedBuild: installedBuild ?? Self.bundleValue("CFBundleVersion"),
+            operatingSystemVersion: [
+                operatingSystemVersion.majorVersion,
+                operatingSystemVersion.minorVersion,
+                operatingSystemVersion.patchVersion
+            ],
+            now: now
+        )
+    }
+
+    init(
+        url: URL = ExternalBetaUpdateManifestService.manifestURL,
+        fetchData: @escaping FetchData,
+        installedVersion: String,
+        installedBuild: String,
+        operatingSystemVersion: [Int],
+        now: @escaping @Sendable () -> Date
+    ) {
+        self.fetchData = { request in
+            var request = request
+            request.url = url
+            return try await fetchData(request)
+        }
+        self.installedVersion = installedVersion
+        self.installedBuild = installedBuild
+        self.operatingSystemVersion = operatingSystemVersion
+        self.now = now
+    }
+
+    func check() async -> ExternalBetaUpdateSnapshot {
+        do {
+            var request = URLRequest(url: Self.manifestURL, cachePolicy: .reloadIgnoringLocalCacheData)
+            request.timeoutInterval = 15
+            let (data, response) = try await fetchData(request)
+            guard let response = response as? HTTPURLResponse,
+                  (200..<300).contains(response.statusCode)
+            else { return ExternalBetaUpdateSnapshot(.unknown) }
+
+            let manifest = try JSONDecoder().decode(Manifest.self, from: data)
+            let currentTime = now()
+            guard manifest.schemaVersion == 1, manifest.channel == "external",
+                  let generatedAt = Self.date(from: manifest.generatedAt),
+                  let validUntil = Self.date(from: manifest.validUntil),
+                  generatedAt <= currentTime.addingTimeInterval(5 * 60),
+                  validUntil > generatedAt,
+                  validUntil > currentTime,
+                  validUntil <= generatedAt.addingTimeInterval(24 * 60 * 60)
+            else { return ExternalBetaUpdateSnapshot(.unknown) }
+            guard let externalBuild = manifest.externalBuild else {
+                return ExternalBetaUpdateSnapshot(.noExternalRelease, validUntil: validUntil)
+            }
+            guard let expiresAt = Self.date(from: externalBuild.expiresAt), expiresAt > currentTime,
+                  let requiredOS = NumericVersion(externalBuild.minimumOSVersion, allowsDots: true),
+                  let installedOS = NumericVersion(operatingSystemVersion.map(String.init).joined(separator: "."), allowsDots: true),
+                  let externalVersion = NumericVersion(externalBuild.version, allowsDots: true),
+                  let localVersion = NumericVersion(installedVersion, allowsDots: true),
+                  let externalBuildNumber = NumericVersion(externalBuild.build, allowsDots: true),
+                  let localBuildNumber = NumericVersion(installedBuild, allowsDots: true)
+            else { return ExternalBetaUpdateSnapshot(.unknown) }
+
+            let candidate = ExternalBetaBuild(version: externalBuild.version, build: externalBuild.build)
+            let usableUntil = min(validUntil, expiresAt)
+            guard installedOS >= requiredOS else {
+                return ExternalBetaUpdateSnapshot(
+                    .unsupportedMinimumOS(externalBuild.minimumOSVersion),
+                    validUntil: usableUntil
+                )
+            }
+            if externalVersion > localVersion { return ExternalBetaUpdateSnapshot(.available(candidate), validUntil: usableUntil) }
+            if externalVersion < localVersion { return ExternalBetaUpdateSnapshot(.installedBuildIsNewer, validUntil: usableUntil) }
+            if externalBuildNumber > localBuildNumber { return ExternalBetaUpdateSnapshot(.available(candidate), validUntil: usableUntil) }
+            if externalBuildNumber < localBuildNumber { return ExternalBetaUpdateSnapshot(.installedBuildIsNewer, validUntil: usableUntil) }
+            return ExternalBetaUpdateSnapshot(.current, validUntil: usableUntil)
+        } catch {
+            return ExternalBetaUpdateSnapshot(.unknown)
+        }
+    }
+
+    private struct Manifest: Decodable {
+        struct Build: Decodable {
+            let version: String
+            let build: String
+            let minimumOSVersion: String
+            let expiresAt: String
+        }
+
+        let schemaVersion: Int
+        let channel: String
+        let generatedAt: String
+        let validUntil: String
+        let externalBuild: Build?
+
+        private enum CodingKeys: String, CodingKey {
+            case schemaVersion
+            case channel
+            case generatedAt
+            case validUntil
+            case externalBuild
+        }
+
+        init(from decoder: any Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            schemaVersion = try container.decode(Int.self, forKey: .schemaVersion)
+            channel = try container.decode(String.self, forKey: .channel)
+            generatedAt = try container.decode(String.self, forKey: .generatedAt)
+            validUntil = try container.decode(String.self, forKey: .validUntil)
+            guard container.contains(.externalBuild) else {
+                throw DecodingError.keyNotFound(
+                    CodingKeys.externalBuild,
+                    DecodingError.Context(
+                        codingPath: container.codingPath,
+                        debugDescription: "External beta manifest is missing externalBuild."
+                    )
+                )
+            }
+            externalBuild = try container.decodeIfPresent(Build.self, forKey: .externalBuild)
+        }
+    }
+
+    private struct NumericVersion: Comparable {
+        let parts: [String]
+
+        init?(_ rawValue: String, allowsDots: Bool) {
+            let components = rawValue.split(separator: ".", omittingEmptySubsequences: false)
+            guard !components.isEmpty, components.count <= 3,
+                  (allowsDots || components.count == 1),
+                  components.allSatisfy({ part in
+                      (1...9).contains(part.utf8.count)
+                          && part.utf8.allSatisfy { $0 >= 48 && $0 <= 57 }
+                  })
+            else { return nil }
+            var normalizedParts = components.map { part in
+                let normalized = part.drop(while: { $0 == "0" })
+                return normalized.isEmpty ? "0" : String(normalized)
+            }
+            while normalizedParts.count > 1, normalizedParts.last == "0" {
+                normalizedParts.removeLast()
+            }
+            parts = normalizedParts
+        }
+
+        static func < (lhs: Self, rhs: Self) -> Bool {
+            let count = max(lhs.parts.count, rhs.parts.count)
+            for index in 0..<count {
+                let left = index < lhs.parts.count ? lhs.parts[index] : "0"
+                let right = index < rhs.parts.count ? rhs.parts[index] : "0"
+                if left.count != right.count { return left.count < right.count }
+                if left != right { return left < right }
+            }
+            return false
+        }
+    }
+
+    private static func date(from value: String) -> Date? {
+        let bytes = Array(value.utf8)
+        guard bytes.count == 20,
+              bytes[4] == 45, bytes[7] == 45, bytes[10] == 84,
+              bytes[13] == 58, bytes[16] == 58, bytes[19] == 90,
+              [0, 1, 2, 3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18].allSatisfy({ index in
+                  bytes[index] >= 48 && bytes[index] <= 57
+              })
+        else { return nil }
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withDashSeparatorInDate, .withColonSeparatorInTime]
+        return formatter.date(from: value)
+    }
+
+    private static func bundleValue(_ key: String) -> String {
+        Bundle.main.object(forInfoDictionaryKey: key) as? String ?? ""
+    }
+}
+
 enum AppRoute: Hashable {
     case artist(String)
     case allSongs
@@ -122,11 +350,13 @@ final class LibraryStore {
     var harvestURL = ""
     var downloadInfo: FeatureState<CatalogDownloadInfo> = .idle
     private(set) var catalogUpdateState: CatalogUpdateState = .idle
+    private(set) var externalBetaUpdateState: ExternalBetaUpdateState = .idle
     var downloadPromptDismissed = false
 
     private let catalog: any CatalogRepository
     private let maintenance: any CatalogMaintenanceService
     private let assetMetadata: any CatalogAssetMetadataService
+    private let externalBetaUpdates: any ExternalBetaUpdateService
     private let history: HistoryStore
     private let prepareCatalog: @MainActor () async throws -> Void
     private let downloadURL: URL
@@ -138,9 +368,16 @@ final class LibraryStore {
     @ObservationIgnored private var maintenanceCancellation: (@Sendable () -> CatalogCancellationDisposition)?
     @ObservationIgnored private var maintenanceGeneration = 0
     @ObservationIgnored private var catalogUpdateGeneration = 0
+    @ObservationIgnored private var betaUpdateGeneration = 0
+    @ObservationIgnored private var lastCatalogUpdateCheck: Date?
+    @ObservationIgnored private var lastBetaUpdateCheck: Date?
+    @ObservationIgnored private var betaUpdateValidUntil: Date?
+    @ObservationIgnored private var betaExpiryTask: Task<Void, Never>?
     @ObservationIgnored private var retryHarvestURL: URL?
     @ObservationIgnored private var didAttemptAutomaticCatalogInstall = false
     private var catalogInstallWasAutomatic = false
+
+    private static let updateRefreshInterval: TimeInterval = 60 * 60
 
     var hasInstalledCatalog: Bool {
         guard case let .content(count) = catalogState else { return false }
@@ -197,6 +434,7 @@ final class LibraryStore {
             catalog: environment.catalog,
             maintenance: environment.maintenance,
             assetMetadata: environment.catalogAssetMetadata,
+            externalBetaUpdates: environment.externalBetaUpdates,
             history: environment.history,
             userLibrary: environment.userLibrary,
             prepareCatalog: { try await environment.prepare() },
@@ -209,6 +447,7 @@ final class LibraryStore {
         catalog: any CatalogRepository,
         maintenance: any CatalogMaintenanceService,
         assetMetadata: any CatalogAssetMetadataService,
+        externalBetaUpdates: any ExternalBetaUpdateService = ExternalBetaUpdateManifestService(),
         history: HistoryStore,
         userLibrary: UserLibraryStore,
         prepareCatalog: @escaping @MainActor () async throws -> Void,
@@ -218,6 +457,7 @@ final class LibraryStore {
         self.catalog = catalog
         self.maintenance = maintenance
         self.assetMetadata = assetMetadata
+        self.externalBetaUpdates = externalBetaUpdates
         self.history = history
         self.browse = AllSongsBrowseStore(catalog: catalog)
         self.userContent = UserLibraryViewModel(catalog: catalog, userLibrary: userLibrary)
@@ -283,13 +523,59 @@ final class LibraryStore {
     }
 
     func checkForCatalogUpdate() async {
+        await checkForCatalogUpdate(rateLimited: false)
+    }
+
+    func refreshUpdateIndicatorsIfNeeded() async {
+        async let catalog: Void = checkForCatalogUpdate(rateLimited: true)
+        async let beta: Void = checkForExternalBetaUpdate(rateLimited: true)
+        _ = await (catalog, beta)
+    }
+
+    var hasAvailableUpdate: Bool {
+        if case .updateAvailable = catalogUpdateState { return true }
+        if case .available = externalBetaUpdateState {
+            return betaUpdateValidUntil.map { $0 > Date() } ?? true
+        }
+        return false
+    }
+
+    var updateIndicatorAccessibilityLabel: String {
+        let databaseAvailable: Bool
+        if case .updateAvailable = catalogUpdateState {
+            databaseAvailable = true
+        } else {
+            databaseAvailable = false
+        }
+        let betaAvailable: Bool
+        if case .available = externalBetaUpdateState,
+           betaUpdateValidUntil.map({ $0 > Date() }) ?? true {
+            betaAvailable = true
+        } else {
+            betaAvailable = false
+        }
+        switch (databaseAvailable, betaAvailable) {
+        case (true, true): return "Settings, database and beta updates available"
+        case (true, false): return "Settings, database update available"
+        case (false, true): return "Settings, beta update available"
+        case (false, false): return "Settings"
+        }
+    }
+
+    private func checkForCatalogUpdate(rateLimited: Bool) async {
         guard !maintenanceState.isRunning else { return }
         guard catalogUpdateState != .checking else { return }
+        let currentTime = Date()
+        if rateLimited, let lastCatalogUpdateCheck,
+           currentTime.timeIntervalSince(lastCatalogUpdateCheck) < Self.updateRefreshInterval {
+            return
+        }
         guard case .content = catalogState else {
             catalogUpdateState = .idle
             return
         }
 
+        lastCatalogUpdateCheck = currentTime
         catalogUpdateGeneration &+= 1
         let generation = catalogUpdateGeneration
         catalogUpdateState = .checking
@@ -310,6 +596,50 @@ final class LibraryStore {
         } catch {
             guard generation == catalogUpdateGeneration else { return }
             catalogUpdateState = .failed(error.localizedDescription)
+        }
+    }
+
+    private func checkForExternalBetaUpdate(rateLimited: Bool) async {
+        guard externalBetaUpdateState != .checking else { return }
+        let currentTime = Date()
+        if rateLimited, let lastBetaUpdateCheck,
+           currentTime.timeIntervalSince(lastBetaUpdateCheck) < Self.updateRefreshInterval,
+           betaUpdateValidUntil.map({ $0 > currentTime }) ?? true {
+            return
+        }
+
+        lastBetaUpdateCheck = currentTime
+        betaUpdateGeneration &+= 1
+        let generation = betaUpdateGeneration
+        externalBetaUpdateState = .checking
+        let result = await externalBetaUpdates.check()
+        guard generation == betaUpdateGeneration else { return }
+        betaUpdateValidUntil = result.validUntil
+        externalBetaUpdateState = result.state
+        scheduleBetaExpiryInvalidation(validUntil: result.validUntil, generation: generation)
+    }
+
+    private func scheduleBetaExpiryInvalidation(validUntil: Date?, generation: Int) {
+        betaExpiryTask?.cancel()
+        guard let validUntil else { return }
+        guard validUntil > Date() else {
+            betaUpdateValidUntil = nil
+            lastBetaUpdateCheck = nil
+            externalBetaUpdateState = .unknown
+            return
+        }
+
+        let nanoseconds = UInt64(max(0, validUntil.timeIntervalSinceNow) * 1_000_000_000)
+        betaExpiryTask = Task { [weak self] in
+            do {
+                try await Task.sleep(nanoseconds: nanoseconds)
+            } catch {
+                return
+            }
+            guard !Task.isCancelled, let self, generation == self.betaUpdateGeneration else { return }
+            self.betaUpdateValidUntil = nil
+            self.lastBetaUpdateCheck = nil
+            self.externalBetaUpdateState = .unknown
         }
     }
 
