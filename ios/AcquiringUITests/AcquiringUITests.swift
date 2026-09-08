@@ -113,7 +113,7 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertEqual(app.progressIndicators.count, 0)
     }
 
-    func testIntroductionAppearsOnceAndCanBeReopenedFromSettings() {
+    func testIntroductionAppearsOnceAndSettingsOpensNotationHelp() {
         let app = launchApp(scenario: .ready, arguments: ["--ui-testing-introduction"])
         XCTAssertTrue(app.navigationBars["Introduction"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.textFields["library.search.field"].exists)
@@ -140,13 +140,19 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(app.textFields["library.search.field"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["introduction.continue"].exists)
         openCatalogSettings(app)
-        app.buttons["settings.introduction"].tap()
-        XCTAssertTrue(app.navigationBars["Introduction"].waitForExistence(timeout: 5))
+        app.buttons["settings.help"].tap()
+        XCTAssertTrue(app.navigationBars["Help"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["introduction.continue"].exists)
-        XCTAssertTrue(app.staticTexts["Objective:"].exists)
-        scrollToHittable(app.staticTexts["Tessitura"], in: app)
-        XCTAssertTrue(app.buttons["introduction.done"].isHittable)
-        app.buttons["introduction.done"].tap()
+        for topic in ["scaleDegrees", "intervals", "romanNumerals", "modes", "tessitura"] {
+            let link = app.buttons["help.topic.\(topic)"]
+            scrollToHittable(link, in: app)
+            link.tap()
+            XCTAssertTrue(app.scrollViews["help.topic.\(topic)"].waitForExistence(timeout: 5))
+            app.navigationBars.buttons.element(boundBy: 0).tap()
+            XCTAssertTrue(app.navigationBars["Help"].waitForExistence(timeout: 5))
+        }
+        XCTAssertTrue(app.buttons["help.done"].isHittable)
+        app.buttons["help.done"].tap()
         XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 5))
     }
 

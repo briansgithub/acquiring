@@ -227,6 +227,13 @@ final class VocalPracticeModel {
         isExpanded = true
     }
 
+    /// Help reveals the controls without discarding a practice session, including
+    /// when it is opened during the dock's delayed collapse cleanup.
+    func expandForHelp() {
+        cancelPendingCollapseClear()
+        isExpanded = true
+    }
+
     func minimize() {
         cancelPendingCollapseClear()
         cancelPreview()
