@@ -1190,6 +1190,239 @@ final class AcquiringTests: XCTestCase {
         XCTAssertEqual(fixture.store.catalogUpdateState, .current)
     }
 
+    func testExternalBetaManifestOnlyOffersAFreshNewerExternalBuild() async throws {
+        let now = try XCTUnwrap(ISO8601DateFormatter().date(from: "2026-09-08T12:00:00Z"))
+        let response = try XCTUnwrap(HTTPURLResponse(
+            url: ExternalBetaUpdateManifestService.manifestURL,
+            statusCode: 200,
+            httpVersion: nil,
+            headerFields: nil
+        ))
+        let availableJSON = """
+        {"schemaVersion":1,"channel":"external","generatedAt":"2026-09-08T12:00:00Z","validUntil":"2026-09-08T13:00:00Z","externalBuild":{"version":"1.0","build":"42","minimumOSVersion":"17.0","expiresAt":"2026-12-01T12:00:00Z"}}
+        """
+        let available = ExternalBetaUpdateManifestService(
+            fetchData: { _ in (Data(availableJSON.utf8), response) },
+            installedVersion: "1.0",
+            installedBuild: "41",
+            operatingSystemVersion: [17, 0, 0],
+            now: { now }
+        )
+        let availableResult = await available.check()
+        let validUntil = try XCTUnwrap(ISO8601DateFormatter().date(from: "2026-09-08T13:00:00Z"))
+        XCTAssertEqual(
+            availableResult,
+            ExternalBetaUpdateSnapshot(
+                .available(ExternalBetaBuild(version: "1.0", build: "42")),
+                validUntil: validUntil
+            )
+        )
+
+        let staleJSON = availableJSON.replacingOccurrences(of: "2026-09-08T13:00:00Z", with: "2026-09-08T11:00:00Z")
+        let stale = ExternalBetaUpdateManifestService(
+            fetchData: { _ in (Data(staleJSON.utf8), response) },
+            installedVersion: "1.0",
+            installedBuild: "41",
+            operatingSystemVersion: [17, 0, 0],
+            now: { now }
+        )
+        let staleResult = await stale.check()
+        XCTAssertEqual(staleResult, ExternalBetaUpdateSnapshot(.unknown))
+
+        let noExternalJSON = availableJSON.replacingOccurrences(
+            of: "{\"version\":\"1.0\",\"build\":\"42\",\"minimumOSVersion\":\"17.0\",\"expiresAt\":\"2026-12-01T12:00:00Z\"}",
+            with: "null"
+        )
+        let noExternalRelease = ExternalBetaUpdateManifestService(
+            fetchData: { _ in (Data(noExternalJSON.utf8), response) },
+            installedVersion: "1.0",
+            installedBuild: "41",
+            operatingSystemVersion: [17, 0, 0],
+            now: { now }
+        )
+        let noExternalResult = await noExternalRelease.check()
+        XCTAssertEqual(noExternalResult.state, .noExternalRelease)
+
+        let missingBuildJSON = """
+        {"schemaVersion":1,"channel":"external","generatedAt":"2026-09-08T12:00:00Z","validUntil":"2026-09-08T13:00:00Z"}
+        """
+        let missingBuild = ExternalBetaUpdateManifestService(
+            fetchData: { _ in (Data(missingBuildJSON.utf8), response) },
+            installedVersion: "1.0",
+            installedBuild: "41",
+            operatingSystemVersion: [17, 0, 0],
+            now: { now }
+        )
+        let missingBuildResult = await missingBuild.check()
+        XCTAssertEqual(missingBuildResult, ExternalBetaUpdateSnapshot(.unknown))
+    }
+
+    func testExternalBetaManifestDoesNotOfferInternalOrIncompatibleBuilds() async throws {
+        let now = try XCTUnwrap(ISO8601DateFormatter().date(from: "2026-09-08T12:00:00Z"))
+        let response = try XCTUnwrap(HTTPURLResponse(
+            url: ExternalBetaUpdateManifestService.manifestURL,
+            statusCode: 200,
+            httpVersion: nil,
+            headerFields: nil
+        ))
+        let internalJSON = """
+        {"schemaVersion":1,"channel":"internal","generatedAt":"2026-09-08T12:00:00Z","validUntil":"2026-09-08T13:00:00Z","externalBuild":{"version":"1.0","build":"42","minimumOSVersion":"17.0","expiresAt":"2026-12-01T12:00:00Z"}}
+        """
+        let internalManifest = ExternalBetaUpdateManifestService(
+            fetchData: { _ in (Data(internalJSON.utf8), response) },
+            installedVersion: "1.0",
+            installedBuild: "41",
+            operatingSystemVersion: [17, 0, 0],
+            now: { now }
+        )
+        let internalResult = await internalManifest.check()
+        XCTAssertEqual(internalResult, ExternalBetaUpdateSnapshot(.unknown))
+
+        let newerInstalledJSON = internalJSON.replacingOccurrences(of: "\"internal\"", with: "\"external\"")
+        let newerInstalled = ExternalBetaUpdateManifestService(
+            fetchData: { _ in (Data(newerInstalledJSON.utf8), response) },
+            installedVersion: "1.1",
+            installedBuild: "1",
+            operatingSystemVersion: [17, 0, 0],
+            now: { now }
+        )
+        let newerInstalledResult = await newerInstalled.check()
+        XCTAssertEqual(newerInstalledResult.state, .installedBuildIsNewer)
+
+        let currentInstalled = ExternalBetaUpdateManifestService(
+            fetchData: { _ in (Data(newerInstalledJSON.utf8), response) },
+            installedVersion: "1.0",
+            installedBuild: "42",
+            operatingSystemVersion: [17, 0, 0],
+            now: { now }
+        )
+        let currentInstalledResult = await currentInstalled.check()
+        XCTAssertEqual(currentInstalledResult.state, .current)
+
+        let dottedBuildJSON = newerInstalledJSON.replacingOccurrences(
+            of: "\"build\":\"42\"",
+            with: "\"build\":\"1.0.2\""
+        )
+        let dottedBuild = ExternalBetaUpdateManifestService(
+            fetchData: { _ in (Data(dottedBuildJSON.utf8), response) },
+            installedVersion: "1.0",
+            installedBuild: "1.0.1",
+            operatingSystemVersion: [17, 0, 0],
+            now: { now }
+        )
+        let dottedBuildResult = await dottedBuild.check()
+        XCTAssertEqual(
+            dottedBuildResult.state,
+            .available(ExternalBetaBuild(version: "1.0", build: "1.0.2"))
+        )
+
+        let equivalentVersion = ExternalBetaUpdateManifestService(
+            fetchData: { _ in (
+                Data(dottedBuildJSON.replacingOccurrences(of: "\"version\":\"1.0\"", with: "\"version\":\"1.0.0\"").utf8),
+                response
+            ) },
+            installedVersion: "1",
+            installedBuild: "1.0.2",
+            operatingSystemVersion: [17, 0, 0],
+            now: { now }
+        )
+        let equivalentVersionResult = await equivalentVersion.check()
+        XCTAssertEqual(equivalentVersionResult.state, .current)
+
+        let malformedBuild = ExternalBetaUpdateManifestService(
+            fetchData: { _ in (Data(newerInstalledJSON.replacingOccurrences(of: "\"42\"", with: "\"42a\"").utf8), response) },
+            installedVersion: "1.0",
+            installedBuild: "1",
+            operatingSystemVersion: [17, 0, 0],
+            now: { now }
+        )
+        let malformedBuildResult = await malformedBuild.check()
+        XCTAssertEqual(malformedBuildResult.state, .unknown)
+
+        let requiresNewerOSJSON = newerInstalledJSON
+            .replacingOccurrences(of: "\"17.0\"", with: "\"18.0\"")
+            .replacingOccurrences(of: "2026-12-01T12:00:00Z", with: "2026-09-08T12:30:00Z")
+        let requiresNewerOS = ExternalBetaUpdateManifestService(
+            fetchData: { _ in (Data(requiresNewerOSJSON.utf8), response) },
+            installedVersion: "1.0",
+            installedBuild: "1",
+            operatingSystemVersion: [17, 0, 0],
+            now: { now }
+        )
+        let newerOSResult = await requiresNewerOS.check()
+        let minimumOSValidity = try XCTUnwrap(ISO8601DateFormatter().date(from: "2026-09-08T12:30:00Z"))
+        XCTAssertEqual(newerOSResult.state, .unsupportedMinimumOS("18.0"))
+        XCTAssertEqual(newerOSResult.validUntil, minimumOSValidity)
+    }
+
+    @MainActor
+    func testExternalBetaAvailabilityDrivesTheSettingsIndicator() async throws {
+        let fixture = try makeLibraryStore(
+            maintenance: ScriptedCatalogMaintenanceService(),
+            externalBetaUpdates: StubExternalBetaUpdateService(
+                ExternalBetaUpdateSnapshot(.available(ExternalBetaBuild(version: "1.0", build: "42")))
+            ),
+            catalogCount: 7
+        )
+        defer { fixture.cleanup() }
+
+        await fixture.store.refreshUpdateIndicatorsIfNeeded()
+
+        XCTAssertTrue(fixture.store.hasAvailableUpdate)
+        XCTAssertEqual(fixture.store.updateIndicatorAccessibilityLabel, "Settings, beta update available")
+        XCTAssertEqual(
+            fixture.store.externalBetaUpdateState,
+            .available(ExternalBetaBuild(version: "1.0", build: "42"))
+        )
+
+        let current = CatalogAssetIdentity(eTag: "\"current\"", lastModified: nil, contentLength: 100)
+        let updated = CatalogAssetIdentity(eTag: "\"updated\"", lastModified: nil, contentLength: 100)
+        let databaseOnly = try makeLibraryStore(
+            maintenance: ScriptedCatalogMaintenanceService(),
+            assetMetadata: StubCatalogAssetMetadataService(remote: updated, installed: current),
+            externalBetaUpdates: StubExternalBetaUpdateService(),
+            catalogCount: 7
+        )
+        defer { databaseOnly.cleanup() }
+        await databaseOnly.store.refreshUpdateIndicatorsIfNeeded()
+        XCTAssertEqual(databaseOnly.store.updateIndicatorAccessibilityLabel, "Settings, database update available")
+
+        let both = try makeLibraryStore(
+            maintenance: ScriptedCatalogMaintenanceService(),
+            assetMetadata: StubCatalogAssetMetadataService(remote: updated, installed: current),
+            externalBetaUpdates: StubExternalBetaUpdateService(
+                ExternalBetaUpdateSnapshot(.available(ExternalBetaBuild(version: "1.0", build: "42")))
+            ),
+            catalogCount: 7
+        )
+        defer { both.cleanup() }
+        await both.store.refreshUpdateIndicatorsIfNeeded()
+        XCTAssertEqual(both.store.updateIndicatorAccessibilityLabel, "Settings, database and beta updates available")
+    }
+
+    @MainActor
+    func testExternalBetaStateExpiresWhileTheLibraryRemainsVisible() async throws {
+        let fixture = try makeLibraryStore(
+            maintenance: ScriptedCatalogMaintenanceService(),
+            externalBetaUpdates: ExpiringExternalBetaUpdateService(),
+            catalogCount: 7
+        )
+        defer { fixture.cleanup() }
+
+        await fixture.store.refreshUpdateIndicatorsIfNeeded()
+        XCTAssertTrue(fixture.store.hasAvailableUpdate)
+
+        for _ in 0..<200 where fixture.store.externalBetaUpdateState != .unknown {
+            try await Task.sleep(for: .milliseconds(10))
+        }
+
+        XCTAssertEqual(fixture.store.externalBetaUpdateState, .unknown)
+        XCTAssertFalse(fixture.store.hasAvailableUpdate)
+
+        await fixture.store.refreshUpdateIndicatorsIfNeeded()
+        XCTAssertTrue(fixture.store.hasAvailableUpdate)
+    }
+
     @MainActor
     func testBlankSearchKeepsRecentsVisibleWhenKeyboardIsDismissed() throws {
         let fixture = try makeLibraryStore(maintenance: ScriptedCatalogMaintenanceService())
@@ -1392,6 +1625,7 @@ final class AcquiringTests: XCTestCase {
     private func makeLibraryStore(
         maintenance: any CatalogMaintenanceService,
         assetMetadata: any CatalogAssetMetadataService = StubCatalogAssetMetadataService(),
+        externalBetaUpdates: any ExternalBetaUpdateService = StubExternalBetaUpdateService(),
         catalogCount: Int = 0,
         catalogCounts: [Int]? = nil,
         catalogCountThrows: Bool = false,
@@ -1422,6 +1656,7 @@ final class AcquiringTests: XCTestCase {
             catalog: catalog,
             maintenance: maintenance,
             assetMetadata: assetMetadata,
+            externalBetaUpdates: externalBetaUpdates,
             history: history,
             userLibrary: userLibrary,
             prepareCatalog: prepareCatalog
@@ -1462,6 +1697,25 @@ private actor StubCatalogAssetMetadataService: CatalogAssetMetadataService {
 
     func recordInstalledAsset(_ identity: CatalogAssetIdentity?) {
         installedIdentity = identity
+    }
+}
+
+private actor StubExternalBetaUpdateService: ExternalBetaUpdateService {
+    private let result: ExternalBetaUpdateSnapshot
+
+    init(_ result: ExternalBetaUpdateSnapshot = ExternalBetaUpdateSnapshot(.noExternalRelease)) {
+        self.result = result
+    }
+
+    func check() -> ExternalBetaUpdateSnapshot { result }
+}
+
+private actor ExpiringExternalBetaUpdateService: ExternalBetaUpdateService {
+    func check() -> ExternalBetaUpdateSnapshot {
+        ExternalBetaUpdateSnapshot(
+            .available(ExternalBetaBuild(version: "1.0", build: "42")),
+            validUntil: Date().addingTimeInterval(1)
+        )
     }
 }
 

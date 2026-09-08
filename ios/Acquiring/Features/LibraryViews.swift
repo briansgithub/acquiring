@@ -83,8 +83,14 @@ struct LibraryScene: View {
         .onChange(of: scenePhase) { _, phase in
             if phase != .active { environment.audio.pauseForAppInactivity() }
             if phase == .background { environment.vocalPractice.handleSceneBackgrounded() }
+            if phase == .active {
+                Task { await store.refreshUpdateIndicatorsIfNeeded() }
+            }
         }
-        .task { await store.load() }
+        .task {
+            await store.load()
+            await store.refreshUpdateIndicatorsIfNeeded()
+        }
     }
 
     @ViewBuilder
@@ -117,9 +123,18 @@ private struct LibraryView: View {
                     NavigationLink {
                         CatalogSettingsView(store: store)
                     } label: {
-                        Text("Settings")
+                        HStack(spacing: 5) {
+                            Text("Settings")
+                            if store.hasAvailableUpdate {
+                                Circle()
+                                    .fill(.orange)
+                                    .frame(width: 7, height: 7)
+                                    .accessibilityHidden(true)
+                            }
+                        }
                     }
                     .accessibilityIdentifier("catalog.settings")
+                    .accessibilityLabel(store.updateIndicatorAccessibilityLabel)
                 }
             }
     }
@@ -712,7 +727,7 @@ private struct CatalogSettingsView: View {
                 .accessibilityIdentifier("settings.introduction")
             }
             AudioDiagnosticsSettingsSection()
-            AppUpdateSettingsSection()
+            AppUpdateSettingsSection(store: store)
             TimelineRenderingSettingsSection()
 
             if showsCatalogSettings {
@@ -739,10 +754,7 @@ private struct CatalogSettingsView: View {
                     }
             }
         }
-        .task(id: hasInstalledCatalog) {
-            guard hasInstalledCatalog else { return }
-            await store.checkForCatalogUpdate()
-        }
+        .task { await store.refreshUpdateIndicatorsIfNeeded() }
     }
 
     private var hasInstalledCatalog: Bool { store.hasInstalledCatalog }
@@ -779,6 +791,7 @@ private struct TimelineRenderingSettingsSection: View {
 }
 
 private struct AppUpdateSettingsSection: View {
+    @Bindable var store: LibraryStore
     @Environment(\.openURL) private var openURL
     @State private var cannotOpenTestFlight = false
 
@@ -787,7 +800,9 @@ private struct AppUpdateSettingsSection: View {
             LabeledContent("Installed Version", value: installedVersion)
                 .accessibilityIdentifier("app.installedVersion")
 
-            Button("Check for Updates", systemImage: "arrow.triangle.2.circlepath") {
+            betaStatus
+
+            Button(buttonTitle, systemImage: "arrow.triangle.2.circlepath") {
                 // Beta builds are updated by TestFlight, not the catalog downloader.
                 guard let url = URL(string: "itms-beta://testflight.apple.com/v1/app/6807512572") else {
                     cannotOpenTestFlight = true
@@ -798,13 +813,13 @@ private struct AppUpdateSettingsSection: View {
                 }
             }
             .accessibilityIdentifier("app.checkForUpdates")
-            .accessibilityHint("Opens Acquiring in TestFlight to check for a newer beta build")
+            .accessibilityHint(buttonHint)
         } header: {
             Text("App Updates")
                 // A leaf anchors the screen without overriding Form controls' IDs.
                 .accessibilityIdentifier("catalog.settings.screen")
         } footer: {
-            Text("Updates are delivered through TestFlight. Select Acquiring there and tap Update if a newer build is available.")
+            Text("External beta updates are delivered through TestFlight. This status only reflects the latest build available to external testers.")
         }
         .alert("Unable to Open TestFlight", isPresented: $cannotOpenTestFlight) {
             Button("OK", role: .cancel) { }
@@ -817,6 +832,57 @@ private struct AppUpdateSettingsSection: View {
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Unknown"
         let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
         return build.map { "\(version) (\($0))" } ?? version
+    }
+
+    private var buttonTitle: String {
+        if case .available = store.externalBetaUpdateState { return "Update in TestFlight" }
+        return "Check in TestFlight"
+    }
+
+    private var buttonHint: String {
+        if case .available = store.externalBetaUpdateState {
+            return "Opens Acquiring in TestFlight to install the available external beta build"
+        }
+        return "Opens Acquiring in TestFlight to check for a newer beta build"
+    }
+
+    @ViewBuilder
+    private var betaStatus: some View {
+        switch store.externalBetaUpdateState {
+        case .idle:
+            EmptyView()
+        case .checking:
+            HStack(spacing: 8) {
+                ProgressView()
+                Text("Checking external beta updates…")
+                    .foregroundStyle(.secondary)
+            }
+            .accessibilityIdentifier("app.update.checking")
+        case .current:
+            Label("External beta is up to date", systemImage: "checkmark.circle.fill")
+                .foregroundStyle(.green)
+                .accessibilityIdentifier("app.update.current")
+        case .installedBuildIsNewer:
+            Label("Installed build is newer than the external beta", systemImage: "checkmark.circle")
+                .foregroundStyle(.secondary)
+                .accessibilityIdentifier("app.update.installedNewer")
+        case let .available(build):
+            Label("External beta update available: \(build.version) (\(build.build))", systemImage: "arrow.down.circle.fill")
+                .foregroundStyle(.orange)
+                .accessibilityIdentifier("app.update.available")
+        case .noExternalRelease:
+            Label("No external beta release is available", systemImage: "minus.circle")
+                .foregroundStyle(.secondary)
+                .accessibilityIdentifier("app.update.none")
+        case let .unsupportedMinimumOS(version):
+            Label("External beta requires iOS \(version)", systemImage: "iphone.slash")
+                .foregroundStyle(.secondary)
+                .accessibilityIdentifier("app.update.minimumOS")
+        case .unknown:
+            Label("External beta update status unavailable", systemImage: "questionmark.circle")
+                .foregroundStyle(.secondary)
+                .accessibilityIdentifier("app.update.unknown")
+        }
     }
 }
 

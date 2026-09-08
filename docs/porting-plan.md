@@ -74,6 +74,54 @@ Record actual checks, limitations, and review disposition without claiming an
 unrun test passed. Feature approval is not complete parity verification: inventory
 rows remain Partial until required final evidence is gathered.
 
+### Home update indicators — 2026-09-08
+
+`[review]` User-requested implementation on `codex/ios-update-indicators` in the
+separate `H:/Desktop/Acquiring-ios-update-indicators` worktree. UI/integration route:
+Terra/high; release tooling and final integration: current runtime model unknown.
+This user-requested feature takes precedence over the A–F execution order; prior
+review statuses and the separate full-testing gate remain unchanged.
+
+Library's Settings button now has a subtle, accessible dot for database and/or
+external beta updates. Quiet launch/foreground checks reuse existing catalog
+metadata and fetch a fresh external beta manifest. Expired/malformed/unknown beta
+metadata cannot indicate availability; visible beta status clears on expiry.
+The publisher considers only active, unexpired iOS builds common to every
+external group with Apple's external state `IN_BETA_TESTING`. New internal-only
+uploads and external builds still in review cannot advance the record.
+
+Validation in this Windows worktree:
+
+- `python -m unittest discover -s ios/scripts -p test_external_beta.py` — 16 offline
+  release-boundary tests passed, exit 0. No live API writes occur in these tests.
+- `& 'C:/Program Files/Git/bin/bash.exe' -n ios/scripts/deploy-testflight.sh` — passed,
+  exit 0. Python AST parsing of the three affected scripts and YAML parsing of
+  the new workflow also passed.
+- `git diff --check -- ios/Acquiring/Features/LibraryStore.swift ios/Acquiring/Features/LibraryViews.swift ios/Acquiring/Infrastructure/AppEnvironment.swift ios/AcquiringTests/AcquiringTests.swift ios/README.md ios/scripts .github/workflows/ios-external-beta.yml docs/porting-plan.md`
+  — passed, exit 0.
+
+Swift/Xcode are absent here, and the configured Mac hostname/LAN connection was
+unreachable. The incremental iPhone 17 build/install/launch and four focused
+`testExternalBeta...` app tests are **not run**. They remain the next verification
+step on a Mac. No full suite or screenshots were run locally; no merge,
+TestFlight upload, or live metadata publication was performed. The user
+subsequently authorized committing and publishing this branch; use Git for the
+current commit and remote status. The published branch includes the new files,
+so the Mac can fetch it without transferring uncommitted changes manually.
+
+After merge, enable the hourly publisher using the Actions secrets and variable
+listed in `ios/scripts/README-asc-api.md`; no repository Actions secrets were
+configured during this implementation. Until a fresh manifest is published,
+the app quietly reports beta status unavailable and shows no beta indicator.
+The database endpoint remains the existing fixed GitHub catalog asset.
+
+Human review after the Mac build: (1) launch the existing `library.ready` fixture
+with `--ui-testing-beta-update-available`, inspect the Settings dot and TestFlight
+action; (2) add `--ui-testing-catalog-update-available`, inspect both statuses and
+the combined accessibility label; (3) use `--ui-testing-beta-current` with a
+current catalog, confirm no dot. Use the existing full-catalog `500 Miles`
+review fixture and keep its user data isolated as usual.
+
 ### Retained Phase 0–3.4 checkpoints
 
 The following are existing work/review records, not a second execution queue.
