@@ -83,18 +83,18 @@ struct IntervalSingingTool: View {
                     }
                     .frame(height: 100)
                 } else {
+                    // The error used to take the interval card's place, which put a
+                    // CoreAudio string into a third of the dock's width and removed
+                    // the one card describing the two notes just sung. It reads
+                    // below the row instead, where a sentence fits.
                     HStack(spacing: 6) {
                         pitchCard(slot: 1)
                         pitchCard(slot: 2)
-                        if let error = model.errorMessage {
-                            ScrollView {
-                                PracticeErrorMessage(message: error, clear: model.clearError)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 100)
-                        } else {
-                            intervalCard
-                        }
+                        intervalCard
+                    }
+                    if let error = model.errorMessage {
+                        PracticeErrorMessage(message: error, clear: model.clearError)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
             }
@@ -323,7 +323,6 @@ private struct DockPitchCard: View {
             }
         }
         .contentShape(RoundedRectangle(cornerRadius: 8))
-        .disabled(!isEnabled)
         .gesture(TapGesture(count: 2).onEnded { if isEnabled { record() } }
             .exclusively(before: TapGesture(count: 1).onEnded { if isEnabled { play() } }))
         .accessibilityElement(children: .ignore)
@@ -343,6 +342,13 @@ private struct DockPitchCard: View {
             play: play,
             record: record
         )
+        // Applied last on purpose. `accessibilityElement(children: .ignore)` above
+        // synthesizes a fresh element for this card, and a `disabled` applied
+        // before that never reaches it: the gestures were correctly inert while
+        // Flip-Flop ran, but VoiceOver and XCUITest were both told the card was
+        // still actionable. Disabling the composed element instead reports the
+        // state and still propagates down to the gestures.
+        .disabled(!isEnabled)
     }
 
     private func errorText(_ cents: Double) -> String {
