@@ -115,7 +115,7 @@ private struct FavoriteConfirmationPointer: Shape {
 /// Shared visual treatment for the primary Library disclosure controls.
 struct LibrarySectionHeading: View {
     let title: String
-    let subtitle: String
+    var subtitle: String?
     let systemImage: String
 
     var body: some View {
@@ -130,9 +130,11 @@ struct LibrarySectionHeading: View {
                 Text(title)
                     .font(.headline)
                     .foregroundStyle(.primary)
-                Text(subtitle)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                if let subtitle {
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
         }
     }
