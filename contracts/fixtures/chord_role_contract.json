@@ -1,0 +1,481 @@
+[
+  {
+    "id": "sus2",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "type": 5,
+      "suspensions": [
+        2
+      ]
+    },
+    "expectedRootMidi": 48,
+    "expectedToneLabels": [
+      "1̂",
+      "2̂",
+      "5̂"
+    ]
+  },
+  {
+    "id": "sus4",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "type": 5,
+      "suspensions": [
+        4
+      ]
+    },
+    "expectedRootMidi": 48,
+    "expectedToneLabels": [
+      "1̂",
+      "4̂",
+      "5̂"
+    ]
+  },
+  {
+    "id": "sus4-inversion",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "type": 5,
+      "inversion": 1,
+      "suspensions": [
+        4
+      ]
+    },
+    "expectedRootMidi": 48,
+    "expectedToneLabels": [
+      "4̂",
+      "5̂",
+      "1̂"
+    ]
+  },
+  {
+    "id": "dominant-seventh",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "type": 7
+    },
+    "expectedRootMidi": 55,
+    "expectedToneLabels": [
+      "1̂",
+      "3̂",
+      "5̂",
+      "♭7̂"
+    ]
+  },
+  {
+    "id": "diminished-seventh-role",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 7,
+      "type": 7
+    },
+    "expectedRootMidi": 59,
+    "expectedToneLabels": [
+      "1̂",
+      "♭3̂",
+      "♭5̂",
+      "♭♭7̂"
+    ]
+  },
+  {
+    "id": "upper-extensions",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "type": 13
+    },
+    "expectedRootMidi": 48,
+    "expectedToneLabels": [
+      "1̂",
+      "3̂",
+      "11̂",
+      "5̂",
+      "7̂",
+      "9̂",
+      "13̂"
+    ]
+  },
+  {
+    "id": "added-sixth",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "type": 5,
+      "adds": [
+        6
+      ]
+    },
+    "expectedRootMidi": 48,
+    "expectedToneLabels": [
+      "1̂",
+      "3̂",
+      "6̂"
+    ]
+  },
+  {
+    "id": "altered-ninth-inversion",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "type": 7,
+      "inversion": 3,
+      "alterations": [
+        "b9"
+      ]
+    },
+    "expectedRootMidi": 48,
+    "expectedToneLabels": [
+      "7̂",
+      "♭9̂",
+      "1̂",
+      "3̂",
+      "5̂"
+    ]
+  },
+  {
+    "id": "suspension-and-sharp-eleventh",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "type": 7,
+      "suspensions": [
+        4
+      ],
+      "alterations": [
+        "#11"
+      ]
+    },
+    "expectedRootMidi": 48,
+    "expectedToneLabels": [
+      "1̂",
+      "4̂",
+      "5̂",
+      "♭7̂",
+      "♯11̂"
+    ]
+  },
+  {
+    "id": "custom-borrowed-minor",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "type": 7,
+      "borrowed": [
+        0,
+        2,
+        3,
+        5,
+        7,
+        8,
+        10
+      ]
+    },
+    "expectedRootMidi": 48,
+    "expectedToneLabels": [
+      "1̂",
+      "♭3̂",
+      "5̂",
+      "♭7̂"
+    ],
+    "displayContext": {
+      "tonic": "C"
+    },
+    "expectedRelativeIonianRoman": "i7(bor)"
+  },
+  {
+    "id": "letter-anchored-root",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 0,
+      "type": 5,
+      "_letterRootName": "C",
+      "_letterQuality": "minor",
+      "_letterBassName": "G"
+    },
+    "expectedRootMidi": 48,
+    "expectedToneLabels": [
+      "5̂",
+      "1̂",
+      "♭3̂"
+    ]
+  },
+  {
+    "id": "rest",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "type": 7,
+      "isRest": true
+    },
+    "expectedRootMidi": null,
+    "expectedToneLabels": []
+  },
+  {
+    "id": "custom-minor-relative",
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 1,
+      "type": 7,
+      "borrowed": [
+        0,
+        2,
+        3,
+        5,
+        7,
+        8,
+        10
+      ]
+    },
+    "expectedRootMidi": 57,
+    "expectedToneLabels": [
+      "1̂",
+      "♭3̂",
+      "5̂",
+      "♭7̂"
+    ],
+    "displayContext": {
+      "tonic": "C"
+    },
+    "expectedRelativeIonianRoman": "vi7(bor)"
+  },
+  {
+    "id": "applied-borrowed-relative",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 6,
+      "type": 7,
+      "applied": 5,
+      "borrowed": "minor"
+    },
+    "expectedRootMidi": 51,
+    "expectedToneLabels": [
+      "1̂",
+      "3̂",
+      "5̂",
+      "♭7̂"
+    ],
+    "displayContext": {
+      "tonic": "G"
+    },
+    "expectedRelativeIonianRoman": "V7/♭II(min)"
+  },
+  {
+    "id": "relative-leading-tone-spelling",
+    "key": {
+      "tonic": "A",
+      "scale": "harmonicMinor"
+    },
+    "chord": {
+      "root": 7,
+      "type": 5
+    },
+    "expectedRootMidi": 56,
+    "expectedToneLabels": [
+      "1̂",
+      "♭3̂",
+      "♭5̂"
+    ],
+    "displayContext": {
+      "tonic": "C"
+    },
+    "expectedRelativeIonianRoman": "♯v°"
+  },
+  {
+    "id": "dual-suspension-roles",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "type": 7,
+      "suspensions": [
+        2,
+        4
+      ],
+      "omits": [
+        5
+      ]
+    },
+    "expectedRootMidi": 48,
+    "expectedToneLabels": [
+      "1̂",
+      "2̂",
+      "4̂",
+      "♭7̂"
+    ]
+  },
+  {
+    "id": "harmonic-minor-dual-suspension",
+    "key": {
+      "tonic": "C",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 6,
+      "type": 7,
+      "borrowed": "harmonicMinor",
+      "suspensions": [
+        2,
+        4
+      ],
+      "omits": [
+        5
+      ]
+    },
+    "expectedRootMidi": 56,
+    "expectedToneLabels": [
+      "1̂",
+      "♯2̂",
+      "♯4̂",
+      "7̂"
+    ]
+  },
+  {
+    "id": "dominant-eleventh-shell",
+    "key": {
+      "tonic": "G",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 5,
+      "type": 11
+    },
+    "expectedRootMidi": 50,
+    "expectedToneLabels": [
+      "1̂",
+      "11̂",
+      "♭7̂",
+      "9̂"
+    ]
+  },
+  {
+    "id": "harmonic-minor-dominant-eleventh-shell",
+    "key": {
+      "tonic": "D",
+      "scale": "harmonicMinor"
+    },
+    "chord": {
+      "root": 5,
+      "type": 11
+    },
+    "expectedRootMidi": 57,
+    "expectedToneLabels": [
+      "1̂",
+      "11̂",
+      "♭7̂",
+      "♭9̂"
+    ]
+  },
+  {
+    "id": "phrygian-dominant-raised-suspension",
+    "key": {
+      "tonic": "C",
+      "scale": "phrygianDominant"
+    },
+    "chord": {
+      "root": 2,
+      "type": 7,
+      "inversion": 3,
+      "suspensions": [
+        2
+      ]
+    },
+    "expectedRootMidi": 49,
+    "expectedToneLabels": [
+      "7̂",
+      "1̂",
+      "♯2̂",
+      "5̂"
+    ]
+  },
+  {
+    "id": "minor-eleventh-omitted-triad",
+    "key": {
+      "tonic": "A",
+      "scale": "minor"
+    },
+    "chord": {
+      "root": 2,
+      "type": 11,
+      "omits": [
+        3,
+        5
+      ]
+    },
+    "expectedRootMidi": 59,
+    "expectedToneLabels": [
+      "1̂",
+      "♭9̂",
+      "11̂",
+      "♭7̂"
+    ]
+  },
+  {
+    "id": "explicit-flat-eleventh",
+    "key": {
+      "tonic": "C",
+      "scale": "major"
+    },
+    "chord": {
+      "root": 1,
+      "type": 11,
+      "alterations": [
+        "b11"
+      ]
+    },
+    "expectedRootMidi": 48,
+    "expectedToneLabels": [
+      "1̂",
+      "♭11̂",
+      "7̂",
+      "9̂"
+    ]
+  }
+]

@@ -50,13 +50,11 @@ public struct RomanNumeralDisplay: Equatable, Sendable {
         }
 
         borrowedLabel = label
-        self.symbol = label == nil
-            ? symbol
-            : symbol.replacingOccurrences(
-                of: #"\((min|mix|dor|phr|lyd|loc|maj|hmin|phdm|bor)\)"#,
-                with: "",
-                options: .regularExpression
-            )
+        var displayed = symbol
+        if let label, let range = displayed.range(of: label, options: .backwards) {
+            displayed.removeSubrange(range)
+        }
+        self.symbol = displayed
     }
 
     public var accessibilityLabel: String {

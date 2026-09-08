@@ -3,8 +3,9 @@ import { TRIAD_DEGREES, MAJOR_SCALE_CHORD_QUALITIES } from "./scales.js";
 import { replaceTriadThird } from "./chordSuspensions.js";
 import { applyChordModifiers, applyTypeExtensions } from "./chordModifiers.js";
 import { shiftNoteBySemitones, shiftPitchClass, noteLabel, noteNameToPc } from "./chordNoteUtils.js";
-import { applySuspendedExtensionVoicing, finalizeVoicing } from "./chordVoicing.js";
+import { applySuspendedExtensionVoicing, applyEleventhVoicing, finalizeVoicing } from "./chordVoicing.js";
 import { resolveChordPolicy, enrichModifierChord } from "./chordPolicy.js";
+import { applyScaleExtensionPitches } from "./chordScaleExtensions.js";
 import {
   resolveSeventhDegree, resolveOmitTriad35Seventh, resolveAppliedSeventhDegree,
   applySeventhToChord,
@@ -276,22 +277,49 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
     toneJSNames, degreeIndices, chordRootNoteName, baseOctave, chordType, sdToToneJSNoteName, triadQuality,
     { natural11: policy.natural11, skipNine: skipNine || policy.skipNine, skipThirteenth: policy.skipThirteenth, customBorrowedHalfDimM7: policy.customBorrowedHalfDimM7, customBorrowedDimNatural11: policy.customBorrowedDimNatural11, dim11Natural: policy.dim11Natural, alterations: effModifierChord?.alterations, applied: !!effModifierChord?.appliedContext, halfDim: !!effModifierChord?.halfDim || policy.halfDim, borrowed },
   );
+  applyScaleExtensionPitches(toneJSNames, degreeIndices, chordRootNoteName, chordRootSD,
+    modifiedKey, customScaleIntervals, { ...effModifierChord, type: chordType, borrowed }, policy);
 
-  replaceTriadThird(toneJSNames, degreeIndices, chordRootNoteName, baseOctave, suspensions, sdToToneJSNoteName);
+  replaceTriadThird(toneJSNames, degreeIndices, chordRootNoteName, baseOctave, suspensions, sdToToneJSNoteName,
+    { scale: modifiedKey.scale, degree: chordRootSD, phdmIImaj7: policy.phdmIImaj7 });
+
+  // Junko Shiratsu, Speed of Sound / Pre-Chorus 30.5: the raw diminished
+  // no5/sus2 frame plays the prevailing scale's second (F#–G), not F#–G#.
+  // Explicit symbol frames keep their separately established voicing rules.
+  if (chordQuality === "diminished" && modifierChord?.omits?.includes(5)
+      && suspensions.includes(2)
+      && !modifierChord?.halfDim && !modifierChord?.dimTriad
+      && !modifierChord?.appliedContext && !modifierChord?.applied) {
+    const index = degreeIndices.indexOf(7);
+    const desired = noteNameToPc(getNoteLabel(chordRootSD % 7 + 1, modifiedKey, customScaleIntervals));
+    if (index >= 0 && desired != null) {
+      let shift = desired - noteNameToPc(toneJSNames[index]);
+      while (shift > 6) shift -= 12;
+      while (shift < -6) shift += 12;
+      toneJSNames[index] = shiftNoteBySemitones(toneJSNames[index], shift);
+    }
+  }
 
   applyChordModifiers(
     toneJSNames, degreeIndices, chordRootNoteName, baseOctave,
-    { ...effModifierChord, triadQuality, halfDim: !effModifierChord?.dimTriad && (!!effModifierChord?.halfDim || policy.halfDim), augmentedTriad: triadQuality === "augmented" },
+    { ...effModifierChord, triadQuality, retainHalfDimOmittedFifth: !effModifierChord?.dimTriad && !!effModifierChord?.halfDim,
+      halfDim: !effModifierChord?.dimTriad && (!!effModifierChord?.halfDim || policy.halfDim), augmentedTriad: triadQuality === "augmented" },
     sdToToneJSNoteName,
   );
 
   applySuspendedExtensionVoicing(toneJSNames, degreeIndices, chordRootNoteName, modifierChord);
+  applyEleventhVoicing(toneJSNames, degreeIndices, modifierChord, { chordType, inversion });
 
   // Apply secondary dominant transformations
   applySecondaryDominant(toneJSNames, degreeIndices, chordRootNoteName, chordQuality, baseOctave);
 
   // Apply inversion
-  applyInversion(toneJSNames, degreeIndices, inversion, baseOctave);
+  // Omitting the fifth leaves three tones; a third inversion still selects
+  // the seventh, rather than rotating three times back to the root.
+  const seventhInversion = inversion === 3 && modifierChord?.omits?.includes(5)
+    && !modifierChord?.halfDim && !modifierChord?.dimTriad
+    ? degreeIndices.indexOf(3) : -1;
+  applyInversion(toneJSNames, degreeIndices, seventhInversion >= 0 ? seventhInversion : inversion, baseOctave);
   const omit3Power = modifierChord?.omits?.includes(3)
     && !modifierChord?.omits?.includes(5)
     && chordType < 7;
@@ -314,7 +342,7 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
     chordType,
   );
 
-  return { notes: toneJSNames, chordDegrees: baseKeyDegrees };
+  return { notes: toneJSNames, chordDegrees: baseKeyDegrees, rootMidi: 48 + noteNameToPc(chordRootNoteName) };
 }
 
 const TRIAD_SEMITONES = {
@@ -364,6 +392,7 @@ export function buildChordFromNoteName(rootNoteName, quality, originalKey, baseO
   applyChordModifiers(toneJSNames, degreeIndices, rootNoteName, baseOctave, modifierChord, sdToToneJSNoteName);
 
   applySuspendedExtensionVoicing(toneJSNames, degreeIndices, rootNoteName, modifierChord);
+  applyEleventhVoicing(toneJSNames, degreeIndices, modifierChord, { chordType, inversion });
   
   // Apply inversion
   if (inversion > 0) {
@@ -446,5 +475,5 @@ export function buildChordFromNoteName(rootNoteName, quality, originalKey, baseO
     chordType,
   );
 
-  return { notes: toneJSNames, chordDegrees: baseKeyDegrees };
+  return { notes: toneJSNames, chordDegrees: baseKeyDegrees, rootMidi: 48 + noteNameToPc(rootNoteName) };
 }

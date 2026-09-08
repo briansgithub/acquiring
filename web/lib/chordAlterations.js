@@ -20,6 +20,7 @@ const ALT_RULES = {
 
   "9": { src: 2, delta: 0 },
 
+  b11: { src: 5, delta: -1, addSd: "b4", addOct: 1 },
   "#11": { src: 5, delta: 1, addSd: "#4", addOct: 1 },
 
   "11": { src: 5, delta: 0 },
@@ -166,6 +167,18 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
 
 
     if (key === "b9" || key === "#9" || key === "9") {
+      // Scale borrowing can already have flattened the ninth. Alter its role,
+      // not only a natural-ninth pitch: a #9 may share the third's pitch class,
+      // but must survive when an eleventh voicing omits that third.
+      const ninthIndex = degreeIndices.indexOf(4);
+      if (ninthIndex >= 0 && (chord?.type || 5) >= 9 && (chord?.type || 5) <= 11) {
+        const desiredPc = (rootPc + 2 + rule.delta + 12) % 12;
+        let shift = desiredPc - noteNameToPc(toneJSNames[ninthIndex]);
+        while (shift > 6) shift -= 12;
+        while (shift < -6) shift += 12;
+        if (shift) toneJSNames[ninthIndex] = shiftNoteBySemitones(toneJSNames[ninthIndex], shift);
+        continue;
+      }
       if (key === "#9" && (chord?.type || 5) >= 13) {
         const sharp11Pc = (rootPc + 6) % 12;
         if (!hasPc(toneJSNames, sharp11Pc)) {
@@ -178,6 +191,7 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
       for (let i = 0; i < toneJSNames.length; i++) {
         if (noteNameToPc(toneJSNames[i]) === ninthPc) {
           found = true;
+          degreeIndices[i] = 4;
           if (rule.delta !== 0) toneJSNames[i] = shiftNoteBySemitones(toneJSNames[i], rule.delta);
           break;
         }
@@ -186,7 +200,7 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
         const targetPc = (ninthPc + rule.delta + 12) % 12;
         if (!hasPc(toneJSNames, targetPc)) {
           toneJSNames.push(sdToToneJSNoteName(rule.addSd, rule.addOct ?? 1, rk, baseOctave));
-          degreeIndices.push(degreeIndices.length);
+          degreeIndices.push(4);
         }
       }
       continue;
@@ -196,7 +210,7 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
       const flat13Pc = (rootPc + 8) % 12;
       if (!hasPc(toneJSNames, flat13Pc) && sdToToneJSNoteName) {
         toneJSNames.push(sdToToneJSNoteName("b6", 1, rk, baseOctave));
-        degreeIndices.push(degreeIndices.length);
+        degreeIndices.push(6);
       }
       continue;
     }
@@ -208,7 +222,7 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
       const sharp11Pc = (rootPc + 6) % 12;
       if (!hasPc(toneJSNames, sharp11Pc) && rule.addSd && sdToToneJSNoteName) {
         toneJSNames.push(sdToToneJSNoteName(rule.addSd, rule.addOct ?? 1, rk, baseOctave));
-        degreeIndices.push(degreeIndices.length);
+        degreeIndices.push(5);
       }
       continue;
     }
@@ -220,6 +234,7 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
       if (noteNameToPc(toneJSNames[i]) === srcPc) {
 
         found = true;
+        degreeIndices[i] = key.includes("13") ? 6 : 5;
 
         if (rule.delta !== 0) toneJSNames[i] = shiftNoteBySemitones(toneJSNames[i], rule.delta);
 
@@ -237,7 +252,7 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
 
         toneJSNames.push(sdToToneJSNoteName(rule.addSd, rule.addOct ?? 1, rk, baseOctave));
 
-        degreeIndices.push(degreeIndices.length);
+        degreeIndices.push(key.includes("13") ? 6 : 5);
 
       }
 
@@ -246,4 +261,3 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
   }
 
 }
-

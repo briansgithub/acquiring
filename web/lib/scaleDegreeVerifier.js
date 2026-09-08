@@ -42,8 +42,8 @@ export function parseDegreeLabel(label) {
  */
 export function pitchClassForDegreeLabel(label, key) {
   const { degree, semitoneOffset } = parseDegreeLabel(label);
-  if (degree < 1 || degree > 7) return null;
-  const diatonic = getNoteLabel(degree, key);
+  if (degree < 1 || degree > 13) return null;
+  const diatonic = getNoteLabel(((degree - 1) % 7) + 1, key);
   if (!diatonic) return null;
   const spelled = shiftNoteBySemitones(`${diatonic}4`, semitoneOffset);
   return noteNameToPc(spelled);
@@ -143,14 +143,9 @@ export function verifyInterpretedChord(chord, key, opts = {}) {
 
 /** Return the major-scale key used for chord-tone labels. */
 export function chordDegreeKey(chord, key) {
-  const rootPosition = chordInterpreter(chord, key, { forceRootPosition: true });
-  const rootDegreeIndex = (rootPosition?.chordDegrees || []).findIndex((label) => {
-    const parsed = parseDegreeLabel(label);
-    return parsed.degree === 1 && parsed.modifier === "";
-  });
-  const rootNoteIndex = rootDegreeIndex >= 0 ? rootDegreeIndex : 0;
-  const rootNote = String(rootPosition?.notes?.[rootNoteIndex] || "").replace(/-?\d+$/, "");
-  return rootNote ? { tonic: rootNote, scale: "major" } : key;
+  const interpreted = chordInterpreter(chord, key);
+  const names = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+  return interpreted.rootMidi == null ? key : { tonic: names[interpreted.rootMidi % 12], scale: "major" };
 }
 
 /**

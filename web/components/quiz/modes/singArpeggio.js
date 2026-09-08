@@ -15,8 +15,6 @@ import {
   cueQuestionAudio,
 } from "./modeUtils.js";
 
-const LABELS = ["root", "3rd", "5th", "7th"];
-
 export const singArpeggio = {
   id: "singArpeggio",
   label: "Sing Arpeggio",
@@ -63,7 +61,7 @@ export const singArpeggio = {
     }
 
     function renderPrompt() {
-      const label = LABELS[toneIdx] || `tone ${toneIdx + 1}`;
+      const label = target.rootDegrees?.[toneIdx] ? `chord tone ${target.rootDegrees[toneIdx]}` : `tone ${toneIdx + 1}`;
       promptEl.innerHTML = `Sing the ${label} (${toneIdx + 1}/${target.rootNotes.length}) — <span class="quiz-chord-sym" data-quiz-symbol="${target.symbol}">${ctx.romanHtml(target.symbol)}</span>`;
       chordTools.wireStaticChords(promptEl);
       chordTools.syncDisplay(target);

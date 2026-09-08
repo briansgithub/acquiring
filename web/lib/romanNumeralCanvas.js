@@ -16,6 +16,7 @@ const SUFFIX_SCALE = 0.72;
 export function normalizeSymbolDigits(symbol) {
   if (!symbol) return '';
   return String(symbol)
+    .replace(/[¹²³]/g, (c) => ({ '¹': '1', '²': '2', '³': '3' })[c])
     .replace(/[\u2070-\u2079]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0x2070 + 0x30))
     .replace(/[\u2080-\u2089]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0x2080 + 0x30));
 }
@@ -366,12 +367,15 @@ export function tokenizeRomanNumeral(symbol) {
       continue;
     }
     if (ch === '/') {
+      parts.push({ kind: 'base', text: '/' });
+      i += 1;
       const slashBase = readBase(normalized, i);
       if (slashBase.text) {
         parts.push({ kind: 'base', text: slashBase.text });
         i = slashBase.next;
         continue;
       }
+      continue;
     }
     if (ch === '(') {
       const tag = readParen(normalized, i);

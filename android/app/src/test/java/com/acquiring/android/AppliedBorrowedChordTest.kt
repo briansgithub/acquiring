@@ -12,10 +12,8 @@ import org.robolectric.annotation.Config
  * Regression coverage for applied+borrowed chords (modal-mixture secondary dominants /
  * functions), ported from web/lib/chordBuild.js's resolveAppliedBorrowedChord.
  *
- * Per the ported parity decision, the Roman numeral / letter name LABEL for these chords
- * intentionally does NOT reflect the borrow (matches web/lib/jsonToSymbol.js's
- * getChordSymbol, whose applied branch never reads chord.borrowed), while the actual SOUND
- * (getChordNotes / resolveChordRoot) IS tonicized against the borrowed-resolved target.
+ * The Roman denominator, letter root, and sound all resolve their tonicization
+ * target from the borrowed scale.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
@@ -28,8 +26,7 @@ class AppliedBorrowedChordTest {
 
     @Test
     fun v7OfFlatSixBorrowedFromMinor_soundsTonicizedAgainstTheBorrowedTarget() {
-        // {root: 6, applied: 5, borrowed: "minor", type: 7} in C major = V7/bVI ("V7/vi(maj)"
-        // as a label, since bVI's minor-key origin makes the denominator read as major-ized).
+        // {root: 6, applied: 5, borrowed: "minor", type: 7} in C major = V7/bVI(min).
         // Sound: bVI is Ab (degree 6 of C minor); V7 of Ab major is Eb7.
         val chordJson = chord("""{"root": 6, "applied": 5, "borrowed": "minor", "type": 7}""")
 
@@ -41,8 +38,8 @@ class AppliedBorrowedChordTest {
         val notes = ChordInterpreter.getChordNotes(chordJson, cMajor)
         assertEquals(setOf(3, 7, 10, 1), notes.map { it % 12 }.toSet())
 
-        assertEquals("V7/vi(maj)", ChordInterpreter.getRomanSymbol(chordJson, cMajor))
-        assertEquals("E7", ChordInterpreter.getLetterName(chordJson, cMajor))
+        assertEquals("V7/♭VI(min)", ChordInterpreter.getRomanSymbol(chordJson, cMajor))
+        assertEquals("Eb7", ChordInterpreter.getLetterName(chordJson, cMajor))
     }
 
     @Test
@@ -58,8 +55,8 @@ class AppliedBorrowedChordTest {
         val notes = ChordInterpreter.getChordNotes(chordJson, cMajor)
         assertEquals(setOf(5, 9, 0, 3), notes.map { it % 12 }.toSet())
 
-        assertEquals("V7/vii°", ChordInterpreter.getRomanSymbol(chordJson, cMajor))
-        assertEquals("F#7", ChordInterpreter.getLetterName(chordJson, cMajor))
+        assertEquals("V7/♭VII(min)", ChordInterpreter.getRomanSymbol(chordJson, cMajor))
+        assertEquals("F7", ChordInterpreter.getLetterName(chordJson, cMajor))
     }
 
     @Test
@@ -83,9 +80,7 @@ class AppliedBorrowedChordTest {
         // minor degree 6); the tritone-sub dominant root is a tritone above Ab's V (Eb), i.e.
         // "b2" of Ab major. Diatonic letter-based spelling (matching the existing non-borrowed
         // triSub root spelling in resolveChordRoot) gives Bbb, enharmonic to A (pc 9) - the
-        // simpler PC_SPELL-flat spelling "A" is what getChordNotes/getLetterName use instead;
-        // this same single-flat-vs-diatonic-letter divergence already exists for the
-        // non-borrowed triSub case (see resolveChordRoot vs getChordNotes/getLetterName).
+        // letter name keeps this diatonic spelling while playback uses its pitch class.
         val chordJson = chord(
             """{"root": 6, "applied": 5, "borrowed": "minor", "substitutions": ["tri"]}"""
         )
@@ -94,6 +89,7 @@ class AppliedBorrowedChordTest {
         assertEquals("Bbb", root?.pitch?.noteName)
         assertEquals(ChordRootContext.TRITONE_SUBSTITUTION, root?.context)
         assertEquals("major", root?.chordQuality)
+        assertEquals("Bbb", ChordInterpreter.getLetterName(chordJson, cMajor))
 
         val notes = ChordInterpreter.getChordNotes(chordJson, cMajor)
         assertEquals(setOf(9, 1, 4), notes.map { it % 12 }.toSet())

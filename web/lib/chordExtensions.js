@@ -14,7 +14,7 @@ export function applyTypeExtensions(toneJSNames, degreeIndices, chordRootNoteNam
   if (opts.customBorrowedHalfDimM7 && triadQuality === "minor" && chordType >= 11) {
     if (!hasPc(toneJSNames, (rootPc + 1) % 12)) {
       toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 1));
-      degreeIndices.push(5);
+      degreeIndices.push(4);
     }
   } else if ((opts.customBorrowedDimNatural11 || opts.dim11Natural) && triadQuality === "diminished" && chordType >= 11) {
     if (!hasPc(toneJSNames, (rootPc + 1) % 12)) {
@@ -29,7 +29,7 @@ export function applyTypeExtensions(toneJSNames, degreeIndices, chordRootNoteNam
     if (opts.halfDim && opts.skipNine && opts.borrowed !== "lydian") {
       if (!hasPc(toneJSNames, (rootPc + 1) % 12)) {
         toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 1));
-        degreeIndices.push(5);
+        degreeIndices.push(4);
       }
     } else if (!hasPc(toneJSNames, (rootPc + 5) % 12)) {
       toneJSNames.push(shiftNoteBySemitones(toneJSNames[0], 5));

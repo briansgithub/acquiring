@@ -11,6 +11,7 @@ import {
   getScaleChordQualities,
 } from "./musicScale.js";
 import { rootToDiatonicTriad, buildChordFromNoteName, voicingWithSlashBass } from "./chordBuild.js";
+import { isLetterAnchoredChord } from "./letterAnchoredChord.js";
 
 export {
   parseKey,
@@ -24,6 +25,9 @@ export {
 export { borrowedModeDimSeventhDegree } from "./chordPolicy.js";
 
 export function chordInterpreter(chord, key, opts = {}) {
+  if (!chord || chord.isRest || chord.rest || ((!Number.isInteger(chord.root) || chord.root < 1 || chord.root > 7) && !isLetterAnchoredChord(chord))) {
+    return { notes: [], chordDegrees: [], rootMidi: null };
+  }
   const intent = resolveHarmonicIntent(chord, key, opts);
   const effective = intent.rawChord;
   const defaultChordOctave = intent.baseOctave || 3;
@@ -42,7 +46,7 @@ export function chordInterpreter(chord, key, opts = {}) {
     );
     if (intent.slashBassName) {
       const voiced = voicingWithSlashBass(built.notes, built.chordDegrees, intent.slashBassName);
-      return { notes: voiced.notes, chordDegrees: voiced.chordDegrees };
+      return { notes: voiced.notes, chordDegrees: voiced.chordDegrees, rootMidi: built.rootMidi };
     }
     return built;
   }
