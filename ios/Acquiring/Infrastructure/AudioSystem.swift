@@ -211,8 +211,9 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     }
 
     private func schedulePreview(_ sourceRequest: PreviewRequest, token: UInt64) async throws -> Bool {
-        // Musical callers supply source pitches. Apply the shared instrument
-        // and absolute transpose once here; measured microphone pitches opt out.
+        // The shared instrument is applied to every preview here. Musical callers supply
+        // source pitches and also take the absolute transpose; measured microphone pitches
+        // opt out of that alone.
         let request = configuredPreview(sourceRequest)
         guard previewGeneration.isCurrent(token), !Task.isCancelled else { return false }
         previewRender?.task.cancel()
@@ -963,8 +964,12 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         let session = AVAudioSession.sharedInstance()
         for attempt in 0..<4 {
             try Task.checkCancellation()
-            guard pendingMicrophone?.id == id else { throw CancellationError() }
-            try configureSession(category: .playAndRecord, captureProfile: profile)
+            guard let pending = pendingMicrophone, pending.id == id else { throw CancellationError() }
+            try configureSession(
+                category: .playAndRecord,
+                captureProfile: profile,
+                captureOwner: pending.owner
+            )
 
             if session.currentRoute.inputs.isEmpty,
                let builtIn = session.availableInputs?.first(where: { $0.portType == .builtInMic }) {
@@ -1001,18 +1006,43 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     static let microphoneStartFailureMessage =
         "The iPhone microphone could not start. Try recording again; if it persists, close and reopen the app."
 
+    /// `.measurement` is the closest iOS has to Android's UNPROCESSED input, and the
+    /// interval tool and tessitura calibration want it: they pause the song, own the
+    /// device alone, and are measuring a sung pitch to the cent.
+    ///
+    /// It cannot be used for persistent monitoring. The mode is a property of the whole
+    /// session, not of its input, so it strips processing from the *output* too - the
+    /// song keeps playing underneath monitoring, and in measurement mode it plays thin
+    /// and far too quiet. Default mode also gives that capture echo cancellation, which
+    /// monitoring specifically needs: without it the detector hears the backing track
+    /// through the speaker and tracks the song rather than the singer.
+    private func captureMode(for owner: MicrophoneOwner?) -> AVAudioSession.Mode {
+        switch owner {
+        case .singingTool, .tessitura: .measurement
+        case .persistentPractice, nil: .default
+        }
+    }
+
     private func configureSession(
         category: AVAudioSession.Category,
-        captureProfile: PitchTrackingProfile? = nil
+        captureProfile: PitchTrackingProfile? = nil,
+        captureOwner: MicrophoneOwner? = nil
     ) throws {
         recordAudioEvent("session.configure", details: ["requestedCategory": category.rawValue])
         let session = AVAudioSession.sharedInstance()
         let options: AVAudioSession.CategoryOptions = category == .playAndRecord
             ? [.defaultToSpeaker, .allowAirPlay, .allowBluetoothA2DP, .allowBluetoothHFP]
             : []
-        let mode: AVAudioSession.Mode = category == .playAndRecord ? .measurement : .default
+        let owner = captureOwner ?? activeMicrophone?.owner ?? pendingMicrophone?.owner
+        let mode: AVAudioSession.Mode = category == .playAndRecord ? captureMode(for: owner) : .default
 
         if session.category != category || session.mode != mode || session.categoryOptions != options {
+            // Leaving a recording category while this engine still holds an input node is
+            // refused with '!pri', and the refusal sticks: every later preview and quiz
+            // start re-attempts the same change, fails the same way, and the device has no
+            // sound until the app is restarted. AVAudioEngine cannot detach an input node,
+            // so the graph has to go before the category can.
+            if category != .playAndRecord { retireInputNodeBeforeCategoryChange() }
             do {
                 try audioOperation("session.setCategory") { try session.setCategory(category, mode: mode, options: options) }
             } catch {
@@ -1079,13 +1109,35 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
 
     private func configureSessionForCurrentNeeds() throws {
         if let activeMicrophone {
-            try configureSession(category: .playAndRecord, captureProfile: activeMicrophone.profile)
+            try configureSession(
+                category: .playAndRecord,
+                captureProfile: activeMicrophone.profile,
+                captureOwner: activeMicrophone.owner
+            )
         } else if let pendingMicrophone {
             // Playback/previews must not turn input off while acquisition is settling.
-            try configureSession(category: .playAndRecord, captureProfile: pendingMicrophone.profile)
+            try configureSession(
+                category: .playAndRecord,
+                captureProfile: pendingMicrophone.profile,
+                captureOwner: pendingMicrophone.owner
+            )
         } else {
             try configureSession(category: .playback)
         }
+    }
+
+    /// Retires a graph holding an input node so the session can leave `.playAndRecord`.
+    ///
+    /// Distinct from `replaceEngineIfInputNodeBlocksPlayback`, which runs before a start on
+    /// an already-stopped engine. This one runs on whatever is there, including a running
+    /// capture graph, because the category change is refused otherwise. `rebuildAudioEngine`
+    /// stops the engine first, so it cannot cut audio mid-render; an in-flight preview is
+    /// retired with it, which the category change would have broken anyway.
+    private func retireInputNodeBeforeCategoryChange() {
+        guard engineHasInputNode, pendingMicrophone == nil, activeMicrophone == nil else { return }
+        recordAudioEvent("engine.replaceBeforeCategoryChange")
+        invalidatePreviewPlayback()
+        rebuildAudioEngine()
     }
 
     private static func makeSourceNode(
@@ -1203,7 +1255,11 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     private func transitionSessionAfterMicrophoneRelease() {
         do {
             if let pendingMicrophone {
-                try configureSession(category: .playAndRecord, captureProfile: pendingMicrophone.profile)
+                try configureSession(
+                    category: .playAndRecord,
+                    captureProfile: pendingMicrophone.profile,
+                    captureOwner: pendingMicrophone.owner
+                )
                 return
             }
             if quizPlaybackRequested || player.isPlaying {
@@ -1236,9 +1292,15 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
             )
     }
 
+    /// Every preview the app plays uses the instrument currently selected, the singing
+    /// tool's exact replays included - the instrument is a global choice, and a tool that
+    /// answered in a different timbre from the cards beside it read as a bug. Only the
+    /// quiz transpose is opt-in, because those replays are of measured frequencies and
+    /// shifting them would answer a question the singer did not ask.
     private func configuredPreview(_ request: PreviewRequest) -> PreviewRequest {
-        guard request.usesMusicalConfiguration else { return request }
-        let transposeSemitones = quizContext?.soundConfiguration.transposeSemitones ?? 0
+        let transposeSemitones = request.appliesQuizTranspose
+            ? (quizContext?.soundConfiguration.transposeSemitones ?? 0)
+            : 0
         let pitchRatio = pow(2, Double(transposeSemitones) / 12)
         return PreviewRequest(
             frequenciesHz: request.frequenciesHz.map { $0 * pitchRatio },
@@ -1247,7 +1309,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
             arpeggioStep: request.arpeggioStep,
             waveform: sessionInstrument,
             gain: request.gain,
-            usesMusicalConfiguration: false
+            appliesQuizTranspose: false
         )
     }
 

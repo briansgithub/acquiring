@@ -93,7 +93,11 @@ public struct PreviewRequest: Equatable, Sendable {
     public let arpeggioStep: Duration
     public let waveform: SynthWaveform
     public let gain: Float
-    public let usesMusicalConfiguration: Bool
+    /// Whether the quiz's transpose applies. Off for replays of measured frequencies,
+    /// which must sound at the pitch they were measured at. Deliberately not about the
+    /// instrument: that is a global choice the audio boundary applies to every preview,
+    /// and a flag covering both is how a tool ended up permanently playing clarinet.
+    public let appliesQuizTranspose: Bool
 
     public init(
         frequenciesHz: [Double],
@@ -102,7 +106,7 @@ public struct PreviewRequest: Equatable, Sendable {
         arpeggioStep: Duration = .milliseconds(160),
         waveform: SynthWaveform = .clarinet,
         gain: Float = 1,
-        usesMusicalConfiguration: Bool = true
+        appliesQuizTranspose: Bool = true
     ) {
         self.frequenciesHz = frequenciesHz
         self.duration = duration
@@ -110,7 +114,7 @@ public struct PreviewRequest: Equatable, Sendable {
         self.arpeggioStep = arpeggioStep
         self.waveform = waveform
         self.gain = gain
-        self.usesMusicalConfiguration = usesMusicalConfiguration
+        self.appliesQuizTranspose = appliesQuizTranspose
     }
 }
 
