@@ -925,8 +925,7 @@ struct QuizView: View {
     @State private var showsAudioDiagnostics = false
     @State private var showsSongInformation = false
     @State private var usesRelativeIonianContext = false
-    /// Drives the help overlay the circled question mark toggles on the quiz controls.
-    @State private var showsTooltips = false
+    @Environment(\.quizHelpState) private var quizHelp
     @State private var tempoPercent = 100.0
     @State private var soundConfiguration = QuizSoundConfiguration()
     @State private var quizCardPreviewTask: Task<Void, Never>?
@@ -1108,8 +1107,8 @@ struct QuizView: View {
         let selected = sections.first(where: { $0.id == selectedSectionID }) ?? sections.first
 
         return GeometryReader { viewport in
-            // The dense Quiz dashboard fits its text to the available viewport.
-            // Keep all targets >=44pt without a page-level pan recognizer competing with controls.
+            // Keep fixed-size cards reachable when the expanded dock leaves less
+            // room. Only the dashboard scrolls; transport stays above the dock.
             let maximumControlType: DynamicTypeSize = viewport.size.height >= 760 ? .xxxLarge : .large
             Group {
                 VStack(spacing: 4) {
@@ -1118,10 +1117,16 @@ struct QuizView: View {
                             initialKey: selected.section.key(at: PlaybackTiming.firstBeat),
                             currentKey: selected.section.key(at: currentBeat(in: selected.section)),
                             usesRelativeIonianContext: $usesRelativeIonianContext,
-                            showsTooltips: $showsTooltips
+                            quizHelp: quizHelp
                         )
 
-                        quizSurface(selected.section, sectionID: selected.id)
+                        ViewThatFits(in: .vertical) {
+                            quizSurface(selected.section, sectionID: selected.id)
+                                .fixedSize(horizontal: false, vertical: true)
+                            ScrollView {
+                                quizSurface(selected.section, sectionID: selected.id)
+                            }
+                        }
                     }
                 }
                 .padding(.horizontal, 12)
@@ -1135,9 +1140,12 @@ struct QuizView: View {
         // The parent scene reserves the separate, expandable singing dock.
         .safeAreaInset(edge: .bottom, spacing: 4) {
             if let selected {
-                HStack {
-                    Spacer(minLength: 0)
-                    transportControls(sectionID: selected.id, sections: sections)
+                VStack(spacing: 4) {
+                    quizTransportBar(section: selected.section, sectionID: selected.id)
+                    HStack {
+                        Spacer(minLength: 0)
+                        transportControls(sectionID: selected.id, sections: sections)
+                    }
                 }
                 .padding(.horizontal, 12)
                 .padding(.bottom, 12)
@@ -1225,10 +1233,8 @@ struct QuizView: View {
                 }
                 quizCards(section: section, sectionID: sectionID, beat: beat)
                 playbackKnobs(sectionID: sectionID)
-                quizTransportBar(section: section, sectionID: sectionID)
-                Spacer(minLength: 0)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .frame(maxWidth: .infinity, alignment: .top)
     }
 
     /// The lanes are a lighter wash of whatever color the key readout above them is
@@ -2744,7 +2750,8 @@ private struct QuizHeader: View {
     let initialKey: KeyInfo
     let currentKey: KeyInfo
     @Binding var usesRelativeIonianContext: Bool
-    @Binding var showsTooltips: Bool
+    let quizHelp: QuizHelpState?
+    @AccessibilityFocusState private var helpButtonIsFocused: Bool
 
     private var displayedKey: KeyInfo {
         usesRelativeIonianContext ? RelativeIonianContext.key(for: initialKey) : currentKey
@@ -2775,6 +2782,9 @@ private struct QuizHeader: View {
             }
         }
         .frame(height: 44)
+        .onChange(of: quizHelp?.focusHelpButtonRequest) { _, _ in
+            helpButtonIsFocused = true
+        }
     }
 
     private var keyLabel: some View {
@@ -2811,19 +2821,21 @@ private struct QuizHeader: View {
             .accessibilityValue(usesRelativeIonianContext ? "On" : "Off")
             .accessibilityHint("Updates key, card degrees, and practice targets to the relative major key")
             .accessibilityIdentifier("quiz.lockInMajor")
+            .quizHelpTarget(.quizRelativeKey)
     }
 
     private var helpButton: some View {
         Button {
-            showsTooltips.toggle()
+            quizHelp?.toggle()
         } label: {
-            Image(systemName: showsTooltips ? "questionmark.circle.fill" : "questionmark.circle")
+            Image(systemName: quizHelp?.isPresented == true ? "questionmark.circle.fill" : "questionmark.circle")
         }
         .buttonStyle(QuizIconButtonStyle())
-        .accessibilityLabel("Show tooltips")
-        .accessibilityValue(showsTooltips ? "On" : "Off")
+        .accessibilityLabel(quizHelp?.isPresented == true ? "Hide tooltips" : "Show tooltips")
+        .accessibilityValue(quizHelp?.isPresented == true ? "On" : "Off")
         .accessibilityHint("Labels the less obvious quiz controls")
         .accessibilityIdentifier("quiz.help")
+        .accessibilityFocused($helpButtonIsFocused)
     }
 
     // Android's key readout keeps the current source mode's color even when the

@@ -5,6 +5,7 @@ import UIKit
 
 struct LibraryScene: View {
     @State private var store: LibraryStore
+    @State private var quizHelp = QuizHelpState()
     @AppStorage private var hasCompletedIntroduction: Bool
     @Environment(\.scenePhase) private var scenePhase
     private let environment: AppEnvironment
@@ -63,8 +64,10 @@ struct LibraryScene: View {
         }
         .environment(store.userContent)
         .environment(environment.vocalPractice)
+        .quizHelpHost(state: quizHelp)
         .tessituraCalibrationPresentation(model: environment.vocalPractice)
         .onChange(of: store.path) { _, path in
+            quizHelp.dismiss()
             let remainsInSong = path.last.map { route in
                 switch route {
                 case .songDetail, .quiz: true
@@ -81,6 +84,7 @@ struct LibraryScene: View {
             }
         }
         .onChange(of: scenePhase) { _, phase in
+            if phase != .active { quizHelp.dismiss() }
             if phase != .active { environment.audio.pauseForAppInactivity() }
             if phase == .background { environment.vocalPractice.handleSceneBackgrounded() }
         }
@@ -688,7 +692,7 @@ struct SongRow: View {
 
 private struct CatalogSettingsView: View {
     @Bindable var store: LibraryStore
-    @State private var showsIntroduction = false
+    @State private var showsHelp = false
     @AppStorage(QuizNavigationPreference.edgeSwipeBackKey, store: QuizNavigationPreference.defaults)
     private var enablesQuizEdgeSwipeBack = false
 
@@ -705,11 +709,11 @@ private struct CatalogSettingsView: View {
             }
             Section {
                 Button {
-                    showsIntroduction = true
+                    showsHelp = true
                 } label: {
-                    Label("Introduction", systemImage: "book")
+                    Label("Help", systemImage: "book")
                 }
-                .accessibilityIdentifier("settings.introduction")
+                .accessibilityIdentifier("settings.help")
             }
             AudioDiagnosticsSettingsSection()
             AppUpdateSettingsSection()
@@ -728,13 +732,13 @@ private struct CatalogSettingsView: View {
         }
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
-        .fullScreenCover(isPresented: $showsIntroduction) {
+        .fullScreenCover(isPresented: $showsHelp) {
             NavigationStack {
-                IntroductionView()
+                HelpView()
                     .toolbar {
                         ToolbarItem(placement: .topBarTrailing) {
-                            Button("Done") { showsIntroduction = false }
-                                .accessibilityIdentifier("introduction.done")
+                            Button("Done") { showsHelp = false }
+                                .accessibilityIdentifier("help.done")
                         }
                     }
             }
