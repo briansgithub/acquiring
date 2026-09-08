@@ -320,6 +320,10 @@ private struct SearchCatalogView: View {
     @State private var hooktheoryQuery = ""
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
+    private var isDatabaseSearchFocused: Bool {
+        focusedElement == .search
+    }
+
     var body: some View {
         ScrollViewReader { proxy in
             libraryList
@@ -329,60 +333,81 @@ private struct SearchCatalogView: View {
                         proxy.scrollTo("library.allSongs.section", anchor: .top)
                     }
                 }
+                .onChange(of: isDatabaseSearchFocused) { _, isFocused in
+                    guard isFocused else { return }
+                    Task { @MainActor in
+                        await Task.yield()
+                        withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.2)) {
+                            proxy.scrollTo("library.search.section", anchor: .top)
+                        }
+                    }
+                }
         }
     }
 
     private var libraryList: some View {
         List {
-            Section {
-                PlaylistsSectionView(store: store)
-                    .disabled(!store.hasInstalledCatalog)
+            if !isDatabaseSearchFocused {
+                Section {
+                    PlaylistsSectionView(store: store)
+                        .disabled(!store.hasInstalledCatalog)
+                }
             }
             Section {
                 searchControls
-                    .padding(14)
+                    .padding(isDatabaseSearchFocused ? 10 : 14)
                     .background(Color.accentColor.opacity(0.05), in: RoundedRectangle(cornerRadius: 14))
                     .overlay {
                         RoundedRectangle(cornerRadius: 14)
                             .stroke(Color.accentColor.opacity(0.25), lineWidth: 1)
                     }
-                    .listRowInsets(EdgeInsets(top: 20, leading: 16, bottom: 12, trailing: 16))
+                    .id("library.search.section")
+                    .listRowInsets(
+                        EdgeInsets(
+                            top: isDatabaseSearchFocused ? 8 : 20,
+                            leading: 16,
+                            bottom: isDatabaseSearchFocused ? 8 : 12,
+                            trailing: 16
+                        )
+                    )
                     .listRowSeparator(.hidden)
             }
             if store.hasInstalledCatalog {
                 searchResults
             }
 
-            Section {
-                hooktheoryDisclosure
-                    .listRowInsets(EdgeInsets(top: 20, leading: 16, bottom: 8, trailing: 16))
-                    .listRowSeparator(.hidden)
-                if isHooktheoryExpanded {
-                    hooktheoryTools
-                        .padding(14)
-                        .background(Color.accentColor.opacity(0.05), in: RoundedRectangle(cornerRadius: 14))
-                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 12, trailing: 16))
+            if !isDatabaseSearchFocused {
+                Section {
+                    hooktheoryDisclosure
+                        .listRowInsets(EdgeInsets(top: 20, leading: 16, bottom: 8, trailing: 16))
                         .listRowSeparator(.hidden)
+                    if isHooktheoryExpanded {
+                        hooktheoryTools
+                            .padding(14)
+                            .background(Color.accentColor.opacity(0.05), in: RoundedRectangle(cornerRadius: 14))
+                            .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 12, trailing: 16))
+                            .listRowSeparator(.hidden)
+                    }
                 }
-            }
 
-            Section {
-                allSongsDisclosure
-                    .disabled(!store.hasInstalledCatalog)
-                    .id("library.allSongs.section")
-                    .listRowInsets(EdgeInsets(top: 20, leading: 16, bottom: 8, trailing: 16))
-                    .listRowSeparator(.hidden)
-
-                if isAllSongsExpanded, store.hasInstalledCatalog {
-                    AllSongsBrowseView(store: store)
-                        .frame(height: 560)
-                        .background(.background, in: RoundedRectangle(cornerRadius: 14))
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 14)
-                                .stroke(.secondary.opacity(0.25), lineWidth: 1)
-                        }
-                        .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 12, trailing: 16))
+                Section {
+                    allSongsDisclosure
+                        .disabled(!store.hasInstalledCatalog)
+                        .id("library.allSongs.section")
+                        .listRowInsets(EdgeInsets(top: 20, leading: 16, bottom: 8, trailing: 16))
                         .listRowSeparator(.hidden)
+
+                    if isAllSongsExpanded, store.hasInstalledCatalog {
+                        AllSongsBrowseView(store: store)
+                            .frame(height: 560)
+                            .background(.background, in: RoundedRectangle(cornerRadius: 14))
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 14)
+                                    .stroke(.secondary.opacity(0.25), lineWidth: 1)
+                            }
+                            .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 12, trailing: 16))
+                            .listRowSeparator(.hidden)
+                    }
                 }
             }
         }
@@ -467,12 +492,15 @@ private struct SearchCatalogView: View {
 
     private var searchControls: some View {
         VStack(alignment: .leading, spacing: 0) {
-            LibrarySectionHeading(
-                title: "Search Database:",
-                subtitle: "Songs and artists in your library",
-                systemImage: "magnifyingglass"
-            )
-            .padding(.bottom, 12)
+            if !isDatabaseSearchFocused {
+                LibrarySectionHeading(
+                    title: "Search Database:",
+                    subtitle: "Songs and artists in your library",
+                    systemImage: "magnifyingglass"
+                )
+                .padding(.bottom, 12)
+                .accessibilityIdentifier("library.search.heading")
+            }
             HStack(spacing: 8) {
                 Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
                 TextField(
@@ -573,7 +601,10 @@ private struct SearchCatalogView: View {
             EmptyView()
         case .loading: ProgressView()
         case let .content(songs):
-            ForEach(songs) { song in SongRow(song: song) { store.openSong(song) } }
+            ForEach(songs) { song in
+                SongRow(song: song, isCompact: true) { store.openSong(song) }
+                    .listRowInsets(EdgeInsets(top: 2, leading: 16, bottom: 2, trailing: 16))
+            }
             pagingErrorRow
             if store.hasMoreSongSuggestions {
                 loadMoreRow
@@ -1343,10 +1374,13 @@ private struct SearchKeyboardDismissal: UIViewRepresentable {
 
         func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
             guard isEnabled, !bounds.contains(touch.location(in: self)) else { return false }
-            // Let another editable field take focus without dismissing its keyboard.
+            // Let editable fields and the search scope finish their actions before
+            // any focus-driven layout change.
             var touchedView = touch.view
             while let view = touchedView {
-                if view is UITextField || view is UITextView { return false }
+                if view is UITextField || view is UITextView || view is UISegmentedControl {
+                    return false
+                }
                 touchedView = view.superview
             }
             return true

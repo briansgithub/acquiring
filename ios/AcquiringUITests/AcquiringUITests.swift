@@ -93,14 +93,34 @@ final class AcquiringUITests: XCTestCase {
     func testSearchKeyboardDismissesOutsideAndReopensInside() {
         let app = launchApp(scenario: .ready)
         let search = app.textFields["library.search.field"]
+        let playlists = app.buttons["playlists.header"]
+        let searchHeading = app.descendants(matching: .any)["library.search.heading"]
         XCTAssertTrue(search.waitForExistence(timeout: 5))
+        XCTAssertTrue(playlists.waitForExistence(timeout: 5))
+        XCTAssertTrue(searchHeading.exists)
         search.tap()
-        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 3))
-        search.typeText("500 Miles")
+        let keyboard = app.keyboards.firstMatch
+        XCTAssertTrue(keyboard.waitForExistence(timeout: 3))
+        XCTAssertTrue(playlists.waitForNonExistence(timeout: 3))
+        XCTAssertTrue(searchHeading.waitForNonExistence(timeout: 3))
+        XCTAssertFalse(app.buttons["library.hooktheory.toggle"].exists)
+        XCTAssertFalse(app.buttons["library.allSongs"].exists)
+        search.typeText("B")
+
+        let badRomance = app.buttons[Fixture.badRomance]
+        let bohemianRhapsody = app.buttons[Fixture.bohemianRhapsody]
+        XCTAssertTrue(badRomance.waitForExistence(timeout: 5))
+        XCTAssertTrue(bohemianRhapsody.waitForExistence(timeout: 5))
+        XCTAssertTrue(badRomance.isHittable)
+        XCTAssertTrue(bohemianRhapsody.isHittable)
+        XCTAssertLessThanOrEqual(badRomance.frame.maxY, keyboard.frame.minY)
+        XCTAssertLessThanOrEqual(bohemianRhapsody.frame.maxY, keyboard.frame.minY)
 
         app.navigationBars["Library"].staticTexts["Library"].firstMatch.tap()
         XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 3))
-        XCTAssertEqual(search.value as? String, "500 Miles")
+        XCTAssertEqual(search.value as? String, "B")
+        XCTAssertTrue(playlists.waitForExistence(timeout: 3))
+        XCTAssertTrue(searchHeading.waitForExistence(timeout: 3))
 
         search.tap()
         XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 3))
