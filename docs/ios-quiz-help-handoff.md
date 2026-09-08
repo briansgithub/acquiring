@@ -200,3 +200,15 @@ Human review, without screenshots:
 
 No screenshots, full-app suite, physical-device work, or TestFlight release.
 Earlier unrelated pending reviews remain unchanged.
+
+## Merged and cleaned up — 2026-09-08
+
+Merged into `main` as `4b5a94a2`, preserving both the display-name and quiz-help
+status notes in `docs/porting-plan.md`. From the primary checkout,
+`bash ios/scripts/run-sim.sh` passed (exit 0): merged Debug build, install, and
+launch on the warm iPhone 17. Log: `/tmp/acquiring-quiz-help-merge-build.log`.
+Existing warnings remain; no additional XCTest or VoiceOver investigation was run.
+The clean task worktree and local branch were removed after verifying merge
+reachability. The primary checkout is now the continuation location; retain this
+handoff and the deferred review items above. The remote task branch is removed
+only after successfully pushing `main`.
