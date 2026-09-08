@@ -922,7 +922,7 @@ struct QuizView: View {
     @State private var timelineInertiaGeneration = 0
     @State private var error: String?
     @State private var showsAudioDiagnostics = false
-    @State private var showsSongInformation = false
+    @State private var isNavigationTitleExpanded = false
     @State private var usesRelativeIonianContext = false
     @Environment(\.quizHelpState) private var quizHelp
     @State private var tempoPercent = 100.0
@@ -965,29 +965,47 @@ struct QuizView: View {
         }
         .navigationTitle(navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
+        .simultaneousGesture(
+            TapGesture().onEnded {
+                if isNavigationTitleExpanded {
+                    isNavigationTitleExpanded = false
+                }
+            }
+        )
+        .overlay(alignment: .top) {
+            if isNavigationTitleExpanded {
+                Text(navigationTitle)
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .frame(maxWidth: 680)
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .shadow(color: .black.opacity(0.12), radius: 6, y: 3)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 8)
+                    .allowsHitTesting(false)
+                    .accessibilityIdentifier("quiz.songTitle.expanded")
+            }
+        }
         .background(QuizNavigationGestureGuard(enablesEdgeSwipeBack: enablesEdgeSwipeBack))
         .quizNotationFontStyle(notationFontStyle)
         .toolbar {
             ToolbarItem(placement: .principal) {
                 if case .content = state {
-                    Button { showsSongInformation = true } label: {
-                        HStack(spacing: 5) {
-                            Text(navigationTitle)
-                                .font(.headline)
-                                .lineLimit(1)
-                                .truncationMode(.tail)
-                            Image(systemName: "info.circle")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .accessibilityHidden(true)
-                        }
-                        .frame(maxWidth: .infinity, minHeight: 44)
-                        .contentShape(Rectangle())
+                    Button { isNavigationTitleExpanded = true } label: {
+                        Text(navigationTitle)
+                            .font(.headline)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                            .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel(navigationTitle)
-                    .accessibilityHint("Shows the full song title and artist.")
-                    .accessibilityIdentifier("quiz.songInformation")
+                    .accessibilityHint("Shows the full song title and artist. Tap the screen to collapse it.")
+                    .accessibilityIdentifier("quiz.songTitle")
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
@@ -1056,36 +1074,6 @@ struct QuizView: View {
         }
         .sheet(isPresented: $showsAudioDiagnostics) {
             AudioDiagnosticsSheet(audio: environment.audio)
-        }
-        .sheet(isPresented: $showsSongInformation) {
-            if case let .content(document) = state {
-                NavigationStack {
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text(document.song.displayTitle)
-                                .font(.title2.bold())
-                                .accessibilityIdentifier("quiz.songInformation.title")
-                            Text("by \(document.song.displayArtist)")
-                                .font(.title3)
-                                .foregroundStyle(.secondary)
-                                .accessibilityIdentifier("quiz.songInformation.artist")
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .textSelection(.enabled)
-                        .padding()
-                    }
-                    .navigationTitle("Song Information")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .confirmationAction) {
-                            Button("Done") { showsSongInformation = false }
-                                .accessibilityIdentifier("quiz.songInformation.done")
-                        }
-                    }
-                }
-                .presentationDetents([.medium, .large])
-                .presentationDragIndicator(.visible)
-            }
         }
     }
 
@@ -2311,18 +2299,23 @@ private enum QuizTransportLayout {
     static let controlSize: CGFloat = 44
     static let selectorWidth: CGFloat = 72
     static let spacing: CGFloat = 8
-    /// Favorite, reset, play and one 44 pt selector, plus the transpose selector.
-    static let width = controlSize * 4 + selectorWidth + spacing * 4
+    /// Play is the row's primary action, so it reads at double an icon button.
+    /// The row has no slack, so the bar's own width absorbs the difference.
+    static let playControlWidth = controlSize * 2
+    /// Favorite, reset and one 44 pt selector, plus play and the transpose selector.
+    static let width = controlSize * 3 + playControlWidth + selectorWidth + spacing * 4
 }
 
 private struct QuizIconButtonStyle: ButtonStyle {
     var isProminent = false
+    /// Defaults to a square control; widen it for the row's primary action.
+    var width = QuizTransportLayout.controlSize
     @Environment(\.isEnabled) private var isEnabled
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.system(size: 16, weight: .semibold))
-            .frame(width: QuizTransportLayout.controlSize, height: QuizTransportLayout.controlSize)
+            .frame(width: width, height: QuizTransportLayout.controlSize)
             .foregroundStyle(isProminent ? Color.white : Color.primary)
             .background(isProminent ? Color.accentColor : .clear, in: RoundedRectangle(cornerRadius: 8))
             .overlay {
@@ -2366,7 +2359,9 @@ private struct QuizTransportButton: View {
         }
         Group {
             if compact {
-                button.buttonStyle(QuizIconButtonStyle(isProminent: true))
+                button.buttonStyle(
+                    QuizIconButtonStyle(isProminent: true, width: QuizTransportLayout.playControlWidth)
+                )
             } else {
                 button.buttonStyle(.borderedProminent)
             }

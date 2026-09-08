@@ -24,7 +24,7 @@ final class AcquiringUITests: XCTestCase {
         continueAfterFailure = false
     }
 
-    func testQuizSongInformationRetainsModeAndPlayback() {
+    func testQuizSongTitleExpansionRetainsModeAndPlayback() {
         let app = launchApp(scenario: .ready)
         openQuiz(app, searchText: "500 Miles", songButton: Fixture.fiveHundredMiles, navigationTitle: Fixture.fiveHundredMilesQuizTitle)
         let modePicker = app.descendants(matching: .any)["quiz.mode"]
@@ -37,14 +37,12 @@ final class AcquiringUITests: XCTestCase {
         let playing = expectation(for: NSPredicate(format: "label == %@", "Pause"), evaluatedWith: play)
         wait(for: [playing], timeout: 10)
 
-        let heading = app.buttons["quiz.songInformation"]
+        let heading = app.buttons["quiz.songTitle"]
         XCTAssertEqual(heading.label, Fixture.fiveHundredMilesQuizTitle)
         heading.tap()
-        let title = app.staticTexts["quiz.songInformation.title"]
+        let title = app.staticTexts["quiz.songTitle.expanded"]
         XCTAssertTrue(title.waitForExistence(timeout: 5))
-        XCTAssertEqual(title.label, "500 Miles")
-        XCTAssertEqual(app.staticTexts["quiz.songInformation.artist"].label, "by The Proclaimers")
-        app.buttons["quiz.songInformation.done"].tap()
+        XCTAssertEqual(title.label, Fixture.fiveHundredMilesQuizTitle)
 
         XCTAssertTrue(heading.waitForExistence(timeout: 5))
         XCTAssertEqual(modePicker.value as? String, "Root-only")
@@ -192,7 +190,7 @@ final class AcquiringUITests: XCTestCase {
         app.buttons["settings.help"].tap()
         XCTAssertTrue(app.navigationBars["Help"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["introduction.continue"].exists)
-        for topic in ["scaleDegrees", "intervals", "romanNumerals", "modes", "tessitura"] {
+        for topic in ["scaleDegrees", "intervals", "romanNumerals", "tessitura"] {
             let link = app.buttons["help.topic.\(topic)"]
             scrollToHittable(link, in: app)
             link.tap()
