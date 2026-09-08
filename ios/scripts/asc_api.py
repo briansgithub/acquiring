@@ -401,7 +401,8 @@ def cmd_set_notes(client: Client, args: argparse.Namespace) -> int:
 
 # How Apple's externalBuildState maps onto "did this just become a submission?"
 _EXTERNAL_STATE_NOTES = {
-    "READY_FOR_BETA_TESTING": "distributing now; no review was needed",
+    "READY_FOR_BETA_TESTING": "ready to test; external testing may still need to be started",
+    "IN_BETA_TESTING": "available to external testers",
     "IN_BETA_REVIEW": "in beta app review — Apple is reviewing it now",
     "WAITING_FOR_BETA_REVIEW": "queued for beta app review; testers get it once approved",
     "READY_FOR_BETA_SUBMISSION": "not submitted for review; testers cannot see it yet",
@@ -448,6 +449,38 @@ def cmd_assign(client: Client, args: argparse.Namespace) -> int:
             "  note: this assignment put the build into beta app review. "
             "App Store submission is still a separate, human-only step."
         )
+    if args.publish_update:
+        # Query actual external distribution afresh, not the just-uploaded build
+        # number. A pending review must leave the previous eligible build visible.
+        print("Refreshing the public external beta update record.")
+        try:
+            refresh_external_update(client, publish=True)
+        except (AscError, ValueError, OSError) as exc:
+            raise AscError(
+                "The group assignment succeeded, but update metadata publication failed. "
+                "Retry `external-update --publish`; do not re-upload the build. "
+                f"{exc}"
+            ) from exc
+    return 0
+
+
+def refresh_external_update(client: Client, output: str | None = None, publish: bool = False) -> None:
+    from external_beta import generate_manifest, publish_manifest, write_manifest
+
+    manifest = generate_manifest(client)
+    if output:
+        write_manifest(manifest, Path(output))
+    if publish:
+        publish_manifest(manifest)
+    build = manifest["externalBuild"]
+    description = f"{build['version']} ({build['build']})" if build else "none available"
+    print(f"External beta update: {description}; valid until {manifest['validUntil']}.")
+
+
+def cmd_external_update(client: Client, args: argparse.Namespace) -> int:
+    if not args.output and not args.publish:
+        raise AscError("Pass --output PATH to preview, or --publish to update the public metadata.")
+    refresh_external_update(client, output=args.output, publish=args.publish)
     return 0
 
 
@@ -498,6 +531,14 @@ def main(argv: list[str] | None = None) -> int:
         help="Resolve the single group on this track. Fails if the track has several.",
     )
     p.add_argument("--group", help="Exact group name; overrides --track.")
+    p.add_argument(
+        "--publish-update", action="store_true",
+        help="After an external assignment, refresh the public external-only update metadata.",
+    )
+
+    p = sub.add_parser("external-update", help="Refresh update metadata from active external builds only.")
+    p.add_argument("--output", help="Write a local JSON preview without publishing unless --publish is also set.")
+    p.add_argument("--publish", action="store_true", help="Publish latest.json to the GitHub metadata release.")
 
     args = parser.parse_args(argv)
     handlers = {
@@ -507,11 +548,12 @@ def main(argv: list[str] | None = None) -> int:
         "wait": cmd_wait,
         "set-notes": cmd_set_notes,
         "assign": cmd_assign,
+        "external-update": cmd_external_update,
     }
 
     try:
         return handlers[args.command](Client(), args)
-    except AscError as exc:
+    except (AscError, ValueError, OSError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
 

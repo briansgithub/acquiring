@@ -357,6 +357,7 @@ final class AppEnvironment {
     let catalog: CatalogCoordinator
     let maintenance: any CatalogMaintenanceService
     let catalogAssetMetadata: any CatalogAssetMetadataService
+    let externalBetaUpdates: any ExternalBetaUpdateService
     let history: HistoryStore
     let userLibrary: UserLibraryStore
     let audio: AppAudioSystem
@@ -439,6 +440,15 @@ final class AppEnvironment {
         )
 #endif
         catalogAssetMetadata = selectedAssetMetadata
+        #if DEBUG
+        if isUITesting {
+            externalBetaUpdates = ExternalBetaUpdateUITestService(arguments: arguments)
+        } else {
+            externalBetaUpdates = ExternalBetaUpdateManifestService()
+        }
+        #else
+        externalBetaUpdates = ExternalBetaUpdateManifestService()
+        #endif
         maintenance = ExclusiveCatalogMaintenanceService(base: selectedMaintenance)
         history = HistoryStore(suiteName: uiTestSession?.historySuiteName)
         userLibrary = try UserLibraryStore(context: modelContext)
@@ -642,6 +652,22 @@ private actor CatalogAssetMetadataUITestService: CatalogAssetMetadataService {
     func recordInstalledAsset(_ identity: CatalogAssetIdentity?) {
         installedIdentity = identity
     }
+}
+
+private actor ExternalBetaUpdateUITestService: ExternalBetaUpdateService {
+    private let result: ExternalBetaUpdateSnapshot
+
+    init(arguments: [String]) {
+        if arguments.contains("--ui-testing-beta-update-available") {
+            result = ExternalBetaUpdateSnapshot(.available(ExternalBetaBuild(version: "1.0", build: "2")))
+        } else if arguments.contains("--ui-testing-beta-current") {
+            result = ExternalBetaUpdateSnapshot(.current)
+        } else {
+            result = ExternalBetaUpdateSnapshot(.noExternalRelease)
+        }
+    }
+
+    func check() -> ExternalBetaUpdateSnapshot { result }
 }
 
 private final class UITestMaintenanceRunController: @unchecked Sendable {

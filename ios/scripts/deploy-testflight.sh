@@ -52,6 +52,8 @@ Usage: $(basename "$0") [--build N] [--skip-upload] [--notes TEXT | --notes-file
 The internal group auto-distributes on upload, so it needs no flag. --external
 covers people outside the team, including anyone holding the group's public
 link; the script reports whether that assignment entered beta app review.
+External assignments also refresh the public external-only update metadata
+using authenticated gh. Internal assignments do not publish update metadata.
 
 Authentication:
   Signing and upload use the Xcode-stored session. The post-upload metadata
@@ -232,10 +234,10 @@ if [[ -n "$NOTES" || -n "$NOTES_FILE" || -n "$TRACK" || -n "$GROUP" ]]; then
 
       if [[ -n "$GROUP" ]]; then
         echo "==> Releasing to group $GROUP"
-        /usr/bin/env python3 "$ASC_SCRIPT" assign --version "$BUILD_NUMBER" --group "$GROUP"
+        /usr/bin/env python3 "$ASC_SCRIPT" assign --version "$BUILD_NUMBER" --group "$GROUP" --publish-update
       elif [[ -n "$TRACK" ]]; then
         echo "==> Releasing to the $TRACK tester group"
-        /usr/bin/env python3 "$ASC_SCRIPT" assign --version "$BUILD_NUMBER" --track "$TRACK"
+        /usr/bin/env python3 "$ASC_SCRIPT" assign --version "$BUILD_NUMBER" --track "$TRACK" --publish-update
       fi
     else
       # The build is already uploaded and, for the internal group, already
