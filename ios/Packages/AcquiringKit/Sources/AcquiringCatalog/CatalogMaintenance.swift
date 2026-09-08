@@ -218,6 +218,13 @@ public struct DefaultCatalogMaintenanceService: CatalogMaintenanceService, Senda
                     continuation.yield(.validating)
                     let result = try CatalogCandidate.validate(at: stagedURL, contract: configuration.contract)
                     try Task.checkCancellation()
+
+                    // One-time amnesty for songs harvested before the ledger
+                    // existed: the outgoing catalog is the only record of them,
+                    // and the swap below deletes it. Never fatal — a catalog the
+                    // user asked for must not fail over a bookkeeping error.
+                    await Self.adoptLegacyHarvests(coordinator: coordinator, stagedURL: stagedURL)
+
                     guard cancellationController.beginCommit(cancellationID) else {
                         throw CancellationError()
                     }
@@ -234,7 +241,15 @@ public struct DefaultCatalogMaintenanceService: CatalogMaintenanceService, Senda
                     try? await assetMetadata.recordInstalledAsset(
                         CatalogAssetIdentity(response: response)
                     )
-                    outcome = .completed(songCount: result.songCount)
+                    // Rebuild manual harvests the new catalog does not carry.
+                    // Skipping this is survivable: prepare() replays on the next
+                    // launch, so a failure here delays restoration, never loses it.
+                    let restored = (try? await coordinator.replayHarvestLedger()) ?? 0
+                    outcome = .completed(
+                        songCount: restored == 0
+                            ? result.songCount
+                            : (try? await coordinator.songCount()) ?? result.songCount
+                    )
                 } catch is CancellationError {
                     outcome = .cancelled
                 } catch {
@@ -285,16 +300,26 @@ public struct DefaultCatalogMaintenanceService: CatalogMaintenanceService, Senda
                         throw CancellationError()
                     }
                     continuation.yield(.installing)
+                    let alphaGroup = BrowseGrouping.alphabeticalGroup(for: harvested.song.title)
+                    let modes = Set(
+                        BrowseGrouping.modes(inSections: harvested.sections.values).map(\.rawValue)
+                    )
                     try await coordinator.writeHarvested(
                         song: harvested.song,
                         payload: payload,
-                        alphaGroup: BrowseGrouping.alphabeticalGroup(for: harvested.song.title),
-                        modes: Set(
-                            BrowseGrouping.modes(inSections: harvested.sections.values)
-                                .map(\.rawValue)
-                        ),
+                        alphaGroup: alphaGroup,
+                        modes: modes,
                         preserveExistingTitle: !harvested.hasSourceTitle,
                         preserveExistingArtist: !harvested.hasSourceArtist
+                    )
+                    // The catalog row this just wrote is destroyed by the next
+                    // download. The ledger is what survives it.
+                    await Self.recordHarvest(
+                        coordinator: coordinator,
+                        song: harvested.song,
+                        payload: payload,
+                        alphaGroup: alphaGroup,
+                        modes: modes
                     )
                     let count = try await coordinator.songCount()
                     outcome = .completed(songCount: count)
@@ -326,4 +351,43 @@ public struct DefaultCatalogMaintenanceService: CatalogMaintenanceService, Senda
         }
     }
 
+    /// Ledgers the row the catalog actually ended up with, which is not always
+    /// the scraped one: `writeHarvested` keeps the existing title and artist
+    /// when the page carried no usable names.
+    private static func recordHarvest(
+        coordinator: CatalogCoordinator,
+        song: CatalogSong,
+        payload: Data,
+        alphaGroup: String,
+        modes: Set<String>
+    ) async {
+        guard let ledger = await coordinator.harvestLedger() else { return }
+        let stored = try? await coordinator.song(id: song.id)
+        let title = stored?.title ?? song.title
+        try? ledger.record(
+            slug: song.id,
+            artist: stored?.artist ?? song.artist,
+            title: title,
+            url: song.url?.absoluteString ?? "",
+            status: song.status,
+            payload: payload,
+            alphaGroup: title == song.title ? alphaGroup : BrowseGrouping.alphabeticalGroup(for: title),
+            modes: modes
+        )
+    }
+
+    private static func adoptLegacyHarvests(coordinator: CatalogCoordinator, stagedURL: URL) async {
+        guard let ledger = await coordinator.harvestLedger(),
+              let alreadyAdopted = try? ledger.hasAdoptedLegacyHarvests(),
+              !alreadyAdopted
+        else { return }
+        do {
+            try ledger.adopt(try await coordinator.harvests(missingFrom: stagedURL))
+            try ledger.markLegacyHarvestsAdopted()
+        } catch {
+            // Leaving the flag unset retries the sweep on the next install,
+            // which is the safe direction: the amnesty is skipped, never
+            // half-applied and then closed.
+        }
+    }
 }
