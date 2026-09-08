@@ -144,7 +144,7 @@ private struct LibraryView: View {
     }
 }
 
-private struct IntroductionView: View {
+struct IntroductionView: View {
     var continueToLibrary: (() -> Void)? = nil
 
     var body: some View {
