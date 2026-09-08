@@ -161,11 +161,16 @@ public protocol CatalogRepository: Sendable {
     func searchSongs(title query: String) async throws -> [CatalogSong]
     func songSuggestions(query: String, limit: Int, offset: Int) async throws -> [CatalogSong]
     func artistSuggestions(query: String, limit: Int, offset: Int) async throws -> [String]
+    func resolvedArtistName(_ artist: String) async throws -> String?
     func songs(artist: String) async throws -> [CatalogSong]
     func songs(ids: [String]) async throws -> [CatalogSong]
     func browseMetadata() async throws -> BrowseMetadataStatus
     func browseCounts(mode: BrowseMode, filter: String) async throws -> [BrowseGroupCount]
     func browseSongs(group: BrowseGroup, filter: String) async throws -> [CatalogSong]
+}
+
+public extension CatalogRepository {
+    func resolvedArtistName(_ artist: String) async throws -> String? { nil }
 }
 
 public enum CatalogCancellationDisposition: Equatable, Sendable {

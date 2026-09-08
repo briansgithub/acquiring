@@ -50,7 +50,7 @@ function releaseRetryableBlockedSongs(db) {
 }
 
 async function harvestLightSong(db, slug, url, { fetchMetrics = true, browser = null } = {}) {
-  const modeRow = db.prepare('SELECT harvest_mode FROM songs WHERE slug = ?').get(slug);
+  const modeRow = db.prepare('SELECT harvest_mode, artist, title FROM songs WHERE slug = ?').get(slug);
   if (modeRow?.harvest_mode === 'full') {
     return { slug, skipped: true, reason: 'full_fetch_complete' };
   }
@@ -72,6 +72,8 @@ async function harvestLightSong(db, slug, url, { fetchMetrics = true, browser = 
   const scrape = {
     url,
     title: null,
+    artist: modeRow?.artist || null,
+    songTitle: modeRow?.title || null,
     harvestMode: 'light',
     sections: [],
     errors: [],

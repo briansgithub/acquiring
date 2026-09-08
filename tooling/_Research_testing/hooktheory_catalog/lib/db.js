@@ -6,6 +6,8 @@ const path = require('path');
 const Database = require('better-sqlite3');
 const { DATA_DIR, ensureDataDir, migrateLegacyFile } = require('./paths');
 const { migrateSchema } = require('./dbMigrations');
+const { normalizeDisplayText, preferDisplayName } = require('./catalogDisplayNames');
+const { parseTheoryTabUrl } = require('./catalogUtils');
 
 const DB_PATH = path.join(DATA_DIR, 'hooktheory_catalog.db');
 
@@ -148,8 +150,8 @@ function reconcileSong(db, entry, { apply = true } = {}) {
       slug: entry.slug,
       artist_slug: entry.artist_slug || null,
       title_slug: entry.title_slug || null,
-      artist: entry.artist || null,
-      title: entry.title || null,
+      artist: normalizeDisplayText(entry.artist) || null,
+      title: normalizeDisplayText(entry.title) || null,
       url: entry.url,
       difficulty_label: entry.difficulty_label || null,
       first_seen_at: entry.first_seen_at || ts,
@@ -161,6 +163,22 @@ function reconcileSong(db, entry, { apply = true } = {}) {
     return { action: 'inserted', slug: entry.slug, url: entry.url };
   }
 
+  const parsedUrl = parseTheoryTabUrl(entry.url);
+  const nameFor = (field) => {
+    // Fresh source metadata is authoritative about its own capitalization,
+    // including intentional lowercase artist/title styling.
+    if (entry.display_name_source) {
+      return normalizeDisplayText(entry[field]) || normalizeDisplayText(existing[field]);
+    }
+    // URL paths retain some punctuation, so a parenthesized path may look like
+    // readable metadata to a generic slug formatter. Its origin is known here.
+    const fromUrl = !entry.display_name_source && parsedUrl
+      && normalizeDisplayText(entry[field]) === normalizeDisplayText(parsedUrl[field]);
+    if (fromUrl && existing[field]) return normalizeDisplayText(existing[field]);
+    return preferDisplayName(existing[field], entry[field], entry[`${field}_slug`] || existing[`${field}_slug`]);
+  };
+  const artist = nameFor('artist');
+  const title = nameFor('title');
   const urlChanged = existing.url !== entry.url;
   if (!urlChanged) {
     if (apply) {
@@ -176,7 +194,7 @@ function reconcileSong(db, entry, { apply = true } = {}) {
         WHERE slug = ?
       `).run(
         entry.artist_slug || null, entry.title_slug || null,
-        entry.artist || null, entry.title || null,
+        artist || null, title || null,
         entry.difficulty_label || null, candidateSource, candidateUrlSource, entry.slug,
       );
     }
@@ -187,6 +205,13 @@ function reconcileSong(db, entry, { apply = true } = {}) {
   if (existing.status === 'enriched'
       || candidateRank < existingRank
       || (candidateRank === existingRank && candidateUrlSource === 'observed')) {
+    // Display metadata can improve independently of URL evidence. A catalog
+    // identity match must never replace an observed URL with a synthesized one.
+    const ambiguousObservedUrls = candidateRank === existingRank && candidateUrlSource === 'observed';
+    if (apply && !ambiguousObservedUrls && (artist !== existing.artist || title !== existing.title)) {
+      db.prepare('UPDATE songs SET artist = ?, title = ? WHERE slug = ?')
+        .run(artist || null, title || null, entry.slug);
+    }
     return {
       action: candidateRank === existingRank && candidateUrlSource === 'observed'
         ? 'conflict' : 'unchanged',
@@ -233,7 +258,7 @@ function reconcileSong(db, entry, { apply = true } = {}) {
     WHERE slug = ?
   `).run(
     entry.artist_slug || null, entry.title_slug || null,
-    entry.artist || null, entry.title || null,
+    artist || null, title || null,
     entry.url, entry.difficulty_label || null,
     revived ? 1 : 0, urlChanged ? 1 : 0, urlChanged ? 1 : 0, revived ? 1 : 0,
     candidateSource, candidateUrlSource, entry.slug,

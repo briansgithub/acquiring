@@ -28,8 +28,7 @@ actor HistoryStore {
     func addArtist(_ artist: String?) {
         guard let artist else { return }
         store(artist, key: Key.artists) { value in
-            value.replacingOccurrences(of: "-", with: " ")
-                .trimmingCharacters(in: .whitespacesAndNewlines)
+            value.trimmingCharacters(in: .whitespacesAndNewlines)
         }
     }
 

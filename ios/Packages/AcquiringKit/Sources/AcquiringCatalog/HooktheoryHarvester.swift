@@ -5,6 +5,8 @@ import SwiftSoup
 struct HarvestedSong: Sendable {
     let song: CatalogSong
     let sections: [String: ExtractedSection]
+    let hasSourceTitle: Bool
+    let hasSourceArtist: Bool
 }
 
 struct HooktheoryHarvester: Sendable {
@@ -34,6 +36,8 @@ struct HooktheoryHarvester: Sendable {
         var sections: [String: ExtractedSection] = [:]
         var title = "Unknown"
         var artist = "Unknown"
+        var hasSourceTitle = false
+        var hasSourceArtist = false
         for (index, reference) in references.enumerated() {
             try Task.checkCancellation()
             progress(index + 1, references.count)
@@ -59,14 +63,23 @@ struct HooktheoryHarvester: Sendable {
             }
             sections[key] = extracted
             if index == 0 {
-                title = result.song
-                artist = result.artist ?? slug.split(separator: "__").first.map(String.init) ?? "Unknown"
+                let metadata = try Self.displayMetadata(html: html, songID: slug, apiTitle: result.song)
+                let sourceTitle = metadata?.title ?? Self.nonemptySourceName(result.song)
+                let sourceArtist = metadata?.artist ?? Self.nonemptySourceName(result.artist)
+                hasSourceTitle = sourceTitle != nil
+                hasSourceArtist = sourceArtist != nil
+                title = sourceTitle
+                    ?? slug.components(separatedBy: "__").dropFirst().joined(separator: "__")
+                artist = sourceArtist
+                    ?? slug.components(separatedBy: "__").first ?? "Unknown"
             }
         }
 
         return HarvestedSong(
             song: CatalogSong(id: slug, artist: artist, title: title, url: url, status: "enriched"),
-            sections: sections
+            sections: sections,
+            hasSourceTitle: hasSourceTitle,
+            hasSourceArtist: hasSourceArtist
         )
     }
 
@@ -104,6 +117,52 @@ struct HooktheoryHarvester: Sendable {
         return result
     }
 
+    /// The public page title contains source display names, whereas the URL
+    /// contains identity slugs. Validate both names against the requested song
+    /// before accepting them; a generic/error page must never rename a song.
+    static func displayMetadata(html: String, songID: String, apiTitle: String? = nil) throws -> HooktheoryDisplayMetadata? {
+        let identity = songID.components(separatedBy: "__")
+        guard identity.count == 2 else { return nil }
+        let document = try SwiftSoup.parse(html)
+        let pageTitle = CatalogDisplayName.clean(try document.title())
+        let suffix = " Chords, Melody, and Music Theory Analysis - Hooktheory"
+        guard pageTitle.hasSuffix(suffix) else { return nil }
+        let names = String(pageTitle.dropLast(suffix.count))
+        let parts = names.components(separatedBy: " by ")
+        guard parts.count >= 2 else { return nil }
+        let expectedTitles = Set([identity[1], apiTitle ?? ""].flatMap(sourceIdentityKeys).filter { !$0.isEmpty })
+        let expectedArtists = sourceIdentityKeys(identity[0])
+        var matches: [HooktheoryDisplayMetadata] = []
+        for index in 1..<parts.count {
+            let title = parts[..<index].joined(separator: " by ")
+            let artist = parts[index...].joined(separator: " by ")
+            guard !expectedTitles.isDisjoint(with: sourceIdentityKeys(title)),
+                  !expectedArtists.isDisjoint(with: sourceIdentityKeys(artist)) else { continue }
+            matches.append(HooktheoryDisplayMetadata(title: title, artist: artist))
+        }
+        return matches.count == 1 ? matches[0] : nil
+    }
+
+    private static func nonemptySourceName(_ value: String?) -> String? {
+        guard let value else { return nil }
+        let cleaned = CatalogDisplayName.clean(value)
+        return cleaned.isEmpty ? nil : cleaned
+    }
+
+    private static func identityKey(_ value: String) -> String {
+        let folded = value.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: Locale(identifier: "en_US_POSIX"))
+        return String(folded.unicodeScalars.filter(CharacterSet.alphanumerics.contains))
+    }
+
+    private static func sourceIdentityKeys(_ value: String) -> Set<String> {
+        let decoded = value.removingPercentEncoding ?? value
+        // TheoryTab spells these characters out in observed URL paths.
+        let pathSpelling = decoded.replacingOccurrences(of: "&", with: "and")
+            .replacingOccurrences(of: "/", with: "slash")
+            .replacingOccurrences(of: "$", with: "s")
+        return [identityKey(decoded), identityKey(pathSpelling)]
+    }
+
     private static func extract(result: HooktheoryAPIResult, name: String, index: Int) throws -> ExtractedSection {
         guard let rawJSON = result.jsonData, let data = rawJSON.data(using: .utf8) else {
             throw CatalogError.harvest("Section \(result.id.stringValue ?? "unknown") has no jsonData.")
@@ -132,6 +191,11 @@ struct HooktheoryHarvester: Sendable {
 struct SectionReference: Equatable, Sendable {
     let id: String
     let name: String?
+}
+
+struct HooktheoryDisplayMetadata: Equatable, Sendable {
+    let title: String
+    let artist: String
 }
 
 private struct HooktheoryAPIResult: Decodable, Sendable {

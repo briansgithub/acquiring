@@ -292,7 +292,9 @@ public struct DefaultCatalogMaintenanceService: CatalogMaintenanceService, Senda
                         modes: Set(
                             BrowseGrouping.modes(inSections: harvested.sections.values)
                                 .map(\.rawValue)
-                        )
+                        ),
+                        preserveExistingTitle: !harvested.hasSourceTitle,
+                        preserveExistingArtist: !harvested.hasSourceArtist
                     )
                     let count = try await coordinator.songCount()
                     outcome = .completed(songCount: count)
