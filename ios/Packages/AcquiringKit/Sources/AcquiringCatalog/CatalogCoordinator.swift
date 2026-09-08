@@ -189,7 +189,13 @@ public actor CatalogCoordinator: CatalogRepository {
         }
     }
 
-    public func resolvedArtistName(_ artist: String) throws -> String? {
+    public func resolvedArtistName(_ artist: String) async throws -> String? {
+        // Match the async protocol requirement explicitly so callers do not
+        // select CatalogRepository's default nil implementation.
+        try resolveArtistName(artist)
+    }
+
+    private func resolveArtistName(_ artist: String) throws -> String? {
         // A readable source name is authoritative. Only use the legacy lookup
         // when it does not match, so punctuation-distinct artists stay separate.
         guard !Self.searchKey(artist).isEmpty else { return nil }
@@ -212,7 +218,7 @@ public actor CatalogCoordinator: CatalogRepository {
     }
 
     public func songs(artist: String) throws -> [CatalogSong] {
-        guard let resolvedArtist = try resolvedArtistName(artist) else { return [] }
+        guard let resolvedArtist = try resolveArtistName(artist) else { return [] }
         return try rows(
             sql: """
                 SELECT slug, artist, title, url, status FROM songs

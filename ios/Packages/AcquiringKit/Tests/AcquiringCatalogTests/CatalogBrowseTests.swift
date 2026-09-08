@@ -201,9 +201,41 @@ final class CatalogBrowseTests: XCTestCase {
         ])
         defer { fixture.cleanup() }
         let resolved = try await fixture.coordinator.resolvedArtistName("a-b")
+        let repository: any CatalogRepository = fixture.coordinator
+        let repositoryResolved = try await repository.resolvedArtistName("a-b")
         let songs = try await fixture.coordinator.songs(artist: "a-b")
         XCTAssertNil(resolved)
+        XCTAssertNil(repositoryResolved)
         XCTAssertTrue(songs.isEmpty)
+    }
+
+    func testArtistResolutionMatchesThroughConcreteAndRepositoryInterfaces() async throws {
+        let fixture = try await makeFixture([
+            .init(slug: "puff-daddy__song", title: "Song", artist: "Diddy", complexity: nil),
+            .init(slug: "ac-slash-dc__song", title: "Song", artist: "AC/DC", complexity: nil),
+            .init(slug: "ac-dc__song", title: "Song", artist: "AC-DC", complexity: nil),
+            .init(slug: "first__song", title: "Song", artist: "A.B.", complexity: nil),
+            .init(slug: "second__song", title: "Song", artist: "A B", complexity: nil),
+            .init(slug: "a-b__song", title: "Song", artist: "Legacy Alias", complexity: nil)
+        ])
+        defer { fixture.cleanup() }
+        let repository: any CatalogRepository = fixture.coordinator
+        let cases: [(query: String, expected: String?)] = [
+            ("puff daddy", "Diddy"),
+            ("puff-daddy", "Diddy"),
+            ("Diddy", "Diddy"),
+            ("AC/DC", "AC/DC"),
+            ("AC-DC", "AC-DC"),
+            ("A.B.", "A.B."),
+            ("A B", "A B"),
+            ("missing artist", nil)
+        ]
+        for (query, expected) in cases {
+            let concrete = try await fixture.coordinator.resolvedArtistName(query)
+            let abstract = try await repository.resolvedArtistName(query)
+            XCTAssertEqual(concrete, expected, "Concrete lookup: \(query)")
+            XCTAssertEqual(abstract, expected, "Repository lookup: \(query)")
+        }
     }
 
     func testReharvestFallbackKeepsExistingNamesAndBrowseGroup() async throws {
