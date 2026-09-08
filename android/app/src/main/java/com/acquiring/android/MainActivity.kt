@@ -393,7 +393,7 @@ class MainActivity : ComponentActivity() {
         userDb = Room.databaseBuilder(
             applicationContext,
             UserDataDatabase::class.java, UserDataDatabase.DB_NAME
-        ).build()
+        ).addMigrations(UserDataDatabase.MIGRATION_1_2).build()
 
         val neutralContainer = Color(0xFF3A3A3A)
         val neutralOnContainer = Color(0xFFE6E6E6)
@@ -506,7 +506,8 @@ internal fun MainScreen(
             catalogStatus = "Starting download..."
             val result = DatabaseDownloader.downloadAndInstallCatalog(
                 context = context,
-                currentDb = activeDb
+                currentDb = activeDb,
+                userDb = userDb
             ) { catalogStatus = it }
 
             if (result.isSuccess) {
@@ -518,7 +519,15 @@ internal fun MainScreen(
                     AppDatabase.MIGRATION_1_2,
                     AppDatabase.MIGRATION_2_3
                 ).build()
-                catalogStatus = "Database Refreshed!"
+                // Rebuild manual harvests the new catalog does not carry.
+                // Skipping this is survivable: the launch-time replay below
+                // picks them up, so a failure delays restoration, never loses it.
+                val restored = runCatching { HarvestLedger.replay(activeDb, userDb) }.getOrDefault(0)
+                catalogStatus = if (restored > 0) {
+                    "Database Refreshed! ($restored harvested song${if (restored == 1) "" else "s"} kept)"
+                } else {
+                    "Database Refreshed!"
+                }
             } else {
                 // A validated install closes Room only immediately before the
                 // atomic swap. Reopen the preserved catalog if needed.
@@ -558,7 +567,12 @@ internal fun MainScreen(
     val allSongsStateHolder = rememberSaveableStateHolder()
     val allSongsRuntimeState = rememberAllSongsRuntimeState()
 
-    val harvestService = remember(activeDb) { HarvestService(activeDb) }
+    val harvestService = remember(activeDb, userDb) { HarvestService(activeDb, userDb) }
+    // Repairs an install that died between the swap and its own replay. Replay
+    // is insert-if-absent, so the usual case is one query and no writes.
+    LaunchedEffect(activeDb, userDb) {
+        runCatching { HarvestLedger.replay(activeDb, userDb) }
+    }
     val json = remember { Json { ignoreUnknownKeys = true } }
     val singingSessionKey = selectedSong?.slug?.let { slug -> "$slug:${selectedSectionId.orEmpty()}" }
     LaunchedEffect(singingSessionKey) {

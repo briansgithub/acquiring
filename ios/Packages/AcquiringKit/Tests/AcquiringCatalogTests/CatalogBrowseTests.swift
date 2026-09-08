@@ -272,7 +272,8 @@ final class CatalogBrowseTests: XCTestCase {
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let configuration = CatalogConfiguration(
             directoryURL: directory,
-            downloadURL: URL(string: "https://example.invalid/catalog.db.gz")!
+            downloadURL: URL(string: "https://example.invalid/catalog.db.gz")!,
+            ledgerDirectoryURL: directory.appending(path: "UserHarvests", directoryHint: .isDirectory)
         )
         let queue = try DatabaseQueue(path: directory.appending(path: "catalog.db").path)
         try await queue.write { db in

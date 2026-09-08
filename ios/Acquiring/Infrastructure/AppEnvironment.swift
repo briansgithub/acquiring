@@ -90,6 +90,14 @@ struct UITestSession {
             .appending(path: identifier)
     }
 
+    /// Per-session, and reset with the catalog: the ledger outlives a catalog
+    /// install by design, so a shared one would leak harvests between runs.
+    var harvestLedgerDirectoryURL: URL {
+        FileManager.default.temporaryDirectory
+            .appending(path: "AcquiringUITests")
+            .appending(path: "\(identifier)-harvests")
+    }
+
     var historySuiteName: String { "AcquiringUITests.\(identifier)" }
     var instrumentPreferencesSuiteName: String { "AcquiringUITests.\(identifier).QuizInstrument" }
 
@@ -106,8 +114,9 @@ struct UITestSession {
 
     func resetPersistentFixtures() throws {
         let fileManager = FileManager.default
-        if fileManager.fileExists(atPath: catalogDirectoryURL.path) {
-            try fileManager.removeItem(at: catalogDirectoryURL)
+        for directory in [catalogDirectoryURL, harvestLedgerDirectoryURL]
+        where fileManager.fileExists(atPath: directory.path) {
+            try fileManager.removeItem(at: directory)
         }
         UserDefaults(suiteName: historySuiteName)?.removePersistentDomain(forName: historySuiteName)
     }
@@ -399,7 +408,8 @@ final class AppEnvironment {
             configuration = CatalogConfiguration(
                 directoryURL: uiTestSession.catalogDirectoryURL,
                 downloadURL: URL(string: "https://example.invalid/catalog.db.gz")!,
-                contract: contract
+                contract: contract,
+                ledgerDirectoryURL: uiTestSession.harvestLedgerDirectoryURL
             )
         } else {
             configuration = try CatalogConfiguration.live(contract: contract)

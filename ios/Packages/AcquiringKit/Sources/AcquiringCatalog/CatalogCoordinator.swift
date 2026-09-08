@@ -7,6 +7,9 @@ public actor CatalogCoordinator: CatalogRepository {
     private var databasePool: DatabasePool?
     private let fileSystem: any CatalogFileSystem
     private let poolOpener: CatalogPoolOpener
+    /// Opened alongside the catalog. Nil only when the ledger file itself is
+    /// unusable, which must not cost the caller a working catalog.
+    private var ledger: HarvestLedger?
 
     public init(configuration: CatalogConfiguration) {
         self.init(
@@ -74,7 +77,14 @@ public actor CatalogCoordinator: CatalogRepository {
 
         // Only now is the backup provably redundant: live is open and serving.
         CatalogArtifacts.removeDatabase(at: backupURL, using: fileSystem)
+
+        ledger = try? HarvestLedger(directoryURL: configuration.ledgerDirectoryURL)
+        // Covers an install that died between the swap and its own replay.
+        // Replay is insert-if-absent, so a redundant pass is cheap and safe.
+        _ = try? replayHarvestLedger()
     }
+
+    public func harvestLedger() -> HarvestLedger? { ledger }
 
     /// A backup is restorable when it still satisfies the contract's structural
     /// rules. The row floor is deliberately not enforced: it gates admission of
@@ -333,6 +343,112 @@ public actor CatalogCoordinator: CatalogRepository {
             try db.execute(sql: "DELETE FROM song_browse_modes WHERE slug = ?", arguments: [song.id])
             for mode in modes {
                 try db.execute(sql: "INSERT OR IGNORE INTO song_browse_modes (slug, mode) VALUES (?, ?)", arguments: [song.id, mode])
+            }
+        }
+    }
+
+    /// Insert-if-absent sibling of `writeHarvested`. A slug the incoming catalog
+    /// already carries keeps the catalog's own row: that copy is newer and
+    /// carries a complexity rating a harvest never produces.
+    public func restoreHarvestedIfAbsent(_ entry: HarvestLedgerEntry) throws {
+        guard let pool = databasePool else { throw CatalogError.install("catalog is not prepared") }
+        try pool.write { db in
+            let exists = try Bool.fetchOne(
+                db,
+                sql: "SELECT EXISTS (SELECT 1 FROM songs WHERE slug = ?)",
+                arguments: [entry.slug]
+            ) ?? false
+            guard !exists else { return }
+            try db.execute(
+                sql: "INSERT INTO songs (slug, artist, title, url, status, dataBlob) VALUES (?, ?, ?, ?, ?, ?)",
+                arguments: [entry.slug, entry.artist, entry.title, entry.url, entry.status, entry.payload]
+            )
+            try db.execute(
+                sql: """
+                    INSERT OR REPLACE INTO song_browse_entries
+                        (slug, artist, title, alphaGroup, complexityRating, complexityBucket)
+                    VALUES (?, ?, ?, ?, NULL, NULL)
+                    """,
+                arguments: [entry.slug, entry.artist, entry.title, entry.alphaGroup]
+            )
+            try db.execute(sql: "DELETE FROM song_browse_modes WHERE slug = ?", arguments: [entry.slug])
+            for mode in entry.modes {
+                try db.execute(
+                    sql: "INSERT OR IGNORE INTO song_browse_modes (slug, mode) VALUES (?, ?)",
+                    arguments: [entry.slug, mode]
+                )
+            }
+        }
+    }
+
+    /// Rebuilds every ledgered harvest the live catalog is missing. Idempotent.
+    @discardableResult
+    public func replayHarvestLedger() throws -> Int {
+        guard let ledger else { return 0 }
+        var restored = 0
+        for entry in try ledger.entries() {
+            try restoreHarvestedIfAbsent(entry)
+            restored += 1
+        }
+        return restored
+    }
+
+    /// A diff this large is not a set of manual harvests — it is a catalog that
+    /// was re-keyed or rebuilt. Adopting it would pin thousands of stale rows
+    /// into every future catalog, so the sweep declines instead.
+    static let legacyAdoptionLimit = 500
+
+    /// Live songs that look manually harvested and whose slug the staged catalog
+    /// does not carry.
+    ///
+    /// "Looks harvested" is the absence of a complexity rating: every shipped
+    /// catalog row has one, and a harvest never computes one. Without that test
+    /// a catalog whose slugs merely moved would be adopted wholesale.
+    ///
+    /// This sweep must run before the swap: afterwards the outgoing catalog is
+    /// gone. Attaching the staged file to the live writer keeps the diff inside
+    /// SQLite rather than materializing forty thousand slugs in memory.
+    public func harvests(missingFrom stagedURL: URL) throws -> [HarvestLedgerEntry] {
+        guard let pool = databasePool else { throw CatalogError.install("catalog is not prepared") }
+        return try pool.writeWithoutTransaction { db in
+            try db.execute(sql: "ATTACH DATABASE ? AS staged", arguments: [stagedURL.path])
+            defer { try? db.execute(sql: "DETACH DATABASE staged") }
+            let rows = try Row.fetchAll(db, sql: """
+                SELECT main.songs.slug AS slug, main.songs.artist AS artist, main.songs.title AS title,
+                       main.songs.url AS url, main.songs.status AS status, main.songs.dataBlob AS dataBlob,
+                       entries.alphaGroup AS alphaGroup
+                FROM main.songs
+                LEFT JOIN main.song_browse_entries entries ON entries.slug = main.songs.slug
+                WHERE main.songs.dataBlob IS NOT NULL
+                  AND entries.complexityRating IS NULL
+                  AND NOT EXISTS (SELECT 1 FROM staged.songs WHERE staged.songs.slug = main.songs.slug)
+                LIMIT ?
+                """, arguments: [Self.legacyAdoptionLimit + 1])
+            guard !rows.isEmpty, rows.count <= Self.legacyAdoptionLimit else { return [] }
+            let adopting = Set(rows.map { $0["slug"] as String })
+            var modesBySlug: [String: Set<String>] = [:]
+            for row in try Row.fetchAll(db, sql: """
+                SELECT modes.slug AS slug, modes.mode AS mode
+                FROM main.song_browse_modes modes
+                WHERE NOT EXISTS (SELECT 1 FROM staged.songs WHERE staged.songs.slug = modes.slug)
+                """) {
+                let slug: String = row["slug"]
+                guard adopting.contains(slug) else { continue }
+                modesBySlug[slug, default: []].insert(row["mode"])
+            }
+            return rows.map { row in
+                let slug: String = row["slug"]
+                let title: String? = row["title"]
+                return HarvestLedgerEntry(
+                    slug: slug,
+                    artist: row["artist"],
+                    title: title,
+                    url: row["url"] ?? "",
+                    status: row["status"] ?? "ready",
+                    payload: row["dataBlob"],
+                    alphaGroup: row["alphaGroup"] ?? BrowseGrouping.alphabeticalGroup(for: title),
+                    modes: modesBySlug[slug] ?? []
+                )
             }
         }
     }
