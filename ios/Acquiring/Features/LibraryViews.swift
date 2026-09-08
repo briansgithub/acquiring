@@ -207,7 +207,8 @@ private struct IntroductionView: View {
 
     /// The card types the gesture rows below it are talking about, drawn the way the quiz draws
     /// them. The interval label comes from `IntervalAnalysis` rather than a literal so the example
-    /// cannot drift from the shorthand a real interval card prints.
+    /// cannot drift from the shorthand a real interval card prints — including its direction
+    /// arrow, which is all a real interval card now shows.
     private var exampleCardRow: some View {
         let low = SpelledPitch.fromMIDI(60)
         let high = SpelledPitch.fromMIDI(67)
@@ -218,16 +219,11 @@ private struct IntroductionView: View {
                     .frame(maxWidth: .infinity, minHeight: 34)
             }
             QuizExampleCard(fixedHeight: 56) {
-                VStack(spacing: 3) {
-                    Text(interval.shorthand)
-                        .font(.title3.bold().monospaced())
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.65)
-                    Text("\(low.noteName) → \(high.noteName)")
-                        .font(.caption2)
-                        .lineLimit(1)
-                }
-                .frame(maxWidth: .infinity)
+                Text(interval.shorthand)
+                    .font(.custom("Roboto-Bold", size: 32, relativeTo: .title3))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                    .frame(maxWidth: .infinity)
             }
         }
         .frame(maxWidth: 300, alignment: .leading)

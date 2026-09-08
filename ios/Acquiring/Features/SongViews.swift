@@ -927,6 +927,8 @@ struct QuizView: View {
     @State private var error: String?
     @State private var showsAudioDiagnostics = false
     @State private var usesRelativeIonianContext = false
+    /// Drives the help overlay the circled question mark toggles on the quiz controls.
+    @State private var showsTooltips = false
     @State private var tempoPercent = 100.0
     @State private var soundConfiguration = QuizSoundConfiguration()
     @State private var quizCardPreviewTask: Task<Void, Never>?
@@ -1064,10 +1066,10 @@ struct QuizView: View {
                 VStack(spacing: 4) {
                     if let selected {
                         QuizHeader(
-                            songID: songID,
                             initialKey: selected.section.key(at: PlaybackTiming.firstBeat),
                             currentKey: selected.section.key(at: currentBeat(in: selected.section)),
-                            usesRelativeIonianContext: $usesRelativeIonianContext
+                            usesRelativeIonianContext: $usesRelativeIonianContext,
+                            showsTooltips: $showsTooltips
                         )
 
                         quizSurface(selected.section, sectionID: selected.id)
@@ -1170,10 +1172,13 @@ struct QuizView: View {
                     onDragEnd: endTimelineDrag,
                     onDragCancel: cancelTimelineDrag
                     )
-                } else {
-                    rootOnlySeekControl(section: section, sectionID: sectionID)
                 }
                 quizCards(section: section, sectionID: sectionID, beat: beat)
+                // Root-only puts its scrub bar under the cards, where the full-mode
+                // timeline's own playhead row sits relative to them.
+                if mode != .full {
+                    rootOnlySeekControl(section: section, sectionID: sectionID)
+                }
                 playbackKnobs(sectionID: sectionID)
                 Spacer(minLength: 0)
         }
@@ -1224,6 +1229,8 @@ struct QuizView: View {
     private func transportControls(sectionID: String, sections: [QuizSection]) -> some View {
         VStack(spacing: QuizTransportLayout.spacing) {
             HStack(spacing: QuizTransportLayout.spacing) {
+                FavoriteSongButton(songID: songID)
+                    .buttonStyle(QuizIconButtonStyle())
                 instrumentSelector(sectionID: sectionID)
                 transposeSelector(sectionID: sectionID)
                 Button(action: requestPlaybackReset) {
@@ -1246,6 +1253,12 @@ struct QuizView: View {
             }
             if !environment.vocalPractice.isExpanded {
                 HStack(spacing: QuizTransportLayout.spacing) {
+                    NavigationLink(value: AppRoute.songDetail(songID)) {
+                        Image(systemName: "info.circle")
+                    }
+                    .buttonStyle(QuizIconButtonStyle())
+                    .accessibilityLabel("Song information")
+                    .accessibilityIdentifier("quiz.info")
                     QuizSelectorMenu(
                         identityContext: "\(songID):\(sectionID):mode",
                         options: QuizDisplayMode.allCases.map {
@@ -2241,7 +2254,8 @@ private enum QuizTransportLayout {
     static let controlSize: CGFloat = 44
     static let selectorWidth: CGFloat = 72
     static let spacing: CGFloat = 8
-    static let width = controlSize * 3 + selectorWidth + spacing * 3
+    /// Favorite, reset, play and one 44 pt selector, plus the transpose selector.
+    static let width = controlSize * 4 + selectorWidth + spacing * 4
 }
 
 private struct QuizIconButtonStyle: ButtonStyle {
@@ -2580,10 +2594,10 @@ private struct QuizTimelineScrub {
 }
 
 private struct QuizHeader: View {
-    let songID: String
     let initialKey: KeyInfo
     let currentKey: KeyInfo
     @Binding var usesRelativeIonianContext: Bool
+    @Binding var showsTooltips: Bool
 
     private var displayedKey: KeyInfo {
         usesRelativeIonianContext ? RelativeIonianContext.key(for: initialKey) : currentKey
@@ -2600,19 +2614,16 @@ private struct QuizHeader: View {
 
     var body: some View {
         ZStack {
-            // Reserve matching space on both sides so the key stays centered.
-            keyLabel.padding(.horizontal, 104)
-            HStack(spacing: 8) {
+            // The lock reads as a prefix on the key, so the pair centers as one unit;
+            // reserve the trailing help button's width on both sides to keep it centered.
+            HStack(spacing: 0) {
                 majorToggle
+                keyLabel
+            }
+            .padding(.horizontal, 44)
+            HStack(spacing: 8) {
                 Spacer(minLength: 0)
-                NavigationLink(value: AppRoute.songDetail(songID)) {
-                    Image(systemName: "info.circle")
-                }
-                .buttonStyle(QuizIconButtonStyle())
-                .accessibilityLabel("Song information")
-                .accessibilityIdentifier("quiz.info")
-                FavoriteSongButton(songID: songID)
-                    .buttonStyle(QuizIconButtonStyle())
+                helpButton
             }
         }
         .frame(height: 44)
@@ -2631,7 +2642,6 @@ private struct QuizHeader: View {
                     RoundedRectangle(cornerRadius: 4).stroke(.red, lineWidth: 1)
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .center)
             .accessibilityIdentifier("quiz.key")
             .accessibilityLabel("Key \(displayedKeyLabel)")
     }
@@ -2643,7 +2653,9 @@ private struct QuizHeader: View {
             Image(systemName: usesRelativeIonianContext ? "lock.fill" : "lock.open")
                 .font(.body)
                 .foregroundStyle(usesRelativeIonianContext ? Color.red : Color.secondary)
-                .frame(width: 44, height: 44)
+                // Trailing-aligned inside a full 44 pt target so the glyph sits against
+                // the key string without shrinking the touch area.
+                .frame(width: 44, height: 44, alignment: .trailing)
                 .contentShape(Rectangle())
         }
             .buttonStyle(.plain)
@@ -2651,6 +2663,19 @@ private struct QuizHeader: View {
             .accessibilityValue(usesRelativeIonianContext ? "On" : "Off")
             .accessibilityHint("Updates key, card degrees, and practice targets to the relative major key")
             .accessibilityIdentifier("quiz.lockInMajor")
+    }
+
+    private var helpButton: some View {
+        Button {
+            showsTooltips.toggle()
+        } label: {
+            Image(systemName: showsTooltips ? "questionmark.circle.fill" : "questionmark.circle")
+        }
+        .buttonStyle(QuizIconButtonStyle())
+        .accessibilityLabel("Show tooltips")
+        .accessibilityValue(showsTooltips ? "On" : "Off")
+        .accessibilityHint("Labels the less obvious quiz controls")
+        .accessibilityIdentifier("quiz.help")
     }
 
     // Android's key readout keeps the current source mode's color even when the
