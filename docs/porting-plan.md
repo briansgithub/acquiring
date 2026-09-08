@@ -1934,6 +1934,75 @@ review statuses are retained. Commands, artifact locations, future scheduled
 update sequence, and the focused review script are in
 [catalog-display-names.md](catalog-display-names.md).
 
+### Catalog artist identity CI repair — 2026-09-08
+
+Runtime model: unknown. Branch `codex/fix-ios-catalog-identity` was created in
+`H:/Desktop/Acquiring-ios-catalog-identity` from fetched `origin/main` at
+`48bce084100dafde7fe6afe4af9164b75dc481b0`. The investigation branch
+`codex/fix-ios-artist-history-test` remains untouched at `a3aa285d`. No merge.
+
+Root cause: `CatalogRepository` declares an async `resolvedArtistName` and supplies
+a default returning nil, while `CatalogCoordinator` implemented a synchronous
+actor-isolated overload. Async calls selected the default instead of the lookup.
+Synchronous calls inside `songs(artist:)` reached the real lookup, explaining why
+those assertions passed while direct resolution failed. The original formatting
+commit `9ee7c52f` introduced this mismatch. SQL normalization was not the cause.
+
+Commit `e235680f2281c948b52d3eb94467d2514621934d` makes the public implementation
+explicitly async and shares a private synchronous lookup with `songs(artist:)`.
+Lookup SQL is unchanged. Regression tests cover concrete and protocol-interface
+calls, legacy aliases, exact-name priority over a conflicting legacy identity,
+punctuation-distinct artists, ambiguous normalized names, and missing artists.
+Original assertions remain intact. Changed files:
+
+- `ios/Packages/AcquiringKit/Sources/AcquiringCatalog/CatalogCoordinator.swift`
+- `ios/Packages/AcquiringKit/Tests/AcquiringCatalogTests/CatalogBrowseTests.swift`
+
+Once package tests passed, the app build exposed two pre-existing SwiftUI
+type-checking timeouts. Separate commits extract expressions without changing
+rendering or interactions:
+
+- `e8163d4c156bb7afa0add19d49d5738e1d3cea23`: `QuizHelpOverlay.swift`, fallback badge.
+- `755a8dddfb832c257670584ab897f86ac644472a`: `SongViews.swift`, chord timeline block.
+
+Validation and commands:
+
+- `git diff --check` and `git diff --check origin/main...HEAD`: passed.
+- `python -` inline consistency checks: lookup body/SQL identical to main;
+  explicit async entry point shares the synchronous helper; extracted chord-block
+  expression identical except indentation. Passed. No local Swift/Xcode available.
+- `git push -u origin codex/fix-ios-catalog-identity`, then `git push`: succeeded.
+- `gh workflow run chord-parity.yml --ref codex/fix-ios-catalog-identity`: dispatched
+  parity after each app-only compiler refactor, so checks cover the same revision.
+- CI `swift test --package-path ios/Packages/AcquiringKit`: 239 tests passed,
+  including the original failing assertion and new interface regression test.
+- CI `xcodebuild test -project ios/Acquiring.xcodeproj -scheme Acquiring
+  -destination "platform=iOS Simulator,id=${IPHONE_UDID}" CODE_SIGNING_ALLOWED=NO`:
+  still running at handoff. The workflow then runs the same command with
+  `${IPAD_UDID}`. Neither simulator result is claimed as passing.
+- Inspected run states with `gh run view <id> --json status,conclusion,jobs` and
+  scoped diagnostics with `gh run view <id> --log-failed`.
+
+Authoritative runs at `755a8dddfb832c257670584ab897f86ac644472a`:
+
+- [Chord interpretation parity: passed](https://github.com/briansgithub/acquiring/actions/runs/34208550766)
+- [iOS: pending simulator completion](https://github.com/briansgithub/acquiring/actions/runs/34208551873)
+
+Earlier evidence: original repair commit passed all package tests and parity
+([run](https://github.com/briansgithub/acquiring/actions/runs/34207521668)); its
+[iOS run](https://github.com/briansgithub/acquiring/actions/runs/34207521660) exposed
+the Help compiler timeout. The next
+[iOS run](https://github.com/briansgithub/acquiring/actions/runs/34207992900) cleared
+Help and exposed the timeline compiler timeout. The old investigation's latest
+`58acbd01` [iOS run](https://github.com/briansgithub/acquiring/actions/runs/34206878988)
+still had the original nil-versus-Diddy assertion failure.
+
+The user asked to move on while the final iPhone stage was active. Stop monitoring;
+leave the worktree and pushed branch available. Before consuming/merging, inspect
+the final iOS run and require both requested workflows to pass. The independently
+invalid `ios-external-beta.yml` is unchanged and outside scope. No catalog asset,
+schema, normalization, fixture UUID, or assertion weakening was required.
+
 ### Quiz tooltips and illustrated notation Help — 2026-09-08
 
 `[review]` Implemented on `codex/ios-quiz-help` with Terra/medium UI agents and
