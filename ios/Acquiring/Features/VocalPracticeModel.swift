@@ -943,11 +943,14 @@ final class VocalPracticeModel {
         }
     }
 
+    /// Replays exactly what was measured: no quiz transpose, so the pitch the singer
+    /// hears is the pitch that was recorded. The instrument is not named here - the audio
+    /// boundary plays every preview on the currently selected one.
     private func exactPreview(frequencies: [Double], duration: Duration) -> PreviewRequest {
         PreviewRequest(
             frequenciesHz: frequencies,
             duration: duration,
-            usesMusicalConfiguration: false
+            appliesQuizTranspose: false
         )
     }
 

@@ -435,7 +435,12 @@ Recording/DSP parity was checked against final Android `MicrophonePitchTracker.k
 | Capture timing | Manual 3 s wall time, latest valid pitch; tessitura 3 voiced s, final 2 s mean, 1 s dropout grace |
 
 iOS requests `.measurement`, 16 kHz and hop-sized I/O, averages resolved channels,
-resamples with AVAudioConverter, and scales to PCM16. Android uses AudioRecord's
+resamples with AVAudioConverter, and scales to PCM16. `.measurement` is now asked for
+only by the interval tool and tessitura calibration, which pause the song and own the
+device alone. Persistent monitoring uses `.default`: the mode belongs to the whole
+session rather than to its input, so measurement mode also strips processing from the
+song playing underneath monitoring, and default mode gives that capture the echo
+cancellation it needs to track the singer rather than the backing track. Android uses AudioRecord's
 UNPROCESSED → VOICE_RECOGNITION → MIC fallback. These are platform-specific input
 paths, not a guarantee of identical physical preprocessing or latency. Tap frame
 requests scale to the resolved hardware rate; Apple may coalesce callbacks. Fast
@@ -756,6 +761,36 @@ Incremental build passed (no full/UI suites run):
 `xcodebuild -quiet -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,id=55373408-99CC-4EB3-A771-6ACF29E2D96A' -configuration Debug build CODE_SIGNING_ALLOWED=NO`.
 Log: `/tmp/acquiring-palatino.6Ak8Qd/build.log`. Human review: open 500 Miles and
 check the Palatino numeral/degree cards; confirm Aa is absent. No release/commit.
+
+### Session mode by capture owner, category recovery, global preview instrument — 2026-09-08
+
+Implemented by the current agent (Opus 5), without delegation. User reported that the
+interval singing tool ignored the selected instrument and that song playback broke
+while mic-button monitoring was active, and attached an exported audio diagnostic.
+
+- `PreviewRequest` carried one flag gating both the quiz transpose and the instrument.
+  The singing tool cleared it to replay measured frequencies at their recorded pitch and
+  lost the instrument with it, playing the `.clarinet` default forever. The flag is now
+  `appliesQuizTranspose` and governs the transpose alone; the audio boundary applies the
+  selected instrument to every preview. Selection already lived in memory for the app's
+  lifetime and resets to the saved default on relaunch, which is the requested lifetime.
+- The session ran in `.measurement` for any `.playAndRecord`. The mode is session-wide,
+  so it stripped processing from the song playing underneath monitoring. It is now chosen
+  by `MicrophoneOwner`: `.measurement` for `.singingTool` and `.tessitura`, `.default` for
+  `.persistentPractice`.
+- The exported diagnostic showed `session.setCategory.failed` with `561017449` ('!pri',
+  insufficient priority) on the release path, and again on every later preview: iOS
+  refuses to leave a recording category while running I/O still holds an input node, and
+  the refusal stands for the life of the process. `configureSession` now retires the
+  graph before leaving `.playAndRecord`, the same cure the file already applied before an
+  engine start. This was the "no sound until the app restarts" failure.
+
+Build passed on the iPhone 17 simulator, with install and relaunch. The package audio
+tests were updated for the renamed flag but not run; no full suite, screenshots,
+physical-device checks or TestFlight upload. The `.measurement` note in group E's DSP
+table is updated to match - monitoring's input is now processed, which is a deliberate
+trade against unusable playback and is the first place to look if pitch tracking during
+a song reads worse than before.
 
 ### Quiz pitch monitoring entry point, melody row and readouts — 2026-09-08
 
