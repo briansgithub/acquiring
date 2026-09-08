@@ -1139,12 +1139,9 @@ struct QuizView: View {
         // The parent scene reserves the separate, expandable singing dock.
         .safeAreaInset(edge: .bottom, spacing: 4) {
             if let selected {
-                VStack(spacing: 4) {
-                    quizTransportBar(section: selected.section, sectionID: selected.id)
-                    HStack {
-                        Spacer(minLength: 0)
-                        transportControls(sectionID: selected.id, sections: sections)
-                    }
+                HStack {
+                    transportControls(sectionID: selected.id, sections: sections)
+                    Spacer(minLength: 0)
                 }
                 .padding(.horizontal, 12)
                 .padding(.bottom, 12)
@@ -1231,6 +1228,9 @@ struct QuizView: View {
                     .environment(\.quizLaneTint, laneTint(in: section, at: beat))
                 }
                 quizCards(section: section, sectionID: sectionID, beat: beat)
+                if mode != .full {
+                    rootOnlySeekControl(section: section, sectionID: sectionID)
+                }
                 playbackKnobs(sectionID: sectionID)
         }
         .frame(maxWidth: .infinity, alignment: .top)
@@ -1299,6 +1299,14 @@ struct QuizView: View {
                 .accessibilityIdentifier("quiz.reset")
                 .accessibilityLabel("Reset quiz playback")
                 .accessibilityHint("Stops playback and returns to the beginning")
+                QuizTransportButton(
+                    phase: transportPhase,
+                    isReady: sectionLoadStatus.isReady,
+                    isPlaybackEnabled: tempoPercent > 0,
+                    commandPending: playbackCommandPending || timelineScrub != nil,
+                    action: requestPlaybackToggle,
+                    compact: true
+                )
             }
             if !environment.vocalPractice.isExpanded {
                 HStack(spacing: QuizTransportLayout.spacing) {
@@ -1355,21 +1363,13 @@ struct QuizView: View {
         .fixedSize(horizontal: false, vertical: true)
     }
 
-    private func quizTransportBar(section: ExtractedSection, sectionID: String) -> some View {
+    private func rootOnlySeekControl(section: ExtractedSection, sectionID: String) -> some View {
         let endBeat = playbackEndBeat(in: section)
-        let position = currentBeat(in: section)
-        let previousBoundary = chordBoundary(direction: .previous, from: position, in: section)
-        let nextBoundary = chordBoundary(direction: .next, from: position, in: section)
-        let canStepChordBoundary = canSeek && timelineScrub == nil
-        return VStack(spacing: 6) {
-            Text("Beat \(position.formatted(.number.precision(.fractionLength(0...2)))) of \(endBeat.formatted(.number.precision(.fractionLength(0...2))))")
-                .font(.caption.monospacedDigit())
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
+        return VStack(alignment: .leading, spacing: 6) {
             Slider(
                 value: Binding(
-                    get: { position },
-                    set: { updateTransportSeek(to: $0, in: section, sectionID: sectionID) }
+                    get: { currentBeat(in: section) },
+                    set: { updateRootOnlySeek(to: $0, in: section, sectionID: sectionID) }
                 ),
                 in: PlaybackTiming.firstBeat...endBeat,
                 onEditingChanged: { isEditing in
@@ -1382,56 +1382,14 @@ struct QuizView: View {
                 }
             )
             .disabled(!canSeek || endBeat <= PlaybackTiming.firstBeat)
-            .accessibilityIdentifier(mode == .rootOnly ? "quiz.rootSeek" : "quiz.seek")
+            .accessibilityIdentifier("quiz.rootSeek")
             .accessibilityLabel("Quiz position")
-            .accessibilityValue("Beat \(position.formatted(.number.precision(.fractionLength(0...2)))) of \(endBeat.formatted(.number.precision(.fractionLength(0...2))))")
+            .accessibilityValue("Beat \(currentBeat(in: section).formatted(.number.precision(.fractionLength(0...2))))")
             .accessibilityHint("Adjusts the current beat")
-
-            HStack {
-                Button {
-                    requestChordBoundarySeek(direction: .previous, in: section)
-                } label: {
-                    Image(systemName: "backward.end.fill")
-                        .frame(width: 54, height: 54)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .disabled(!canStepChordBoundary || previousBoundary == nil)
-                .accessibilityIdentifier("quiz.previous")
-                .accessibilityLabel("Previous chord")
-                .accessibilityHint("Seeks to the previous chord boundary")
-
-                Spacer(minLength: 0)
-
-                QuizTransportButton(
-                    phase: transportPhase,
-                    isReady: sectionLoadStatus.isReady,
-                    isPlaybackEnabled: tempoPercent > 0,
-                    commandPending: playbackCommandPending || timelineScrub != nil,
-                    action: requestPlaybackToggle,
-                    circular: true
-                )
-
-                Spacer(minLength: 0)
-
-                Button {
-                    requestChordBoundarySeek(direction: .next, in: section)
-                } label: {
-                    Image(systemName: "forward.end.fill")
-                        .frame(width: 54, height: 54)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .disabled(!canStepChordBoundary || nextBoundary == nil)
-                .accessibilityIdentifier("quiz.next")
-                .accessibilityLabel("Next chord")
-                .accessibilityHint("Seeks to the next chord boundary")
-            }
         }
-        .frame(maxWidth: .infinity)
     }
 
-    private func updateTransportSeek(
+    private func updateRootOnlySeek(
         to targetBeat: Double,
         in section: ExtractedSection,
         sectionID: String
@@ -1446,40 +1404,6 @@ struct QuizView: View {
         } else {
             // VoiceOver can adjust a Slider without a begin/end editing pair.
             requestSeek(to: targetBeat, in: section)
-        }
-    }
-
-    private enum ChordBoundaryDirection {
-        case previous
-        case next
-    }
-
-    private func requestChordBoundarySeek(
-        direction: ChordBoundaryDirection,
-        in section: ExtractedSection
-    ) {
-        guard canSeek,
-              timelineScrub == nil,
-              let target = chordBoundary(direction: direction, from: currentBeat(in: section), in: section)
-        else { return }
-        requestSeek(to: target, in: section)
-    }
-
-    private func chordBoundary(
-        direction: ChordBoundaryDirection,
-        from current: Double,
-        in section: ExtractedSection
-    ) -> Double? {
-        let boundaries = Array(Set(section.chords.map {
-            PlaybackTiming.normalize(beat: $0["beat"]?.doubleValue ?? PlaybackTiming.firstBeat)
-        }))
-        .sorted()
-        switch direction {
-        case .previous:
-            // Inside a chord, return to its onset; near its onset, step to the one before it.
-            return boundaries.last(where: { $0 < current - 0.05 })
-        case .next:
-            return boundaries.first(where: { $0 > current + 0.05 })
         }
     }
 
@@ -2387,8 +2311,8 @@ private enum QuizTransportLayout {
     static let controlSize: CGFloat = 44
     static let selectorWidth: CGFloat = 72
     static let spacing: CGFloat = 8
-    /// Favorite, instrument, and reset controls, plus the transpose selector.
-    static let width = controlSize * 3 + selectorWidth + spacing * 3
+    /// Favorite, reset, play and one 44 pt selector, plus the transpose selector.
+    static let width = controlSize * 4 + selectorWidth + spacing * 4
 }
 
 private struct QuizIconButtonStyle: ButtonStyle {
@@ -2419,7 +2343,6 @@ private struct QuizTransportButton: View {
     let commandPending: Bool
     let action: () -> Void
     var compact = false
-    var circular = false
 
     private var isBusy: Bool { commandPending || phase == .buffering }
 
@@ -2431,36 +2354,18 @@ private struct QuizTransportButton: View {
 
     var body: some View {
         let button = Button(action: action) {
-            Group {
-                if circular {
-                    ZStack {
-                        if isBusy {
-                            ProgressView().tint(.white)
-                        } else {
-                            Image(systemName: phase == .playing ? "pause.fill" : "play.fill")
-                        }
-                    }
-                    .font(.system(size: 20, weight: .bold))
-                    .frame(width: 54, height: 54)
-                    .foregroundStyle(.white)
-                    .background(Color.accentColor, in: Circle())
+            HStack(spacing: 8) {
+                if isBusy {
+                    ProgressView().controlSize(.small)
                 } else {
-                    HStack(spacing: 8) {
-                        if isBusy {
-                            ProgressView().controlSize(.small)
-                        } else {
-                            Image(systemName: phase == .playing ? "pause.fill" : "play.fill")
-                        }
-                        if !compact { Text(title) }
-                    }
-                    .frame(minWidth: compact ? nil : 100)
+                    Image(systemName: phase == .playing ? "pause.fill" : "play.fill")
                 }
+                if !compact { Text(title) }
             }
+            .frame(minWidth: compact ? nil : 100)
         }
         Group {
-            if circular {
-                button.buttonStyle(.plain)
-            } else if compact {
+            if compact {
                 button.buttonStyle(QuizIconButtonStyle(isProminent: true))
             } else {
                 button.buttonStyle(.borderedProminent)
