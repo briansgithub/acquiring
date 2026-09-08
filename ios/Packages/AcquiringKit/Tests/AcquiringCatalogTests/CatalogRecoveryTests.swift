@@ -1085,7 +1085,10 @@ final class CatalogRecoveryTests: XCTestCase {
         CatalogConfiguration(
             directoryURL: directory,
             downloadURL: downloadURL,
-            contract: miniatureContract(minimumRows: 1)
+            contract: miniatureContract(minimumRows: 1),
+            // Per-test ledger. The default sits beside the catalog directory,
+            // which for these temporary directories would be shared.
+            ledgerDirectoryURL: directory.appending(path: "UserHarvests", directoryHint: .isDirectory)
         )
     }
 
@@ -1137,9 +1140,14 @@ final class CatalogRecoveryTests: XCTestCase {
                     sql: "INSERT INTO songs (slug, artist, title, url, status, dataBlob) VALUES (?, ?, ?, ?, ?, ?)",
                     arguments: [slug, "Artist", title, "https://example.com/\(slug)", "ready", Data("{}".utf8)]
                 )
+                // A rating stands in for "came from a shipped catalog": the
+                // legacy-harvest sweep uses its absence to spot local rows.
                 try db.execute(
-                    sql: "INSERT INTO song_browse_entries (slug, artist, title, alphaGroup) VALUES (?, ?, ?, ?)",
-                    arguments: [slug, "Artist", title, "S"]
+                    sql: """
+                        INSERT INTO song_browse_entries (slug, artist, title, alphaGroup, complexityRating)
+                        VALUES (?, ?, ?, ?, ?)
+                        """,
+                    arguments: [slug, "Artist", title, "S", 50.0]
                 )
             }
         }

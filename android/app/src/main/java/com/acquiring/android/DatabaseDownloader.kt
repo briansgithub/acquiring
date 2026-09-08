@@ -23,9 +23,15 @@ object DatabaseDownloader {
     private const val DEFAULT_CATALOG_URL =
         "https://github.com/briansgithub/acquiring/releases/download/v1.0.0-data/catalog.db.gz"
 
+    /**
+     * @param userDb ledger home. Manually harvested songs are adopted from the
+     *   outgoing catalog before it is replaced; the caller replays them once it
+     *   has reopened Room (see HarvestLedger).
+     */
     suspend fun downloadAndInstallCatalog(
         context: Context,
         currentDb: AppDatabase? = null,
+        userDb: UserDataDatabase? = null,
         url: String = DEFAULT_CATALOG_URL,
         onProgress: (String) -> Unit = {}
     ): Result<Boolean> = withContext(Dispatchers.IO) {
@@ -80,6 +86,14 @@ object DatabaseDownloader {
 
                     ensureBrowseSchema(stagedDbFile)
                     validateCatalog(context, stagedDbFile)
+
+                    // Before the swap, while the outgoing catalog still exists:
+                    // it is the only record of songs harvested before the ledger
+                    // shipped. Never fatal — a catalog the user asked for must
+                    // not fail over bookkeeping.
+                    if (currentDb != null && userDb != null) {
+                        runCatching { HarvestLedger.adopt(currentDb, stagedDbFile, userDb) }
+                    }
 
                     onProgress("Installing catalog...")
                     currentDb?.close()

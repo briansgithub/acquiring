@@ -45,6 +45,25 @@ interface SongDao {
     @Query("SELECT EXISTS(SELECT 1 FROM songs WHERE slug = :slug)")
     suspend fun songExists(slug: String): Boolean
 
+    /**
+     * Songs that look locally harvested rather than shipped: they hold chords,
+     * but no complexity rating. Every row of an exported catalog carries a
+     * rating; a harvest never computes one. Used only by the ledger's one-time
+     * adoption sweep, hence the caller-supplied bound.
+     */
+    @Query(
+        """
+        SELECT songs.slug FROM songs
+        LEFT JOIN song_browse_entries ON song_browse_entries.slug = songs.slug
+        WHERE songs.dataBlob IS NOT NULL AND song_browse_entries.complexityRating IS NULL
+        LIMIT :limit
+        """
+    )
+    suspend fun getUnratedSlugsWithChords(limit: Int): List<String>
+
+    @Query("SELECT mode FROM song_browse_modes WHERE slug = :slug")
+    suspend fun getModesForSlug(slug: String): List<String>
+
     @Query(
         """
         SELECT slug, artist, title
