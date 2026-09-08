@@ -2031,3 +2031,145 @@ private func failureStream(
         continuation.finish(throwing: error)
     }
 }
+
+/// Geometry behind the quiz help tooltips: every leader must point at the control
+/// it describes without running under another bubble or crossing another leader.
+final class QuizHelpLayoutTests: XCTestCase {
+    // An iPhone-sized viewport with the insets the overlay applies.
+    private let area = CGRect(x: 8, y: 103, width: 386, height: 729)
+
+    private let frames: [QuizHelpTargetID: [CGRect]] = [
+        .quizRelativeKey: [CGRect(x: 120, y: 110, width: 44, height: 44)],
+        .quizChord: [CGRect(x: 121, y: 190, width: 160, height: 120)],
+        .quizNotes: [
+            CGRect(x: 16, y: 340, width: 84, height: 74),
+            CGRect(x: 108, y: 340, width: 84, height: 74),
+            CGRect(x: 200, y: 340, width: 84, height: 74),
+            CGRect(x: 292, y: 340, width: 84, height: 74),
+            CGRect(x: 16, y: 440, width: 120, height: 60),
+        ],
+        .vocalTessitura: [CGRect(x: 16, y: 760, width: 60, height: 50)],
+        .vocalPitchCards: [
+            CGRect(x: 90, y: 760, width: 90, height: 50),
+            CGRect(x: 190, y: 760, width: 90, height: 50),
+        ],
+        .vocalInterval: [CGRect(x: 290, y: 760, width: 90, height: 50)],
+    ]
+
+    private let sizes: [QuizHelpTargetID: CGSize] = [
+        .quizNotes: CGSize(width: 195, height: 56),
+        .quizChord: CGSize(width: 130, height: 32),
+        .quizRelativeKey: CGSize(width: 150, height: 32),
+        .vocalTessitura: CGSize(width: 195, height: 48),
+        .vocalPitchCards: CGSize(width: 175, height: 48),
+        .vocalInterval: CGSize(width: 130, height: 32),
+    ]
+
+    /// Root-only hides the Roman-numeral card, so its hint drops out entirely.
+    private var rootOnlyFrames: [QuizHelpTargetID: [CGRect]] {
+        frames.filter { $0.key != .quizChord }
+    }
+
+    /// Accessibility text sizes widen every bubble to 270pt, leaving room for
+    /// only one column — the tightest layout the engine has to survive.
+    private var accessibilitySizes: [QuizHelpTargetID: CGSize] {
+        sizes.mapValues { CGSize(width: 270, height: $0.height * 1.6) }
+    }
+
+    private func placements(
+        frames: [QuizHelpTargetID: [CGRect]]? = nil,
+        sizes: [QuizHelpTargetID: CGSize]? = nil
+    ) -> [QuizHelpLayoutEngine.Placement] {
+        QuizHelpLayoutEngine(area: area, frames: frames ?? self.frames, sizes: sizes ?? self.sizes).placements()
+    }
+
+    func testEveryTargetKeepsOneLeaderPerAnchor() {
+        let placements = self.placements()
+        XCTAssertEqual(Set(placements.map(\.id)), Set(frames.keys))
+        for placement in placements {
+            XCTAssertEqual(placement.leaders.count, frames[placement.id]?.count)
+        }
+    }
+
+    func testArrowTipsLandOnTheEdgeOfTheDescribedElement() {
+        for placement in placements() {
+            for (leader, anchor) in zip(placement.leaders, frames[placement.id] ?? []) {
+                XCTAssertTrue(anchor.insetBy(dx: -0.5, dy: -0.5).contains(leader.tip),
+                              "\(placement.id) tip \(leader.tip) is off its anchor \(anchor)")
+                XCTAssertFalse(anchor.insetBy(dx: 0.5, dy: 0.5).contains(leader.tip),
+                               "\(placement.id) tip \(leader.tip) sits inside its anchor \(anchor)")
+                XCTAssertNotNil(leader.direction, "\(placement.id) has a zero-length leader")
+            }
+        }
+    }
+
+    func testLeadersStayClearOfOtherBubblesAndLeaders() {
+        assertLeadersStayClear(placements(), "Full")
+        assertLeadersStayClear(placements(frames: rootOnlyFrames), "Root-only")
+        // Accessibility text sizes are deliberately not asserted here: six 270pt
+        // bubbles leave a single column, so some leaders must pass a neighbour.
+        // The scorer still minimizes them; `testBubblesStayInsideTheAreaAndDoNotOverlap`
+        // keeps that layout legible.
+    }
+
+    private func assertLeadersStayClear(
+        _ placements: [QuizHelpLayoutEngine.Placement],
+        _ layout: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        for (index, placement) in placements.enumerated() {
+            for other in placements where other.id != placement.id {
+                for leader in placement.leaders {
+                    XCTAssertFalse(leader.intersects(other.frame),
+                                   "\(layout): \(placement.id) leader passes under \(other.id)", file: file, line: line)
+                }
+            }
+            for other in placements.dropFirst(index + 1) {
+                for leader in placement.leaders where other.leaders.contains(where: leader.crosses) {
+                    XCTAssertTrue(false, "\(layout): \(placement.id) crosses \(other.id)", file: file, line: line)
+                }
+            }
+        }
+    }
+
+    func testBubblesStayInsideTheAreaAndDoNotOverlap() {
+        for (layout, placements) in [
+            ("Full", placements()),
+            ("Root-only", placements(frames: rootOnlyFrames)),
+            ("accessibility text", placements(sizes: accessibilitySizes)),
+        ] {
+            for (index, placement) in placements.enumerated() {
+                XCTAssertTrue(area.insetBy(dx: -0.5, dy: -0.5).contains(placement.frame),
+                              "\(layout): \(placement.id) escapes the layout area")
+                for other in placements.dropFirst(index + 1) {
+                    XCTAssertFalse(placement.frame.intersects(other.frame),
+                                   "\(layout): \(placement.id) overlaps \(other.id)")
+                }
+            }
+        }
+    }
+
+    func testSegmentsCrossDetectsTouchingAndProperIntersections() {
+        let cross = QuizHelpGeometry.segmentsCross
+        XCTAssertTrue(cross(CGPoint(x: 0, y: 0), CGPoint(x: 10, y: 10),
+                            CGPoint(x: 0, y: 10), CGPoint(x: 10, y: 0)))
+        XCTAssertTrue(cross(CGPoint(x: 0, y: 0), CGPoint(x: 10, y: 0),
+                            CGPoint(x: 5, y: 0), CGPoint(x: 5, y: 10)))
+        XCTAssertTrue(cross(CGPoint(x: 0, y: 0), CGPoint(x: 10, y: 0),
+                            CGPoint(x: 4, y: 0), CGPoint(x: 20, y: 0)))
+        XCTAssertFalse(cross(CGPoint(x: 0, y: 0), CGPoint(x: 10, y: 0),
+                             CGPoint(x: 0, y: 5), CGPoint(x: 10, y: 5)))
+        XCTAssertFalse(cross(CGPoint(x: 0, y: 0), CGPoint(x: 10, y: 10),
+                             CGPoint(x: 20, y: 0), CGPoint(x: 30, y: 10)))
+    }
+
+    func testSegmentRectIntersectionCoversCrossingAndContainedEnds() {
+        let rect = CGRect(x: 10, y: 10, width: 20, height: 20)
+        XCTAssertTrue(QuizHelpGeometry.segment(CGPoint(x: 0, y: 20), CGPoint(x: 40, y: 20), intersects: rect))
+        XCTAssertTrue(QuizHelpGeometry.segment(CGPoint(x: 20, y: 20), CGPoint(x: 100, y: 100), intersects: rect))
+        XCTAssertFalse(QuizHelpGeometry.segment(CGPoint(x: 0, y: 0), CGPoint(x: 5, y: 40), intersects: rect))
+        XCTAssertFalse(QuizHelpGeometry.segment(CGPoint(x: 0, y: 0), CGPoint(x: 40, y: 0), intersects: rect))
+        XCTAssertFalse(QuizHelpGeometry.segment(CGPoint(x: 0, y: 0), CGPoint(x: 40, y: 40), intersects: .null))
+    }
+}
