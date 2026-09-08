@@ -4,13 +4,13 @@ import XCTest
 @MainActor
 final class AcquiringUITests: XCTestCase {
     private enum Fixture {
-        static let fiveHundredMiles = "500 Miles, by the-proclaimers"
-        static let fiveHundredMilesQuizTitle = "500 Miles by the-proclaimers"
-        static let badRomance = "Bad Romance, by lady-gaga"
-        static let badRomanceQuizTitle = "Bad Romance by lady-gaga"
+        static let fiveHundredMiles = "500 Miles, by The Proclaimers"
+        static let fiveHundredMilesQuizTitle = "500 Miles by The Proclaimers"
+        static let badRomance = "Bad Romance, by Lady Gaga"
+        static let badRomanceQuizTitle = "Bad Romance by Lady Gaga"
         static let bohemianRhapsody = "Bohemian Rhapsody, by queen"
-        static let gladiolusRag = "Gladiolus Rag, by scott-joplin"
-        static let theEntertainer = "The Entertainer, by scott-joplin"
+        static let gladiolusRag = "Gladiolus Rag, by Scott Joplin"
+        static let theEntertainer = "The Entertainer, by Scott Joplin"
     }
 
     private enum LibraryScenario: String {
@@ -22,6 +22,35 @@ final class AcquiringUITests: XCTestCase {
 
     override func setUpWithError() throws {
         continueAfterFailure = false
+    }
+
+    func testQuizSongInformationRetainsModeAndPlayback() {
+        let app = launchApp(scenario: .ready)
+        openQuiz(app, searchText: "500 Miles", songButton: Fixture.fiveHundredMiles, navigationTitle: Fixture.fiveHundredMilesQuizTitle)
+        let modePicker = app.descendants(matching: .any)["quiz.mode"]
+        modePicker.tap()
+        app.buttons["Root-only"].tap()
+        let sectionPicker = app.descendants(matching: .any)["quiz.section"]
+        let selectedSection = sectionPicker.value as? String
+        let play = app.buttons["quiz.play"]
+        play.tap()
+        let playing = expectation(for: NSPredicate(format: "label == %@", "Pause"), evaluatedWith: play)
+        wait(for: [playing], timeout: 10)
+
+        let heading = app.buttons["quiz.songInformation"]
+        XCTAssertEqual(heading.label, Fixture.fiveHundredMilesQuizTitle)
+        heading.tap()
+        let title = app.staticTexts["quiz.songInformation.title"]
+        XCTAssertTrue(title.waitForExistence(timeout: 5))
+        XCTAssertEqual(title.label, "500 Miles")
+        XCTAssertEqual(app.staticTexts["quiz.songInformation.artist"].label, "by The Proclaimers")
+        app.buttons["quiz.songInformation.done"].tap()
+
+        XCTAssertTrue(heading.waitForExistence(timeout: 5))
+        XCTAssertEqual(modePicker.value as? String, "Root-only")
+        XCTAssertEqual(sectionPicker.value as? String, selectedSection)
+        XCTAssertEqual(play.label, "Pause", "Reading the song name must not pause playback")
+        play.tap()
     }
 
     func testAudioDiagnosticsResetAndHiddenSettingsEntry() {
@@ -775,11 +804,11 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(scope.waitForExistence(timeout: 5))
         scope.buttons["Artists"].tap()
 
-        let artist = app.buttons["scott joplin"]
+        let artist = app.buttons["Scott Joplin"]
         XCTAssertTrue(artist.waitForExistence(timeout: 5))
         artist.tap()
 
-        XCTAssertTrue(app.navigationBars["scott joplin"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.navigationBars["Scott Joplin"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons[Fixture.gladiolusRag].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons[Fixture.theEntertainer].waitForExistence(timeout: 5))
         attachScreenshot(of: app, named: "phase-2-artist-results")
