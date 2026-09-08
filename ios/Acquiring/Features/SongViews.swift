@@ -3938,33 +3938,7 @@ private struct ChordTimelineView: View {
                 ZStack(alignment: .topLeading) {
                     ForEach(presentation.visuals) { visual in
                         if presentation.width(for: visual) > 0 {
-                            let isActive = active?.id == visual.id
-                            RoundedRectangle(cornerRadius: 5)
-                                .fill(isActive ? laneTint.opacity(0.82) : Color.white.opacity(0.16))
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 5)
-                                        .stroke(
-                                            isActive ? Color.white : Color.white.opacity(0.42),
-                                            lineWidth: isActive ? 2 : 1
-                                        )
-                                }
-                                .overlay {
-                                    if let display = visual.display {
-                                        FittedRomanNumeral(
-                                            display: display,
-                                            maximumFontSize: 18,
-                                            minimumFontSize: 8,
-                                            color: .white
-                                        )
-                                        .padding(.horizontal, 2)
-                                        .accessibilityHidden(true)
-                                    }
-                                }
-                                .frame(
-                                    width: presentation.width(for: visual),
-                                    height: ChordTimelinePresentation.laneHeight
-                                )
-                                .offset(x: presentation.localX(for: visual))
+                            chordBlock(visual, isActive: active?.id == visual.id)
                         }
                     }
                 }
@@ -4047,6 +4021,35 @@ private struct ChordTimelineView: View {
                 cancelActiveDragIfNeeded()
             }
         }
+    }
+
+    private func chordBlock(_ visual: ChordTimelineVisual, isActive: Bool) -> some View {
+        RoundedRectangle(cornerRadius: 5)
+            .fill(isActive ? laneTint.opacity(0.82) : Color.white.opacity(0.16))
+            .overlay {
+                RoundedRectangle(cornerRadius: 5)
+                    .stroke(
+                        isActive ? Color.white : Color.white.opacity(0.42),
+                        lineWidth: isActive ? 2 : 1
+                    )
+            }
+            .overlay {
+                if let display = visual.display {
+                    FittedRomanNumeral(
+                        display: display,
+                        maximumFontSize: 18,
+                        minimumFontSize: 8,
+                        color: .white
+                    )
+                    .padding(.horizontal, 2)
+                    .accessibilityHidden(true)
+                }
+            }
+            .frame(
+                width: presentation.width(for: visual),
+                height: ChordTimelinePresentation.laneHeight
+            )
+            .offset(x: presentation.localX(for: visual))
     }
 
     private func accessibilityLabel(for active: ChordTimelineVisual?) -> String {
