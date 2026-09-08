@@ -282,11 +282,6 @@ final class AcquiringUITests: XCTestCase {
         letters.tap()
         XCTAssertEqual(letters.value as? String, "1")
 
-        let arpeggiate = app.switches["songDetail.chords.arpeggiate"]
-        XCTAssertTrue(arpeggiate.waitForExistence(timeout: 5))
-        arpeggiate.tap()
-        XCTAssertEqual(arpeggiate.value as? String, "1")
-
         // The tone row replaced the arpeggio-speed knob and is populated before any tap.
         XCTAssertTrue(
             app.descendants(matching: .any)["songDetail.chords.tones"].waitForExistence(timeout: 5)

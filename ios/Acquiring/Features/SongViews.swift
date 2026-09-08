@@ -15,7 +15,6 @@ struct SongDetailView: View {
     @State private var tab: SongDetailTab = .info
     @State private var selectedSectionID: String?
     @State private var showsLetterNames = false
-    @State private var arpeggiatesChords = false
     @State private var audioError: String?
     @State private var showsAudioDiagnostics = false
     @State private var audioRecoveryTask: Task<Void, Never>?
@@ -148,11 +147,10 @@ struct SongDetailView: View {
                     SongChordsView(
                         section: selected.section,
                         showsLetterNames: $showsLetterNames,
-                        arpeggiates: $arpeggiatesChords,
-                        onPreview: { chord in preview(chord, arpeggiates: arpeggiatesChords) },
+                        onPreview: { chord in preview(chord) },
                         onPreviewTone: { midi in previewTone(midi) },
                         onPreviewTransition: { transition in
-                            previewTransition(transition, arpeggiates: arpeggiatesChords)
+                            previewTransition(transition, arpeggiates: false)
                         }
                     )
                 }
@@ -500,7 +498,6 @@ private struct InfoProgressionPill: View {
 private struct SongChordsView: View {
     let section: ExtractedSection
     @Binding var showsLetterNames: Bool
-    @Binding var arpeggiates: Bool
     let onPreview: (SongDetailChord) -> Void
     let onPreviewTone: (Int) -> Void
     let onPreviewTransition: (ChordTransition) -> Void
@@ -531,8 +528,6 @@ private struct SongChordsView: View {
 
                 Toggle("Show letter names", isOn: $showsLetterNames)
                     .accessibilityIdentifier("songDetail.chords.letters")
-                Toggle("Arpeggiate", isOn: $arpeggiates)
-                    .accessibilityIdentifier("songDetail.chords.arpeggiate")
                 chordTones
 
                 if chords.isEmpty {
