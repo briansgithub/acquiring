@@ -338,6 +338,78 @@ final class QuizCoverageTests: XCTestCase {
         XCTAssertFalse(app.alerts["Audio"].exists)
     }
 
+    func testQuizHelpExpandsDockAndConsumesDismissalTapsInBothModes() {
+        let app = launchReadyQuiz()
+        let help = app.buttons["quiz.help"]
+        let dock = app.buttons["vocal.practice.expand"]
+        let overlay = app.descendants(matching: .any)["help.overlay"].firstMatch
+
+        for modeName in ["Full", "Root-only"] {
+            if modeName == "Root-only" {
+                dock.tap()
+                XCTAssertTrue(waitForValue(dock, "Collapsed", timeout: 5))
+                let mode = app.descendants(matching: .any)["quiz.mode"].firstMatch
+                mode.tap()
+                app.buttons["Root-only"].tap()
+                XCTAssertTrue(waitForValue(mode, modeName, timeout: 5))
+            }
+
+            XCTAssertTrue(waitForEnabled(help, timeout: 10))
+            help.tap()
+            XCTAssertTrue(overlay.waitForExistence(timeout: 5))
+            for id in ["help.quizNoteIntervalChordTone", "help.quizRelativeKey",
+                       "help.vocalTessitura", "help.vocalPitchCards", "help.vocalInterval"] {
+                XCTAssertTrue(app.descendants(matching: .any)[id].firstMatch.waitForExistence(timeout: 5), id)
+            }
+            XCTAssertEqual(app.descendants(matching: .any)["help.quizChord"].firstMatch.exists, modeName == "Full")
+            app.buttons["help.dismiss"].tap()
+            XCTAssertTrue(poll(timeout: 5) { !overlay.exists })
+            XCTAssertTrue(waitForValue(dock, "Expanded", timeout: 5))
+            XCTAssertEqual(help.value as? String, "Off")
+            XCTAssertFalse(app.buttons["vocal.practice.stop"].exists,
+                           "Opening help must not start microphone capture")
+
+            let lock = app.buttons["quiz.lockInMajor"]
+            let initialLockValue = lock.value as? String
+            let firstPitch = app.buttons["vocal.practice.slot.1"]
+            let initialPitchValue = firstPitch.value as? String
+            let back = app.navigationBars.buttons.element(boundBy: 0)
+            // Coordinates are saved before help hides the underlying elements
+            // from accessibility. These taps must reach only the help layer.
+            let points = [lock, firstPitch, dock, help, back].map {
+                CGPoint(x: $0.frame.midX, y: $0.frame.midY)
+            }
+            for point in points {
+                help.tap()
+                XCTAssertTrue(overlay.waitForExistence(timeout: 5))
+                app.coordinate(withNormalizedOffset: .zero)
+                    .withOffset(CGVector(dx: point.x - app.frame.minX, dy: point.y - app.frame.minY))
+                    .tap()
+                XCTAssertTrue(poll(timeout: 5) { !overlay.exists })
+                XCTAssertTrue(app.navigationBars[Fixture.quizTitle].exists)
+                XCTAssertEqual(lock.value as? String, initialLockValue)
+                XCTAssertEqual(firstPitch.value as? String, initialPitchValue)
+                XCTAssertEqual(dock.value as? String, "Expanded")
+                XCTAssertEqual(help.value as? String, "Off")
+                XCTAssertFalse(app.buttons["vocal.practice.stop"].exists)
+            }
+        }
+    }
+
+    func testQuizHelpDismissalDoesNotPausePlayback() {
+        let app = launchReadyQuiz()
+        let play = app.buttons["quiz.play"]
+        XCTAssertTrue(waitForEnabled(play, timeout: 30))
+        play.tap()
+        XCTAssertTrue(waitForLabel(play, "Pause", timeout: 10))
+        app.buttons["quiz.help"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["help.overlay"].firstMatch.waitForExistence(timeout: 5))
+        app.buttons["help.dismiss"].tap()
+        XCTAssertTrue(waitForLabel(play, "Pause", timeout: 5))
+        XCTAssertFalse(app.alerts["Audio"].exists)
+        play.tap()
+    }
+
     // MARK: - F037 Lock in Major
 
     func testLockInMajorChangesTheKeyLabelWithoutTransposingTheSource() {

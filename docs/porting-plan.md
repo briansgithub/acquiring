@@ -1865,3 +1865,14 @@ terminate/install/launch on the existing iPhone 17 simulator. Review `500 Miles`
 check first/subsequent root cards, hats, labels, and centered interval; in both modes,
 check the below-knob controls fit and that scrubbing, chord stepping, and play/pause
 work. Human visual review remains pending.
+
+### Quiz tooltips and illustrated notation Help — 2026-09-08
+
+`[review]` Implemented on `codex/ios-quiz-help` with Terra/medium UI agents and
+primary integration review. Contextual hints cover the selected quiz cards and
+expanded singing tool; Settings Help is limited to card notation and tessitura.
+First-launch Introduction is preserved. Windows source syntax and project checks
+passed; Xcode build, focused XCTest execution, and simulator/human review remain
+pending on the Mac. The user requested branch publication and a Mac handoff.
+See [the branch handoff](ios-quiz-help-handoff.md) for exact commands and review
+priorities. No screenshots, full-app test suite, or release was performed.
