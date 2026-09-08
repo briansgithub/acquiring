@@ -800,45 +800,52 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
             try Task.checkCancellation()
             guard pendingMicrophone?.id == id else { throw CancellationError() }
 
-            let (input, format) = try await prepareMicrophoneInput(id: id, profile: profile)
-
-            let pipeline = try PitchPipeline(inputFormat: format, profile: profile) { [weak self] reading, capturedAt in
-                Task { @MainActor in
-                    guard let self,
-                          self.activeMicrophone?.id == id,
-                          profile.acceptsDelivery(capturedAt: capturedAt)
-                    else { return }
-                    self.activeMicrophone?.continuation.yield(reading)
+            var attachment = try await attachMicrophoneInput(id: id, profile: profile)
+            do {
+                try startEngineIfNeeded(operation: "microphone.engineStart")
+            } catch let startFailure {
+                // This start is the one path with neither the preventive rebuild
+                // nor the automatic retry: both refuse while a capture is in
+                // flight, so they do not pull the input node out from under an
+                // acquisition that is still settling. That reasoning holds
+                // *before* a start; once one has failed the graph is unusable
+                // either way, and refusing to rebuild here is what puts a raw
+                // 'what' (2003329396) in front of a singer.
+                //
+                // The rebuild discards the input node and tap this acquisition
+                // just installed, so the attachment has to be made again on the
+                // replacement graph rather than merely retried.
+                guard canRebuildForMicrophoneStart() else { throw startFailure }
+                recordAudioEvent("microphone.rebuildAfterStartFailure")
+                attachment.detach()
+                rebuildAudioEngine()
+                guard pendingMicrophone?.id == id else { throw CancellationError() }
+                attachment = try await attachMicrophoneInput(id: id, profile: profile)
+                do {
+                    try startEngineIfNeeded(operation: "microphone.engineStart.retryAfterRebuild")
+                } catch {
+                    // Both attempts are in the diagnostic history with their
+                    // original NSErrors; the singer gets something they can act on.
+                    attachment.detach()
+                    throw AcquiringAudioError.engine(Self.microphoneStartFailureMessage)
                 }
             }
-            input.removeTap(onBus: 0)
-            let requestedTapFrames = AVAudioFrameCount(max(
-                Int(ceil(Double(profile.analysisHopSize) * format.sampleRate / 16_000)),
-                1
-            ))
-            // AVAudioEngine invokes taps on its audio queue. An unannotated
-            // closure here inherits MainActor and traps when the first buffer arrives.
-            input.installTap(onBus: 0, bufferSize: requestedTapFrames, format: format) { @Sendable buffer, _ in
-                pipeline.consume(buffer)
-            }
+
             guard pendingMicrophone?.id == id else {
-                input.removeTap(onBus: 0)
-                pipeline.deactivate()
+                attachment.detach()
                 throw CancellationError()
             }
-
             pendingMicrophone = nil
             activeMicrophone = ActiveMicrophone(
                 id: id,
                 owner: owner,
                 continuation: continuation,
-                pipeline: pipeline,
+                pipeline: attachment.pipeline,
                 profile: profile,
-                sampleRate: format.sampleRate,
-                channelCount: format.channelCount
+                sampleRate: attachment.format.sampleRate,
+                channelCount: attachment.format.channelCount
             )
-            try startEngineIfNeeded(operation: "microphone.engineStart")
-            guard activeMicrophone?.id == id else { throw CancellationError() }
+            let format = attachment.format
             logger.info("Microphone pitch capture started at \(format.sampleRate, privacy: .public) Hz")
             return lease
         } catch {
@@ -886,6 +893,69 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     /// Hardware input can remain disabled on an engine first used for playback.
     /// Re-query the real route, then rebuild that engine once if its cached input
     /// still has no format. Never invent a sample rate for an unavailable device.
+    /// The input node, its tap and the pitch pipeline, held together so a failed
+    /// engine start can tear the whole thing down and build it again on a
+    /// replacement graph. `detach` is idempotent and safe on a graph that has
+    /// already been thrown away.
+    private struct MicrophoneAttachment {
+        let input: AVAudioInputNode
+        let format: AVAudioFormat
+        let pipeline: PitchPipeline
+
+        func detach() {
+            input.removeTap(onBus: 0)
+            pipeline.deactivate()
+        }
+    }
+
+    /// Prepares the input node, installs the tap, and wires the pitch pipeline.
+    /// Split out of `acquireMicrophone` so it can be run a second time against a
+    /// rebuilt engine: a rebuild replaces the graph wholesale, so the node and
+    /// tap from the first attempt do not survive it.
+    private func attachMicrophoneInput(
+        id: UUID,
+        profile: PitchTrackingProfile
+    ) async throws -> MicrophoneAttachment {
+        let (input, format) = try await prepareMicrophoneInput(id: id, profile: profile)
+
+        let pipeline = try PitchPipeline(inputFormat: format, profile: profile) { [weak self] reading, capturedAt in
+            Task { @MainActor in
+                guard let self,
+                      self.activeMicrophone?.id == id,
+                      profile.acceptsDelivery(capturedAt: capturedAt)
+                else { return }
+                self.activeMicrophone?.continuation.yield(reading)
+            }
+        }
+        input.removeTap(onBus: 0)
+        let requestedTapFrames = AVAudioFrameCount(max(
+            Int(ceil(Double(profile.analysisHopSize) * format.sampleRate / 16_000)),
+            1
+        ))
+        // AVAudioEngine invokes taps on its audio queue. An unannotated
+        // closure here inherits MainActor and traps when the first buffer arrives.
+        input.installTap(onBus: 0, bufferSize: requestedTapFrames, format: format) { @Sendable buffer, _ in
+            pipeline.consume(buffer)
+        }
+        let attachment = MicrophoneAttachment(input: input, format: format, pipeline: pipeline)
+        guard pendingMicrophone?.id == id else {
+            attachment.detach()
+            throw CancellationError()
+        }
+        return attachment
+    }
+
+    /// The rebuild that follows a failed capture start. Recovery owns the graph
+    /// while it runs, and a rebuild racing a session the system is tearing down
+    /// would only trade one failure for another, so both are refused here. Unlike
+    /// `canRetryEngineStartAfterRebuild`, this deliberately permits an in-flight
+    /// microphone: this *is* that microphone's own start, and re-attaching is the
+    /// point of the rebuild.
+    private func canRebuildForMicrophoneStart() -> Bool {
+        guard !recoveryInProgress, !isRetryingEngineStart else { return false }
+        return appIsActive && hardware.isAppActive()
+    }
+
     private func prepareMicrophoneInput(
         id: UUID,
         profile: PitchTrackingProfile
@@ -921,8 +991,15 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
             }
             if attempt < 3 { try await Task.sleep(for: .milliseconds(150)) }
         }
-        throw AcquiringAudioError.engine("The iPhone microphone could not start. Try recording again; if it persists, close and reopen the app.")
+        throw AcquiringAudioError.engine(Self.microphoneStartFailureMessage)
     }
+
+    /// Both ways a capture can fail to start — no usable input format, and an
+    /// engine start that survives a rebuild — say the same thing to the singer,
+    /// because from the dock they are the same event. One constant so the two
+    /// cannot drift into near-identical variants.
+    static let microphoneStartFailureMessage =
+        "The iPhone microphone could not start. Try recording again; if it persists, close and reopen the app."
 
     private func configureSession(
         category: AVAudioSession.Category,
