@@ -451,7 +451,9 @@ public actor CatalogCoordinator: CatalogRepository {
     // their original punctuation, capitalization, and Unicode spelling.
     private static func searchKey(_ value: String) -> String {
         let folded = value.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: Locale(identifier: "en_US_POSIX"))
-        return String(folded.unicodeScalars.filter(CharacterSet.alphanumerics.contains))
+        return String(folded.unicodeScalars.filter {
+            $0.properties.isAlphabetic || $0.properties.numericType != nil
+        })
     }
 
     private static let artistIdentitySQL = "CASE WHEN INSTR(slug, '__') > 0 THEN SUBSTR(slug, 1, INSTR(slug, '__') - 1) ELSE '' END"
