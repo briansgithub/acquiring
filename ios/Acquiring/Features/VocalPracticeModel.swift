@@ -797,7 +797,7 @@ final class VocalPracticeModel {
 
                 switch operation {
                 case let .capture(slot):
-                    await self.capturePitch(slot: slot, generation: generation, reportsMissingSignal: true)
+                    await self.capturePitch(slot: slot, generation: generation)
                 case let .listen(slot):
                     await self.listenToTarget(slot: slot, generation: generation)
                 case .flipFlop:
@@ -841,8 +841,7 @@ final class VocalPracticeModel {
 
     private func capturePitch(
         slot: Int,
-        generation: UInt64,
-        reportsMissingSignal: Bool = false
+        generation: UInt64
     ) async {
         recordingSlot = slot
         listeningSlot = nil
@@ -863,12 +862,10 @@ final class VocalPracticeModel {
             do { try await Task.sleep(for: .milliseconds(16)) } catch { return }
         }
 
+        // A silent capture leaves the slot empty, which the tool already shows; it is
+        // not an error worth a banner the singer has to dismiss before retrying.
         if isCurrent(generation), let lastAcceptedReading {
             setSlot(slot, sample: makeSample(rawMIDI: lastAcceptedReading.midi, slot: slot))
-        } else if reportsMissingSignal,
-                  isCurrent(generation),
-                  (slot == 1 ? slot1 : slot2) == nil {
-            errorMessage = "No voiced pitch was detected. Try recording again."
         }
         recordingSlot = nil
         captureRemainingMilliseconds = 0

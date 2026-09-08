@@ -18,6 +18,13 @@ struct QuizCardsView: View {
         static let singleOrIntervalHeight: CGFloat = 88
     }
 
+    /// Root-only mirrors the melody pair/interval geometry at half the scale, so the
+    /// whole root row still costs one card's height and the scrub bar fits beneath it.
+    private enum RootCardLayout {
+        static let pairHeight: CGFloat = 22
+        static let singleOrIntervalHeight: CGFloat = 44
+    }
+
     let section: ExtractedSection
     let beat: Double
     let rootOnly: Bool
@@ -104,47 +111,105 @@ struct QuizCardsView: View {
         vocalPractice?.gaugePosition == position
     }
 
+    @ViewBuilder
     private func rootOnlyCards(rootState: ChordRootIntervalState?) -> some View {
         QuizCardSection("Roots", compact: compact) {
             let previous = rootState?.previousIntervalPitch
             let current = rootState?.currentIntervalPitch
             let interval = rootState?.interval
+            let previousLabel = previous.map {
+                usesRelativeIonianContext
+                    ? RelativeIonianContext.degreeLabel(for: $0, contextKey: ionianContextKey)
+                    : (rootState?.previousDegreeLabel ?? "")
+            } ?? ""
+            let currentLabel = current.map {
+                usesRelativeIonianContext
+                    ? RelativeIonianContext.degreeLabel(for: $0, contextKey: ionianContextKey)
+                    : (rootState?.currentDegreeLabel ?? "")
+            } ?? ""
 
-            HStack(alignment: .center, spacing: 8) {
-                rootCard(
-                    title: "Previous root",
-                    pitch: previous,
-                    degree: rootState?.previousDegreeLabel,
-                    identifier: "quiz.root.previous"
-                )
-                rootCard(
-                    title: "Current root",
-                    pitch: current,
-                    degree: rootState?.currentDegreeLabel,
-                    identifier: "quiz.root.current",
-                    showsPitchGauge: showsPitchGauge(.simpleRoot)
-                )
-                intervalCard(
-                    title: "Root interval",
-                    previous: previous,
-                    current: current,
-                    interval: interval,
-                    identifier: "quiz.root.interval",
-                    labels: [
-                        previous.map {
-                            usesRelativeIonianContext
-                                ? RelativeIonianContext.degreeLabel(for: $0, contextKey: ionianContextKey)
-                                : (rootState?.previousDegreeLabel ?? "")
-                        } ?? "",
-                        current.map {
-                            usesRelativeIonianContext
-                                ? RelativeIonianContext.degreeLabel(for: $0, contextKey: ionianContextKey)
-                                : (rootState?.currentDegreeLabel ?? "")
-                        } ?? ""
-                    ]
-                )
+            if let current, let previous, let interval, previous != current {
+                // Same reading as the melody pair: the higher root sits in the top
+                // quadrant, so the pair's shape shows the interval's direction.
+                let ascending = interval.direction == .ascending
+                GeometryReader { row in
+                    let halfWidth = max(0, (row.size.width - 8) / 2)
+                    HStack(alignment: .center, spacing: 8) {
+                        HStack(spacing: 8) {
+                            positionedRootCard(
+                                title: "Previous root",
+                                pitch: previous,
+                                degree: rootState?.previousDegreeLabel,
+                                identifier: "quiz.root.previous",
+                                position: ascending ? .bottom : .top
+                            )
+                            positionedRootCard(
+                                title: "Current root",
+                                pitch: current,
+                                degree: rootState?.currentDegreeLabel,
+                                identifier: "quiz.root.current",
+                                position: ascending ? .top : .bottom,
+                                showsPitchGauge: showsPitchGauge(.simpleRoot)
+                            )
+                        }
+                        .frame(width: halfWidth)
+                        intervalCard(
+                            title: "Root interval",
+                            previous: previous,
+                            current: current,
+                            interval: interval,
+                            identifier: "quiz.root.interval",
+                            labels: [previousLabel, currentLabel],
+                            fixedHeight: RootCardLayout.singleOrIntervalHeight
+                        )
+                        .frame(width: halfWidth)
+                    }
+                }
+                .frame(height: RootCardLayout.singleOrIntervalHeight)
+            } else if let current {
+                GeometryReader { row in
+                    let halfWidth = max(0, (row.size.width - 8) / 2)
+                    rootCard(
+                        title: "Current root",
+                        pitch: current,
+                        degree: rootState?.currentDegreeLabel,
+                        identifier: "quiz.root.current",
+                        fixedHeight: RootCardLayout.singleOrIntervalHeight,
+                        showsPitchGauge: showsPitchGauge(.simpleRoot)
+                    )
+                    .frame(width: halfWidth)
+                    .offset(x: halfWidth + 8)
+                }
+                .frame(height: RootCardLayout.singleOrIntervalHeight)
+            } else {
+                QuizEmptyCardSlot(fixedHeight: RootCardLayout.singleOrIntervalHeight)
             }
         }
+    }
+
+    /// A half-height root card pinned to the top or bottom of the root row, the way
+    /// `positionedPitchCard` pins a melody card inside the taller melody row.
+    private func positionedRootCard(
+        title: String,
+        pitch: SpelledPitch,
+        degree: String?,
+        identifier: String,
+        position: MelodyPitchCardVerticalPosition,
+        showsPitchGauge: Bool = false
+    ) -> some View {
+        VStack(spacing: 0) {
+            if case .bottom = position { Spacer(minLength: 0) }
+            rootCard(
+                title: title,
+                pitch: pitch,
+                degree: degree,
+                identifier: identifier,
+                fixedHeight: RootCardLayout.pairHeight,
+                showsPitchGauge: showsPitchGauge
+            )
+            if case .top = position { Spacer(minLength: 0) }
+        }
+        .frame(height: RootCardLayout.singleOrIntervalHeight)
     }
 
     @ViewBuilder
@@ -226,7 +291,6 @@ struct QuizCardsView: View {
                                 currentLabel
                             ],
                             fixedHeight: MelodyCardLayout.singleOrIntervalHeight,
-                            showsPitchNames: false,
                             showsPitchGauge: showsPitchGauge(.melodyCurrent)
                         )
                         .frame(width: halfWidth)
@@ -356,12 +420,20 @@ struct QuizCardsView: View {
                 showsPitchGauge: showsPitchGauge,
                 fixedHeight: fixedHeight
             ) {
+                // A half-height root card has no room for the full-size degree, so the
+                // fitted range follows the card it is drawn in.
+                let isShort = fixedHeight.map { $0 <= RootCardLayout.pairHeight } == true
                 if label.isEmpty {
                     Text(pitch.displayName)
-                        .font(.title3.weight(.semibold))
+                        .font(isShort ? .caption.weight(.semibold) : .title3.weight(.semibold))
                 } else {
-                    FittedScaleDegree(label, maximumFontSize: 42, minimumFontSize: 13, color: .white)
-                        .frame(maxWidth: .infinity, minHeight: compact ? 34 : 58)
+                    FittedScaleDegree(
+                        label,
+                        maximumFontSize: isShort ? 16 : 42,
+                        minimumFontSize: isShort ? 9 : 13,
+                        color: .white
+                    )
+                    .frame(maxWidth: .infinity, minHeight: isShort ? 14 : (compact ? 34 : 58))
                 }
             }
         } else {
@@ -423,7 +495,6 @@ struct QuizCardsView: View {
         identifier: String,
         labels: [String],
         fixedHeight: CGFloat? = nil,
-        showsPitchNames: Bool = true,
         showsPitchGauge: Bool = false
     ) -> some View {
         if let previous, let current, let interval {
@@ -440,20 +511,13 @@ struct QuizCardsView: View {
                 showsPitchGauge: showsPitchGauge,
                 fixedHeight: fixedHeight
             ) {
-                VStack(spacing: 3) {
-                    Text(interval.shorthand)
-                        .font(showsPitchNames
-                              ? .title3.bold().monospaced()
-                              : .custom("Roboto-Bold", size: 32, relativeTo: .title3))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.65)
-                    if showsPitchNames {
-                        Text("\(previous.noteName) → \(current.noteName)")
-                            .font(.caption2)
-                            .lineLimit(1)
-                    }
-                }
-                .frame(maxWidth: .infinity)
+                // The shorthand already carries the direction arrow; the note letters
+                // it used to sit above are the source spelling, not the interval.
+                Text(interval.shorthand)
+                    .font(.custom("Roboto-Bold", size: 32, relativeTo: .title3))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                    .frame(maxWidth: .infinity)
             }
         } else {
             QuizEmptyCardSlot(fixedHeight: fixedHeight)
@@ -739,7 +803,9 @@ private struct QuizCardButton<Content: View>: View {
         ) {
             content()
                 .padding(.horizontal, 8)
-                .padding(.vertical, 5)
+                // Short paired cards would lose most of their content box to the
+                // standard inset, so the padding scales with the card.
+                .padding(.vertical, fixedHeight.map { $0 <= 24 } == true ? 2 : 5)
                 .frame(maxWidth: .infinity)
                 .frame(height: fixedHeight)
         }
@@ -753,7 +819,7 @@ private struct QuizCardButton<Content: View>: View {
         .overlay(alignment: .topTrailing) {
             if hasSingBackHint {
                 PitchHintDot(isAdjusted: isTessituraEnabled)
-                    .padding(fixedHeight.map { $0 <= 44 } == true ? 3 : 5)
+                    .padding(fixedHeight.map { $0 <= 24 } == true ? 1 : fixedHeight.map { $0 <= 44 } == true ? 3 : 5)
             }
         }
         .accessibilityValue(accessibilityValueText)
