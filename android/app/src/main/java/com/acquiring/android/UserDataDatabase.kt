@@ -2,6 +2,8 @@ package com.acquiring.android
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
  * User-owned data, kept in its own database file on purpose.
@@ -17,16 +19,52 @@ import androidx.room.RoomDatabase
  * close this database when the catalog is replaced.
  */
 @Database(
-    entities = [Playlist::class, PlaylistEntry::class],
+    entities = [Playlist::class, PlaylistEntry::class, HarvestedSong::class, HarvestLedgerMeta::class],
     version = UserDataDatabase.SCHEMA_VERSION
 )
 abstract class UserDataDatabase : RoomDatabase() {
     abstract fun playlistDao(): PlaylistDao
 
+    abstract fun harvestLedgerDao(): HarvestLedgerDao
+
     companion object {
-        const val SCHEMA_VERSION = 1
+        const val SCHEMA_VERSION = 2
 
         /** Deliberately distinct from [AppDatabase.DB_NAME]. */
         const val DB_NAME = "acquiring-user-db"
+
+        /**
+         * Adds the manual-harvest ledger. A real migration rather than a
+         * destructive one: playlists in this file predate it and must survive.
+         */
+        val MIGRATION_1_2 = object : Migration(1, SCHEMA_VERSION) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `harvested_songs` (
+                        `slug` TEXT NOT NULL,
+                        `artist` TEXT,
+                        `title` TEXT,
+                        `url` TEXT NOT NULL,
+                        `status` TEXT NOT NULL,
+                        `dataBlob` BLOB NOT NULL,
+                        `alphaGroup` TEXT NOT NULL,
+                        `modes` TEXT NOT NULL,
+                        `harvestedAt` INTEGER NOT NULL,
+                        PRIMARY KEY(`slug`)
+                    )
+                    """
+                )
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `harvest_ledger_meta` (
+                        `key` TEXT NOT NULL,
+                        `value` TEXT NOT NULL,
+                        PRIMARY KEY(`key`)
+                    )
+                    """
+                )
+            }
+        }
     }
 }

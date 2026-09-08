@@ -96,11 +96,21 @@ public struct CatalogContract: Codable, Equatable, Sendable {
 
 public struct CatalogConfiguration: Sendable {
     public let directoryURL: URL
+    /// Home of the manual-harvest ledger. Must never be inside `directoryURL`:
+    /// an install writes staging files there and `prepare()` sweeps it.
+    public let ledgerDirectoryURL: URL
     public let downloadURL: URL
     public let contract: CatalogContract
 
-    public init(directoryURL: URL, downloadURL: URL, contract: CatalogContract = .mobileV3) {
+    public init(
+        directoryURL: URL,
+        downloadURL: URL,
+        contract: CatalogContract = .mobileV3,
+        ledgerDirectoryURL: URL? = nil
+    ) {
         self.directoryURL = directoryURL
+        self.ledgerDirectoryURL = ledgerDirectoryURL
+            ?? directoryURL.deletingLastPathComponent().appending(path: "UserHarvests", directoryHint: .isDirectory)
         self.downloadURL = downloadURL
         self.contract = contract
     }
@@ -118,7 +128,8 @@ public struct CatalogConfiguration: Sendable {
         return CatalogConfiguration(
             directoryURL: applicationSupport.appending(path: "Acquiring/Catalog", directoryHint: .isDirectory),
             downloadURL: URL(string: "https://github.com/briansgithub/acquiring/releases/download/v1.0.0-data/catalog.db.gz")!,
-            contract: contract
+            contract: contract,
+            ledgerDirectoryURL: applicationSupport.appending(path: "Acquiring/UserHarvests", directoryHint: .isDirectory)
         )
     }
 }

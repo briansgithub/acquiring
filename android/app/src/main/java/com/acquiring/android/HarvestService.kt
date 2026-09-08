@@ -8,7 +8,12 @@ import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-class HarvestService(private val db: AppDatabase) {
+/**
+ * @param userDb ledgers each harvest so it survives the next catalog install,
+ *   which replaces the catalog database as a whole file. Optional only so tests
+ *   that exercise scraping alone need not build one.
+ */
+class HarvestService(private val db: AppDatabase, private val userDb: UserDataDatabase? = null) {
     private val client = OkHttpClient()
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -79,6 +84,16 @@ class HarvestService(private val db: AppDatabase) {
                 if (browseModes.isNotEmpty()) {
                     db.songDao().insertBrowseModes(browseModes)
                 }
+            }
+            // The catalog row just written is destroyed by the next "Download
+            // Full Library". The ledger is what survives it.
+            userDb?.let { ledger ->
+                HarvestLedger.record(
+                    userDb = ledger,
+                    song = song,
+                    alphaGroup = browseEntry.alphaGroup,
+                    modes = browseModes.map(SongBrowseMode::mode)
+                )
             }
             onProgress("Harvest complete!")
             Result.success(song)

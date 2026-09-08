@@ -9,7 +9,8 @@ final class AcquiringCatalogTests: XCTestCase {
         let coordinator = CatalogCoordinator(
             configuration: CatalogConfiguration(
                 directoryURL: directory,
-                downloadURL: URL(string: "https://example.invalid/catalog.db.gz")!
+                downloadURL: URL(string: "https://example.invalid/catalog.db.gz")!,
+                ledgerDirectoryURL: directory.appending(path: "UserHarvests", directoryHint: .isDirectory)
             )
         )
         try await coordinator.prepare()
