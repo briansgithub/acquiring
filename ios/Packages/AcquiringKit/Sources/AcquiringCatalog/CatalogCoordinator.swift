@@ -192,18 +192,19 @@ public actor CatalogCoordinator: CatalogRepository {
     public func resolvedArtistName(_ artist: String) throws -> String? {
         // A readable source name is authoritative. Only use the legacy lookup
         // when it does not match, so punctuation-distinct artists stay separate.
-        guard !Self.searchKey(artist).isEmpty else { return nil }
+        let searchKey = Self.searchKey(artist)
+        guard !searchKey.isEmpty else { return nil }
         return try read { db in
-            let predicates = [
-                "artist = ? COLLATE NOCASE",
-                "catalog_search_key(\(Self.artistIdentitySQL)) = catalog_search_key(?)",
-                "catalog_search_key(artist) = catalog_search_key(?)"
+            let lookups = [
+                (predicate: "artist = ? COLLATE NOCASE", value: artist),
+                (predicate: "catalog_search_key(\(Self.artistIdentitySQL)) = ?", value: searchKey),
+                (predicate: "catalog_search_key(artist) = ?", value: searchKey)
             ]
-            for predicate in predicates {
+            for lookup in lookups {
                 let matches = try String.fetchAll(
                     db,
-                    sql: "SELECT DISTINCT artist FROM songs WHERE dataBlob IS NOT NULL AND artist IS NOT NULL AND \(predicate) LIMIT 2",
-                    arguments: [artist]
+                    sql: "SELECT DISTINCT artist FROM songs WHERE dataBlob IS NOT NULL AND artist IS NOT NULL AND \(lookup.predicate) LIMIT 2",
+                    arguments: [lookup.value]
                 )
                 if !matches.isEmpty { return matches.count == 1 ? matches[0] : nil }
             }
