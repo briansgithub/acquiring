@@ -471,7 +471,6 @@ export function generateScaleLabels(tonic, intervals) {
     
     // Find the note name that matches this semitone and letter
     let noteName = null;
-    let fallbackName = null;
     
     for (const [name, value] of Object.entries(NOTE_NAME_TO_INTEGER_NOTATION)) {
       if (value === semitone) {
@@ -481,16 +480,17 @@ export function generateScaleLabels(tonic, intervals) {
           noteName = name;
           break;
         }
-        // Keep a fallback
-        if (!fallbackName) {
-          fallbackName = name;
-        }
       }
     }
     
-    // Use fallback if no exact letter match found
+    // Remote applied keys can require triple accidentals. Preserve the
+    // diatonic letter: substituting an enharmonic letter changes later b3/b5
+    // alterations even though the unaltered pitch class was the same.
     if (!noteName) {
-      noteName = fallbackName;
+      const natural = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[letter];
+      let accidental = ((semitone - natural) % 12 + 12) % 12;
+      if (accidental > 6) accidental -= 12;
+      noteName = letter + (accidental < 0 ? 'b'.repeat(-accidental) : '#'.repeat(accidental));
     }
     
     if (!noteName) {
@@ -502,4 +502,3 @@ export function generateScaleLabels(tonic, intervals) {
   
   return labels;
 }
-

@@ -62,7 +62,7 @@ export function entryTones(entry, songCtx) {
   if (degrees.length < notes.length) {
     degrees = [
       ...degrees,
-      ...notes.slice(degrees.length).map((_, i) => String((degrees.length || 1) + i)),
+      ...notes.slice(degrees.length).map(() => "?"),
     ];
   }
   return { notes, degrees: degrees.slice(0, notes.length) };

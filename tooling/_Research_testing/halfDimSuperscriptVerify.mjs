@@ -1,5 +1,5 @@
 /**
- * Verify ø/° superscript tokenization against Hooktheory SVG fragments (Gladiolus Rag).
+ * Verify ø/° superscript tokenization against the committed captured source corpus.
  * Usage: node _Research_testing/halfDimSuperscriptVerify.mjs
  */
 import fs from 'node:fs';
@@ -12,27 +12,22 @@ const REPO = path.join(__dirname, '..');
 const { tokenizeRomanNumeral, romanNumeralToHtml } = await import(
   pathToFileURL(path.join(REPO, '..', 'web', 'lib', 'romanNumeralCanvas.js')).href
 );
-const { chordTruth } = await import(
-  pathToFileURL(path.join(REPO, '_Decode_oracle', 'svgTruth.js')).href
-);
-
-const scrape = JSON.parse(fs.readFileSync(
-  path.join(REPO, '..', 'acquiring_data', 'harvest', 'scott-joplin__gladiolus-rag', 'scrape.json'),
+const cases = JSON.parse(fs.readFileSync(
+  path.join(REPO, '..', 'contracts', 'fixtures', 'hooktheory_parity.json'),
   'utf8',
 ));
 
 let failed = 0;
 let checked = 0;
 
-for (const sec of scrape.sections) {
-  for (const r of sec.rendered) {
-    if (!/[°ø]/.test(r.raw)) continue;
+for (const row of cases) {
+  for (const truth of new Set([row.truthRoman, row.expectedRoman])) {
+    if (!/[°ø]/.test(truth)) continue;
     checked += 1;
-    const truth = chordTruth(r).roman;
     const tokens = tokenizeRomanNumeral(truth);
-    const base = tokens.find((t) => t.kind === 'base')?.text || '';
+    const base = tokens.filter((t) => t.kind === 'base').map((t) => t.text).join('');
     const html = romanNumeralToHtml(truth);
-    const qFigured = /[°ø]\d{2}/.test(truth) && !/[°ø]\d{2}\//.test(truth.split('(')[0]);
+    const qFigured = /[°ø](?:42|43|65|64|46)/.test(truth);
     const hasQualityGrid = !qFigured || html.includes('roman-stack--quality');
     const dimUsesCircle = !truth.includes('°') || (html.includes('roman-quality--dim') && html.includes('○'));
     const equalFiguredDigits = !html.includes('roman-stack--quality')
@@ -40,12 +35,12 @@ for (const sec of scrape.sections) {
     const ok = !base.includes('ø') && !base.includes('°') && hasQualityGrid && dimUsesCircle && equalFiguredDigits;
     if (!ok) {
       failed += 1;
-      console.error('FAIL', sec.name, truth, tokens);
+      console.error('FAIL', row.id, truth, tokens);
     }
   }
 }
 
-if (failed) {
+if (failed || !checked) {
   console.error(`${failed} failures`);
   process.exit(1);
 }

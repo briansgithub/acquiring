@@ -414,8 +414,9 @@ export function renderNoteIndicator(container, options = {}) {
     
     const isMasked = chordObj && options.isChordMasked?.(chordObj);
     const rootOnly = !isMasked && options.isRootOnlyDisplay?.();
-    const displayNotes = rootOnly ? (notes || []).slice(0, 1) : (notes || []);
-    const displayDegrees = rootOnly ? (chordDegrees || []).slice(0, 1) : (chordDegrees || []);
+    const rootIndex = Math.max(0, (chordDegrees || []).findIndex((degree) => String(degree) === "1"));
+    const displayNotes = rootOnly ? (notes || []).slice(rootIndex, rootIndex + 1) : (notes || []);
+    const displayDegrees = rootOnly ? (chordDegrees || []).slice(rootIndex, rootIndex + 1) : (chordDegrees || []);
 
     if (isMasked) {
       (notes || []).forEach((n) => {
@@ -709,4 +710,3 @@ export function renderNoteIndicator(container, options = {}) {
     },
   };
 }
-

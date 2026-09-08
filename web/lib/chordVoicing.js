@@ -64,6 +64,23 @@ export function applySuspendedExtensionVoicing(toneJSNames, degreeIndices, chord
   degreeIndices.splice(fifthIndex, 1);
 }
 
+/** Live Hooktheory eleventh shells omit the third and fifth.
+ * Keep the actual ninth from the prevailing scale, even when its printed
+ * upper-triad shorthand does not spell that pitch (Back to Black G/A).
+ */
+export function applyEleventhVoicing(notes, roles, chord, { chordType, inversion }) {
+  if (chordType !== 11 || inversion !== 0) return;
+  // Explicit fifth alterations retain the accumulated voicing policy until
+  // independent source keyboard evidence establishes their treatment.
+  if (chord?.alterations?.some(alteration => ['b5', '#5', '♭5', '♯5'].includes(alteration))) return;
+  for (let i = roles.length - 1; i >= 0; i--) {
+    if (roles[i] === 1 || roles[i] === 2) {
+      notes.splice(i, 1);
+      roles.splice(i, 1);
+    }
+  }
+}
+
 /** Lift dim7 3rd/5th when still in the root's octave (Hooktheory spread voicing). */
 function spreadDim7Voicing(toneJSNames, degreeIndices) {
   if (toneJSNames.length < 4) return [toneJSNames, degreeIndices];

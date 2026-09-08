@@ -18,10 +18,13 @@ import {
   ROMAN_NUMERALS_HARMONIC_MINOR,
   ROMAN_NUMERALS_PHRYGIAN_DOMINANT
 } from "./scales.js";
-import { getNoteLabel, getCustomBorrowedIntervals } from "./music.js";
+import { getNoteLabel, getCustomBorrowedIntervals, chordInterpreter } from "./music.js";
 import { resolveTriSubRoot } from "./chordSubstitutions.js";
 import { shiftNoteBySemitones, noteLabel } from "./chordNoteUtils.js";
 import { isMajorSeventh as policyIsMajorSeventh } from "./chordPolicy.js";
+import { resolveAppliedChordContext } from "./appliedChordContext.js";
+import { getLetterAnchoredName } from "./letterAnchoredChord.js";
+import { formatChordLetter } from "./chordLetterFormat.js";
 
 function isTriSubApplied(chord) {
     return chord?.applied === 5
@@ -92,6 +95,7 @@ const SCALE_INTERVALS = {
 
 function triadQualityWithAlts(baseQuality, chord) {
     const alts = chord.alterations || [];
+    if (alts.includes('#5') && baseQuality === 'diminished') return 'minor';
     if (alts.includes('b5') && baseQuality === 'minor') return 'diminished';
     return baseQuality;
 }
@@ -170,6 +174,11 @@ function customArraySeventhMajor(arr, degree) {
     return iv === 11;
 }
 
+function customArraySeventhDiminished(arr, degree) {
+    const seventh = arr[(degree + 5) % 7];
+    return ((seventh - arr[degree - 1]) % 12 + 12) % 12 === 9;
+}
+
 // Accidental prefix for a borrowed root: compare the borrowed-scale note at this degree to
 // the major-scale note at the same degree (e.g. bVI in Ab = Fb vs F -> "b").
 function accidentalValue(note) {
@@ -211,22 +220,19 @@ function buildSuffix(chord, quality, opts = {}) {
     const majorSeventh = opts.majorSeventh || false;
     const suspended = Array.isArray(chord.suspensions) && chord.suspensions.length > 0;
   const alterations = Array.isArray(chord.alterations) ? chord.alterations : [];
-  const implicitHalfDimB5 = quality === 'diminished' && chord.type >= 7 && !fullyDiminished;
-  const displayAlts = implicitHalfDimB5
-    ? alterations.filter((a) => a !== 'b5')
-    : alterations;
+  const displayAlts = alterations;
   const altInline = displayAlts.length ? displayAlts.map((a) => `(${a})`).join('') : '';
     const susStr = suspended ? chord.suspensions.map((s) => `sus${s}`).join('') : '';
     const omit3Only = Array.isArray(chord.omits) && chord.omits.includes(3) && !chord.omits.includes(5);
     const sharp5Only = displayAlts.length === 1 && displayAlts[0] === '#5';
-    const suppressPlusForSharp5 = chord.type < 7 && sharp5Only
+    const suppressPlusForSharp5 = !opts.applied && chord.type < 7 && sharp5Only
       && (chord.inversion === 1 || chord.inversion === 2);
     const suppressDimForSharp5Inv2 = sharp5Only && quality === 'diminished'
       && chord.inversion === 2 && chord.type < 7;
     let suffix = '';
     let alterationsEmbedded = false;
 
-    const augmented = quality === 'augmented' || (alterations.includes('#5') && !suppressPlusForSharp5);
+    const augmented = quality === 'augmented' || (quality === 'major' && alterations.includes('#5') && !suppressPlusForSharp5);
     if (augmented) suffix += '+';
 
     if (!suspended) {
@@ -285,7 +291,7 @@ function buildSuffix(chord, quality, opts = {}) {
                 opts.susPlaced = true;
                 opts.addsPlaced = true;
             } else {
-                suffix += `4${susStr}6`;
+                suffix += opts.applied ? `64${susStr}` : `4${susStr}6`;
                 opts.susPlaced = true;
             }
         } else if (sharp5Only) {
@@ -297,13 +303,13 @@ function buildSuffix(chord, quality, opts = {}) {
                 if (quality === 'minor' || quality === 'diminished') {
                     suffix += `6(${addBody})${altInline}4`;
                 } else {
-                    suffix += `+6(${addBody})${altInline}4`;
+                    suffix += `${suffix.includes('+') ? '' : '+'}6(${addBody})${altInline}4`;
                 }
                 opts.addsPlaced = true;
             } else if (quality === 'minor' || quality === 'diminished') {
                 suffix += `6${altInline}4`;
             } else {
-                suffix += `+6${altInline}4`;
+                suffix += `${suffix.includes('+') ? '' : '+'}6${altInline}4`;
             }
             alterationsEmbedded = true;
         } else if (omit3Only) {
@@ -326,10 +332,7 @@ function buildSuffix(chord, quality, opts = {}) {
             suffix += '64';
         }
     } else if (chord.inversion === 3) {
-        if (chord.type >= 7 && implicitHalfDimB5 && alterations.includes('b5')) {
-            suffix += '4(b5)2';
-            alterationsEmbedded = true;
-        } else if (chord.type >= 7 && altInline) {
+        if (chord.type >= 7 && altInline) {
             suffix += `4${altInline}2`;
             alterationsEmbedded = true;
         } else {
@@ -390,9 +393,7 @@ function buildSuffix(chord, quality, opts = {}) {
     }
 
   if (alterations.length && !alterationsEmbedded) {
-    const trailing = implicitHalfDimB5
-      ? alterations.filter((a) => a !== 'b5')
-      : alterations;
+    const trailing = alterations;
     if (trailing.length) suffix += `(${trailing.join('')})`;
   }
 
@@ -416,7 +417,7 @@ function buildNumeral(degree, qualities, chord, prefix, opts = {}) {
  * @returns {string} The Roman Numeral symbol (e.g., "ii", "vii°/ii", "V7/V", "♭VI(min)").
  */
 export function getChordSymbol(chord, key) {
-    if (!chord || !chord.root) return "";
+    if (!chord || chord.isRest || chord.rest || !Number.isInteger(chord.root) || chord.root < 1 || chord.root > 7) return "";
 
     // --- Applied chords (secondary dominants / leading-tone chords) ---
     // HOOKTHEORY DATA MODEL: `applied` is the NUMERATOR chord degree, `root` is the
@@ -425,12 +426,9 @@ export function getChordSymbol(chord, key) {
     if (chord.applied && chord.applied >= 1 && chord.applied <= 7) {
         const suspended = Array.isArray(chord.suspensions) && chord.suspensions.length > 0;
         const fullyDim = chord.applied === 7 && !suspended; // leading-tone applied chords are fully diminished
-        const targetTonic = getNoteLabel(chord.root, key);
+        const target = resolveAppliedChordContext(chord, key);
+        const targetTonic = target.targetTonic;
         const numeratorKey = { tonic: targetTonic, scale: 'major' };
-        const parentQualities = getChordQualitiesForScale(key.scale);
-        const targetQual = parentQualities[chord.root - 1];
-        const appliedDenomMaj = chord.appliedDenomMaj
-            || (chord.applied === 5 && chord.type >= 7 && targetQual === 'minor');
         const triSub = isTriSubApplied(chord);
         const numDegree = triSub ? 2 : chord.applied;
         const numPrefix = triSub ? '♭' : '';
@@ -440,13 +438,13 @@ export function getChordSymbol(chord, key) {
             && !(Array.isArray(chord.suspensions) && chord.suspensions.length);
         const numerator = buildNumeral(
             numDegree, MAJOR_SCALE_CHORD_QUALITIES, chord, numPrefix,
-            { fullyDiminished: fullyDim && !triSub, majorSeventh, applied: true },
+            { fullyDiminished: fullyDim && !triSub, majorSeventh, applied: true, ...(triSub ? { quality: 'major' } : {}) },
         );
-        const targetRomans = getRomanNumeralsForScale(key.scale);
-        const denominator = targetRomans[chord.root - 1] || '';
-        const denomTag = appliedDenomMaj ? '(maj)' : '';
+        const denominator = target.denominator;
+        const numeratorTag = key.scale === 'minor' ? '(maj)' : '';
         const subTag = triSub ? '(∆-sub)' : '';
-        return `${numerator}/${denominator}${denomTag}${subTag}`;
+        const borrowTag = borrowedAbbrev(chord.borrowed) || '';
+        return `${numerator}${subTag}${numeratorTag}/${denominator}${borrowTag}`;
     }
 
     // --- Normal / borrowed chords ---
@@ -473,7 +471,7 @@ export function getChordSymbol(chord, key) {
         const hasAdds = Array.isArray(chord.adds) && chord.adds.length > 0;
         const suffixOpts = {
             majorSeventh,
-            fullyDiminished: dimTriad && chord.type >= 7,
+            fullyDiminished: dimTriad && chord.type >= 7 && (majorSeventh || customArraySeventhDiminished(borrowed, chord.root)),
         };
         if (hasAdds) suffixOpts.borrowedTag = tag;
         return prefix + roman + buildSuffix(chord, quality, suffixOpts) + (hasAdds ? '' : tag);
@@ -486,7 +484,8 @@ export function getChordSymbol(chord, key) {
     );
     const majorSeventh = chord.type >= 7 && quality !== 'diminished' && isMajorSeventh(chord.root, { tonic: key.tonic, scale });
     const hasAdds = Array.isArray(chord.adds) && chord.adds.length > 0;
-    const suffixOpts = { majorSeventh, quality, keyScale: scale, keyTonic: key.tonic };
+    const fullyDiminished = quality === 'diminished' && ((scale === 'harmonicMinor' && chord.root === 7) || (scale === 'phrygianDominant' && chord.root === 3));
+    const suffixOpts = { majorSeventh, quality, fullyDiminished, keyScale: scale, keyTonic: key.tonic };
     if (tag && hasAdds) suffixOpts.borrowedTag = tag;
     return buildNumeral(chord.root, qualities, chord, prefix, suffixOpts) + (tag && !hasAdds ? tag : '');
 }
@@ -498,7 +497,10 @@ export function getChordSymbol(chord, key) {
  * @returns {string} The letter name symbol (e.g., "Cm", "C7", "F#m").
  */
 export function getChordLetterName(chord, key) {
-    if (!chord || !chord.root) return "";
+    if (!chord || chord.isRest || chord.rest) return "";
+    if (!Number.isInteger(chord.root) || chord.root < 1 || chord.root > 7) {
+        return chord._letterRootName ? getLetterAnchoredName(chord).replace(/x/g, '##') : "";
+    }
 
     // Resolve the degree + key the chord root should be read from. For applied chords the
     // root note comes from the MAJOR scale of the tonicization target (degree `root`), and
@@ -506,15 +508,15 @@ export function getChordLetterName(chord, key) {
     let degree, effKey, quality;
     let customIntervals = null;
     if (chord.applied && chord.applied >= 1 && chord.applied <= 7) {
-        const targetTonic = getNoteLabel(chord.root, key);
+        const targetTonic = resolveAppliedChordContext(chord, key).targetTonic;
         if (isTriSubApplied(chord)) {
-            effKey = { tonic: resolveTriSubRoot(targetTonic), scale: 'major' };
+            effKey = { tonic: getNoteLabel('b2', { tonic: targetTonic, scale: 'major' }), scale: 'major' };
             degree = 1;
             quality = 'major';
         } else {
             effKey = { tonic: targetTonic, scale: 'major' };
             degree = chord.applied;
-            quality = MAJOR_SCALE_CHORD_QUALITIES[degree - 1];
+            quality = triadQualityWithAlts(MAJOR_SCALE_CHORD_QUALITIES[degree - 1], chord);
         }
     } else if (Array.isArray(chord.borrowed)) {
         customIntervals = getCustomBorrowedIntervals(chord.borrowed);
@@ -532,14 +534,12 @@ export function getChordLetterName(chord, key) {
     const rootNoteName = getNoteLabel(degree, effKey, customIntervals);
     const augmented = quality === 'augmented';
     const triSub = isTriSubApplied(chord);
-    const sharp5 = Array.isArray(chord.alterations) && chord.alterations.includes('#5');
     const suspended = Array.isArray(chord.suspensions) && chord.suspensions.length > 0;
-    const sus4Only = chord.suspensions?.includes(4) && !chord.suspensions?.includes(2);
     let majorSeventh = false;
     if (chord.type >= 7 && quality !== 'diminished' && !augmented && !suspended) {
         if (chord.applied && chord.applied >= 1 && chord.applied <= 7) {
             if (!triSub) {
-                const targetTonic = getNoteLabel(chord.root, key);
+                const targetTonic = resolveAppliedChordContext(chord, key).targetTonic;
                 majorSeventh = quality === 'major' && chord.applied !== 5 && !suspended
                     && isMajorSeventh(chord.applied, { tonic: targetTonic, scale: 'major' });
             }
@@ -553,54 +553,17 @@ export function getChordLetterName(chord, key) {
       customIntervals
         ? customArraySeventhMajor(chord.borrowed, degree)
         : (chord.applied && chord.applied >= 1 && chord.applied <= 7
-            ? isMajorSeventh(chord.applied, { tonic: getNoteLabel(chord.root, key), scale: 'major' })
+            ? isMajorSeventh(chord.applied, { tonic: resolveAppliedChordContext(chord, key).targetTonic, scale: 'major' })
             : isMajorSeventh(degree, effKey))
     );
-    const augOmit35 = augmented && chord.omits?.includes(3) && chord.omits?.includes(5);
-    const sharp5ParenLetter = sharp5 && chord.type < 7 && (
-      (chord.inversion === 2 && !suspended) ||
-      (chord.inversion === 1 && sus4Only)
-    );
-
-    const omit3Only = Array.isArray(chord.omits) && chord.omits.includes(3) && !chord.omits.includes(5);
-    const omit3Power = omit3Only && chord.type < 7;
-    let suffix = "";
-    if (omit3Power) suffix += "5";
-    else if (quality === "minor") suffix += "m";
-    else if (quality === "diminished" && !suspended) suffix += "°";
-    else if (augMaj7Letter || augOmit35) suffix += "++";
-    else if (augmented || (sharp5 && !sharp5ParenLetter)) suffix += "+";
-    if (chord.type >= 7 && !augMaj7Letter) suffix += (majorSeventh ? 'maj' : '') + String(chord.type);
-    if (sharp5ParenLetter) suffix += "(#5)";
-    if (augOmit35) suffix += "(n°5n3)";
-    const sharp11Sus4 = chord.alterations?.includes("#11") && sus4Only;
-    if (sharp11Sus4 && chord.alterations?.length) {
-        suffix += chord.alterations.map((a) => `(${a})`).join("");
-    }
-    if (Array.isArray(chord.suspensions) && chord.suspensions.length) {
-        suffix += chord.suspensions.map((s) => (
-            s === 4 && (sharp5ParenLetter || sharp11Sus4) ? "sus#4" : `sus${s}`
-        )).join("");
-    }
-    if (Array.isArray(chord.alterations) && chord.alterations.length && !sharp11Sus4) {
-        suffix += chord.alterations.map((a) => `(${a})`).join("");
-    }
-
-    // Inversion bass note: nth chord tone read within the effective key (inv 1–3).
-    let bassOffset = null;
-    if (chord.inversion === 1) {
-      const sus4Bass = chord.type < 7 && chord.suspensions?.includes(4) && !chord.suspensions?.includes(2);
-      bassOffset = sus4Bass ? 3 : 2;
-    }
-    else if (chord.inversion === 2) bassOffset = 4;   // fifth
-    else if (chord.inversion === 3 && chord.type >= 7) bassOffset = 6; // seventh
-    if (bassOffset != null) {
-        const bassDegree = ((degree - 1 + bassOffset) % 7) + 1;
-        const bassNoteName = getNoteLabel(bassDegree, effKey, customIntervals);
-        return `${rootNoteName}${suffix}/${bassNoteName}`;
-    }
-
-    return rootNoteName + suffix;
+    const interpreted = chordInterpreter(chord, key);
+    const bassRole = chord.inversion > 0 ? interpreted.chordDegrees[0] : null;
+    const bassDegree = bassRole?.replace(/\d+/, value => String(((Number(value) - 1) % 7) + 1));
+    const bassNoteName = bassDegree ? getNoteLabel(bassDegree, { tonic: rootNoteName, scale: 'major' }) : null;
+    return formatChordLetter(chord, key, {
+        rootNoteName, quality, majorSeventh, augMaj7Letter, triSub, effKey, customIntervals, degree,
+        interpreted, bassNoteName,
+    }).replace(/x/g, '##');
 }
 
 /**
@@ -638,4 +601,3 @@ export function getNoteNameRomanNumeral(noteName, key) {
     // If not found, return the note name itself
     return noteWithoutOctave;
 }
-

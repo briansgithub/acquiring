@@ -1,5 +1,13 @@
 import Foundation
 
+public struct ChordInterpretation: Equatable, Sendable {
+    public let roman: String
+    public let letter: String
+    public let midi: [Int]
+    public let rootMidi: Int?
+    public let toneLabels: [String]
+}
+
 public enum ChordRootContext: String, Equatable, Sendable {
     case standard
     case borrowed
@@ -49,30 +57,6 @@ public struct ResolvedChordRoot: Equatable, Sendable {
     }
 }
 
-/// The chord's tones as an insertion-ordered stack of (scale degree -> semitone
-/// offset from the root). Order matters: an inverted chord rotates this stack as
-/// built, and web appends later additions rather than sorting them into degree
-/// order, so `add4` stacks *after* the fifth. Mirrors the LinkedHashMap the
-/// Android port relies on for the same reason.
-private struct DegreeStack {
-    private var order: [Int] = []
-    private var offsets: [Int: Int] = [:]
-
-    subscript(degree: Int) -> Int? {
-        get { offsets[degree] }
-        set {
-            guard let newValue else {
-                if offsets.removeValue(forKey: degree) != nil { order.removeAll { $0 == degree } }
-                return
-            }
-            if offsets.updateValue(newValue, forKey: degree) == nil { order.append(degree) }
-        }
-    }
-
-    /// Semitone offsets in build order.
-    var pitchOffsets: [Int] { order.compactMap { offsets[$0] } }
-}
-
 public enum ChordInterpreter {
     private static let romanMap = [1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI", 7: "VII"]
     private static let pitchClassNames = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"]
@@ -84,29 +68,29 @@ public enum ChordInterpreter {
 
     public static func romanSymbol(for chord: [String: JSONValue], key: KeyInfo) -> String {
         let root = integer(chord, "root")
-        guard (1...7).contains(root), !boolean(chord, "isRest"), !boolean(chord, "rest") else { return "Rest" }
+        guard (1...7).contains(root), !boolean(chord, "isRest"), !boolean(chord, "rest") else { return "" }
         let applied = integer(chord, "applied")
         if (1...7).contains(applied) {
-            let targetTonic = MusicTheory.noteLabel(degree: root, tonic: key.tonic, scale: key.scale)
+            let target = appliedContext(chord, key: key)
+            let targetTonic = target.tonic
             let numeratorKey = KeyInfo(tonic: targetTonic, scale: "major")
             let tritoneSubstitution = isTritoneSubstitution(chord)
             let numeratorDegree = tritoneSubstitution ? 2 : applied
-            let targetQuality = qualities(for: key.scale)[root - 1]
             let type = integer(chord, "type", default: 5)
             let majorSeventh = type >= 7 && applied != 5
+                && qualities(for: "major")[applied - 1] == "major"
                 && isMajorSeventh(degree: numeratorDegree, key: numeratorKey)
                 && integers(chord, "suspensions").isEmpty
             let numerator = buildNumeral(
                 degree: numeratorDegree,
-                quality: qualities(for: "major")[numeratorDegree - 1],
+                quality: adjustedQuality(tritoneSubstitution ? "major" : qualities(for: "major")[numeratorDegree - 1], chord: chord),
                 chord: chord,
                 prefix: tritoneSubstitution ? "♭" : "",
                 majorSeventh: majorSeventh,
                 fullyDiminished: applied == 7 && !tritoneSubstitution
             )
-            let denominator = (MusicTheory.romanNumerals[key.scale] ?? MusicTheory.romanNumerals["major"]!)[root - 1]
-            let denominatorTag = applied == 5 && type >= 7 && targetQuality == "minor" ? "(maj)" : ""
-            return "\(numerator)/\(denominator)\(denominatorTag)\(tritoneSubstitution ? "(∆-sub)" : "")"
+            let numeratorTag = key.scale == "minor" ? "(maj)" : ""
+            return numerator + (tritoneSubstitution ? "(∆-sub)" : "") + numeratorTag + "/" + target.denominator + borrowedTag(for: chord)
         }
 
         // A custom borrowed scale arrives as an array of absolute semitone offsets.
@@ -122,7 +106,7 @@ public enum ChordInterpreter {
                 chord: chord,
                 prefix: customArrayPrefix(raw, degree: root, key: key),
                 majorSeventh: type >= 7 && customArraySeventhMajor(raw, degree: root),
-                fullyDiminished: quality == "diminished" && type >= 7,
+                fullyDiminished: quality == "diminished" && type >= 7 && [9, 11].contains(floorMod(raw[(root + 5) % 7] - raw[root - 1], 12)),
                 borrowedTag: hasAdds ? "(bor)" : ""
             )
             return result + (hasAdds ? "" : "(bor)")
@@ -142,6 +126,7 @@ public enum ChordInterpreter {
             majorSeventh: integer(chord, "type", default: 5) >= 7
                 && quality != "diminished"
                 && isMajorSeventh(degree: root, key: KeyInfo(tonic: key.tonic, scale: scale)),
+            fullyDiminished: quality == "diminished" && ((scale == "harmonicMinor" && root == 7) || (scale == "phrygianDominant" && root == 3)),
             borrowedTag: hasAdds ? tag : "",
             symbolKey: KeyInfo(tonic: key.tonic, scale: scale)
         )
@@ -150,14 +135,13 @@ public enum ChordInterpreter {
 
     public static func letterName(for chord: [String: JSONValue], key: KeyInfo) -> String {
         let root = integer(chord, "root")
-        guard (1...7).contains(root) else { return "" }
+        guard !boolean(chord, "isRest"), !boolean(chord, "rest") else { return "" }
+        guard (1...7).contains(root) else { return letterAnchoredName(chord).replacingOccurrences(of: "x", with: "##") }
         let applied = integer(chord, "applied")
         let borrowed = string(chord, "borrowed")
         let type = integer(chord, "type", default: 5)
         let inversion = integer(chord, "inversion")
         let suspensions = integers(chord, "suspensions")
-        let alterations = strings(chord, "alterations")
-        let omits = integers(chord, "omits")
         var effectiveKey = key
         var degree = root
         // Set only for a custom borrowed scale, whose note spellings come from the
@@ -166,9 +150,12 @@ public enum ChordInterpreter {
         var customQuality: String?
 
         if (1...7).contains(applied) {
-            let target = MusicTheory.noteLabel(degree: root, tonic: key.tonic, scale: key.scale)
+            let target = appliedContext(chord, key: key).tonic
             if isTritoneSubstitution(chord) {
-                effectiveKey = KeyInfo(tonic: pitchClassNames[(MusicTheory.pitchClass(note: target) + 1) % 12], scale: "major")
+                let second = MusicTheory.noteLabel(degree: 2, tonic: target, scale: "major")
+                let modifier = MusicTheory.modifierValue(String(second.dropFirst())) - 1
+                let accidental = modifier == 2 ? "x" : String(repeating: modifier < 0 ? "b" : "#", count: abs(modifier))
+                effectiveKey = KeyInfo(tonic: String(second.prefix(1)) + accidental, scale: "major")
                 degree = 1
             } else {
                 effectiveKey = KeyInfo(tonic: target, scale: "major")
@@ -190,9 +177,8 @@ public enum ChordInterpreter {
             customIntervals: customIntervals
         )
         let augmented = quality == "augmented"
-        let sharpFive = alterations.contains("#5")
-        // An applied chord's label ignores `borrowed` entirely, custom arrays
-        // included -- the same rule the Roman-numeral path follows.
+        // An applied numerator uses its target's major frame; borrowed/custom
+        // scales have already selected that target above.
         let customSeventh = (1...7).contains(applied)
             ? nil
             : rawCustomBorrowedIntervals(chord["borrowed"]).map { customArraySeventhMajor($0, degree: degree) }
@@ -200,237 +186,87 @@ public enum ChordInterpreter {
             ?? isMajorSeventh(degree: degree, key: effectiveKey, customIntervals: customIntervals)
         let majorSeventh = type >= 7 && quality != "diminished" && !augmented && suspensions.isEmpty
             && !isTritoneSubstitution(chord)
+            && (!(1...7).contains(applied) || (quality == "major" && applied != 5))
             && diatonicMajorSeventh
         let augmentedMajorSeventh = augmented && type >= 7 && diatonicMajorSeventh
 
-        var suffix = ""
-        if omits.contains(3), !omits.contains(5), type < 7 { suffix = "5" }
-        else if quality == "minor" { suffix = "m" }
-        else if quality == "diminished" && suspensions.isEmpty { suffix = "°" }
-        else if augmentedMajorSeventh || (augmented && omits.contains(3) && omits.contains(5)) { suffix = "++" }
-        else if augmented || sharpFive { suffix = "+" }
-        if type >= 7 && !augmentedMajorSeventh { suffix += majorSeventh ? "maj\(type)" : "\(type)" }
-        suffix += suspensions.map { "sus\($0)" }.joined()
-        suffix += alterations.map { "(\($0))" }.joined()
+        let voiced = ChordVoicing.build(chord, key: key)
+        let bassName = inversion > 0 ? voiced.flatMap { result in
+            result.tones.first.map { roleNoteName($0, rootMidi: result.rootMidi, tonic: rootName) }
+        } : nil
+        return ChordLetterFormat.format(
+            chord, rootName: rootName, quality: quality, degree: degree,
+            effectiveKey: effectiveKey, customIntervals: customIntervals,
+            majorSeventh: majorSeventh, augmentedMajorSeventh: augmentedMajorSeventh,
+            tritoneSubstitution: isTritoneSubstitution(chord), voiced: voiced, bassName: bassName
+        ).replacingOccurrences(of: "x", with: "##")
+    }
 
-        guard (1...3).contains(inversion) else { return rootName + suffix }
-        let bassOffset: Int
-        if inversion == 1 { bassOffset = type < 7 && suspensions.contains(4) && !suspensions.contains(2) ? 3 : 2 }
-        else if inversion == 2 { bassOffset = 4 }
-        else { bassOffset = 6 }
-        let bassDegree = ((degree - 1 + bassOffset) % 7) + 1
-        let bassName = MusicTheory.noteLabel(
-            degree: bassDegree,
-            tonic: effectiveKey.tonic,
-            scale: effectiveKey.scale,
-            customIntervals: customIntervals
+    private static func borrowedTag(for chord: [String: JSONValue]) -> String {
+        if chord["borrowed"]?.arrayValue != nil { return "(bor)" }
+        return borrowedTags[string(chord, "borrowed")].map { "(\($0))" } ?? ""
+    }
+
+    private static func appliedContext(_ chord: [String: JSONValue], key: KeyInfo) -> (tonic: String, denominator: String) {
+        let root = integer(chord, "root")
+        let intervals = customBorrowedIntervals(chord["borrowed"])
+        let borrowed = string(chord, "borrowed")
+        let scale = intervals != nil ? "custom" : borrowedTags[borrowed] != nil ? borrowed : key.scale
+        let tonic = MusicTheory.noteLabel(degree: root, tonic: key.tonic, scale: scale, customIntervals: intervals)
+        let quality = (intervals.map(customChordQualities) ?? qualities(for: scale))[root - 1]
+        let original = MusicTheory.noteLabel(degree: root, tonic: key.tonic, scale: key.scale)
+        var shift = MusicTheory.pitchClass(note: tonic) - MusicTheory.pitchClass(note: original)
+        if shift > 6 { shift -= 12 }
+        if shift < -6 { shift += 12 }
+        let prefix = String(repeating: shift < 0 ? "♭" : "♯", count: abs(shift))
+        let numeral = romanMap[root] ?? ""
+        let denominator = quality == "minor" || quality == "diminished" ? numeral.lowercased() : numeral
+        return (tonic, prefix + denominator + (quality == "diminished" ? "°" : ""))
+    }
+
+    private static func roleNoteName(_ tone: ChordTone, rootMidi: Int, tonic: String) -> String {
+        let degree = floorMod(tone.degree - 1, 7) + 1
+        let natural = [0, 2, 4, 5, 7, 9, 11][degree - 1]
+        var alteration = floorMod(tone.midi - rootMidi - natural, 12)
+        if alteration > 6 { alteration -= 12 }
+        let base = MusicTheory.noteLabel(degree: degree, tonic: tonic, scale: "major")
+        guard alteration != 0 else { return base }
+        let modifier = MusicTheory.modifierValue(String(base.dropFirst())) + alteration
+        let accidental = modifier == 2 ? "x" : String(repeating: modifier < 0 ? "b" : "#", count: abs(modifier))
+        return String(base.prefix(1)) + accidental
+    }
+
+    private static func letterAnchoredName(_ chord: [String: JSONValue]) -> String {
+        let root = string(chord, "_letterRootName")
+        guard integer(chord, "root") == 0, root.range(of: "^[A-G][#bx]*$", options: .regularExpression) != nil else { return "" }
+        let quality = ["minor": "m", "diminished": "°", "augmented": "+"][string(chord, "_letterQuality")] ?? ""
+        let type = integer(chord, "type", default: 5)
+        let extensionText = type >= 7 ? (boolean(chord, "useMaj7") ? "maj" : "") + String(type) : ""
+        let suspensions = integers(chord, "suspensions").map { "sus\($0)" }.joined()
+        let alterations = strings(chord, "alterations").map { "(\($0))" }.joined()
+        let adds = integers(chord, "adds").map { "(add\($0))" }.joined()
+        let bass = string(chord, "_letterBassName")
+        return root + quality + extensionText + suspensions + alterations + adds + (bass.isEmpty ? "" : "/" + bass)
+    }
+
+    public static func interpret(_ chord: [String: JSONValue], key: KeyInfo) -> ChordInterpretation {
+        let voiced = ChordVoicing.build(chord, key: key)
+        return ChordInterpretation(
+            roman: romanSymbol(for: chord, key: key), letter: letterName(for: chord, key: key),
+            midi: voiced?.tones.map(\.midi) ?? [], rootMidi: voiced?.rootMidi, toneLabels: voiced?.labels ?? []
         )
-        return "\(rootName)\(suffix)/\(bassName)"
     }
 
     public static func chordNotes(for chord: [String: JSONValue], key: KeyInfo) -> [Int] {
-        let root = integer(chord, "root")
-        guard (1...7).contains(root), !boolean(chord, "isRest"), !boolean(chord, "rest") else { return [] }
-        let applied = integer(chord, "applied")
-        let type = integer(chord, "type", default: 5)
-        let inversion = integer(chord, "inversion")
-        let borrowed = string(chord, "borrowed")
-        let customIntervals = customBorrowedIntervals(chord["borrowed"])
-        let hasBorrowedScale = !borrowed.isEmpty || customIntervals != nil
-        let suspensions = integers(chord, "suspensions")
-        let alterations = strings(chord, "alterations")
-        let omits = integers(chord, "omits")
-        let adds = integers(chord, "adds")
-        var effectiveKey = key
-        var effectiveRoot = root
-        var forcedTriadQuality: String?
-        var forcedSeventh: Int?
-        var usesAppliedVoicing = false
+        ChordVoicing.build(chord, key: key)?.tones.map(\.midi) ?? []
+    }
 
-        if (1...7).contains(applied), !hasBorrowedScale {
-            let target = MusicTheory.noteLabel(degree: root, tonic: key.tonic, scale: key.scale)
-            if isTritoneSubstitution(chord) {
-                effectiveKey = KeyInfo(tonic: pitchClassNames[(MusicTheory.pitchClass(note: target) + 1) % 12], scale: "major")
-                effectiveRoot = 1
-            } else {
-                effectiveKey = KeyInfo(tonic: target, scale: "major")
-                effectiveRoot = applied
-            }
-            usesAppliedVoicing = true
-        } else if (1...7).contains(applied), hasBorrowedScale {
-            let targetScale = customIntervals == nil ? borrowed : "custom"
-            let target = MusicTheory.noteLabel(
-                degree: root,
-                tonic: key.tonic,
-                scale: targetScale,
-                customIntervals: customIntervals
-            )
-            if borrowed == "locrian", root == 1, applied == 1, type < 7 {
-                effectiveKey = KeyInfo(tonic: target, scale: "major")
-                effectiveRoot = 1
-                forcedTriadQuality = "minor"
-                usesAppliedVoicing = true
-            } else if isTritoneSubstitution(chord) {
-                effectiveKey = KeyInfo(
-                    tonic: pitchClassNames[(MusicTheory.pitchClass(note: target) + 1) % 12],
-                    scale: "major"
-                )
-                effectiveRoot = 1
-                forcedTriadQuality = "major"
-                forcedSeventh = 10
-                usesAppliedVoicing = true
-            } else if applied == 7, alterations.contains("#5") {
-                effectiveKey = KeyInfo(tonic: target, scale: "major")
-                effectiveRoot = 7
-                forcedTriadQuality = "minor"
-                forcedSeventh = 10
-                usesAppliedVoicing = true
-            } else if customIntervals != nil, inversion == 1 || inversion == 2 {
-                effectiveKey = KeyInfo(tonic: target, scale: "major")
-                effectiveRoot = 1
-                forcedTriadQuality = "major"
-                forcedSeventh = 10
-                usesAppliedVoicing = true
-            } else {
-                effectiveKey = KeyInfo(tonic: target, scale: "major")
-                effectiveRoot = applied
-            }
-        }
+    public static func resolvedRootMIDI(for chord: [String: JSONValue], key: KeyInfo) -> Int? {
+        ChordVoicing.build(chord, key: key)?.rootMidi
+    }
 
-        let borrowedAppliedDefault = (1...7).contains(applied) && hasBorrowedScale && forcedTriadQuality == nil
-        let scale: String
-        if (1...7).contains(applied), hasBorrowedScale {
-            scale = effectiveKey.scale
-        } else if customIntervals != nil {
-            scale = "custom"
-        } else if !borrowed.isEmpty {
-            scale = borrowed
-        } else {
-            scale = effectiveKey.scale
-        }
-        let scaleIntervals: [Int]
-        if (1...7).contains(applied), hasBorrowedScale {
-            scaleIntervals = MusicTheory.scaleIntervals["major"]!
-        } else if let customIntervals {
-            scaleIntervals = customIntervals
-        } else {
-            scaleIntervals = MusicTheory.scaleIntervals[scale] ?? MusicTheory.scaleIntervals["major"]!
-        }
-        let rootIndex = effectiveRoot - 1
-        let rootPitchClass = (MusicTheory.pitchClass(note: effectiveKey.tonic) + scaleIntervals[rootIndex]) % 12
-        let qualityTable: [String]
-        if (1...7).contains(applied), hasBorrowedScale {
-            qualityTable = qualities(for: "major")
-        } else if let customIntervals {
-            qualityTable = customChordQualities(customIntervals)
-        } else {
-            qualityTable = qualities(for: scale)
-        }
-        let quality = forcedTriadQuality ?? qualityTable[rootIndex]
-        var degrees = DegreeStack()
-        degrees[1] = 0
-        degrees[3] = 4
-        degrees[5] = 7
-        if quality == "minor" || quality == "diminished" { degrees[3] = 3 }
-        if quality == "diminished" { degrees[5] = 6 }
-        if quality == "augmented" { degrees[5] = 8 }
-        if suspensions.contains(2) { degrees[3] = 2 }
-        if suspensions.contains(4) { degrees[3] = 5 }
-
-        if type >= 7 {
-            let fullyDiminished = !borrowedAppliedDefault && (
-                quality == "diminished" && suspensions.isEmpty ||
-                    applied == 7 ||
-                    borrowed == "dorian" && effectiveRoot == 6 ||
-                    borrowed == "lydian" && effectiveRoot == 4 ||
-                    borrowed == "minor" && effectiveRoot == 2 ||
-                    borrowed == "phrygian" && effectiveRoot == 5
-            )
-            let harmonicMinorAugmentedMajorSeven = scale == "harmonicMinor" && effectiveRoot == 3 && suspensions.isEmpty
-            if let forcedSeventh {
-                degrees[7] = forcedSeventh
-            } else if harmonicMinorAugmentedMajorSeven {
-                degrees[7] = 7
-                degrees[11] = 11
-                degrees[5] = nil
-                degrees[3] = 4
-            } else if fullyDiminished {
-                degrees[7] = 9
-            } else if isTritoneSubstitution(chord) {
-                degrees[7] = 10
-            } else if isMajorSeventh(
-                // The seventh's quality comes from the scale actually in force -
-                // the borrowed mode, or the custom interval array - not from the
-                // song key. `effectiveKey` only tracks the applied-chord tonic, so
-                // reading its scale here would spell a borrowed i7 as a major
-                // seventh. Mirrors ChordInterpreter.kt's KeyInfo(effKey.tonic, scale).
-                degree: effectiveRoot,
-                key: KeyInfo(tonic: effectiveKey.tonic, scale: scale),
-                customIntervals: customIntervals
-            ) && suspensions.isEmpty {
-                degrees[7] = 11
-            } else {
-                degrees[7] = 10
-            }
-        }
-        if type >= 9 { degrees[9] = 14 }
-        // The chord's own eleventh sits a fourth above the root, not a compound
-        // fourth: web builds it as shiftNoteBySemitones(root, 5). An *added*
-        // eleventh (adds: [11], below) is the compound one at +17.
-        if type >= 11 { degrees[11] = degrees[11] ?? 5 }
-        if type >= 13 { degrees[13] = 21 }
-        if (effectiveKey.scale == "minor" || effectiveKey.scale == "harmonicMinor"), effectiveRoot == 5, type >= 13 {
-            degrees[9] = 13
-            degrees[13] = 21
-            degrees[14] = 20
-        }
-        for omit in omits { degrees[omit] = nil }
-        for alteration in alterations {
-            switch alteration.replacingOccurrences(of: "♭", with: "b").replacingOccurrences(of: "♯", with: "#") {
-            case "b5": degrees[5] = 6
-            case "#5": degrees[5] = 8
-            case "b9": degrees[9] = 13
-            case "#9": degrees[9] = 15
-            // Raise the chord's own eleventh where it exists; otherwise introduce
-            // a compound #4 (web: rule {src: 5, delta: 1} with addSd "#4").
-            case "#11": degrees[11] = degrees[11] == nil ? 18 : 6
-            case "b13": degrees[13] = 20
-            default: break
-            }
-        }
-        for add in adds {
-            let target = add <= 6 && type >= 7 ? add + 7 : add
-            if degrees[target] == nil {
-                degrees[target] = [2: 2, 4: 5, 6: 9, 9: 14, 11: 17, 13: 21][target] ?? 0
-            }
-        }
-        // Hooktheory voices an added sixth on a triad without its fifth, unless a
-        // ninth is also added (web/lib/chordAdds.js). Only an unaltered perfect
-        // fifth is dropped.
-        if adds.contains(6), type < 7, !adds.contains(9), degrees[5] == 7 { degrees[5] = nil }
-
-        let alteredFifth = alterations.contains { ["b5", "#5", "♭5", "♯5"].contains($0) }
-        if type >= 9, !suspensions.isEmpty, !omits.contains(5), !alteredFifth, degrees[5] == 7 { degrees[5] = nil }
-
-        let rootPositionPitches = degrees.pitchOffsets.map { 48 + rootPitchClass + $0 }
-        if usesAppliedVoicing {
-            return voiceAppliedChord(
-                rootPositionPitches,
-                inversion: inversion,
-                chordType: type,
-                fullyDiminished: applied == 7 && quality == "diminished" && suspensions.isEmpty
-            )
-        }
-
-        // Web sorts a voicing into pitch order only in root position; an inverted
-        // chord rotates the degree-order stack as built. The two agree for every
-        // chord whose offsets ascend, and differ exactly when an eleventh sits
-        // below the fifth.
-        var pitches = inversion > 0 ? rootPositionPitches : rootPositionPitches.sorted()
-        if inversion > 0, inversion < pitches.count {
-            for _ in 0..<inversion { pitches.append(pitches.removeFirst() + 12) }
-        }
-        return pitches
+    public static func chordToneLabels(for chord: [String: JSONValue], key: KeyInfo) -> [String] {
+        ChordVoicing.build(chord, key: key)?.labels ?? []
     }
 
     public static func rootPositionChordNotes(for chord: [String: JSONValue], key: KeyInfo) -> [Int] {
@@ -445,7 +281,20 @@ public enum ChordInterpreter {
         referenceOctave: Int = 3
     ) -> ResolvedChordRoot? {
         let root = integer(chord, "root")
-        guard (1...7).contains(root), !boolean(chord, "isRest"), !boolean(chord, "rest") else { return nil }
+        guard !boolean(chord, "isRest"), !boolean(chord, "rest") else { return nil }
+        if root == 0, !letterAnchoredName(chord).isEmpty,
+           let pitch = SpelledPitch.parse(noteName: string(chord, "_letterRootName"), octave: referenceOctave),
+           let tonic = SpelledPitch.parse(noteName: key.tonic, octave: referenceOctave) {
+            let quality = string(chord, "_letterQuality")
+            return ResolvedChordRoot(
+                pitch: pitch, simpleModePitch: pitch, sourceDegree: 0, effectiveDegree: 1,
+                sourceKey: key, effectiveKey: KeyInfo(tonic: pitch.noteName, scale: "major"),
+                customIntervals: nil, chordQuality: quality.isEmpty ? "major" : quality, context: .standard,
+                genericStepsFromTonic: pitch.staffPosition - tonic.staffPosition,
+                specificSemitonesFromTonic: pitch.midiNote - tonic.midiNote
+            )
+        }
+        guard (1...7).contains(root) else { return nil }
 
         let sourceKey = KeyInfo(tonic: key.tonic, scale: RelativeIonianContext.canonicalScaleName(key.scale))
         let borrowedName = string(chord, "borrowed")
@@ -608,72 +457,39 @@ public enum ChordInterpreter {
         key: KeyInfo,
         contextKey explicitContextKey: KeyInfo? = nil
     ) -> String {
+        let symbol = romanSymbol(for: chord, key: key)
         let root = integer(chord, "root")
-        guard (1...7).contains(root), !boolean(chord, "isRest"), !boolean(chord, "rest") else { return "Rest" }
-
+        guard (1...7).contains(root), symbol != "Rest", !symbol.isEmpty else { return symbol }
         let sourceKey = KeyInfo(tonic: key.tonic, scale: RelativeIonianContext.canonicalScaleName(key.scale))
-        let displayKey = KeyInfo(
-            tonic: (explicitContextKey ?? RelativeIonianContext.key(for: key)).tonic,
-            scale: "major"
-        )
+        let displayKey = KeyInfo(tonic: (explicitContextKey ?? RelativeIonianContext.key(for: key)).tonic, scale: "major")
+        if sourceKey.scale == "major" && sourceKey.tonic == displayKey.tonic { return symbol }
         let applied = integer(chord, "applied")
-        let borrowed = string(chord, "borrowed")
-
         if (1...7).contains(applied) {
-            guard let targetPitch = MusicTheory.spelledPitch(
-                scaleDegree: String(root),
-                relativeOctave: 0,
-                key: sourceKey
-            ), let displayDegree = RelativeIonianContext.degree(for: targetPitch, in: displayKey)
-            else { return romanSymbol(for: chord, key: key) }
-
-            let numeratorKey = KeyInfo(tonic: targetPitch.noteName, scale: "major")
-            let tritoneSubstitution = isTritoneSubstitution(chord)
-            let numeratorDegree = tritoneSubstitution ? 2 : applied
-            let targetQuality = qualities(for: sourceKey.scale)[root - 1]
-            let type = integer(chord, "type", default: 5)
-            let majorSeventh = type >= 7 && applied != 5
-                && isMajorSeventh(degree: numeratorDegree, key: numeratorKey)
-                && integers(chord, "suspensions").isEmpty
-            let numerator = buildNumeral(
-                degree: numeratorDegree,
-                quality: qualities(for: "major")[numeratorDegree - 1],
-                chord: chord,
-                prefix: tritoneSubstitution ? "♭" : "",
-                majorSeventh: majorSeventh,
-                fullyDiminished: applied == 7 && !tritoneSubstitution
+            let customIntervals = customBorrowedIntervals(chord["borrowed"])
+            let borrowed = string(chord, "borrowed")
+            let targetKey = KeyInfo(
+                tonic: sourceKey.tonic,
+                scale: customIntervals != nil ? "custom" : borrowedTags[borrowed] != nil ? borrowed : sourceKey.scale
             )
-            var denominator = romanMap[displayDegree.degree] ?? ""
-            if targetQuality == "minor" || targetQuality == "diminished" { denominator = denominator.lowercased() }
-            denominator = displayDegree.accidentalPrefix + denominator
-            if targetQuality == "diminished" { denominator += "°" }
-            if targetQuality == "augmented" { denominator += "+" }
-            let denominatorTag = applied == 5 && type >= 7 && targetQuality == "minor" ? "(maj)" : ""
-            return "\(numerator)/\(denominator)\(denominatorTag)\(tritoneSubstitution ? "(∆-sub)" : "")"
+            guard let target = MusicTheory.spelledPitch(
+                scaleDegree: String(root), relativeOctave: 0, key: targetKey, customIntervals: customIntervals
+            ), let degree = RelativeIonianContext.degree(for: target, in: displayKey),
+                  let slash = symbol.firstIndex(of: "/") else { return symbol }
+            return String(symbol[...slash]) + rebaseNumeral(String(symbol[symbol.index(after: slash)...]), to: degree)
         }
-
         guard let resolved = resolvedRoot(for: chord, key: sourceKey),
-              let displayDegree = RelativeIonianContext.degree(for: resolved.pitch, in: displayKey)
-        else { return romanSymbol(for: chord, key: key) }
+              let degree = RelativeIonianContext.degree(for: resolved.pitch, in: displayKey) else { return symbol }
+        return rebaseNumeral(symbol, to: degree)
+    }
 
-        let sourceScale = borrowedTags[borrowed] == nil
-            ? sourceKey.scale
-            : RelativeIonianContext.canonicalScaleName(borrowed)
-        let borrowedTag = borrowedTags[borrowed].map { "(\($0))" } ?? (borrowed.hasPrefix("[") ? "(bor)" : "")
-        let type = integer(chord, "type", default: 5)
-        let majorSeventh = type >= 7 && resolved.chordQuality != "diminished"
-            && isMajorSeventh(degree: root, key: KeyInfo(tonic: sourceKey.tonic, scale: sourceScale))
-        let hasAdds = !integers(chord, "adds").isEmpty
-        let result = buildNumeral(
-            degree: displayDegree.degree,
-            quality: resolved.chordQuality,
-            chord: chord,
-            prefix: displayDegree.accidentalPrefix,
-            majorSeventh: majorSeventh,
-            borrowedTag: hasAdds ? borrowedTag : "",
-            symbolKey: KeyInfo(tonic: sourceKey.tonic, scale: sourceScale)
-        )
-        return result + (hasAdds ? "" : borrowedTag)
+    /// Rebase only the numeral. All quality, inversion and borrowed annotations
+    /// remain exactly those selected by the canonical symbol interpreter.
+    private static func rebaseNumeral(_ symbol: String, to degree: RelativeIonianDegree) -> String {
+        guard let range = symbol.range(of: "^[♭♯]*[ivIV]+", options: .regularExpression) else { return symbol }
+        let original = symbol[range].drop(while: { $0 == "♭" || $0 == "♯" })
+        let numeral = romanMap[degree.degree] ?? ""
+        let isMinor = original.first?.isLowercase == true
+        return degree.accidentalPrefix + (isMinor ? numeral.lowercased() : numeral) + symbol[range.upperBound...]
     }
 
     private static func buildNumeral(
@@ -698,11 +514,8 @@ public enum ChordInterpreter {
         )
     }
 
-    /// The figured-bass and quality suffix, ported from ChordInterpreter.kt's
-    /// buildSuffix. `symbolKey` carries the tonic and the *resolved* scale (the
-    /// borrowed mode where one applies) and is nil on the applied-numerator
-    /// path, mirroring the opts map Android does and does not supply there --
-    /// several of the Hooktheory spellings below key off exactly that absence.
+    /// Hooktheory's ordered figured-bass spelling. Keep insertion points separate
+    /// from trailing modifiers: their order is part of the shared text contract.
     private static func suffix(
         chord: [String: JSONValue],
         quality: String,
@@ -719,99 +532,99 @@ public enum ChordInterpreter {
         let omits = integers(chord, "omits")
         let adds = integers(chord, "adds")
         let suspended = !suspensions.isEmpty
+        let applied = (1...7).contains(integer(chord, "applied"))
         let implicitHalfDiminished = quality == "diminished" && type >= 7 && !fullyDiminished
-        let displayAlterations = implicitHalfDiminished ? alterations.filter { $0 != "b5" } : alterations
-        let alterationBody = displayAlterations.joined()
-        let alterationText = alterationBody.isEmpty ? "" : "(\(alterationBody))"
+        let displayAlterations = alterations
+        let alterationText = displayAlterations.map { "(\($0))" }.joined()
         let suspensionText = suspensions.map { "sus\($0)" }.joined()
         let addBody = adds.map { "add\($0 <= 6 && type >= 7 ? $0 + 7 : $0)" }.joined()
         let omit3Only = omits.contains(3) && !omits.contains(5)
         let sharpFiveOnly = displayAlterations == ["#5"]
-        // Once a triad is inverted, Hooktheory writes the raised fifth into the
-        // figured bass instead of as a "+" on the numeral.
-        let suppressPlus = type < 7 && sharpFiveOnly && (inversion == 1 || inversion == 2)
+        let suppressPlus = !applied && type < 7 && sharpFiveOnly && (inversion == 1 || inversion == 2)
         let suppressDiminished = sharpFiveOnly && quality == "diminished" && inversion == 2 && type < 7
-        // Nil exactly where Android leaves "borrowed" out of its opts map.
-        let borrowedOpt = symbolKey == nil ? nil : string(chord, "borrowed")
-
+        let hasBorrowed = chord["borrowed"]?.arrayValue != nil || !string(chord, "borrowed").isEmpty
         var result = ""
         var embeddedAlterations = false
         var placedSuspensions = false
         var placedOmits = false
+        var placedAdds = false
 
-        if quality == "augmented" || (alterations.contains("#5") && !suppressPlus) { result += "+" }
+        if quality == "augmented" || (quality == "major" && alterations.contains("#5") && !suppressPlus) { result += "+" }
         if !suspended {
             if quality == "diminished", !suppressDiminished {
-                result += type >= 7 && !fullyDiminished ? "ø" : "°"
-                if majorSeventh && !(type >= 7 && !fullyDiminished) { result += "△" }
+                result += implicitHalfDiminished ? "ø" : "°"
+                if majorSeventh && !implicitHalfDiminished { result += "△" }
             } else if type >= 7 && majorSeventh {
                 result += "△"
             }
         }
-
         switch inversion {
         case 1:
-            if suspended && type < 7 {
-                let sus4Only = suspensions.contains(4) && !suspensions.contains(2)
-                if sus4Only && (borrowedOpt == "lydian" || borrowedTag == "(lyd)") {
+            if type >= 7 {
+                result += "6\(alterationText)5"
+                embeddedAlterations = !alterationText.isEmpty
+            } else if !alterationText.isEmpty {
+                result += "6\(alterationText)"
+                embeddedAlterations = true
+            } else if suspended {
+                if suspensions.contains(4) && !suspensions.contains(2)
+                    && (string(chord, "borrowed") == "lydian" || borrowedTag == "(lyd)") {
                     result += "sus\(suspensions.map(String.init).joined())6"
                 } else {
                     result += "6\(suspensionText)"
                 }
                 placedSuspensions = true
-            } else if type >= 7 {
-                result += alterationText.isEmpty ? "65" : "6\(alterationText)5"
-                embeddedAlterations = !alterationText.isEmpty
-            } else if !alterationText.isEmpty {
-                result += "6\(alterationText)"
-                embeddedAlterations = true
             } else {
                 result += "6"
             }
         case 2:
             if type >= 7 {
-                result += alterationText.isEmpty ? "43" : "4\(alterationText)3"
+                result += "4\(alterationText)3"
                 embeddedAlterations = !alterationText.isEmpty
             } else if suspended {
                 if !adds.isEmpty {
                     result += suspensions.contains(4) && suspensions.contains(2)
                         ? "4\(suspensionText)6(\(addBody))"
                         : "6(\(addBody))4\(suspensionText)"
+                    placedAdds = true
                 } else {
-                    result += "4\(suspensionText)6"
+                    result += applied ? "64\(suspensionText)" : "4\(suspensionText)6"
                 }
                 placedSuspensions = true
             } else if sharpFiveOnly {
-                if quality == "minor", root == 1, borrowedOpt == nil {
+                if quality == "minor", root == 1, !hasBorrowed {
                     result += "46\(alterationText)"
+                } else if !adds.isEmpty {
+                    result += (quality == "minor" || quality == "diminished" || result.contains("+") ? "" : "+")
+                        + "6(\(addBody))\(alterationText)4"
+                    placedAdds = true
                 } else {
-                    result += (quality == "minor" || quality == "diminished" ? "" : "+")
+                    result += (quality == "minor" || quality == "diminished" || result.contains("+") ? "" : "+")
                         + "6\(alterationText)4"
                 }
                 embeddedAlterations = true
             } else if omit3Only {
                 let tonic = symbolKey?.tonic ?? ""
-                let use46 = (quality == "minor" && root == 4 && (tonic == "F" || tonic == "B"))
+                let use46 = !hasBorrowed && (
+                    (quality == "minor" && root == 4 && (tonic == "F" || tonic == "B"))
                     || (quality == "minor" && root == 1 && tonic == "C")
                     || (root == 7 && symbolKey?.scale == "phrygian")
+                )
                 result += use46 ? "46(no3)" : "6(no3)4"
                 placedOmits = true
-            } else if !alterationText.isEmpty {
-                result += "6\(alterationText)4"
-                embeddedAlterations = true
             } else {
-                result += "64"
+                result += "6\(alterationText)4"
+                embeddedAlterations = !alterationText.isEmpty
             }
         case 3:
-            if type >= 7 {
-                result += implicitHalfDiminished && alterations.contains("b5") ? "4(b5)2" : "42"
-                embeddedAlterations = !alterationText.isEmpty
+            if type >= 7 && !alterationText.isEmpty {
+                result += "4\(alterationText)2"
+                embeddedAlterations = true
             } else {
                 result += "42"
             }
         default: break
         }
-
         let hasFiguredBass = result.contains(where: \.isNumber)
         if suspended && !placedSuspensions {
             if type >= 7 && !hasFiguredBass {
@@ -820,7 +633,7 @@ public enum ChordInterpreter {
                         result += "\(suspensionText)\(type)"
                     } else {
                         result += "\(type)" + omits.map { "(no\($0))" }.joined() + suspensionText
-                        if !omits.isEmpty { placedOmits = true }
+                        placedOmits = !omits.isEmpty
                     }
                 } else {
                     result += "\(type)\(alterationText)\(suspensionText)"
@@ -832,15 +645,15 @@ public enum ChordInterpreter {
         } else if type >= 7, !hasFiguredBass {
             result += "\(type)"
         }
-
         result += borrowedTag
-        if !adds.isEmpty { result += "(\(addBody))" }
+        if !adds.isEmpty && !placedAdds { result += "(\(addBody))" }
         if !omits.isEmpty, !placedOmits {
             result += omits.contains(3) && omits.contains(5) && quality == "augmented"
-                ? "(no5no3)"
-                : omits.map { "(no\($0))" }.joined()
+                ? "(no5no3)" : omits.map { "(no\($0))" }.joined()
         }
-        if !displayAlterations.isEmpty && !embeddedAlterations { result += alterationText }
+        if !displayAlterations.isEmpty && !embeddedAlterations {
+            result += "(\(displayAlterations.joined()))"
+        }
         return result
     }
 
@@ -922,7 +735,9 @@ public enum ChordInterpreter {
     }
 
     private static func adjustedQuality(_ quality: String, chord: [String: JSONValue]) -> String {
-        strings(chord, "alterations").contains("b5") && quality == "minor" ? "diminished" : quality
+        let alterations = strings(chord, "alterations")
+        if alterations.contains("#5") && quality == "diminished" { return "minor" }
+        return alterations.contains("b5") && quality == "minor" ? "diminished" : quality
     }
 
     private static func isMajorSeventh(
@@ -937,36 +752,6 @@ public enum ChordInterpreter {
         var seventh = intervals[(degree - 1 + 6) % 7]
         if seventh < root { seventh += 12 }
         return seventh - root == 11
-    }
-
-    private static func voiceAppliedChord(
-        _ rootPositionPitches: [Int],
-        inversion: Int,
-        chordType: Int,
-        fullyDiminished: Bool
-    ) -> [Int] {
-        guard !rootPositionPitches.isEmpty else { return [] }
-        if inversion > 0 {
-            let rotation = inversion % rootPositionPitches.count
-            let rotated = Array(rootPositionPitches.dropFirst(rotation)) + Array(rootPositionPitches.prefix(rotation))
-            let originalBass = rotated[0]
-            let bassOctave = max(1, originalBass / 12 - 2)
-            let bass = (bassOctave + 1) * 12 + floorMod(originalBass, 12)
-            let highestUpperOctave = rotated.dropFirst().map { $0 / 12 - 1 }.max() ?? 0
-            let targetUpperOctave = max(highestUpperOctave, bassOctave + 1)
-            let upperOctaveBase = (targetUpperOctave + 1) * 12
-            return [bass] + rotated.dropFirst().map { upperOctaveBase + floorMod($0, 12) }
-        }
-
-        if chordType >= 7, fullyDiminished, rootPositionPitches.count >= 4 {
-            var spread = rootPositionPitches
-            let rootOctave = spread[0] / 12 - 1
-            for index in [1, 2] where spread[index] / 12 - 1 == rootOctave {
-                spread[index] += 12
-            }
-            return spread.sorted()
-        }
-        return rootPositionPitches.sorted()
     }
 
     private static func borrowedPrefix(degree: Int, key: KeyInfo, borrowedScale: String) -> String {

@@ -10,8 +10,11 @@ export function noteLabel(noteName) {
 }
 
 export function noteNameToPc(noteName) {
-  const pc = NOTE_NAME_TO_INTEGER_NOTATION[noteLabel(noteName)];
-  return pc != null ? ((pc % 12) + 12) % 12 : null;
+  const match = noteLabel(noteName).match(/^([A-G])([#bx]*)$/);
+  if (!match) return null;
+  let pc = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[match[1]];
+  for (const accidental of match[2]) pc += accidental === "b" ? -1 : accidental === "x" ? 2 : 1;
+  return ((pc % 12) + 12) % 12;
 }
 
 export function rootKey(chordRootNoteName) {

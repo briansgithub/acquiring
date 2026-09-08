@@ -1,0 +1,5091 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-09-08",
+  "corrections": [
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/1",
+      "category": "rendered-symbol-pitch-inference",
+      "original": {
+        "truthPcs": [
+          1,
+          2,
+          6,
+          9
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          1,
+          5,
+          8
+        ]
+      },
+      "reason": "Rendered Db/C contains Db F Ab and the slash bass C. The previous truth root resolver incorrectly transposed the letter root by one semitone.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/gustav-holst/mars---bringer-of-war",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "II△42",
+        "truthLetter": "Db/C",
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/89",
+      "category": "rendered-symbol-pitch-inference",
+      "original": {
+        "truthPcs": [
+          2,
+          6,
+          9
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          1,
+          5,
+          8
+        ]
+      },
+      "reason": "Rendered Db/F is the Db major triad over F. The previous truth root resolver incorrectly transposed the letter root by one semitone.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/gustav-holst/mars---bringer-of-war",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "II6",
+        "truthLetter": "Db/F",
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Chorus Lead-Out/83",
+      "category": "rendered-symbol-pitch-inference",
+      "original": {
+        "truthPcs": [
+          2,
+          5,
+          8,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          5,
+          10,
+          11
+        ]
+      },
+      "reason": "Rendered b°/A# and Roman ii°△42 specify B D F A#: diminished triad with major seventh. The old inference incorrectly chose a diminished seventh.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/gustav-holst/mars---bringer-of-war",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "ii°△4(b5)2(bor)",
+        "truthLetter": "b°/A#",
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "a-perfect-circle__judith/Chorus/10",
+      "category": "rendered-symbol-pitch-inference",
+      "original": {
+        "truthPcs": [
+          1,
+          4,
+          7,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          1,
+          4,
+          7,
+          11
+        ]
+      },
+      "reason": "Rendered em6 independently specifies E G B C#. Roman iø65(b5) is consistent with the same pitch set. The old inference incorrectly chose a diminished seventh.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/a-perfect-circle/judith",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "iø6(b5)5",
+        "truthLetter": "em6",
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Chorus/49",
+      "category": "rendered-symbol-pitch-inference",
+      "original": {
+        "truthPcs": [
+          0,
+          3,
+          6,
+          9
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          3,
+          7,
+          9
+        ]
+      },
+      "reason": "Rendered am7(b5) independently specifies A C Eb G. The old inference treated the half-diminished seventh as fully diminished.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/gustav-holst/mars---bringer-of-war",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "ivø7(bor)",
+        "truthLetter": "am7(b5)",
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "motoi-sakuraba__a-place-to-relax---duke-fabre-house/Verse/25",
+      "category": "rendered-symbol-pitch-inference",
+      "original": {
+        "truthPcs": [
+          4,
+          7,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          4,
+          8,
+          11
+        ]
+      },
+      "reason": "Rendered E is E G# B. A diminished sign on the applied denominator vii° does not make the numerator E diminished.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/motoi-sakuraba/a-place-to-relax---duke-fabre-house",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "IV/vii°",
+        "truthLetter": "E",
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "kero-kero-bonito__21_04_20/Bridge/15",
+      "category": "rendered-symbol-pitch-inference",
+      "original": {
+        "truthPcs": [
+          0,
+          3,
+          6,
+          9
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          1,
+          4,
+          6,
+          10
+        ]
+      },
+      "reason": "Rendered F#7 is F# A# C# E. A diminished sign on the applied denominator vii° does not make this dominant seventh fully diminished.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/kero-kero-bonito/21_04_20",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "V7/vii°",
+        "truthLetter": "F#7",
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "mariah-carey__x-girlfriend/Bridge/11",
+      "category": "rendered-symbol-pitch-inference",
+      "original": {
+        "truthPcs": [
+          2,
+          4,
+          8,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          4,
+          8
+        ]
+      },
+      "reason": "Rendered G#++(#5) has a duplicated augmentation glyph; its triad is G# B# Dx. The denominator iii° does not add a diminished seventh to a type-5 numerator.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/mariah-carey/x-girlfriend",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "V+(#5)/#iii°(maj)(mix)",
+        "truthLetter": "G#++(#5)",
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "the-beach-boys__god-only-knows/Bridge/45",
+      "category": "rendered-symbol-pitch-inference",
+      "original": {
+        "truthPcs": [
+          0,
+          3,
+          6,
+          9
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          1,
+          3,
+          6,
+          9
+        ]
+      },
+      "reason": "Rendered d#m7(b5) is D# F# A C#. The old inference incorrectly flattened its minor seventh to a diminished seventh.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/the-beach-boys/god-only-knows",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "#iø7(bor)",
+        "truthLetter": "d#m7(b5)",
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "the-beach-boys__god-only-knows/Verse/29",
+      "category": "rendered-symbol-pitch-inference",
+      "original": {
+        "truthPcs": [
+          1,
+          4,
+          7,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          1,
+          4,
+          8,
+          10
+        ]
+      },
+      "reason": "Rendered a#m7(b5) is A# C# E G#. The old inference incorrectly flattened its minor seventh to a diminished seventh.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/the-beach-boys/god-only-knows",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "#iø7(bor)",
+        "truthLetter": "a#m7(b5)",
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "el-alfa-x-darell-x-noriel__4k/Chorus/5",
+      "category": "rendered-symbol-pitch-inference",
+      "original": {
+        "truthPcs": [
+          5,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          5
+        ]
+      },
+      "reason": "Roman ii°(no5no3) and rendered e#°(n5n3) explicitly omit both third and fifth; E# is the only remaining tone.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/el-alfa-x-darell-x-noriel/4k",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "ii°(no5no3)",
+        "truthLetter": "e#°(n5n3)",
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "the-beatles__blackbird/Chorus/2",
+      "category": "rendered-symbol-pitch-inference",
+      "original": {
+        "truthPcs": [
+          4,
+          7,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          4,
+          7
+        ]
+      },
+      "reason": "Roman vii°(no5) and rendered e°(n5) omit the fifth: E G remain. The old inference failed to apply the omission.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/the-beatles/blackbird",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "vii°(no5)",
+        "truthLetter": "e°(n5)",
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "lana-del-rey__video-games/Chorus/85",
+      "category": "rendered-symbol-pitch-inference",
+      "original": {
+        "truthPcs": [
+          5,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          5
+        ]
+      },
+      "reason": "Roman #vii°(no5no3)(hmin) and rendered e#°(n5n3) explicitly omit both third and fifth; E# is the only remaining tone.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/lana-del-rey/video-games",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "#vii°(no5no3)(hmin)",
+        "truthLetter": "e#°(n5n3)",
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "the-police__every-breath-you-take/Chorus/64.5",
+      "category": "rendered-symbol-pitch-inference",
+      "original": {
+        "truthPcs": [
+          2,
+          5,
+          8,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          4,
+          5,
+          8,
+          11
+        ]
+      },
+      "reason": "Rendered fmmaj7(b5) is F Ab Cb E. Roman vi°△7(b5) explicitly retains a major seventh above a diminished triad.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/the-police/every-breath-you-take",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "vi°△7(b5)(bor)",
+        "truthLetter": "fmmaj7(b5)",
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "the-kinks__waterloo-sunset/Bridge/41",
+      "category": "rendered-symbol-pitch-inference",
+      "original": {
+        "truthPcs": [
+          0,
+          3,
+          6,
+          9
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          1,
+          3,
+          6,
+          9
+        ]
+      },
+      "reason": "Rendered d#°(add13)/C# supplies D# F# A, added B# and slash bass C#. Roman iiiø42(add13) retains the minor seventh; old inference dropped the explicitly written slash bass.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/the-kinks/waterloo-sunset",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "iiiø4(add13)2",
+        "truthLetter": "d#°(add13)/C#",
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "the-beatles__penny-lane/Verse/6",
+      "category": "source-alignment",
+      "original": {
+        "truthRoman": "vi7",
+        "truthLetter": "g#m7",
+        "truthPcs": [
+          3,
+          6,
+          8,
+          11
+        ]
+      },
+      "corrected": {
+        "truthRoman": "I△42",
+        "truthLetter": "B/A#",
+        "truthPcs": [
+          3,
+          6,
+          10,
+          11
+        ]
+      },
+      "reason": "The first verse capture shifts rendered labels across adjacent objects. The same song repeats this exact complete chord object and key later in the verse. Use that independently captured, matching-input occurrence; no interpreter output is consulted.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/the-beatles/penny-lane",
+        "peerId": "the-beatles__penny-lane/Verse/38",
+        "peerChord": {
+          "root": 1,
+          "beat": 38,
+          "duration": 1,
+          "type": 7,
+          "inversion": 3,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false,
+          "recordingEndBeat": null
+        },
+        "key": {
+          "tonic": "B",
+          "scale": "major"
+        },
+        "capturePath": "tooling/_Decode_oracle/chord_db/byModification/type=7.json",
+        "captureSha256": "2759d0e52e75864db4dcaf5a23726a8f51382bcfe8601ab56d7c655c96da701e"
+      }
+    },
+    {
+      "id": "the-beatles__penny-lane/Verse/7",
+      "category": "source-alignment",
+      "original": {
+        "truthRoman": "I64",
+        "truthLetter": "B/F#",
+        "truthPcs": [
+          0,
+          3,
+          6,
+          8
+        ]
+      },
+      "corrected": {
+        "truthRoman": "vi7",
+        "truthLetter": "g#m7",
+        "truthPcs": [
+          3,
+          6,
+          8,
+          11
+        ]
+      },
+      "reason": "The first verse capture shifts rendered labels across adjacent objects. The same song repeats this exact complete chord object and key later in the verse. Use that independently captured, matching-input occurrence; no interpreter output is consulted.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/the-beatles/penny-lane",
+        "peerId": "the-beatles__penny-lane/Verse/39",
+        "peerChord": {
+          "root": 6,
+          "beat": 39,
+          "duration": 1,
+          "type": 7,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false,
+          "recordingEndBeat": null
+        },
+        "key": {
+          "tonic": "B",
+          "scale": "major"
+        },
+        "capturePath": "tooling/_Decode_oracle/chord_db/byModification/type=7.json",
+        "captureSha256": "2759d0e52e75864db4dcaf5a23726a8f51382bcfe8601ab56d7c655c96da701e"
+      }
+    },
+    {
+      "id": "the-beatles__penny-lane/Verse/8",
+      "category": "source-alignment",
+      "original": {
+        "truthRoman": "ii65",
+        "truthLetter": "E6",
+        "truthPcs": [
+          4,
+          8,
+          11
+        ]
+      },
+      "corrected": {
+        "truthRoman": "I64",
+        "truthLetter": "B/F#",
+        "truthPcs": [
+          3,
+          6,
+          11
+        ]
+      },
+      "reason": "The first verse capture shifts rendered labels across adjacent objects. The same song repeats this exact complete chord object and key later in the verse. Use that independently captured, matching-input occurrence; no interpreter output is consulted.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/the-beatles/penny-lane",
+        "peerId": "the-beatles__penny-lane/Verse/40",
+        "peerChord": {
+          "root": 1,
+          "beat": 40,
+          "duration": 1,
+          "type": 5,
+          "inversion": 2,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false,
+          "recordingEndBeat": null
+        },
+        "key": {
+          "tonic": "B",
+          "scale": "major"
+        },
+        "capturePath": "tooling/_Decode_oracle/chord_db/byModification/type=5.json",
+        "captureSha256": "3c3dfd863acf0b9142dc4c77576591a71dc19aef8b80856c781a92dcc12b7105"
+      }
+    },
+    {
+      "id": "the-beatles__penny-lane/Verse/11",
+      "category": "source-alignment",
+      "original": {
+        "truthRoman": "I",
+        "truthLetter": "B",
+        "truthPcs": [
+          3,
+          6,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthRoman": "V7",
+        "truthLetter": "F#7",
+        "truthPcs": [
+          1,
+          4,
+          6,
+          10
+        ]
+      },
+      "reason": "The first verse capture shifts rendered labels across adjacent objects. The same song repeats this exact complete chord object and key later in the verse. Use that independently captured, matching-input occurrence; no interpreter output is consulted.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/the-beatles/penny-lane",
+        "peerId": "the-beatles__penny-lane/Verse/43",
+        "peerChord": {
+          "root": 5,
+          "beat": 43,
+          "duration": 2,
+          "type": 7,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false,
+          "recordingEndBeat": null
+        },
+        "key": {
+          "tonic": "B",
+          "scale": "major"
+        },
+        "capturePath": "tooling/_Decode_oracle/chord_db/byModification/type=7.json",
+        "captureSha256": "2759d0e52e75864db4dcaf5a23726a8f51382bcfe8601ab56d7c655c96da701e"
+      }
+    },
+    {
+      "id": "george-harrison__this-guitar-(cant-keep-from-crying)/Verse/8.5",
+      "category": "rendered-symbol-pitch-inference",
+      "original": {
+        "truthPcs": [
+          1,
+          4,
+          7,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          4,
+          7,
+          10
+        ]
+      },
+      "reason": "Rendered em7(b5) means E G Bb D. The previous symbol-to-pitch inference used Db, confusing half-diminished with diminished seventh.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/george-harrison/this-guitar-(cant-keep-from-crying)#verse",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "#viø7(b5)(lyd)",
+        "truthLetter": "em7(b5)",
+        "key": {
+          "tonic": "G",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 6,
+          "type": 7,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [
+            "b5"
+          ],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "lydian",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5",
+      "category": "live-corroborated-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          0,
+          1,
+          3,
+          5,
+          6,
+          9
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          1,
+          4,
+          9
+        ]
+      },
+      "reason": "Rendered C°7(b9b11) has C Eb Gb Bbb Db Fb. The previous inference retained a natural eleventh F despite the explicit b11. Live Hooktheory eleventh voicings omit structural third and implicit fifth. This is directly corroborated for major-seventh with altered ninth (Holst Pre-Chorus/18: C B D# F#), custom diminished (Holst Pre-Chorus/39.5: C Db E Bbb), applied tritone substitution, and harmonic-minor dominant. Remove only third/fifth pitches implied by the captured letter quality, retaining captured extensions. Explicit fifth alterations remain outside this verified rule.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/gustav-holst/mars---bringer-of-war#pre-chorus",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "i°11(bor)",
+        "truthLetter": "c°7(b9b11)",
+        "key": {
+          "tonic": "C",
+          "scale": "phrygianDominant"
+        },
+        "chord": {
+          "root": 1,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": [
+            0,
+            1,
+            3,
+            4,
+            6,
+            8,
+            9
+          ],
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "the-police__every-breath-you-take/Chorus/53",
+      "category": "live-keyboard-voicing",
+      "original": {
+        "truthPcs": [
+          1,
+          3,
+          5,
+          8,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          1,
+          3,
+          5,
+          8
+        ]
+      },
+      "reason": "Live source keyboard, Show Chords, Ab major, selected V9sus4/Eb9sus4: Eb3 Db4 F4 Ab4. The source omits the fifth Bb from this suspension voicing; the old inferred pitch list incorrectly added it.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/the-police/every-breath-you-take#chorus",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "V9sus4",
+        "truthLetter": "Eb9sus4",
+        "key": {
+          "tonic": "Ab",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 5,
+          "type": 9,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [
+            4
+          ],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "elton-john__rocket-man/Pre-Chorus/5",
+      "category": "live-keyboard-voicing",
+      "original": {
+        "truthPcs": [
+          0,
+          2,
+          5,
+          7,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          2,
+          5,
+          10
+        ]
+      },
+      "reason": "Live source keyboard, Show Chords, selected C9sus4: C3 Bb3 D4 F4 with no G. Current section key G Dorian differs from frozen Bb major, so this corroborates suspension voicing and is not an exact-input recapture. Exact-context Eb9sus4 verification is recorded separately.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/elton-john/rocket-man#pre-chorus",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "ii9sus4",
+        "truthLetter": "c9sus4",
+        "key": {
+          "tonic": "Bb",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 2,
+          "type": 9,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [
+            4
+          ],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29/Pre-Outro/29",
+      "category": "representative-live-voicing-rule",
+      "original": {
+        "truthPcs": [
+          1,
+          4,
+          6,
+          8,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          4,
+          6,
+          8,
+          11
+        ]
+      },
+      "reason": "Frozen F#9sus4 inferred pitches included the fifth C#. Independent source keyboard checks of Eb9sus4 in matching Ab-major context and C9sus4 corroborate the preserved Hooktheory sus9 policy: root, seventh, ninth and fourth without fifth. Apply that verified voicing rule, transposed to F#.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/lady-gaga/die-with-a-smile-%28with-bruno-mars%29#pre-outro",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "i9sus4",
+        "truthLetter": "f#9sus4",
+        "key": {
+          "tonic": "F#",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 1,
+          "type": 9,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [
+            4
+          ],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "earth-wind-and-fire__september/Verse/29",
+      "category": "representative-live-voicing-rule",
+      "original": {
+        "truthPcs": [
+          2,
+          4,
+          6,
+          7,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          6,
+          7,
+          9,
+          11
+        ]
+      },
+      "reason": "Frozen A9(add13)sus4 inferred pitches included E. Independent source keyboard checks of Eb9sus4 and C9sus4 corroborate the preserved Hooktheory sus9 policy: omit the fifth. Retain the explicitly added thirteenth F#.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/earth-wind-and-fire/september#verse",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "V9(add13)sus4/IV",
+        "truthLetter": "A9(add13)sus4",
+        "key": {
+          "tonic": "A",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 4,
+          "type": 9,
+          "inversion": 0,
+          "applied": 5,
+          "adds": [
+            6
+          ],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [
+            4
+          ],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "gorillaz__5-4/Chorus/14",
+      "category": "live-keyboard-voicing",
+      "original": {
+        "truthPcs": [
+          2,
+          6,
+          9
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          7,
+          9,
+          11
+        ]
+      },
+      "reason": "Live source keyboard, C minor, Show Chords, selected V7(no5)sus2sus4(maj)/ii° / A7(no5)sus2sus4: A2 B3 D4 G4. Both suspensions sound. The old inferred list has an unrepresented F# and drops the seventh and second. Adjacent borrowed Ab chord independently confirms both suspensions.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/gorillaz/5-4#chorus",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "V7(no5)sus2sus4/ii°(maj)",
+        "truthLetter": "A7(n°5)sus2sus4",
+        "key": {
+          "tonic": "C",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 2,
+          "type": 7,
+          "inversion": 0,
+          "applied": 5,
+          "adds": [],
+          "omits": [
+            5
+          ],
+          "alterations": [],
+          "suspensions": [
+            2,
+            4
+          ],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "georges-bizet__larlesienne-suite-no-2---iv-farandole/Verse/5",
+      "category": "representative-live-voicing-rule",
+      "original": {
+        "truthPcs": [
+          0,
+          2,
+          7,
+          9
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          2,
+          4,
+          7,
+          9
+        ]
+      },
+      "reason": "Rendered letter explicitly includes both sus2 and sus4. Two independent live Gorillaz keyboard checks establish that both suspension roles sound. The old pitch parser overwrote the second with the fourth; restore only the missing source-spelled second and preserve every other captured pitch.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/georges-bizet/larlesienne-suite-no-2---iv-farandole#verse",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "I7sus4sus2",
+        "truthLetter": "D7sus4sus2",
+        "key": {
+          "tonic": "D",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 1,
+          "type": 7,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [
+            4,
+            2
+          ],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gorillaz__5-4/Chorus/14",
+          "gorillaz__5-4/Chorus/13.5"
+        ]
+      }
+    },
+    {
+      "id": "john-williams__jurassic-park---main-theme/Intro/5",
+      "category": "representative-live-voicing-rule",
+      "original": {
+        "truthPcs": [
+          2,
+          7,
+          9
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          4,
+          7,
+          9
+        ]
+      },
+      "reason": "Rendered letter explicitly includes both sus2 and sus4. Two independent live Gorillaz keyboard checks establish that both suspension roles sound. The old pitch parser overwrote the second with the fourth; restore only the missing source-spelled second and preserve every other captured pitch.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/john-williams/jurassic-park---main-theme#intro",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "Isus2sus4",
+        "truthLetter": "Dsus2sus4",
+        "key": {
+          "tonic": "D",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 1,
+          "type": 5,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [
+            2,
+            4
+          ],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gorillaz__5-4/Chorus/14",
+          "gorillaz__5-4/Chorus/13.5"
+        ]
+      }
+    },
+    {
+      "id": "a-perfect-circle__judith/Solo/103",
+      "category": "representative-live-voicing-rule",
+      "original": {
+        "truthPcs": [
+          1,
+          6,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          1,
+          6,
+          8,
+          11
+        ]
+      },
+      "reason": "Rendered letter explicitly includes both sus2 and sus4. Two independent live Gorillaz keyboard checks establish that both suspension roles sound. The old pitch parser overwrote the second with the fourth; restore only the missing source-spelled second and preserve every other captured pitch.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/a-perfect-circle/judith#solo",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "ivsus2sus4",
+        "truthLetter": "f#sus2sus4",
+        "key": {
+          "tonic": "C#",
+          "scale": "phrygian"
+        },
+        "chord": {
+          "root": 4,
+          "type": 5,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [
+            2,
+            4
+          ],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gorillaz__5-4/Chorus/14",
+          "gorillaz__5-4/Chorus/13.5"
+        ]
+      }
+    },
+    {
+      "id": "journey__dont-stop-believin/Pre-Chorus/9.5",
+      "category": "representative-live-voicing-rule",
+      "original": {
+        "truthPcs": [
+          2,
+          4,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          4,
+          6,
+          9,
+          11
+        ]
+      },
+      "reason": "Rendered letter explicitly includes both sus2 and sus4. Two independent live Gorillaz keyboard checks establish that both suspension roles sound. The old pitch parser overwrote the second with the fourth; restore only the missing source-spelled second and preserve every other captured pitch.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/journey/dont-stop-believin#pre-chorus",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "Isus4sus27",
+        "truthLetter": "E7sus4sus2",
+        "key": {
+          "tonic": "E",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 1,
+          "type": 7,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [
+            4,
+            2
+          ],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gorillaz__5-4/Chorus/14",
+          "gorillaz__5-4/Chorus/13.5"
+        ]
+      }
+    },
+    {
+      "id": "kazumi-totaka__5pm---animal-crossing-new-horizons/Intro and Verse/13",
+      "category": "representative-live-voicing-rule",
+      "original": {
+        "truthPcs": [
+          1,
+          4,
+          6,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          1,
+          4,
+          6,
+          8,
+          11
+        ]
+      },
+      "reason": "Rendered letter explicitly includes both sus2 and sus4. Two independent live Gorillaz keyboard checks establish that both suspension roles sound. The old pitch parser overwrote the second with the fourth; restore only the missing source-spelled second and preserve every other captured pitch.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/kazumi-totaka/5pm---animal-crossing-new-horizons#intro-and-verse",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "vi7sus4sus2",
+        "truthLetter": "f#7sus4sus2",
+        "key": {
+          "tonic": "A",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 6,
+          "type": 7,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [
+            4,
+            2
+          ],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gorillaz__5-4/Chorus/14",
+          "gorillaz__5-4/Chorus/13.5"
+        ]
+      }
+    },
+    {
+      "id": "ludwig-van-beethoven__joyful-joyful-we-adore-thee/Verse/21",
+      "category": "representative-live-voicing-rule",
+      "original": {
+        "truthPcs": [
+          3,
+          5,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          3,
+          5,
+          10
+        ]
+      },
+      "reason": "Rendered letter explicitly includes both sus2 and sus4. Two independent live Gorillaz keyboard checks establish that both suspension roles sound. The old pitch parser overwrote the second with the fourth; restore only the missing source-spelled second and preserve every other captured pitch.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/ludwig-van-beethoven/joyful-joyful-we-adore-thee#verse",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "IVsus4sus2(mix)",
+        "truthLetter": "Bbsus4sus2",
+        "key": {
+          "tonic": "F",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 4,
+          "type": 5,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [
+            4,
+            2
+          ],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "mixolydian",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gorillaz__5-4/Chorus/14",
+          "gorillaz__5-4/Chorus/13.5"
+        ]
+      }
+    },
+    {
+      "id": "elton-john__rocket-man/Verse/22.75",
+      "category": "representative-live-voicing-rule",
+      "original": {
+        "truthPcs": [
+          3,
+          7,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          3,
+          7,
+          10
+        ]
+      },
+      "reason": "Rendered letter explicitly includes both sus2 and sus4. Two independent live Gorillaz keyboard checks establish that both suspension roles sound. The old pitch parser overwrote the second with the fourth; restore only the missing source-spelled second and preserve every other captured pitch.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/elton-john/rocket-man#verse",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "Isus2sus4(add6)",
+        "truthLetter": "Bb(add6)sus2sus4",
+        "key": {
+          "tonic": "Bb",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 1,
+          "type": 5,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [
+            6
+          ],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [
+            2,
+            4
+          ],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gorillaz__5-4/Chorus/14",
+          "gorillaz__5-4/Chorus/13.5"
+        ]
+      }
+    },
+    {
+      "id": "frank-sinatra__fly-me-to-the-moon/Verse/53",
+      "category": "representative-live-voicing-rule",
+      "original": {
+        "truthPcs": [
+          0,
+          2,
+          4,
+          5,
+          7
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          2,
+          4,
+          5,
+          7,
+          9
+        ]
+      },
+      "reason": "Rendered letter explicitly includes both sus2 and sus4. Two independent live Gorillaz keyboard checks establish that both suspension roles sound. The old pitch parser overwrote the second with the fourth; restore only the missing source-spelled second and preserve every other captured pitch.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/frank-sinatra/fly-me-to-the-moon#verse",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "V7(add13)sus2sus4",
+        "truthLetter": "G7(add13)sus2sus4",
+        "key": {
+          "tonic": "C",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 5,
+          "type": 7,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [
+            6
+          ],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [
+            2,
+            4
+          ],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gorillaz__5-4/Chorus/14",
+          "gorillaz__5-4/Chorus/13.5"
+        ]
+      }
+    },
+    {
+      "id": "john-legend__all-of-me/Pre-Chorus and Chorus/45",
+      "category": "representative-live-voicing-rule",
+      "original": {
+        "truthPcs": [
+          3,
+          8,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          3,
+          5,
+          8,
+          10
+        ]
+      },
+      "reason": "Rendered letter explicitly includes both sus2 and sus4. Two independent live Gorillaz keyboard checks establish that both suspension roles sound. The old pitch parser overwrote the second with the fourth; restore only the missing source-spelled second and preserve every other captured pitch.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/john-legend/all-of-me#pre-chorus-and-chorus",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "Vsus2sus4",
+        "truthLetter": "Ebsus2sus4",
+        "key": {
+          "tonic": "Ab",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 5,
+          "type": 5,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [
+            2,
+            4
+          ],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gorillaz__5-4/Chorus/14",
+          "gorillaz__5-4/Chorus/13.5"
+        ]
+      }
+    },
+    {
+      "id": "gorillaz__5-4/Chorus/13.5",
+      "category": "live-keyboard-voicing",
+      "original": {
+        "truthPcs": [
+          1,
+          6,
+          8
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          7,
+          8,
+          11
+        ]
+      },
+      "reason": "Live C-minor source, matching captured complete chord object at beat13.5, shows VI7(no5)sus2sus4(hmin), Ab7(no5)sus#2sus#4; Show Chords keyboard is Ab2 B3 D4 G4. Old inferred pitch list replaces scale-specific suspensions by generic fourth and uses an incorrect seventh. Both suspensions are present.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/gorillaz/5-4#chorus",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "VI7(no5)sus2sus4(hmin)",
+        "truthLetter": "Ab7(n°5)sus#2sus#4",
+        "key": {
+          "tonic": "C",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 6,
+          "type": 7,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [
+            5
+          ],
+          "alterations": [],
+          "suspensions": [
+            2,
+            4
+          ],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "harmonicMinor",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "hertzdevil__stage-64/Instrumental/29",
+      "category": "representative-live-voicing-rule",
+      "original": {
+        "truthPcs": [
+          3,
+          5,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          3,
+          5,
+          10
+        ]
+      },
+      "reason": "Rendered letter explicitly includes both sus2 and sus4. Two independent live Gorillaz keyboard checks establish that both suspension roles sound. The old pitch parser overwrote the second with the fourth; restore only the missing source-spelled second and preserve every other captured pitch.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/hertzdevil/stage-64#instrumental",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "Vsus4sus2(maj)",
+        "truthLetter": "A#sus4sus2",
+        "key": {
+          "tonic": "D#",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 5,
+          "type": 5,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [
+            4,
+            2
+          ],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "major",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gorillaz__5-4/Chorus/14",
+          "gorillaz__5-4/Chorus/13.5"
+        ]
+      }
+    },
+    {
+      "id": "jean-sibelius__5-pieces-for-piano---no-5/Bridge/13",
+      "category": "representative-live-voicing-rule",
+      "original": {
+        "truthPcs": [
+          2,
+          4,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          4,
+          6,
+          9,
+          11
+        ]
+      },
+      "reason": "Rendered letter explicitly includes both sus2 and sus4. Two independent live Gorillaz keyboard checks establish that both suspension roles sound. The old pitch parser overwrote the second with the fourth; restore only the missing source-spelled second and preserve every other captured pitch.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/jean-sibelius/5-pieces-for-piano---no-5#bridge",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "IV7sus2sus4(mix)",
+        "truthLetter": "E7sus2sus4",
+        "key": {
+          "tonic": "B",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 4,
+          "type": 7,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [
+            2,
+            4
+          ],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "mixolydian",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gorillaz__5-4/Chorus/14",
+          "gorillaz__5-4/Chorus/13.5"
+        ]
+      }
+    },
+    {
+      "id": "joseph-haydn__12-easy-pieces-for-piano-no-1---andante-grazioso/Intro/29",
+      "category": "representative-live-voicing-rule",
+      "original": {
+        "truthPcs": [
+          0,
+          3,
+          5,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          3,
+          5,
+          7,
+          10
+        ]
+      },
+      "reason": "Rendered letter explicitly includes both sus2 and sus4. Two independent live Gorillaz keyboard checks establish that both suspension roles sound. The old pitch parser overwrote the second with the fourth; restore only the missing source-spelled second and preserve every other captured pitch.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/joseph-haydn/12-easy-pieces-for-piano-no-1---andante-grazioso#intro",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "I7sus2sus4",
+        "truthLetter": "F7sus2sus4",
+        "key": {
+          "tonic": "F",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 1,
+          "type": 7,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [
+            2,
+            4
+          ],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gorillaz__5-4/Chorus/14",
+          "gorillaz__5-4/Chorus/13.5"
+        ]
+      }
+    },
+    {
+      "id": "kazumi-totaka__5pm---animal-crossing-new-horizons/Chorus/13",
+      "category": "representative-live-voicing-rule",
+      "original": {
+        "truthPcs": [
+          1,
+          3,
+          6,
+          8
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          1,
+          3,
+          6,
+          8,
+          10
+        ]
+      },
+      "reason": "Rendered letter explicitly includes both sus2 and sus4. Two independent live Gorillaz keyboard checks establish that both suspension roles sound. The old pitch parser overwrote the second with the fourth; restore only the missing source-spelled second and preserve every other captured pitch.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/kazumi-totaka/5pm---animal-crossing-new-horizons#chorus",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "vi7sus4sus2",
+        "truthLetter": "g#7sus4sus2",
+        "key": {
+          "tonic": "B",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 6,
+          "type": 7,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [
+            4,
+            2
+          ],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gorillaz__5-4/Chorus/14",
+          "gorillaz__5-4/Chorus/13.5"
+        ]
+      }
+    },
+    {
+      "id": "kazumi-totaka__7am---animal-crossing-new-horizons/Chorus/1",
+      "category": "representative-live-voicing-rule",
+      "original": {
+        "truthPcs": [
+          1,
+          6,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          1,
+          6,
+          8,
+          11
+        ]
+      },
+      "reason": "Rendered letter explicitly includes both sus2 and sus4. Two independent live Gorillaz keyboard checks establish that both suspension roles sound. The old pitch parser overwrote the second with the fourth; restore only the missing source-spelled second and preserve every other captured pitch.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/kazumi-totaka/7am---animal-crossing-new-horizons#chorus",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "Vsus4sus2",
+        "truthLetter": "F#sus4sus2",
+        "key": {
+          "tonic": "B",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 5,
+          "type": 5,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [
+            4,
+            2
+          ],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gorillaz__5-4/Chorus/14",
+          "gorillaz__5-4/Chorus/13.5"
+        ]
+      }
+    },
+    {
+      "id": "kazumi-totaka__kaeru-no-tame-ni---the-princes-adventure/Intro/17",
+      "category": "representative-live-voicing-rule",
+      "original": {
+        "truthPcs": [
+          2,
+          4,
+          7,
+          9
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          4,
+          7,
+          9,
+          11
+        ]
+      },
+      "reason": "Rendered letter explicitly includes both sus2 and sus4. Two independent live Gorillaz keyboard checks establish that both suspension roles sound. The old pitch parser overwrote the second with the fourth; restore only the missing source-spelled second and preserve every other captured pitch.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/kazumi-totaka/kaeru-no-tame-ni---the-princes-adventure#intro",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "ii7sus4sus2",
+        "truthLetter": "a7sus4sus2",
+        "key": {
+          "tonic": "G",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 2,
+          "type": 7,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [
+            4,
+            2
+          ],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gorillaz__5-4/Chorus/14",
+          "gorillaz__5-4/Chorus/13.5"
+        ]
+      }
+    },
+    {
+      "id": "kentarou-haneda__wizardry-v---heart-of-the-maelstrom---title/Chorus/70",
+      "category": "representative-live-voicing-rule",
+      "original": {
+        "truthPcs": [
+          2,
+          7,
+          9
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          4,
+          7,
+          9
+        ]
+      },
+      "reason": "Rendered letter explicitly includes both sus2 and sus4. Two independent live Gorillaz keyboard checks establish that both suspension roles sound. The old pitch parser overwrote the second with the fourth; restore only the missing source-spelled second and preserve every other captured pitch.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/kentarou-haneda/wizardry-v---heart-of-the-maelstrom---title#chorus",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "Isus2sus4(maj)",
+        "truthLetter": "Dsus2sus4",
+        "key": {
+          "tonic": "D",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 1,
+          "type": 5,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [
+            2,
+            4
+          ],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "major",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gorillaz__5-4/Chorus/14",
+          "gorillaz__5-4/Chorus/13.5"
+        ]
+      }
+    },
+    {
+      "id": "chic__le-freak/Chorus/18.75",
+      "category": "representative-live-voicing-rule",
+      "original": {
+        "truthPcs": [
+          2,
+          4,
+          9
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          4,
+          6,
+          9
+        ]
+      },
+      "reason": "Rendered letter explicitly includes both sus2 and sus4. Two independent live Gorillaz keyboard checks establish that both suspension roles sound. The old pitch parser overwrote the second with the fourth; restore only the missing source-spelled second and preserve every other captured pitch.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/chic/le-freak#chorus",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "v7(no5)sus2sus4",
+        "truthLetter": "e7(n°5)sus2sus4",
+        "key": {
+          "tonic": "A",
+          "scale": "dorian"
+        },
+        "chord": {
+          "root": 5,
+          "type": 7,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [
+            5
+          ],
+          "alterations": [],
+          "suspensions": [
+            2,
+            4
+          ],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gorillaz__5-4/Chorus/14",
+          "gorillaz__5-4/Chorus/13.5"
+        ]
+      }
+    },
+    {
+      "id": "the-beatles__penny-lane/Verse/9",
+      "category": "matching-source-occurrence",
+      "original": {
+        "truthRoman": "ii7",
+        "truthLetter": "c#m7",
+        "truthPcs": [
+          1,
+          4,
+          8,
+          11
+        ]
+      },
+      "corrected": {
+        "truthRoman": "ii65",
+        "truthLetter": "E6",
+        "truthPcs": [
+          1,
+          4,
+          8,
+          11
+        ]
+      },
+      "reason": "Misaligned first-verse extraction. A later same-song occurrence has the identical complete interpretive object and key. Empty and null borrowed sentinels both mean no borrowing; no alterations or flags are removed. Preserve the later independently captured matching occurrence.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/the-beatles/penny-lane#verse",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "ii7",
+        "truthLetter": "c#m7",
+        "key": {
+          "tonic": "B",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 2,
+          "type": 7,
+          "inversion": 1,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "peerId": "the-beatles__penny-lane/Verse/41",
+        "peerChord": {
+          "root": 2,
+          "beat": 41,
+          "duration": 1,
+          "type": 7,
+          "inversion": 1,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false,
+          "recordingEndBeat": null
+        },
+        "capturePath": "tooling/_Decode_oracle/chord_db/byModification/type=7.json",
+        "captureSha256": "2759d0e52e75864db4dcaf5a23726a8f51382bcfe8601ab56d7c655c96da701e"
+      }
+    },
+    {
+      "id": "the-beatles__penny-lane/Verse/3.5",
+      "category": "matching-source-occurrence",
+      "original": {
+        "truthRoman": "I",
+        "truthLetter": "B",
+        "truthPcs": [
+          3,
+          6,
+          11
+        ]
+      },
+      "corrected": {
+        "truthRoman": "I64",
+        "truthLetter": "B/F#",
+        "truthPcs": [
+          3,
+          6,
+          11
+        ]
+      },
+      "reason": "Misaligned first-verse extraction. A later same-song occurrence has the identical complete interpretive object and key. Empty and null borrowed sentinels both mean no borrowing; no alterations or flags are removed. Preserve the later independently captured matching occurrence.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/the-beatles/penny-lane#verse",
+        "fixture": "hooktheory_parity.json",
+        "truthRoman": "I",
+        "truthLetter": "B",
+        "key": {
+          "tonic": "B",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 1,
+          "type": 5,
+          "inversion": 2,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "peerId": "the-beatles__penny-lane/Verse/40",
+        "peerChord": {
+          "root": 1,
+          "beat": 40,
+          "duration": 1,
+          "type": 5,
+          "inversion": 2,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false,
+          "recordingEndBeat": null
+        },
+        "capturePath": "tooling/_Decode_oracle/chord_db/byModification/type=5.json",
+        "captureSha256": "3c3dfd863acf0b9142dc4c77576591a71dc19aef8b80856c781a92dcc12b7105"
+      }
+    },
+    {
+      "id": "george-gershwin__summertime/Chorus/7",
+      "category": "reviewed-applied-annotation-scope",
+      "original": {
+        "truthRoman": "V7/i(maj)"
+      },
+      "corrected": {
+        "truthRoman": "V7(maj)/i"
+      },
+      "reason": "Legacy SVG extraction appended parentheses after the applied denominator. Preserve the exact original glyph multiset, restoring only scope: chord additions/omissions/alterations belong to the numerator; implicit minor-home maj belongs to the numerator; an explicit borrowed-major target retains its separate denominator maj. Live A-minor Summertime confirms numerator maj on V, V7 and vii°; live DND confirms separate numerator and denominator maj when both apply. This is a case-specific reviewed correction, not global slash normalization.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/george-gershwin/summertime",
+        "key": {
+          "tonic": "A",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 1,
+          "type": 7,
+          "inversion": 0,
+          "applied": 5,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveSources": [
+          "https://www.hooktheory.com/theorytab/view/george-gershwin/summertime#chorus",
+          "https://www.hooktheory.com/theorytab/view/dnd-allstars/1-2-pass-it---dj-premier-remix#instrumental"
+        ]
+      }
+    },
+    {
+      "id": "the-beatles__while-my-guitar-gently-weeps/Intro/25",
+      "category": "reviewed-applied-annotation-scope",
+      "original": {
+        "truthRoman": "V/VII(maj)"
+      },
+      "corrected": {
+        "truthRoman": "V(maj)/VII"
+      },
+      "reason": "Legacy SVG extraction appended parentheses after the applied denominator. Preserve the exact original glyph multiset, restoring only scope: chord additions/omissions/alterations belong to the numerator; implicit minor-home maj belongs to the numerator; an explicit borrowed-major target retains its separate denominator maj. Live A-minor Summertime confirms numerator maj on V, V7 and vii°; live DND confirms separate numerator and denominator maj when both apply. This is a case-specific reviewed correction, not global slash normalization.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/the-beatles/while-my-guitar-gently-weeps",
+        "key": {
+          "tonic": "A",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 7,
+          "type": 5,
+          "inversion": 0,
+          "applied": 5,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveSources": [
+          "https://www.hooktheory.com/theorytab/view/george-gershwin/summertime#chorus",
+          "https://www.hooktheory.com/theorytab/view/dnd-allstars/1-2-pass-it---dj-premier-remix#instrumental"
+        ]
+      }
+    },
+    {
+      "id": "george-gershwin__summertime/Chorus/3",
+      "category": "reviewed-applied-annotation-scope",
+      "original": {
+        "truthRoman": "V/i(maj)"
+      },
+      "corrected": {
+        "truthRoman": "V(maj)/i"
+      },
+      "reason": "Legacy SVG extraction appended parentheses after the applied denominator. Preserve the exact original glyph multiset, restoring only scope: chord additions/omissions/alterations belong to the numerator; implicit minor-home maj belongs to the numerator; an explicit borrowed-major target retains its separate denominator maj. Live A-minor Summertime confirms numerator maj on V, V7 and vii°; live DND confirms separate numerator and denominator maj when both apply. This is a case-specific reviewed correction, not global slash normalization.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/george-gershwin/summertime",
+        "key": {
+          "tonic": "A",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 1,
+          "type": 5,
+          "inversion": 0,
+          "applied": 5,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveSources": [
+          "https://www.hooktheory.com/theorytab/view/george-gershwin/summertime#chorus",
+          "https://www.hooktheory.com/theorytab/view/dnd-allstars/1-2-pass-it---dj-premier-remix#instrumental"
+        ]
+      }
+    },
+    {
+      "id": "carole-king__its-too-late/Verse/4.5",
+      "category": "reviewed-applied-annotation-scope",
+      "original": {
+        "truthRoman": "V/ii(add6)"
+      },
+      "corrected": {
+        "truthRoman": "V(add6)/ii"
+      },
+      "reason": "Legacy SVG extraction appended parentheses after the applied denominator. Preserve the exact original glyph multiset, restoring only scope: chord additions/omissions/alterations belong to the numerator; implicit minor-home maj belongs to the numerator; an explicit borrowed-major target retains its separate denominator maj. Live A-minor Summertime confirms numerator maj on V, V7 and vii°; live DND confirms separate numerator and denominator maj when both apply. This is a case-specific reviewed correction, not global slash normalization.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/carole-king/its-too-late",
+        "key": {
+          "tonic": "F",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 2,
+          "type": 5,
+          "inversion": 0,
+          "applied": 5,
+          "adds": [
+            6
+          ],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveSources": [
+          "https://www.hooktheory.com/theorytab/view/george-gershwin/summertime#chorus",
+          "https://www.hooktheory.com/theorytab/view/dnd-allstars/1-2-pass-it---dj-premier-remix#instrumental"
+        ]
+      }
+    },
+    {
+      "id": "george-gershwin__summertime/Chorus/27",
+      "category": "reviewed-applied-annotation-scope",
+      "original": {
+        "truthRoman": "vii°/v(maj)"
+      },
+      "corrected": {
+        "truthRoman": "vii°(maj)/v"
+      },
+      "reason": "Legacy SVG extraction appended parentheses after the applied denominator. Preserve the exact original glyph multiset, restoring only scope: chord additions/omissions/alterations belong to the numerator; implicit minor-home maj belongs to the numerator; an explicit borrowed-major target retains its separate denominator maj. Live A-minor Summertime confirms numerator maj on V, V7 and vii°; live DND confirms separate numerator and denominator maj when both apply. This is a case-specific reviewed correction, not global slash normalization.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/george-gershwin/summertime",
+        "key": {
+          "tonic": "A",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 5,
+          "type": 5,
+          "inversion": 0,
+          "applied": 7,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveSources": [
+          "https://www.hooktheory.com/theorytab/view/george-gershwin/summertime#chorus",
+          "https://www.hooktheory.com/theorytab/view/dnd-allstars/1-2-pass-it---dj-premier-remix#instrumental"
+        ]
+      }
+    },
+    {
+      "id": "george-gershwin__summertime/Chorus/31",
+      "category": "reviewed-applied-annotation-scope",
+      "original": {
+        "truthRoman": "V7/v(maj)"
+      },
+      "corrected": {
+        "truthRoman": "V7(maj)/v"
+      },
+      "reason": "Legacy SVG extraction appended parentheses after the applied denominator. Preserve the exact original glyph multiset, restoring only scope: chord additions/omissions/alterations belong to the numerator; implicit minor-home maj belongs to the numerator; an explicit borrowed-major target retains its separate denominator maj. Live A-minor Summertime confirms numerator maj on V, V7 and vii°; live DND confirms separate numerator and denominator maj when both apply. This is a case-specific reviewed correction, not global slash normalization.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/george-gershwin/summertime",
+        "key": {
+          "tonic": "A",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 5,
+          "type": 7,
+          "inversion": 0,
+          "applied": 5,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveSources": [
+          "https://www.hooktheory.com/theorytab/view/george-gershwin/summertime#chorus",
+          "https://www.hooktheory.com/theorytab/view/dnd-allstars/1-2-pass-it---dj-premier-remix#instrumental"
+        ]
+      }
+    },
+    {
+      "id": "george-gershwin__summertime/Chorus/51",
+      "category": "reviewed-applied-annotation-scope",
+      "original": {
+        "truthRoman": "V7/VII(maj)"
+      },
+      "corrected": {
+        "truthRoman": "V7(maj)/VII"
+      },
+      "reason": "Legacy SVG extraction appended parentheses after the applied denominator. Preserve the exact original glyph multiset, restoring only scope: chord additions/omissions/alterations belong to the numerator; implicit minor-home maj belongs to the numerator; an explicit borrowed-major target retains its separate denominator maj. Live A-minor Summertime confirms numerator maj on V, V7 and vii°; live DND confirms separate numerator and denominator maj when both apply. This is a case-specific reviewed correction, not global slash normalization.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/george-gershwin/summertime",
+        "key": {
+          "tonic": "A",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 7,
+          "type": 7,
+          "inversion": 0,
+          "applied": 5,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveSources": [
+          "https://www.hooktheory.com/theorytab/view/george-gershwin/summertime#chorus",
+          "https://www.hooktheory.com/theorytab/view/dnd-allstars/1-2-pass-it---dj-premier-remix#instrumental"
+        ]
+      }
+    },
+    {
+      "id": "miles-davis__blue-in-green/Intro/11",
+      "category": "reviewed-applied-annotation-scope",
+      "original": {
+        "truthRoman": "V+7(#5#9)/v(maj)"
+      },
+      "corrected": {
+        "truthRoman": "V+7(#5#9)(maj)/v"
+      },
+      "reason": "Legacy SVG extraction appended parentheses after the applied denominator. Preserve the exact original glyph multiset, restoring only scope: chord additions/omissions/alterations belong to the numerator; implicit minor-home maj belongs to the numerator; an explicit borrowed-major target retains its separate denominator maj. Live A-minor Summertime confirms numerator maj on V, V7 and vii°; live DND confirms separate numerator and denominator maj when both apply. This is a case-specific reviewed correction, not global slash normalization.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/miles-davis/blue-in-green",
+        "key": {
+          "tonic": "D",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 5,
+          "type": 7,
+          "inversion": 0,
+          "applied": 5,
+          "adds": [],
+          "omits": [],
+          "alterations": [
+            "#5",
+            "#9"
+          ],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveSources": [
+          "https://www.hooktheory.com/theorytab/view/george-gershwin/summertime#chorus",
+          "https://www.hooktheory.com/theorytab/view/dnd-allstars/1-2-pass-it---dj-premier-remix#instrumental"
+        ]
+      }
+    },
+    {
+      "id": "alicia-keys__3-hour-drive-ft-sampha/Verse and Pre-Chorus/13",
+      "category": "reviewed-applied-annotation-scope",
+      "original": {
+        "truthRoman": "V/III(maj)(add6)"
+      },
+      "corrected": {
+        "truthRoman": "V(add6)(maj)/III"
+      },
+      "reason": "Legacy SVG extraction appended parentheses after the applied denominator. Preserve the exact original glyph multiset, restoring only scope: chord additions/omissions/alterations belong to the numerator; implicit minor-home maj belongs to the numerator; an explicit borrowed-major target retains its separate denominator maj. Live A-minor Summertime confirms numerator maj on V, V7 and vii°; live DND confirms separate numerator and denominator maj when both apply. This is a case-specific reviewed correction, not global slash normalization.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/alicia-keys/3-hour-drive-ft-sampha",
+        "key": {
+          "tonic": "C",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 3,
+          "type": 5,
+          "inversion": 0,
+          "applied": 5,
+          "adds": [
+            6
+          ],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveSources": [
+          "https://www.hooktheory.com/theorytab/view/george-gershwin/summertime#chorus",
+          "https://www.hooktheory.com/theorytab/view/dnd-allstars/1-2-pass-it---dj-premier-remix#instrumental"
+        ]
+      }
+    },
+    {
+      "id": "pink-floyd__money/Chorus/8",
+      "category": "reviewed-applied-annotation-scope",
+      "original": {
+        "truthRoman": "vii/V(maj)(#5)(maj)"
+      },
+      "corrected": {
+        "truthRoman": "vii(#5)(maj)/V(maj)"
+      },
+      "reason": "Legacy SVG extraction appended parentheses after the applied denominator. Preserve the exact original glyph multiset, restoring only scope: chord additions/omissions/alterations belong to the numerator; implicit minor-home maj belongs to the numerator; an explicit borrowed-major target retains its separate denominator maj. Live A-minor Summertime confirms numerator maj on V, V7 and vii°; live DND confirms separate numerator and denominator maj when both apply. This is a case-specific reviewed correction, not global slash normalization.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/pink-floyd/money",
+        "key": {
+          "tonic": "B",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 5,
+          "type": 5,
+          "inversion": 0,
+          "applied": 7,
+          "adds": [],
+          "omits": [],
+          "alterations": [
+            "#5"
+          ],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "major",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveSources": [
+          "https://www.hooktheory.com/theorytab/view/george-gershwin/summertime#chorus",
+          "https://www.hooktheory.com/theorytab/view/dnd-allstars/1-2-pass-it---dj-premier-remix#instrumental"
+        ]
+      }
+    },
+    {
+      "id": "duke-ellington__in-a-sentimental-mood/Verse/27",
+      "category": "reviewed-applied-annotation-scope",
+      "original": {
+        "truthRoman": "V7/#vi(maj)(maj)"
+      },
+      "corrected": {
+        "truthRoman": "V7(maj)/#vi(maj)"
+      },
+      "reason": "Legacy SVG extraction appended parentheses after the applied denominator. Preserve the exact original glyph multiset, restoring only scope: chord additions/omissions/alterations belong to the numerator; implicit minor-home maj belongs to the numerator; an explicit borrowed-major target retains its separate denominator maj. Live A-minor Summertime confirms numerator maj on V, V7 and vii°; live DND confirms separate numerator and denominator maj when both apply. This is a case-specific reviewed correction, not global slash normalization.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/duke-ellington/in-a-sentimental-mood",
+        "key": {
+          "tonic": "Bb",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 6,
+          "type": 7,
+          "inversion": 0,
+          "applied": 5,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "major",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveSources": [
+          "https://www.hooktheory.com/theorytab/view/george-gershwin/summertime#chorus",
+          "https://www.hooktheory.com/theorytab/view/dnd-allstars/1-2-pass-it---dj-premier-remix#instrumental"
+        ]
+      }
+    },
+    {
+      "id": "green-day__boulevard-of-broken-dreams/Outro/11",
+      "category": "reviewed-applied-annotation-scope",
+      "original": {
+        "truthRoman": "V/#iii(maj)(maj)"
+      },
+      "corrected": {
+        "truthRoman": "V(maj)/#iii(maj)"
+      },
+      "reason": "Legacy SVG extraction appended parentheses after the applied denominator. Preserve the exact original glyph multiset, restoring only scope: chord additions/omissions/alterations belong to the numerator; implicit minor-home maj belongs to the numerator; an explicit borrowed-major target retains its separate denominator maj. Live A-minor Summertime confirms numerator maj on V, V7 and vii°; live DND confirms separate numerator and denominator maj when both apply. This is a case-specific reviewed correction, not global slash normalization.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/green-day/boulevard-of-broken-dreams",
+        "key": {
+          "tonic": "F",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 3,
+          "type": 5,
+          "inversion": 0,
+          "applied": 5,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "major",
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveSources": [
+          "https://www.hooktheory.com/theorytab/view/george-gershwin/summertime#chorus",
+          "https://www.hooktheory.com/theorytab/view/dnd-allstars/1-2-pass-it---dj-premier-remix#instrumental"
+        ]
+      }
+    },
+    {
+      "id": "mika__jai-pas-envie/Bridge/30",
+      "category": "reviewed-applied-annotation-scope",
+      "original": {
+        "truthRoman": "V/vi(no5no3)"
+      },
+      "corrected": {
+        "truthRoman": "V(no5no3)/vi"
+      },
+      "reason": "Legacy SVG extraction appended parentheses after the applied denominator. Preserve the exact original glyph multiset, restoring only scope: chord additions/omissions/alterations belong to the numerator; implicit minor-home maj belongs to the numerator; an explicit borrowed-major target retains its separate denominator maj. Live A-minor Summertime confirms numerator maj on V, V7 and vii°; live DND confirms separate numerator and denominator maj when both apply. This is a case-specific reviewed correction, not global slash normalization.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/mika/jai-pas-envie",
+        "key": {
+          "tonic": "C",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 6,
+          "type": 5,
+          "inversion": 0,
+          "applied": 5,
+          "adds": [],
+          "omits": [
+            5,
+            3
+          ],
+          "alterations": [],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "reviewedAt": "2026-09-08",
+        "representativeLiveSources": [
+          "https://www.hooktheory.com/theorytab/view/george-gershwin/summertime#chorus",
+          "https://www.hooktheory.com/theorytab/view/dnd-allstars/1-2-pass-it---dj-premier-remix#instrumental"
+        ]
+      }
+    },
+    {
+      "id": "stevie-wonder__isnt-she-lovely/Intro/25",
+      "category": "live-corroborated-dominant-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          1,
+          3,
+          4,
+          6,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          1,
+          4,
+          9,
+          11
+        ]
+      },
+      "reason": "Rendered upper-structure slash letter names the source dominant-eleventh voicing. Live G-major ACNH tritone-substitution Eb/F and D-harmonic-minor Amy V11 independently confirm four tones: root, seventh, ninth and eleventh, omitting structural third and fifth. The original inferred pitch list expanded the numeral into a dense six-note eleventh. Restore the source voicing from the independently captured letter names; pitches are not copied from an app interpreter.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/stevie-wonder/isnt-she-lovely",
+        "key": {
+          "tonic": "E",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 5,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthRoman": "V11",
+        "truthLetter": "A/B",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/12.5",
+          "amy-winehouse__back-to-black/Instrumental/16.5"
+        ]
+      }
+    },
+    {
+      "id": "john-coltrane__giant-steps/Solo 1/251",
+      "category": "live-corroborated-dominant-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          0,
+          2,
+          3,
+          5,
+          8,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          3,
+          8,
+          10
+        ]
+      },
+      "reason": "Rendered upper-structure slash letter names the source dominant-eleventh voicing. Live G-major ACNH tritone-substitution Eb/F and D-harmonic-minor Amy V11 independently confirm four tones: root, seventh, ninth and eleventh, omitting structural third and fifth. The original inferred pitch list expanded the numeral into a dense six-note eleventh. Restore the source voicing from the independently captured letter names; pitches are not copied from an app interpreter.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/john-coltrane/giant-steps",
+        "key": {
+          "tonic": "Eb",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 5,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthRoman": "V11",
+        "truthLetter": "Ab/Bb",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/12.5",
+          "amy-winehouse__back-to-black/Instrumental/16.5"
+        ]
+      }
+    },
+    {
+      "id": "kazumi-totaka__5pm---animal-crossing-new-horizons/Intro and Verse/5",
+      "category": "live-corroborated-dominant-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          2,
+          4,
+          6,
+          8,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          4,
+          6,
+          9
+        ]
+      },
+      "reason": "Rendered upper-structure slash letter names the source dominant-eleventh voicing. Live G-major ACNH tritone-substitution Eb/F and D-harmonic-minor Amy V11 independently confirm four tones: root, seventh, ninth and eleventh, omitting structural third and fifth. The original inferred pitch list expanded the numeral into a dense six-note eleventh. Restore the source voicing from the independently captured letter names; pitches are not copied from an app interpreter.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/kazumi-totaka/5pm---animal-crossing-new-horizons",
+        "key": {
+          "tonic": "A",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 5,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthRoman": "V11",
+        "truthLetter": "D/E",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/12.5",
+          "amy-winehouse__back-to-black/Instrumental/16.5"
+        ]
+      }
+    },
+    {
+      "id": "amy-winehouse__back-to-black/Instrumental/16.5",
+      "category": "live-corroborated-dominant-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          1,
+          2,
+          4,
+          7,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          7,
+          9,
+          10
+        ]
+      },
+      "reason": "Live matching D-harmonic-minor V11/G/A, Show Chords keyboard: A2 Bb3 D4 G4. Structural third and fifth are omitted; the harmonic-minor ninth remains Bb. Hooktheory still displays the upper-structure label G/A even though its keyboard contains Bb. Preserve those separate observed display/playback channels.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/amy-winehouse/back-to-black",
+        "key": {
+          "tonic": "D",
+          "scale": "harmonicMinor"
+        },
+        "chord": {
+          "root": 5,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthRoman": "V11",
+        "truthLetter": "G/A",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/12.5",
+          "amy-winehouse__back-to-black/Instrumental/16.5"
+        ]
+      }
+    },
+    {
+      "id": "coldplay__everythings-not-lost/Verse/25",
+      "category": "live-corroborated-dominant-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          1,
+          3,
+          4,
+          6,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          1,
+          4,
+          9,
+          11
+        ]
+      },
+      "reason": "Rendered upper-structure slash letter names the source dominant-eleventh voicing. Live G-major ACNH tritone-substitution Eb/F and D-harmonic-minor Amy V11 independently confirm four tones: root, seventh, ninth and eleventh, omitting structural third and fifth. The original inferred pitch list expanded the numeral into a dense six-note eleventh. Restore the source voicing from the independently captured letter names; pitches are not copied from an app interpreter.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/coldplay/everythings-not-lost",
+        "key": {
+          "tonic": "E",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 5,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "truthRoman": "V11",
+        "truthLetter": "A/B",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/12.5",
+          "amy-winehouse__back-to-black/Instrumental/16.5"
+        ]
+      }
+    },
+    {
+      "id": "dnd-allstars__1-2-pass-it---dj-premier-remix/Instrumental/7.5",
+      "category": "live-corroborated-dominant-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          1,
+          3,
+          5,
+          7,
+          8,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          1,
+          3,
+          5,
+          8
+        ]
+      },
+      "reason": "Rendered upper-structure slash letter names the source dominant-eleventh voicing. Live G-major ACNH tritone-substitution Eb/F and D-harmonic-minor Amy V11 independently confirm four tones: root, seventh, ninth and eleventh, omitting structural third and fifth. The original inferred pitch list expanded the numeral into a dense six-note eleventh. Restore the source voicing from the independently captured letter names; pitches are not copied from an app interpreter.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/dnd-allstars/1-2-pass-it---dj-premier-remix",
+        "key": {
+          "tonic": "G#",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 1,
+          "type": 11,
+          "inversion": 0,
+          "applied": 5,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthRoman": "V11/i(maj)",
+        "truthLetter": "C#/D#",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/12.5",
+          "amy-winehouse__back-to-black/Instrumental/16.5"
+        ]
+      }
+    },
+    {
+      "id": "hiroko-moriguchi__zeta-gundam---mizu-no-hoshi-e-ai-wo-komete/Chorus/40.5",
+      "category": "live-corroborated-dominant-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          1,
+          3,
+          4,
+          6,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          1,
+          4,
+          9,
+          11
+        ]
+      },
+      "reason": "Rendered upper-structure slash letter names the source dominant-eleventh voicing. Live G-major ACNH tritone-substitution Eb/F and D-harmonic-minor Amy V11 independently confirm four tones: root, seventh, ninth and eleventh, omitting structural third and fifth. The original inferred pitch list expanded the numeral into a dense six-note eleventh. Restore the source voicing from the independently captured letter names; pitches are not copied from an app interpreter.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/hiroko-moriguchi/zeta-gundam---mizu-no-hoshi-e-ai-wo-komete",
+        "key": {
+          "tonic": "E",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 5,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "major",
+          "isRest": false
+        },
+        "truthRoman": "V11(maj)",
+        "truthLetter": "A/B",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/12.5",
+          "amy-winehouse__back-to-black/Instrumental/16.5"
+        ]
+      }
+    },
+    {
+      "id": "kazumi-totaka__5pm---animal-crossing-new-horizons/Chorus/45",
+      "category": "live-corroborated-dominant-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          1,
+          4,
+          6,
+          8,
+          10,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          4,
+          6,
+          8,
+          11
+        ]
+      },
+      "reason": "Rendered upper-structure slash letter names the source dominant-eleventh voicing. Live G-major ACNH tritone-substitution Eb/F and D-harmonic-minor Amy V11 independently confirm four tones: root, seventh, ninth and eleventh, omitting structural third and fifth. The original inferred pitch list expanded the numeral into a dense six-note eleventh. Restore the source voicing from the independently captured letter names; pitches are not copied from an app interpreter.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/kazumi-totaka/5pm---animal-crossing-new-horizons",
+        "key": {
+          "tonic": "A",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 2,
+          "type": 11,
+          "inversion": 0,
+          "applied": 5,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthRoman": "V11/ii",
+        "truthLetter": "E/F#",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/12.5",
+          "amy-winehouse__back-to-black/Instrumental/16.5"
+        ]
+      }
+    },
+    {
+      "id": "kazumi-totaka__5pm---animal-crossing-new-horizons/Chorus/5",
+      "category": "live-corroborated-dominant-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          1,
+          4,
+          6,
+          8,
+          10,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          4,
+          6,
+          8,
+          11
+        ]
+      },
+      "reason": "Rendered upper-structure slash letter names the source dominant-eleventh voicing. Live G-major ACNH tritone-substitution Eb/F and D-harmonic-minor Amy V11 independently confirm four tones: root, seventh, ninth and eleventh, omitting structural third and fifth. The original inferred pitch list expanded the numeral into a dense six-note eleventh. Restore the source voicing from the independently captured letter names; pitches are not copied from an app interpreter.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/kazumi-totaka/5pm---animal-crossing-new-horizons",
+        "key": {
+          "tonic": "B",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 5,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthRoman": "V11",
+        "truthLetter": "E/F#",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/12.5",
+          "amy-winehouse__back-to-black/Instrumental/16.5"
+        ]
+      }
+    },
+    {
+      "id": "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/12.5",
+      "category": "live-corroborated-dominant-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          1,
+          3,
+          4,
+          6,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          3,
+          5,
+          7,
+          10
+        ]
+      },
+      "reason": "Rendered upper-structure slash letter names the source dominant-eleventh voicing. Live G-major ACNH tritone-substitution Eb/F and D-harmonic-minor Amy V11 independently confirm four tones: root, seventh, ninth and eleventh, omitting structural third and fifth. The original inferred pitch list expanded the numeral into a dense six-note eleventh. Restore the source voicing from the independently captured letter names; pitches are not copied from an app interpreter.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/kazumi-totaka/9am---animal-crossing-new-horizons",
+        "key": {
+          "tonic": "G",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 6,
+          "type": 11,
+          "inversion": 0,
+          "applied": 5,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [
+            "tri"
+          ],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthRoman": "bII11/vi(∆-sub)",
+        "truthLetter": "Eb/F",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/12.5",
+          "amy-winehouse__back-to-black/Instrumental/16.5"
+        ]
+      }
+    },
+    {
+      "id": "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/14.5",
+      "category": "live-corroborated-dominant-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          2,
+          4,
+          6,
+          8,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          4,
+          6,
+          9
+        ]
+      },
+      "reason": "Rendered upper-structure slash letter names the source dominant-eleventh voicing. Live G-major ACNH tritone-substitution Eb/F and D-harmonic-minor Amy V11 independently confirm four tones: root, seventh, ninth and eleventh, omitting structural third and fifth. The original inferred pitch list expanded the numeral into a dense six-note eleventh. Restore the source voicing from the independently captured letter names; pitches are not copied from an app interpreter.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/kazumi-totaka/9am---animal-crossing-new-horizons",
+        "key": {
+          "tonic": "G",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 2,
+          "type": 11,
+          "inversion": 0,
+          "applied": 5,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthRoman": "V11/ii",
+        "truthLetter": "D/E",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/12.5",
+          "amy-winehouse__back-to-black/Instrumental/16.5"
+        ]
+      }
+    },
+    {
+      "id": "kazumi-totaka__kaeru-no-tame-ni---the-princes-adventure/Chorus/25",
+      "category": "live-corroborated-dominant-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          0,
+          2,
+          4,
+          6,
+          7,
+          9
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          2,
+          4,
+          7
+        ]
+      },
+      "reason": "Rendered upper-structure slash letter names the source dominant-eleventh voicing. Live G-major ACNH tritone-substitution Eb/F and D-harmonic-minor Amy V11 independently confirm four tones: root, seventh, ninth and eleventh, omitting structural third and fifth. The original inferred pitch list expanded the numeral into a dense six-note eleventh. Restore the source voicing from the independently captured letter names; pitches are not copied from an app interpreter.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/kazumi-totaka/kaeru-no-tame-ni---the-princes-adventure",
+        "key": {
+          "tonic": "G",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 5,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "truthRoman": "V11",
+        "truthLetter": "C/D",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/12.5",
+          "amy-winehouse__back-to-black/Instrumental/16.5"
+        ]
+      }
+    },
+    {
+      "id": "bryan-scary__the-little-engine-who-couldnt-(think-straight)/Verse/45",
+      "category": "live-corroborated-dominant-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          0,
+          2,
+          3,
+          5,
+          8,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          3,
+          8,
+          10
+        ]
+      },
+      "reason": "Rendered upper-structure slash letter names the source dominant-eleventh voicing. Live G-major ACNH tritone-substitution Eb/F and D-harmonic-minor Amy V11 independently confirm four tones: root, seventh, ninth and eleventh, omitting structural third and fifth. The original inferred pitch list expanded the numeral into a dense six-note eleventh. Restore the source voicing from the independently captured letter names; pitches are not copied from an app interpreter.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/bryan-scary/the-little-engine-who-couldnt-(think-straight)",
+        "key": {
+          "tonic": "Eb",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 5,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "truthRoman": "V11",
+        "truthLetter": "Ab/Bb",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/12.5",
+          "amy-winehouse__back-to-black/Instrumental/16.5"
+        ]
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/95",
+      "category": "live-corroborated-dominant-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          0,
+          2,
+          5,
+          7,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          5,
+          7,
+          9
+        ]
+      },
+      "reason": "Rendered upper-structure slash letter names the source dominant-eleventh voicing. Live G-major ACNH tritone-substitution Eb/F and D-harmonic-minor Amy V11 independently confirm four tones: root, seventh, ninth and eleventh, omitting structural third and fifth. The original inferred pitch list expanded the numeral into a dense six-note eleventh. Restore the source voicing from the independently captured letter names; pitches are not copied from an app interpreter.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/gustav-holst/mars---bringer-of-war",
+        "key": {
+          "tonic": "C",
+          "scale": "phrygianDominant"
+        },
+        "chord": {
+          "root": 5,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "major",
+          "isRest": false
+        },
+        "truthRoman": "V11(maj)",
+        "truthLetter": "F/G",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/12.5",
+          "amy-winehouse__back-to-black/Instrumental/16.5"
+        ]
+      }
+    },
+    {
+      "id": "kazumi-totaka__5pm---animal-crossing-new-horizons/Chorus/29",
+      "category": "live-corroborated-dominant-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          1,
+          3,
+          4,
+          6,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          1,
+          4,
+          9,
+          11
+        ]
+      },
+      "reason": "Rendered upper-structure slash letter names the source dominant-eleventh voicing. Live G-major ACNH tritone-substitution Eb/F and D-harmonic-minor Amy V11 independently confirm four tones: root, seventh, ninth and eleventh, omitting structural third and fifth. The original inferred pitch list expanded the numeral into a dense six-note eleventh. Restore the source voicing from the independently captured letter names; pitches are not copied from an app interpreter.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/kazumi-totaka/5pm---animal-crossing-new-horizons",
+        "key": {
+          "tonic": "B",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 4,
+          "type": 11,
+          "inversion": 0,
+          "applied": 5,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthRoman": "V11/IV",
+        "truthLetter": "A/B",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/12.5",
+          "amy-winehouse__back-to-black/Instrumental/16.5"
+        ]
+      }
+    },
+    {
+      "id": "stevie-wonder__sir-duke/Pre-Chorus and Chorus/31",
+      "category": "live-corroborated-dominant-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          1,
+          4,
+          6,
+          8,
+          10,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          4,
+          6,
+          8,
+          11
+        ]
+      },
+      "reason": "Rendered upper-structure slash letter names the source dominant-eleventh voicing. Live G-major ACNH tritone-substitution Eb/F and D-harmonic-minor Amy V11 independently confirm four tones: root, seventh, ninth and eleventh, omitting structural third and fifth. The original inferred pitch list expanded the numeral into a dense six-note eleventh. Restore the source voicing from the independently captured letter names; pitches are not copied from an app interpreter.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/stevie-wonder/sir-duke",
+        "key": {
+          "tonic": "B",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 5,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "truthRoman": "V11",
+        "truthLetter": "E/F#",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/12.5",
+          "amy-winehouse__back-to-black/Instrumental/16.5"
+        ]
+      }
+    },
+    {
+      "id": "the-beatles__penny-lane/Chorus/11.5",
+      "category": "live-corroborated-dominant-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          2,
+          4,
+          6,
+          8,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          4,
+          6,
+          9
+        ]
+      },
+      "reason": "Rendered upper-structure slash letter names the source dominant-eleventh voicing. Live G-major ACNH tritone-substitution Eb/F and D-harmonic-minor Amy V11 independently confirm four tones: root, seventh, ninth and eleventh, omitting structural third and fifth. The original inferred pitch list expanded the numeral into a dense six-note eleventh. Restore the source voicing from the independently captured letter names; pitches are not copied from an app interpreter.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/the-beatles/penny-lane",
+        "key": {
+          "tonic": "A",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 5,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "truthRoman": "V11",
+        "truthLetter": "D/E",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/12.5",
+          "amy-winehouse__back-to-black/Instrumental/16.5"
+        ]
+      }
+    },
+    {
+      "id": "wolfgang-amadeus-mozart__a-little-night-music---1st-movement/Chorus/108",
+      "category": "live-corroborated-dominant-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          1,
+          2,
+          4,
+          7,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          7,
+          9,
+          11
+        ]
+      },
+      "reason": "Rendered upper-structure slash letter names the source dominant-eleventh voicing. Live G-major ACNH tritone-substitution Eb/F and D-harmonic-minor Amy V11 independently confirm four tones: root, seventh, ninth and eleventh, omitting structural third and fifth. The original inferred pitch list expanded the numeral into a dense six-note eleventh. Restore the source voicing from the independently captured letter names; pitches are not copied from an app interpreter.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/wolfgang-amadeus-mozart/a-little-night-music---1st-movement",
+        "key": {
+          "tonic": "D",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 5,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthRoman": "V11",
+        "truthLetter": "G/A",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/12.5",
+          "amy-winehouse__back-to-black/Instrumental/16.5"
+        ]
+      }
+    },
+    {
+      "id": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29/Chorus/13",
+      "category": "live-corroborated-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          2,
+          4,
+          6,
+          8,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          4,
+          6,
+          9
+        ]
+      },
+      "reason": "Live Hooktheory eleventh voicings omit structural third and implicit fifth. This is directly corroborated for major-seventh with altered ninth (Holst Pre-Chorus/18: C B D# F#), custom diminished (Holst Pre-Chorus/39.5: C Db E Bbb), applied tritone substitution, and harmonic-minor dominant. Remove only third/fifth pitches implied by the captured letter quality, retaining captured extensions. Explicit fifth alterations remain outside this verified rule.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/lady-gaga/die-with-a-smile-%28with-bruno-mars%29",
+        "key": {
+          "tonic": "F#",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 7,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthLetter": "E11",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5"
+        ]
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+      "category": "live-corroborated-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          0,
+          3,
+          4,
+          6,
+          7,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          3,
+          6,
+          11
+        ]
+      },
+      "reason": "Live Hooktheory eleventh voicings omit structural third and implicit fifth. This is directly corroborated for major-seventh with altered ninth (Holst Pre-Chorus/18: C B D# F#), custom diminished (Holst Pre-Chorus/39.5: C Db E Bbb), applied tritone substitution, and harmonic-minor dominant. Remove only third/fifth pitches implied by the captured letter quality, retaining captured extensions. Explicit fifth alterations remain outside this verified rule.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/gustav-holst/mars---bringer-of-war",
+        "key": {
+          "tonic": "C",
+          "scale": "phrygianDominant"
+        },
+        "chord": {
+          "root": 1,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [
+            "#9"
+          ],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "lydian",
+          "isRest": false
+        },
+        "truthLetter": "Cmaj7(#9#11)",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5"
+        ]
+      }
+    },
+    {
+      "id": "amy-winehouse__back-to-black/Verse/16.5",
+      "category": "live-corroborated-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          0,
+          2,
+          4,
+          7,
+          9,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          7,
+          9,
+          10
+        ]
+      },
+      "reason": "Live Hooktheory eleventh voicings omit structural third and implicit fifth. This is directly corroborated for major-seventh with altered ninth (Holst Pre-Chorus/18: C B D# F#), custom diminished (Holst Pre-Chorus/39.5: C Db E Bbb), applied tritone substitution, and harmonic-minor dominant. Remove only third/fifth pitches implied by the captured letter quality, retaining captured extensions. Explicit fifth alterations remain outside this verified rule.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/amy-winehouse/back-to-black",
+        "key": {
+          "tonic": "D",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 5,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthLetter": "am11(b9)",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5"
+        ]
+      }
+    },
+    {
+      "id": "the-beatles__penny-lane/Chorus/3.5",
+      "category": "live-corroborated-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          1,
+          2,
+          4,
+          6,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          1,
+          4,
+          9,
+          11
+        ]
+      },
+      "reason": "Live Hooktheory eleventh voicings omit structural third and implicit fifth. This is directly corroborated for major-seventh with altered ninth (Holst Pre-Chorus/18: C B D# F#), custom diminished (Holst Pre-Chorus/39.5: C Db E Bbb), applied tritone substitution, and harmonic-minor dominant. Remove only third/fifth pitches implied by the captured letter quality, retaining captured extensions. Explicit fifth alterations remain outside this verified rule.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/the-beatles/penny-lane",
+        "key": {
+          "tonic": "A",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 2,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "truthLetter": "bm11",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5"
+        ]
+      }
+    },
+    {
+      "id": "hertzdevil__stage-64/Instrumental/6.5",
+      "category": "live-corroborated-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          1,
+          3,
+          5,
+          8,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          1,
+          3,
+          5,
+          8
+        ]
+      },
+      "reason": "Live Hooktheory eleventh voicings omit structural third and implicit fifth. This is directly corroborated for major-seventh with altered ninth (Holst Pre-Chorus/18: C B D# F#), custom diminished (Holst Pre-Chorus/39.5: C Db E Bbb), applied tritone substitution, and harmonic-minor dominant. Remove only third/fifth pitches implied by the captured letter quality, retaining captured extensions. Explicit fifth alterations remain outside this verified rule.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/hertzdevil/stage-64",
+        "key": {
+          "tonic": "D#",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 1,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [
+            3
+          ],
+          "alterations": [],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "truthLetter": "d#m11(n°3)",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5"
+        ]
+      }
+    },
+    {
+      "id": "djvi__xstep---from-geometry-dash/Pre-Chorus and Chorus/25",
+      "category": "live-corroborated-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          0,
+          2,
+          4,
+          7,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          7,
+          9,
+          11
+        ]
+      },
+      "reason": "Live Hooktheory eleventh voicings omit structural third and implicit fifth. This is directly corroborated for major-seventh with altered ninth (Holst Pre-Chorus/18: C B D# F#), custom diminished (Holst Pre-Chorus/39.5: C Db E Bbb), applied tritone substitution, and harmonic-minor dominant. Remove only third/fifth pitches implied by the captured letter quality, retaining captured extensions. Explicit fifth alterations remain outside this verified rule.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/djvi/xstep---from-geometry-dash",
+        "key": {
+          "tonic": "A",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 1,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthLetter": "am11",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5"
+        ]
+      }
+    },
+    {
+      "id": "dnd-allstars__1-2-pass-it---dj-premier-remix/Instrumental/3",
+      "category": "live-corroborated-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          1,
+          4,
+          6,
+          8,
+          10,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          4,
+          6,
+          8,
+          11
+        ]
+      },
+      "reason": "Live Hooktheory eleventh voicings omit structural third and implicit fifth. This is directly corroborated for major-seventh with altered ninth (Holst Pre-Chorus/18: C B D# F#), custom diminished (Holst Pre-Chorus/39.5: C Db E Bbb), applied tritone substitution, and harmonic-minor dominant. Remove only third/fifth pitches implied by the captured letter quality, retaining captured extensions. Explicit fifth alterations remain outside this verified rule.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/dnd-allstars/1-2-pass-it---dj-premier-remix",
+        "key": {
+          "tonic": "G#",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 7,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthLetter": "F#11",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5"
+        ]
+      }
+    },
+    {
+      "id": "hiroko-moriguchi__zeta-gundam---mizu-no-hoshi-e-ai-wo-komete/Chorus/38.5",
+      "category": "live-corroborated-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          2,
+          4,
+          6,
+          7,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          4,
+          6,
+          9
+        ]
+      },
+      "reason": "Live Hooktheory eleventh voicings omit structural third and implicit fifth. This is directly corroborated for major-seventh with altered ninth (Holst Pre-Chorus/18: C B D# F#), custom diminished (Holst Pre-Chorus/39.5: C Db E Bbb), applied tritone substitution, and harmonic-minor dominant. Remove only third/fifth pitches implied by the captured letter quality, retaining captured extensions. Explicit fifth alterations remain outside this verified rule.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/hiroko-moriguchi/zeta-gundam---mizu-no-hoshi-e-ai-wo-komete",
+        "key": {
+          "tonic": "E",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 1,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "truthLetter": "em11",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5"
+        ]
+      }
+    },
+    {
+      "id": "hiroko-moriguchi__zeta-gundam---mizu-no-hoshi-e-ai-wo-komete/Chorus/42.5",
+      "category": "live-corroborated-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          0,
+          2,
+          4,
+          6,
+          7,
+          9
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          2,
+          4,
+          7
+        ]
+      },
+      "reason": "Live Hooktheory eleventh voicings omit structural third and implicit fifth. This is directly corroborated for major-seventh with altered ninth (Holst Pre-Chorus/18: C B D# F#), custom diminished (Holst Pre-Chorus/39.5: C Db E Bbb), applied tritone substitution, and harmonic-minor dominant. Remove only third/fifth pitches implied by the captured letter quality, retaining captured extensions. Explicit fifth alterations remain outside this verified rule.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/hiroko-moriguchi/zeta-gundam---mizu-no-hoshi-e-ai-wo-komete",
+        "key": {
+          "tonic": "E",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 7,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "truthLetter": "D11",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5"
+        ]
+      }
+    },
+    {
+      "id": "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/26.5",
+      "category": "live-corroborated-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          0,
+          3,
+          5,
+          7,
+          9,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          3,
+          5,
+          7,
+          10
+        ]
+      },
+      "reason": "Live Hooktheory eleventh voicings omit structural third and implicit fifth. This is directly corroborated for major-seventh with altered ninth (Holst Pre-Chorus/18: C B D# F#), custom diminished (Holst Pre-Chorus/39.5: C Db E Bbb), applied tritone substitution, and harmonic-minor dominant. Remove only third/fifth pitches implied by the captured letter quality, retaining captured extensions. Explicit fifth alterations remain outside this verified rule.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/kazumi-totaka/9am---animal-crossing-new-horizons",
+        "key": {
+          "tonic": "G",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 7,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "minor",
+          "isRest": false
+        },
+        "truthLetter": "F11",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5"
+        ]
+      }
+    },
+    {
+      "id": "frank-sinatra__fly-me-to-the-moon/Verse/54.5",
+      "category": "live-corroborated-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          0,
+          2,
+          5,
+          7,
+          8,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          5,
+          7,
+          8
+        ]
+      },
+      "reason": "Live Hooktheory eleventh voicings omit structural third and implicit fifth. This is directly corroborated for major-seventh with altered ninth (Holst Pre-Chorus/18: C B D# F#), custom diminished (Holst Pre-Chorus/39.5: C Db E Bbb), applied tritone substitution, and harmonic-minor dominant. Remove only third/fifth pitches implied by the captured letter quality, retaining captured extensions. Explicit fifth alterations remain outside this verified rule.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/frank-sinatra/fly-me-to-the-moon",
+        "key": {
+          "tonic": "C",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 5,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [
+            "b9"
+          ],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "mixolydian",
+          "isRest": false
+        },
+        "truthLetter": "gm11(b9)",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5"
+        ]
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/105",
+      "category": "live-corroborated-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          0,
+          2,
+          4,
+          7,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          7,
+          9,
+          11
+        ]
+      },
+      "reason": "Live Hooktheory eleventh voicings omit structural third and implicit fifth. This is directly corroborated for major-seventh with altered ninth (Holst Pre-Chorus/18: C B D# F#), custom diminished (Holst Pre-Chorus/39.5: C Db E Bbb), applied tritone substitution, and harmonic-minor dominant. Remove only third/fifth pitches implied by the captured letter quality, retaining captured extensions. Explicit fifth alterations remain outside this verified rule.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/gustav-holst/mars---bringer-of-war",
+        "key": {
+          "tonic": "C",
+          "scale": "phrygianDominant"
+        },
+        "chord": {
+          "root": 6,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "major",
+          "isRest": false
+        },
+        "truthLetter": "am11",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5"
+        ]
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/127",
+      "category": "live-corroborated-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          0,
+          1,
+          4,
+          5,
+          7,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          1,
+          5,
+          10
+        ]
+      },
+      "reason": "Live Hooktheory eleventh voicings omit structural third and implicit fifth. This is directly corroborated for major-seventh with altered ninth (Holst Pre-Chorus/18: C B D# F#), custom diminished (Holst Pre-Chorus/39.5: C Db E Bbb), applied tritone substitution, and harmonic-minor dominant. Remove only third/fifth pitches implied by the captured letter quality, retaining captured extensions. Explicit fifth alterations remain outside this verified rule.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/gustav-holst/mars---bringer-of-war",
+        "key": {
+          "tonic": "C",
+          "scale": "phrygianDominant"
+        },
+        "chord": {
+          "root": 1,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthLetter": "C11(b9)",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5"
+        ]
+      }
+    },
+    {
+      "id": "ludwig-van-beethoven__joyful-joyful-we-adore-thee/Verse/3",
+      "category": "live-corroborated-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          0,
+          4,
+          5,
+          7,
+          9,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          4,
+          5,
+          7,
+          10
+        ]
+      },
+      "reason": "Live Hooktheory eleventh voicings omit structural third and implicit fifth. This is directly corroborated for major-seventh with altered ninth (Holst Pre-Chorus/18: C B D# F#), custom diminished (Holst Pre-Chorus/39.5: C Db E Bbb), applied tritone substitution, and harmonic-minor dominant. Remove only third/fifth pitches implied by the captured letter quality, retaining captured extensions. Explicit fifth alterations remain outside this verified rule.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/ludwig-van-beethoven/joyful-joyful-we-adore-thee",
+        "key": {
+          "tonic": "F",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 1,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthLetter": "Fmaj11",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5"
+        ]
+      }
+    },
+    {
+      "id": "mitsuo-hagita__gundam-0083---der-solomoner-boser-traum/Instrumental/117",
+      "category": "live-corroborated-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          1,
+          4,
+          6,
+          8,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          4,
+          6,
+          8,
+          11
+        ]
+      },
+      "reason": "Live Hooktheory eleventh voicings omit structural third and implicit fifth. This is directly corroborated for major-seventh with altered ninth (Holst Pre-Chorus/18: C B D# F#), custom diminished (Holst Pre-Chorus/39.5: C Db E Bbb), applied tritone substitution, and harmonic-minor dominant. Remove only third/fifth pitches implied by the captured letter quality, retaining captured extensions. Explicit fifth alterations remain outside this verified rule.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/mitsuo-hagita/gundam-0083---der-solomoner-boser-traum",
+        "key": {
+          "tonic": "F#",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 1,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthLetter": "f#m11",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5"
+        ]
+      }
+    },
+    {
+      "id": "mitsuo-hagita__gundam-0083---der-solomoner-boser-traum/Instrumental/93",
+      "category": "live-corroborated-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          2,
+          4,
+          6,
+          7,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          4,
+          6,
+          9
+        ]
+      },
+      "reason": "Live Hooktheory eleventh voicings omit structural third and implicit fifth. This is directly corroborated for major-seventh with altered ninth (Holst Pre-Chorus/18: C B D# F#), custom diminished (Holst Pre-Chorus/39.5: C Db E Bbb), applied tritone substitution, and harmonic-minor dominant. Remove only third/fifth pitches implied by the captured letter quality, retaining captured extensions. Explicit fifth alterations remain outside this verified rule.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/mitsuo-hagita/gundam-0083---der-solomoner-boser-traum",
+        "key": {
+          "tonic": "E",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 1,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthLetter": "em11",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5"
+        ]
+      }
+    },
+    {
+      "id": "the-beatles__something/Bridge/32.5",
+      "category": "live-corroborated-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          0,
+          2,
+          4,
+          5,
+          7,
+          9
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          2,
+          4,
+          7
+        ]
+      },
+      "reason": "Live Hooktheory eleventh voicings omit structural third and implicit fifth. This is directly corroborated for major-seventh with altered ninth (Holst Pre-Chorus/18: C B D# F#), custom diminished (Holst Pre-Chorus/39.5: C Db E Bbb), applied tritone substitution, and harmonic-minor dominant. Remove only third/fifth pitches implied by the captured letter quality, retaining captured extensions. Explicit fifth alterations remain outside this verified rule.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/the-beatles/something",
+        "key": {
+          "tonic": "C",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 2,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthLetter": "dm11",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5"
+        ]
+      }
+    },
+    {
+      "id": "the-beatles__while-my-guitar-gently-weeps/Chorus/27",
+      "category": "live-corroborated-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          1,
+          4,
+          6,
+          8,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          4,
+          6,
+          8,
+          11
+        ]
+      },
+      "reason": "Live Hooktheory eleventh voicings omit structural third and implicit fifth. This is directly corroborated for major-seventh with altered ninth (Holst Pre-Chorus/18: C B D# F#), custom diminished (Holst Pre-Chorus/39.5: C Db E Bbb), applied tritone substitution, and harmonic-minor dominant. Remove only third/fifth pitches implied by the captured letter quality, retaining captured extensions. Explicit fifth alterations remain outside this verified rule.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/the-beatles/while-my-guitar-gently-weeps",
+        "key": {
+          "tonic": "A",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 6,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthLetter": "f#m11",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5"
+        ]
+      }
+    },
+    {
+      "id": "adele__set-fire-to-the-rain/Outro/18.5",
+      "category": "live-corroborated-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          0,
+          2,
+          4,
+          7,
+          9
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          2,
+          4,
+          7
+        ]
+      },
+      "reason": "Live Hooktheory eleventh voicings omit structural third and implicit fifth. This is directly corroborated for major-seventh with altered ninth (Holst Pre-Chorus/18: C B D# F#), custom diminished (Holst Pre-Chorus/39.5: C Db E Bbb), applied tritone substitution, and harmonic-minor dominant. Remove only third/fifth pitches implied by the captured letter quality, retaining captured extensions. Explicit fifth alterations remain outside this verified rule.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/adele/set-fire-to-the-rain",
+        "key": {
+          "tonic": "D",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 1,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [
+            3
+          ],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthLetter": "dm11(n°3)",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5"
+        ]
+      }
+    },
+    {
+      "id": "bruce-springsteen__born-to-run/Pre-Chorus/22",
+      "category": "live-corroborated-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          2,
+          4,
+          6,
+          8,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          4,
+          6,
+          9
+        ]
+      },
+      "reason": "Live Hooktheory eleventh voicings omit structural third and implicit fifth. This is directly corroborated for major-seventh with altered ninth (Holst Pre-Chorus/18: C B D# F#), custom diminished (Holst Pre-Chorus/39.5: C Db E Bbb), applied tritone substitution, and harmonic-minor dominant. Remove only third/fifth pitches implied by the captured letter quality, retaining captured extensions. Explicit fifth alterations remain outside this verified rule.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/bruce-springsteen/born-to-run",
+        "key": {
+          "tonic": "E",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 1,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "mixolydian",
+          "isRest": false
+        },
+        "truthLetter": "E11",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5"
+        ]
+      }
+    },
+    {
+      "id": "whitney-houston__i-will-always-love-you/Chorus/24",
+      "category": "live-corroborated-eleventh-voicing",
+      "original": {
+        "truthPcs": [
+          1,
+          2,
+          4,
+          7,
+          9,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          7,
+          9,
+          11
+        ]
+      },
+      "reason": "Live Hooktheory eleventh voicings omit structural third and implicit fifth. This is directly corroborated for major-seventh with altered ninth (Holst Pre-Chorus/18: C B D# F#), custom diminished (Holst Pre-Chorus/39.5: C Db E Bbb), applied tritone substitution, and harmonic-minor dominant. Remove only third/fifth pitches implied by the captured letter quality, retaining captured extensions. Explicit fifth alterations remain outside this verified rule.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/whitney-houston/i-will-always-love-you",
+        "key": {
+          "tonic": "A",
+          "scale": "major"
+        },
+        "chord": {
+          "root": 1,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "mixolydian",
+          "isRest": false
+        },
+        "truthLetter": "A11",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveIds": [
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+          "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5"
+        ]
+      }
+    },
+    {
+      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/129",
+      "category": "live-keyboard-voicing",
+      "original": {
+        "truthPcs": [
+          0,
+          2,
+          4,
+          9
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          1,
+          4,
+          8
+        ]
+      },
+      "reason": "Live matching C-phrygian-dominant II42sus2, Db7sus#2/C: Show Chords keyboard C3 Db4 E4 Ab4. Both the suspension and seventh follow the source scale. Original pitch inference transposed the root and decoded this voicing incorrectly.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/gustav-holst/mars---bringer-of-war#pre-chorus",
+        "key": {
+          "tonic": "C",
+          "scale": "phrygianDominant"
+        },
+        "chord": {
+          "root": 2,
+          "type": 7,
+          "inversion": 3,
+          "applied": 0,
+          "adds": [],
+          "omits": [],
+          "alterations": [],
+          "suspensions": [
+            2
+          ],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthLetter": "Db7sus#2/C",
+        "reviewedAt": "2026-09-08"
+      }
+    },
+    {
+      "id": "rem__losing-my-religion/Intro/15",
+      "category": "live-corroborated-half-diminished-eleventh",
+      "original": {
+        "truthPcs": [
+          0,
+          5,
+          8,
+          11
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          0,
+          4,
+          9,
+          11
+        ]
+      },
+      "reason": "Live REM Intro/15, A minor, iiø11(no3no5), bm11(no3no5)(b5b9), Show Chords keyboard B2 C4 E4 A4. The four roles are root, minor seventh, flat ninth and natural eleventh; original symbol inference used a diminished seventh and raised eleventh. The corresponding E-root D-minor Adele cases use the identical chord fields and scale-degree pattern transposed: E D F A. Preserve the source minor seventh and natural eleventh rather than the incorrect legacy inferred intervals.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/rem/losing-my-religion",
+        "key": {
+          "tonic": "A",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 2,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [
+            3,
+            5
+          ],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "truthRoman": "iiø11(no3no5)",
+        "truthLetter": "bm11(n°3n5)(b5b9)",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveId": "rem__losing-my-religion/Intro/15"
+      }
+    },
+    {
+      "id": "adele__set-fire-to-the-rain/Outro/10.5",
+      "category": "live-corroborated-half-diminished-eleventh",
+      "original": {
+        "truthPcs": [
+          1,
+          4,
+          5,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          4,
+          5,
+          9
+        ]
+      },
+      "reason": "Live REM Intro/15, A minor, iiø11(no3no5), bm11(no3no5)(b5b9), Show Chords keyboard B2 C4 E4 A4. The four roles are root, minor seventh, flat ninth and natural eleventh; original symbol inference used a diminished seventh and raised eleventh. The corresponding E-root D-minor Adele cases use the identical chord fields and scale-degree pattern transposed: E D F A. Preserve the source minor seventh and natural eleventh rather than the incorrect legacy inferred intervals.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/adele/set-fire-to-the-rain",
+        "key": {
+          "tonic": "D",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 2,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [
+            3,
+            5
+          ],
+          "alterations": [],
+          "suspensions": [],
+          "substitutions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": null,
+          "isRest": false
+        },
+        "truthRoman": "iiø11(no3no5)",
+        "truthLetter": "em11(n°3n5)(b5b9)",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveId": "rem__losing-my-religion/Intro/15"
+      }
+    },
+    {
+      "id": "adele__set-fire-to-the-rain/Chorus/6.5",
+      "category": "live-corroborated-half-diminished-eleventh",
+      "original": {
+        "truthPcs": [
+          1,
+          4,
+          5,
+          10
+        ]
+      },
+      "corrected": {
+        "truthPcs": [
+          2,
+          4,
+          5,
+          9
+        ]
+      },
+      "reason": "Live REM Intro/15, A minor, iiø11(no3no5), bm11(no3no5)(b5b9), Show Chords keyboard B2 C4 E4 A4. The four roles are root, minor seventh, flat ninth and natural eleventh; original symbol inference used a diminished seventh and raised eleventh. The corresponding E-root D-minor Adele cases use the identical chord fields and scale-degree pattern transposed: E D F A. Preserve the source minor seventh and natural eleventh rather than the incorrect legacy inferred intervals.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/adele/set-fire-to-the-rain",
+        "key": {
+          "tonic": "D",
+          "scale": "minor"
+        },
+        "chord": {
+          "root": 2,
+          "type": 11,
+          "inversion": 0,
+          "applied": 0,
+          "adds": [],
+          "omits": [
+            3,
+            5
+          ],
+          "alterations": [],
+          "suspensions": [],
+          "pedal": null,
+          "alternate": "",
+          "borrowed": "",
+          "isRest": false
+        },
+        "truthRoman": "iiø11(no3no5)",
+        "truthLetter": "em11(n°3n5)(b5b9)",
+        "reviewedAt": "2026-09-08",
+        "representativeLiveId": "rem__losing-my-religion/Intro/15"
+      }
+    }
+  ],
+  "liveChecks": [
+    {
+      "url": "https://www.hooktheory.com/theorytab/view/dnd-allstars/1-2-pass-it---dj-premier-remix#instrumental",
+      "key": {
+        "tonic": "G#",
+        "scale": "minor"
+      },
+      "id": "dnd-allstars__1-2-pass-it---dj-premier-remix/Instrumental/2",
+      "roman": "V7(b5)sus2(maj)/#iii(maj)",
+      "letter": "Fx7(b5)sus2",
+      "observation": "Live staff and positioned SVG confirmed both maj tags: numerator tag x=-39.9409, slash x=-0.7354, denominator tag x=18.064. Both annotations are retained with their scope."
+    },
+    {
+      "url": "https://www.hooktheory.com/theorytab/view/scott-joplin/maple-leaf-rag#bridge",
+      "key": {
+        "tonic": "Db",
+        "scale": "major"
+      },
+      "id": "scott-joplin__maple-leaf-rag/Bridge/33",
+      "roman": "V7/ii",
+      "letter": "Bb7",
+      "observation": "Live bridge staff shows V7/ii, V65/ii and V43/ii with no maj annotation."
+    },
+    {
+      "url": "https://www.hooktheory.com/theorytab/view/kazumi-totaka/9am---animal-crossing-new-horizons#chorus",
+      "key": {
+        "tonic": "G",
+        "scale": "major"
+      },
+      "id": "kazumi-totaka__9am---animal-crossing-new-horizons/Chorus/26.5",
+      "roman": "V9/bIII(min)",
+      "letter": "F9",
+      "observation": "Live final G-major passage confirms borrowed minor denominator with min tag; adjacent ii7/bIII(min) is cm7 and unborrowed V9/ii is E9."
+    },
+    {
+      "url": "https://www.hooktheory.com/theorytab/view/kazumi-totaka/9am---animal-crossing-new-horizons#intro-and-verse",
+      "key": {
+        "tonic": "G",
+        "scale": "major"
+      },
+      "id": "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/12.5",
+      "roman": "bII11(∆-sub)/vi",
+      "letter": "Eb/F",
+      "observation": "Live source uses uppercase II and places the tritone substitution marker below the numerator before the slash. Letter uses an upper-structure triad over the bass; original inferred truthPcs need separate voicing review."
+    },
+    {
+      "url": "https://www.hooktheory.com/theorytab/view/stevie-wonder/superstition#chorus",
+      "key": {
+        "tonic": "Eb",
+        "scale": "dorian"
+      },
+      "roman": "bII9(b5)(∆-sub)/V(maj)",
+      "letter": "Cb9(b5)",
+      "observation": "Live borrowed-major tritone substitution places maj under denominator and substitution tag under numerator. Adjacent unborrowed bII9(b5)(∆-sub)/IV, Bbb9(b5), has no maj tag."
+    },
+    {
+      "url": "https://www.hooktheory.com/theorytab/view/the-police/every-breath-you-take#chorus",
+      "key": {
+        "tonic": "Ab",
+        "scale": "major"
+      },
+      "id": "the-police__every-breath-you-take/Chorus/53",
+      "roman": "V9sus4",
+      "letter": "Eb9sus4",
+      "keyboardNotes": [
+        "Eb3",
+        "Db4",
+        "F4",
+        "Ab4"
+      ],
+      "observation": "Show Chords selected; keyboard has no fifth Bb. Source instrument register is not the shared decoder octave contract."
+    },
+    {
+      "url": "https://www.hooktheory.com/theorytab/view/elton-john/rocket-man#pre-chorus",
+      "key": {
+        "tonic": "G",
+        "scale": "dorian"
+      },
+      "roman": "IV9sus4",
+      "letter": "C9sus4",
+      "keyboardNotes": [
+        "C3",
+        "Bb3",
+        "D4",
+        "F4"
+      ],
+      "observation": "Show Chords selected. Current key differs from frozen Bb-major ii9sus4 context; supports voicing policy only, not an exact-input recapture."
+    },
+    {
+      "url": "https://www.hooktheory.com/theorytab/view/gorillaz/5-4#chorus",
+      "key": {
+        "tonic": "C",
+        "scale": "minor"
+      },
+      "id": "gorillaz__5-4/Chorus/14",
+      "roman": "V7(no5)sus2sus4(maj)/ii°",
+      "letter": "A7(no5)sus2sus4",
+      "keyboardNotes": [
+        "A2",
+        "B3",
+        "D4",
+        "G4"
+      ],
+      "observation": "Show Chords selected. Both suspension roles 2 and 4 sound, no fifth."
+    },
+    {
+      "url": "https://www.hooktheory.com/theorytab/view/gorillaz/5-4#chorus",
+      "key": {
+        "tonic": "C",
+        "scale": "minor"
+      },
+      "roman": "VI7(no5)sus2sus4(hmin)",
+      "letter": "Ab7(no5)sus#2sus#4",
+      "keyboardNotes": [
+        "Ab2",
+        "B3",
+        "D4",
+        "G4"
+      ],
+      "observation": "Adjacent chord independently corroborates both suspended tones. Symbolic seventh spelling differs from keyboard major seventh; preserve separate source display/playback channels."
+    },
+    {
+      "url": "https://www.hooktheory.com/theorytab/view/george-gershwin/summertime#chorus",
+      "key": {
+        "tonic": "A",
+        "scale": "minor"
+      },
+      "romanExamples": [
+        "V(maj)/i",
+        "V7(maj)/i",
+        "vii°(maj)/v",
+        "V7(maj)/v"
+      ],
+      "observation": "Current live chord SVG text places implicit maj under the numerator before the slash. These directly corroborate the source scope reconstruction in the frozen Summertime cases."
+    },
+    {
+      "url": "https://www.hooktheory.com/theorytab/view/kazumi-totaka/9am---animal-crossing-new-horizons#intro-and-verse",
+      "id": "kazumi-totaka__9am---animal-crossing-new-horizons/Intro and Verse/12.5",
+      "key": {
+        "tonic": "G",
+        "scale": "major"
+      },
+      "roman": "bII11(∆-sub)/vi",
+      "letter": "Eb/F",
+      "keyboardNotes": [
+        "F2",
+        "Bb3",
+        "Eb4",
+        "G4"
+      ],
+      "observation": "Show Chords selected. Four-tone upper-structure voicing omits third and fifth."
+    },
+    {
+      "url": "https://www.hooktheory.com/theorytab/view/amy-winehouse/back-to-black#instrumental",
+      "id": "amy-winehouse__back-to-black/Instrumental/16.5",
+      "key": {
+        "tonic": "D",
+        "scale": "harmonicMinor"
+      },
+      "roman": "V11",
+      "letter": "G/A",
+      "keyboardNotes": [
+        "A2",
+        "Bb3",
+        "D4",
+        "G4"
+      ],
+      "observation": "Show Chords selected. Four-tone voicing omits third and fifth, preserving flat ninth Bb. Displayed G/A is not a literal description of keyboard major-triad tones."
+    },
+    {
+      "url": "https://www.hooktheory.com/theorytab/view/gustav-holst/mars---bringer-of-war#pre-chorus",
+      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/18",
+      "key": {
+        "tonic": "C",
+        "scale": "phrygianDominant"
+      },
+      "roman": "I△11(#9)(lyd)",
+      "letter": "Cmaj7(#9#11)",
+      "keyboardNotes": [
+        "C3",
+        "B3",
+        "D#4",
+        "F#4"
+      ],
+      "observation": "Show Chords selected. Third and fifth omitted even with explicit ninth alteration."
+    },
+    {
+      "url": "https://www.hooktheory.com/theorytab/view/gustav-holst/mars---bringer-of-war#pre-chorus",
+      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/39.5",
+      "key": {
+        "tonic": "C",
+        "scale": "phrygianDominant"
+      },
+      "roman": "i°11(bor)",
+      "letter": "co7o(b9b11)",
+      "keyboardNotes": [
+        "C3",
+        "Db4",
+        "E4",
+        "Bbb4"
+      ],
+      "observation": "Show Chords selected. Diminished third and fifth omitted; custom seventh and altered extensions retained."
+    },
+    {
+      "url": "https://www.hooktheory.com/theorytab/view/gustav-holst/mars---bringer-of-war#pre-chorus",
+      "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/129",
+      "key": {
+        "tonic": "C",
+        "scale": "phrygianDominant"
+      },
+      "roman": "II42sus2",
+      "letter": "Db7sus#2/C",
+      "keyboardNotes": [
+        "C3",
+        "Db4",
+        "E4",
+        "Ab4"
+      ],
+      "observation": "Show Chords selected. Source keyboard confirms raised second and major seventh with third inversion."
+    },
+    {
+      "url": "https://www.hooktheory.com/theorytab/view/rem/losing-my-religion#intro",
+      "id": "rem__losing-my-religion/Intro/15",
+      "key": {
+        "tonic": "A",
+        "scale": "minor"
+      },
+      "roman": "iiø11(no3no5)",
+      "letter": "bm11(no3no5)(b5b9)",
+      "keyboardNotes": [
+        "B2",
+        "C4",
+        "E4",
+        "A4"
+      ],
+      "observation": "Show Chords selected. Four sounding tones confirm minor seventh, flat ninth and natural eleventh despite old inferred diminished seventh and raised eleventh."
+    }
+  ],
+  "ambiguities": [
+    {
+      "id": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29/Bridge/71",
+      "fields": [
+        "pcs"
+      ],
+      "category": "changed-live-source-and-contradictory-inference",
+      "reason": "The frozen G#m11(b5b9) pitch list is internally contradictory, and the live F#-minor bridge checked on 2026-09-08 has changed to iv7/VII11/v7/i and iv9 variants with no ii half-diminished eleventh. No independent keyboard recording survives for this individual frozen capture, so that captured pitch list remains unresolved. The corresponding musical rule is independently established by live REM A-minor iiø11(no3no5): root, minor seventh, flat ninth and natural eleventh. Transposed to G#, that rule yields [1,6,8,9]; this is a rule-derived expectation, not a replacement recording for the missing historical source.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/lady-gaga/die-with-a-smile-%28with-bruno-mars%29#bridge",
+        "reviewedAt": "2026-09-08"
+      },
+      "original": {
+        "json": "{\"root\":2,\"type\":11,\"inversion\":0,\"applied\":0,\"adds\":[],\"omits\":[],\"alterations\":[],\"suspensions\":[],\"substitutions\":[],\"pedal\":null,\"alternate\":\"\",\"borrowed\":\"\",\"isRest\":false}",
+        "key": {
+          "tonic": "F#",
+          "scale": "minor"
+        },
+        "truthRoman": "iiø11",
+        "truthLetter": "g#m11(b5b9)",
+        "truthPcs": [
+          2,
+          5,
+          8,
+          9,
+          11
+        ]
+      },
+      "rawFingerprint": "4d7aafe5c859018188b2b9ea30e459b3efcc214f8c33baf2543618ef19fcf790"
+    }
+  ],
+  "ruleAmbiguities": [
+    {
+      "rule": "type11-explicit-fifth-alterations",
+      "reason": "No explicit b5 or #5 type11 example exists in the 1824 frozen cases or any of the four existing type11 oracle shards. Existing behavior for intentional fifth alterations is retained pending source evidence; synthetic parity coverage is not independent source accuracy.",
+      "checkedSources": [
+        "hooktheory_parity.json",
+        "chord_db/byModification/type=11.json",
+        "chord_db_corpus2/byModification/type=11.json",
+        "chord_db_corpus3/byModification/type=11.json",
+        "chord_db_corpus4/byModification/type=11.json"
+      ],
+      "reviewedAt": "2026-09-08"
+    }
+  ],
+  "derivedRuleExpectations": [
+    {
+      "id": "lady-gaga__die-with-a-smile-%28with-bruno-mars%29/Bridge/71",
+      "pcs": [
+        1,
+        6,
+        8,
+        9
+      ],
+      "toneRoles": [
+        "1",
+        "b7",
+        "b9",
+        "11"
+      ],
+      "reason": "Live REM iiø11(no3no5) plus independently verified eleventh third/fifth omission establishes the same minor-scale ii eleventh role set. Transpose those roles to the frozen G# root without claiming the changed Gaga page is a direct recapture.",
+      "source": {
+        "url": "https://www.hooktheory.com/theorytab/view/rem/losing-my-religion#intro",
+        "id": "rem__losing-my-religion/Intro/15",
+        "reviewedAt": "2026-09-08"
+      }
+    }
+  ]
+}

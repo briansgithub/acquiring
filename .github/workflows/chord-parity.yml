@@ -1,0 +1,119 @@
+name: Chord interpretation parity
+
+on:
+  pull_request:
+    paths:
+      - "web/lib/**"
+      - "web/scripts/**"
+      - "android/app/src/main/**"
+      - "android/app/src/test/**"
+      - "android/app/build.gradle*"
+      - "ios/Packages/AcquiringKit/**"
+      - "contracts/**"
+      - "tooling/scripts/**"
+      - "tooling/_Decode_oracle/**"
+      - "tooling/_Research_testing/**"
+      - "package*.json"
+      - ".github/workflows/chord-parity.yml"
+  push:
+    branches: [main, "codex/**"]
+    paths:
+      - "web/lib/**"
+      - "web/scripts/**"
+      - "android/app/src/main/**"
+      - "android/app/src/test/**"
+      - "android/app/build.gradle*"
+      - "ios/Packages/AcquiringKit/**"
+      - "contracts/**"
+      - "tooling/scripts/**"
+      - "tooling/_Decode_oracle/**"
+      - "tooling/_Research_testing/**"
+      - "package*.json"
+      - ".github/workflows/chord-parity.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Assert shared chord fixtures and source test integrity
+        run: |
+          npm run test:shared-parity
+          npm run test:chord-interpretation
+          node tooling/scripts/sourceAccuracyUnitTest.mjs
+          node tooling/scripts/chordLetterFormatTest.mjs
+          node tooling/_Debug_testing/policyRegression.mjs
+      - name: Assert independent captured source accuracy
+        shell: bash
+        run: node tooling/scripts/sourceAccuracyTest.mjs --json | tee "$RUNNER_TEMP/chord-source-accuracy.json"
+      - name: Verify scale degrees, Roman rendering and pronunciation
+        run: |
+          npm run test:scale-degrees
+          npm run test:roman-symbols
+          npm run test:pronunciation
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chord-source-accuracy-${{ github.sha }}
+          path: ${{ runner.temp }}/chord-source-accuracy.json
+          if-no-files-found: ignore
+
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+      - run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
+      - name: Assert native chord, parity and symbol rendering tests
+        run: >-
+          ./android/gradlew -p android testDebugUnitTest
+          --tests '*CorpusParityTest'
+          --tests '*HooktheoryRealParityTest'
+          --tests '*ChordRoleContractTest'
+          --tests '*RelativeIonianContextTest'
+          --tests '*ChordInterpreterTest'
+          --tests '*AppliedBorrowedChordTest'
+          --tests '*InversionChordPlaybackTest'
+          --tests '*RomanNumeralTokenizerTest'
+          --tests '*RomanNumeralPainterTest'
+          --tests '*ScaleDegreeRendererTest'
+
+  ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - name: Assert Swift package tests against the same shared fixtures
+        run: swift test --package-path ios/Packages/AcquiringKit
+
+  parity:
+    name: All three chord interpreters
+    if: always()
+    needs: [web, android, ios]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require successful checks at the same revision
+        env:
+          WEB: ${{ needs.web.result }}
+          ANDROID: ${{ needs.android.result }}
+          IOS: ${{ needs.ios.result }}
+        run: test "$WEB" = success && test "$ANDROID" = success && test "$IOS" = success

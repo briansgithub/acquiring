@@ -26,6 +26,8 @@
     "player:start": "node tooling/_Debug_testing/playerServerCtl.mjs start",
     "player:stop": "node tooling/_Debug_testing/playerServerCtl.mjs stop",
     "player:status": "node tooling/_Debug_testing/playerServerCtl.mjs status",
-    "player:restart": "node tooling/_Debug_testing/playerServerCtl.mjs restart"
+    "player:restart": "node tooling/_Debug_testing/playerServerCtl.mjs restart",
+    "test:chord-interpretation": "node web/scripts/chordInterpretationTest.mjs",
+    "test:source-accuracy": "node tooling/scripts/sourceAccuracyUnitTest.mjs && node tooling/scripts/sourceAccuracyTest.mjs"
   }
 }
