@@ -1,0 +1,3431 @@
+[
+  {
+    "id": "aiko__skirt/Chorus/43",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/aiko/skirt",
+      "captureFile": "harvest/aiko__skirt/scrape.json",
+      "captureSha256": "52a9c0cc13b831f79cda8306f6be986cb21e4ce0a73d6052be3cad1189ced73f",
+      "sourceChordSha256": "7193202d677f84a9105aaac9edbf078f8216d7d61661182c245d470a2862c1aa",
+      "jsonChordIndex": 18,
+      "renderedIndex": 18,
+      "counts": {
+        "json": 26,
+        "rendered": 26
+      }
+    },
+    "chord": {
+      "root": 5,
+      "beat": 43,
+      "duration": 2,
+      "type": 7,
+      "inversion": 1,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "major",
+        "tonic": "F"
+      },
+      {
+        "beat": 5,
+        "scale": "mixolydian",
+        "tonic": "A"
+      },
+      {
+        "beat": 53,
+        "scale": "major",
+        "tonic": "F"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "V",
+        "relX": 13,
+        "y": 755,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "6",
+        "relX": 28,
+        "y": 758,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "5",
+        "relX": 28,
+        "y": 765,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "(maj)",
+        "relX": 13,
+        "y": 773,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "/",
+        "relX": 34,
+        "y": 754,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "v",
+        "relX": 46,
+        "y": 755,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "B7",
+        "relX": 14,
+        "y": 793,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/D#",
+        "relX": 31,
+        "y": 793,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "V65(maj)/v",
+    "truthLetter": "B7/D#"
+  },
+  {
+    "id": "aram-khachaturian__masquerade-waltz/Verse/61",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/aram-khachaturian/masquerade-waltz",
+      "captureFile": "harvest/aram-khachaturian__masquerade-waltz/scrape.json",
+      "captureSha256": "b00b00183445c5d856cca292e07fa23cf367e20265d8cbd3472aa5f4952b3ff5",
+      "sourceChordSha256": "5a54317bd942a8948f7b39dd6fcf21f52fe0e00fccc4062c6760b130cbce3a7f",
+      "jsonChordIndex": 20,
+      "renderedIndex": 20,
+      "counts": {
+        "json": 28,
+        "rendered": 28
+      }
+    },
+    "chord": {
+      "root": 2,
+      "beat": 61,
+      "duration": 3,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "lydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "minor",
+        "tonic": "A"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "II",
+        "relX": 53,
+        "y": 766,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "4(b5)",
+        "relX": 67,
+        "y": 769,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "3",
+        "relX": 67,
+        "y": 776,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "(lyd)",
+        "relX": 61,
+        "y": 784,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "B7",
+        "relX": 40,
+        "y": 803,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(b5)",
+        "relX": 62,
+        "y": 802,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/F#",
+        "relX": 75,
+        "y": 803,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "II43(b5)(lyd)",
+    "truthLetter": "B7(b5)/F#"
+  },
+  {
+    "id": "aram-khachaturian__masquerade-waltz/Verse/67",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/aram-khachaturian/masquerade-waltz",
+      "captureFile": "harvest/aram-khachaturian__masquerade-waltz/scrape.json",
+      "captureSha256": "b00b00183445c5d856cca292e07fa23cf367e20265d8cbd3472aa5f4952b3ff5",
+      "sourceChordSha256": "5596fe494acd956e410abb09b934a3e26eaf0ff7c1a304f29d0d3c669f9d2249",
+      "jsonChordIndex": 22,
+      "renderedIndex": 22,
+      "counts": {
+        "json": 28,
+        "rendered": 28
+      }
+    },
+    "chord": {
+      "root": 1,
+      "beat": 67,
+      "duration": 3,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "mixolydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "minor",
+        "tonic": "A"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "I",
+        "relX": 57,
+        "y": 766,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "4(b5)",
+        "relX": 63,
+        "y": 769,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "3",
+        "relX": 63,
+        "y": 776,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "(mix)",
+        "relX": 60,
+        "y": 784,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "A7",
+        "relX": 43,
+        "y": 803,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(b5)",
+        "relX": 66,
+        "y": 802,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/E",
+        "relX": 79,
+        "y": 803,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "I43(b5)(mix)",
+    "truthLetter": "A7(b5)/E"
+  },
+  {
+    "id": "azymuth__cascade-of-the-seven-waterfalls/Bridge/7",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/azymuth/cascade-of-the-seven-waterfalls",
+      "captureFile": "harvest/azymuth__cascade-of-the-seven-waterfalls/scrape.json",
+      "captureSha256": "3576788473f8150cb4637e56887d76736fd56e6cd5d0bd152986e6b347f8c8c4",
+      "sourceChordSha256": "810c94b540fae53eaca3f40f1aa0495ee0f04bb5e8f3a3c448d7e4e7b8803505",
+      "jsonChordIndex": 3,
+      "renderedIndex": 3,
+      "counts": {
+        "json": 20,
+        "rendered": 20
+      }
+    },
+    "chord": {
+      "root": 5,
+      "beat": 7,
+      "duration": 2,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "minor",
+        "tonic": "B"
+      },
+      {
+        "beat": 33,
+        "scale": "major",
+        "tonic": "F"
+      },
+      {
+        "beat": 49,
+        "scale": "minor",
+        "tonic": "E"
+      },
+      {
+        "beat": 57,
+        "scale": "major",
+        "tonic": "C"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "V",
+        "relX": 16,
+        "y": 776,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "4(b5)",
+        "relX": 31,
+        "y": 779,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "3",
+        "relX": 31,
+        "y": 786,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "(maj)",
+        "relX": 24,
+        "y": 794,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "F#7",
+        "relX": 14,
+        "y": 817,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(b5)",
+        "relX": 31,
+        "y": 816,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/C#",
+        "relX": 39,
+        "y": 817,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "V43(b5)(maj)",
+    "truthLetter": "F#7(b5)/C#"
+  },
+  {
+    "id": "azymuth__cascade-of-the-seven-waterfalls/Verse/9",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/azymuth/cascade-of-the-seven-waterfalls",
+      "captureFile": "harvest/azymuth__cascade-of-the-seven-waterfalls/scrape.json",
+      "captureSha256": "3576788473f8150cb4637e56887d76736fd56e6cd5d0bd152986e6b347f8c8c4",
+      "sourceChordSha256": "61983e714f70a64855a67fbfce91821554d20252d0b787c8c0c059eea347b156",
+      "jsonChordIndex": 1,
+      "renderedIndex": 1,
+      "counts": {
+        "json": 14,
+        "rendered": 14
+      }
+    },
+    "chord": {
+      "root": 4,
+      "beat": 9,
+      "duration": 7.5,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "major",
+        "tonic": "G"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "IV",
+        "relX": 112,
+        "y": 766,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "4(b5)",
+        "relX": 134,
+        "y": 769,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "3",
+        "relX": 134,
+        "y": 776,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "(dor)",
+        "relX": 124,
+        "y": 784,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "C7",
+        "relX": 105,
+        "y": 803,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(b5)",
+        "relX": 127,
+        "y": 802,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/G",
+        "relX": 141,
+        "y": 803,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "IV43(b5)(dor)",
+    "truthLetter": "C7(b5)/G"
+  },
+  {
+    "id": "barbra-streisand__woman-in-love/Chorus/19",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/barbra-streisand/woman-in-love",
+      "captureFile": "harvest/barbra-streisand__woman-in-love/scrape.json",
+      "captureSha256": "6ee293d5a08f7c2ebca1ee3981a4cc17b3c6315bcdc0bc165d49347c8756183c",
+      "sourceChordSha256": "f0bf19f6411b749c3790c5db7f56287e340fd5bd573dee2a9643e0870b11eb8e",
+      "jsonChordIndex": 9,
+      "renderedIndex": 9,
+      "counts": {
+        "json": 14,
+        "rendered": 14
+      }
+    },
+    "chord": {
+      "root": 3,
+      "beat": 19,
+      "duration": 4,
+      "type": 5,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "harmonicMinor",
+        "tonic": "D#"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "V",
+        "relX": 37,
+        "y": 698,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "/",
+        "relX": 55,
+        "y": 698,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "III",
+        "relX": 71,
+        "y": 698,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "+",
+        "relX": 97,
+        "y": 702,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "C#",
+        "relX": 61,
+        "y": 737,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "V/III+",
+    "truthLetter": "C#"
+  },
+  {
+    "id": "barry-manilow__could-it-be-magic/Chorus/25",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/barry-manilow/could-it-be-magic",
+      "captureFile": "harvest/barry-manilow__could-it-be-magic/scrape.json",
+      "captureSha256": "4a1932a6aa4a0aa5f255e5ce2411e552a56ec6f464e498dd49db74f565ac5ad9",
+      "sourceChordSha256": "8605155648a3a9c6999c333c0f611f67218d5db565f58f8a1952dc701c7d4ac1",
+      "jsonChordIndex": 8,
+      "renderedIndex": 8,
+      "counts": {
+        "json": 30,
+        "rendered": 30
+      }
+    },
+    "chord": {
+      "root": 5,
+      "beat": 25,
+      "duration": 2,
+      "type": 11,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "minor",
+        "tonic": "C"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "v",
+        "relX": 13,
+        "y": 720,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "11(#9)",
+        "relX": 27,
+        "y": 724,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "gm11",
+        "relX": 14,
+        "y": 761,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(#9)",
+        "relX": 44,
+        "y": 760,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "v11(#9)",
+    "truthLetter": "gm11(#9)"
+  },
+  {
+    "id": "bibi__apocalypse/Intro and Verse/6.75",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/bibi/apocalypse",
+      "captureFile": "harvest/bibi__apocalypse/scrape.json",
+      "captureSha256": "a4c5f2026ee096aecdd2de82825bd24df36c8bcd35e7f247d427242cbc56e6e0",
+      "sourceChordSha256": "bd8c63bff2b033db0d95cb51fee7b77ac242f2ffa44739670786652b2dd18157",
+      "jsonChordIndex": 7,
+      "renderedIndex": 7,
+      "counts": {
+        "json": 66,
+        "rendered": 66
+      }
+    },
+    "chord": {
+      "root": 1,
+      "beat": 6.75,
+      "duration": 0.5,
+      "type": 9,
+      "inversion": 0,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b13"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "dorian",
+        "tonic": "C#"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "V",
+        "relX": 3,
+        "y": 699,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "9(b13)",
+        "relX": 5,
+        "y": 700,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "(maj)",
+        "relX": 4,
+        "y": 702,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "/",
+        "relX": 9,
+        "y": 699,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "i",
+        "relX": 11,
+        "y": 699,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "G#9",
+        "relX": 3,
+        "y": 733,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(b13)",
+        "relX": 8,
+        "y": 734,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "V9(b13)(maj)/i",
+    "truthLetter": "G#9(b13)"
+  },
+  {
+    "id": "billy-joel__pressure/Intro/25",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/billy-joel/pressure",
+      "captureFile": "harvest/billy-joel__pressure/scrape.json",
+      "captureSha256": "7913b5e4af7b7b50268dc7347b8f4d7f5de3b33417774e4fb3decae2eca71ee4",
+      "sourceChordSha256": "4146d479695d8a6ccc2a109aae85ab33032451b2c667cd62b6eed4c17dc6deca",
+      "jsonChordIndex": 12,
+      "renderedIndex": 12,
+      "counts": {
+        "json": 18,
+        "rendered": 16
+      },
+      "alignmentReason": "Rendered capture omits final two JSON chords; all sixteen captured entries are a prefix with stableX=39+36*(beat-1). Beat25 is renderedIndex12 at stableX903; text dm6 includes the addition."
+    },
+    "chord": {
+      "root": 1,
+      "beat": 25,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "minor",
+        "tonic": "D"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "i",
+        "relX": 13,
+        "y": 775,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "(add6)",
+        "relX": 20,
+        "y": 779,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "dm6",
+        "relX": 17,
+        "y": 814,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "i(add6)",
+    "truthLetter": "dm6"
+  },
+  {
+    "id": "brian-wilson__its-over-now/Verse/17",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/brian-wilson/its-over-now",
+      "captureFile": "harvest/brian-wilson__its-over-now/scrape.json",
+      "captureSha256": "364ffcd58616ae2564ea9f160398fb26b0092a905136aa833e1d685fad66dfcf",
+      "sourceChordSha256": "52e0f5eef881f34bdfc9e5db939eb32553b091afb0f5f2dc1f74b7e52cc31430",
+      "jsonChordIndex": 9,
+      "renderedIndex": 9,
+      "counts": {
+        "json": 22,
+        "rendered": 22
+      }
+    },
+    "chord": {
+      "root": 3,
+      "beat": 17,
+      "duration": 4,
+      "type": 11,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "major",
+        "tonic": "F#"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "iii",
+        "relX": 46,
+        "y": 786,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "11(#9)",
+        "relX": 67,
+        "y": 790,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "a#m11",
+        "relX": 42,
+        "y": 825,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(#9)",
+        "relX": 85,
+        "y": 824,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "iii11(#9)",
+    "truthLetter": "a#m11(#9)"
+  },
+  {
+    "id": "coralie-clement__samba-de-mon-coeur-qui-bat/Verse/13",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/coralie-clement/samba-de-mon-coeur-qui-bat",
+      "captureFile": "harvest/coralie-clement__samba-de-mon-coeur-qui-bat/scrape.json",
+      "captureSha256": "1b5ddf3f302e769f2d5e23a07e902c517f01ae50d9bf29cfab6d25a4291c8a8f",
+      "sourceChordSha256": "58ed228b34f33107fca08780633e46cd4aa07309deed29b857f3369ac9fbe267",
+      "jsonChordIndex": 3,
+      "renderedIndex": 3,
+      "counts": {
+        "json": 16,
+        "rendered": 16
+      }
+    },
+    "chord": {
+      "root": 3,
+      "beat": 13,
+      "duration": 4,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "minor",
+        "tonic": "C"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "III",
+        "relX": 50,
+        "y": 689,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "4(b5)",
+        "relX": 70,
+        "y": 692,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "3",
+        "relX": 70,
+        "y": 699,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "(phr)",
+        "relX": 61,
+        "y": 707,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "Eb7",
+        "relX": 38,
+        "y": 726,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(b5)",
+        "relX": 64,
+        "y": 725,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/Bb",
+        "relX": 78,
+        "y": 726,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "III43(b5)(phr)",
+    "truthLetter": "Eb7(b5)/Bb"
+  },
+  {
+    "id": "crumb__bones/Bridge/30",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/crumb/bones",
+      "captureFile": "harvest/crumb__bones/scrape.json",
+      "captureSha256": "9487981428913a27bcb307c94d1e6341c9df5581430eb3849e189831f95c4691",
+      "sourceChordSha256": "86f4f7d36875d27b53ebdd1012fbe2f218c77bee9d1bd9559e114bde4fd93a7f",
+      "jsonChordIndex": 16,
+      "renderedIndex": 16,
+      "counts": {
+        "json": 26,
+        "rendered": 26
+      }
+    },
+    "chord": {
+      "root": 3,
+      "beat": 30,
+      "duration": 2,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "minor",
+        "tonic": "A"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "III",
+        "relX": 9,
+        "y": 710,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "4(b5)",
+        "relX": 27,
+        "y": 713,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "3",
+        "relX": 27,
+        "y": 719,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "(phr)",
+        "relX": 19,
+        "y": 725,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "C7",
+        "relX": 11,
+        "y": 750,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(b5)",
+        "relX": 24,
+        "y": 749,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/G",
+        "relX": 31,
+        "y": 750,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "III43(b5)(phr)",
+    "truthLetter": "C7(b5)/G"
+  },
+  {
+    "id": "ed-helms__how-bad-can-i-be/Outro/5",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/ed-helms/how-bad-can-i-be",
+      "captureFile": "harvest/ed-helms__how-bad-can-i-be/scrape.json",
+      "captureSha256": "8f3b2076cc4851ff59b8d79a6f2c00d59a1be920d2ee94e42d174e604632f739",
+      "sourceChordSha256": "eabd7ed2ade9c5a00fa0c175905fba094e12602fad44ef2a9db8b3e728239a67",
+      "jsonChordIndex": 0,
+      "renderedIndex": 0,
+      "counts": {
+        "json": 16,
+        "rendered": 16
+      }
+    },
+    "chord": {
+      "root": 1,
+      "beat": 5,
+      "duration": 12,
+      "type": 13,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "mixolydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "phrygianDominant",
+        "tonic": "E"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "I",
+        "relX": 199,
+        "y": 676,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "13(#9)",
+        "relX": 206,
+        "y": 679,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "(mix)",
+        "relX": 204,
+        "y": 694,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "E13",
+        "relX": 194,
+        "y": 713,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(#9)",
+        "relX": 221,
+        "y": 712,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "I13(#9)(mix)",
+    "truthLetter": "E13(#9)"
+  },
+  {
+    "id": "ed-helms__how-bad-can-i-be/Outro/21",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/ed-helms/how-bad-can-i-be",
+      "captureFile": "harvest/ed-helms__how-bad-can-i-be/scrape.json",
+      "captureSha256": "8f3b2076cc4851ff59b8d79a6f2c00d59a1be920d2ee94e42d174e604632f739",
+      "sourceChordSha256": "50f91f9b07784c12d32420b01b5f0b6c16aac70c03e1603d222bc40a5706684e",
+      "jsonChordIndex": 2,
+      "renderedIndex": 2,
+      "counts": {
+        "json": 16,
+        "rendered": 16
+      }
+    },
+    "chord": {
+      "root": 7,
+      "beat": 21,
+      "duration": 12,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#11"
+      ],
+      "suspensions": [
+        2,
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "phrygianDominant",
+        "tonic": "E"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "VII",
+        "relX": 180,
+        "y": 676,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "7(#11)",
+        "relX": 209,
+        "y": 679,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "sus2sus4",
+        "relX": 209,
+        "y": 686,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "(dor)",
+        "relX": 205,
+        "y": 694,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "D7",
+        "relX": 187,
+        "y": 713,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(#11)",
+        "relX": 210,
+        "y": 712,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "sus2sus4",
+        "relX": 211,
+        "y": 719,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "VII7(#11)sus2sus4(dor)",
+    "truthLetter": "D7(#11)sus2sus4"
+  },
+  {
+    "id": "fiona-apple__daredevil/Chorus/23",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/fiona-apple/daredevil",
+      "captureFile": "harvest/fiona-apple__daredevil/scrape.json",
+      "captureSha256": "dcda5fb14eef9cf559cfce6eb2907f1b1785b7cc30a9b070fa112b827489ae6d",
+      "sourceChordSha256": "9201545912c5d887bcb6a33731e3e0dce57899fcd1235b8839a9f256a3fddb16",
+      "jsonChordIndex": 12,
+      "renderedIndex": 12,
+      "counts": {
+        "json": 19,
+        "rendered": 19
+      }
+    },
+    "chord": {
+      "root": 3,
+      "beat": 23,
+      "duration": 1,
+      "type": 5,
+      "inversion": 1,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "harmonicMinor",
+        "tonic": "A"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "V",
+        "relX": 2,
+        "y": 729,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "6",
+        "relX": 9,
+        "y": 730,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "/",
+        "relX": 12,
+        "y": 729,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "III",
+        "relX": 17,
+        "y": 729,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "+",
+        "relX": 28,
+        "y": 730,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "G",
+        "relX": 7,
+        "y": 763,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/B",
+        "relX": 14,
+        "y": 763,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "V6/III+",
+    "truthLetter": "G/B"
+  },
+  {
+    "id": "glitched-hookpad-projects__inverted-11ths-and-13ths/Instrumental/10",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/glitched-hookpad-projects/inverted-11ths-and-13ths",
+      "captureFile": "harvest/glitched-hookpad-projects__inverted-11ths-and-13ths/scrape.json",
+      "captureSha256": "0dfd0ef777445362d5e13e79a782a39670c80fcd30f0ad22d482956ee6c36cdc",
+      "sourceChordSha256": "76d57faecc652d1e321211c2650371a06a9e8d1399c9d4335987d7912ddd2047",
+      "jsonChordIndex": 4,
+      "renderedIndex": 4,
+      "counts": {
+        "json": 13,
+        "rendered": 13
+      }
+    },
+    "chord": {
+      "root": 1,
+      "beat": 10,
+      "duration": 2.25,
+      "type": 13,
+      "inversion": 4,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "major",
+        "tonic": "C"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "I",
+        "relX": 31,
+        "y": 687,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "△",
+        "relX": 39,
+        "y": 692,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "Cmaj13",
+        "relX": 15,
+        "y": 728,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "I△",
+    "truthLetter": "Cmaj13"
+  },
+  {
+    "id": "glitched-hookpad-projects__inverted-11ths-and-13ths/Instrumental/12.25",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/glitched-hookpad-projects/inverted-11ths-and-13ths",
+      "captureFile": "harvest/glitched-hookpad-projects__inverted-11ths-and-13ths/scrape.json",
+      "captureSha256": "0dfd0ef777445362d5e13e79a782a39670c80fcd30f0ad22d482956ee6c36cdc",
+      "sourceChordSha256": "a77390d4aae97780029bf800af85f503a0e9284823b1c0e7cf630efbe82f4fbb",
+      "jsonChordIndex": 5,
+      "renderedIndex": 5,
+      "counts": {
+        "json": 13,
+        "rendered": 13
+      }
+    },
+    "chord": {
+      "root": 1,
+      "beat": 12.25,
+      "duration": 2.25,
+      "type": 13,
+      "inversion": 5,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "major",
+        "tonic": "C"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "I",
+        "relX": 31,
+        "y": 687,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "△",
+        "relX": 39,
+        "y": 692,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "Cmaj13",
+        "relX": 15,
+        "y": 728,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "I△",
+    "truthLetter": "Cmaj13"
+  },
+  {
+    "id": "glitched-hookpad-projects__inverted-11ths-and-13ths/Instrumental/14.5",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/glitched-hookpad-projects/inverted-11ths-and-13ths",
+      "captureFile": "harvest/glitched-hookpad-projects__inverted-11ths-and-13ths/scrape.json",
+      "captureSha256": "0dfd0ef777445362d5e13e79a782a39670c80fcd30f0ad22d482956ee6c36cdc",
+      "sourceChordSha256": "01f2ff9ab178b5a804c1d975b2d911d25f942b5a6cd8331ca51e2b0d1577f6fa",
+      "jsonChordIndex": 6,
+      "renderedIndex": 6,
+      "counts": {
+        "json": 13,
+        "rendered": 13
+      }
+    },
+    "chord": {
+      "root": 1,
+      "beat": 14.5,
+      "duration": 2.5,
+      "type": 13,
+      "inversion": 6,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "major",
+        "tonic": "C"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "I",
+        "relX": 35,
+        "y": 687,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "△",
+        "relX": 44,
+        "y": 692,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "Cmaj13",
+        "relX": 17,
+        "y": 727,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "I△",
+    "truthLetter": "Cmaj13"
+  },
+  {
+    "id": "glitched-hookpad-projects__inverted-11ths-and-13ths/Instrumental/28",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/glitched-hookpad-projects/inverted-11ths-and-13ths",
+      "captureFile": "harvest/glitched-hookpad-projects__inverted-11ths-and-13ths/scrape.json",
+      "captureSha256": "0dfd0ef777445362d5e13e79a782a39670c80fcd30f0ad22d482956ee6c36cdc",
+      "sourceChordSha256": "70686b01f6711461f7e527226dbc5db7f91c360e36f87a1c53dfea2c3b31680e",
+      "jsonChordIndex": 11,
+      "renderedIndex": 11,
+      "counts": {
+        "json": 13,
+        "rendered": 13
+      }
+    },
+    "chord": {
+      "root": 1,
+      "beat": 28,
+      "duration": 2.5,
+      "type": 11,
+      "inversion": 4,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "major",
+        "tonic": "C"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "I",
+        "relX": 35,
+        "y": 687,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "△",
+        "relX": 44,
+        "y": 692,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "Cmaj11",
+        "relX": 18,
+        "y": 726,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "I△",
+    "truthLetter": "Cmaj11"
+  },
+  {
+    "id": "glitched-hookpad-projects__inverted-11ths-and-13ths/Instrumental/30.5",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/glitched-hookpad-projects/inverted-11ths-and-13ths",
+      "captureFile": "harvest/glitched-hookpad-projects__inverted-11ths-and-13ths/scrape.json",
+      "captureSha256": "0dfd0ef777445362d5e13e79a782a39670c80fcd30f0ad22d482956ee6c36cdc",
+      "sourceChordSha256": "b2beb19a02efc50058c9bd8e80ddce87755b7240ca1cdc5d58c82ff7972978ec",
+      "jsonChordIndex": 12,
+      "renderedIndex": 12,
+      "counts": {
+        "json": 13,
+        "rendered": 13
+      }
+    },
+    "chord": {
+      "root": 1,
+      "beat": 30.5,
+      "duration": 2.5,
+      "type": 11,
+      "inversion": 5,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "major",
+        "tonic": "C"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "I",
+        "relX": 35,
+        "y": 687,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "△",
+        "relX": 44,
+        "y": 692,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "Cmaj11",
+        "relX": 18,
+        "y": 726,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "I△",
+    "truthLetter": "Cmaj11"
+  },
+  {
+    "id": "gustav-holst__mars---bringer-of-war/Pre-Chorus/129",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/gustav-holst/mars---bringer-of-war",
+      "captureFile": "harvest/gustav-holst__mars---bringer-of-war/scrape.json",
+      "captureSha256": "8fbc0fb58aca1b525b5e7cae8b9b82c9f82b8e0efb3b087968bb2bdaa581f696",
+      "sourceChordSha256": "16011666683ebac2fccb6cd053599886e2b57335742b0e3a1a5cccaceb0a47c5",
+      "jsonChordIndex": 115,
+      "renderedIndex": 115,
+      "counts": {
+        "json": 117,
+        "rendered": 117
+      }
+    },
+    "chord": {
+      "root": 2,
+      "beat": 129,
+      "duration": 1.5,
+      "type": 7,
+      "inversion": 3,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [
+        2
+      ],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "phrygianDominant",
+        "tonic": "C"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "II",
+        "relX": 3,
+        "y": 857,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "4",
+        "relX": 16,
+        "y": 859,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "2sus2",
+        "relX": 16,
+        "y": 866,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "Db7",
+        "relX": 9,
+        "y": 897,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "sus#2",
+        "relX": 18,
+        "y": 899,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/C",
+        "relX": 24,
+        "y": 897,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "II42sus2",
+    "truthLetter": "Db7sus#2/C"
+  },
+  {
+    "id": "her__automatic-woman/Chorus/67",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/her/automatic-woman",
+      "captureFile": "harvest/her__automatic-woman/scrape.json",
+      "captureSha256": "c109d49f45e8d3f9328bce7b0864b88dca864849fb711220574420d9b520109a",
+      "sourceChordSha256": "5c8e67119f1d74762817bba74efb58270a2a377e0d3be825229f91a927886f89",
+      "jsonChordIndex": 27,
+      "renderedIndex": 27,
+      "counts": {
+        "json": 29,
+        "rendered": 29
+      }
+    },
+    "chord": {
+      "root": 5,
+      "beat": 67,
+      "duration": 1,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "minor",
+        "tonic": "F#"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "V",
+        "relX": 6,
+        "y": 747,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "4(b5)",
+        "relX": 14,
+        "y": 748,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "3",
+        "relX": 14,
+        "y": 753,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "(maj)",
+        "relX": 11,
+        "y": 758,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "C#7",
+        "relX": 7,
+        "y": 786,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(b5)",
+        "relX": 14,
+        "y": 785,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/G#",
+        "relX": 18,
+        "y": 786,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "V43(b5)(maj)",
+    "truthLetter": "C#7(b5)/G#"
+  },
+  {
+    "id": "hideki-kanazashi__mach-rider/Chorus/25",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/hideki-kanazashi/mach-rider",
+      "captureFile": "harvest/hideki-kanazashi__mach-rider/scrape.json",
+      "captureSha256": "e0e2a45b53105519696d9b1cb245cad189bf1d52b533192c6ee26f97e3e18dfb",
+      "sourceChordSha256": "67f8efb4ef68ead98e2d926949a603a6861d9f7bdd232ce31ce7faca9328e0e8",
+      "jsonChordIndex": 4,
+      "renderedIndex": 4,
+      "counts": {
+        "json": 12,
+        "rendered": 12
+      }
+    },
+    "chord": {
+      "root": 5,
+      "beat": 25,
+      "duration": 4,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "major",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "minor",
+        "tonic": "F"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "V",
+        "relX": 52,
+        "y": 777,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "4(b5)",
+        "relX": 67,
+        "y": 780,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "3",
+        "relX": 67,
+        "y": 787,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "(maj)",
+        "relX": 60,
+        "y": 795,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "C7",
+        "relX": 42,
+        "y": 814,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(b5)",
+        "relX": 64,
+        "y": 813,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/G",
+        "relX": 78,
+        "y": 814,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "V43(b5)(maj)",
+    "truthLetter": "C7(b5)/G"
+  },
+  {
+    "id": "iron-butterfly__in-a-gadda-da-vida/Intro/51.5",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/iron-butterfly/in-a-gadda-da-vida",
+      "captureFile": "harvest/iron-butterfly__in-a-gadda-da-vida/scrape.json",
+      "captureSha256": "6a374f57e26e9f0514484c3d5cc498932a6f6c812924be0aa5d2c340dedfd44e",
+      "sourceChordSha256": "6d0e04a4b788ca0bf6466f7bbd8ee308f69eb82b941a49fd251dc77f2b211898",
+      "jsonChordIndex": 25,
+      "renderedIndex": 25,
+      "counts": {
+        "json": 28,
+        "rendered": 28
+      }
+    },
+    "chord": {
+      "root": 1,
+      "beat": 51.5,
+      "duration": 1,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "dorian",
+        "tonic": "D"
+      },
+      {
+        "beat": 30,
+        "scale": "mixolydian",
+        "tonic": "D"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "I",
+        "relX": 5,
+        "y": 860,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "4(b5)",
+        "relX": 14,
+        "y": 864,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "3",
+        "relX": 14,
+        "y": 873,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "D7",
+        "relX": 9,
+        "y": 904,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(b5)",
+        "relX": 19,
+        "y": 903,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/A",
+        "relX": 26,
+        "y": 904,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "I43(b5)",
+    "truthLetter": "D7(b5)/A"
+  },
+  {
+    "id": "iron-butterfly__in-a-gadda-da-vida/Verse/6.5",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/iron-butterfly/in-a-gadda-da-vida",
+      "captureFile": "harvest/iron-butterfly__in-a-gadda-da-vida/scrape.json",
+      "captureSha256": "6a374f57e26e9f0514484c3d5cc498932a6f6c812924be0aa5d2c340dedfd44e",
+      "sourceChordSha256": "783f491d699b3450bc95991726641bc67be7ee1f3d505f1d4fee091b65f214a0",
+      "jsonChordIndex": 6,
+      "renderedIndex": 6,
+      "counts": {
+        "json": 100,
+        "rendered": 100
+      }
+    },
+    "chord": {
+      "root": 1,
+      "beat": 6.5,
+      "duration": 1,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "mixolydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "dorian",
+        "tonic": "D"
+      },
+      {
+        "beat": 49,
+        "scale": "mixolydian",
+        "tonic": "G"
+      },
+      {
+        "beat": 65,
+        "scale": "minor",
+        "tonic": "A"
+      },
+      {
+        "beat": 81,
+        "scale": "mixolydian",
+        "tonic": "B"
+      },
+      {
+        "beat": 89,
+        "scale": "harmonicMinor",
+        "tonic": "D"
+      },
+      {
+        "beat": 97,
+        "scale": "dorian",
+        "tonic": "D"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "I",
+        "relX": 6,
+        "y": 844,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "4(b5)",
+        "relX": 11,
+        "y": 846,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "3",
+        "relX": 11,
+        "y": 852,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "(mix)",
+        "relX": 9,
+        "y": 858,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "D7",
+        "relX": 7,
+        "y": 884,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(b5)",
+        "relX": 13,
+        "y": 884,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/A",
+        "relX": 18,
+        "y": 884,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "I43(b5)(mix)",
+    "truthLetter": "D7(b5)/A"
+  },
+  {
+    "id": "janet-jackson__thats-the-way-love-goes/Chorus/31",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/janet-jackson/thats-the-way-love-goes",
+      "captureFile": "harvest/janet-jackson__thats-the-way-love-goes/scrape.json",
+      "captureSha256": "19f8eb8c06d727bfac8c577203aafc6272e176b178669101ea8e9697f67ee95a",
+      "sourceChordSha256": "0f7c2c1755c03b1b7e16411e1e217c9860f4e3ece3c13f0a1ebdac80bbb5e7b4",
+      "jsonChordIndex": 9,
+      "renderedIndex": 9,
+      "counts": {
+        "json": 11,
+        "rendered": 10
+      },
+      "alignmentReason": "Rendered capture omits final JSON chord at beat33; all ten captured entries form a prefix with stableX=39+36*(beat-1). Beat31 is renderedIndex9 at stableX1119; text gm(add9add4) includes additions."
+    },
+    "chord": {
+      "root": 1,
+      "beat": 31,
+      "duration": 2,
+      "type": 5,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        9,
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "minor",
+        "tonic": "G"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "i",
+        "relX": 5,
+        "y": 745,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "(add9add4)",
+        "relX": 11,
+        "y": 748,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "gm",
+        "relX": 14,
+        "y": 785,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(add9add4)",
+        "relX": 30,
+        "y": 784,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "i(add9add4)",
+    "truthLetter": "gm(add9add4)"
+  },
+  {
+    "id": "joni-mitchell__my-old-man/Chorus/12.5",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/joni-mitchell/my-old-man",
+      "captureFile": "harvest/joni-mitchell__my-old-man/scrape.json",
+      "captureSha256": "281488c40da613a924f564f90d6a532fdbfed8c7044ed967c4d099521de3db71",
+      "sourceChordSha256": "1a373f57e13edf1d8d11b3677f02a882857d35520aa180e9caa70d91fbdab6f8",
+      "jsonChordIndex": 5,
+      "renderedIndex": 5,
+      "counts": {
+        "json": 16,
+        "rendered": 16
+      }
+    },
+    "chord": {
+      "root": 5,
+      "beat": 12.5,
+      "duration": 2.5,
+      "type": 5,
+      "inversion": 1,
+      "applied": 5,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#5"
+      ],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "major",
+        "tonic": "A"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "V",
+        "relX": 4,
+        "y": 732,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "6(#5)",
+        "relX": 23,
+        "y": 735,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "sus4",
+        "relX": 23,
+        "y": 744,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "/",
+        "relX": 49,
+        "y": 731,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "V",
+        "relX": 64,
+        "y": 732,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "B",
+        "relX": 20,
+        "y": 770,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(#5)",
+        "relX": 32,
+        "y": 769,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "sus4",
+        "relX": 33,
+        "y": 776,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/E",
+        "relX": 48,
+        "y": 770,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "V6(#5)sus4/V",
+    "truthLetter": "B(#5)sus4/E"
+  },
+  {
+    "id": "judgment-bolt__deaths-dynamic-shroud/Intro/29",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/judgment-bolt/deaths-dynamic-shroud",
+      "captureFile": "harvest/judgment-bolt__deaths-dynamic-shroud/scrape.json",
+      "captureSha256": "833ef1ddc4563b597fb1223bccfaed9233a9c56d3448c5c8bc815cb606ccbd32",
+      "sourceChordSha256": "5bac7e9e55cae38e4843d591b02c2adf903d6f661ac7b49c225ad44d83f9b687",
+      "jsonChordIndex": 10,
+      "renderedIndex": 10,
+      "counts": {
+        "json": 15,
+        "rendered": 15
+      }
+    },
+    "chord": {
+      "root": 4,
+      "beat": 29,
+      "duration": 4,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "major",
+        "tonic": "Eb"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "IV",
+        "relX": 44,
+        "y": 786,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "△4(b5)",
+        "relX": 71,
+        "y": 790,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "3",
+        "relX": 79,
+        "y": 799,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "Abmaj7",
+        "relX": 28,
+        "y": 825,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(b5)",
+        "relX": 85,
+        "y": 824,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/Eb",
+        "relX": 99,
+        "y": 825,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "IV△43(b5)",
+    "truthLetter": "Abmaj7(b5)/Eb"
+  },
+  {
+    "id": "junko-yagami__mizu-iro-no-ame/Chorus/31",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/junko-yagami/mizu-iro-no-ame",
+      "captureFile": "harvest/junko-yagami__mizu-iro-no-ame/scrape.json",
+      "captureSha256": "11461bc8f463555ee755360e1f4e6fa1b144637d85436f11e3e1a1b9a9bf8879",
+      "sourceChordSha256": "12c92344428a0fce73604d4fd622219a1a136cec6180c5351d3e4fd080a40cb6",
+      "jsonChordIndex": 9,
+      "renderedIndex": 9,
+      "counts": {
+        "json": 17,
+        "rendered": 17
+      }
+    },
+    "chord": {
+      "root": 5,
+      "beat": 31,
+      "duration": 2,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "harmonicMinor",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "minor",
+        "tonic": "D"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "V",
+        "relX": 16,
+        "y": 722,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "4(b5)",
+        "relX": 31,
+        "y": 725,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "3",
+        "relX": 31,
+        "y": 732,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "(hmin)",
+        "relX": 22,
+        "y": 740,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "A7",
+        "relX": 14,
+        "y": 762,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(b5)",
+        "relX": 31,
+        "y": 760,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/E",
+        "relX": 41,
+        "y": 762,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "V43(b5)(hmin)",
+    "truthLetter": "A7(b5)/E"
+  },
+  {
+    "id": "kaku-p-model__go-for-it-halycon/Intro and Verse/7.5",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/kaku-p-model/go-for-it-halycon",
+      "captureFile": "harvest/kaku-p-model__go-for-it-halycon/scrape.json",
+      "captureSha256": "ca96bc84a800e6f54c245e1f6726a7401f520f6e8af37804c1b1d6757681e4d8",
+      "sourceChordSha256": "6a670d00cee99d664e4a69f02ff6649f73bb4737177be2ee1d6f59b5cfab58b7",
+      "jsonChordIndex": 13,
+      "renderedIndex": 13,
+      "counts": {
+        "json": 64,
+        "rendered": 64
+      }
+    },
+    "chord": {
+      "root": 2,
+      "beat": 7.5,
+      "duration": 0.5,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "lydian",
+        "tonic": "C"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "II",
+        "relX": 1,
+        "y": 1006,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "4(b5)",
+        "relX": 6,
+        "y": 1006,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "3",
+        "relX": 6,
+        "y": 1010,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "D7",
+        "relX": 3,
+        "y": 1042,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(b5)",
+        "relX": 6,
+        "y": 1042,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/A",
+        "relX": 8,
+        "y": 1042,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "II43(b5)",
+    "truthLetter": "D7(b5)/A"
+  },
+  {
+    "id": "kelela__contact/Verse/13",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/kelela/contact",
+      "captureFile": "harvest/kelela__contact/scrape.json",
+      "captureSha256": "5e75f6c2e9b76fffc45eb3db06f318c40235902b6d759e82a0c731baebca8f4e",
+      "sourceChordSha256": "929d857ff6a97ea09ab930dbe8619ad7b56c646f8455ce42da2496b24f80b407",
+      "jsonChordIndex": 3,
+      "renderedIndex": 3,
+      "counts": {
+        "json": 8,
+        "rendered": 8
+      }
+    },
+    "chord": {
+      "root": 3,
+      "beat": 13,
+      "duration": 4,
+      "type": 11,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "major",
+        "tonic": "A"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "iii",
+        "relX": 46,
+        "y": 797,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "11(#9)",
+        "relX": 67,
+        "y": 801,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "c#m11",
+        "relX": 42,
+        "y": 836,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(#9)",
+        "relX": 85,
+        "y": 835,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "iii11(#9)",
+    "truthLetter": "c#m11(#9)"
+  },
+  {
+    "id": "kevin-saunders-hayes__rapsittie-street-kids-believe-in-santa-main-theme/Verse/90",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/kevin-saunders-hayes/rapsittie-street-kids-believe-in-santa-main-theme",
+      "captureFile": "harvest/kevin-saunders-hayes__rapsittie-street-kids-believe-in-santa-main-theme/scrape.json",
+      "captureSha256": "5ce444d6f1a25e0b25c27e5ad1f5d8cd1b4d8507439c066b343d5ef701b2bb05",
+      "sourceChordSha256": "36086b451503816e7a5c003d5b4aeb8552473fa33c6d40da52cb879bdd4a5382",
+      "jsonChordIndex": 53,
+      "renderedIndex": 53,
+      "counts": {
+        "json": 100,
+        "rendered": 100
+      }
+    },
+    "chord": {
+      "root": 1,
+      "beat": 90,
+      "duration": 1,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": [
+        -1,
+        1,
+        3,
+        5,
+        6,
+        8,
+        10
+      ],
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "minor",
+        "tonic": "D#"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "bI",
+        "relX": 2,
+        "y": 754,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "△4(b5)",
+        "relX": 3,
+        "y": 754,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "3",
+        "relX": 3,
+        "y": 755,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "(bor)",
+        "relX": 3,
+        "y": 755,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "Dmaj7",
+        "relX": 2,
+        "y": 788,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(b5)",
+        "relX": 4,
+        "y": 788,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/A",
+        "relX": 4,
+        "y": 788,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "bI△43(b5)(bor)",
+    "truthLetter": "Dmaj7(b5)/A"
+  },
+  {
+    "id": "logan-whitehurst-and-the-junior-science-club__lizard-and-fish/Verse/3.25",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/logan-whitehurst-and-the-junior-science-club/lizard-and-fish",
+      "captureFile": "harvest/logan-whitehurst-and-the-junior-science-club__lizard-and-fish/scrape.json",
+      "captureSha256": "69b6e260318c5531064383af8a09639eef45fde105f53327364ed617e0e779f9",
+      "sourceChordSha256": "288d131314823df176dfc8e683d82149f75590636b74aaface2f5c8b8e19624e",
+      "jsonChordIndex": 4,
+      "renderedIndex": 4,
+      "counts": {
+        "json": 48,
+        "rendered": 48
+      }
+    },
+    "chord": {
+      "root": 1,
+      "beat": 3.25,
+      "duration": 0.5,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "mixolydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "major",
+        "tonic": "C"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "I",
+        "relX": 3,
+        "y": 729,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "4(b5)",
+        "relX": 7,
+        "y": 730,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "3",
+        "relX": 7,
+        "y": 733,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "(mix)",
+        "relX": 6,
+        "y": 737,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "C7",
+        "relX": 4,
+        "y": 766,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(b5)",
+        "relX": 9,
+        "y": 766,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/G",
+        "relX": 12,
+        "y": 766,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "I43(b5)(mix)",
+    "truthLetter": "C7(b5)/G"
+  },
+  {
+    "id": "logan-whitehurst-and-the-junior-science-club__lizard-and-fish/Verse/15.25",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/logan-whitehurst-and-the-junior-science-club/lizard-and-fish",
+      "captureFile": "harvest/logan-whitehurst-and-the-junior-science-club__lizard-and-fish/scrape.json",
+      "captureSha256": "69b6e260318c5531064383af8a09639eef45fde105f53327364ed617e0e779f9",
+      "sourceChordSha256": "c586077fb8dd9bba25c834dc81cdece47a77584d863713a75ef210ca724634f1",
+      "jsonChordIndex": 28,
+      "renderedIndex": 28,
+      "counts": {
+        "json": 48,
+        "rendered": 48
+      }
+    },
+    "chord": {
+      "root": 4,
+      "beat": 15.25,
+      "duration": 0.5,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "dorian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "major",
+        "tonic": "C"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "IV",
+        "relX": 3,
+        "y": 730,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "4(b5)",
+        "relX": 10,
+        "y": 731,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "3",
+        "relX": 10,
+        "y": 734,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "(dor)",
+        "relX": 7,
+        "y": 736,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "F7",
+        "relX": 5,
+        "y": 766,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(b5)",
+        "relX": 9,
+        "y": 766,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/C",
+        "relX": 12,
+        "y": 766,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "IV43(b5)(dor)",
+    "truthLetter": "F7(b5)/C"
+  },
+  {
+    "id": "michael-haggins__daybreak/Intro/24",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/michael-haggins/daybreak",
+      "captureFile": "harvest/michael-haggins__daybreak/scrape.json",
+      "captureSha256": "b527601c8bb6008ea55a0955dc2ee3996a40eba66f1206bb65122f811d5e0994",
+      "sourceChordSha256": "476279331d7c3951a0e0573d49f7059070033f96acd1ebbbee913702a0d0b5b1",
+      "jsonChordIndex": 6,
+      "renderedIndex": 6,
+      "counts": {
+        "json": 10,
+        "rendered": 10
+      }
+    },
+    "chord": {
+      "root": 1,
+      "beat": 24,
+      "duration": 1,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5",
+        "#9"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "phrygianDominant",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "major",
+        "tonic": "Db"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "I",
+        "relX": 6,
+        "y": 749,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "4(b5#9)",
+        "relX": 9,
+        "y": 750,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "3",
+        "relX": 9,
+        "y": 755,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "(phdm)",
+        "relX": 8,
+        "y": 759,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "Db7",
+        "relX": 7,
+        "y": 788,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(b5#9)",
+        "relX": 13,
+        "y": 787,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/Ab",
+        "relX": 19,
+        "y": 788,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "I43(b5#9)(phdm)",
+    "truthLetter": "Db7(b5#9)/Ab"
+  },
+  {
+    "id": "mizore__yashoku/Verse/7",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/mizore/yashoku",
+      "captureFile": "harvest/mizore__yashoku/scrape.json",
+      "captureSha256": "00b66cb34df8cc0ccbc5ebe3ff3cf4c5ce6052640416b5b47fbb3c3a799665c2",
+      "sourceChordSha256": "7304b435f94b3278d6c5ef70486df1ce5c6e1df7310b74f8ad2bce042943c232",
+      "jsonChordIndex": 3,
+      "renderedIndex": 3,
+      "counts": {
+        "json": 37,
+        "rendered": 37
+      }
+    },
+    "chord": {
+      "root": 1,
+      "beat": 7,
+      "duration": 2,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "mixolydian",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "minor",
+        "tonic": "D"
+      },
+      {
+        "beat": 37,
+        "scale": "minor",
+        "tonic": "A"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "I",
+        "relX": 21,
+        "y": 831,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "4(b5)",
+        "relX": 27,
+        "y": 834,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "3",
+        "relX": 27,
+        "y": 841,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "(mix)",
+        "relX": 24,
+        "y": 849,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "D7",
+        "relX": 14,
+        "y": 870,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(b5)",
+        "relX": 30,
+        "y": 869,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/A",
+        "relX": 40,
+        "y": 870,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "I43(b5)(mix)",
+    "truthLetter": "D7(b5)/A"
+  },
+  {
+    "id": "nct-dream__chiller/Pre-Chorus and Chorus/4",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/nct-dream/chiller",
+      "captureFile": "harvest/nct-dream__chiller/scrape.json",
+      "captureSha256": "ce4f0beef7753720296fcd76d94d9c6bac23cb6fddd4746da0038da409484dae",
+      "sourceChordSha256": "dfd51cbe910ff18096c73de980d2e45f9bb0202e6f2796c49fb961122324fd81",
+      "jsonChordIndex": 3,
+      "counts": {
+        "json": 41,
+        "rendered": 27
+      },
+      "alignmentReason": "All27captured rows map to JSONindices14..40 (beats17..48), proved by stableX=39+36*(beat-17) including 0.25beat subdivisions. The first14JSONchords at beats1..14 with adds[4] are outside the capture. Old truth d#m7 is a different chord at beat20/24/28/32 with no additions."
+    },
+    "chord": {
+      "root": 1,
+      "beat": 4,
+      "duration": 1,
+      "type": 7,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [
+        4
+      ],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "minor",
+        "tonic": "D#"
+      }
+    ],
+    "unresolved": "No rendered source evidence for beat4; prior expected label came from a different chord."
+  },
+  {
+    "id": "paul-mccartney__beautiful-night/Chorus/32",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/paul-mccartney/beautiful-night",
+      "captureFile": "harvest/paul-mccartney__beautiful-night/scrape.json",
+      "captureSha256": "7e95fb3c39fccee921daeadfdea593d0d2e68f34777d4d6047e7fd57d8921b6f",
+      "sourceChordSha256": "6a0953ba57afabd2cc79e7179f1f58b457b89dc53b5c01217d941caedca1b3c1",
+      "jsonChordIndex": 15,
+      "renderedIndex": 15,
+      "counts": {
+        "json": 16,
+        "rendered": 16
+      }
+    },
+    "chord": {
+      "root": 6,
+      "beat": 32,
+      "duration": 1,
+      "type": 5,
+      "inversion": 2,
+      "applied": 5,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [
+        "#5"
+      ],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "major",
+        "tonic": "C"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "V",
+        "relX": 2,
+        "y": 731,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "6(add6)(#5)",
+        "relX": 7,
+        "y": 731,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "4sus4",
+        "relX": 7,
+        "y": 733,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "/",
+        "relX": 22,
+        "y": 731,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "vi",
+        "relX": 25,
+        "y": 731,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "E",
+        "relX": 7,
+        "y": 766,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(add6)(#5)",
+        "relX": 9,
+        "y": 765,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "sus4",
+        "relX": 9,
+        "y": 767,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/B#",
+        "relX": 19,
+        "y": 766,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "V6(add6)(#5)4sus4/vi",
+    "truthLetter": "E(add6)(#5)sus4/B#"
+  },
+  {
+    "id": "richard-jacques__the-factory-of-a-better-tomorrow/Intro/8",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/richard-jacques/the-factory-of-a-better-tomorrow",
+      "captureFile": "harvest/richard-jacques__the-factory-of-a-better-tomorrow/scrape.json",
+      "captureSha256": "3be5c58e495e5d26624238090cdf8a08ec67e3b0e02d68c4d0f9a75d64b9dfb4",
+      "sourceChordSha256": "f7fb281ff2c407f7f8b3c73da6da9c12a914604b497afdbf4e39ab7b2a6841f8",
+      "jsonChordIndex": 8,
+      "renderedIndex": 8,
+      "counts": {
+        "json": 10,
+        "rendered": 10
+      }
+    },
+    "chord": {
+      "root": 5,
+      "beat": 8,
+      "duration": 0.5,
+      "type": 7,
+      "inversion": 2,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "b5"
+      ],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "major",
+        "tonic": "G"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "V",
+        "relX": 1,
+        "y": 698,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "4(b5)",
+        "relX": 6,
+        "y": 698,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "3",
+        "relX": 6,
+        "y": 701,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "D7",
+        "relX": 3,
+        "y": 734,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(b5)",
+        "relX": 6,
+        "y": 734,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/A",
+        "relX": 8,
+        "y": 734,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "V43(b5)",
+    "truthLetter": "D7(b5)/A"
+  },
+  {
+    "id": "the-beach-boys__lets-go-away-for-awhile/Verse/9",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/the-beach-boys/lets-go-away-for-awhile",
+      "captureFile": "harvest/the-beach-boys__lets-go-away-for-awhile/scrape.json",
+      "captureSha256": "ba5eb5dfa86b20c62a515c3469963402d52f6d16f7e36c4662ad7bd2e8d31288",
+      "sourceChordSha256": "807a0d07ab41eda3ad226f299454c887d8780ded943d00fb2c3f76c85d04def8",
+      "jsonChordIndex": 1,
+      "renderedIndex": 1,
+      "counts": {
+        "json": 14,
+        "rendered": 14
+      }
+    },
+    "chord": {
+      "root": 6,
+      "beat": 9,
+      "duration": 4,
+      "type": 5,
+      "inversion": 2,
+      "applied": 5,
+      "adds": [
+        6
+      ],
+      "omits": [],
+      "alterations": [
+        "#5"
+      ],
+      "suspensions": [
+        4
+      ],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": null,
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "major",
+        "tonic": "F"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "V",
+        "relX": 10,
+        "y": 709,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "6(add6)(#5)",
+        "relX": 30,
+        "y": 713,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "4sus4",
+        "relX": 30,
+        "y": 722,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "/",
+        "relX": 95,
+        "y": 709,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "vi",
+        "relX": 110,
+        "y": 709,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "A",
+        "relX": 32,
+        "y": 748,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(add6)(#5)",
+        "relX": 46,
+        "y": 747,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "sus4",
+        "relX": 47,
+        "y": 754,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "/E#",
+        "relX": 83,
+        "y": 748,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "V6(add6)(#5)4sus4/vi",
+    "truthLetter": "A(add6)(#5)sus4/E#"
+  },
+  {
+    "id": "the-beach-boys__pet-sounds/Chorus/47",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/the-beach-boys/pet-sounds",
+      "captureFile": "harvest/the-beach-boys__pet-sounds/scrape.json",
+      "captureSha256": "afa947f12a3c4161f1848bd413d9836f84772c9662b172b70ae94a2bb986f570",
+      "sourceChordSha256": "ad6d81e2b3e806bb51ff78c9231b8ddcbdf73cf426aaa46277052ac236b0bdbd",
+      "jsonChordIndex": 21,
+      "renderedIndex": 21,
+      "counts": {
+        "json": 25,
+        "rendered": 25
+      }
+    },
+    "chord": {
+      "root": 3,
+      "beat": 47,
+      "duration": 2,
+      "type": 11,
+      "inversion": 0,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [
+        "#9"
+      ],
+      "suspensions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "major",
+        "tonic": "Bb"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "iii",
+        "relX": 10,
+        "y": 797,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "11(#9)",
+        "relX": 31,
+        "y": 801,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "dm11",
+        "relX": 14,
+        "y": 838,
+        "fill": "#dae0e6"
+      },
+      {
+        "s": "(#9)",
+        "relX": 44,
+        "y": 837,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "iii11(#9)",
+    "truthLetter": "dm11(#9)"
+  },
+  {
+    "id": "windows96__visage/Intro and Verse/53",
+    "source": {
+      "url": "https://www.hooktheory.com/theorytab/view/windows96/visage",
+      "captureFile": "harvest/windows96__visage/scrape.json",
+      "captureSha256": "299f900708f182b43179b3aaca662a350c003ff7a678107ecae258fcc1857a4f",
+      "sourceChordSha256": "9af3e998cd0ac1c9d3750f69298ebfa3eaa71d34fe1da7d8346a407083ce8d32",
+      "jsonChordIndex": 9,
+      "renderedIndex": 9,
+      "counts": {
+        "json": 11,
+        "rendered": 11
+      }
+    },
+    "chord": {
+      "root": 5,
+      "beat": 53,
+      "duration": 4,
+      "type": 13,
+      "inversion": 6,
+      "applied": 0,
+      "adds": [],
+      "omits": [],
+      "alterations": [],
+      "suspensions": [],
+      "substitutions": [],
+      "pedal": null,
+      "alternate": "",
+      "borrowed": "",
+      "isRest": false,
+      "recordingEndBeat": null
+    },
+    "keyChanges": [
+      {
+        "beat": 1,
+        "scale": "major",
+        "tonic": "Bb"
+      }
+    ],
+    "fragments": [
+      {
+        "s": "V",
+        "relX": 61,
+        "y": 775,
+        "fill": "#ffffff"
+      },
+      {
+        "s": "F13",
+        "relX": 58,
+        "y": 814,
+        "fill": "#dae0e6"
+      }
+    ],
+    "truthRoman": "V",
+    "truthLetter": "F13"
+  }
+]

@@ -149,6 +149,9 @@ enum ChordVoicing {
         let scale = custom != nil ? "custom" : borrowed.isEmpty ? key.scale : borrowed
         let halfDim = chord.chordFlag("halfDim")
         let dimTriad = chord.chordFlag("dimTriad")
+        let hasAppliedContext = chord["appliedContext"]?.objectValue != nil
+        let rawOmittedFifthSeventh = omits.contains(5) && !halfDim && !dimTriad
+            && !hasAppliedContext && chord.chordInt("applied") != 7
         let sharp5Minor = alts.contains("#5") && rawQuality == "diminished"
         let halfDimIi = !sus && root == 2 && scale == "major" && type >= 7 && halfDim
         let customHalf = custom != nil && halfDim
@@ -230,7 +233,7 @@ enum ChordVoicing {
                     else if rawQuality == "diminished" && alts.contains("#5") { seventh = 10 }
                     else { seventh = chord.chordFlag("useMaj7") ? 11 : 10 }
                 } else if omit35 {
-                    seventh = halfDim ? 9 : sus ? 10 : dimScale ? 9 : diatonic7
+                    seventh = halfDim ? 9 : sus ? 10 : rawOmittedFifthSeventh ? diatonic7 : dimScale ? 9 : diatonic7
                 } else if augStack { seventh = 11 }
                 else if m6Stack { seventh = 9 }
                 else if phdmII && suspensions.contains(2) && !suspensions.contains(4) { seventh = 11 }
@@ -241,6 +244,7 @@ enum ChordVoicing {
                 else if dimTriad { seventh = 9 }
                 else if custom != nil && rawQuality == "diminished" { seventh = diatonic7 }
                 else if phdmII { seventh = 11 }
+                else if rawOmittedFifthSeventh { seventh = diatonic7 }
                 else { seventh = dimScale ? 9 : diatonic7 }
                 tone(seventh, m6Stack ? 9 : 3, m6Stack ? 6 : 7, !appliedFrame && omit35)
             }
@@ -259,7 +263,8 @@ enum ChordVoicing {
         }
         if type >= 13 { append(21, 6, 13, true) }
         else if type >= 11 && appliedFrame && alts.contains("b5") && !has(9) { removeFirst(5); tone(21, 6, 13, true) }
-        if !appliedFrame && type == 11 && scale == "minor" && root == 2 && !dimTriad && !sus,
+        let rawLydianFourth = borrowed == "lydian" && root == 4 && !halfDim
+        if !appliedFrame && type == 11 && ((scale == "minor" && root == 2) || rawLydianFourth) && !dimTriad && !sus,
            let rootTone = tones.first(where: { $0.slot == 0 }) {
             for (role, semitones, degree) in [(3, 10, 7), (4, 1, 9), (5, 5, 11)] {
                 if let index = tones.firstIndex(where: { $0.slot == role }) {
@@ -279,7 +284,7 @@ enum ChordVoicing {
                 guard role == 4 || role == 5 else { continue }
                 if !customExtensions && role == 5 && scale != "lydian" { continue }
                 let minorSupertonicNinth = role == 4 && scale == "minor" && root == 2
-                if !customExtensions && quality == "diminished" && !minorSupertonicNinth { continue }
+                if !customExtensions && quality == "diminished" && !minorSupertonicNinth && !rawLydianFourth { continue }
                 let extensionDegree = role == 4 ? 9 : 11
                 let targetDegree = mod(root + extensionDegree - 2, 7) + 1
                 let desired = pc(note(targetDegree, KeyInfo(tonic: key.tonic, scale: scale), custom))
@@ -302,9 +307,24 @@ enum ChordVoicing {
                 }
             }
         }
+        // Raw diminished no5/sus2 uses the prevailing scale's second; explicit
+        // symbol frames preserve their separate suspension policy.
+        if !appliedFrame && rawQuality == "diminished" && omits.contains(5)
+            && suspensions.contains(2) && !halfDim && !dimTriad
+            && !hasAppliedContext && chord.chordInt("applied") == 0,
+           let index = tones.firstIndex(where: { $0.slot == 7 }) {
+            let desired = pc(note(root % 7 + 1, KeyInfo(tonic: key.tonic, scale: scale), custom))
+            var shift = desired - mod(tones[index].midi)
+            if shift > 6 { shift -= 12 }
+            if shift < -6 { shift += 12 }
+            tones[index] = tones[index].shifted(shift)
+        }
         let modifierHalf = appliedFrame ? halfDim : !dimTriad && (halfDim || policyHalf)
+        let retainHalfDimFifth = appliedFrame
+            ? (chord["retainHalfDimOmittedFifth"]?.boolValue ?? (halfDim && !dimTriad))
+            : halfDim && !dimTriad
         var effectiveOmits = omits
-        if modifierHalf && omits.contains(5) { effectiveOmits = omits.filter { $0 != 5 } }
+        if retainHalfDimFifth && omits.contains(5) { effectiveOmits = omits.filter { $0 != 5 } }
         if omits.contains(3) && (suspensions.contains(2) || suspensions.contains(4)) { effectiveOmits = omits.filter { $0 != 3 } }
         if !appliedFrame && quality == "augmented" && omits.contains(5) && ((!omits.contains(3) && type < 7) || omits.contains(3)) {
             effectiveOmits = omits.filter { $0 != 5 }
@@ -352,6 +372,14 @@ enum ChordVoicing {
             default: continue
             }
             let slot = spec.degree == 9 ? 4 : spec.degree == 11 ? 5 : 6
+            if type >= 9 && type <= 11 && ["b9", "#9", "9"].contains(alt),
+               let index = tones.firstIndex(where: { $0.slot == 4 }) {
+                var shift = mod(rootMidi + 2 + spec.delta) - mod(tones[index].midi)
+                if shift > 6 { shift -= 12 }
+                if shift < -6 { shift += 12 }
+                if shift != 0 { tones[index] = tones[index].shifted(shift) }
+                continue
+            }
             if alt == "#9" && type >= 13 { append(6, 5, 11) }
             if alt == "b13" && (minorV13 || minorI13 || hmV13) { append(20, 6, 13, true); continue }
             if alt == "#11" && suspensions.contains(4) { append(18, 5, 11, true); continue }
@@ -385,10 +413,14 @@ enum ChordVoicing {
                 let bassOctave = max(1, rotated[0].writtenOctave - 1)
                 let upperOctave = max(rotated.dropFirst().map(\.writtenOctave).max() ?? 0, bassOctave + 1)
                 tones = rotated.enumerated().map { index, tone in
-                    .init(midi: ((index == 0 ? bassOctave : upperOctave) + 1) * 12 + mod(tone.midi), slot: tone.slot, degree: tone.degree)
+                    // Written Cb/B# retain their -1/12 offset when changing octaves.
+                    let writtenPitch = tone.midi - (tone.writtenOctave + 1) * 12
+                    return .init(midi: ((index == 0 ? bassOctave : upperOctave) + 1) * 12 + writtenPitch, slot: tone.slot, degree: tone.degree)
                 }
             } else {
-                for _ in 0..<inversion { let moved = tones.removeFirst(); tones.append(moved.raisedOctave()) }
+                let rotation = inversion == 3 && omits.contains(5) && !halfDim && !dimTriad
+                    ? (tones.firstIndex(where: { $0.slot == 3 }) ?? inversion) : inversion
+                for _ in 0..<rotation { let moved = tones.removeFirst(); tones.append(moved.raisedOctave()) }
             }
         }
         if !appliedFrame && type < 7 && inversion == 2 && omits.contains(3) && !omits.contains(5) && tones.count == 2,
@@ -397,7 +429,7 @@ enum ChordVoicing {
             tones = [fifth, rootTone]
         }
         if inversion == 0 {
-            let spread = appliedFrame ? (fullyDim || (quality == "diminished" && type >= 7))
+            let spread = appliedFrame ? type >= 7 && (fullyDim || quality == "diminished")
                 : type >= 7 && !customHalf && !sharp5Minor && (rawQuality == "diminished" || halfDimIi || dimScale)
             if spread && tones.count >= 4 {
                 let rootOctave = tones[0].writtenOctave

@@ -1,7 +1,8 @@
 # Chord interpretation contract and source evidence
 
-The shared fixtures have two separate purposes. `corpus_parity.json` and the
-`expected*` fields in `hooktheory_parity.json` describe the common app contract:
+The shared fixtures have two separate purposes. `corpus_parity.json`,
+`historic_catalog_parity.json`, and the `expected*` fields in
+`hooktheory_parity.json` describe the common app contract:
 Roman string, letter string, ordered MIDI/notes, resolved harmonic root, and
 ordered chord-tone labels. All three implementations must match these
 fields for every fixture ID. Generated app output is a parity reference, not an
@@ -43,7 +44,9 @@ sus2/sus4 chords sound, suspended ninth voicings omit the fifth, and elevenths
 omit the third and implicit fifth while preserving their scale-specific
 extensions. The findings file records exact chord IDs, keys, labels and
 keyboard notes. Explicit fifth alterations on elevenths have no example in the
-existing source corpora and remain a stated source-rule boundary. One frozen
+original 1,824 cases or four tracked oracle shards. The larger historical
+catalog does contain such objects; their individual keyboard treatment has
+not been independently rechecked and remains a stated source-rule boundary. One frozen
 Lady Gaga bridge pitch list is contradictory and the live section has changed;
 that historical field is explicitly unresolved, with its original evidence
 fingerprinted. The corresponding minor-scale ii eleventh rule is independently
@@ -54,6 +57,7 @@ Validation commands:
 
 ```text
 npm run test:shared-parity
+npm run test:historical-accuracy
 npm run test:chord-interpretation
 node tooling/scripts/sourceAccuracyUnitTest.mjs
 node tooling/scripts/chordLetterFormatTest.mjs
@@ -100,3 +104,57 @@ then a suspended or eleventh chord, and finally an inverted chord. Confirm the
 Roman and letter displays agree, the note cards retain suspension/extension
 roles, and the root target stays the harmonic root as the bass changes. This
 check does not require a release or changes to the catalog.
+
+## Historical regression gate — 2026-09-08
+
+The recovered July 25 catalog contains 91,107 occurrences from 1,969 songs,
+representing 21,464 complete interpretive inputs and 22,072 input/truth groups.
+The new historical parity corpus adds every distinct input to all three native
+gates, bringing the combined case count to 39,018. Only recording timing fields
+are removed when identifying equal inputs; keys, borrowing arrays and optional
+interpretation flags remain part of the identity.
+
+The independent historical accuracy fixture preserves each source field that
+matched the raw web decoder at the July 25 `35fd7c24`, July 31 `a60fe900`, or
+pre-upgrade `f0c4e8e7` checkpoint. The July 25 comparison added 291 pitch
+assertions (610 occurrences) missed by the newer baseline. Passing is based on
+individual fields, not an aggregate improvement or discrepancy allowance.
+The source fixture, complete input identity, and every reviewed source record
+are fingerprinted separately from generated parity expectations.
+
+Historical stored pitches were mostly inferred from labels. The review retains
+the original values and distinguishes positioned SVG repairs, capture alignment
+repairs, direct live keyboard observations and applications of independently
+verified musical rules. `historic_notation_evidence.json` preserves raw fragments
+and source hashes. `historic_catalog_review.json` records each correction and
+its provenance. Regenerating app parity cannot change these accuracy assertions.
+
+This pass also checked the historical policy, scale-degree, Roman rendering,
+pronunciation and note-order suites. The old strict note-order diagnostic already
+had failures before this upgrade; the historical audit found no newly failing
+IDs at the initial upgrade checkpoint. It is not a claim that every legacy
+source-derived bass assertion has been independently replayed. Default smoke
+tests and comparisons using truth-enriched chord objects are weaker evidence
+than the new raw-object source gate.
+
+New live checks cover Dvorak's omitted-fifth third inversion, Grieg's root-position
+half-diminished omission, Junko Shiratsu's flattened suspended second, They Might
+Be Giants' dual suspension, and Gentle Giant's borrowed-Lydian eleventh. They
+establish the omitted fifth, retained seventh and suspension roles, and the
+four-tone eleventh shell. Explicit `halfDim`/`dimTriad` inputs retain their
+historical symbol-frame policies; inferred diminished quality no longer silently
+grants an explicit half-diminished omission exception.
+
+One additional historical label group remains unresolved: NCT Dream, Chiller,
+beats 4/9/14 lie outside the captured rendering, whose labels start at beat 17.
+Those three occurrences are reported as an ambiguity, never as verified passes.
+The earlier Gaga capture ambiguity and explicit-fifth eleventh boundary remain
+disclosed above. No catalog, UI redesign, release or deployment work is included.
+
+Local validation of the historical extension: all 39,018 web/Android parity
+cases match on six fields; Android reports 80 tests in 18 suites with no failures
+or skips. `npm run test:historical-accuracy` passes 51,774 assertions, with one
+separately reported grouped ambiguity. `npm run test:source-accuracy` still
+passes 5,471 source assertions and two rule assertions. Chord-role/transposition,
+policy, scale-degree, Roman-rendering, pronunciation and letter-format checks
+pass. Swift syntax checks passed; final runtime validation uses macOS CI.

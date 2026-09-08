@@ -287,19 +287,21 @@ async function exportCorpus() {
 
 async function refreshRealParitySnapshot() {
   const { interpretChordContract } = await import('../../web/lib/chordContract.js');
-  const file = path.join(repoRoot, 'contracts/fixtures/hooktheory_parity.json');
-  const cases = JSON.parse(fs.readFileSync(file, 'utf8'));
-  for (const test of cases) {
-    const actual = interpretChordContract(JSON.parse(test.json), test.key);
-    Object.assign(test, {
-      expectedRoman: actual.roman, expectedLetter: actual.letter,
-      expectedPcs: actual.pcs, expectedMidi: actual.midi,
-      expectedRootMidi: actual.rootMidi, expectedToneLabels: actual.toneLabels,
-    });
+  for (const name of ['hooktheory_parity', 'historic_catalog_parity']) {
+    const file = path.join(repoRoot, 'contracts/fixtures', `${name}.json`);
+    const cases = JSON.parse(fs.readFileSync(file, 'utf8'));
+    for (const test of cases) {
+      const actual = interpretChordContract(JSON.parse(test.json), test.key);
+      Object.assign(test, {
+        expectedRoman: actual.roman, expectedLetter: actual.letter,
+        expectedPcs: actual.pcs, expectedMidi: actual.midi,
+        expectedRootMidi: actual.rootMidi, expectedToneLabels: actual.toneLabels,
+      });
+    }
+    // Accuracy fixtures/reviews are deliberately not regenerated here.
+    fs.writeFileSync(file, '[\n' + cases.map((test) => '  ' + JSON.stringify(test)).join(',\n') + '\n]\n');
+    console.log(`Refreshed ${name} parity snapshot (${cases.length} cases); source truth unchanged.`);
   }
-  // Preserve id, input, occurrence counts and all independent truth* fields.
-  fs.writeFileSync(file, '[\n' + cases.map((test) => '  ' + JSON.stringify(test)).join(',\n') + '\n]\n');
-  console.log('Refreshed real-song parity snapshot (' + cases.length + ' cases); source truth unchanged.');
 }
 
 exportCorpus().then(() => refreshRealParitySnapshot()).catch((error) => {

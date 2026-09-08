@@ -89,7 +89,7 @@ public enum ChordInterpreter {
                 majorSeventh: majorSeventh,
                 fullyDiminished: applied == 7 && !tritoneSubstitution
             )
-            let numeratorTag = key.scale == "minor" ? "(maj)" : ""
+            let numeratorTag = !tritoneSubstitution && ["minor", "dorian", "phrygian", "lydian", "mixolydian", "locrian", "phrygianDominant"].contains(key.scale) ? "(maj)" : ""
             return numerator + (tritoneSubstitution ? "(∆-sub)" : "") + numeratorTag + "/" + target.denominator + borrowedTag(for: chord)
         }
 
@@ -221,7 +221,7 @@ public enum ChordInterpreter {
         let prefix = String(repeating: shift < 0 ? "♭" : "♯", count: abs(shift))
         let numeral = romanMap[root] ?? ""
         let denominator = quality == "minor" || quality == "diminished" ? numeral.lowercased() : numeral
-        return (tonic, prefix + denominator + (quality == "diminished" ? "°" : ""))
+        return (tonic, prefix + denominator + (quality == "diminished" ? "°" : quality == "augmented" ? "+" : ""))
     }
 
     private static func roleNoteName(_ tone: ChordTone, rootMidi: Int, tonic: String) -> String {
@@ -549,7 +549,7 @@ public enum ChordInterpreter {
         var placedOmits = false
         var placedAdds = false
 
-        if quality == "augmented" || (quality == "major" && alterations.contains("#5") && !suppressPlus) { result += "+" }
+        if quality == "augmented" || (quality == "major" && !suspended && alterations.contains("#5") && !suppressPlus) { result += "+" }
         if !suspended {
             if quality == "diminished", !suppressDiminished {
                 result += implicitHalfDiminished ? "ø" : "°"
