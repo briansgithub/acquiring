@@ -76,7 +76,7 @@ rows remain Partial until required final evidence is gathered.
 
 ### Home update indicators — 2026-09-08
 
-`[review]` User-requested implementation on `codex/ios-update-indicators` in the
+`[approved]` User-requested implementation on `codex/ios-update-indicators` in the
 separate `H:/Desktop/Acquiring-ios-update-indicators` worktree. UI/integration route:
 Terra/high; release tooling and final integration: current runtime model unknown.
 This user-requested feature takes precedence over the A–F execution order; prior
@@ -101,13 +101,13 @@ Validation in this Windows worktree:
   — passed, exit 0.
 
 Swift/Xcode are absent here, and the configured Mac hostname/LAN connection was
-unreachable. The incremental iPhone 17 build/install/launch and four focused
-`testExternalBeta...` app tests are **not run**. They remain the next verification
-step on a Mac. No full suite or screenshots were run locally; no merge,
-TestFlight upload, or live metadata publication was performed. The user
-subsequently authorized committing and publishing this branch; use Git for the
-current commit and remote status. The published branch includes the new files,
-so the Mac can fetch it without transferring uncommitted changes manually.
+unreachable during implementation. On the Mac, `bash ios/scripts/run-sim.sh`
+built, installed, and launched the app on the iPhone 17 simulator, exit 0. The six
+focused external-beta/catalog update tests listed in the branch handoff passed via
+`xcodebuild -quiet test`, exit 0. No full suite or screenshots were run. The
+beta-only fixture was staged for review, but the four-state perceptual review was
+not completed; the user explicitly directed merge and cleanup without waiting for
+that confirmation. No TestFlight upload or live metadata publication was performed.
 
 After merge, enable the hourly publisher using the Actions secrets and variable
 listed in `ios/scripts/README-asc-api.md`; no repository Actions secrets were
