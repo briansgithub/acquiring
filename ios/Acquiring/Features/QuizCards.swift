@@ -183,6 +183,7 @@ struct QuizCardsView: View {
             }
             .frame(height: 44)
         }
+        .quizHelpTarget(.quizNotes)
     }
 
     /// Root-only intentionally renders only the requested scale degree. Source note
@@ -321,6 +322,7 @@ struct QuizCardsView: View {
                 )
             }
         }
+        .quizHelpTarget(.quizNotes)
     }
 
     @ViewBuilder
@@ -354,6 +356,7 @@ struct QuizCardsView: View {
                 .frame(maxWidth: .infinity, minHeight: compact ? 34 : 58)
             }
             .frame(maxWidth: .infinity)
+            .quizHelpTarget(.quizChord)
             } else {
                 QuizEmptyCardSlot(
                     fixedHeight: compact ? 44 : nil
@@ -385,6 +388,7 @@ struct QuizCardsView: View {
                 )
             }
         }
+        .quizHelpTarget(.quizNotes)
     }
 
     private func toneCard(

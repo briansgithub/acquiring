@@ -9,6 +9,28 @@ import UIKit
 
 final class AcquiringTests: XCTestCase {
     @MainActor
+    func testOpeningHelpDuringCollapsePreservesSingBackTargets() async throws {
+        let model = VocalPracticeModel(audio: AppAudioSystem())
+        let request = SingingTargetRequest(
+            first: SingingTargetNote(sourceMIDI: 60, scaleDegreeLabel: "1"),
+            second: SingingTargetNote(sourceMIDI: 67, scaleDegreeLabel: "5"),
+            requestID: 1
+        )
+        model.requestSingBack(request)
+        model.minimize()
+        model.expandForHelp()
+
+        // Cross the delayed collapse cleanup deadline. Help must cancel the
+        // cleanup, not merely reopen the dock while the clear is still queued.
+        try await Task.sleep(for: .milliseconds(350))
+        XCTAssertTrue(model.isExpanded)
+        XCTAssertEqual(model.targetRequest, request)
+        XCTAssertFalse(model.isManualPracticeActive)
+        XCTAssertNil(model.recordingSlot)
+        XCTAssertNil(model.listeningSlot)
+    }
+
+    @MainActor
     func testQuizInstrumentSessionSeparatesCurrentSelectionFromSavedDefault() throws {
         let suiteName = "AcquiringTests.QuizInstrument.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))

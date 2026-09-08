@@ -1885,3 +1885,20 @@ publication, screenshot inspection, or full-app test sweep occurred. Earlier
 review statuses are retained. Commands, artifact locations, future scheduled
 update sequence, and the focused review script are in
 [catalog-display-names.md](catalog-display-names.md).
+
+### Quiz tooltips and illustrated notation Help — 2026-09-08
+
+`[review]` Implemented on `codex/ios-quiz-help` with Terra/medium UI agents and
+primary integration review. Contextual hints cover the selected quiz cards and
+expanded singing tool; Settings Help is limited to card notation and tessitura.
+First-launch Introduction is preserved. Mac build/install/launch passed on the
+warm iPhone 17. Fixed the Help dismiss identifier and overlapping Play placement;
+transport now reserves bottom space, with a dashboard scrolling fallback.
+Three focused methods passed. All core dismissal/state assertions passed in both
+500 Miles modes; added VoiceOver assertions failed and were deferred at the user's
+request. Accessibility experiments were reverted; no final all-green test rerun.
+Human review remains pending for layout, notation, scrolling/gestures, and existing
+practice-session variants. VoiceOver is low priority and must not be resumed
+without a new request. See [the branch handoff](ios-quiz-help-handoff.md) for exact
+commands, results, and remaining review items. No screenshots, full-app suite,
+physical-device testing, or release was performed.
