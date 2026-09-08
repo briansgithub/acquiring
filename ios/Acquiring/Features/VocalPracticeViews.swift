@@ -6,7 +6,9 @@ import UIKit
 struct IntervalSingingTool: View {
     @Bindable var model: VocalPracticeModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.quizHelpState) private var quizHelp
     @State private var showsPersistentDetails = false
+    @State private var restoresPersistentDetailsAfterHelp = false
 
     var body: some View {
         VStack(spacing: 6) {
@@ -49,6 +51,7 @@ struct IntervalSingingTool: View {
                     .accessibilityLabel("Tessitura")
                     .accessibilityValue(model.comfortablePitchLabel ?? "Comfortable pitch not set")
                     .accessibilityIdentifier("vocal.practice.tessitura")
+                    .quizHelpTarget(.vocalTessitura)
                 } else {
                     Image(systemName: "waveform")
                     VStack(alignment: .leading, spacing: 1) {
@@ -89,7 +92,9 @@ struct IntervalSingingTool: View {
                     // below the row instead, where a sentence fits.
                     HStack(spacing: 6) {
                         pitchCard(slot: 1)
+                            .quizHelpTarget(.vocalPitchCards)
                         pitchCard(slot: 2)
+                            .quizHelpTarget(.vocalPitchCards)
                         intervalCard
                     }
                     if let error = model.errorMessage {
@@ -111,6 +116,23 @@ struct IntervalSingingTool: View {
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.22), value: model.isExpanded)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("vocal.practice.dock")
+        .onChange(of: quizHelp?.isPresented) { _, presented in
+            guard let quizHelp else { return }
+            if presented == true {
+                restoresPersistentDetailsAfterHelp = showsPersistentDetails
+                showsPersistentDetails = false
+                model.expandForHelp()
+                updateHelpModes(quizHelp)
+            } else if restoresPersistentDetailsAfterHelp {
+                showsPersistentDetails = true
+                restoresPersistentDetailsAfterHelp = false
+            }
+        }
+        .onChange(of: model.isFlipFlopEnabled) { _, _ in updateHelpModes() }
+        .onChange(of: model.recordingSlot) { _, _ in updateHelpModes() }
+        .onChange(of: model.listeningSlot) { _, _ in updateHelpModes() }
+        .onChange(of: model.slot1) { _, _ in updateHelpModes() }
+        .onChange(of: model.slot2) { _, _ in updateHelpModes() }
     }
 
     private var minimizedSummary: String? {
@@ -136,7 +158,7 @@ struct IntervalSingingTool: View {
             remainingMilliseconds: model.captureRemainingMilliseconds,
             isEnabled: !model.isFlipFlopEnabled && !isRecording,
             showsPitchHint: !model.isFlipFlopEnabled && !isRecording,
-            isTessituraAdjusted: model.isSingingTargetTessituraAdjusted(slot: slot),
+            isTessituraEnabled: model.comfortablePitchMIDI != nil,
             anchorMIDI: anchorMIDI(slot: slot),
             play: { model.playSlot(slot) },
             record: { model.toggleRecording(slot: slot) }
@@ -183,6 +205,16 @@ struct IntervalSingingTool: View {
         .accessibilityValue(model.measuredInterval.map { "\($0.namedInterval.spokenName), \(PersistentPitchFeedback.formatCentsError($0.centsDeviation))" } ?? "Record both notes")
         .accessibilityHint("Plays the first note, second note, then both together")
         .accessibilityIdentifier("vocal.practice.interval")
+        .quizHelpTarget(.vocalInterval)
+    }
+
+    private func updateHelpModes(_ state: QuizHelpState? = nil) {
+        let state = state ?? quizHelp
+        guard let state, state.isPresented else { return }
+        state.pitchCardsMode = model.isFlipFlopEnabled
+            ? .flipFlop
+            : (model.recordingSlot != nil || model.listeningSlot != nil ? .capturing : .standard)
+        state.intervalMode = model.slot1 != nil && model.slot2 != nil ? .captured : .uncaptured
     }
 
     private var persistentFeedback: some View {
@@ -240,7 +272,7 @@ private struct DockPitchCard: View {
     let remainingMilliseconds: Int
     let isEnabled: Bool
     let showsPitchHint: Bool
-    let isTessituraAdjusted: Bool
+    let isTessituraEnabled: Bool
     /// Where the tape parks while a recording card is still waiting for its first voiced
     /// frame. The gauge is on screen from the moment recording starts, so there has to be a
     /// pitch under it before the singer has sung one.
@@ -319,7 +351,7 @@ private struct DockPitchCard: View {
         }
         .overlay(alignment: .topTrailing) {
             if showsPitchHint {
-                PitchHintDot(isAdjusted: isTessituraAdjusted).padding(5)
+                PitchHintDot(isAdjusted: isTessituraEnabled).padding(5)
             }
         }
         .contentShape(RoundedRectangle(cornerRadius: 8))
@@ -328,7 +360,7 @@ private struct DockPitchCard: View {
         .accessibilityElement(children: .ignore)
         .accessibilityAddTraits(.isButton)
         .accessibilityLabel(title)
-        .accessibilityValue("\(sample?.pitchLabel ?? (isActive ? "Waiting for a voiced pitch" : "No pitch")), \(isReference ? "Reference" : sample.map { errorText($0.centsFromReference) } ?? ""), \(status), \(isTessituraAdjusted ? "Tessitura adjusted" : "Original target octave")")
+        .accessibilityValue("\(sample?.pitchLabel ?? (isActive ? "Waiting for a voiced pitch" : "No pitch")), \(isReference ? "Reference" : sample.map { errorText($0.centsFromReference) } ?? ""), \(status), \(isTessituraEnabled ? "Tessitura enabled" : "Original target octave")")
         .accessibilityHint(
             isEnabled
                 ? "Single tap replays. Double tap records or stops listening."

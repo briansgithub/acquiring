@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
 const Database = require('better-sqlite3');
+const { resolveDisplayNames, preferDisplayName } = require('../lib/catalogDisplayNames');
+const { catalogExportOptions, prepareCatalogOutput } = require('../lib/catalogExportOptions');
 const catalogContractDir = path.resolve(__dirname, '../../../../contracts/catalog');
 const catalogContract = JSON.parse(
     fs.readFileSync(path.join(catalogContractDir, 'contract.json'), 'utf8')
@@ -24,10 +26,13 @@ const {
   getAndroidDir,
 } = require('../../../lib/dataRoot');
 
-const cacheDir = getPlaybackCacheDir();
-const catalogDbPath = path.join(getCatalogDir(), 'hooktheory_catalog.db');
-const outputDbPath = path.join(getAndroidDir(), catalogContract.databaseFilename);
-const outputGzPath = path.join(getAndroidDir(), catalogContract.archiveFilename);
+const exportOptions = catalogExportOptions(process.argv.slice(2), {
+    sourceDbPath: path.join(getCatalogDir(), 'hooktheory_catalog.db'),
+    outputDir: getAndroidDir(),
+    cacheDir: getPlaybackCacheDir(),
+    ...catalogContract,
+});
+const { sourceDbPath: catalogDbPath, cacheDir, outputDbPath, outputGzPath, namesBySlug } = exportOptions;
 
 if (!fs.existsSync(catalogDbPath)) {
     throw new Error(`Complexity source database is required: ${catalogDbPath}`);
@@ -44,12 +49,15 @@ if (!hasMetricsTable) {
     throw new Error(`song_metrics is missing from complexity source: ${catalogDbPath}`);
 }
 
-const catalogRows = catalogDb.prepare('SELECT slug, artist, title, url, status FROM songs').all();
+const catalogRows = catalogDb.prepare(`
+    SELECT s.slug, s.artist, s.title, s.url, s.status, d.hooktheory_song_name AS source_title
+    FROM songs s LEFT JOIN song_details d ON d.slug = s.slug
+`).all();
+const catalogBySlug = new Map(catalogRows.map(row => [row.slug, row]));
 const urlKey = (value) => String(value || '').trim().replace(/\/+$/, '');
 const catalogSlugByUrl = new Map(catalogRows.map(row => [urlKey(row.url), row.slug]));
 
-if (fs.existsSync(outputDbPath)) fs.unlinkSync(outputDbPath);
-if (fs.existsSync(outputGzPath)) fs.unlinkSync(outputGzPath);
+prepareCatalogOutput(exportOptions);
 
 console.log('Creating Room-compatible SQLite DB at:', outputDbPath);
 const outDb = new Database(outputDbPath);
@@ -153,11 +161,19 @@ for (let i = 0; i < folders.length; i++) {
         const jsonStr = JSON.stringify(sectionMap);
         // Gzip compress the section payload blob for maximum efficiency
         const compressedBlob = zlib.gzipSync(Buffer.from(jsonStr, 'utf8'), { level: 9 });
+        const catalogSong = catalogBySlug.get(slug) || { slug };
+        const names = resolveDisplayNames(catalogSong, {
+            namesBySlug,
+            fallback: {
+                artist: meta.artist,
+                title: preferDisplayName(catalogSong.source_title, meta.songTitle),
+            },
+        });
 
         batch.push({
             slug: slug,
-            artist: meta.artist || null,
-            title: meta.songTitle || null,
+            artist: names.artist || null,
+            title: names.title || null,
             url: cleanUrl,
             status: 'enriched',
             dataBlob: compressedBlob,
@@ -227,7 +243,8 @@ const insertMissingStmt = outDb.prepare(`
 
 const insertMissingBatch = outDb.transaction((rows) => {
     for (const r of rows) {
-        insertMissingStmt.run(r.slug, r.artist || null, r.title || null, r.url, r.status || 'pending');
+        const names = resolveDisplayNames(r, { namesBySlug, fallback: { title: r.source_title } });
+        insertMissingStmt.run(r.slug, names.artist || null, names.title || null, r.url, r.status || 'pending');
     }
 });
 

@@ -15,7 +15,6 @@ struct SongDetailView: View {
     @State private var tab: SongDetailTab = .info
     @State private var selectedSectionID: String?
     @State private var showsLetterNames = false
-    @State private var arpeggiatesChords = false
     @State private var audioError: String?
     @State private var showsAudioDiagnostics = false
     @State private var audioRecoveryTask: Task<Void, Never>?
@@ -148,11 +147,10 @@ struct SongDetailView: View {
                     SongChordsView(
                         section: selected.section,
                         showsLetterNames: $showsLetterNames,
-                        arpeggiates: $arpeggiatesChords,
-                        onPreview: { chord in preview(chord, arpeggiates: arpeggiatesChords) },
+                        onPreview: { chord in preview(chord) },
                         onPreviewTone: { midi in previewTone(midi) },
                         onPreviewTransition: { transition in
-                            previewTransition(transition, arpeggiates: arpeggiatesChords)
+                            previewTransition(transition, arpeggiates: false)
                         }
                     )
                 }
@@ -432,10 +430,7 @@ private struct SongInfoView: View {
                     if !section.safeNumericID.isEmpty {
                         DetailRow("Hooktheory ID", section.safeNumericID)
                     }
-                    DetailRow("Slug", song.id)
-                    if !section.safeSongInfo.isEmpty {
-                        DetailRow("Song", section.safeSongInfo)
-                    }
+                    DetailRow("Song", "\(song.displayTitle) by \(song.displayArtist)")
                     HStack(spacing: 16) {
                         if let url = song.url {
                             Link("Open on Hooktheory ↗", destination: url)
@@ -503,7 +498,6 @@ private struct InfoProgressionPill: View {
 private struct SongChordsView: View {
     let section: ExtractedSection
     @Binding var showsLetterNames: Bool
-    @Binding var arpeggiates: Bool
     let onPreview: (SongDetailChord) -> Void
     let onPreviewTone: (Int) -> Void
     let onPreviewTransition: (ChordTransition) -> Void
@@ -534,8 +528,6 @@ private struct SongChordsView: View {
 
                 Toggle("Show letter names", isOn: $showsLetterNames)
                     .accessibilityIdentifier("songDetail.chords.letters")
-                Toggle("Arpeggiate", isOn: $arpeggiates)
-                    .accessibilityIdentifier("songDetail.chords.arpeggiate")
                 chordTones
 
                 if chords.isEmpty {
@@ -930,9 +922,9 @@ struct QuizView: View {
     @State private var timelineInertiaGeneration = 0
     @State private var error: String?
     @State private var showsAudioDiagnostics = false
+    @State private var showsSongInformation = false
     @State private var usesRelativeIonianContext = false
-    /// Drives the help overlay the circled question mark toggles on the quiz controls.
-    @State private var showsTooltips = false
+    @Environment(\.quizHelpState) private var quizHelp
     @State private var tempoPercent = 100.0
     @State private var soundConfiguration = QuizSoundConfiguration()
     @State private var quizCardPreviewTask: Task<Void, Never>?
@@ -976,6 +968,28 @@ struct QuizView: View {
         .background(QuizNavigationGestureGuard(enablesEdgeSwipeBack: enablesEdgeSwipeBack))
         .quizNotationFontStyle(notationFontStyle)
         .toolbar {
+            ToolbarItem(placement: .principal) {
+                if case .content = state {
+                    Button { showsSongInformation = true } label: {
+                        HStack(spacing: 5) {
+                            Text(navigationTitle)
+                                .font(.headline)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                            Image(systemName: "info.circle")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .accessibilityHidden(true)
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(navigationTitle)
+                    .accessibilityHint("Shows the full song title and artist.")
+                    .accessibilityIdentifier("quiz.songInformation")
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 if showsFontSampler, case .content = state {
                     QuizFontSamplerMenu(selection: $notationFontStyle)
@@ -1043,6 +1057,36 @@ struct QuizView: View {
         .sheet(isPresented: $showsAudioDiagnostics) {
             AudioDiagnosticsSheet(audio: environment.audio)
         }
+        .sheet(isPresented: $showsSongInformation) {
+            if case let .content(document) = state {
+                NavigationStack {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text(document.song.displayTitle)
+                                .font(.title2.bold())
+                                .accessibilityIdentifier("quiz.songInformation.title")
+                            Text("by \(document.song.displayArtist)")
+                                .font(.title3)
+                                .foregroundStyle(.secondary)
+                                .accessibilityIdentifier("quiz.songInformation.artist")
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .textSelection(.enabled)
+                        .padding()
+                    }
+                    .navigationTitle("Song Information")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Done") { showsSongInformation = false }
+                                .accessibilityIdentifier("quiz.songInformation.done")
+                        }
+                    }
+                }
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+            }
+        }
     }
 
     private var errorAlertBinding: Binding<Bool> {
@@ -1054,8 +1098,7 @@ struct QuizView: View {
 
     private var navigationTitle: String {
         guard case let .content(document) = state else { return "Quiz" }
-        let artist = document.song.artist?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        return artist.isEmpty ? document.song.displayTitle : "\(document.song.displayTitle) by \(artist)"
+        return "\(document.song.displayTitle) by \(document.song.displayArtist)"
     }
 
     private func quiz(_ document: SongDocument) -> some View {
@@ -1063,8 +1106,8 @@ struct QuizView: View {
         let selected = sections.first(where: { $0.id == selectedSectionID }) ?? sections.first
 
         return GeometryReader { viewport in
-            // The dense Quiz dashboard fits its text to the available viewport.
-            // Keep all targets >=44pt without a page-level pan recognizer competing with controls.
+            // Keep fixed-size cards reachable when the expanded dock leaves less
+            // room. Only the dashboard scrolls; transport stays above the dock.
             let maximumControlType: DynamicTypeSize = viewport.size.height >= 760 ? .xxxLarge : .large
             Group {
                 VStack(spacing: 4) {
@@ -1073,10 +1116,16 @@ struct QuizView: View {
                             initialKey: selected.section.key(at: PlaybackTiming.firstBeat),
                             currentKey: selected.section.key(at: currentBeat(in: selected.section)),
                             usesRelativeIonianContext: $usesRelativeIonianContext,
-                            showsTooltips: $showsTooltips
+                            quizHelp: quizHelp
                         )
 
-                        quizSurface(selected.section, sectionID: selected.id)
+                        ViewThatFits(in: .vertical) {
+                            quizSurface(selected.section, sectionID: selected.id)
+                                .fixedSize(horizontal: false, vertical: true)
+                            ScrollView {
+                                quizSurface(selected.section, sectionID: selected.id)
+                            }
+                        }
                     }
                 }
                 .padding(.horizontal, 12)
@@ -1090,9 +1139,12 @@ struct QuizView: View {
         // The parent scene reserves the separate, expandable singing dock.
         .safeAreaInset(edge: .bottom, spacing: 4) {
             if let selected {
-                HStack {
-                    Spacer(minLength: 0)
-                    transportControls(sectionID: selected.id, sections: sections)
+                VStack(spacing: 4) {
+                    quizTransportBar(section: selected.section, sectionID: selected.id)
+                    HStack {
+                        Spacer(minLength: 0)
+                        transportControls(sectionID: selected.id, sections: sections)
+                    }
                 }
                 .padding(.horizontal, 12)
                 .padding(.bottom, 12)
@@ -1176,17 +1228,19 @@ struct QuizView: View {
                     onDragEnd: endTimelineDrag,
                     onDragCancel: cancelTimelineDrag
                     )
+                    .environment(\.quizLaneTint, laneTint(in: section, at: beat))
                 }
                 quizCards(section: section, sectionID: sectionID, beat: beat)
-                // Root-only puts its scrub bar under the cards, where the full-mode
-                // timeline's own playhead row sits relative to them.
-                if mode != .full {
-                    rootOnlySeekControl(section: section, sectionID: sectionID)
-                }
                 playbackKnobs(sectionID: sectionID)
-                Spacer(minLength: 0)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .frame(maxWidth: .infinity, alignment: .top)
+    }
+
+    /// The lanes are a lighter wash of whatever color the key readout above them is
+    /// wearing. Locking in major retunes the readout's own reference key, so the
+    /// lanes follow major rather than the source mode they were written in.
+    private func laneTint(in section: ExtractedSection, at beat: Double) -> Color {
+        QuizModeColor.lane(for: usesRelativeIonianContext ? "major" : section.key(at: beat).scale)
     }
 
     private func quizCards(
@@ -1245,15 +1299,6 @@ struct QuizView: View {
                 .accessibilityIdentifier("quiz.reset")
                 .accessibilityLabel("Reset quiz playback")
                 .accessibilityHint("Stops playback and returns to the beginning")
-
-                QuizTransportButton(
-                    phase: transportPhase,
-                    isReady: sectionLoadStatus.isReady,
-                    isPlaybackEnabled: tempoPercent > 0,
-                    commandPending: playbackCommandPending || timelineScrub != nil,
-                    action: requestPlaybackToggle,
-                    compact: true
-                )
             }
             if !environment.vocalPractice.isExpanded {
                 HStack(spacing: QuizTransportLayout.spacing) {
@@ -1310,13 +1355,21 @@ struct QuizView: View {
         .fixedSize(horizontal: false, vertical: true)
     }
 
-    private func rootOnlySeekControl(section: ExtractedSection, sectionID: String) -> some View {
+    private func quizTransportBar(section: ExtractedSection, sectionID: String) -> some View {
         let endBeat = playbackEndBeat(in: section)
-        return VStack(alignment: .leading, spacing: 6) {
+        let position = currentBeat(in: section)
+        let previousBoundary = chordBoundary(direction: .previous, from: position, in: section)
+        let nextBoundary = chordBoundary(direction: .next, from: position, in: section)
+        let canStepChordBoundary = canSeek && timelineScrub == nil
+        return VStack(spacing: 6) {
+            Text("Beat \(position.formatted(.number.precision(.fractionLength(0...2)))) of \(endBeat.formatted(.number.precision(.fractionLength(0...2))))")
+                .font(.caption.monospacedDigit())
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
             Slider(
                 value: Binding(
-                    get: { currentBeat(in: section) },
-                    set: { updateRootOnlySeek(to: $0, in: section, sectionID: sectionID) }
+                    get: { position },
+                    set: { updateTransportSeek(to: $0, in: section, sectionID: sectionID) }
                 ),
                 in: PlaybackTiming.firstBeat...endBeat,
                 onEditingChanged: { isEditing in
@@ -1329,14 +1382,56 @@ struct QuizView: View {
                 }
             )
             .disabled(!canSeek || endBeat <= PlaybackTiming.firstBeat)
-            .accessibilityIdentifier("quiz.rootSeek")
+            .accessibilityIdentifier(mode == .rootOnly ? "quiz.rootSeek" : "quiz.seek")
             .accessibilityLabel("Quiz position")
-            .accessibilityValue("Beat \(currentBeat(in: section).formatted(.number.precision(.fractionLength(0...2))))")
+            .accessibilityValue("Beat \(position.formatted(.number.precision(.fractionLength(0...2)))) of \(endBeat.formatted(.number.precision(.fractionLength(0...2))))")
             .accessibilityHint("Adjusts the current beat")
+
+            HStack {
+                Button {
+                    requestChordBoundarySeek(direction: .previous, in: section)
+                } label: {
+                    Image(systemName: "backward.end.fill")
+                        .frame(width: 54, height: 54)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .disabled(!canStepChordBoundary || previousBoundary == nil)
+                .accessibilityIdentifier("quiz.previous")
+                .accessibilityLabel("Previous chord")
+                .accessibilityHint("Seeks to the previous chord boundary")
+
+                Spacer(minLength: 0)
+
+                QuizTransportButton(
+                    phase: transportPhase,
+                    isReady: sectionLoadStatus.isReady,
+                    isPlaybackEnabled: tempoPercent > 0,
+                    commandPending: playbackCommandPending || timelineScrub != nil,
+                    action: requestPlaybackToggle,
+                    circular: true
+                )
+
+                Spacer(minLength: 0)
+
+                Button {
+                    requestChordBoundarySeek(direction: .next, in: section)
+                } label: {
+                    Image(systemName: "forward.end.fill")
+                        .frame(width: 54, height: 54)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .disabled(!canStepChordBoundary || nextBoundary == nil)
+                .accessibilityIdentifier("quiz.next")
+                .accessibilityLabel("Next chord")
+                .accessibilityHint("Seeks to the next chord boundary")
+            }
         }
+        .frame(maxWidth: .infinity)
     }
 
-    private func updateRootOnlySeek(
+    private func updateTransportSeek(
         to targetBeat: Double,
         in section: ExtractedSection,
         sectionID: String
@@ -1351,6 +1446,40 @@ struct QuizView: View {
         } else {
             // VoiceOver can adjust a Slider without a begin/end editing pair.
             requestSeek(to: targetBeat, in: section)
+        }
+    }
+
+    private enum ChordBoundaryDirection {
+        case previous
+        case next
+    }
+
+    private func requestChordBoundarySeek(
+        direction: ChordBoundaryDirection,
+        in section: ExtractedSection
+    ) {
+        guard canSeek,
+              timelineScrub == nil,
+              let target = chordBoundary(direction: direction, from: currentBeat(in: section), in: section)
+        else { return }
+        requestSeek(to: target, in: section)
+    }
+
+    private func chordBoundary(
+        direction: ChordBoundaryDirection,
+        from current: Double,
+        in section: ExtractedSection
+    ) -> Double? {
+        let boundaries = Array(Set(section.chords.map {
+            PlaybackTiming.normalize(beat: $0["beat"]?.doubleValue ?? PlaybackTiming.firstBeat)
+        }))
+        .sorted()
+        switch direction {
+        case .previous:
+            // Inside a chord, return to its onset; near its onset, step to the one before it.
+            return boundaries.last(where: { $0 < current - 0.05 })
+        case .next:
+            return boundaries.first(where: { $0 > current + 0.05 })
         }
     }
 
@@ -2258,8 +2387,8 @@ private enum QuizTransportLayout {
     static let controlSize: CGFloat = 44
     static let selectorWidth: CGFloat = 72
     static let spacing: CGFloat = 8
-    /// Favorite, reset, play and one 44 pt selector, plus the transpose selector.
-    static let width = controlSize * 4 + selectorWidth + spacing * 4
+    /// Favorite, instrument, and reset controls, plus the transpose selector.
+    static let width = controlSize * 3 + selectorWidth + spacing * 3
 }
 
 private struct QuizIconButtonStyle: ButtonStyle {
@@ -2290,6 +2419,7 @@ private struct QuizTransportButton: View {
     let commandPending: Bool
     let action: () -> Void
     var compact = false
+    var circular = false
 
     private var isBusy: Bool { commandPending || phase == .buffering }
 
@@ -2301,18 +2431,36 @@ private struct QuizTransportButton: View {
 
     var body: some View {
         let button = Button(action: action) {
-            HStack(spacing: 8) {
-                if isBusy {
-                    ProgressView().controlSize(.small)
+            Group {
+                if circular {
+                    ZStack {
+                        if isBusy {
+                            ProgressView().tint(.white)
+                        } else {
+                            Image(systemName: phase == .playing ? "pause.fill" : "play.fill")
+                        }
+                    }
+                    .font(.system(size: 20, weight: .bold))
+                    .frame(width: 54, height: 54)
+                    .foregroundStyle(.white)
+                    .background(Color.accentColor, in: Circle())
                 } else {
-                    Image(systemName: phase == .playing ? "pause.fill" : "play.fill")
+                    HStack(spacing: 8) {
+                        if isBusy {
+                            ProgressView().controlSize(.small)
+                        } else {
+                            Image(systemName: phase == .playing ? "pause.fill" : "play.fill")
+                        }
+                        if !compact { Text(title) }
+                    }
+                    .frame(minWidth: compact ? nil : 100)
                 }
-                if !compact { Text(title) }
             }
-            .frame(minWidth: compact ? nil : 100)
         }
         Group {
-            if compact {
+            if circular {
+                button.buttonStyle(.plain)
+            } else if compact {
                 button.buttonStyle(QuizIconButtonStyle(isProminent: true))
             } else {
                 button.buttonStyle(.borderedProminent)
@@ -2601,7 +2749,8 @@ private struct QuizHeader: View {
     let initialKey: KeyInfo
     let currentKey: KeyInfo
     @Binding var usesRelativeIonianContext: Bool
-    @Binding var showsTooltips: Bool
+    let quizHelp: QuizHelpState?
+    @AccessibilityFocusState private var helpButtonIsFocused: Bool
 
     private var displayedKey: KeyInfo {
         usesRelativeIonianContext ? RelativeIonianContext.key(for: initialKey) : currentKey
@@ -2618,19 +2767,23 @@ private struct QuizHeader: View {
 
     var body: some View {
         ZStack {
-            // The lock reads as a prefix on the key, so the pair centers as one unit;
-            // reserve the trailing help button's width on both sides to keep it centered.
+            // The lock hangs off the key as a prefix, but the key alone owns the
+            // screen's center line: the pair's own center sits half a lock's width
+            // to the left of the key's, so shift it back by exactly that much.
             HStack(spacing: 0) {
                 majorToggle
                 keyLabel
             }
-            .padding(.horizontal, 44)
+            .offset(x: -QuizTransportLayout.controlSize / 2)
             HStack(spacing: 8) {
                 Spacer(minLength: 0)
                 helpButton
             }
         }
         .frame(height: 44)
+        .onChange(of: quizHelp?.focusHelpButtonRequest) { _, _ in
+            helpButtonIsFocused = true
+        }
     }
 
     private var keyLabel: some View {
@@ -2667,40 +2820,75 @@ private struct QuizHeader: View {
             .accessibilityValue(usesRelativeIonianContext ? "On" : "Off")
             .accessibilityHint("Updates key, card degrees, and practice targets to the relative major key")
             .accessibilityIdentifier("quiz.lockInMajor")
+            .quizHelpTarget(.quizRelativeKey)
     }
 
     private var helpButton: some View {
         Button {
-            showsTooltips.toggle()
+            quizHelp?.toggle()
         } label: {
-            Image(systemName: showsTooltips ? "questionmark.circle.fill" : "questionmark.circle")
+            Image(systemName: quizHelp?.isPresented == true ? "questionmark.circle.fill" : "questionmark.circle")
         }
         .buttonStyle(QuizIconButtonStyle())
-        .accessibilityLabel("Show tooltips")
-        .accessibilityValue(showsTooltips ? "On" : "Off")
+        .accessibilityLabel(quizHelp?.isPresented == true ? "Hide tooltips" : "Show tooltips")
+        .accessibilityValue(quizHelp?.isPresented == true ? "On" : "Off")
         .accessibilityHint("Labels the less obvious quiz controls")
         .accessibilityIdentifier("quiz.help")
+        .accessibilityFocused($helpButtonIsFocused)
     }
 
     // Android's key readout keeps the current source mode's color even when the
     // label is locked to the initial relative major; the red border marks locking.
     private var modeColor: Color {
-        let rgb: UInt32
-        switch currentKey.scale {
-        case "major", "ionian": rgb = 0xFF0000
-        case "dorian": rgb = 0xFFB014
-        case "phrygian", "phrygianDominant": rgb = 0xEFE600
-        case "lydian": rgb = 0x00D300
-        case "mixolydian": rgb = 0x4800FF
-        case "minor", "aeolian", "harmonicMinor": rgb = 0xB800E5
-        case "locrian": rgb = 0xFF00CB
-        default: rgb = 0xE6E1E5
+        QuizModeColor.readout(for: currentKey.scale)
+    }
+}
+
+/// The mode colors the quiz key readout is drawn in, and the lighter wash the
+/// timeline lanes take from it so the two read as one thing.
+enum QuizModeColor {
+    static func readout(for scale: String) -> Color {
+        color(rgb(for: scale))
+    }
+
+    /// The same hue as the readout, mixed toward white. The lanes sit under the
+    /// readout and behind white note text, so they lift rather than re-saturate.
+    static func lane(for scale: String) -> Color {
+        color(rgb(for: scale), mixedTowardWhite: 0.3)
+    }
+
+    private static func rgb(for scale: String) -> UInt32 {
+        switch scale {
+        case "major", "ionian": 0xFF0000
+        case "dorian": 0xFFB014
+        case "phrygian", "phrygianDominant": 0xEFE600
+        case "lydian": 0x00D300
+        case "mixolydian": 0x4800FF
+        case "minor", "aeolian", "harmonicMinor": 0xB800E5
+        case "locrian": 0xFF00CB
+        default: 0xE6E1E5
         }
-        return Color(
-            red: Double((rgb >> 16) & 0xFF) / 255,
-            green: Double((rgb >> 8) & 0xFF) / 255,
-            blue: Double(rgb & 0xFF) / 255
-        )
+    }
+
+    private static func color(_ rgb: UInt32, mixedTowardWhite mix: Double = 0) -> Color {
+        func channel(_ shift: UInt32) -> Double {
+            let value = Double((rgb >> shift) & 0xFF) / 255
+            return value + (1 - value) * mix
+        }
+        return Color(red: channel(16), green: channel(8), blue: channel(0))
+    }
+}
+
+private struct QuizLaneTintKey: EnvironmentKey {
+    // The preview fixtures are in major, so the unset value is major's own lane.
+    static let defaultValue = QuizModeColor.lane(for: "major")
+}
+
+extension EnvironmentValues {
+    /// The color the melody and chord lanes draw their events in.
+    var quizLaneTint: Color {
+        get { self[QuizLaneTintKey.self] }
+        set { self[QuizLaneTintKey.self] = newValue }
     }
 }
 
@@ -3285,6 +3473,7 @@ private struct MelodyTimelineView: View {
     let onDragEnd: () -> Void
     let onDragCancel: () -> Void
     @Environment(VocalPracticeModel.self) private var vocalPractice: VocalPracticeModel?
+    @Environment(\.quizLaneTint) private var laneTint
     @State private var dragIsActive = false
     @GestureState private var dragGestureIsRecognized = false
 
@@ -3325,8 +3514,8 @@ private struct MelodyTimelineView: View {
                             Rectangle()
                                 .fill(
                                     visual.isActive(at: visualBeat)
-                                        ? Color.indigo
-                                        : Color.indigo.opacity(0.6)
+                                        ? laneTint
+                                        : laneTint.opacity(0.6)
                                 )
                                 .frame(
                                     width: presentation.width(for: visual),
@@ -3710,6 +3899,7 @@ private struct ChordTimelineView: View {
     let onDragChange: (CGFloat, Date) -> Void
     let onDragEnd: () -> Void
     let onDragCancel: () -> Void
+    @Environment(\.quizLaneTint) private var laneTint
     @State private var dragIsActive = false
     @GestureState private var dragGestureIsRecognized = false
 
@@ -3750,7 +3940,7 @@ private struct ChordTimelineView: View {
                         if presentation.width(for: visual) > 0 {
                             let isActive = active?.id == visual.id
                             RoundedRectangle(cornerRadius: 5)
-                                .fill(isActive ? Color.indigo.opacity(0.82) : Color.white.opacity(0.16))
+                                .fill(isActive ? laneTint.opacity(0.82) : Color.white.opacity(0.16))
                                 .overlay {
                                     RoundedRectangle(cornerRadius: 5)
                                         .stroke(

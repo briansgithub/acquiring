@@ -74,6 +74,54 @@ Record actual checks, limitations, and review disposition without claiming an
 unrun test passed. Feature approval is not complete parity verification: inventory
 rows remain Partial until required final evidence is gathered.
 
+### Home update indicators — 2026-09-08
+
+`[approved]` User-requested implementation on `codex/ios-update-indicators` in the
+separate `H:/Desktop/Acquiring-ios-update-indicators` worktree. UI/integration route:
+Terra/high; release tooling and final integration: current runtime model unknown.
+This user-requested feature takes precedence over the A–F execution order; prior
+review statuses and the separate full-testing gate remain unchanged.
+
+Library's Settings button now has a subtle, accessible dot for database and/or
+external beta updates. Quiet launch/foreground checks reuse existing catalog
+metadata and fetch a fresh external beta manifest. Expired/malformed/unknown beta
+metadata cannot indicate availability; visible beta status clears on expiry.
+The publisher considers only active, unexpired iOS builds common to every
+external group with Apple's external state `IN_BETA_TESTING`. New internal-only
+uploads and external builds still in review cannot advance the record.
+
+Validation in this Windows worktree:
+
+- `python -m unittest discover -s ios/scripts -p test_external_beta.py` — 16 offline
+  release-boundary tests passed, exit 0. No live API writes occur in these tests.
+- `& 'C:/Program Files/Git/bin/bash.exe' -n ios/scripts/deploy-testflight.sh` — passed,
+  exit 0. Python AST parsing of the three affected scripts and YAML parsing of
+  the new workflow also passed.
+- `git diff --check -- ios/Acquiring/Features/LibraryStore.swift ios/Acquiring/Features/LibraryViews.swift ios/Acquiring/Infrastructure/AppEnvironment.swift ios/AcquiringTests/AcquiringTests.swift ios/README.md ios/scripts .github/workflows/ios-external-beta.yml docs/porting-plan.md`
+  — passed, exit 0.
+
+Swift/Xcode are absent here, and the configured Mac hostname/LAN connection was
+unreachable during implementation. On the Mac, `bash ios/scripts/run-sim.sh`
+built, installed, and launched the app on the iPhone 17 simulator, exit 0. The six
+focused external-beta/catalog update tests listed in the branch handoff passed via
+`xcodebuild -quiet test`, exit 0. No full suite or screenshots were run. The
+beta-only fixture was staged for review, but the four-state perceptual review was
+not completed; the user explicitly directed merge and cleanup without waiting for
+that confirmation. No TestFlight upload or live metadata publication was performed.
+
+After merge, enable the hourly publisher using the Actions secrets and variable
+listed in `ios/scripts/README-asc-api.md`; no repository Actions secrets were
+configured during this implementation. Until a fresh manifest is published,
+the app quietly reports beta status unavailable and shows no beta indicator.
+The database endpoint remains the existing fixed GitHub catalog asset.
+
+Human review after the Mac build: (1) launch the existing `library.ready` fixture
+with `--ui-testing-beta-update-available`, inspect the Settings dot and TestFlight
+action; (2) add `--ui-testing-catalog-update-available`, inspect both statuses and
+the combined accessibility label; (3) use `--ui-testing-beta-current` with a
+current catalog, confirm no dot. Use the existing full-catalog `500 Miles`
+review fixture and keep its user data isolated as usual.
+
 ### Retained Phase 0–3.4 checkpoints
 
 The following are existing work/review records, not a second execution queue.
@@ -1841,3 +1889,64 @@ claim is made that any test passes.
 Next: build and run `AudioDiagnosticsTests` plus both UI tests on the Mac, then
 reproduce on the phone — use the singing tool, stop it, press Play — and confirm
 sound with no alert. The build number is deliberately not bumped.
+
+## 2026-09-08 — Root cards and shared quiz transport (Mac review pending)
+
+Implemented the user's selected UI refinements only: Root-only now has bottom-aligned
+40/60 previous/current cards at 128/162pt, labeled `Previous` and `Current root`.
+Scale degrees still use `FittedScaleDegree` for their hats; note letters are not shown.
+The existing abbreviated interval action is centered below the pair, with its row
+reserved even before an interval is available. Full and Root-only share a scrubber,
+beat position, previous/next chord controls, and centered circular play/pause below
+the unchanged knobs. Existing auxiliary controls, card gestures, and pitch feedback
+remain. Other concept changes were excluded. UI implementation: GPT-5.6 Terra/high.
+
+Updated `testQuizInstrumentAndModeMenusApplyWhilePlaying` to check the shared bar's
+placement while retaining its playback/menu continuity checks. Source review and
+`git diff --check -- ios/Acquiring/Features/QuizCards.swift ios/Acquiring/Features/SongViews.swift ios/AcquiringUITests/AcquiringUITests.swift docs/porting-plan.md`
+passed. Swift compilation, simulator launch, and the UI test remain unrun: this
+Windows host has no Xcode/Swift toolchain, and configured remote connections were
+unreachable. Prior pending review and testing statuses are unchanged.
+
+Next on the Mac: run one incremental Debug build and the updated focused UI test;
+terminate/install/launch on the existing iPhone 17 simulator. Review `500 Miles`:
+check first/subsequent root cards, hats, labels, and centered interval; in both modes,
+check the below-knob controls fit and that scrubbing, chord stepping, and play/pause
+work. Human visual review remains pending.
+
+### Song and artist display names — 2026-09-08, review pending
+
+Runtime model: unknown. Implemented on `codex/ios-song-display-names` in a separate
+worktree. Song/artist labels share display formatting; the compact Quiz heading
+opens a selectable full-text sheet. Harvesting and developer discovery preserve
+source names, and catalog queries retain legacy artist/slug compatibility.
+
+The staged catalog retains all 40,979 playable songs with unchanged IDs, URLs,
+musical data, ratings, and modes; 40,315 labels changed. The complete recovery
+assessed 42,196 source/export records, with 39,456 source-backed title/artist pairs
+and explicit unresolved/conflicting-name reports. Existing metadata was reused;
+the only online recovery was a cached, sequential 42-page name-only search pass.
+
+Focused Node enrichment/export/catalog checks and the staged schema contract
+passed. Swift/Xcode and simulator validation remain pending on a Mac. No release,
+publication, screenshot inspection, or full-app test sweep occurred. Earlier
+review statuses are retained. Commands, artifact locations, future scheduled
+update sequence, and the focused review script are in
+[catalog-display-names.md](catalog-display-names.md).
+
+### Quiz tooltips and illustrated notation Help — 2026-09-08
+
+`[review]` Implemented on `codex/ios-quiz-help` with Terra/medium UI agents and
+primary integration review. Contextual hints cover the selected quiz cards and
+expanded singing tool; Settings Help is limited to card notation and tessitura.
+First-launch Introduction is preserved. Mac build/install/launch passed on the
+warm iPhone 17. Fixed the Help dismiss identifier and overlapping Play placement;
+transport now reserves bottom space, with a dashboard scrolling fallback.
+Three focused methods passed. All core dismissal/state assertions passed in both
+500 Miles modes; added VoiceOver assertions failed and were deferred at the user's
+request. Accessibility experiments were reverted; no final all-green test rerun.
+Human review remains pending for layout, notation, scrolling/gestures, and existing
+practice-session variants. VoiceOver is low priority and must not be resumed
+without a new request. See [the branch handoff](ios-quiz-help-handoff.md) for exact
+commands, results, and remaining review items. No screenshots, full-app suite,
+physical-device testing, or release was performed.
