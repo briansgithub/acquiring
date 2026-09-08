@@ -140,16 +140,7 @@ private struct QuizHelpOverlay: View {
                 } else {
                     ForEach(Array(visibleTips.enumerated()), id: \.element) { index, id in
                         ForEach(Array((localFrames[id] ?? []).enumerated()), id: \.offset) { _, rect in
-                            Text("\(index + 1)")
-                                .font(.caption.weight(.bold))
-                                .foregroundStyle(.white)
-                                .frame(width: 24, height: 24)
-                                .background(.tint, in: Circle())
-                                .overlay(Circle().stroke(.background, lineWidth: 2))
-                                .position(x: min(max(rect.maxX - 12, 16), proxy.size.width - 16),
-                                          y: min(max(rect.minY + 12, safeArea.top + 16), proxy.size.height - safeArea.bottom - 16))
-                                .allowsHitTesting(false)
-                                .accessibilityHidden(true)
+                            fallbackBadge(number: index + 1, rect: rect, size: proxy.size)
                         }
                     }
                     fallbackPanel(in: proxy.size, safeArea: safeArea, frames: localFrames)
@@ -170,6 +161,20 @@ private struct QuizHelpOverlay: View {
         .accessibilityElement(children: .contain)
         .accessibilityAddTraits(.isModal)
         .accessibilityIdentifier("help.overlay")
+    }
+
+    private func fallbackBadge(number: Int, rect: CGRect, size: CGSize) -> some View {
+        let x = min(max(rect.maxX - 12, 16), size.width - 16)
+        let y = min(max(rect.minY + 12, safeArea.top + 16), size.height - safeArea.bottom - 16)
+        return Text("\(number)")
+            .font(.caption.weight(.bold))
+            .foregroundStyle(.white)
+            .frame(width: 24, height: 24)
+            .background(.tint, in: Circle())
+            .overlay(Circle().stroke(.background, lineWidth: 2))
+            .position(x: x, y: y)
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
     }
 
     private var visibleTips: [QuizHelpTargetID] {
