@@ -260,7 +260,8 @@ const BASELINE = {
     key: { tonic: "E", scale: "minor" },
     pcs: [2, 5, 7, 11],
     letter: "G/F",
-    roman: "♭II42(∆-sub)(maj)/ii°",
+    // Positioned source captures omit implicit (maj) on tritone substitutions.
+    roman: "♭II42(∆-sub)/ii°",
   },
   customBorSharp5M7: {
     chord: { root: 7, type: 7, inversion: 1, alterations: ["#5"], borrowed: [1, 3, 5, 6, 8, 10, 12] },

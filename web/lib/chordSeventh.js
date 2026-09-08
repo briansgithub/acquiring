@@ -59,6 +59,13 @@ export function resolveSeventhDegree({
   if (effModifierChord?.dimTriad) return "bb7";
   if (policy.customDimMaj7) return diatonicSeventhDegreeStr(chordRootSD, modifiedKey, customScaleIntervals, getNoteLabel);
   if (policy.phdmIImaj7) return "7";
+  // Raw no5 preserves the scale seventh (Dvorak iiø42(no5): C#–D#–F#).
+  // Explicit symbol frames and applied leading tones have separate policies.
+  if (effModifierChord?.omits?.includes(5) && !effModifierChord?.halfDim
+      && !effModifierChord?.dimTriad && !effModifierChord?.appliedContext
+      && effModifierChord?.applied !== 7) {
+    return diatonicSeventhDegreeStr(chordRootSD, modifiedKey, customScaleIntervals, getNoteLabel);
+  }
   return borrowedModeDimSeventhDegree(
     chordRootSD, modifiedKey.scale, chordQuality, 7,
     { halfDim: effModifierChord?.halfDim },
@@ -73,6 +80,10 @@ export function resolveOmitTriad35Seventh({
 }) {
   if (effModifierChord?.halfDim) return "bb7";
   if (useSusFrame) return "b7";
+  if (effModifierChord?.omits?.includes(5) && !effModifierChord?.dimTriad
+      && !effModifierChord?.appliedContext && effModifierChord?.applied !== 7) {
+    return diatonicSeventhDegreeStr(chordRootSD, modifiedKey, customScaleIntervals, getNoteLabel);
+  }
   return borrowedModeDimSeventhDegree(
     chordRootSD, modifiedKey.scale, chordQuality, 7,
     { halfDim: effModifierChord?.halfDim },

@@ -20,8 +20,11 @@ assert.equal(label({ type: 7 }, { quality: "diminished", majorSeventh: true, int
 assert.equal(label({ type: 7, inversion: 1 }, { quality: "minor", bassNoteName: "Eb" }), "Eb6");
 assert.equal(label({ type: 7, inversion: 3 }, { quality: "minor", bassNoteName: "Bb" }), "Cm/Bb");
 assert.equal(label({ type: 11 }, { degree: 5 }), "Bb/C");
-assert.equal(label({ type: 11, alterations: ["#9"] }, { majorSeventh: true, interpreted: { chordDegrees: ["1", "3", "5", "7", "#9", "#11"] } }), "Cmaj7(#9#11)");
-assert.equal(label({ type: 9 }, { quality: "minor", interpreted: { chordDegrees: ["1", "b3", "5", "b7", "b9"] } }), "Cm7(b9)");
+// Played voicing roles must not invent written alterations. Preserve the
+// highest unaltered written extension, and take implicit b9 from the scale.
+assert.equal(label({ type: 11, alterations: ["#9"] }, { majorSeventh: true, interpreted: { chordDegrees: ["1", "3", "5", "7", "#9", "#11"] } }), "Cmaj11(#9)");
+assert.equal(label({ type: 11, alterations: ["#9", "#11"] }, { majorSeventh: true }), "Cmaj7(#9#11)");
+assert.equal(label({ type: 9 }, { quality: "minor", effKey: { tonic: "C", scale: "phrygian" }, interpreted: { chordDegrees: ["1", "b3", "5", "b7", "b9"] } }), "Cm7(b9)");
 assert.equal(label({ type: 7, suspensions: [2] }, { effKey: { tonic: "C", scale: "phrygian" }, interpreted: { chordDegrees: ["1", "b2", "5", "b7"] } }), "C7susb2");
 assert.equal(label({ type: 7 }, { rootNoteName: "C#", quality: "minor", degree: 3, effKey: { tonic: "A", scale: "major" } }), "C#m7");
 assert.equal(label({ type: 7, suspensions: [2] }, { rootNoteName: "G", degree: 5, effKey: { tonic: "C", scale: "major" } }), "G7sus2");

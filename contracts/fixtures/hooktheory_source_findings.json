@@ -5018,6 +5018,90 @@
         "A4"
       ],
       "observation": "Show Chords selected. Four sounding tones confirm minor seventh, flat ninth and natural eleventh despite old inferred diminished seventh and raised eleventh."
+    },
+    {
+      "id": "junko-shiratsu__speed-of-sound/Pre-Chorus/30.5",
+      "url": "https://www.hooktheory.com/theorytab/view/junko-shiratsu/speed-of-sound#pre-chorus",
+      "key": {
+        "tonic": "C",
+        "scale": "lydian"
+      },
+      "roman": "iv7(no5)sus2",
+      "letter": "f#7(no5)susb2",
+      "keyboardNotes": [
+        "F#2",
+        "G3",
+        "E4",
+        "F#4"
+      ],
+      "observation": "Live Show Chords keyboard, matching complete object and C-lydian context, confirms absent fifth C# and flat second G. The historical symbol-derived pitch list incorrectly used G#."
+    },
+    {
+      "id": "antonin-dvorak__serenade-for-strings/Bridge/33",
+      "url": "https://www.hooktheory.com/theorytab/view/antonin-dvorak/serenade-for-strings#bridge",
+      "key": {
+        "tonic": "C#",
+        "scale": "minor"
+      },
+      "roman": "iiø42(no5)",
+      "letter": "d#°(no5)/C#",
+      "keyboardNotes": [
+        "C#3",
+        "D#4",
+        "F#4"
+      ],
+      "observation": "Live Show Chords keyboard in the matching C#-minor bridge confirms an omitted fifth and diatonic minor seventh C#. Historical inferred pitch list incorrectly used C natural."
+    },
+    {
+      "id": "gentle-giant__peel-the-paint/Pre-Chorus/8.5",
+      "url": "https://www.hooktheory.com/theorytab/view/gentle-giant/peel-the-paint#pre-chorus",
+      "key": {
+        "tonic": "Eb",
+        "scale": "major"
+      },
+      "roman": "#ivø11(lyd)",
+      "letter": "am11(b5b9)",
+      "keyboardNotes": [
+        "A2",
+        "Bb3",
+        "D4",
+        "G4"
+      ],
+      "observation": "Live Show Chords keyboard for matching root4/type11/borrowedlydian object confirms root, minor seventh, flat ninth, natural eleventh. Neither the five-tone old inference nor the three-tone skipNine result matches the recording."
+    },
+    {
+      "id": "they-might-be-giants__its-not-my-birthday/Chorus/35.5",
+      "url": "https://www.hooktheory.com/theorytab/view/they-might-be-giants/its-not-my-birthday#chorus",
+      "key": {
+        "tonic": "D",
+        "scale": "major"
+      },
+      "roman": "vii7(no5)sus2sus4",
+      "letter": "c#7(no5)susb2sus4",
+      "keyboardNotes": [
+        "C#3",
+        "B3",
+        "D4",
+        "F#4"
+      ],
+      "observation": "Live Show Chords keyboard for the matching root7/type7/omits5/sus2sus4 object confirms the flattened second D and fourth F#, with minor seventh B and no fifth. This directly establishes the dual-suspension boundary separately from the single-sus2 Junko recording."
+    },
+    {
+      "id": "edvard-grieg__the-death-of-aase/Intro/10",
+      "url": "https://www.hooktheory.com/theorytab/view/edvard-grieg/the-death-of-aase#intro",
+      "key": {
+        "tonic": "B",
+        "scale": "minor"
+      },
+      "roman": "iiø7(no5)",
+      "letter": "c#m7(no5)(b5)",
+      "keyboardNotes": [
+        "C#3",
+        "B3",
+        "C#4",
+        "E4"
+      ],
+      "observation": "Live Show Chords keyboard for the matching root2/type7/omits5 object confirms that the displayed m7(no5)(b5) does not retain the diminished fifth G. The retained seventh is B, not the diminished seventh Bb. This independently establishes the root-position half-diminished-label boundary separately from the third-inversion Dvorak recording."
     }
   ],
   "ambiguities": [

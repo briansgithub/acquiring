@@ -17,5 +17,6 @@ export function resolveAppliedChordContext(chord, key) {
   let denominator = ROMANS[chord.root - 1];
   if (quality === "minor" || quality === "diminished") denominator = denominator.toLowerCase();
   if (quality === "diminished") denominator += "°";
+  if (quality === "augmented") denominator += "+";
   return { targetTonic, quality, denominator: accidental + denominator };
 }

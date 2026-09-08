@@ -1,7 +1,6 @@
 import { getNoteLabel } from "./musicScale.js";
 
 const numberOf = value => Number(String(value).replace(/[^0-9]/g, ""));
-const accidentalOf = value => String(value).replace(/[0-9]/g, "");
 const unique = values => [...new Set(values)];
 const pc = value => {
   const match = String(value).match(/^([A-Ga-g])([#bx]*)/);
@@ -14,7 +13,7 @@ const pc = value => {
 /** Format the already-resolved chord without independently choosing pitches. */
 export function formatChordLetter(chord, key, context) {
   if (!chord || chord.isRest || chord.rest || !context.rootNoteName) return "";
-  const { rootNoteName, quality, degree, effKey, triSub, interpreted } = context;
+  const { rootNoteName, quality, degree, effKey, triSub } = context;
   const type = Number(chord.type) || 5;
   const inversion = Number(chord.inversion) || 0;
   const suspensions = unique(chord.suspensions || []);
@@ -22,7 +21,6 @@ export function formatChordLetter(chord, key, context) {
   const alterations = unique((chord.alterations || []).map(String));
   const omits = unique((chord.omits || []).map(Number));
   const adds = unique((chord.adds || []).map(Number));
-  const roles = interpreted?.chordDegrees || [];
   const symbolicNote = relativeDegree => {
     if (!effKey || !Number.isInteger(degree)) return null;
     const scaleDegree = ((degree + relativeDegree - 2) % 7 + 7) % 7 + 1;
@@ -47,12 +45,12 @@ export function formatChordLetter(chord, key, context) {
   // tones and altered fifths may change the first sounding note independently.
   const bassRole = inversion === 1 ? (suspensions.includes(4) ? 4 : suspensions.includes(2) ? 2 : 3)
     : inversion === 2 ? 5 : inversion === 3 ? 7 : null;
-  let bassName = context.bassNoteName;
+  let bassName = bassRole ? context.bassNoteName : null;
   if (bassRole && bassName) {
     bassName = triSub ? getNoteLabel(bassRole === 7 ? "b7" : bassRole, rootKey)
       : chord.applied === 7 && bassRole === 7 ? getNoteLabel("bb7", rootKey)
         : bassRole === 3 ? getNoteLabel(minor || diminished ? "b3" : "3", rootKey)
-        : bassRole === 5 && type >= 7 && !suspended && alterations.includes("b5") ? getNoteLabel("b5", rootKey)
+        : bassRole === 5 && (diminished || chord.applied > 0) && type >= 7 && !suspended && alterations.includes("b5") ? getNoteLabel("b5", rootKey)
         : symbolicNote(bassRole) || bassName;
   }
 
@@ -85,11 +83,15 @@ export function formatChordLetter(chord, key, context) {
   // (Cmaj7(#9#11), Fm7(b9)); the unaltered extension keeps its number.
   const implicitAlterations = [];
   if (!suspended && (halfDiminished || (diminished && majorSeventh))) implicitAlterations.push("b5");
-  for (const role of roles) {
-    if (numberOf(role) >= 9 && accidentalOf(role)) implicitAlterations.push(String(role));
+  for (const extension of [9, 11, 13].filter(value => value <= type)) {
+    if (alterations.some(value => numberOf(value) === extension)) continue;
+    const interval = symbolicInterval(extension);
+    if (interval == null) continue;
+    const difference = interval - ({ 9: 2, 11: 5, 13: 9 })[extension];
+    if (difference) implicitAlterations.push(`${difference > 0 ? "#".repeat(difference) : "b".repeat(-difference)}${extension}`);
   }
   let writtenType = type;
-  if (type >= 9 && implicitAlterations.some(alteration => numberOf(alteration) === type)) writtenType = 7;
+  while (writtenType >= 9 && [...alterations, ...implicitAlterations].some(alteration => numberOf(alteration) === writtenType)) writtenType -= 2;
   if (thirdInversion || type < 7) writtenType = 0;
 
   const additionTokens = adds.filter(add => !(add === 2 && type >= 9) && !(add === 4 && type >= 11) && !(add === 6 && type >= 13))
@@ -118,7 +120,7 @@ export function formatChordLetter(chord, key, context) {
     const interval = symbolicInterval(Number(suspension));
     const difference = interval == null ? 0 : interval - (Number(suspension) === 2 ? 2 : 5);
     let accidental = difference > 0 ? "#".repeat(difference) : "b".repeat(-difference);
-    if (Number(suspension) === 4 && alterations.includes("#11")) accidental = "#";
+    if (Number(suspension) === 4 && suspensions.length === 1 && alterations.includes("#11")) accidental = "#";
     return `sus${accidental}${suspension}`;
   }).join("");
   const group = tokens => tokens.length ? `(${tokens.join("")})` : "";

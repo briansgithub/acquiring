@@ -232,7 +232,7 @@ function buildSuffix(chord, quality, opts = {}) {
     let suffix = '';
     let alterationsEmbedded = false;
 
-    const augmented = quality === 'augmented' || (quality === 'major' && alterations.includes('#5') && !suppressPlusForSharp5);
+    const augmented = quality === 'augmented' || (quality === 'major' && !suspended && alterations.includes('#5') && !suppressPlusForSharp5);
     if (augmented) suffix += '+';
 
     if (!suspended) {
@@ -441,7 +441,7 @@ export function getChordSymbol(chord, key) {
             { fullyDiminished: fullyDim && !triSub, majorSeventh, applied: true, ...(triSub ? { quality: 'major' } : {}) },
         );
         const denominator = target.denominator;
-        const numeratorTag = key.scale === 'minor' ? '(maj)' : '';
+        const numeratorTag = !triSub && ['minor', 'dorian', 'phrygian', 'lydian', 'mixolydian', 'locrian', 'phrygianDominant'].includes(key.scale) ? '(maj)' : '';
         const subTag = triSub ? '(∆-sub)' : '';
         const borrowTag = borrowedAbbrev(chord.borrowed) || '';
         return `${numerator}${subTag}${numeratorTag}/${denominator}${borrowTag}`;

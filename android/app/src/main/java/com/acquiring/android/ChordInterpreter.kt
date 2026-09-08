@@ -407,7 +407,7 @@ object ChordInterpreter {
         var omitsPlaced = false
         var addsPlaced = false
 
-        val augmented = quality == "augmented" || (quality == "major" && alterations.any { it == "#5" } && !suppressPlusForSharp5)
+        val augmented = quality == "augmented" || (quality == "major" && !suspended && alterations.any { it == "#5" } && !suppressPlusForSharp5)
         if (augmented) suffix += "+"
 
         if (!suspended) {
@@ -569,7 +569,7 @@ object ChordInterpreter {
         while (shift < -6) shift += 12
         val prefix = if (shift < 0) "♭".repeat(-shift) else "♯".repeat(shift)
         val roman = ROMAN_MAP[root].orEmpty().let { if (quality == "minor" || quality == "diminished") it.lowercase() else it }
-        return target to (prefix + roman + if (quality == "diminished") "°" else "")
+        return target to (prefix + roman + when (quality) { "diminished" -> "°"; "augmented" -> "+"; else -> "" })
     }
 
     fun getRomanSymbol(chordJson: JsonObject, key: KeyInfo): String {
@@ -590,7 +590,7 @@ object ChordInterpreter {
             val numerator = buildNumeral(numDegree, MusicTheory.CHORD_QUALITIES["major"]!!, chordJson,
                 if (triSub) "♭" else "", mapOf("fullyDiminished" to (applied == 7 && !triSub && !suspended), "majorSeventh" to majorSeventh) + if (triSub) mapOf("quality" to "major") else emptyMap())
             val borrowTag = if (chordJson["borrowed"] is JsonArray) "(bor)" else BORROWED_TAG[borrowed]?.let { "($it)" }.orEmpty()
-            val numeratorTag = if (key.scale == "minor") "(maj)" else ""
+            val numeratorTag = if (!triSub && key.scale in setOf("minor", "dorian", "phrygian", "lydian", "mixolydian", "locrian", "phrygianDominant")) "(maj)" else ""
             return numerator + (if (triSub) "(∆-sub)" else "") + "$numeratorTag/${target.second}$borrowTag"
         }
 
@@ -751,7 +751,7 @@ object ChordInterpreter {
         val bass = if (inversion > 0) voiced?.tones?.firstOrNull() else null
         val bassName = if (bass != null && voiced != null) spellChordTone(rootNoteName, bass, voiced.rootMidi) else null
         return ChordLetterFormat.format(chordJson, rootNoteName, quality, degree, majorSeventh,
-            augMaj7Letter, triSub, voiced, bassName, effKey, customIntervals)
+            augMaj7Letter, triSub, bassName, effKey, customIntervals).replace("x", "##")
     }
 
     private fun spellChordTone(rootName: String, tone: ChordTone, rootMidi: Int): String {

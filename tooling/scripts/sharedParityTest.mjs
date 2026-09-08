@@ -5,7 +5,7 @@ import { interpretChordContract } from "../../web/lib/chordContract.js";
 // These snapshots establish equality, not source accuracy. The separate
 // Hooktheory source gate never obtains its truth from these expected* fields.
 let total = 0;
-for (const name of ["corpus_parity", "hooktheory_parity"]) {
+for (const name of ["corpus_parity", "hooktheory_parity", "historic_catalog_parity"]) {
   const cases = JSON.parse(fs.readFileSync(new URL(`../../contracts/fixtures/${name}.json`, import.meta.url)));
   assert.ok(cases.length > 0, `${name}: empty corpus`);
   const ids = new Set();

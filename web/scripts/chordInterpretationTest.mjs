@@ -45,4 +45,19 @@ assert.equal(interpretChordContract({ root: 4, applied: 5, type: 5, inversion: 2
   "V64sus4(maj)/iv", "applied suspension keeps visually ordered inversion digits");
 assert.equal(interpretChordContract({ root: 4, applied: 5, type: 5, inversion: 2, alterations: ["#5"] }, { tonic: "C", scale: "major" }).roman,
   "V+6(#5)4/IV", "applied augmented inversion has one quality marker");
+// Independently read from the live source keyboards on 2026-09-08. These
+// expectations do not come from regenerating the shared parity snapshots.
+const historicalKeyboards = [
+  { id: "Dvorak Bridge/33", chord: { root: 2, type: 7, inversion: 3, omits: [5] }, key: { tonic: "C#", scale: "minor" }, pcs: [1, 3, 6], bassPc: 1 },
+  { id: "Grieg Intro/10", chord: { root: 2, type: 7, inversion: 0, omits: [5] }, key: { tonic: "B", scale: "minor" }, pcs: [1, 4, 11] },
+  { id: "Junko Pre-Chorus/30.5", chord: { root: 4, type: 7, omits: [5], suspensions: [2] }, key: { tonic: "C", scale: "lydian" }, pcs: [4, 6, 7] },
+  { id: "TMBG Chorus/35.5", chord: { root: 7, type: 7, omits: [5], suspensions: [2, 4] }, key: { tonic: "D", scale: "major" }, pcs: [1, 2, 6, 11] },
+  { id: "Gentle Giant Pre-Chorus/8.5", chord: { root: 4, type: 11, borrowed: "lydian" }, key: { tonic: "Eb", scale: "major" }, pcs: [2, 7, 9, 10] },
+];
+for (const test of historicalKeyboards) {
+  const result = interpretChordContract(test.chord, test.key);
+  assert.deepEqual(result.pcs, test.pcs, `${test.id}: live keyboard pitches`);
+  if (test.bassPc != null) assert.equal(result.midi[0] % 12, test.bassPc, `${test.id}: seventh remains the bass after omission`);
+  assert.equal(verifyInterpretedChord(test.chord, test.key).verification.ok, true, `${test.id}: retained tone roles`);
+}
 console.log(`Chord interpretation passed: ${roles.length} musical-role cases, ${transpositions} transposition/inversion cases and quiz note/label pairing.`);

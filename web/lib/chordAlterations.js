@@ -167,6 +167,18 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
 
 
     if (key === "b9" || key === "#9" || key === "9") {
+      // Scale borrowing can already have flattened the ninth. Alter its role,
+      // not only a natural-ninth pitch: a #9 may share the third's pitch class,
+      // but must survive when an eleventh voicing omits that third.
+      const ninthIndex = degreeIndices.indexOf(4);
+      if (ninthIndex >= 0 && (chord?.type || 5) >= 9 && (chord?.type || 5) <= 11) {
+        const desiredPc = (rootPc + 2 + rule.delta + 12) % 12;
+        let shift = desiredPc - noteNameToPc(toneJSNames[ninthIndex]);
+        while (shift > 6) shift -= 12;
+        while (shift < -6) shift += 12;
+        if (shift) toneJSNames[ninthIndex] = shiftNoteBySemitones(toneJSNames[ninthIndex], shift);
+        continue;
+      }
       if (key === "#9" && (chord?.type || 5) >= 13) {
         const sharp11Pc = (rootPc + 6) % 12;
         if (!hasPc(toneJSNames, sharp11Pc)) {

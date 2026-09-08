@@ -9,7 +9,7 @@ export function applyOmits(toneJSNames, degreeIndices, omits, chord = null) {
   if (!omits?.length) return;
   let effective = omits;
   // HT ø(no5): letter omits perfect fifth but voices dim5 — do not strip ø fifth.
-  if (chord?.halfDim && omits.includes(5)) {
+  if ((chord?.retainHalfDimOmittedFifth ?? (chord?.halfDim && !chord?.dimTriad)) && omits.includes(5)) {
     effective = omits.filter((o) => o !== 5);
   }
   // HT omit-3 + sus2/4: third already replaced — do not strip the sus tone.

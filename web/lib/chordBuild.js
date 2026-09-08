@@ -283,9 +283,27 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
   replaceTriadThird(toneJSNames, degreeIndices, chordRootNoteName, baseOctave, suspensions, sdToToneJSNoteName,
     { scale: modifiedKey.scale, degree: chordRootSD, phdmIImaj7: policy.phdmIImaj7 });
 
+  // Junko Shiratsu, Speed of Sound / Pre-Chorus 30.5: the raw diminished
+  // no5/sus2 frame plays the prevailing scale's second (F#–G), not F#–G#.
+  // Explicit symbol frames keep their separately established voicing rules.
+  if (chordQuality === "diminished" && modifierChord?.omits?.includes(5)
+      && suspensions.includes(2)
+      && !modifierChord?.halfDim && !modifierChord?.dimTriad
+      && !modifierChord?.appliedContext && !modifierChord?.applied) {
+    const index = degreeIndices.indexOf(7);
+    const desired = noteNameToPc(getNoteLabel(chordRootSD % 7 + 1, modifiedKey, customScaleIntervals));
+    if (index >= 0 && desired != null) {
+      let shift = desired - noteNameToPc(toneJSNames[index]);
+      while (shift > 6) shift -= 12;
+      while (shift < -6) shift += 12;
+      toneJSNames[index] = shiftNoteBySemitones(toneJSNames[index], shift);
+    }
+  }
+
   applyChordModifiers(
     toneJSNames, degreeIndices, chordRootNoteName, baseOctave,
-    { ...effModifierChord, triadQuality, halfDim: !effModifierChord?.dimTriad && (!!effModifierChord?.halfDim || policy.halfDim), augmentedTriad: triadQuality === "augmented" },
+    { ...effModifierChord, triadQuality, retainHalfDimOmittedFifth: !effModifierChord?.dimTriad && !!effModifierChord?.halfDim,
+      halfDim: !effModifierChord?.dimTriad && (!!effModifierChord?.halfDim || policy.halfDim), augmentedTriad: triadQuality === "augmented" },
     sdToToneJSNoteName,
   );
 
@@ -296,7 +314,12 @@ export function rootToDiatonicTriad(chordRootSD, key, baseOctave, borrowed = nul
   applySecondaryDominant(toneJSNames, degreeIndices, chordRootNoteName, chordQuality, baseOctave);
 
   // Apply inversion
-  applyInversion(toneJSNames, degreeIndices, inversion, baseOctave);
+  // Omitting the fifth leaves three tones; a third inversion still selects
+  // the seventh, rather than rotating three times back to the root.
+  const seventhInversion = inversion === 3 && modifierChord?.omits?.includes(5)
+    && !modifierChord?.halfDim && !modifierChord?.dimTriad
+    ? degreeIndices.indexOf(3) : -1;
+  applyInversion(toneJSNames, degreeIndices, seventhInversion >= 0 ? seventhInversion : inversion, baseOctave);
   const omit3Power = modifierChord?.omits?.includes(3)
     && !modifierChord?.omits?.includes(5)
     && chordType < 7;

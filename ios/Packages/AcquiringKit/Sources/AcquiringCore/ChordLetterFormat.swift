@@ -1,13 +1,12 @@
 import Foundation
 
-/// Source-compatible letter notation from the already resolved chord and roles.
+/// Source-compatible letter notation from the resolved harmonic context.
 enum ChordLetterFormat {
     private static func unique<T: Hashable>(_ values: [T]) -> [T] {
         var seen = Set<T>()
         return values.filter { seen.insert($0).inserted }
     }
     private static func number(_ value: String) -> Int { Int(value.filter(\.isNumber)) ?? 0 }
-    private static func accidental(_ value: String) -> String { String(value.filter { !$0.isNumber }) }
     private static func group(_ values: [String]) -> String { values.isEmpty ? "" : "(\(values.joined()))" }
     private static func pitchClass(_ note: String) -> Int? {
         guard let natural = ["C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11][String(note.prefix(1)).uppercased()] else { return nil }
@@ -27,10 +26,6 @@ enum ChordLetterFormat {
         let alterations = unique(chord["alterations"]?.arrayValue?.compactMap(\.stringValue) ?? [])
         let omits = unique(chord["omits"]?.arrayValue?.compactMap(\.intValue) ?? [])
         let adds = unique(chord["adds"]?.arrayValue?.compactMap(\.intValue) ?? [])
-        let roles = (voiced?.labels ?? []).map {
-            $0.replacingOccurrences(of: "♭", with: "b").replacingOccurrences(of: "♯", with: "#")
-                .replacingOccurrences(of: "\u{0302}", with: "")
-        }
         func symbolicNote(_ relativeDegree: Int) -> String {
             let scaleDegree = ((degree + relativeDegree - 2) % 7 + 7) % 7 + 1
             return MusicTheory.noteLabel(degree: scaleDegree, tonic: effectiveKey.tonic,
@@ -57,12 +52,13 @@ enum ChordLetterFormat {
         let augmented = quality == "augmented" || (quality == "major" && alterations.contains("#5"))
         let bassRole: Int? = inversion == 1 ? (suspensions.contains(4) ? 4 : suspensions.contains(2) ? 2 : 3)
             : inversion == 2 ? 5 : inversion == 3 ? 7 : nil
-        var bassName = contextBassName
+        var bassName = bassRole == nil ? nil : contextBassName
         if let bassRole, bassName != nil {
             if tritoneSubstitution { bassName = rootNote(bassRole, bassRole == 7 ? -1 : 0) }
             else if chord["applied"]?.intValue == 7 && bassRole == 7 { bassName = rootNote(7, -2) }
             else if bassRole == 3 { bassName = rootNote(3, minor || diminished ? -1 : 0) }
-            else if bassRole == 5 && type >= 7 && !suspended && alterations.contains("b5") { bassName = rootNote(5, -1) }
+            else if bassRole == 5 && (diminished || (chord["applied"]?.intValue ?? 0) > 0)
+                && type >= 7 && !suspended && alterations.contains("b5") { bassName = rootNote(5, -1) }
             else { bassName = symbolicNote(bassRole) }
         }
         if type == 11 && !majorSeventh && quality == "major" && (degree == 5 || tritoneSubstitution)
@@ -84,9 +80,19 @@ enum ChordLetterFormat {
         }
         var implicitAlterations: [String] = []
         if !suspended && (halfDiminished || (diminished && majorSeventh)) { implicitAlterations.append("b5") }
-        for role in roles where number(role) >= 9 && !accidental(role).isEmpty { implicitAlterations.append(role) }
+        for extensionDegree in [9, 11, 13] where extensionDegree <= type {
+            if alterations.contains(where: { number($0) == extensionDegree }) { continue }
+            guard let interval = symbolicInterval(extensionDegree) else { continue }
+            let difference = interval - (extensionDegree == 9 ? 2 : extensionDegree == 11 ? 5 : 9)
+            if difference != 0 {
+                let accidental = String(repeating: difference > 0 ? "#" : "b", count: abs(difference))
+                implicitAlterations.append("\(accidental)\(extensionDegree)")
+            }
+        }
         var writtenType = type
-        if type >= 9 && implicitAlterations.contains(where: { number($0) == type }) { writtenType = 7 }
+        while writtenType >= 9 && (alterations + implicitAlterations).contains(where: { number($0) == writtenType }) {
+            writtenType -= 2
+        }
         if thirdInversion || type < 7 { writtenType = 0 }
         let additionTokens = adds.filter { !(($0 == 2 && type >= 9) || ($0 == 4 && type >= 11) || ($0 == 6 && type >= 13)) }
             .map { "add\($0 == 2 ? 9 : type >= 7 && $0 == 4 ? 11 : type >= 7 && $0 == 6 ? 13 : $0)" }
@@ -102,7 +108,7 @@ enum ChordLetterFormat {
         let suspensionText = suspensions.map { suspension in
             let difference = symbolicInterval(suspension).map { $0 - (suspension == 2 ? 2 : 5) } ?? 0
             var accidental = String(repeating: difference > 0 ? "#" : "b", count: abs(difference))
-            if suspension == 4 && alterations.contains("#11") { accidental = "#" }
+            if suspension == 4 && suspensions.count == 1 && alterations.contains("#11") { accidental = "#" }
             return "sus\(accidental)\(suspension)"
         }.joined()
         return rootName + qualityText + extensionText + group(plainSixth || sixNine ? [] : additionTokens) + group(omissionTokens)

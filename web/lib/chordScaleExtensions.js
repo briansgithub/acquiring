@@ -7,7 +7,11 @@ export function applyScaleExtensionPitches(notes, roles, rootName, degree, key, 
   // Minor iiø11 is a four-tone root/b7/b9/11 shell, including when the source
   // writes no3/no5. REM Losing My Religion supplies independent keyboard
   // evidence; the former bb7 and missing/raised eleventh were inferred errors.
-  if (chord.type === 11 && key.scale === "minor" && degree === 2
+  const minorSupertonic = key.scale === "minor" && degree === 2;
+  // Gentle Giant, Peel the Paint / Pre-Chorus 8.5 independently confirms
+  // the same shell for raw borrowed lydian #ivø11: A–G–Bb–D.
+  const rawLydianFourth = chord.borrowed === "lydian" && degree === 4 && !chord.halfDim;
+  if (chord.type === 11 && (minorSupertonic || rawLydianFourth)
       && !chord.dimTriad && !chord.suspensions?.length) {
     const root = notes[roles.indexOf(0)];
     const rootPc = noteNameToPc(rootName);
@@ -35,7 +39,7 @@ export function applyScaleExtensionPitches(notes, roles, rootName, degree, key, 
     if (!custom && role === 5 && key.scale !== "lydian") continue;
     // Captured minor iiø11 names explicitly retain b9 (Gaga, Adele, R.E.M.).
     const minorSupertonicNinth = role === 4 && key.scale === "minor" && degree === 2;
-    if (!custom && policy.triadQuality === "diminished" && !minorSupertonicNinth) continue;
+    if (!custom && policy.triadQuality === "diminished" && !minorSupertonicNinth && !rawLydianFourth) continue;
     const extension = role === 4 ? 9 : 11;
     const targetDegree = ((degree + extension - 2) % 7) + 1;
     const desiredPc = noteNameToPc(getNoteLabel(targetDegree, key, intervals));

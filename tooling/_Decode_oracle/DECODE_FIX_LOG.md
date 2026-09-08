@@ -1396,3 +1396,22 @@ One historical Gaga pitch capture remains unresolved; its independently verified
 minor-ii-eleventh family rule is separately asserted. No source example exists
 for explicit fifth alterations on elevenths, so those established policies are
 retained rather than presented as newly verified. No catalog or release changes.
+
+## Fix 080 — preserve historical source successes and repair omitted-tone regressions (2026-09-08)
+
+Recovered the 91,107-occurrence July 25 snapshot and compared complete raw inputs
+against the July 25, July 31 and pre-upgrade decoders. Every distinct historical
+input now participates in web/Android/Swift parity, and a separate frozen source
+gate preserves previously passing fields. Generated parity snapshots cannot
+redefine the independent historical expectations.
+
+Corrected augmented applied targets, modal numerator tags, extension spelling,
+explicit altered ninth roles, and native double-sharp/octave handling. Live
+Hooktheory keyboard checks also confirmed that raw no5 chords omit their fifth,
+keep their diatonic seventh and suspended second, and retain the seventh as the
+bass after third inversion. Borrowed-Lydian #iv elevenths keep b7, b9 and 11.
+Explicit legacy symbol-frame flags retain their separate policies.
+
+Historical inferred pitch and positioned-text errors receive exact, provenance-
+bound corrections. The new NCT capture-alignment ambiguity remains explicit.
+See `contracts/CHORD_INTERPRETATION.md` for scope, validation and source limits.

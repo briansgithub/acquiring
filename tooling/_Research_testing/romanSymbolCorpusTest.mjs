@@ -5,7 +5,7 @@ import { getChordSymbol } from '../../web/lib/jsonToSymbol.js';
 import { tokenizeRomanNumeral, romanNumeralVerticalExtents, romanNumeralToHtml } from '../../web/lib/romanNumeralCanvas.js';
 
 let checked = 0;
-for (const name of ['corpus_parity', 'hooktheory_parity']) {
+for (const name of ['corpus_parity', 'hooktheory_parity', 'historic_catalog_parity']) {
   const cases = JSON.parse(fs.readFileSync(new URL(`../../contracts/fixtures/${name}.json`, import.meta.url)));
   assert.ok(cases.length > 0, `${name}: missing rendering coverage`);
   for (const row of cases) {

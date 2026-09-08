@@ -5,7 +5,6 @@ import kotlinx.serialization.json.*
 /** Formats source-style letter names from the resolved chord and its actual roles. */
 internal object ChordLetterFormat {
     private fun number(value: String) = value.filter(Char::isDigit).toIntOrNull() ?: 0
-    private fun accidental(value: String) = value.filterNot(Char::isDigit)
     private fun JsonObject.ints(name: String) = (this[name] as? JsonArray)?.mapNotNull { (it as? JsonPrimitive)?.intOrNull }.orEmpty().distinct()
     private fun JsonObject.strings(name: String) = (this[name] as? JsonArray)?.mapNotNull { (it as? JsonPrimitive)?.contentOrNull }.orEmpty().distinct()
     private fun group(tokens: List<String>) = if (tokens.isEmpty()) "" else "(${tokens.joinToString("")})"
@@ -21,7 +20,7 @@ internal object ChordLetterFormat {
 
     fun format(chord: JsonObject, root: String, quality: String, degree: Int,
         majorSeventhHint: Boolean, augmentedMajorSeventhHint: Boolean, triSub: Boolean,
-        voiced: VoicedChord?, bassName: String?, effectiveKey: KeyInfo, customIntervals: List<Int>?): String {
+        bassName: String?, effectiveKey: KeyInfo, customIntervals: List<Int>?): String {
         val type = (chord["type"] as? JsonPrimitive)?.intOrNull ?: 5
         val inversion = (chord["inversion"] as? JsonPrimitive)?.intOrNull ?: 0
         val suspensions = chord.ints("suspensions")
@@ -29,7 +28,6 @@ internal object ChordLetterFormat {
         val alterations = chord.strings("alterations")
         val omits = chord.ints("omits")
         val adds = chord.ints("adds")
-        val roles = voiced?.labels?.map { it.replace("♭", "b").replace("♯", "#").replace("\u0302", "") }.orEmpty()
         fun symbolicNote(relativeDegree: Int): String = MusicTheory.getNoteLabel(
             Math.floorMod(degree + relativeDegree - 2, 7) + 1, effectiveKey.tonic, effectiveKey.scale, customIntervals)
         fun symbolicInterval(relativeDegree: Int): Int? {
@@ -55,9 +53,9 @@ internal object ChordLetterFormat {
             triSub -> MusicTheory.getNoteLabel(if (bassRole == 7) "b7" else "$bassRole", root, "major")
             (chord["applied"] as? JsonPrimitive)?.intOrNull == 7 && bassRole == 7 -> MusicTheory.getNoteLabel("bb7", root, "major")
             bassRole == 3 -> MusicTheory.getNoteLabel(if (minor || diminished) "b3" else "3", root, "major")
-            bassRole == 5 && type >= 7 && !suspended && alterations.contains("b5") -> MusicTheory.getNoteLabel("b5", root, "major")
+            bassRole == 5 && (diminished || ((chord["applied"] as? JsonPrimitive)?.intOrNull ?: 0) > 0) && type >= 7 && !suspended && alterations.contains("b5") -> MusicTheory.getNoteLabel("b5", root, "major")
             else -> symbolicNote(bassRole)
-        } else bassName
+        } else if (bassRole != null) bassName else null
         if (type == 11 && !majorSeventh && quality == "major" && (degree == 5 || triSub)
             && !suspended && alterations.isEmpty() && omits.isEmpty() && adds.isEmpty() && inversion == 0) {
             return "${flatSeventh(root)}/$root"
@@ -75,9 +73,14 @@ internal object ChordLetterFormat {
         }
         val implicitAlterations = mutableListOf<String>()
         if (!suspended && (halfDiminished || diminished && majorSeventh)) implicitAlterations += "b5"
-        for (role in roles) if (number(role) >= 9 && accidental(role).isNotEmpty()) implicitAlterations += role
+        for (extension in listOf(9, 11, 13).filter { it <= type }) {
+            if (alterations.any { number(it) == extension }) continue
+            val interval = symbolicInterval(extension) ?: continue
+            val difference = interval - when (extension) { 9 -> 2; 11 -> 5; else -> 9 }
+            if (difference != 0) implicitAlterations += (if (difference > 0) "#".repeat(difference) else "b".repeat(-difference)) + extension
+        }
         var writtenType = type
-        if (type >= 9 && implicitAlterations.any { number(it) == type }) writtenType = 7
+        while (writtenType >= 9 && (alterations + implicitAlterations).any { number(it) == writtenType }) writtenType -= 2
         if (thirdInversion || type < 7) writtenType = 0
         val additionTokens = adds.filter { !(it == 2 && type >= 9) && !(it == 4 && type >= 11) && !(it == 6 && type >= 13) }
             .map { "add${if (it == 2) 9 else if (type >= 7 && it == 4) 11 else if (type >= 7 && it == 6) 13 else it}" }
@@ -93,7 +96,7 @@ internal object ChordLetterFormat {
             val interval = symbolicInterval(suspension)
             val difference = if (interval == null) 0 else interval - if (suspension == 2) 2 else 5
             var accidental = if (difference > 0) "#".repeat(difference) else "b".repeat(-difference)
-            if (suspension == 4 && alterations.contains("#11")) accidental = "#"
+            if (suspension == 4 && suspensions.size == 1 && alterations.contains("#11")) accidental = "#"
             "sus$accidental$suspension"
         }
         return root + qualityText + extensionText + group(if (plainSixth || sixNine) emptyList() else additionTokens) + group(omissionTokens) +
