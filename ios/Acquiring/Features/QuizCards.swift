@@ -39,7 +39,6 @@ struct QuizCardsView: View {
     let onPreview: ([Int], Duration) -> Void
     let onIntervalPreview: ([Int]) -> Void
     let onSingBack: ((SingingTargetRequest) -> Void)?
-    let onPersistentPractice: ((PersistentPitchSelection) -> Void)?
     let onPracticeContext: ((QuizPracticeTargets) -> Void)?
 
     @State private var presentation: QuizCardsPresentation
@@ -60,7 +59,6 @@ struct QuizCardsView: View {
         onPreview: @escaping ([Int], Duration) -> Void,
         onIntervalPreview: @escaping ([Int]) -> Void,
         onSingBack: ((SingingTargetRequest) -> Void)? = nil,
-        onPersistentPractice: ((PersistentPitchSelection) -> Void)? = nil,
         onPracticeContext: ((QuizPracticeTargets) -> Void)? = nil
     ) {
         self.section = section
@@ -73,7 +71,6 @@ struct QuizCardsView: View {
         self.onPreview = onPreview
         self.onIntervalPreview = onIntervalPreview
         self.onSingBack = onSingBack
-        self.onPersistentPractice = onPersistentPractice
         self.onPracticeContext = onPracticeContext
         _presentation = State(initialValue: QuizCardsPresentation(section: section))
     }
@@ -197,7 +194,6 @@ struct QuizCardsView: View {
                 enabled: isPreviewEnabled && !degree.isEmpty,
                 action: { onPreview([previewMIDI(for: pitch)], .milliseconds(450)) },
                 doubleTapAction: singBackAction([previewMIDI(for: pitch)], labels: [degree]),
-                longPressAction: persistentAction(.simpleRoot),
                 doubleTapActionName: "Sing Back",
                 isTessituraEnabled: isTessituraEnabled,
                 showsPitchGauge: showsPitchGauge,
@@ -395,7 +391,6 @@ struct QuizCardsView: View {
             enabled: isPreviewEnabled,
             action: { onPreview([preview], .milliseconds(450)) },
             doubleTapAction: singBackAction([preview], labels: [label]),
-            longPressAction: persistentAction(.chordTone(requestedIndex: index)),
             doubleTapActionName: "Sing Back",
             isTessituraEnabled: isTessituraEnabled,
             showsPitchGauge: showsPitchGauge(.chordTone(displayedIndex: index)),
@@ -422,7 +417,6 @@ struct QuizCardsView: View {
             enabled: isPreviewEnabled && !degree.isEmpty,
             action: { onPreview([previewMIDI(for: pitch)], .milliseconds(450)) },
             doubleTapAction: singBackAction([previewMIDI(for: pitch)], labels: [degree]),
-            longPressAction: persistentAction(.melody),
             doubleTapActionName: "Sing Back",
             isTessituraEnabled: isTessituraEnabled,
             showsPitchGauge: showsPitchGauge,
@@ -471,7 +465,6 @@ struct QuizCardsView: View {
                 enabled: isPreviewEnabled,
                 action: { onIntervalPreview(intervalPreviewPair(previous: previous, current: current)) },
                 doubleTapAction: singBackAction(intervalPreviewPair(previous: previous, current: current), labels: labels),
-                longPressAction: persistentAction(identifier.hasPrefix("quiz.root") ? .simpleRoot : .melody),
                 previewActionName: "Preview sequence and together",
                 doubleTapActionName: "Sing Back Interval",
                 isTessituraEnabled: isTessituraEnabled,
@@ -539,11 +532,6 @@ struct QuizCardsView: View {
                 requestID: singingRequestID
             ))
         }
-    }
-
-    private func persistentAction(_ selection: PersistentPitchSelection) -> (() -> Void)? {
-        guard let onPersistentPractice else { return nil }
-        return { onPersistentPractice(selection) }
     }
 
     private func practiceTargets(
@@ -696,10 +684,8 @@ private struct QuizCardButton<Content: View>: View {
     let enabled: Bool
     let action: () -> Void
     let doubleTapAction: (() -> Void)?
-    let longPressAction: (() -> Void)?
     let previewActionName: String
     let doubleTapActionName: String
-    let longPressActionName: String
     let isTessituraEnabled: Bool
     let showsSingBackHint: Bool
     /// Whether this is the card currently under persistent practice.
@@ -714,10 +700,8 @@ private struct QuizCardButton<Content: View>: View {
         enabled: Bool,
         action: @escaping () -> Void,
         doubleTapAction: (() -> Void)? = nil,
-        longPressAction: (() -> Void)? = nil,
         previewActionName: String = "Preview",
         doubleTapActionName: String = "Practice",
-        longPressActionName: String = "Persistent pitch practice",
         isTessituraEnabled: Bool = false,
         showsSingBackHint: Bool = true,
         showsPitchGauge: Bool = false,
@@ -729,10 +713,8 @@ private struct QuizCardButton<Content: View>: View {
         self.enabled = enabled
         self.action = action
         self.doubleTapAction = doubleTapAction
-        self.longPressAction = longPressAction
         self.previewActionName = previewActionName
         self.doubleTapActionName = doubleTapActionName
-        self.longPressActionName = longPressActionName
         self.isTessituraEnabled = isTessituraEnabled
         self.showsSingBackHint = showsSingBackHint
         self.showsPitchGauge = showsPitchGauge
@@ -751,7 +733,7 @@ private struct QuizCardButton<Content: View>: View {
             ? (isTessituraEnabled ? "Tessitura enabled" : "Original target octave")
             : ""
         guard showsPitchGauge else { return register }
-        let pitch = vocalPractice?.sampledLivePercentageText
+        let pitch = vocalPractice?.sampledLiveCentsText
             .map { "pitch \($0) from target" } ?? "waiting for a voiced pitch"
         return register.isEmpty ? pitch : "\(register), \(pitch)"
     }
@@ -762,10 +744,8 @@ private struct QuizCardButton<Content: View>: View {
             isEnabled: enabled,
             onTap: action,
             onDoubleTap: doubleTapAction,
-            onLongPress: longPressAction,
             previewActionName: previewActionName,
-            doubleTapActionName: doubleTapActionName,
-            longPressActionName: longPressActionName
+            doubleTapActionName: doubleTapActionName
         ) {
             content()
                 .padding(.horizontal, 8)
@@ -791,7 +771,6 @@ private struct QuizCardButton<Content: View>: View {
         .accessibilityValue(accessibilityValueText)
         .accessibilityHint(enabled
             ? (doubleTapAction != nil ? "Tap to preview. Double tap to sing back." : "Tap to preview.")
-                + (longPressAction != nil ? " Long press to toggle persistent pitch practice." : "")
             : "Preview unavailable")
         .opacity(enabled ? 1 : 0.45)
         .accessibilityIdentifier(identifier)
@@ -879,50 +858,20 @@ struct PitchHintDot: View {
     }
 }
 
-/// A single arbitration point for future card-practice gestures. With no optional
-/// handlers it intentionally remains a native Button; adding a handler swaps to
-/// one exclusive recognizer chain so a Button action cannot click through.
+/// A single arbitration point for card gestures. Without a double-tap handler it
+/// intentionally remains a native Button; adding one swaps to an exclusive recognizer
+/// chain so a Button action cannot click through the sing-back tap.
 private struct QuizCardActions<Content: View>: View {
     let accessibilityLabel: String
     let isEnabled: Bool
     let onTap: () -> Void
     let onDoubleTap: (() -> Void)?
-    let onLongPress: (() -> Void)?
     let previewActionName: String
     let doubleTapActionName: String
-    let longPressActionName: String
     @ViewBuilder let content: () -> Content
 
     var body: some View {
-        if let onLongPress {
-            if let onDoubleTap {
-                gestureControl
-                    .gesture(longPressThenDoubleTapGesture(onLongPress, onDoubleTap: onDoubleTap))
-                    .quizCardAccessibility(
-                        label: accessibilityLabel,
-                        isEnabled: isEnabled,
-                        onTap: onTap,
-                        onDoubleTap: onDoubleTap,
-                        onLongPress: onLongPress,
-                        previewActionName: previewActionName,
-                        doubleTapActionName: doubleTapActionName,
-                        longPressActionName: longPressActionName
-                    )
-            } else {
-                gestureControl
-                    .gesture(longPressThenSingleTapGesture(onLongPress))
-                    .quizCardAccessibility(
-                        label: accessibilityLabel,
-                        isEnabled: isEnabled,
-                        onTap: onTap,
-                        onDoubleTap: nil,
-                        onLongPress: onLongPress,
-                        previewActionName: previewActionName,
-                        doubleTapActionName: doubleTapActionName,
-                        longPressActionName: longPressActionName
-                    )
-            }
-        } else if let onDoubleTap {
+        if let onDoubleTap {
             gestureControl
                 .gesture(doubleTapGesture(onDoubleTap))
                 .quizCardAccessibility(
@@ -930,10 +879,8 @@ private struct QuizCardActions<Content: View>: View {
                     isEnabled: isEnabled,
                     onTap: onTap,
                     onDoubleTap: onDoubleTap,
-                    onLongPress: nil,
                     previewActionName: previewActionName,
-                    doubleTapActionName: doubleTapActionName,
-                    longPressActionName: longPressActionName
+                    doubleTapActionName: doubleTapActionName
                 )
         } else {
             Button(action: perform(onTap)) { content() }
@@ -944,10 +891,8 @@ private struct QuizCardActions<Content: View>: View {
                     isEnabled: isEnabled,
                     onTap: onTap,
                     onDoubleTap: nil,
-                    onLongPress: nil,
                     previewActionName: previewActionName,
-                    doubleTapActionName: doubleTapActionName,
-                    longPressActionName: longPressActionName
+                    doubleTapActionName: doubleTapActionName
                 )
         }
     }
@@ -964,21 +909,6 @@ private struct QuizCardActions<Content: View>: View {
             .exclusively(before: TapGesture().onEnded { _ in perform(onTap)() })
     }
 
-    private func longPressThenDoubleTapGesture(
-        _ action: @escaping () -> Void,
-        onDoubleTap: @escaping () -> Void
-    ) -> some Gesture {
-        LongPressGesture(minimumDuration: 0.5)
-            .onEnded { _ in perform(action)() }
-            .exclusively(before: doubleTapGesture(onDoubleTap))
-    }
-
-    private func longPressThenSingleTapGesture(_ action: @escaping () -> Void) -> some Gesture {
-        LongPressGesture(minimumDuration: 0.5)
-            .onEnded { _ in perform(action)() }
-            .exclusively(before: TapGesture().onEnded { _ in perform(onTap)() })
-    }
-
     private func perform(_ action: @escaping () -> Void) -> () -> Void {
         { if isEnabled { action() } }
     }
@@ -991,21 +921,12 @@ private extension View {
         isEnabled: Bool,
         onTap: @escaping () -> Void,
         onDoubleTap: (() -> Void)?,
-        onLongPress: (() -> Void)?,
         previewActionName: String,
-        doubleTapActionName: String,
-        longPressActionName: String
+        doubleTapActionName: String
     ) -> some View {
-        if let onDoubleTap, let onLongPress {
+        if let onDoubleTap {
             self.quizCardAccessibilityBase(label: label, isEnabled: isEnabled, onTap: onTap, previewActionName: previewActionName)
                 .accessibilityAction(named: doubleTapActionName) { if isEnabled { onDoubleTap() } }
-                .accessibilityAction(named: longPressActionName) { if isEnabled { onLongPress() } }
-        } else if let onDoubleTap {
-            self.quizCardAccessibilityBase(label: label, isEnabled: isEnabled, onTap: onTap, previewActionName: previewActionName)
-                .accessibilityAction(named: doubleTapActionName) { if isEnabled { onDoubleTap() } }
-        } else if let onLongPress {
-            self.quizCardAccessibilityBase(label: label, isEnabled: isEnabled, onTap: onTap, previewActionName: previewActionName)
-                .accessibilityAction(named: longPressActionName) { if isEnabled { onLongPress() } }
         } else {
             self.quizCardAccessibilityBase(label: label, isEnabled: isEnabled, onTap: onTap, previewActionName: previewActionName)
         }

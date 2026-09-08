@@ -2,6 +2,7 @@ import AcquiringAudio
 import AcquiringCore
 import Foundation
 import Observation
+import UIKit
 
 struct VocalPitchSample: Equatable, Sendable {
     let rawMIDI: Double
@@ -98,9 +99,36 @@ final class VocalPracticeModel {
     /// where a run boundary can no longer separate one attempt from the next.
     @ObservationIgnored private var silentMillisecondsInRun = 0
     @ObservationIgnored private var livePercentageSampler = LivePitchErrorSampler()
+    @ObservationIgnored private var lifecycleTasks: [Task<Void, Never>] = []
 
     init(audio: AppAudioSystem) {
         self.audio = audio
+        observeApplicationLifecycle()
+    }
+
+    /// Persistent monitoring holds the microphone with no on-screen control but the collapsed
+    /// dock's Stop button, so it must never outlive the app being put away.
+    ///
+    /// `handleSceneBackgrounded` already covers this when the scene phase reaches the view that
+    /// calls it. Observing the notifications here makes the stop the model's own, so it holds
+    /// whatever is mounted at the time, and picks up termination, which no scene phase reports.
+    private func observeApplicationLifecycle() {
+        lifecycleTasks = [
+            Task { @MainActor [weak self] in
+                for await _ in NotificationCenter.default.notifications(
+                    named: UIApplication.didEnterBackgroundNotification
+                ) {
+                    self?.stopPersistentPractice()
+                }
+            },
+            Task { @MainActor [weak self] in
+                for await _ in NotificationCenter.default.notifications(
+                    named: UIApplication.willTerminateNotification
+                ) {
+                    self?.cancelActivity()
+                }
+            }
+        ]
     }
 
     var isManualPracticeActive: Bool { manualOperation != nil }
@@ -183,24 +211,11 @@ final class VocalPracticeModel {
         sampledLiveCentsError.map(PersistentPitchFeedback.band)
     }
 
-    /// The measured pitch on the readout's cadence rather than the detector's.
-    ///
-    /// Reconstructed from the sampled cents error and the note it was measured against - the
-    /// exact inverse of how `liveCentsError` was formed - so the printed pitch and the printed
-    /// percentage can never describe different instants. Sampling it separately would let them.
-    var sampledMeasuredMIDI: Double? {
-        guard let sampledLiveCentsError, let targetMIDI = persistentTargetMIDI else { return nil }
-        return Double(targetMIDI) + sampledLiveCentsError / 100
-    }
-
-    /// The percentage printed beside the timeline marker, or nil when nothing voiced is
-    /// arriving or the reading is a semitone or more out - past that the number saturates
-    /// and stops separating "slightly flat" from "singing a different note".
-    var sampledLivePercentageText: String? {
-        guard let sampledLiveCentsError,
-              PersistentPitchFeedback.showsLiveErrorPercentage(centsError: sampledLiveCentsError)
-        else { return nil }
-        return PersistentPitchFeedback.formatLiveErrorPercentage(centsError: sampledLiveCentsError)
+    /// The cents figure printed beside the timeline marker and in the card gauge's corner,
+    /// on the readout's readable cadence rather than the detector's. Unlike the percentage it
+    /// replaced, this never saturates, so there is no reading far enough out to withhold it.
+    var sampledLiveCentsText: String? {
+        sampledLiveCentsError.map(PersistentPitchFeedback.formatCentsError)
     }
 
     var manualStatusText: String? {
@@ -219,7 +234,13 @@ final class VocalPracticeModel {
         melodyRunScores[runID]
     }
 
+    /// Opening the tool ends persistent practice. The two are alternative uses of the one
+    /// microphone and of the singer's attention, and persistent feedback is worn by the card
+    /// and the timeline - both of which the open dock covers or crowds. Keeping the invariant
+    /// absolute (open tool implies no monitoring) is also what lets the collapsed dock offer
+    /// a bare Stop button with nothing to explain.
     func expand() {
+        stopPersistentPractice()
         if collapseClearTask != nil {
             cancelPendingCollapseClear()
             clearManualPracticeContent()
@@ -230,6 +251,7 @@ final class VocalPracticeModel {
     /// Help reveals the controls without discarding a practice session, including
     /// when it is opened during the dock's delayed collapse cleanup.
     func expandForHelp() {
+        stopPersistentPractice()
         cancelPendingCollapseClear()
         isExpanded = true
     }
@@ -484,16 +506,18 @@ final class VocalPracticeModel {
         }
     }
 
+    /// Starts monitoring whether or not a target resolves this instant.
+    ///
+    /// The header's microphone button is a standing mode, not an action on one card: pressed
+    /// during a rest, or before the first melody note has sounded, it must still latch and
+    /// pick the target up when the music reaches one. `refreshPersistentTarget` already
+    /// tolerates the target coming and going underneath a running session, which is the same
+    /// state this starts in.
     func startPersistentPractice(_ selection: PersistentPitchSelection) {
-        let resolved = PersistentPitchTargets.resolve(
-            selection: selection,
-            simpleRoot: rootTarget,
-            chordTones: chordToneTargets,
-            melody: melodyTarget
-        )
-        guard resolved != nil else { return }
-
         cancelActivity()
+        // Collapsing is what surfaces the dock's Stop button, which exists only in the
+        // collapsed header - the mirror of `expand()` ending monitoring from the other side.
+        if isExpanded { minimize() }
         errorMessage = nil
         persistentSelection = selection
         persistentPhase = .listening
