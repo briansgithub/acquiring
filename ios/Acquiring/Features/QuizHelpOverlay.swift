@@ -94,6 +94,7 @@ private struct QuizHelpHost: ViewModifier {
     func body(content: Content) -> some View {
         content
             .environment(\.quizHelpState, state)
+            .accessibilityElement(children: .contain)
             .allowsHitTesting(!state.isPresented)
             .accessibilityHidden(state.isPresented)
             .onPreferenceChange(QuizHelpFramesKey.self) { frames = $0 }
@@ -166,6 +167,7 @@ private struct QuizHelpOverlay: View {
             }
             .animation(reduceMotion ? nil : .easeInOut(duration: 0.16), value: frames)
         }
+        .accessibilityElement(children: .contain)
         .accessibilityAddTraits(.isModal)
         .accessibilityIdentifier("help.overlay")
     }

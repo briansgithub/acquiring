@@ -362,6 +362,8 @@ final class QuizCoverageTests: XCTestCase {
                 XCTAssertTrue(app.descendants(matching: .any)[id].firstMatch.waitForExistence(timeout: 5), id)
             }
             XCTAssertEqual(app.descendants(matching: .any)["help.quizChord"].firstMatch.exists, modeName == "Full")
+            // VoiceOver isolation/focus is deferred in ios-quiz-help-handoff.md.
+            // The checks below cover touch interception and state preservation.
             app.buttons["help.dismiss"].tap()
             XCTAssertTrue(poll(timeout: 5) { !overlay.exists })
             XCTAssertTrue(waitForValue(dock, "Expanded", timeout: 5))
@@ -400,8 +402,12 @@ final class QuizCoverageTests: XCTestCase {
         let app = launchReadyQuiz()
         let play = app.buttons["quiz.play"]
         XCTAssertTrue(waitForEnabled(play, timeout: 30))
+        XCTAssertLessThanOrEqual(play.frame.maxY, app.buttons["song.favorite"].frame.minY)
         play.tap()
-        XCTAssertTrue(waitForLabel(play, "Pause", timeout: 10))
+        guard waitForLabel(play, "Pause", timeout: 10) else {
+            XCTFail("Playback must start before checking help dismissal")
+            return
+        }
         app.buttons["quiz.help"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["help.overlay"].firstMatch.waitForExistence(timeout: 5))
         app.buttons["help.dismiss"].tap()

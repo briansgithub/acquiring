@@ -1871,8 +1871,14 @@ work. Human visual review remains pending.
 `[review]` Implemented on `codex/ios-quiz-help` with Terra/medium UI agents and
 primary integration review. Contextual hints cover the selected quiz cards and
 expanded singing tool; Settings Help is limited to card notation and tessitura.
-First-launch Introduction is preserved. Windows source syntax and project checks
-passed; Xcode build, focused XCTest execution, and simulator/human review remain
-pending on the Mac. The user requested branch publication and a Mac handoff.
-See [the branch handoff](ios-quiz-help-handoff.md) for exact commands and review
-priorities. No screenshots, full-app test suite, or release was performed.
+First-launch Introduction is preserved. Mac build/install/launch passed on the
+warm iPhone 17. Fixed the Help dismiss identifier and overlapping Play placement;
+transport now reserves bottom space, with a dashboard scrolling fallback.
+Three focused methods passed. All core dismissal/state assertions passed in both
+500 Miles modes; added VoiceOver assertions failed and were deferred at the user's
+request. Accessibility experiments were reverted; no final all-green test rerun.
+Human review remains pending for layout, notation, scrolling/gestures, and existing
+practice-session variants. VoiceOver is low priority and must not be resumed
+without a new request. See [the branch handoff](ios-quiz-help-handoff.md) for exact
+commands, results, and remaining review items. No screenshots, full-app suite,
+physical-device testing, or release was performed.
