@@ -7,6 +7,9 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 @Serializable
+data class ParityDisplayContext(val tonic: String, val scale: String = "major")
+
+@Serializable
 data class ParityTestCase(
     val id: String,
     val json: String,
@@ -15,8 +18,10 @@ data class ParityTestCase(
     val expectedLetter: String,
     val expectedPcs: List<Int>,
     val expectedMidi: List<Int>,
-    val expectedRootMidi: Int,
-    val expectedToneLabels: List<String>
+    val expectedRootMidi: Int?,
+    val expectedToneLabels: List<String>,
+    val expectedRelativeIonianRoman: String? = null,
+    val displayContext: ParityDisplayContext? = null
 )
 
 /**
@@ -51,7 +56,7 @@ class CorpusParityTest {
             val roman = ChordInterpreter.getRomanSymbol(chordJson, tc.key)
             val letter = ChordInterpreter.getLetterName(chordJson, tc.key)
             val notes = ChordInterpreter.getChordNotes(chordJson, tc.key)
-            val rootMidi = ChordInterpreter.getRootPositionChordNotes(chordJson, tc.key).firstOrNull()
+            val rootMidi = ChordInterpreter.getResolvedRootMidi(chordJson, tc.key)
             val pcs = notes.map { ((it % 12) + 12) % 12 }.toSet().sorted()
 
             if (roman != tc.expectedRoman) {
@@ -69,11 +74,11 @@ class CorpusParityTest {
             if (rootMidi != tc.expectedRootMidi) {
                 failures["rootMidi"]!!.add("[${tc.id}] expected ${tc.expectedRootMidi}, got $rootMidi")
             }
-            if (rootMidi != null) {
-                val labels = notes.map { MusicTheory.getRelativeDegreeLabel(it, rootMidi) }
-                if (labels != tc.expectedToneLabels) {
-                    failures["toneLabels"]!!.add("[${tc.id}] expected ${tc.expectedToneLabels}, got $labels")
-                }
+            val labels = ChordInterpreter.getChordToneLabels(chordJson, tc.key)
+            if (labels != tc.expectedToneLabels) failures["toneLabels"]!!.add("[${tc.id}] expected ${tc.expectedToneLabels}, got $labels")
+            tc.expectedRelativeIonianRoman?.let { expected ->
+                val relative = ChordInterpreter.getRelativeIonianRomanSymbol(chordJson, tc.key, tc.displayContext?.let { KeyInfo(it.tonic, "major") } ?: relativeIonianKey(tc.key))
+                if (relative != expected) failures["roman"]!!.add("[${tc.id}] relative Ionian expected '$expected', got '$relative'")
             }
         }
 
@@ -85,11 +90,8 @@ class CorpusParityTest {
             )
         }
 
-        ParityBaseline.assertWithinBaseline(
-            corpus = "corpus_parity",
-            counts = failures.mapValues { it.value.size },
-            total = total,
-            samples = failures.values.flatten()
-        )
+        println("Exact corpus parity over $total cases: " + failures.mapValues { it.value.size })
+        assertTrue("Corpus parity differs: " + failures.mapValues { it.value.size } + "\n" +
+            failures.values.flatMap { it.take(10) }.joinToString("\n"), failures.values.all { it.isEmpty() })
     }
 }

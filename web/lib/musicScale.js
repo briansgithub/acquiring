@@ -269,9 +269,12 @@ export function resolveChordRootSD(rootNoteName, key) {
 export function calculateScaleDegrees(toneJSNames, degreeIndices, chordRootNoteName, chordDegrees, chordType) {
   const extensionBaseDegree = {
     3: "7", // chord seventh
-    4: "2", // 9th
-    5: "4", // 11th
-    6: "6", // 13th
+    4: "9",
+    5: "11",
+    6: "13",
+    7: "2", // suspension / added second
+    8: "4", // suspension / added fourth
+    9: "6", // added sixth
   };
   return toneJSNames.map((noteName, index) => {
     const degreeIdx = degreeIndices[index];
@@ -284,8 +287,7 @@ export function calculateScaleDegrees(toneJSNames, degreeIndices, chordRootNoteN
       // Upper structure indices come from the chord-root major frame.
       degree = extensionBaseDegree[degreeIdx];
     } else {
-      // Fallback (shouldn't happen)
-      degree = "1";
+      throw new Error(`Unknown chord tone role: ${degreeIdx}`);
     }
 
     const rawNumber = rawDegree(degree);
@@ -296,7 +298,7 @@ export function calculateScaleDegrees(toneJSNames, degreeIndices, chordRootNoteN
     // Compare against the major scale built on the actual chord root. This
     // preserves spellings such as b3 and b7 for minor and dominant chords.
     const rootKey = { tonic: chordRootNoteName, scale: "major" };
-    const diatonicNote = getNoteLabel(rawNumber, rootKey);
+    const diatonicNote = getNoteLabel(((rawNumber - 1) % 7) + 1, rootKey);
 
     // Calculate the modifier by comparing the actual vs diatonic note
     const modifier = getModifierDifference(actualNote, diatonicNote);
@@ -317,10 +319,5 @@ function getModifierDifference(actual, diatonic) {
   while (diff > 6) diff -= 12;
   while (diff < -6) diff += 12;
 
-  if (diff === 0) return "";
-  if (diff === -1) return "b";
-  if (diff === -2) return "bb";
-  if (diff === 1) return "#";
-  if (diff === 2) return "##"; // or x
-  return "";
+  return diff < 0 ? "b".repeat(-diff) : "#".repeat(diff);
 }

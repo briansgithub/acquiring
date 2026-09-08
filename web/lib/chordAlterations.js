@@ -20,6 +20,7 @@ const ALT_RULES = {
 
   "9": { src: 2, delta: 0 },
 
+  b11: { src: 5, delta: -1, addSd: "b4", addOct: 1 },
   "#11": { src: 5, delta: 1, addSd: "#4", addOct: 1 },
 
   "11": { src: 5, delta: 0 },
@@ -178,6 +179,7 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
       for (let i = 0; i < toneJSNames.length; i++) {
         if (noteNameToPc(toneJSNames[i]) === ninthPc) {
           found = true;
+          degreeIndices[i] = 4;
           if (rule.delta !== 0) toneJSNames[i] = shiftNoteBySemitones(toneJSNames[i], rule.delta);
           break;
         }
@@ -186,7 +188,7 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
         const targetPc = (ninthPc + rule.delta + 12) % 12;
         if (!hasPc(toneJSNames, targetPc)) {
           toneJSNames.push(sdToToneJSNoteName(rule.addSd, rule.addOct ?? 1, rk, baseOctave));
-          degreeIndices.push(degreeIndices.length);
+          degreeIndices.push(4);
         }
       }
       continue;
@@ -196,7 +198,7 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
       const flat13Pc = (rootPc + 8) % 12;
       if (!hasPc(toneJSNames, flat13Pc) && sdToToneJSNoteName) {
         toneJSNames.push(sdToToneJSNoteName("b6", 1, rk, baseOctave));
-        degreeIndices.push(degreeIndices.length);
+        degreeIndices.push(6);
       }
       continue;
     }
@@ -208,7 +210,7 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
       const sharp11Pc = (rootPc + 6) % 12;
       if (!hasPc(toneJSNames, sharp11Pc) && rule.addSd && sdToToneJSNoteName) {
         toneJSNames.push(sdToToneJSNoteName(rule.addSd, rule.addOct ?? 1, rk, baseOctave));
-        degreeIndices.push(degreeIndices.length);
+        degreeIndices.push(5);
       }
       continue;
     }
@@ -220,6 +222,7 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
       if (noteNameToPc(toneJSNames[i]) === srcPc) {
 
         found = true;
+        degreeIndices[i] = key.includes("13") ? 6 : 5;
 
         if (rule.delta !== 0) toneJSNames[i] = shiftNoteBySemitones(toneJSNames[i], rule.delta);
 
@@ -237,7 +240,7 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
 
         toneJSNames.push(sdToToneJSNoteName(rule.addSd, rule.addOct ?? 1, rk, baseOctave));
 
-        degreeIndices.push(degreeIndices.length);
+        degreeIndices.push(key.includes("13") ? 6 : 5);
 
       }
 
@@ -246,4 +249,3 @@ export function applyAlterations(toneJSNames, degreeIndices, alterations, chordR
   }
 
 }
-

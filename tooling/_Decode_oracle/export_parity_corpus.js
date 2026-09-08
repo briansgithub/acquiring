@@ -2,7 +2,7 @@
  * Regenerates the shared cross-platform chord-decoding contract at
  * contracts/fixtures/corpus_parity.json.
  *
- * The web player is the oracle: every expectation in the fixture is whatever
+ * This is a generated parity snapshot, NOT an accuracy oracle. Every expectation is whatever
  * web/lib produces for that chord object. web, Android and iOS all read this
  * one file (Android via the test.resources.srcDir in android/app/build.gradle,
  * iOS via ChordParityTests and the app test bundle), so a divergence on any
@@ -15,41 +15,6 @@ const fs = require('fs');
 const path = require('path');
 
 const repoRoot = path.join(__dirname, '..', '..');
-
-// ---------------------------------------------------------------------------
-// Scale-degree card labels
-// ---------------------------------------------------------------------------
-
-// Port of MusicTheory.relativeMajorDegreeLabel (iOS, MusicTheory.swift) and
-// MusicTheory.getRelativeDegreeLabel (Android, MusicTheory.kt). Both mobile
-// clients label a chord tone by its distance from the chord's root-position
-// root, read against the MAJOR scale, so the label is chord-relative and never
-// consults the song key. Kept byte-identical to those two so the fixture pins
-// the strings that actually appear on the Chord Tones cards.
-const MAJOR_INTERVALS = [0, 2, 4, 5, 7, 9, 11];
-
-function relativeMajorDegreeLabel(midi, rootMidi) {
-  const relative = (((midi - rootMidi) % 12) + 12) % 12;
-  let best = 0;
-  let bestDistance = Infinity;
-  for (let index = 0; index < MAJOR_INTERVALS.length; index++) {
-    const distance = Math.abs(wrapSemitones(relative - MAJOR_INTERVALS[index]));
-    // On a tie, prefer the higher degree: G against A is b7, not 6.
-    if (distance < bestDistance || (distance === bestDistance && index > best)) {
-      best = index;
-      bestDistance = distance;
-    }
-  }
-  const difference = wrapSemitones(relative - MAJOR_INTERVALS[best]);
-  const prefix = { '-2': '♭♭', '-1': '♭', 1: '♯', 2: '♯♯' }[difference] || '';
-  return `${prefix}${best + 1}̂`;
-}
-
-function wrapSemitones(value) {
-  if (value > 6) return value - 12;
-  if (value < -6) return value + 12;
-  return value;
-}
 
 // ---------------------------------------------------------------------------
 // Note names -> MIDI
@@ -76,6 +41,11 @@ function noteNameToMidi(name) {
 // The original hand-written benchmark. Kept first, with its ids unchanged, so
 // the named cases stay greppable in failure output after the sweeps below.
 const CURATED_CASES = [
+  { id: "contract/rest-flag", json: { root: 1, type: 7, isRest: true }, key: { tonic: "C", scale: "major" } },
+  { id: "contract/rest-alias", json: { root: 1, rest: true }, key: { tonic: "C", scale: "major" } },
+  { id: "contract/invalid-root", json: { root: 8, type: 7 }, key: { tonic: "C", scale: "major" } },
+  { id: "contract/zero-root", json: { root: 0 }, key: { tonic: "C", scale: "major" } },
+  { id: "contract/letter-anchored-slash", json: { root: 0, type: 5, _letterRootName: "C", _letterQuality: "minor", _letterBassName: "G" }, key: { tonic: "C", scale: "major" } },
   // 1. Basic Triads
   { id: "C Major I", json: { root: 1 }, key: { tonic: "C", scale: "major" } },
   { id: "C Major V", json: { root: 5 }, key: { tonic: "C", scale: "major" } },
@@ -271,7 +241,7 @@ async function exportCorpus() {
 
   const results = [];
   const seen = new Set();
-  let skipped = 0;
+
 
   for (const testCase of [...CURATED_CASES, ...sweepCases()]) {
     const chord = { ...testCase.json };
@@ -285,20 +255,11 @@ async function exportCorpus() {
     const interpreted = music.chordInterpreter(chord, testCase.key);
     const notes = (interpreted && interpreted.notes) || [];
     const midi = notes.map(noteNameToMidi);
-    if (!midi.length || midi.some((value) => value == null)) {
-      skipped++;
-      continue;
+    if (midi.some((value) => value == null)) {
+      throw new Error(`Cannot voice parity case ${testCase.id}`);
     }
 
-    // The card labels are measured from the root-position root, exactly as
-    // Android's getRootPositionChordNotes().first() and iOS's
-    // rootPositionChordNotes(for:key:).first do.
-    const rootPosition = music.chordInterpreter({ ...chord, inversion: 0 }, testCase.key);
-    const rootMidi = noteNameToMidi(((rootPosition && rootPosition.notes) || [])[0]);
-    if (rootMidi == null) {
-      skipped++;
-      continue;
-    }
+    const rootMidi = interpreted.rootMidi;
 
     results.push({
       id: testCase.id,
@@ -311,14 +272,8 @@ async function exportCorpus() {
       // The label anchor, so a chord-tone failure separates "wrong voicing"
       // from "wrong root" instead of collapsing both into one bad label.
       expectedRootMidi: rootMidi,
-      expectedToneLabels: midi.map((m) => relativeMajorDegreeLabel(m, rootMidi)),
-      // Informational only, and NOT an oracle. Web derives labels structurally
-      // from note spelling (calculateScaleDegrees), so a sus4 reads "#3" where
-      // the mobile clients read "4"; and for extended chords its degreeIndices
-      // run past extensionBaseDegree and it emits labels against the wrong root
-      // entirely. The mobile pitch-class labels above are the contract; this
-      // field exists so the difference stays visible.
-      webChordDegrees: (interpreted && interpreted.chordDegrees) || []
+      expectedToneLabels: interpreted.chordDegrees.map((role) => `${role.replace(/b/g, "♭").replace(/#/g, "♯")}̂`),
+      webChordDegrees: interpreted.chordDegrees
     });
   }
 
@@ -328,10 +283,26 @@ async function exportCorpus() {
   const body = results.map((entry) => `  ${JSON.stringify(entry)}`).join(',\n');
   fs.writeFileSync(targetPath, `[\n${body}\n]\n`, 'utf8');
   console.log(`Exported ${results.length} parity cases to ${path.relative(repoRoot, targetPath)}`);
-  if (skipped) console.log(`Skipped ${skipped} case(s) the web engine could not voice.`);
 }
 
-exportCorpus().catch((error) => {
+async function refreshRealParitySnapshot() {
+  const { interpretChordContract } = await import('../../web/lib/chordContract.js');
+  const file = path.join(repoRoot, 'contracts/fixtures/hooktheory_parity.json');
+  const cases = JSON.parse(fs.readFileSync(file, 'utf8'));
+  for (const test of cases) {
+    const actual = interpretChordContract(JSON.parse(test.json), test.key);
+    Object.assign(test, {
+      expectedRoman: actual.roman, expectedLetter: actual.letter,
+      expectedPcs: actual.pcs, expectedMidi: actual.midi,
+      expectedRootMidi: actual.rootMidi, expectedToneLabels: actual.toneLabels,
+    });
+  }
+  // Preserve id, input, occurrence counts and all independent truth* fields.
+  fs.writeFileSync(file, '[\n' + cases.map((test) => '  ' + JSON.stringify(test)).join(',\n') + '\n]\n');
+  console.log('Refreshed real-song parity snapshot (' + cases.length + ' cases); source truth unchanged.');
+}
+
+exportCorpus().then(() => refreshRealParitySnapshot()).catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });

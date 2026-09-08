@@ -86,7 +86,7 @@ android {
         }
     }
     sourceSets {
-        test.resources.srcDir "${rootProject.projectDir}/../contracts/fixtures"
+        test.resources.srcDir providers.gradleProperty("parityFixturesDir").getOrElse("${rootProject.projectDir}/../contracts/fixtures")
     }
     testOptions {
         unitTests.returnDefaultValues = true

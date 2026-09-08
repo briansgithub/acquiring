@@ -52,7 +52,7 @@ export const singRoot = {
       statusEl.textContent = "";
       chordTools.clearPanels();
       target = pickFrequencyBiased(base.pool, ctx.session, ctx.session.lastSymbol, ctx.getFrequencyProfile?.(), "normal");
-      if (!target?.rootNotes?.[0]) return;
+      if (!target?.rootNote) return;
       quizNotify(ctx, { symbols: [target.symbol] });
       promptEl.innerHTML = `Sing the root of <span class="quiz-chord-sym" data-quiz-symbol="${target.symbol}">${ctx.romanHtml(target.symbol)}</span>.`;
       chordTools.wireStaticChords(promptEl);
@@ -75,11 +75,11 @@ export const singRoot = {
       onNext: nextQuestion,
     });
     el.querySelector("#sr-sing").addEventListener("click", async () => {
-      if (!target?.rootNotes?.[0]) return;
+      if (!target?.rootNote) return;
       const threshold = DIFFICULTY_TO_CENTS[diffEl.value] || 30;
       try {
         const result = await micGrade({
-          targetNote: target.rootNotes[0],
+          targetNote: target.rootNote,
           thresholdCents: threshold,
           statusEl,
           meterEl,

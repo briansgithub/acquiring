@@ -1366,3 +1366,33 @@ node _Research_testing/hooktheory_catalog/cli/batchCompareCatalog.js --resync
 ---
 
 Single source of truth for the full workflow: [`ORACLE_GUIDE/README.md`](../ORACLE_GUIDE/README.md) (read `01`–`05` + `reference.md` in order).
+
+## Fix 079 — source-verified interpretation and strict platform parity (2026-09-08)
+
+Preserve the existing decoder policies and native public interfaces while making
+web, Android and iOS share six exact output channels. Musical roles now travel
+with tones through modifiers, omissions, inversion and UI/quiz playback. The
+harmonic root no longer depends on the first voiced note; suspensions, diminished
+sevenths and upper extensions retain their authored degree numbers.
+
+Source-backed corrections cover borrowed applied targets and scoped Roman tags,
+seventh qualities, third-inversion alterations, augmentation markers, displayed
+slash basses, explicit additions/omissions, relative-Ionian custom contexts,
+dual suspensions, eleventh shells, and remote-key spelling. Native implementations
+retain the established Hooktheory differences between displayed names and voiced
+pitches. Letter speech preserves additions, omissions and altered suspensions.
+
+The frozen 1,824 real-song inputs and raw truth are unchanged. Separate reviewed
+SVG repairs and live GUI findings preserve provenance; generated parity snapshots
+cannot redefine source accuracy. Exact parity covers 15,730 synthetic inputs
+(the original 15,725 plus five empty/invalid/letter-anchored cases) and all 1,824
+real-song shapes, with 22 independent role/display cases. Aggregate discrepancy
+budgets have been replaced by exact assertions. The shared CI gate requires web,
+Android and Swift package checks at the same revision.
+
+Validation and source boundaries are documented in
+[`contracts/CHORD_INTERPRETATION.md`](../../contracts/CHORD_INTERPRETATION.md).
+One historical Gaga pitch capture remains unresolved; its independently verified
+minor-ii-eleventh family rule is separately asserted. No source example exists
+for explicit fifth alterations on elevenths, so those established policies are
+retained rather than presented as newly verified. No catalog or release changes.

@@ -2,7 +2,7 @@
  * Build quiz pool entries from loaded section state.
  */
 import { chordInterpreter } from "../../lib/music.js";
-import { normalizeToneNotes } from "../../lib/chordVoicing.js";
+import { normalizeToneNotes, midiToToneNote } from "../../lib/chordVoicing.js";
 import { getChordSymbol } from "../../lib/jsonToSymbol.js";
 import { resolveChordRootSD } from "../../lib/musicScale.js";
 
@@ -298,7 +298,7 @@ export function findPoolEntry(pool, symbol) {
 
 /** Scale degree (1–7) of the chord's sounding root in the section key. */
 export function entryRootDegree(entry) {
-  const note = entry?.rootNotes?.[0]?.replace(/\d+$/, "");
+  const note = entry?.rootNote?.replace(/\d+$/, "");
   if (!note || !entry?.key) return null;
   return resolveChordRootSD(note, entry.key);
 }
@@ -316,13 +316,18 @@ export function buildSongEntries(rawChords, sectionKeys, fallbackKey, interpret)
       const symbol = getChordSymbol(chord, activeKey);
       const notes = normalizeToneNotes(data.notes || []);
       const rootNotes = normalizeToneNotes(rootData.notes || []);
+      const rootIndex = (rootData.chordDegrees || []).findIndex((role) => role === "1");
+      const rootNote = rootIndex >= 0 ? rootNotes[rootIndex]
+        : rootData.rootMidi == null ? null : midiToToneNote(rootData.rootMidi);
       return {
         chord,
         key: activeKey,
         symbol,
         notes,
         rootNotes,
-        degrees: rootData.chordDegrees || [],
+        rootNote,
+        rootDegrees: rootData.chordDegrees || [],
+        degrees: data.chordDegrees || [],
       };
     })
     .filter((e) => e.notes.length);
