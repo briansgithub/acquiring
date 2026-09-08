@@ -1058,8 +1058,8 @@ struct QuizView: View {
         let selected = sections.first(where: { $0.id == selectedSectionID }) ?? sections.first
 
         return GeometryReader { viewport in
-            // The dense Quiz dashboard fits its text to the available viewport.
-            // Keep all targets >=44pt without a page-level pan recognizer competing with controls.
+            // Keep fixed-size cards reachable when the expanded dock leaves less
+            // room. Only the dashboard scrolls; transport stays above the dock.
             let maximumControlType: DynamicTypeSize = viewport.size.height >= 760 ? .xxxLarge : .large
             Group {
                 VStack(spacing: 4) {
@@ -1071,7 +1071,13 @@ struct QuizView: View {
                             quizHelp: quizHelp
                         )
 
-                        quizSurface(selected.section, sectionID: selected.id)
+                        ViewThatFits(in: .vertical) {
+                            quizSurface(selected.section, sectionID: selected.id)
+                                .fixedSize(horizontal: false, vertical: true)
+                            ScrollView {
+                                quizSurface(selected.section, sectionID: selected.id)
+                            }
+                        }
                     }
                 }
                 .padding(.horizontal, 12)
@@ -1085,9 +1091,12 @@ struct QuizView: View {
         // The parent scene reserves the separate, expandable singing dock.
         .safeAreaInset(edge: .bottom, spacing: 4) {
             if let selected {
-                HStack {
-                    Spacer(minLength: 0)
-                    transportControls(sectionID: selected.id, sections: sections)
+                VStack(spacing: 4) {
+                    quizTransportBar(section: selected.section, sectionID: selected.id)
+                    HStack {
+                        Spacer(minLength: 0)
+                        transportControls(sectionID: selected.id, sections: sections)
+                    }
                 }
                 .padding(.horizontal, 12)
                 .padding(.bottom, 12)
@@ -1175,10 +1184,8 @@ struct QuizView: View {
                 }
                 quizCards(section: section, sectionID: sectionID, beat: beat)
                 playbackKnobs(sectionID: sectionID)
-                quizTransportBar(section: section, sectionID: sectionID)
-                Spacer(minLength: 0)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .frame(maxWidth: .infinity, alignment: .top)
     }
 
     /// The lanes are a lighter wash of whatever color the key readout above them is
