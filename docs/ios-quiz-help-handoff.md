@@ -29,6 +29,10 @@ test suite, or screenshots are authorized. Preserve pending reviews elsewhere.
   Roman symbols/modifiers, modes/borrowing/major lock, and tessitura. Native,
   silent diagrams use the existing notation renderers. First-launch Introduction
   and its completion key remain intact.
+- Follow-up: adding a song to Favorites shows a non-interactive "Favorited"
+  material bubble for two seconds after persistence succeeds. Removing a favorite
+  or a failed save shows no success bubble. It appears above the Quiz star and
+  below the Song Detail toolbar star; verify neither placement is clipped.
 
 Main new sources: `ios/Acquiring/Features/QuizHelpOverlay.swift` and `HelpViews.swift`.
 Both are registered in the app target. Integration is in LibraryViews, SongViews,
@@ -37,7 +41,7 @@ QuizCards, VocalPracticeViews, and VocalPracticeModel.
 ## Local checks completed
 
 - `git diff --check`: passed.
-- Swift tree-sitter syntax parsing: all seven changed/new app Swift sources passed.
+- Swift tree-sitter syntax parsing: all eight changed/new app Swift sources passed.
 - Focused syntax parsing of the four added/updated test methods: passed.
 - OpenStep project parsing and checks that both new files belong to the Features
   group and app Sources phase: passed.
@@ -82,6 +86,8 @@ of the same failure and report before expanding the investigation.
    Tap the lock, pitch card, dock collapse, navigation Back, and `?` locations
    while help is up. Each tap must only dismiss help; the dock stays expanded.
    Check that playback continues and opening help alone requests no microphone.
+   Add/remove a favorite in Quiz and Song Detail: check the brief confirmation,
+   its placement, and that playback and other controls remain usable.
 2. Check the scrollable fallback, numbered markers, safe-area placement, and
    VoiceOver dismissal/focus. Use larger text and light/dark appearances on the
    same simulator. Confirm the original three equal-width singing cards remain.

@@ -1,15 +1,32 @@
 import AcquiringCore
 import SwiftUI
+import UIKit
 
 struct FavoriteSongButton: View {
     let songID: String
+    var confirmationBelow = false
     @Environment(UserLibraryViewModel.self) private var userContent: UserLibraryViewModel?
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @State private var showsConfirmation = false
+    @State private var presentationRevision = 0
 
     var body: some View {
         if let userContent {
             let isFavorite = userContent.isFavorite(songID)
             Button {
-                Task { await userContent.toggleFavorite(slug: songID) }
+                showsConfirmation = false
+                presentationRevision += 1
+                let revision = presentationRevision
+                Task {
+                    await userContent.toggleFavorite(slug: songID)
+                    // Wait for persistence: the star itself updates optimistically.
+                    guard !isFavorite, userContent.isFavorite(songID),
+                          userContent.favoriteError == nil,
+                          revision == presentationRevision else { return }
+                    showsConfirmation = true
+                    UIAccessibility.post(notification: .announcement, argument: "Favorited")
+                }
             } label: {
                 Image(systemName: isFavorite ? "star.fill" : "star")
                     .foregroundStyle(isFavorite ? .yellow : .primary)
@@ -19,6 +36,26 @@ struct FavoriteSongButton: View {
             .accessibilityValue(isFavorite ? "Favorite" : "Not favorite")
             .accessibilityHint(userContent.favoriteError ?? "Saves this song in Favorites")
             .accessibilityIdentifier("song.favorite")
+            .overlay(alignment: confirmationBelow ? .bottomTrailing : .topLeading) {
+                if showsConfirmation {
+                    confirmationBubble
+                        .alignmentGuide(confirmationBelow ? .bottom : .top) { dimensions in
+                            confirmationBelow ? dimensions[.top] - 8 : dimensions[.bottom] + 8
+                        }
+                        .transition(.opacity)
+                }
+            }
+            .animation(reduceMotion ? nil : .easeOut(duration: 0.18), value: showsConfirmation)
+            .task(id: showsConfirmation) {
+                guard showsConfirmation else { return }
+                do { try await Task.sleep(for: .seconds(2)) }
+                catch { return }
+                showsConfirmation = false
+            }
+            .onDisappear {
+                presentationRevision += 1
+                showsConfirmation = false
+            }
             .alert(
                 "Favorites",
                 isPresented: Binding(
@@ -30,6 +67,47 @@ struct FavoriteSongButton: View {
             } message: {
                 Text(userContent.favoriteError ?? "Unable to update Favorites.")
             }
+        }
+    }
+
+    private var confirmationBubble: some View {
+        VStack(alignment: confirmationBelow ? .trailing : .leading, spacing: 0) {
+            if confirmationBelow { confirmationPointer.rotationEffect(.degrees(180)) }
+            Text("Favorited")
+                .font(.footnote.weight(.medium))
+                .foregroundStyle(.primary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 9)
+                .background(
+                    reduceTransparency
+                        ? AnyShapeStyle(Color(uiColor: .systemBackground))
+                        : AnyShapeStyle(.regularMaterial),
+                    in: RoundedRectangle(cornerRadius: 14)
+                )
+                .overlay(RoundedRectangle(cornerRadius: 14).stroke(.secondary.opacity(0.35)))
+            if !confirmationBelow { confirmationPointer }
+        }
+        .fixedSize()
+        .shadow(color: .black.opacity(0.10), radius: 5, y: 2)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+
+    private var confirmationPointer: some View {
+        FavoriteConfirmationPointer()
+            .fill(reduceTransparency ? Color(uiColor: .systemBackground) : Color.secondary.opacity(0.35))
+            .frame(width: 14, height: 7)
+            .padding(.horizontal, 12)
+    }
+}
+
+private struct FavoriteConfirmationPointer: Shape {
+    func path(in rect: CGRect) -> Path {
+        Path { path in
+            path.move(to: CGPoint(x: rect.minX, y: rect.minY))
+            path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
+            path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
+            path.closeSubpath()
         }
     }
 }
