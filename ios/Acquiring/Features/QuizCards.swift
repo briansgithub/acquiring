@@ -169,7 +169,6 @@ struct QuizCardsView: View {
             }
             .frame(height: RootCardLayout.cardHeight)
         }
-        .quizHelpTarget(.quizNotes)
     }
 
     /// Root-only intentionally renders only the requested scale degree. Source note
@@ -211,6 +210,7 @@ struct QuizCardsView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
+            .quizHelpTarget(.quizNotes)
         } else {
             QuizEmptyCardSlot(fixedHeight: fixedHeight)
         }
@@ -308,7 +308,6 @@ struct QuizCardsView: View {
                 )
             }
         }
-        .quizHelpTarget(.quizNotes)
     }
 
     @ViewBuilder
@@ -373,7 +372,6 @@ struct QuizCardsView: View {
                 )
             }
         }
-        .quizHelpTarget(.quizNotes)
     }
 
     private func toneCard(
@@ -399,6 +397,7 @@ struct QuizCardsView: View {
             FittedScaleDegree(label, maximumFontSize: 28, minimumFontSize: 11, color: .white)
                 .frame(maxWidth: .infinity, minHeight: compact ? 34 : 44)
         }
+        .quizHelpTarget(.quizNotes)
     }
 
     @ViewBuilder
@@ -425,6 +424,7 @@ struct QuizCardsView: View {
             FittedScaleDegree(degree, maximumFontSize: 32, minimumFontSize: 11, color: .white)
                 .frame(maxWidth: .infinity)
         }
+        .quizHelpTarget(.quizNotes)
     }
 
     private func positionedPitchCard(
@@ -479,6 +479,7 @@ struct QuizCardsView: View {
                     .minimumScaleFactor(0.5)
                     .frame(maxWidth: .infinity)
             }
+            .quizHelpTarget(.quizNotes)
         } else {
             QuizEmptyCardSlot(fixedHeight: fixedHeight)
         }
