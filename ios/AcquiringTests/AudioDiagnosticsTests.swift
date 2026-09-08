@@ -362,6 +362,92 @@ final class AudioDiagnosticsTests: XCTestCase {
     }
 
     @MainActor
+    func testMicrophoneStartFailureRebuildsAndReattachesInsteadOfSurfacingCoreAudioError() async throws {
+        let directory = URL.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let diagnostics = AudioDiagnostics(fileURL: directory.appendingPathComponent("report.json"))
+        var attempts = 0
+        let error = startupError
+        let audio = AppAudioSystem(diagnostics: diagnostics, hardware: .init(
+            startEngine: { _ in
+                attempts += 1
+                if attempts == 1 { throw error }
+            },
+            // Real session activation: capture cannot get an input format from a
+            // stubbed session, so a stub would fail this before the engine start
+            // this test is about.
+            requestRecordPermission: { true },
+            isAppActive: { true }
+        ))
+        diagnostics.record(.init(operation: "fixture.failure", state: [:], error: startupError))
+        // The interval singing tool's own start is the one that had neither the
+        // preventive rebuild nor the automatic retry, because both refuse while a
+        // capture is in flight. A singer must not see 'what' for a graph a rebuild
+        // would have cured.
+        let lease = try await audio.acquireMicrophone(owner: .singingTool, profile: .standard)
+        XCTAssertEqual(attempts, 2)
+        let operations = diagnostics.report?.subsequentEvents.map(\.operation) ?? []
+        XCTAssertTrue(operations.contains("microphone.rebuildAfterStartFailure"))
+        XCTAssertTrue(operations.contains("engine.rebuild.succeeded"))
+        XCTAssertTrue(operations.contains("microphone.engineStart.retryAfterRebuild.succeeded"))
+        audio.releaseMicrophone(lease)
+        await audio.stop()
+    }
+
+    @MainActor
+    func testMicrophoneStartThatCannotBeCuredReportsAReadableMessage() async throws {
+        let directory = URL.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let diagnostics = AudioDiagnostics(fileURL: directory.appendingPathComponent("report.json"))
+        let error = startupError
+        let audio = AppAudioSystem(diagnostics: diagnostics, hardware: .init(
+            startEngine: { _ in throw error },
+            // Real session activation: capture cannot get an input format from a
+            // stubbed session, so a stub would fail this before the engine start
+            // this test is about.
+            requestRecordPermission: { true },
+            isAppActive: { true }
+        ))
+        do {
+            _ = try await audio.acquireMicrophone(owner: .singingTool, profile: .standard)
+            XCTFail("A start that fails twice must surface an error")
+        } catch let failure as AcquiringAudioError {
+            // The raw NSError still reaches diagnostics; the dock gets a sentence.
+            XCTAssertEqual(
+                VocalPracticeModel.practiceMessage(for: failure),
+                AppAudioSystem.microphoneStartFailureMessage
+            )
+        }
+        let codes = diagnostics.report.map { report in
+            ([report.failure].compactMap { $0 } + report.subsequentEvents).flatMap { $0.errors.map(\.code) }
+        } ?? []
+        XCTAssertTrue(codes.contains(2003329396))
+        await audio.stop()
+    }
+
+    @MainActor
+    func testCoreAudioErrorsAreTranslatedForTheSingingDock() {
+        // What the tester actually saw in the interval card.
+        XCTAssertEqual(
+            VocalPracticeModel.practiceMessage(for: startupError),
+            "The microphone stopped unexpectedly. Try recording again; if it keeps happening, close and reopen the app."
+        )
+        XCTAssertEqual(
+            VocalPracticeModel.practiceMessage(for: NSError(domain: NSOSStatusErrorDomain, code: -50)),
+            "The microphone stopped unexpectedly. Try recording again; if it keeps happening, close and reopen the app."
+        )
+        // Our own errors already read as sentences and must pass through intact.
+        XCTAssertEqual(
+            VocalPracticeModel.practiceMessage(for: AcquiringAudioError.microphonePermissionDenied),
+            "Microphone access is required for vocal practice."
+        )
+        XCTAssertEqual(
+            VocalPracticeModel.practiceMessage(for: AcquiringAudioError.engine("Nothing to hear here.")),
+            "Nothing to hear here."
+        )
+    }
+
+    @MainActor
     private func loadQuiz(_ audio: AppAudioSystem) async throws -> (UInt64, AppAudioSystem.QuizPlaybackOwner, QuizSoundConfiguration) {
         let configuration = QuizSoundConfiguration(waveform: .triangle)
         let revision = audio.beginQuizReplacement(songID: "fixture", sectionID: "verse", tempoPercent: 100, soundConfiguration: configuration)

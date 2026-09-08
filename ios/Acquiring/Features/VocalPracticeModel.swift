@@ -818,6 +818,15 @@ final class VocalPracticeModel {
                 guard self.isCurrent(generation) else { return }
                 if let microphoneStreamError = self.microphoneStreamError {
                     self.errorMessage = microphoneStreamError
+                } else if operation == .flipFlop, self.microphoneStreamEnded {
+                    // The loop above exits on a finished stream, and
+                    // `clearManualActivityState` then switches the toggle off. A
+                    // clean finish carries no error, so without this the tool
+                    // simply stops mid-cycle and the switch flips itself back --
+                    // which reads as the feature breaking rather than as the
+                    // microphone going away.
+                    self.errorMessage =
+                        "Flip-Flop stopped because the microphone became unavailable. Switch it back on to carry on."
                 }
                 self.clearManualActivityState()
             } catch is CancellationError {
@@ -996,7 +1005,7 @@ final class VocalPracticeModel {
                 return
             } catch {
                 guard self.isCurrent(generation), self.activeLease?.id == lease.id else { return }
-                self.microphoneStreamError = error.localizedDescription
+                self.microphoneStreamError = Self.practiceMessage(for: error)
             }
             guard self.isCurrent(generation), self.activeLease?.id == lease.id else { return }
             self.microphoneStreamEnded = true
@@ -1163,6 +1172,32 @@ final class VocalPracticeModel {
     }
 
     private func setError(_ error: any Error) {
-        errorMessage = error.localizedDescription
+        errorMessage = Self.practiceMessage(for: error)
     }
+
+    /// CoreAudio reports failures as an NSError whose `localizedDescription` is a
+    /// FourCC in parentheses -- "The operation couldn't be completed.
+    /// (com.apple.coreaudio.avfaudio error 2003329396.)" -- which tells a singer
+    /// nothing and does not fit in the dock. Our own audio errors already read as
+    /// sentences, so those pass through; anything from CoreAudio is replaced. The
+    /// domain and code still reach the diagnostics report, which is where they are
+    /// worth having.
+    static func practiceMessage(for error: any Error) -> String {
+        if let audioError = error as? AcquiringAudioError {
+            switch audioError {
+            case let .engine(message), let .session(message), let .invalidRequest(message):
+                return message
+            case .microphonePermissionDenied, .microphoneInUse:
+                return audioError.errorDescription ?? unexpectedMicrophoneMessage
+            }
+        }
+        let nsError = error as NSError
+        guard nsError.domain.hasPrefix("com.apple.coreaudio")
+            || nsError.domain == NSOSStatusErrorDomain
+        else { return error.localizedDescription }
+        return unexpectedMicrophoneMessage
+    }
+
+    private static let unexpectedMicrophoneMessage =
+        "The microphone stopped unexpectedly. Try recording again; if it keeps happening, close and reopen the app."
 }

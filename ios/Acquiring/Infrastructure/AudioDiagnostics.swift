@@ -184,10 +184,11 @@ private struct AudioDiagnosticsActivitySheet: UIViewControllerRepresentable {
 }
 
 struct AudioDiagnosticsSettingsSection: View {
-    /// Hidden now that the playback failure appears fixed. Set to `true` to bring the
-    /// entry back while chasing a regression, or delete this section once the reports
-    /// are confirmed unnecessary. The in-quiz failure alert still offers the report.
-    static let isVisible = false
+    /// Visible while the audio failure is being chased again: a tester is still
+    /// hitting it, and the in-quiz alert only offers the report at the moment it
+    /// fires, which is exactly when someone is least likely to stop and send it.
+    /// Set back to `false` once reports confirm the fix, or delete this section.
+    static let isVisible = true
 
     @Environment(AppEnvironment.self) private var environment
     @State private var showsShare = false
