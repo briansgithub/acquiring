@@ -489,7 +489,7 @@ public enum ChordInterpreter {
         let original = symbol[range].drop(while: { $0 == "♭" || $0 == "♯" })
         let numeral = romanMap[degree.degree] ?? ""
         let isMinor = original.first?.isLowercase == true
-        return degree.accidentalPrefix + (isMinor ? numeral.lowercased() : numeral) + symbol[range.upperBound...]
+        return degree.accidentalPrefix + (isMinor ? numeral.lowercased() : numeral) + String(symbol[range.upperBound...])
     }
 
     private static func buildNumeral(
