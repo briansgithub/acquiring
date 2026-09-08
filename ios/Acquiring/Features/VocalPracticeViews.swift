@@ -136,7 +136,7 @@ struct IntervalSingingTool: View {
             remainingMilliseconds: model.captureRemainingMilliseconds,
             isEnabled: !model.isFlipFlopEnabled && !isRecording,
             showsPitchHint: !model.isFlipFlopEnabled && !isRecording,
-            isTessituraAdjusted: model.isSingingTargetTessituraAdjusted(slot: slot),
+            isTessituraEnabled: model.comfortablePitchMIDI != nil,
             anchorMIDI: anchorMIDI(slot: slot),
             play: { model.playSlot(slot) },
             record: { model.toggleRecording(slot: slot) }
@@ -240,7 +240,7 @@ private struct DockPitchCard: View {
     let remainingMilliseconds: Int
     let isEnabled: Bool
     let showsPitchHint: Bool
-    let isTessituraAdjusted: Bool
+    let isTessituraEnabled: Bool
     /// Where the tape parks while a recording card is still waiting for its first voiced
     /// frame. The gauge is on screen from the moment recording starts, so there has to be a
     /// pitch under it before the singer has sung one.
@@ -319,7 +319,7 @@ private struct DockPitchCard: View {
         }
         .overlay(alignment: .topTrailing) {
             if showsPitchHint {
-                PitchHintDot(isAdjusted: isTessituraAdjusted).padding(5)
+                PitchHintDot(isAdjusted: isTessituraEnabled).padding(5)
             }
         }
         .contentShape(RoundedRectangle(cornerRadius: 8))
@@ -328,7 +328,7 @@ private struct DockPitchCard: View {
         .accessibilityElement(children: .ignore)
         .accessibilityAddTraits(.isButton)
         .accessibilityLabel(title)
-        .accessibilityValue("\(sample?.pitchLabel ?? (isActive ? "Waiting for a voiced pitch" : "No pitch")), \(isReference ? "Reference" : sample.map { errorText($0.centsFromReference) } ?? ""), \(status), \(isTessituraAdjusted ? "Tessitura adjusted" : "Original target octave")")
+        .accessibilityValue("\(sample?.pitchLabel ?? (isActive ? "Waiting for a voiced pitch" : "No pitch")), \(isReference ? "Reference" : sample.map { errorText($0.centsFromReference) } ?? ""), \(status), \(isTessituraEnabled ? "Tessitura enabled" : "Original target octave")")
         .accessibilityHint(
             isEnabled
                 ? "Single tap replays. Double tap records or stops listening."
