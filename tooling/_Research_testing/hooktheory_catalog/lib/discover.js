@@ -15,6 +15,7 @@ const {
   isJunkUrl,
 } = require('./catalogUtils');
 const { acquire } = require('./api/hooktheoryApi');
+const { normalizeDisplayText } = require('./catalogDisplayNames');
 
 const { LEGACY_DISCOVERED } = require('./paths');
 
@@ -40,7 +41,15 @@ function entryFromUrl(url, source) {
 }
 
 function entryFromArtistSong(artist, song, source) {
-  return entryFromUrl(buildTheoryTabUrl(artist, song), source);
+  // URL synthesis needs Hooktheory's original entity spelling. Decode only
+  // after identity and URL have been derived, for the user-facing names.
+  const entry = entryFromUrl(buildTheoryTabUrl(artist, song), source);
+  return entry ? {
+    ...entry,
+    artist: normalizeDisplayText(artist),
+    title: normalizeDisplayText(song),
+    display_name_source: source,
+  } : null;
 }
 
 function upsertEntries(db, entries) {
@@ -251,4 +260,5 @@ module.exports = {
   discoverFromRecent,
   discoverFromMeili,
   entryFromUrl,
+  entryFromArtistSong,
 };

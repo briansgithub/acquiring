@@ -432,10 +432,7 @@ private struct SongInfoView: View {
                     if !section.safeNumericID.isEmpty {
                         DetailRow("Hooktheory ID", section.safeNumericID)
                     }
-                    DetailRow("Slug", song.id)
-                    if !section.safeSongInfo.isEmpty {
-                        DetailRow("Song", section.safeSongInfo)
-                    }
+                    DetailRow("Song", "\(song.displayTitle) by \(song.displayArtist)")
                     HStack(spacing: 16) {
                         if let url = song.url {
                             Link("Open on Hooktheory ↗", destination: url)
@@ -926,6 +923,7 @@ struct QuizView: View {
     @State private var timelineInertiaGeneration = 0
     @State private var error: String?
     @State private var showsAudioDiagnostics = false
+    @State private var showsSongInformation = false
     @State private var usesRelativeIonianContext = false
     /// Drives the help overlay the circled question mark toggles on the quiz controls.
     @State private var showsTooltips = false
@@ -972,6 +970,28 @@ struct QuizView: View {
         .background(QuizNavigationGestureGuard(enablesEdgeSwipeBack: enablesEdgeSwipeBack))
         .quizNotationFontStyle(notationFontStyle)
         .toolbar {
+            ToolbarItem(placement: .principal) {
+                if case .content = state {
+                    Button { showsSongInformation = true } label: {
+                        HStack(spacing: 5) {
+                            Text(navigationTitle)
+                                .font(.headline)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                            Image(systemName: "info.circle")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .accessibilityHidden(true)
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(navigationTitle)
+                    .accessibilityHint("Shows the full song title and artist.")
+                    .accessibilityIdentifier("quiz.songInformation")
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 if showsFontSampler, case .content = state {
                     QuizFontSamplerMenu(selection: $notationFontStyle)
@@ -1039,6 +1059,36 @@ struct QuizView: View {
         .sheet(isPresented: $showsAudioDiagnostics) {
             AudioDiagnosticsSheet(audio: environment.audio)
         }
+        .sheet(isPresented: $showsSongInformation) {
+            if case let .content(document) = state {
+                NavigationStack {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text(document.song.displayTitle)
+                                .font(.title2.bold())
+                                .accessibilityIdentifier("quiz.songInformation.title")
+                            Text("by \(document.song.displayArtist)")
+                                .font(.title3)
+                                .foregroundStyle(.secondary)
+                                .accessibilityIdentifier("quiz.songInformation.artist")
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .textSelection(.enabled)
+                        .padding()
+                    }
+                    .navigationTitle("Song Information")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Done") { showsSongInformation = false }
+                                .accessibilityIdentifier("quiz.songInformation.done")
+                        }
+                    }
+                }
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+            }
+        }
     }
 
     private var errorAlertBinding: Binding<Bool> {
@@ -1050,8 +1100,7 @@ struct QuizView: View {
 
     private var navigationTitle: String {
         guard case let .content(document) = state else { return "Quiz" }
-        let artist = document.song.artist?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        return artist.isEmpty ? document.song.displayTitle : "\(document.song.displayTitle) by \(artist)"
+        return "\(document.song.displayTitle) by \(document.song.displayArtist)"
     }
 
     private func quiz(_ document: SongDocument) -> some View {

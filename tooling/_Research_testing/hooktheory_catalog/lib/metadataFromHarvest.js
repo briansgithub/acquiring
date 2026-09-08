@@ -4,6 +4,7 @@
 
 const { parseSectionPayload, aggregateSongFromSections } = require('./songDataAggregate');
 const { resolveComplexityRating, getCorpusBounds } = require('./complexity');
+const { preferDisplayName } = require('./catalogDisplayNames');
 const {
   saveSections,
   saveStats,
@@ -47,6 +48,11 @@ function commitMetadata(db, slug, prep) {
   saveStats(db, slug, prep.stats);
   saveDetails(db, slug, prep.details);
   saveMetrics(db, slug, prep.metrics, prep.complexity_rating, prep.metrics_source);
+  const song = db.prepare('SELECT title, title_slug FROM songs WHERE slug = ?').get(slug);
+  if (song && prep.details.hooktheory_song_name) {
+    const title = preferDisplayName(song.title, prep.details.hooktheory_song_name, song.title_slug);
+    db.prepare('UPDATE songs SET title = ? WHERE slug = ?').run(title || null, slug);
+  }
   if (prep.difficulty_label) {
     db.prepare('UPDATE songs SET difficulty_label = ? WHERE slug = ?')
       .run(prep.difficulty_label, slug);

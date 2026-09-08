@@ -223,16 +223,18 @@ final class AcquiringTests: XCTestCase {
         XCTAssertTrue(try container.mainContext.fetch(FetchDescriptor<PlaylistEntryRecord>()).isEmpty)
     }
 
-    func testHistoryUsesAndroidOrderingLimitAndArtistCanonicalization() async throws {
+    func testHistoryKeepsOrderingLimitAndPreservesArtistIdentity() async throws {
         let suite = "AcquiringTests.\(UUID().uuidString)"
         let history = HistoryStore(suiteName: suite)
         for index in 0..<12 { await history.addSong("song-\(index)") }
         await history.addArtist("The-Beatles")
         await history.addArtist("the beatles")
+        await history.addArtist(" Jay-Z ")
+        await history.addArtist("jay-z")
         let songs = await history.songSlugs()
         let artists = await history.artists()
         XCTAssertEqual(songs, (2..<12).reversed().map { "song-\($0)" })
-        XCTAssertEqual(artists, ["the beatles"])
+        XCTAssertEqual(artists, ["jay-z", "the beatles", "The-Beatles"])
         await history.removeAll()
     }
 
@@ -1279,25 +1281,57 @@ final class AcquiringTests: XCTestCase {
     }
 
     @MainActor
+    func testLegacyArtistHistoryResolvesCurrentNamesAndKeepsNewestOrder() async throws {
+        let fixture = try makeLibraryStore(
+            maintenance: ScriptedCatalogMaintenanceService(),
+            resolvedArtistNames: ["the proclaimers": "The Proclaimers", "the-proclaimers": "The Proclaimers"]
+        )
+        defer { fixture.cleanup() }
+        await fixture.history.addArtist("the proclaimers")
+        await fixture.history.addArtist("Jay-Z")
+        await fixture.history.addArtist("the-proclaimers")
+        await fixture.store.refreshUserContent()
+
+        XCTAssertEqual(fixture.store.recentArtists, ["The Proclaimers", "Jay-Z"])
+        let storedArtists = await fixture.history.artists()
+        XCTAssertEqual(storedArtists, ["the-proclaimers", "Jay-Z", "the proclaimers"])
+    }
+
+    @MainActor
     func testOpeningSongArtistPreservesOriginAndAvoidsDuplicateArtistRoute() async throws {
         let fixture = try makeLibraryStore(maintenance: ScriptedCatalogMaintenanceService())
         defer { fixture.cleanup() }
         let song = CatalogSong(
-            id: "the-beatles__help",
-            artist: "The-Beatles",
-            title: "Help"
+            id: "jay-z__empire-state-of-mind",
+            artist: "Jay-Z",
+            title: "Empire State of Mind"
         )
 
         fixture.store.path = [.quiz(song.id), .songDetail(song.id)]
         await fixture.store.openArtist(from: song)
-        XCTAssertEqual(fixture.store.path, [.artist("The Beatles")])
+        XCTAssertEqual(fixture.store.path, [.artist("Jay-Z")])
 
         fixture.store.path += [.quiz(song.id), .songDetail(song.id)]
         await fixture.store.openArtist(from: song)
-        XCTAssertEqual(fixture.store.path, [.artist("The Beatles")])
+        XCTAssertEqual(fixture.store.path, [.artist("Jay-Z")])
 
         await fixture.store.refreshUserContent()
-        XCTAssertEqual(fixture.store.recentArtists, ["The Beatles"])
+        XCTAssertEqual(fixture.store.recentArtists, ["Jay-Z"])
+    }
+
+    @MainActor
+    func testOpeningArtistFromLegacyRouteAvoidsDuplicateDestination() async throws {
+        let fixture = try makeLibraryStore(
+            maintenance: ScriptedCatalogMaintenanceService(),
+            resolvedArtistNames: ["the proclaimers": "The Proclaimers"]
+        )
+        defer { fixture.cleanup() }
+        let song = CatalogSong(id: "the-proclaimers__500-miles", artist: "The Proclaimers", title: "500 Miles")
+        fixture.store.path = [.artist("the proclaimers"), .quiz(song.id)]
+
+        await fixture.store.openArtist(from: song)
+
+        XCTAssertEqual(fixture.store.path, [.artist("the proclaimers")])
     }
 
     @MainActor
@@ -1397,9 +1431,11 @@ final class AcquiringTests: XCTestCase {
         catalogCountThrows: Bool = false,
         failingSongSuggestionOffset: Int? = nil,
         songSuggestions: [CatalogSong] = [],
+        resolvedArtistNames: [String: String] = [:],
         prepareCatalog: @escaping @MainActor () async throws -> Void = {}
     ) throws -> (
         store: LibraryStore,
+        history: HistoryStore,
         userLibrary: UserLibraryStore,
         modelContext: ModelContext,
         cleanup: () -> Void
@@ -1408,7 +1444,8 @@ final class AcquiringTests: XCTestCase {
             songCounts: catalogCounts ?? [catalogCount],
             failsSongCount: catalogCountThrows,
             failingSongSuggestionOffset: failingSongSuggestionOffset,
-            songSuggestions: songSuggestions
+            songSuggestions: songSuggestions,
+            resolvedArtistNames: resolvedArtistNames
         )
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(
@@ -1429,6 +1466,7 @@ final class AcquiringTests: XCTestCase {
         store.catalogState = catalogCount == 0 ? .empty : .content(catalogCount)
         return (
             store,
+            history,
             userLibrary,
             container.mainContext,
             {
@@ -1626,17 +1664,20 @@ private actor StubCatalogRepository: CatalogRepository {
     let failsSongCount: Bool
     let failingSongSuggestionOffset: Int?
     let songSuggestions: [CatalogSong]
+    let resolvedArtistNames: [String: String]
 
     init(
         songCounts: [Int],
         failsSongCount: Bool = false,
         failingSongSuggestionOffset: Int? = nil,
-        songSuggestions: [CatalogSong] = []
+        songSuggestions: [CatalogSong] = [],
+        resolvedArtistNames: [String: String] = [:]
     ) {
         self.songCounts = songCounts
         self.failsSongCount = failsSongCount
         self.failingSongSuggestionOffset = failingSongSuggestionOffset
         self.songSuggestions = songSuggestions
+        self.resolvedArtistNames = resolvedArtistNames
     }
 
     func status() -> CatalogStatus {
@@ -1659,6 +1700,7 @@ private actor StubCatalogRepository: CatalogRepository {
         return Array(songSuggestions.prefix(limit))
     }
     func artistSuggestions(query: String, limit: Int, offset: Int) -> [String] { [] }
+    func resolvedArtistName(_ artist: String) -> String? { resolvedArtistNames[artist] }
     func songs(artist: String) -> [CatalogSong] { [] }
     func songs(ids: [String]) -> [CatalogSong] { [] }
     func browseMetadata() -> BrowseMetadataStatus {

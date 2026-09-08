@@ -7,8 +7,8 @@ import XCTest
 @MainActor
 final class AutonomousDiagnosticsTests: XCTestCase {
     private enum Fixture {
-        static let fiveHundredMiles = "500 Miles, by the-proclaimers"
-        static let quizTitle = "500 Miles by the-proclaimers"
+        static let fiveHundredMiles = "500 Miles, by The Proclaimers"
+        static let quizTitle = "500 Miles by The Proclaimers"
     }
 
     override func setUpWithError() throws {
