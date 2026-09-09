@@ -762,6 +762,39 @@ Incremental build passed (no full/UI suites run):
 Log: `/tmp/acquiring-palatino.6Ak8Qd/build.log`. Human review: open 500 Miles and
 check the Palatino numeral/degree cards; confirm Aa is absent. No release/commit.
 
+### Tessitura removed for a singer-set octave offset — 2026-09-08
+
+Implemented by the current agent (Opus 5), without delegation. User asked for tessitura
+and its white/gray dots to be removed outright, the Help description stripped, and the
+tuning fork replaced by an integer with minus/plus buttons applying a plain octave offset
+constrained to -2…+3, scoped per song and shown with an explicit zero.
+
+- `TessituraResolver`, `TessituraSession` and `ComfortablePitchCapture` are deleted, with
+  the comfortable-pitch anchor, the register/window/tritone/contour placement rules and the
+  source-to-target continuity that fed them. Two model fields existed only to feed that
+  continuity and were write-only once it went.
+- The three-second calibration, its sheet and every permission/countdown/retry state are
+  gone, and with them the `.tessitura` microphone owner - so `.measurement` is now the
+  interval tool's mode alone.
+- `PitchHintDot` and every use are removed: quiz cards, the dock's pitch cards and
+  `QuizExampleCard`. With no anchor there is no register for a dot to report, so cards no
+  longer announce one to VoiceOver either.
+- `SingingOctaveOffset` (range -2…3, `clamped`, `semitones`) replaces it. Singing targets
+  and the persistent target are now `source + transpose + 12 x offset`, flat and
+  unconditional, so both notes of an interval move together. The control is a compact pill
+  in the singing tool header in the expand chevron's own styling. Song-scoped: a section
+  change keeps the offset, a new song returns it to zero.
+- The Help article and topic link, the Introduction section and its dot legend, the in-quiz
+  tooltip (now `.vocalOctaveOffset`) and the Info.plist microphone purpose string are all
+  rewritten or removed. The Introduction's stale "press and hold" line is corrected to the
+  header microphone button at the same time.
+
+Package suite passed: 234 tests, 0 failures, including new coverage that an interval moves
+as a unit at every offset in range, that out-of-range values clamp, and that transpose and
+offset compose without the offset reaching playback input. App and UI test targets build;
+those suites were not run. F048 is recorded **Dropped** and F049 **Replaced** in the parity
+inventory rather than left describing a feature iOS no longer has.
+
 ### Session mode by capture owner, category recovery, global preview instrument — 2026-09-08
 
 Implemented by the current agent (Opus 5), without delegation. User reported that the

@@ -4,7 +4,6 @@ import Foundation
 /// The app-level interactions that can temporarily own the single hardware input.
 enum MicrophoneOwner: Sendable {
     case singingTool
-    case tessitura
     case persistentPractice
 }
 

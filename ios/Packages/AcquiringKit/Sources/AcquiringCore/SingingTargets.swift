@@ -9,34 +9,12 @@ public struct SingingTargetNote: Equatable, Sendable {
         self.scaleDegreeLabel = scaleDegreeLabel
     }
 
-    public func effectiveTargetMIDI(
-        transpose: Int,
-        comfortablePitchMIDI: Double?,
-        lastSourceMIDI: Int? = nil,
-        lastTargetMIDI: Int? = nil
-    ) -> Int {
-        let source = sourceMIDI + transpose
-        guard let comfortablePitchMIDI else { return source }
-        return TessituraResolver.resolveTarget(
-            sourceMIDI: source,
-            anchorMIDI: comfortablePitchMIDI,
-            lastSource: lastSourceMIDI,
-            lastTarget: lastTargetMIDI
-        )
+    public func effectiveTargetMIDI(transpose: Int, octaveOffset: Int) -> Int {
+        sourceMIDI + transpose + SingingOctaveOffset.semitones(octaveOffset)
     }
 
-    public func playbackMIDIInput(
-        transpose: Int,
-        comfortablePitchMIDI: Double?,
-        lastSourceMIDI: Int? = nil,
-        lastTargetMIDI: Int? = nil
-    ) -> Int {
-        effectiveTargetMIDI(
-            transpose: transpose,
-            comfortablePitchMIDI: comfortablePitchMIDI,
-            lastSourceMIDI: lastSourceMIDI,
-            lastTargetMIDI: lastTargetMIDI
-        ) - transpose
+    public func playbackMIDIInput(transpose: Int, octaveOffset: Int) -> Int {
+        effectiveTargetMIDI(transpose: transpose, octaveOffset: octaveOffset) - transpose
     }
 }
 
@@ -52,34 +30,47 @@ public struct SingingTargetRequest: Equatable, Sendable {
     }
 }
 
+/// The singer's octave adjustment: one integer, applied flat to every singing target.
+///
+/// It replaces a per-song comfortable-pitch anchor that chose an octave per target from a
+/// measured voice range. That produced targets a singer could not predict - two notes of one
+/// interval could land in different octaves - and needed a microphone calibration before it
+/// did anything. A number the singer sets themselves moves everything by the same amount, so
+/// the interval on the card is always the interval they are asked to sing.
+public enum SingingOctaveOffset {
+    /// Down two octaves to up three: the range that keeps a quiz target reachable for both a
+    /// low and a high voice without letting it leave audible pitch entirely.
+    public static let range = -2...3
+
+    public static func clamped(_ offset: Int) -> Int {
+        min(max(offset, range.lowerBound), range.upperBound)
+    }
+
+    public static func semitones(_ offset: Int) -> Int {
+        clamped(offset) * 12
+    }
+}
+
 public enum SingingTargets {
     public static func resolve(
         request: SingingTargetRequest,
         transpose: Int,
-        comfortablePitchMIDI: Double?
+        octaveOffset: Int
     ) -> (first: Int?, second: Int?) {
-        let first = request.first.map { $0.sourceMIDI + transpose }
-        let second = request.second.map { $0.sourceMIDI + transpose }
-        guard let comfortablePitchMIDI else { return (first, second) }
-        switch (first, second) {
-        case let (.some(first), .some(second)):
-            return TessituraResolver.resolveInterval(first: first, second: second, anchorMIDI: comfortablePitchMIDI)
-        case let (.some(first), nil):
-            return (TessituraResolver.resolveTarget(sourceMIDI: first, anchorMIDI: comfortablePitchMIDI), nil)
-        case let (nil, .some(second)):
-            return (nil, TessituraResolver.resolveTarget(sourceMIDI: second, anchorMIDI: comfortablePitchMIDI))
-        case (nil, nil):
-            return (nil, nil)
-        }
+        let shift = transpose + SingingOctaveOffset.semitones(octaveOffset)
+        return (
+            request.first.map { $0.sourceMIDI + shift },
+            request.second.map { $0.sourceMIDI + shift }
+        )
     }
 
     public static func idealIntervalPlaybackMIDIs(
         request: SingingTargetRequest?,
         transpose: Int,
-        comfortablePitchMIDI: Double?
+        octaveOffset: Int
     ) -> (first: Int, second: Int)? {
         guard let request, request.first != nil, request.second != nil else { return nil }
-        let result = resolve(request: request, transpose: transpose, comfortablePitchMIDI: comfortablePitchMIDI)
+        let result = resolve(request: request, transpose: transpose, octaveOffset: octaveOffset)
         guard let first = result.first, let second = result.second else { return nil }
         return (first - transpose, second - transpose)
     }

@@ -65,7 +65,6 @@ struct LibraryScene: View {
         .environment(store.userContent)
         .environment(environment.vocalPractice)
         .quizHelpHost(state: quizHelp)
-        .tessituraCalibrationPresentation(model: environment.vocalPractice)
         .onChange(of: store.path) { _, path in
             quizHelp.dismiss()
             let remainsInSong = path.last.map { route in
@@ -176,25 +175,20 @@ struct IntroductionView: View {
                                 systemImage: "hand.tap.fill"
                             )
                             IntroductionGestureRow(
-                                action: "Press and hold",
+                                action: "Microphone button",
                                 detail: "Turn on continuous pitch monitoring.",
-                                systemImage: "hand.point.up.left.fill"
+                                systemImage: "music.mic"
                             )
                         }
                     }
                 }
 
                 IntroductionSection(
-                    title: "Tessitura",
-                    identifier: "introduction.tessitura"
+                    title: "Octave offset",
+                    identifier: "introduction.octaveOffset"
                 ) {
-                    Text("The tessitura function shifts the target note of the Interval Singing Tool to a more comfortable octave for you.")
+                    Text("The minus and plus buttons in the Interval Singing Tool move every singing target up or down by whole octaves, so a target sits where your voice can reach it. The note keeps its musical role; only its octave changes.")
                         .foregroundStyle(.secondary)
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        pitchHintRow("White dot: original octave", isAdjusted: false)
-                        pitchHintRow("Gray dot: more comfortable octave", isAdjusted: true)
-                    }
                 }
             }
             .padding(.horizontal, 20)
@@ -248,19 +242,6 @@ struct IntroductionView: View {
         .frame(maxWidth: 300, alignment: .leading)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Example cards: a scale degree card and an interval card")
-    }
-
-    /// The dot on the card it actually lives on. Alone on the section's background the white dot
-    /// is nearly invisible in light mode, and it does not read as "the dot in a card's corner".
-    private func pitchHintRow(_ title: String, isAdjusted: Bool) -> some View {
-        HStack(spacing: 10) {
-            QuizExampleCard(showsPitchHint: true, isTessituraAdjusted: isAdjusted) {
-                Color.clear
-            }
-            .frame(width: 56)
-            Text(title)
-        }
-        .accessibilityElement(children: .combine)
     }
 }
 

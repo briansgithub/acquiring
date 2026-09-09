@@ -1007,8 +1007,8 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
         "The iPhone microphone could not start. Try recording again; if it persists, close and reopen the app."
 
     /// `.measurement` is the closest iOS has to Android's UNPROCESSED input, and the
-    /// interval tool and tessitura calibration want it: they pause the song, own the
-    /// device alone, and are measuring a sung pitch to the cent.
+    /// interval tool wants it: it pauses the song, owns the device alone, and is
+    /// measuring a sung pitch to the cent.
     ///
     /// It cannot be used for persistent monitoring. The mode is a property of the whole
     /// session, not of its input, so it strips processing from the *output* too - the
@@ -1018,7 +1018,7 @@ final class AppAudioSystem: PreviewAudio, QuizTransport, PitchSource {
     /// through the speaker and tracks the song rather than the singer.
     private func captureMode(for owner: MicrophoneOwner?) -> AVAudioSession.Mode {
         switch owner {
-        case .singingTool, .tessitura: .measurement
+        case .singingTool: .measurement
         case .persistentPractice, nil: .default
         }
     }

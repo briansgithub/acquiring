@@ -30,26 +30,8 @@ struct IntervalSingingTool: View {
                             .accessibilityLabel("Stop microphone")
                             .accessibilityIdentifier("vocal.practice.stop")
                     }
-                    Menu {
-                        Button("Set") { model.startCalibration() }
-                            .disabled(!model.canCalibrateComfortablePitch)
-                            .accessibilityLabel("Calibrate comfortable pitch")
-                            .accessibilityHint(
-                                model.canCalibrateComfortablePitch ? "" : "Open a song to calibrate"
-                            )
-                        Button("Clear") { model.clearTessituraAdjustment() }
-                            .disabled(model.comfortablePitchMIDI == nil)
-                            .accessibilityHint("Clears comfortable pitch; keeps recordings")
-                    } label: {
-                        Image(systemName: "tuningfork")
-                            .font(.caption.weight(.semibold))
-                            .frame(minWidth: 44, minHeight: 44)
-                            .contentShape(Rectangle())
-                    }
-                    .accessibilityLabel("Tessitura")
-                    .accessibilityValue(model.comfortablePitchLabel ?? "Comfortable pitch not set")
-                    .accessibilityIdentifier("vocal.practice.tessitura")
-                    .quizHelpTarget(.vocalTessitura)
+                    octaveOffsetStepper
+                        .quizHelpTarget(.vocalOctaveOffset)
                 } else {
                     Image(systemName: "waveform")
                     VStack(alignment: .leading, spacing: 1) {
@@ -134,6 +116,54 @@ struct IntervalSingingTool: View {
         .onChange(of: model.slot2) { _, _ in updateHelpModes() }
     }
 
+    /// Moves every singing target by whole octaves. Drawn as one pill in the chevron's own
+    /// styling so the header keeps two controls rather than gaining three: the buttons carry
+    /// no chrome of their own and the number sits between them.
+    private var octaveOffsetStepper: some View {
+        HStack(spacing: 0) {
+            octaveOffsetButton(
+                systemImage: "minus",
+                label: "Lower singing targets an octave",
+                isEnabled: model.canDecrementOctaveOffset,
+                delta: -1
+            )
+            Text(model.octaveOffsetLabel)
+                .font(.caption.monospacedDigit().weight(.semibold))
+                .frame(width: 24)
+                .accessibilityHidden(true)
+            octaveOffsetButton(
+                systemImage: "plus",
+                label: "Raise singing targets an octave",
+                isEnabled: model.canIncrementOctaveOffset,
+                delta: 1
+            )
+        }
+        .background(.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 8))
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Octave offset")
+        .accessibilityValue("\(model.octaveOffsetLabel) octaves")
+        .accessibilityIdentifier("vocal.practice.octaveOffset")
+    }
+
+    private func octaveOffsetButton(
+        systemImage: String,
+        label: String,
+        isEnabled: Bool,
+        delta: Int
+    ) -> some View {
+        Button { model.adjustOctaveOffset(by: delta) } label: {
+            Image(systemName: systemImage)
+                .font(.system(size: 12, weight: .semibold))
+                .frame(width: 28, height: 44)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(!isEnabled)
+        .opacity(isEnabled ? 1 : 0.35)
+        .accessibilityLabel(label)
+        .accessibilityIdentifier(delta < 0 ? "vocal.practice.octaveOffset.down" : "vocal.practice.octaveOffset.up")
+    }
+
     private var minimizedSummary: String? {
         let notes = [model.displayedSlot1?.pitchLabel, model.displayedSlot2?.pitchLabel].compactMap { $0 }
         guard !notes.isEmpty else { return nil }
@@ -156,8 +186,6 @@ struct IntervalSingingTool: View {
             isRecording: isRecording,
             remainingMilliseconds: model.captureRemainingMilliseconds,
             isEnabled: !model.isFlipFlopEnabled && !isRecording,
-            showsPitchHint: !model.isFlipFlopEnabled && !isRecording,
-            isTessituraEnabled: model.comfortablePitchMIDI != nil,
             anchorMIDI: anchorMIDI(slot: slot),
             play: { model.playSlot(slot) },
             record: { model.toggleRecording(slot: slot) }
@@ -169,7 +197,7 @@ struct IntervalSingingTool: View {
     /// the other slot's note when there is one, otherwise the singer's calibrated comfortable
     /// pitch, otherwise middle C. Only ever a resting place - the first voiced frame replaces it.
     private func anchorMIDI(slot: Int) -> Double {
-        (slot == 1 ? model.slot2 : model.slot1)?.rawMIDI ?? model.comfortablePitchMIDI ?? 60
+        (slot == 1 ? model.slot2 : model.slot1)?.rawMIDI ?? 60
     }
 
     private var intervalCard: some View {
@@ -225,8 +253,6 @@ private struct DockPitchCard: View {
     let isRecording: Bool
     let remainingMilliseconds: Int
     let isEnabled: Bool
-    let showsPitchHint: Bool
-    let isTessituraEnabled: Bool
     /// Where the tape parks while a recording card is still waiting for its first voiced
     /// frame. The gauge is on screen from the moment recording starts, so there has to be a
     /// pitch under it before the singer has sung one.
@@ -249,7 +275,6 @@ private struct DockPitchCard: View {
                 if isActive { Image(systemName: "mic.fill").foregroundStyle(.tint) }
             }
             .font(.caption).foregroundStyle(.secondary)
-            .padding(.trailing, showsPitchHint ? 16 : 0)
             if let sample {
                 DockPitchTape(midi: sample.rawMIDI, color: isReference ? .secondary : Color.pitchFeedback(centsError: sample.centsFromReference))
                     .animation(reduceMotion ? nil : .linear(duration: 0.1), value: sample.rawMIDI)
@@ -303,18 +328,13 @@ private struct DockPitchCard: View {
                 .allowsHitTesting(false)
             }
         }
-        .overlay(alignment: .topTrailing) {
-            if showsPitchHint {
-                PitchHintDot(isAdjusted: isTessituraEnabled).padding(5)
-            }
-        }
         .contentShape(RoundedRectangle(cornerRadius: 8))
         .gesture(TapGesture(count: 2).onEnded { if isEnabled { record() } }
             .exclusively(before: TapGesture(count: 1).onEnded { if isEnabled { play() } }))
         .accessibilityElement(children: .ignore)
         .accessibilityAddTraits(.isButton)
         .accessibilityLabel(title)
-        .accessibilityValue("\(sample?.pitchLabel ?? (isActive ? "Waiting for a voiced pitch" : "No pitch")), \(isReference ? "Reference" : sample.map { errorText($0.centsFromReference) } ?? ""), \(status), \(isTessituraEnabled ? "Tessitura enabled" : "Original target octave")")
+        .accessibilityValue("\(sample?.pitchLabel ?? (isActive ? "Waiting for a voiced pitch" : "No pitch")), \(isReference ? "Reference" : sample.map { errorText($0.centsFromReference) } ?? ""), \(status)")
         .accessibilityHint(
             isEnabled
                 ? "Single tap replays. Double tap records or stops listening."
@@ -423,91 +443,5 @@ private struct PracticeErrorMessage: View {
         .padding(10)
         .background(.red.opacity(0.13), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
         .accessibilityElement(children: .contain)
-    }
-}
-
-/// Attach this once at the active Song Detail or Quiz boundary. It centralizes
-/// manual, guided, and calibration flows so card gestures never create competing
-/// sheet presenters. Manual practice is opt-in because Song Detail retains its
-/// existing guided-only behavior.
-/// A single presenter on the navigation root; sing-back itself always stays inline.
-struct TessituraCalibrationPresentation: ViewModifier {
-    @Bindable var model: VocalPracticeModel
-
-    func body(content: Content) -> some View {
-        content.sheet(isPresented: Binding(
-            get: {
-                if case .idle = model.calibrationState { return false }
-                return true
-            },
-            set: { if !$0 { model.cancelCalibration() } }
-        )) {
-            CalibrationSheet(model: model)
-                .interactiveDismissDisabled()
-                .presentationDetents([.medium])
-        }
-    }
-}
-
-extension View {
-    func tessituraCalibrationPresentation(model: VocalPracticeModel) -> some View {
-        modifier(TessituraCalibrationPresentation(model: model))
-    }
-}
-private struct CalibrationSheet: View {
-    @Bindable var model: VocalPracticeModel
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "waveform")
-                .font(.largeTitle)
-                .foregroundStyle(.tint)
-            Text(title)
-                .font(.title3.weight(.bold))
-            Text(detail)
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
-            if case let .capturing(remainingMilliseconds, hasSignal) = model.calibrationState {
-                ProgressView(value: progress(remainingMilliseconds))
-                    .accessibilityLabel("Calibration progress")
-                    .accessibilityValue("\(Int(progress(remainingMilliseconds) * 100)) percent")
-                Text(hasSignal ? "Voice detected" : "Waiting for a voiced pitch")
-                    .font(.footnote)
-                    .foregroundStyle(hasSignal ? .green : .secondary)
-            }
-            HStack {
-                if case .failed = model.calibrationState {
-                    Button("Retry") { model.retryCalibration() }
-                        .buttonStyle(.borderedProminent)
-                }
-                Button("Cancel", role: .cancel) { model.cancelCalibration() }
-                    .buttonStyle(.bordered)
-            }
-        }
-        .padding(24)
-        .frame(maxWidth: 460)
-        .accessibilityElement(children: .contain)
-    }
-
-    private var title: String {
-        switch model.calibrationState {
-        case .idle: "Comfortable pitch"
-        case .requestingPermission: "Microphone permission"
-        case .capturing: "Hum one comfortable pitch"
-        case .failed: "Calibration needs another try"
-        }
-    }
-
-    private var detail: String {
-        switch model.calibrationState {
-        case .idle: ""
-        case .requestingPermission: "Waiting for microphone permission."
-        case .capturing: "Keep a voiced note steady for three seconds. Brief silence pauses the timer."
-        case let .failed(message): message
-        }
-    }
-
-    private func progress(_ remainingMilliseconds: Int) -> Double {
-        min(max(1 - Double(remainingMilliseconds) / 3_000, 0), 1)
     }
 }

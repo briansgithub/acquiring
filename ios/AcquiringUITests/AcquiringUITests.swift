@@ -171,13 +171,11 @@ final class AcquiringUITests: XCTestCase {
         let orderedHeadings = [
             "Objective:",
             "Tapping on Notes/Intervals/Chords",
-            "Tessitura"
+            "Octave offset"
         ]
         for title in orderedHeadings {
             scrollToHittable(app.staticTexts[title], in: app)
         }
-        XCTAssertTrue(app.staticTexts["White dot: original octave"].exists)
-        XCTAssertTrue(app.staticTexts["Gray dot: more comfortable octave"].exists)
         XCTAssertTrue(continueButton.isHittable)
         continueButton.tap()
         XCTAssertTrue(app.textFields["library.search.field"].waitForExistence(timeout: 5))
@@ -190,7 +188,7 @@ final class AcquiringUITests: XCTestCase {
         app.buttons["settings.help"].tap()
         XCTAssertTrue(app.navigationBars["Help"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["introduction.continue"].exists)
-        for topic in ["scaleDegrees", "intervals", "romanNumerals", "tessitura"] {
+        for topic in ["scaleDegrees", "intervals", "romanNumerals"] {
             let link = app.buttons["help.topic.\(topic)"]
             scrollToHittable(link, in: app)
             link.tap()

@@ -358,7 +358,7 @@ final class QuizCoverageTests: XCTestCase {
             help.tap()
             XCTAssertTrue(overlay.waitForExistence(timeout: 5))
             for id in ["help.quizNoteIntervalChordTone", "help.quizRelativeKey",
-                       "help.vocalTessitura", "help.vocalPitchCards", "help.vocalInterval"] {
+                       "help.vocalOctaveOffset", "help.vocalPitchCards", "help.vocalInterval"] {
                 XCTAssertTrue(app.descendants(matching: .any)[id].firstMatch.waitForExistence(timeout: 5), id)
             }
             XCTAssertEqual(app.descendants(matching: .any)["help.quizChord"].firstMatch.exists, modeName == "Full Chords")
