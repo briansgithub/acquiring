@@ -26,11 +26,6 @@ struct HelpView: View {
                     title: "Roman numerals",
                     detail: "Chord quality, figures, alterations, and applied chords"
                 ) { RomanNumeralsHelpView() }
-                HelpTopicLink(
-                    id: "help.topic.tessitura",
-                    title: "Tessitura",
-                    detail: "Choose a comfortable octave for singing targets"
-                ) { TessituraHelpView() }
             } header: {
                 Text("Card notation")
             } footer: {
@@ -290,36 +285,6 @@ private struct RomanNumeralsHelpView: View {
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel("\(example.symbol): \(example.meaning)")
             }
-        }
-    }
-}
-
-private struct TessituraHelpView: View {
-    var body: some View {
-        HelpArticle(title: "Tessitura", id: "help.topic.tessitura") {
-            HelpSection(title: "Your comfortable octave") {
-                Text("Tessitura is the register where your voice feels comfortable. Choose Set, then sing or hum a comfortable pitch until the countdown completes. Keep voicing for three seconds; after silence, the countdown may restart.")
-                HStack(spacing: 12) {
-                    octaveCard("C5", caption: "original target")
-                    Image(systemName: "arrow.right").foregroundStyle(.secondary).accessibilityHidden(true)
-                    octaveCard("C4", caption: "comfortable target")
-                }
-                .accessibilityElement(children: .ignore)
-                .accessibilityLabel("Example octave adjustment: original target C5, comfortable target C4")
-            }
-            HelpSection(title: "What changes") {
-                Text("Targets may shift by octaves while keeping the same note identity. C4 and C5 are both C, one octave apart. This makes singing targets fit your range without changing the musical role being practiced.")
-                HelpCallout(text: "Clear removes the octave adjustment and preserves your recordings.")
-            }
-        }
-    }
-
-    private func octaveCard(_ pitch: String, caption: String) -> some View {
-        VStack(spacing: 6) {
-            QuizExampleCard(showsPitchHint: false) {
-                Text(pitch).font(.title2.monospaced().weight(.bold))
-            }
-            Text(caption).font(.caption).foregroundStyle(.secondary)
         }
     }
 }

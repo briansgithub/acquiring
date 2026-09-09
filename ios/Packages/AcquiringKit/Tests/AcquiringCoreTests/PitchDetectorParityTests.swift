@@ -62,31 +62,6 @@ final class PitchDetectorParityTests: XCTestCase {
         XCTAssertEqual(PitchDetector.estimate(samples: [1, 2, 3, 4], sampleRate: 0), .init(frequencyHz: 0, confidence: 0, rms: 0))
     }
 
-    func testComfortablePitchCaptureMatchesCountdownDropoutAndFinalWindowRules() {
-        var silent = ComfortablePitchCapture()
-        for _ in 0..<20 { _ = silent.observe(elapsedMilliseconds: 100, midi: nil) }
-        XCTAssertEqual(silent.progress.remainingMilliseconds, 3_000)
-        XCTAssertFalse(silent.progress.hasSignal)
-        XCTAssertNil(silent.averageMIDI)
-
-        var successful = ComfortablePitchCapture()
-        _ = successful.observe(elapsedMilliseconds: 500, midi: 50)
-        _ = successful.observe(elapsedMilliseconds: 500, midi: 52)
-        _ = successful.observe(elapsedMilliseconds: 1_000, midi: 60)
-        let completed = successful.observe(elapsedMilliseconds: 1_000, midi: 64)
-        XCTAssertTrue(completed.isComplete)
-        XCTAssertEqual(successful.averageMIDI ?? 0, (52 + 60 + 64) / 3, accuracy: 0.0001)
-
-        var dropout = ComfortablePitchCapture()
-        _ = dropout.observe(elapsedMilliseconds: 500, midi: 60)
-        XCTAssertEqual(dropout.observe(elapsedMilliseconds: 500, midi: nil).remainingMilliseconds, 2_500)
-        XCTAssertEqual(dropout.observe(elapsedMilliseconds: 500, midi: 61).remainingMilliseconds, 2_000)
-        _ = dropout.observe(elapsedMilliseconds: 1_001, midi: nil)
-        XCTAssertEqual(dropout.progress.remainingMilliseconds, 3_000)
-        XCTAssertFalse(dropout.progress.hasSignal)
-        XCTAssertNil(dropout.averageMIDI)
-    }
-
     private func assertDetection(
         _ signal: [Int16],
         expected: Double,

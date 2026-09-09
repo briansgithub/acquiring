@@ -33,7 +33,6 @@ struct QuizCardsView: View {
     let rootOnly: Bool
     let usesRelativeIonianContext: Bool
     let isPreviewEnabled: Bool
-    let isTessituraEnabled: Bool
     /// Removes visual section labels and uses the fixed-height card rows needed by the single-screen quiz.
     let compact: Bool
     let onPreview: ([Int], Duration) -> Void
@@ -55,7 +54,6 @@ struct QuizCardsView: View {
         usesRelativeIonianContext: Bool,
         isPreviewEnabled: Bool,
         compact: Bool = false,
-        isTessituraEnabled: Bool = false,
         onPreview: @escaping ([Int], Duration) -> Void,
         onIntervalPreview: @escaping ([Int]) -> Void,
         onSingBack: ((SingingTargetRequest) -> Void)? = nil,
@@ -67,7 +65,6 @@ struct QuizCardsView: View {
         self.usesRelativeIonianContext = usesRelativeIonianContext
         self.isPreviewEnabled = isPreviewEnabled
         self.compact = compact
-        self.isTessituraEnabled = isTessituraEnabled
         self.onPreview = onPreview
         self.onIntervalPreview = onIntervalPreview
         self.onSingBack = onSingBack
@@ -194,7 +191,6 @@ struct QuizCardsView: View {
                 action: { onPreview([previewMIDI(for: pitch)], .milliseconds(450)) },
                 doubleTapAction: singBackAction([previewMIDI(for: pitch)], labels: [degree]),
                 doubleTapActionName: "Sing Back",
-                isTessituraEnabled: isTessituraEnabled,
                 showsPitchGauge: showsPitchGauge,
                 fixedHeight: fixedHeight
             ) {
@@ -334,10 +330,7 @@ struct QuizCardsView: View {
             // Deliberately the picture-only card rather than a disabled `QuizCardButton`:
             // disabling dims to 45%, which would make the card change shade as the melody
             // moves in and out of having an interval.
-            QuizExampleCard(
-                fixedHeight: MelodyCardLayout.singleOrIntervalHeight,
-                showsPitchHint: false
-            ) {
+            QuizExampleCard(fixedHeight: MelodyCardLayout.singleOrIntervalHeight) {
                 Color.clear
             }
         }
@@ -362,7 +355,6 @@ struct QuizCardsView: View {
                 identifier: "quiz.chord.preview",
                 enabled: isPreviewEnabled && !voicing.isEmpty,
                 action: { onPreview(voicing, active.nativeDuration(bpm: section.bpm)) },
-                showsSingBackHint: false,
                 fixedHeight: compact ? 44 : nil
             ) {
                 FittedRomanNumeral(
@@ -422,7 +414,6 @@ struct QuizCardsView: View {
             action: { onPreview([preview], .milliseconds(450)) },
             doubleTapAction: singBackAction([preview], labels: [label]),
             doubleTapActionName: "Sing Back",
-            isTessituraEnabled: isTessituraEnabled,
             fixedHeight: compact ? 44 : nil
         ) {
             FittedScaleDegree(label, maximumFontSize: 28, minimumFontSize: 11, color: .white)
@@ -446,7 +437,6 @@ struct QuizCardsView: View {
             action: { onPreview([previewMIDI(for: pitch)], .milliseconds(450)) },
             doubleTapAction: singBackAction([previewMIDI(for: pitch)], labels: [degree]),
             doubleTapActionName: "Sing Back",
-            isTessituraEnabled: isTessituraEnabled,
             fixedHeight: fixedHeight
         ) {
             FittedScaleDegree(degree, maximumFontSize: 32, minimumFontSize: 11, color: .white)
@@ -493,7 +483,6 @@ struct QuizCardsView: View {
                 doubleTapAction: singBackAction(intervalPreviewPair(previous: previous, current: current), labels: labels),
                 previewActionName: "Preview sequence and together",
                 doubleTapActionName: "Sing Back Interval",
-                isTessituraEnabled: isTessituraEnabled,
                 fixedHeight: fixedHeight
             ) {
                 // The shorthand already carries the direction arrow; the note letters
@@ -711,8 +700,6 @@ private struct QuizCardButton<Content: View>: View {
     let doubleTapAction: (() -> Void)?
     let previewActionName: String
     let doubleTapActionName: String
-    let isTessituraEnabled: Bool
-    let showsSingBackHint: Bool
     /// Whether this is the card currently under persistent practice.
     let showsPitchGauge: Bool
     let fixedHeight: CGFloat?
@@ -727,8 +714,6 @@ private struct QuizCardButton<Content: View>: View {
         doubleTapAction: (() -> Void)? = nil,
         previewActionName: String = "Preview",
         doubleTapActionName: String = "Practice",
-        isTessituraEnabled: Bool = false,
-        showsSingBackHint: Bool = true,
         showsPitchGauge: Bool = false,
         fixedHeight: CGFloat? = nil,
         @ViewBuilder content: @escaping () -> Content
@@ -740,27 +725,17 @@ private struct QuizCardButton<Content: View>: View {
         self.doubleTapAction = doubleTapAction
         self.previewActionName = previewActionName
         self.doubleTapActionName = doubleTapActionName
-        self.isTessituraEnabled = isTessituraEnabled
-        self.showsSingBackHint = showsSingBackHint
         self.showsPitchGauge = showsPitchGauge
         self.fixedHeight = fixedHeight
         self.content = content
     }
 
-    private var hasSingBackHint: Bool {
-        enabled && showsSingBackHint && doubleTapAction != nil
-    }
-
-    /// Only the one card wearing the gauge reads the sampled percentage, so the 4 Hz
+    /// Only the one card wearing the gauge reads the sampled reading, so the 4 Hz
     /// invalidation that costs is confined to it.
     private var accessibilityValueText: String {
-        let register = hasSingBackHint
-            ? (isTessituraEnabled ? "Tessitura enabled" : "Original target octave")
-            : ""
-        guard showsPitchGauge else { return register }
-        let pitch = vocalPractice?.sampledLiveCentsText
+        guard showsPitchGauge else { return "" }
+        return vocalPractice?.sampledLiveCentsText
             .map { "pitch \($0) from target" } ?? "waiting for a voiced pitch"
-        return register.isEmpty ? pitch : "\(register), \(pitch)"
     }
 
     var body: some View {
@@ -786,12 +761,6 @@ private struct QuizCardButton<Content: View>: View {
                 .fill(.tint)
                 .overlay { if showsPitchGauge { QuizPitchGauge() } }
                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-        }
-        .overlay(alignment: .topTrailing) {
-            if hasSingBackHint {
-                PitchHintDot(isAdjusted: isTessituraEnabled)
-                    .padding(fixedHeight.map { $0 <= 24 } == true ? 1 : fixedHeight.map { $0 <= 44 } == true ? 3 : 5)
-            }
         }
         .accessibilityValue(accessibilityValueText)
         .accessibilityHint(enabled
@@ -834,8 +803,6 @@ struct ChordToneCardLayout<Card: View>: View {
 /// met one, which is why the chrome here is a copy of that card's and not a look-alike.
 struct QuizExampleCard<Content: View>: View {
     var fixedHeight: CGFloat = 44
-    var showsPitchHint: Bool = true
-    var isTessituraAdjusted: Bool = false
     @ViewBuilder let content: () -> Content
 
     var body: some View {
@@ -846,40 +813,9 @@ struct QuizExampleCard<Content: View>: View {
             .frame(maxWidth: .infinity)
             .frame(height: fixedHeight)
             .background(.tint, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-            .overlay(alignment: .topTrailing) {
-                if showsPitchHint {
-                    PitchHintDot(isAdjusted: isTessituraAdjusted)
-                        .padding(fixedHeight <= 44 ? 3 : 5)
-                }
-            }
             .allowsHitTesting(false)
             // Decorative: every call site describes the row it sits in.
             .accessibilityHidden(true)
-    }
-}
-
-/// Shared decorative singing affordance. Color describes register handling, not microphone activity.
-struct PitchHintDot: View {
-    let isAdjusted: Bool
-
-    var body: some View {
-        let color = isAdjusted ? Color(red: 158.0 / 255, green: 158.0 / 255, blue: 158.0 / 255) : .white
-        RadialGradient(
-            stops: [
-                .init(color: color, location: 0),
-                .init(color: color.opacity(0.95), location: 0.10),
-                .init(color: color.opacity(0.80), location: 0.22),
-                .init(color: color.opacity(0.58), location: 0.36),
-                .init(color: color.opacity(0.36), location: 0.52),
-                .init(color: color.opacity(0.18), location: 0.68),
-                .init(color: color.opacity(0.07), location: 0.84),
-                .init(color: color.opacity(0), location: 1)
-            ],
-            center: .center, startRadius: 0, endRadius: 8
-        )
-        .frame(width: 16, height: 16)
-        .allowsHitTesting(false)
-        .accessibilityHidden(true)
     }
 }
 

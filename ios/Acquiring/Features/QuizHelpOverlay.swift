@@ -27,7 +27,7 @@ enum QuizHelpTargetID: String, CaseIterable, Hashable {
     case quizNotes = "help.quizNoteIntervalChordTone"
     case quizChord = "help.quizChord"
     case quizRelativeKey = "help.quizRelativeKey"
-    case vocalTessitura = "help.vocalTessitura"
+    case vocalOctaveOffset = "help.vocalOctaveOffset"
     case vocalPitchCards = "help.vocalPitchCards"
     case vocalInterval = "help.vocalInterval"
 
@@ -39,8 +39,8 @@ enum QuizHelpTargetID: String, CaseIterable, Hashable {
             "1 tap: hear chord"
         case .quizRelativeKey:
             "Use relative-major labels"
-        case .vocalTessitura:
-            "Set: sing a comfortable note.\nTargets shift to a comfortable range."
+        case .vocalOctaveOffset:
+            "Move singing targets\nby whole octaves"
         case .vocalPitchCards:
             "2 taps: record for 3 seconds\n1 tap: replay"
         case .vocalInterval:
@@ -525,7 +525,7 @@ private struct QuizHelpOverlay: View {
     private func preferredWidth(for id: QuizHelpTargetID) -> CGFloat {
         if dynamicTypeSize.isAccessibilitySize { return 270 }
         switch id {
-        case .quizNotes, .vocalTessitura: return 195
+        case .quizNotes, .vocalOctaveOffset: return 195
         case .vocalPitchCards: return 175
         case .quizRelativeKey: return 150
         case .quizChord, .vocalInterval: return 130

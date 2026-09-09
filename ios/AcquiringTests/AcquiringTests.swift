@@ -2048,7 +2048,7 @@ final class QuizHelpLayoutTests: XCTestCase {
             CGRect(x: 292, y: 340, width: 84, height: 74),
             CGRect(x: 16, y: 440, width: 120, height: 60),
         ],
-        .vocalTessitura: [CGRect(x: 16, y: 760, width: 60, height: 50)],
+        .vocalOctaveOffset: [CGRect(x: 16, y: 760, width: 86, height: 44)],
         .vocalPitchCards: [
             CGRect(x: 90, y: 760, width: 90, height: 50),
             CGRect(x: 190, y: 760, width: 90, height: 50),
@@ -2060,7 +2060,7 @@ final class QuizHelpLayoutTests: XCTestCase {
         .quizNotes: CGSize(width: 195, height: 56),
         .quizChord: CGSize(width: 130, height: 32),
         .quizRelativeKey: CGSize(width: 150, height: 32),
-        .vocalTessitura: CGSize(width: 195, height: 48),
+        .vocalOctaveOffset: CGSize(width: 195, height: 48),
         .vocalPitchCards: CGSize(width: 175, height: 48),
         .vocalInterval: CGSize(width: 130, height: 32),
     ]
