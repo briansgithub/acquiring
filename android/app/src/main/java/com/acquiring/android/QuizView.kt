@@ -141,80 +141,6 @@ private fun ringModeColor(scale: String): Color = when (scale) {
     else -> Color(0xFFE6E1E5)
 }
 
-@Composable
-internal fun DraggableQuizPlayPauseButton(
-    isPlaying: Boolean,
-    enabled: Boolean,
-    xFraction: Float,
-    yFraction: Float,
-    onPositionChange: (Float, Float) -> Unit,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val buttonWidth = 180.dp
-    val buttonHeight = 64.dp
-    val defaultBottomClearance = 72.dp
-
-    BoxWithConstraints(modifier = modifier) {
-        val density = androidx.compose.ui.platform.LocalDensity.current
-        val maxX = with(density) { (maxWidth - buttonWidth).toPx().coerceAtLeast(0f) }
-        val maxY = with(density) { (maxHeight - buttonHeight).toPx().coerceAtLeast(0f) }
-        val defaultY = (maxY - with(density) { defaultBottomClearance.toPx() }).coerceAtLeast(0f)
-        val resolvedX = if (xFraction.isFinite()) xFraction.coerceIn(0f, 1f) * maxX else maxX
-        val resolvedY = if (yFraction.isFinite()) yFraction.coerceIn(0f, 1f) * maxY else defaultY
-        val latestXFraction by rememberUpdatedState(xFraction)
-        val latestYFraction by rememberUpdatedState(yFraction)
-        val latestOnPositionChange by rememberUpdatedState(onPositionChange)
-        val actionLabel = if (isPlaying) "Pause" else "Play"
-
-        Button(
-            onClick = onClick,
-            enabled = enabled,
-            modifier = Modifier
-                .offset { IntOffset(resolvedX.roundToInt(), resolvedY.roundToInt()) }
-                .width(buttonWidth)
-                .height(buttonHeight)
-                .semantics { contentDescription = "$actionLabel. Drag to move." }
-                .pointerInput(maxX, maxY, defaultY) {
-                    var dragX = 0f
-                    var dragY = 0f
-                    detectDragGestures(
-                        onDragStart = {
-                            dragX = if (latestXFraction.isFinite()) {
-                                latestXFraction.coerceIn(0f, 1f) * maxX
-                            } else {
-                                maxX
-                            }
-                            dragY = if (latestYFraction.isFinite()) {
-                                latestYFraction.coerceIn(0f, 1f) * maxY
-                            } else {
-                                defaultY
-                            }
-                        },
-                        onDrag = { change, dragAmount ->
-                            change.consume()
-                            dragX = (dragX + dragAmount.x).coerceIn(0f, maxX)
-                            dragY = (dragY + dragAmount.y).coerceIn(0f, maxY)
-                            latestOnPositionChange(
-                                if (maxX > 0f) dragX / maxX else 0f,
-                                if (maxY > 0f) dragY / maxY else 0f
-                            )
-                        }
-                    )
-                }
-        ) {
-            if (isPlaying) {
-                Text("Ⅱ", fontSize = 28.sp)
-            } else {
-                Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(28.dp))
-            }
-            Spacer(Modifier.width(8.dp))
-            Text(actionLabel)
-        }
-    }
-}
-
-
 private data class QuizTimelineChordVisual(
     val beat: Double,
     val duration: Double,
@@ -235,6 +161,13 @@ internal val QUIZ_ARPEGGIO_OPTIONS = listOf(
 )
 internal const val DEFAULT_QUIZ_ARPEGGIO_OPTION_INDEX = 3
 
+internal fun steppedQuizBeat(
+    current: Double,
+    delta: Double,
+    start: Double,
+    end: Double
+): Double = (current + delta).coerceIn(start, end)
+
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun QuizTab(
@@ -252,9 +185,6 @@ fun QuizTab(
     onTempoPercentChange: (Float) -> Unit,
     arpeggioOptionIndex: Int,
     onArpeggioOptionIndexChange: (Int) -> Unit,
-    quizPlayButtonXFraction: Float,
-    quizPlayButtonYFraction: Float,
-    onQuizPlayButtonPositionChange: (Float, Float) -> Unit,
     onSingingTargetsRequested: (SingingTargetRequest) -> Unit,
     octaveOffset: Int,
     sessionKey: String,
@@ -456,6 +386,17 @@ fun QuizTab(
         AudioEngine.stopPreviewPlayback()
         val beatsToSkip = seconds * (bpm / 60.0)
         QuizPlaybackController.seek(playbackBeat() - beatsToSkip, resume = isPlaying)
+    }
+
+    fun stepBeat(deltaBeats: Double) {
+        cancelInertia()
+        if (isScrubbing) return
+        intervalPreviewJob?.cancel()
+        AudioEngine.stopPreviewPlayback()
+        QuizPlaybackController.seek(
+            steppedQuizBeat(playbackBeat(), deltaBeats, timeline.startBeat, timeline.endBeat),
+            resume = isPlaying
+        )
     }
 
     LaunchedEffect(timeline, sessionKey) {
@@ -1956,91 +1897,96 @@ fun QuizTab(
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(72.dp))
-                }
-            }
-
-        Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-            Column(
-                modifier = Modifier.align(Alignment.BottomStart).fillMaxWidth().zIndex(2f),
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                persistentPitchController.errorMessage?.let { message ->
-                    Text(
-                        text = message,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.labelSmall
-                    )
-                }
-                playbackState.error?.let { message ->
-                    Text(
-                        text = message,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.labelSmall
-                    )
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                    verticalAlignment = Alignment.Bottom,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    QuizInstrumentMenu(
-                        selectedInstrument = currentWaveform,
-                        onInstrumentSelected = onWaveformChange
-                    )
-                    transposePicker()
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(text = "Root Only", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Switch(
-                            checked = isSimpleMode,
-                            onCheckedChange = {
-                                persistentPitchController.cancel()
-                                onSimpleModeChange(it)
-                            },
-                            modifier = Modifier.testTag(QUIZ_MODE_SWITCH_TEST_TAG)
+                    persistentPitchController.errorMessage?.let { message ->
+                        Text(
+                            text = message,
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.labelSmall
                         )
                     }
-                    FilledTonalButton(
-                        onClick = {
-                            cancelInertia()
-                            intervalPreviewJob?.cancel()
-                            AudioEngine.stopAllPlayback()
-                            isScrubbing = false
-                            wasPlayingBeforeScrub = false
-                            scrubBeat = 1.0
-                            QuizPlaybackController.reset()
-                            // Clearing the accumulator first matters: rewinding to the top
-                            // disposes the run that was sounding, and that dispose would
-                            // otherwise bank its score right back into the map we just emptied.
-                            melodyRunScoreAccumulator.clear()
-                            fixedMelodyPitchScores = emptyMap()
-                        },
-                        modifier = Modifier.size(56.dp),
-                        contentPadding = PaddingValues(0.dp),
-                        shape = RoundedCornerShape(14.dp)
-                    ) {
-                        Icon(Icons.Default.Refresh, contentDescription = "Reset", modifier = Modifier.size(28.dp))
+                    playbackState.error?.let { message ->
+                        Text(
+                            text = message,
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.labelSmall
+                        )
                     }
-                    sectionPicker()
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState())
+                            .padding(bottom = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = {
+                                if (!isScrubbing && bpm > 0.0) {
+                                    intervalPreviewJob?.cancel()
+                                    AudioEngine.stopPreviewPlayback()
+                                    if (isPlaying) QuizPlaybackController.pause() else QuizPlaybackController.play()
+                                }
+                            },
+                            enabled = !isScrubbing && bpm > 0.0,
+                            modifier = Modifier.semantics {
+                                contentDescription = if (isPlaying) "Pause" else "Play"
+                            }
+                        ) {
+                            if (isPlaying) {
+                                Text("Ⅱ")
+                            } else {
+                                Icon(Icons.Default.PlayArrow, contentDescription = null)
+                            }
+                            Spacer(Modifier.width(4.dp))
+                            Text(if (isPlaying) "Pause" else "Play")
+                        }
+                        FilledTonalButton(
+                            onClick = { stepBeat(-1.0) },
+                            modifier = Modifier.semantics { contentDescription = "Previous beat" }
+                        ) { Text("−1") }
+                        FilledTonalButton(
+                            onClick = { stepBeat(1.0) },
+                            modifier = Modifier.semantics { contentDescription = "Next beat" }
+                        ) { Text("+1") }
+                        FilledTonalButton(
+                            onClick = {
+                                cancelInertia()
+                                intervalPreviewJob?.cancel()
+                                AudioEngine.stopAllPlayback()
+                                isScrubbing = false
+                                wasPlayingBeforeScrub = false
+                                scrubBeat = 1.0
+                                QuizPlaybackController.reset()
+                                melodyRunScoreAccumulator.clear()
+                                fixedMelodyPitchScores = emptyMap()
+                            }
+                        ) {
+                            Icon(Icons.Default.Refresh, contentDescription = "Reset")
+                        }
+                        sectionPicker()
+                        QuizInstrumentMenu(
+                            selectedInstrument = currentWaveform,
+                            onInstrumentSelected = onWaveformChange
+                        )
+                        transposePicker()
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = "Root Only",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Switch(
+                                checked = isSimpleMode,
+                                onCheckedChange = {
+                                    persistentPitchController.cancel()
+                                    onSimpleModeChange(it)
+                                },
+                                modifier = Modifier.testTag(QUIZ_MODE_SWITCH_TEST_TAG)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(56.dp))
                 }
             }
-
-            DraggableQuizPlayPauseButton(
-                isPlaying = isPlaying,
-                enabled = !isScrubbing && bpm > 0.0,
-                xFraction = quizPlayButtonXFraction,
-                yFraction = quizPlayButtonYFraction,
-                onPositionChange = onQuizPlayButtonPositionChange,
-                onClick = {
-                    if (!isScrubbing && bpm > 0.0) {
-                        intervalPreviewJob?.cancel()
-                        AudioEngine.stopPreviewPlayback()
-                        if (isPlaying) QuizPlaybackController.pause() else QuizPlaybackController.play()
-                    }
-                },
-                modifier = Modifier.fillMaxSize().zIndex(1f)
-            )
-        }
     }
 }

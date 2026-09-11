@@ -248,8 +248,6 @@ internal fun MainScreen(
     val currentWaveform by AppInstrumentSession.sessionInstrument.collectAsState()
     val defaultInstrument by AppInstrumentSession.defaultInstrument.collectAsState()
     var globalTranspose by remember { mutableStateOf(AudioEngine.globalTranspose) }
-    var quizPlayButtonXFraction by rememberSaveable { mutableStateOf(Float.NaN) }
-    var quizPlayButtonYFraction by rememberSaveable { mutableStateOf(Float.NaN) }
     var singingTargetRequest by remember { mutableStateOf<SingingTargetRequest?>(null) }
     var singingTargetRequestId by remember { mutableStateOf(0) }
     val octaveOffset = tessituraSessionViewModel.octaveOffset
@@ -848,12 +846,6 @@ internal fun MainScreen(
                     onTransposeChange = {
                         globalTranspose = it
                         AudioEngine.globalTranspose = it
-                    },
-                    quizPlayButtonXFraction = quizPlayButtonXFraction,
-                    quizPlayButtonYFraction = quizPlayButtonYFraction,
-                    onQuizPlayButtonPositionChange = { xFraction, yFraction ->
-                        quizPlayButtonXFraction = xFraction
-                        quizPlayButtonYFraction = yFraction
                     },
                     onArtistClick = { artistName ->
                         tessituraSessionViewModel.clearSession()

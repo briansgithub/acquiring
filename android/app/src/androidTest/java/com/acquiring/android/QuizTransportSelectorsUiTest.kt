@@ -83,9 +83,6 @@ class QuizTransportSelectorsUiTest {
                             transpose = it
                             AudioEngine.globalTranspose = it
                         },
-                        quizPlayButtonXFraction = Float.NaN,
-                        quizPlayButtonYFraction = Float.NaN,
-                        onQuizPlayButtonPositionChange = { _, _ -> },
                         onArtistClick = {},
                         onShowSongInfo = { showingQuiz = false },
                         onSingingTargetsRequested = {},
