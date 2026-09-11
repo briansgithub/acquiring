@@ -24,40 +24,49 @@ internal val INTRODUCTION_BULLETS = listOf(
 )
 
 @Composable
-fun IntroductionView(onContinue: () -> Unit) {
+fun IntroductionView(
+    onContinue: (() -> Unit)? = null,
+    modifier: Modifier = Modifier
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(24.dp)
             .testTag(INTRODUCTION_SCREEN_TEST_TAG)
     ) {
-        Text(
-            text = "Welcome to Acquiring",
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.semantics { heading() }
-        )
-        Text(
-            text = "A few gestures before the library.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
-        )
-        INTRODUCTION_BULLETS.forEach { line ->
-            Text(
-                text = "• $line",
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(vertical = 6.dp)
-            )
+        IntroductionArticle()
+        if (onContinue != null) {
+            Button(
+                onClick = onContinue,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 24.dp)
+            ) {
+                Text("Continue to Library")
+            }
         }
-        Button(
-            onClick = onContinue,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 24.dp)
-                .semantics { }
-        ) {
-            Text("Continue to Library")
-        }
+    }
+}
+
+@Composable
+internal fun IntroductionArticle() {
+    Text(
+        text = "Welcome to Acquiring",
+        style = MaterialTheme.typography.headlineSmall,
+        modifier = Modifier.semantics { heading() }
+    )
+    Text(
+        text = "A few gestures before the library.",
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
+    )
+    INTRODUCTION_BULLETS.forEach { line ->
+        Text(
+            text = "• $line",
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(vertical = 6.dp)
+        )
     }
 }
