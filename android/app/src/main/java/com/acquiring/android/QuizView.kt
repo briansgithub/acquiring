@@ -160,6 +160,8 @@ internal val QUIZ_ARPEGGIO_OPTIONS = listOf(
     QuizArpeggioOption("4", 4.0)
 )
 internal const val DEFAULT_QUIZ_ARPEGGIO_OPTION_INDEX = 3
+internal const val ROOT_ONLY_PREVIOUS_WEIGHT = 0.55f
+internal const val ROOT_ONLY_FEATURED_WEIGHT = 1f
 
 internal fun steppedQuizBeat(
     current: Double,
@@ -1389,9 +1391,93 @@ fun QuizTab(
                                 modifier = Modifier.fillMaxWidth().heightIn(max = 250.dp),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
+                                val previousRootLabel = if (useRelativeIonianContext && previousIntervalPitch != null) {
+                                    ionianContextDegreeLabel(previousIntervalPitch, ionianContextKey)
+                                } else {
+                                    chordRootIntervalState?.previousDegreeLabel.orEmpty()
+                                }
+                                val previousRootAudio = previousIntervalPitch?.toAudioNoteNumber() ?: 0
+                                Surface(
+                                    modifier = Modifier.weight(ROOT_ONLY_PREVIOUS_WEIGHT).fillMaxHeight()
+                                        .semantics { contentDescription = "Play previous root scale degree." }
+                                        .clickable(enabled = previousRootAudio > 0) {
+                                            playCardPreview(listOf(tessituraPreviewMidi(previousRootAudio)))
+                                        },
+                                    shape = RoundedCornerShape(24.dp),
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                                ) {
+                                    Box(modifier = Modifier.fillMaxSize().padding(6.dp), contentAlignment = Alignment.Center) {
+                                        if (previousRootLabel.isNotEmpty()) {
+                                            ScaleDegreeText(
+                                                label = previousRootLabel,
+                                                fontSize = 48.sp,
+                                                modifier = Modifier.fillMaxWidth(),
+                                                minFontSize = 18.sp
+                                            )
+                                        } else {
+                                            Text("—", fontSize = 32.sp)
+                                        }
+                                    }
+                                }
                                 val rootIntervalEnabled = previousIntervalPitch != null && currentIntervalPitch != null && rootInterval != null
                                 Surface(
-                                    modifier = Modifier.weight(1f).fillMaxHeight()
+                                    modifier = Modifier.weight(ROOT_ONLY_FEATURED_WEIGHT).fillMaxHeight()
+                                        .semantics { contentDescription = "Play current root scale degree. Double tap to sing it back. Long press to toggle persistent pitch practice." }
+                                        .combinedClickable(
+                                            enabled = rootAudioNote > 0,
+                                            onClick = {
+                                                playCardPreview(listOf(tessituraPreviewMidi(rootAudioNote)))
+                                            },
+                                            onDoubleClick = {
+                                                if (rootAudioNote > 0) {
+                                                    requestSingingTargets(
+                                                        SingingTargetRequest(
+                                                            first = SingingTargetNote(rootAudioNote, rootDegreeLabel),
+                                                            second = null,
+                                                            requestId = 0
+                                                        )
+                                                    )
+                                                }
+                                            },
+                                            onLongClick = handleSimpleRootLongClick
+                                        ),
+                                    shape = RoundedCornerShape(32.dp),
+                                    color = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
+                                ) {
+                                    Box(modifier = Modifier.fillMaxSize().padding(8.dp), contentAlignment = Alignment.Center) {
+                                        if (
+                                            resolvedPersistentPitchTarget?.position == PersistentPitchCardPosition.SimpleRoot &&
+                                            persistentPitchGaugeResult != null
+                                        ) {
+                                            PitchGauge(
+                                                pitchResult = persistentPitchGaugeResult,
+                                                targetLabel = resolvedPersistentPitchTarget.label,
+                                                modifier = Modifier.matchParentSize()
+                                            )
+                                        }
+                                        // After the gauge, so the moving bar passes behind the degree
+                                        // rather than across it.
+                                        if (activeSimpleChord != null) {
+                                            if (rootDegreeLabel.isNotEmpty()) {
+                                                ScaleDegreeText(label = rootDegreeLabel, fontSize = 100.sp, modifier = Modifier.fillMaxWidth(), minFontSize = 36.sp)
+                                            } else {
+                                                val symbol = if (useRelativeIonianContext) ChordInterpreter.getRelativeIonianRomanSymbol(activeSimpleChord, activeKey, ionianContextKey) else ChordInterpreter.getRomanSymbol(activeSimpleChord, activeKey)
+                                                val romanDisplay = RomanNumeralDisplay.fromChord(symbol, activeSimpleChord["borrowed"])
+                                                RomanNumeralText(display = romanDisplay, fontSize = 64.sp, modifier = Modifier.fillMaxWidth())
+                                            }
+                                        }
+                                        if (rootAudioNote > 0) {
+                                            DoubleTapHint(
+                                                modifier = Modifier.padding(4.dp),
+                                                isTessituraAdjusted = isTessituraAdjusted
+                                            )
+                                        }
+                                    }
+                                }
+                                Surface(
+                                    modifier = Modifier.weight(ROOT_ONLY_FEATURED_WEIGHT).fillMaxHeight()
                                         .semantics {
                                             contentDescription = rootInterval?.let {
                                                 "Play root interval ${it.spokenName}. Double tap to sing it back. Long press to toggle persistent pitch practice."
@@ -1441,61 +1527,6 @@ fun QuizTab(
                                             maxLines = 1
                                         )
                                         if (rootIntervalEnabled) {
-                                            DoubleTapHint(
-                                                modifier = Modifier.padding(4.dp),
-                                                isTessituraAdjusted = isTessituraAdjusted
-                                            )
-                                        }
-                                    }
-                                }
-                                Surface(
-                                    modifier = Modifier.weight(1f).fillMaxHeight()
-                                        .semantics { contentDescription = "Play current root scale degree. Double tap to sing it back. Long press to toggle persistent pitch practice." }
-                                        .combinedClickable(
-                                            enabled = rootAudioNote > 0,
-                                            onClick = {
-                                                playCardPreview(listOf(tessituraPreviewMidi(rootAudioNote)))
-                                            },
-                                            onDoubleClick = {
-                                                if (rootAudioNote > 0) {
-                                                    requestSingingTargets(
-                                                        SingingTargetRequest(
-                                                            first = SingingTargetNote(rootAudioNote, rootDegreeLabel),
-                                                            second = null,
-                                                            requestId = 0
-                                                        )
-                                                    )
-                                                }
-                                            },
-                                            onLongClick = handleSimpleRootLongClick
-                                        ),
-                                    shape = RoundedCornerShape(32.dp),
-                                    color = MaterialTheme.colorScheme.primary,
-                                    contentColor = MaterialTheme.colorScheme.onPrimary
-                                ) {
-                                    Box(modifier = Modifier.fillMaxSize().padding(8.dp), contentAlignment = Alignment.Center) {
-                                        if (
-                                            resolvedPersistentPitchTarget?.position == PersistentPitchCardPosition.SimpleRoot &&
-                                            persistentPitchGaugeResult != null
-                                        ) {
-                                            PitchGauge(
-                                                pitchResult = persistentPitchGaugeResult,
-                                                targetLabel = resolvedPersistentPitchTarget.label,
-                                                modifier = Modifier.matchParentSize()
-                                            )
-                                        }
-                                        // After the gauge, so the moving bar passes behind the degree
-                                        // rather than across it.
-                                        if (activeSimpleChord != null) {
-                                            if (rootDegreeLabel.isNotEmpty()) {
-                                                ScaleDegreeText(label = rootDegreeLabel, fontSize = 100.sp, modifier = Modifier.fillMaxWidth(), minFontSize = 36.sp)
-                                            } else {
-                                                val symbol = if (useRelativeIonianContext) ChordInterpreter.getRelativeIonianRomanSymbol(activeSimpleChord, activeKey, ionianContextKey) else ChordInterpreter.getRomanSymbol(activeSimpleChord, activeKey)
-                                                val romanDisplay = RomanNumeralDisplay.fromChord(symbol, activeSimpleChord["borrowed"])
-                                                RomanNumeralText(display = romanDisplay, fontSize = 64.sp, modifier = Modifier.fillMaxWidth())
-                                            }
-                                        }
-                                        if (rootAudioNote > 0) {
                                             DoubleTapHint(
                                                 modifier = Modifier.padding(4.dp),
                                                 isTessituraAdjusted = isTessituraAdjusted
@@ -1882,20 +1913,6 @@ fun QuizTab(
                         }
 
                     Spacer(modifier = Modifier.weight(1f))
-
-                    // Unified playback scrub bar. Simple mode only: the full quiz
-                    // scrubs by dragging its own timeline instead.
-                    if (isSimpleMode) {
-                        Slider(
-                            value = currentBeat.toFloat().coerceIn(1f, endBeat.toFloat()),
-                            onValueChange = { beat -> scrubTo(beat.toDouble()) },
-                            onValueChangeFinished = { finishScrubbing() },
-                            valueRange = 1f..endBeat.toFloat(),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(32.dp)
-                        )
-                    }
 
                     persistentPitchController.errorMessage?.let { message ->
                         Text(
