@@ -138,46 +138,81 @@ fun LibraryView(
     onSongClick: (SongBrowseRow) -> Unit
 ) {
     var isHarvestExpanded by remember { mutableStateOf(false) }
+    var searchScope by rememberSaveable { mutableStateOf(LibrarySearchScope.SONGS) }
+    var searchFocused by remember { mutableStateOf(false) }
     // Sends the title search out to Hooktheory's own catalog in the browser instead of
     // querying the downloaded database.
     var searchOnHooktheory by rememberSaveable { mutableStateOf(false) }
     val uriHandler = LocalUriHandler.current
+    val focusManager = LocalFocusManager.current
+    val showChrome = libraryChromeVisible(searchFocused)
+    val activeQuery = if (searchScope == LibrarySearchScope.SONGS) searchQuery else searchArtistQuery
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Spacer(modifier = Modifier.weight(0.3f))
-        // Search Section
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Song Database Search",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.weight(1f)
-            )
-            PrivacyPolicyLink()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures { focusManager.clearFocus(force = true) }
+            }
+    ) {
+        if (showChrome) {
+            Spacer(modifier = Modifier.weight(0.3f))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Search Library",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                PrivacyPolicyLink()
+            }
         }
         
         // Search by Title/Slug
         ExposedDropdownMenuBox(
-            expanded = isExpanded,
-            onExpandedChange = { onExpandedChange(!isExpanded) },
+            expanded = if (searchScope == LibrarySearchScope.SONGS) isExpanded else isArtistExpanded,
+            onExpandedChange = {
+                if (searchScope == LibrarySearchScope.SONGS) {
+                    onExpandedChange(!isExpanded)
+                } else {
+                    onArtistExpandedChange(!isArtistExpanded)
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             OutlinedTextField(
-                value = searchQuery,
-                onValueChange = onSearchQueryChange,
-                label = { Text("Search by Title") },
+                value = activeQuery,
+                onValueChange = {
+                    if (searchScope == LibrarySearchScope.SONGS) {
+                        onSearchQueryChange(it)
+                    } else {
+                        onSearchArtistQueryChange(it)
+                    }
+                },
+                label = { Text("Search Library") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .menuAnchor()
                     .testTag(LIBRARY_TITLE_SEARCH_TEST_TAG)
-                    .onFocusChanged { onSearchTitleFocusChanged(it.isFocused) },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
+                    .onFocusChanged { focused ->
+                        searchFocused = focused.isFocused
+                        if (searchScope == LibrarySearchScope.SONGS) {
+                            onSearchTitleFocusChanged(focused.isFocused)
+                        } else {
+                            onSearchArtistFocusChanged(focused.isFocused)
+                        }
+                    },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(
+                        expanded = if (searchScope == LibrarySearchScope.SONGS) isExpanded else isArtistExpanded
+                    )
+                },
                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
             )
 
-            if (isExpanded) {
+            if (searchScope == LibrarySearchScope.SONGS && isExpanded) {
                 ExposedDropdownMenuWithScrollbar(
                     expanded = isExpanded,
                     onDismissRequest = { onExpandedChange(false) },
@@ -210,63 +245,7 @@ fun LibraryView(
                         )
                     }
                 }
-            }
-        }
-
-        Button(
-            onClick = {
-                if (searchOnHooktheory) {
-                    uriHandler.openUri(
-                        "https://www.hooktheory.com/theorytab/search?q=${Uri.encode(searchQuery)}"
-                    )
-                } else {
-                    onSearchTitle()
-                }
-            },
-            enabled = !searchOnHooktheory || searchQuery.isNotBlank(),
-            modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
-        ) {
-            Text("Search Title")
-        }
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { searchOnHooktheory = !searchOnHooktheory }
-                .semantics { contentDescription = "Search Hooktheory.com instead of the downloaded catalog" }
-        ) {
-            Checkbox(
-                checked = searchOnHooktheory,
-                onCheckedChange = { searchOnHooktheory = it }
-            )
-            Text(
-                text = "Search Hooktheory.com ↗",
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Search by Artist Section
-        ExposedDropdownMenuBox(
-            expanded = isArtistExpanded,
-            onExpandedChange = { onArtistExpandedChange(!isArtistExpanded) },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            OutlinedTextField(
-                value = searchArtistQuery,
-                onValueChange = onSearchArtistQueryChange,
-                label = { Text("Search by Artist") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .menuAnchor()
-                    .onFocusChanged { onSearchArtistFocusChanged(it.isFocused) },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isArtistExpanded) },
-                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
-            )
-
-            if (isArtistExpanded) {
+            } else if (searchScope == LibrarySearchScope.ARTISTS && isArtistExpanded) {
                 ExposedDropdownMenuWithScrollbar(
                     expanded = isArtistExpanded,
                     onDismissRequest = { onArtistExpandedChange(false) },
@@ -297,11 +276,42 @@ fun LibraryView(
             }
         }
 
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            FilterChip(
+                selected = searchScope == LibrarySearchScope.SONGS,
+                onClick = { searchScope = LibrarySearchScope.SONGS },
+                label = { Text("Songs") },
+                modifier = Modifier.testTag("LibrarySearchScopeSongs")
+            )
+            FilterChip(
+                selected = searchScope == LibrarySearchScope.ARTISTS,
+                onClick = { searchScope = LibrarySearchScope.ARTISTS },
+                label = { Text("Artists") },
+                modifier = Modifier.testTag("LibrarySearchScopeArtists")
+            )
+        }
+
         Button(
-            onClick = onSearchArtist,
+            onClick = {
+                if (searchScope == LibrarySearchScope.SONGS) {
+                    if (searchOnHooktheory) {
+                        uriHandler.openUri(
+                            "https://www.hooktheory.com/theorytab/search?q=${Uri.encode(searchQuery)}"
+                        )
+                    } else {
+                        onSearchTitle()
+                    }
+                } else {
+                    onSearchArtist()
+                }
+            },
+            enabled = searchScope == LibrarySearchScope.ARTISTS || !searchOnHooktheory || searchQuery.isNotBlank(),
             modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
         ) {
-            Text("Search Artist")
+            Text("Search")
         }
 
         searchResult?.let {
@@ -328,24 +338,39 @@ fun LibraryView(
             }
         }
 
+        if (showChrome) {
         Divider(modifier = Modifier.padding(vertical = 8.dp))
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { searchOnHooktheory = !searchOnHooktheory }
+                .semantics { contentDescription = "Search Hooktheory.com instead of the downloaded catalog" }
+        ) {
+            Checkbox(
+                checked = searchOnHooktheory,
+                onCheckedChange = { searchOnHooktheory = it }
+            )
+            Text(
+                text = "Search Hooktheory.com ↗",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
 
         Button(
             onClick = onAllSongs,
-            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
         ) {
             Text("All Songs")
         }
 
-        // Keep the playlist controls on the main library screen. Catalog
-        // download controls are available from the app Settings menu instead.
         PlaylistsSection(
             playlistDao = playlistDao,
             songDao = activeDb.songDao(),
             onSongClick = onSongClick
         )
 
-        // Expandable Harvest Section
         Column(modifier = Modifier.fillMaxWidth()) {
             Surface(
                 onClick = { isHarvestExpanded = !isHarvestExpanded },
@@ -383,6 +408,7 @@ fun LibraryView(
                     }
                 }
             }
+        }
         }
 
     }
