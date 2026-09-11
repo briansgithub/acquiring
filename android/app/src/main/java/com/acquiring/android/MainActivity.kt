@@ -211,6 +211,7 @@ internal fun MainScreen(
     var selectedSongComplexityRating by remember { mutableStateOf<Double?>(null) }
     var selectedSectionId by remember { mutableStateOf<String?>(null) }
     var isShowingAllSongs by rememberSaveable { mutableStateOf(false) }
+    var isShowingSettings by rememberSaveable { mutableStateOf(false) }
     var currentTab by remember { mutableStateOf(2) }
     var songParentPage by remember { mutableStateOf(SongParentPage.LIBRARY) }
     var showLetterNames by remember { mutableStateOf(false) }
@@ -389,7 +390,9 @@ internal fun MainScreen(
     val returnToParent = {
         browseOpenJob?.cancel()
         browseOpenJob = null
-        if (selectedArtistSongs != null && selectedSongSections == null) {
+        if (isShowingSettings) {
+            isShowingSettings = false
+        } else if (selectedArtistSongs != null && selectedSongSections == null) {
             // Close the artist detail page.
             selectedArtistName = null
             selectedArtistSongs = null
@@ -415,7 +418,7 @@ internal fun MainScreen(
 
     // Match the visible Back control while a selected song or artist is open.
     BackHandler(
-        enabled = selectedSongSections != null || selectedArtistSongs != null || isShowingAllSongs
+        enabled = isShowingSettings || selectedSongSections != null || selectedArtistSongs != null || isShowingAllSongs
     ) {
         returnToParent()
     }
@@ -579,25 +582,13 @@ internal fun MainScreen(
                 .padding(16.dp)
                 .padding(bottom = 32.dp) // Room for collapsed popup handle
         ) {
-            if (selectedSongSections == null && selectedArtistSongs == null && !isShowingAllSongs) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    AppSettingsMenu(
-                        catalogStatus = catalogStatus,
-                        updateStatus = updateStatus,
-                        defaultInstrument = defaultInstrument,
-                        onDefaultInstrumentChange = AppInstrumentSession::selectAsDefault,
-                        onDownloadCatalog = downloadCatalog,
-                        onCheckForUpdates = {
-                            updateStatus = openUpdateDistribution(context)
-                                ?: "Opening Google Play. Enrolled beta testers can see an available Update there."
-                        }
-                    )
-                }
-            }
-            if (selectedSongSections == null) {
+            if (isShowingSettings) {
+                AppSettingsScreen(
+                    defaultInstrument = defaultInstrument,
+                    onDefaultInstrumentChange = AppInstrumentSession::selectAsDefault,
+                    onBack = { isShowingSettings = false }
+                )
+            } else if (selectedSongSections == null) {
                 if (selectedArtistSongs != null) {
                     ArtistSongsView(
                         artistName = selectedArtistName ?: "Unknown Artist",
@@ -627,7 +618,17 @@ internal fun MainScreen(
                         )
                     }
                 } else {
-                    // Library/Search View
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(
+                            onClick = { isShowingSettings = true },
+                            modifier = Modifier.semantics { contentDescription = "Open settings" }
+                        ) {
+                            Text("Settings")
+                        }
+                    }
                     LibraryView(
                     activeDb = activeDb,
                     playlistDao = playlistDao,
