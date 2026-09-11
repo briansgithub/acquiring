@@ -237,8 +237,6 @@ internal fun MainScreen(
     var isShowingQuiz by remember { mutableStateOf(false) }
     var songParentPage by remember { mutableStateOf(SongParentPage.LIBRARY) }
     var showLetterNames by remember { mutableStateOf(false) }
-    var isArpeggiated by remember { mutableStateOf(false) }
-    var arpeggioStepMs by remember { mutableStateOf(80f) }
     var quizTempoPercent by remember(selectedSong?.slug) { mutableStateOf(100f) }
     var quizArpeggioOptionIndex by remember(selectedSong?.slug) {
         mutableStateOf(DEFAULT_QUIZ_ARPEGGIO_OPTION_INDEX)
@@ -880,10 +878,6 @@ internal fun MainScreen(
                     onSectionChange = { selectedSectionId = it },
                     showLetterNames = showLetterNames,
                     onShowLetterNamesChange = { showLetterNames = it },
-                    isArpeggiated = isArpeggiated,
-                    onArpeggiatedChange = { isArpeggiated = it },
-                    arpeggioStepMs = arpeggioStepMs,
-                    onArpeggioStepMsChange = { arpeggioStepMs = it },
                     onBack = returnToParent
                 )
             }
