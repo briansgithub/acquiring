@@ -2,6 +2,7 @@ package com.acquiring.android
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.ActivityNotFoundException
 import android.graphics.Paint
 import android.graphics.Typeface
@@ -117,6 +118,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (resources.getBoolean(R.bool.lock_phone_portrait)) {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        }
         enableEdgeToEdge()
 
         AppAudioOutput.initialize(this)
