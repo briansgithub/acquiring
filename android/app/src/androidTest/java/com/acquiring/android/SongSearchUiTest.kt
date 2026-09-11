@@ -111,13 +111,13 @@ class SongSearchUiTest {
         waitForText("All Star")
         composeRule.onNodeWithText("All Star").performClick()
         waitForText("Play")
-        composeRule.onNodeWithText("smash mouth").performClick()
+        composeRule.onNodeWithText("Smash Mouth").performClick()
         waitForText("All Star")
         composeRule.onNodeWithText("All Star").performClick()
         waitForText("Play")
         composeRule.onNodeWithText("< Back").performClick()
         waitForText("All Star")
-        composeRule.onNodeWithText("smash mouth").assertIsDisplayed()
+        composeRule.onNodeWithText("Smash Mouth").assertIsDisplayed()
         composeRule.onNodeWithTag(QUIZ_INFO_BUTTON_TEST_TAG).assertDoesNotExist()
     }
 

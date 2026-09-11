@@ -93,9 +93,8 @@ fun QuizDestination(
     var isSimpleMode by remember { mutableStateOf(false) }
     var useRelativeIonianContext by remember { mutableStateOf(false) }
     var quizKeyDisplay by remember { mutableStateOf<QuizKeyDisplay?>(null) }
-    val canonicalArtist = song.artist
-        ?.takeIf { it.isNotBlank() }
-        ?.let(::canonicalArtistName)
+    val quizArtistLabel = song.artist?.takeIf { it.isNotBlank() }?.let { song.displayArtist }
+    val quizArtistQuery = song.artist?.takeIf { it.isNotBlank() }?.let(::canonicalArtistName)
 
     val transposePickerComposable: @Composable () -> Unit = {
         QuizTransposeMenu(globalTranspose, onTransposeChange)
@@ -165,18 +164,20 @@ fun QuizDestination(
                 ) {
                     if (!isSimpleMode) {
                         Text(
-                            text = song.title ?: "Unknown Title",
+                            text = song.displayTitle,
                             style = MaterialTheme.typography.bodySmall,
                             maxLines = 1
                         )
-                        canonicalArtist?.let { artist ->
+                        if (quizArtistLabel != null && quizArtistQuery != null) {
                             Text(" by ", style = MaterialTheme.typography.bodySmall)
                             TextButton(
-                                onClick = { onArtistClick(artist) },
+                                onClick = { onArtistClick(quizArtistQuery) },
                                 contentPadding = PaddingValues(0.dp),
-                                modifier = Modifier.height(28.dp)
+                                modifier = Modifier
+                                    .height(28.dp)
+                                    .semantics { contentDescription = quizArtistLabel }
                             ) {
-                                Text(text = artist, style = MaterialTheme.typography.bodySmall, maxLines = 1)
+                                Text(text = quizArtistLabel, style = MaterialTheme.typography.bodySmall, maxLines = 1)
                             }
                         }
                     }
