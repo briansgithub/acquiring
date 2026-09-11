@@ -43,7 +43,8 @@ data class SongBrowseMode(
 data class SongBrowseRow(
     val slug: String,
     val artist: String?,
-    val title: String?
+    val title: String?,
+    val complexityRating: Double? = null
 )
 
 data class SongBrowseGroupCount(
