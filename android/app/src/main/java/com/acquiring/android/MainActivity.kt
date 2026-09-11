@@ -240,6 +240,7 @@ internal fun MainScreen(
     var isArtistPaging by remember { mutableStateOf(false) }
     var browseOpenJob by remember { mutableStateOf<Job?>(null) }
     var catalogAutoInstallStarted by remember { mutableStateOf(false) }
+    var playUpdateStatus by remember { mutableStateOf(PlayUpdateStatus.UNAVAILABLE) }
     
     val scope = rememberCoroutineScope()
     val context = androidx.compose.ui.platform.LocalContext.current
@@ -293,6 +294,9 @@ internal fun MainScreen(
             catalogAutoInstallStarted = true
             downloadCatalog()
         }
+    }
+    LaunchedEffect(Unit) {
+        playUpdateStatus = checkPlayUpdateStatus(context)
     }
     val microphonePitchCoordinator = remember(context.applicationContext) {
         MicrophonePitchCoordinator(MicrophonePitchTracker(context.applicationContext))
@@ -596,6 +600,10 @@ internal fun MainScreen(
                     catalogStatus = catalogStatus,
                     catalogFreshness = CatalogAutoInstall.lastRefreshLabel(context),
                     onUpdateCatalog = downloadCatalog,
+                    playUpdateStatus = playUpdateStatus,
+                    onOpenPlayUpdate = {
+                        openUpdateDistribution(context)
+                    },
                     onBack = { isShowingSettings = false }
                 )
             } else if (selectedSongSections == null) {
@@ -636,7 +644,13 @@ internal fun MainScreen(
                             onClick = { isShowingSettings = true },
                             modifier = Modifier.semantics { contentDescription = "Open settings" }
                         ) {
-                            Text("Settings")
+                            Text(
+                                if (playUpdateStatus == PlayUpdateStatus.UPDATE_AVAILABLE) {
+                                    "Settings •"
+                                } else {
+                                    "Settings"
+                                }
+                            )
                         }
                     }
                     LibraryView(
