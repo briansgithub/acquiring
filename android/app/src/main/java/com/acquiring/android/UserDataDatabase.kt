@@ -19,7 +19,13 @@ import androidx.sqlite.db.SupportSQLiteDatabase
  * close this database when the catalog is replaced.
  */
 @Database(
-    entities = [Playlist::class, PlaylistEntry::class, HarvestedSong::class, HarvestLedgerMeta::class],
+    entities = [
+        Playlist::class,
+        PlaylistEntry::class,
+        HarvestedSong::class,
+        HarvestLedgerMeta::class,
+        SongOctaveOffset::class
+    ],
     version = UserDataDatabase.SCHEMA_VERSION
 )
 abstract class UserDataDatabase : RoomDatabase() {
@@ -27,8 +33,10 @@ abstract class UserDataDatabase : RoomDatabase() {
 
     abstract fun harvestLedgerDao(): HarvestLedgerDao
 
+    abstract fun songOctaveOffsetDao(): SongOctaveOffsetDao
+
     companion object {
-        const val SCHEMA_VERSION = 2
+        const val SCHEMA_VERSION = 3
 
         /** Deliberately distinct from [AppDatabase.DB_NAME]. */
         const val DB_NAME = "acquiring-user-db"
@@ -37,7 +45,7 @@ abstract class UserDataDatabase : RoomDatabase() {
          * Adds the manual-harvest ledger. A real migration rather than a
          * destructive one: playlists in this file predate it and must survive.
          */
-        val MIGRATION_1_2 = object : Migration(1, SCHEMA_VERSION) {
+        val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL(
                     """
@@ -61,6 +69,20 @@ abstract class UserDataDatabase : RoomDatabase() {
                         `key` TEXT NOT NULL,
                         `value` TEXT NOT NULL,
                         PRIMARY KEY(`key`)
+                    )
+                    """
+                )
+            }
+        }
+
+        val MIGRATION_2_3 = object : Migration(2, SCHEMA_VERSION) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `song_octave_offsets` (
+                        `slug` TEXT NOT NULL,
+                        `offset` INTEGER NOT NULL,
+                        PRIMARY KEY(`slug`)
                     )
                     """
                 )

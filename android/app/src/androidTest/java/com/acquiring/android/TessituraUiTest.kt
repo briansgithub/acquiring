@@ -46,8 +46,7 @@ class TessituraUiTest {
 
     @Test
     fun targetSlotsRenderVectorScaleDegreesAndAdjustedHints() {
-        // Anchored at C3, the pair moves down an octave to C3 and G3.
-        setHummingContent(comfortablePitchMidi = 48.0)
+        setHummingContent(octaveOffset = -1)
 
         composeTestRule.onNodeWithContentDescription("Scale degree flat 3").assertExists()
         composeTestRule.onNodeWithContentDescription("Scale degree sharp 4").assertExists()
@@ -64,10 +63,8 @@ class TessituraUiTest {
     }
 
     @Test
-    fun anAnchorThatLeavesTheRegisterAloneDoesNotMarkTheSlotsAdjusted() {
-        // Anchored at C4, the pair is already in the register it would be moved
-        // to, so nothing about it has been adjusted.
-        setHummingContent(comfortablePitchMidi = 60.0)
+    fun writtenOctaveDoesNotMarkTheSlotsAdjusted() {
+        setHummingContent(octaveOffset = 0)
 
         composeTestRule.onAllNodes(
             SemanticsMatcher.expectValue(
@@ -120,105 +117,29 @@ class TessituraUiTest {
     }
 
     @Test
-    fun calibrationCardOpensAndCancelsFromTheTessituraControl() {
-        val pitchSource = FakePitchSource()
-        composeTestRule.setContent {
-            MaterialTheme {
-                TessituraControl(
-                    comfortablePitchMidi = null,
-                    canCalibrate = true,
-                    pitchSource = pitchSource,
-                    recordAudioPermissionOverride = true
-                )
-            }
-        }
-        composeTestRule.mainClock.autoAdvance = false
-
-        composeTestRule.onNodeWithContentDescription(
-            "Match target pitch to your comfortable singing tessitura. Hum a note to calibrate. Song and source-object playback are unaffected; target previews follow this setting."
-        ).performClick()
-        composeTestRule.mainClock.advanceTimeByFrame()
-        composeTestRule.onNodeWithTag(TESSITURA_CALIBRATION_MODAL_TEST_TAG).assertExists()
-        composeTestRule.onNodeWithTag(TESSITURA_CALIBRATION_CARD_TEST_TAG).assertExists()
-
-        composeTestRule.onNodeWithText("Cancel").performClick()
-        composeTestRule.mainClock.advanceTimeByFrame()
-        composeTestRule.onNodeWithTag(TESSITURA_CALIBRATION_CARD_TEST_TAG).assertDoesNotExist()
-    }
-
-    @Test
-    fun pillOffersNothingToClearUntilAPitchHasBeenRecorded() {
-        composeTestRule.setContent {
-            MaterialTheme {
-                TessituraControl(
-                    comfortablePitchMidi = null,
-                    canCalibrate = true,
-                    pitchSource = FakePitchSource(),
-                    recordAudioPermissionOverride = true
-                )
-            }
-        }
-
-        composeTestRule.onNodeWithText("Set Tessitura").assertExists()
-        composeTestRule.onNodeWithText("Clear").assertDoesNotExist()
-        composeTestRule.onNodeWithTag(TESSITURA_ACTIVE_DOT_TEST_TAG).assertDoesNotExist()
-    }
-
-    @Test
-    fun pillShowsTheDotAndClearsTheAnchorOnDemand() {
-        val anchor = mutableStateOf<Double?>(57.0) // A3
-        composeTestRule.setContent {
-            MaterialTheme {
-                TessituraControl(
-                    comfortablePitchMidi = anchor.value,
-                    canCalibrate = true,
-                    onClearAdjustment = { anchor.value = null },
-                    pitchSource = FakePitchSource(),
-                    recordAudioPermissionOverride = true
-                )
-            }
-        }
-
-        composeTestRule.onNodeWithTag(TESSITURA_ACTIVE_DOT_TEST_TAG).assertExists()
-        composeTestRule.onNodeWithText("Clear").assertExists()
-
-        composeTestRule.onNodeWithContentDescription("Clear tessitura anchor").performClick()
-        composeTestRule.runOnIdle { assertEquals(null, anchor.value) }
-
-        composeTestRule.onNodeWithText("Clear").assertDoesNotExist()
-        composeTestRule.onNodeWithTag(TESSITURA_ACTIVE_DOT_TEST_TAG).assertDoesNotExist()
-    }
-
-    @Test
-    fun pillNoLongerOffersTheOctaveStepper() {
-        composeTestRule.setContent {
-            MaterialTheme {
-                TessituraControl(
-                    comfortablePitchMidi = 57.0,
-                    canCalibrate = true,
-                    pitchSource = FakePitchSource(),
-                    recordAudioPermissionOverride = true
-                )
-            }
-        }
-
+    fun dockOffersStopAndOctaveShifterWithoutStartingTheMic() {
+        setHummingContent(autoListen = false)
+        composeTestRule.onNodeWithTag(SINGING_STOP_TEST_TAG).assertExists()
+        composeTestRule.onNodeWithTag(SINGING_OCTAVE_SHIFTER_TEST_TAG, useUnmergedTree = true)
+            .assertExists()
+        composeTestRule.onNodeWithContentDescription("Written octave").assertExists()
+        composeTestRule.onNodeWithContentDescription("Singing octave offset -2").assertExists()
+        composeTestRule.onNodeWithContentDescription("Singing octave offset +3").assertExists()
         composeTestRule
             .onNodeWithContentDescription("Raise tessitura shift by one octave")
             .assertDoesNotExist()
-        composeTestRule
-            .onNodeWithContentDescription("Lower tessitura shift by one octave")
-            .assertDoesNotExist()
     }
 
     @Test
-    fun clearingTheTessituraKeepsLoadedTargets() {
-        val anchor = mutableStateOf<Double?>(48.0)
+    fun changingOffsetKeepsLoadedTargetsAndMarksThemAdjusted() {
+        val offset = mutableStateOf(0)
         val pitchSource = FakePitchSource()
         composeTestRule.setContent {
             MaterialTheme {
                 HummingIntervalPopup(
                     targetRequest = targetRequest,
-                    comfortablePitchMidi = anchor.value,
+                    octaveOffset = offset.value,
+                    onOctaveOffsetChange = { offset.value = it },
                     pitchSource = pitchSource,
                     autoListenOnTargetLoad = false,
                     recordAudioPermissionOverride = true
@@ -226,29 +147,21 @@ class TessituraUiTest {
             }
         }
 
-        composeTestRule.runOnIdle { anchor.value = null }
-        composeTestRule.waitForIdle()
-
+        composeTestRule.onNodeWithContentDescription("Singing octave offset -1").performClick()
+        composeTestRule.runOnIdle { assertEquals(-1, offset.value) }
         composeTestRule.onNodeWithContentDescription("Scale degree flat 3").assertExists()
-        composeTestRule.onAllNodes(
-            SemanticsMatcher.expectValue(
-                SemanticsProperties.StateDescription,
-                "Original target octave"
-            ),
-            useUnmergedTree = true
-        ).assertCountEquals(2)
     }
 
     @Test
-    fun targetAutoListenStartsOnceAndRetargetsOnlyAfterTheAnchorChanges() {
-        val anchor = mutableStateOf<Double?>(null)
+    fun targetAutoListenStartsOnceAndRetargetsOnlyAfterTheOffsetChanges() {
+        val offset = mutableStateOf(0)
         val pitchSource = FakePitchSource()
         composeTestRule.mainClock.autoAdvance = false
         composeTestRule.setContent {
             MaterialTheme {
                 HummingIntervalPopup(
                     targetRequest = targetRequest,
-                    comfortablePitchMidi = anchor.value,
+                    octaveOffset = offset.value,
                     pitchSource = pitchSource,
                     autoListenOnTargetLoad = true,
                     recordAudioPermissionOverride = true
@@ -259,7 +172,7 @@ class TessituraUiTest {
         composeTestRule.mainClock.advanceTimeBy(850)
         composeTestRule.runOnIdle { assertEquals(1, pitchSource.startCount) }
 
-        composeTestRule.runOnIdle { anchor.value = 48.0 }
+        composeTestRule.runOnIdle { offset.value = -1 }
         composeTestRule.mainClock.advanceTimeByFrame()
         composeTestRule.runOnIdle { assertEquals(2, pitchSource.startCount) }
     }
@@ -279,17 +192,18 @@ class TessituraUiTest {
     }
 
     private fun setHummingContent(
-        comfortablePitchMidi: Double? = null,
+        octaveOffset: Int = 0,
         request: SingingTargetRequest? = targetRequest,
-        pitchSource: FakePitchSource = FakePitchSource()
+        pitchSource: FakePitchSource = FakePitchSource(),
+        autoListen: Boolean = false
     ) {
         composeTestRule.setContent {
             MaterialTheme {
                 HummingIntervalPopup(
                     targetRequest = request,
-                    comfortablePitchMidi = comfortablePitchMidi,
+                    octaveOffset = octaveOffset,
                     pitchSource = pitchSource,
-                    autoListenOnTargetLoad = false,
+                    autoListenOnTargetLoad = autoListen,
                     recordAudioPermissionOverride = true
                 )
             }

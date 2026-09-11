@@ -6,85 +6,39 @@ import org.junit.Test
 
 class TessituraSessionViewModelTest {
     @Test
-    fun reenteringSameSessionRetainsAnchorAndContinuity() {
+    fun reenteringSameSessionKeepsTheOffset() {
         val state = TessituraSessionViewModel()
-        state.enterSession("song-a:verse")
-        state.updateComfortablePitch(57.0)
-        state.updateContinuity(source = 60, target = 48)
+        state.enterSession("song-a", "song-a:verse")
+        state.updateOctaveOffset(-1)
 
-        state.enterSession("song-a:verse")
+        state.enterSession("song-a", "song-a:verse")
 
-        assertEquals(57.0, state.comfortablePitchMidi)
-        assertEquals(60, state.lastSourceMidi)
-        assertEquals(48, state.lastTargetMidi)
-    }
-
-    @Test
-    fun aDifferentSectionEndsTheSequenceButKeepsTheSingersAnchor() {
-        val state = TessituraSessionViewModel()
-        state.enterSession("song-a:verse")
-        state.updateComfortablePitch(57.0)
-        state.updateContinuity(source = 60, target = 48)
-
-        state.enterSession("song-a:chorus")
-
-        // The anchor belongs to the singer, the contour to the section.
-        assertEquals(57.0, state.comfortablePitchMidi)
-        assertNull(state.lastSourceMidi)
-        assertNull(state.lastTargetMidi)
-    }
-
-    @Test
-    fun recordingANewPitchDiscardsRegistersChosenAgainstTheOldOne() {
-        val state = TessituraSessionViewModel()
-        state.enterSession("song-a:verse")
-        state.updateComfortablePitch(57.0)
-        state.updateContinuity(source = 60, target = 48)
-
-        state.updateComfortablePitch(64.0)
-
-        assertEquals(64.0, state.comfortablePitchMidi)
-        assertNull(state.lastSourceMidi)
-        assertNull(state.lastTargetMidi)
-    }
-
-    @Test
-    fun aCalibrationArrivingWithoutASessionIsStillKept() {
-        val state = TessituraSessionViewModel()
-
-        state.updateComfortablePitch(57.0)
-
-        assertEquals(57.0, state.comfortablePitchMidi)
-        assertNull(state.sessionKey)
-    }
-
-    @Test
-    fun clearOnlyResetsTheTessituraAndLeavesTheSessionInPlace() {
-        val state = TessituraSessionViewModel()
-        state.enterSession("song-a:verse")
-        state.updateComfortablePitch(57.0)
-        state.updateContinuity(source = 60, target = 48)
-
-        state.clearAdjustment()
-
-        assertNull(state.comfortablePitchMidi)
-        assertNull(state.lastSourceMidi)
-        assertNull(state.lastTargetMidi)
+        assertEquals(-1, state.octaveOffset)
         assertEquals("song-a:verse", state.sessionKey)
     }
 
     @Test
-    fun leavingTheSongClearsEverything() {
+    fun offsetIsClampedToTheAgreedRange() {
         val state = TessituraSessionViewModel()
-        state.enterSession("song-a:verse")
-        state.updateComfortablePitch(57.0)
-        state.updateContinuity(source = 60, target = 48)
+        state.enterSession("song-a", "song-a:verse")
+        state.updateOctaveOffset(-8)
+        assertEquals(OCTAVE_OFFSET_MIN, state.octaveOffset)
+        state.updateOctaveOffset(9)
+        assertEquals(OCTAVE_OFFSET_MAX, state.octaveOffset)
+        state.updateOctaveOffset(0)
+        assertEquals(0, state.octaveOffset)
+    }
+
+    @Test
+    fun leavingTheSongClearsTheSession() {
+        val state = TessituraSessionViewModel()
+        state.enterSession("song-a", "song-a:verse")
+        state.updateOctaveOffset(2)
 
         state.clearSession()
 
         assertNull(state.sessionKey)
-        assertNull(state.comfortablePitchMidi)
-        assertNull(state.lastSourceMidi)
-        assertNull(state.lastTargetMidi)
+        assertNull(state.songSlug)
+        assertEquals(0, state.octaveOffset)
     }
 }

@@ -215,19 +215,8 @@ internal data class ResolvedPersistentPitchTarget(
 ) {
     fun effectiveTargetMidi(
         globalTranspose: Int,
-        comfortablePitchMidi: Double?,
-        lastSourceMidi: Int? = null,
-        lastTargetMidi: Int? = null
-    ): Int {
-        val source = sourceMidi + globalTranspose
-        if (comfortablePitchMidi == null) return source
-        return TessituraResolver.resolveTarget(
-            source,
-            comfortablePitchMidi,
-            lastSourceMidi,
-            lastTargetMidi
-        )
-    }
+        octaveOffset: Int
+    ): Int = sourceMidi + globalTranspose + singingOctaveSemitones(octaveOffset)
 }
 
 internal fun resolvePersistentPitchTarget(
