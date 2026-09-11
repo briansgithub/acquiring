@@ -57,7 +57,7 @@ class QuizTransportSelectorsUiTest {
         )
         var song by mutableStateOf(song("first-song", "First Song"))
         var selectedSectionId by mutableStateOf("verse")
-        var currentTab by mutableStateOf(2)
+        var showingQuiz by mutableStateOf(true)
         var transpose by mutableStateOf(0)
         var tempoPercent by mutableStateOf(100f)
         var arpeggioOptionIndex by mutableStateOf(DEFAULT_QUIZ_ARPEGGIO_OPTION_INDEX)
@@ -66,45 +66,54 @@ class QuizTransportSelectorsUiTest {
         composeTestRule.setContent {
             val currentWaveform by AppInstrumentSession.sessionInstrument.collectAsState()
             MaterialTheme {
-                SongDetailView(
-                    song = song,
-                    sections = sections,
-                    selectedSectionId = selectedSectionId,
-                    onSectionChange = { selectedSectionId = it },
-                    currentTab = currentTab,
-                    onTabChange = { currentTab = it },
-                    showLetterNames = false,
-                    onShowLetterNamesChange = {},
-                    isArpeggiated = false,
-                    onArpeggiatedChange = {},
-                    arpeggioStepMs = 160f,
-                    onArpeggioStepMsChange = {},
-                    currentWaveform = currentWaveform,
-                    onWaveformChange = AppInstrumentSession::selectForSession,
-                    globalTranspose = transpose,
-                    quizTempoPercent = tempoPercent,
-                    onQuizTempoPercentChange = { tempoPercent = it },
-                    quizArpeggioOptionIndex = arpeggioOptionIndex,
-                    onQuizArpeggioOptionIndexChange = { arpeggioOptionIndex = it },
-                    onTransposeChange = {
-                        transpose = it
-                        AudioEngine.globalTranspose = it
-                    },
-                    quizPlayButtonXFraction = Float.NaN,
-                    quizPlayButtonYFraction = Float.NaN,
-                    onQuizPlayButtonPositionChange = { _, _ -> },
-                    onArtistClick = {},
-                    onSingingTargetsRequested = {},
-                    comfortablePitchMidi = null,
-                    lastSourceMidi = null,
-                    lastTargetMidi = null,
-                    onUpdateContinuity = { _, _ -> },
-                    tessituraControl = {},
-                    persistentPitchSource = pitchSource,
-                    isFavorite = false,
-                    onToggleFavorite = {},
-                    onBack = { currentTab = 2 }
-                )
+                if (showingQuiz) {
+                    QuizDestination(
+                        song = song,
+                        sections = sections,
+                        selectedSectionId = selectedSectionId,
+                        onSectionChange = { selectedSectionId = it },
+                        currentWaveform = currentWaveform,
+                        onWaveformChange = AppInstrumentSession::selectForSession,
+                        globalTranspose = transpose,
+                        quizTempoPercent = tempoPercent,
+                        onQuizTempoPercentChange = { tempoPercent = it },
+                        quizArpeggioOptionIndex = arpeggioOptionIndex,
+                        onQuizArpeggioOptionIndexChange = { arpeggioOptionIndex = it },
+                        onTransposeChange = {
+                            transpose = it
+                            AudioEngine.globalTranspose = it
+                        },
+                        quizPlayButtonXFraction = Float.NaN,
+                        quizPlayButtonYFraction = Float.NaN,
+                        onQuizPlayButtonPositionChange = { _, _ -> },
+                        onArtistClick = {},
+                        onShowSongInfo = { showingQuiz = false },
+                        onSingingTargetsRequested = {},
+                        comfortablePitchMidi = null,
+                        lastSourceMidi = null,
+                        lastTargetMidi = null,
+                        onUpdateContinuity = { _, _ -> },
+                        tessituraControl = {},
+                        persistentPitchSource = pitchSource,
+                        isFavorite = false,
+                        onToggleFavorite = {},
+                        onBack = { showingQuiz = true }
+                    )
+                } else {
+                    SongDetailView(
+                        song = song,
+                        sections = sections,
+                        selectedSectionId = selectedSectionId,
+                        onSectionChange = { selectedSectionId = it },
+                        showLetterNames = false,
+                        onShowLetterNamesChange = {},
+                        isArpeggiated = false,
+                        onArpeggiatedChange = {},
+                        arpeggioStepMs = 160f,
+                        onArpeggioStepMsChange = {},
+                        onBack = { showingQuiz = true }
+                    )
+                }
             }
         }
         waitForQuiz()
@@ -146,7 +155,7 @@ class QuizTransportSelectorsUiTest {
         assertFalse(QuizPlaybackController.isPlaybackRequested)
         val retainedBeat = QuizPlaybackController.state.value.beat
 
-        composeTestRule.onNodeWithText("Quiz").performClick()
+        composeTestRule.onNodeWithText("< Back").performClick()
         waitForQuiz()
         assertFalse(QuizPlaybackController.isPlaybackRequested)
         assertTrue(abs(QuizPlaybackController.state.value.beat - retainedBeat) < 0.001)
