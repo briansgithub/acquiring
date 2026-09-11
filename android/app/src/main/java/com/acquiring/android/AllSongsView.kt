@@ -1,10 +1,13 @@
 package com.acquiring.android
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -397,7 +400,14 @@ fun AllSongsView(
             }
         }
 
+        val subgroups = remember(runtimeState.visibleSongs) {
+            BrowseSubgrouping.subgroups(runtimeState.visibleSongs)
+        }
+        val jumpTargets = remember(subgroups) {
+            BrowseSubgrouping.condensed(BrowseSubgrouping.jumpTargets(subgroups), 14)
+        }
         key(sortMode, expandedGroupKey) {
+            Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn(
                 state = runtimeState.listState,
                 modifier = Modifier.fillMaxSize()
@@ -504,29 +514,90 @@ fun AllSongsView(
                         )
                     }
                 } else if (isExpanded) {
-                    items(
-                        items = runtimeState.visibleSongs,
-                        key = { song -> "${sortMode.name}:${group.key}:${song.slug}" }
-                    ) { song ->
-                        Card(
-                            onClick = { onSongClick(song) },
-                            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp, horizontal = 8.dp)
-                        ) {
-                            Column(modifier = Modifier.padding(10.dp)) {
+                    val songsBySubgroup = if (subgroups.isEmpty()) {
+                        listOf(null to runtimeState.visibleSongs)
+                    } else {
+                        subgroups.map { it to it.songs }
+                    }
+                    songsBySubgroup.forEach { (subgroup, songs) ->
+                        if (subgroup != null) {
+                            item(key = "${sortMode.name}:${group.key}:sub:${subgroup.id}") {
                                 Text(
-                                    text = song.displayTitle,
-                                    style = MaterialTheme.typography.bodyLarge
+                                    text = subgroup.label,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                                        .testTag("AllSongsSubgroup-${subgroup.key}")
                                 )
-                                Text(
-                                    text = song.displayArtist,
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
+                            }
+                        }
+                        items(
+                            items = songs,
+                            key = { song -> "${sortMode.name}:${group.key}:${song.slug}" }
+                        ) { song ->
+                            Card(
+                                onClick = { onSongClick(song) },
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp, horizontal = 8.dp)
+                            ) {
+                                Column(modifier = Modifier.padding(10.dp)) {
+                                    Text(
+                                        text = song.displayTitle,
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                    Text(
+                                        text = song.displayArtist,
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                    if (sortMode == AllSongsSortMode.COMPLEXITY && song.complexityRating != null) {
+                                        Text(
+                                            text = "%.1f".format(song.complexityRating),
+                                            style = MaterialTheme.typography.labelMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
-        }
+            }
+            if (jumpTargets.isNotEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .fillMaxHeight()
+                        .padding(end = 4.dp),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    jumpTargets.forEach { target ->
+                        Text(
+                            text = target.label,
+                            style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier
+                                .clickable {
+                                    scope.launch {
+                                        val before = groups.indexOfFirst { it.key == expandedGroupKey }
+                                            .coerceAtLeast(0)
+                                        val index = BrowseSubgrouping.indexOfSubgroup(
+                                            before,
+                                            subgroups,
+                                            target.id
+                                        )
+                                        if (index != null) {
+                                            runtimeState.listState.animateScrollToItem(index)
+                                        }
+                                    }
+                                }
+                                .padding(vertical = 2.dp, horizontal = 4.dp)
+                                .testTag("AllSongsScrubber-${target.key}")
+                        )
+                    }
+                }
+            }
+            }
         }
     }
 }

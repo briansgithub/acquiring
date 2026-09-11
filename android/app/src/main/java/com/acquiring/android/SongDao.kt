@@ -66,7 +66,7 @@ interface SongDao {
 
     @Query(
         """
-        SELECT slug, artist, title
+        SELECT slug, artist, title, NULL AS complexityRating
         FROM songs
         WHERE """ + LOADABLE_SQL + """
           AND REPLACE(title, '-', ' ') LIKE '%' || REPLACE(TRIM(:query), '-', ' ') || '%'
@@ -81,7 +81,7 @@ interface SongDao {
 
     @Query(
         """
-        SELECT slug, artist, title
+        SELECT slug, artist, title, NULL AS complexityRating
         FROM songs
         WHERE """ + LOADABLE_SQL + """
           AND REPLACE(artist, '-', ' ') LIKE '%' || REPLACE(TRIM(:query), '-', ' ') || '%'
@@ -96,7 +96,7 @@ interface SongDao {
 
     @Query(
         """
-        SELECT slug, artist, title
+        SELECT slug, artist, title, NULL AS complexityRating
         FROM songs
         WHERE """ + LOADABLE_SQL + """
           AND REPLACE(artist, '-', ' ') = REPLACE(:artistName, '-', ' ')
@@ -110,7 +110,7 @@ interface SongDao {
 
     @Query(
         """
-        SELECT slug, artist, title
+        SELECT slug, artist, title, NULL AS complexityRating
         FROM songs
         WHERE """ + LOADABLE_SQL + """
           AND (
@@ -143,7 +143,7 @@ interface SongDao {
     )
     suspend fun getArtistSuggestions(query: String, limit: Int = 20, offset: Int = 0): List<String>
 
-    @Query("SELECT slug, artist, title FROM songs WHERE slug IN (:slugs)")
+    @Query("SELECT slug, artist, title, NULL AS complexityRating FROM songs WHERE slug IN (:slugs)")
     suspend fun getBrowseSongsBySlugs(slugs: List<String>): List<SongBrowseRow>
 
     @Query(
@@ -204,7 +204,7 @@ interface SongDao {
 
     @Query(
         """
-        SELECT slug, artist, title
+        SELECT slug, artist, title, complexityRating
         FROM song_browse_entries
         WHERE alphaGroup = :groupKey AND """ + BROWSE_FILTER_SQL + """
         ORDER BY
@@ -221,7 +221,7 @@ interface SongDao {
 
     @Query(
         """
-        SELECT slug, artist, title
+        SELECT slug, artist, title, complexityRating
         FROM song_browse_entries
         WHERE complexityBucket = :bucket AND """ + BROWSE_FILTER_SQL + """
         ORDER BY
@@ -238,7 +238,7 @@ interface SongDao {
 
     @Query(
         """
-        SELECT slug, artist, title
+        SELECT slug, artist, title, complexityRating
         FROM song_browse_entries
         WHERE complexityBucket IS NULL AND """ + BROWSE_FILTER_SQL + """
         ORDER BY
@@ -252,7 +252,7 @@ interface SongDao {
 
     @Query(
         """
-        SELECT entries.slug, entries.artist, entries.title
+        SELECT entries.slug, entries.artist, entries.title, entries.complexityRating
         FROM song_browse_entries AS entries
         INNER JOIN song_browse_modes AS modes ON modes.slug = entries.slug
         WHERE modes.mode = :mode AND """ + BROWSE_FILTER_SQL + """
