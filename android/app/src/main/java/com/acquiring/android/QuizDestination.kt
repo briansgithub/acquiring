@@ -1,7 +1,10 @@
 package com.acquiring.android
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,6 +19,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Surface
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -86,8 +91,17 @@ fun QuizDestination(
     var isSimpleMode by remember { mutableStateOf(false) }
     var useRelativeIonianContext by remember { mutableStateOf(false) }
     var quizKeyDisplay by remember { mutableStateOf<QuizKeyDisplay?>(null) }
+    var showTitleSheet by remember { mutableStateOf(false) }
+    var showQuizHelp by remember { mutableStateOf(false) }
     val quizArtistLabel = song.artist?.takeIf { it.isNotBlank() }?.let { song.displayArtist }
     val quizArtistQuery = song.artist?.takeIf { it.isNotBlank() }?.let(::canonicalArtistName)
+    val quizTitleText = buildString {
+        append(song.displayTitle)
+        if (quizArtistLabel != null) {
+            append(" by ")
+            append(quizArtistLabel)
+        }
+    }
 
     val transposePickerComposable: @Composable () -> Unit = {
         QuizTransposeMenu(globalTranspose, onTransposeChange)
@@ -133,6 +147,7 @@ fun QuizDestination(
         }
     }
 
+    Box(modifier = Modifier.fillMaxSize()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -157,26 +172,23 @@ fun QuizDestination(
                 ) {
                     if (!isSimpleMode) {
                         Text(
-                            text = song.displayTitle,
+                            text = quizTitleText,
                             style = MaterialTheme.typography.bodySmall,
-                            maxLines = 1
+                            maxLines = 1,
+                            modifier = Modifier
+                                .clickable { showTitleSheet = true }
+                                .semantics { contentDescription = "Quiz title" }
                         )
-                        if (quizArtistLabel != null && quizArtistQuery != null) {
-                            Text(" by ", style = MaterialTheme.typography.bodySmall)
-                            TextButton(
-                                onClick = { onArtistClick(quizArtistQuery) },
-                                contentPadding = PaddingValues(0.dp),
-                                modifier = Modifier
-                                    .height(28.dp)
-                                    .semantics { contentDescription = quizArtistLabel }
-                            ) {
-                                Text(text = quizArtistLabel, style = MaterialTheme.typography.bodySmall, maxLines = 1)
-                            }
-                        }
                     }
                 }
 
                 Row(modifier = Modifier.align(Alignment.CenterEnd)) {
+                    IconButton(
+                        onClick = { showQuizHelp = true },
+                        modifier = Modifier.size(48.dp).semantics { contentDescription = "Quiz help" }
+                    ) {
+                        Text("?", style = MaterialTheme.typography.titleMedium)
+                    }
                     IconButton(
                         onClick = onShowSongInfo,
                         modifier = Modifier.size(48.dp).testTag(QUIZ_INFO_BUTTON_TEST_TAG)
@@ -277,5 +289,44 @@ fun QuizDestination(
             sessionKey = "${song.slug}:${selectedSectionKey.orEmpty()}",
             persistentPitchSource = persistentPitchSource
         )
+    }
+        if (showQuizHelp) {
+            Surface(
+                color = MaterialTheme.colorScheme.scrim.copy(alpha = 0.72f),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable { showQuizHelp = false }
+                    .semantics { contentDescription = "Quiz help overlay" }
+            ) {
+                Column(modifier = Modifier.padding(24.dp)) {
+                    Text("Quiz help", style = MaterialTheme.typography.titleLarge)
+                    Text(
+                        "Tap a card to hear it. Double-tap to sing it back. Hold for live pitch practice.",
+                        modifier = Modifier.padding(top = 12.dp)
+                    )
+                    Text(
+                        "The singing dock’s octave shifter moves targets only. Expand the dock from its handle without starting the microphone.",
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                    Text(
+                        "Tap anywhere to dismiss without activating a control.",
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+            }
+        }
+        if (showTitleSheet) {
+            ModalBottomSheet(onDismissRequest = { showTitleSheet = false }) {
+                SelectionContainer {
+                    Text(
+                        text = quizTitleText,
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp)
+                    )
+                }
+            }
+        }
     }
 }
