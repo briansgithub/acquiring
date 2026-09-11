@@ -100,10 +100,6 @@ class QuizTransportSelectorsUiTest {
                         onSectionChange = { selectedSectionId = it },
                         showLetterNames = false,
                         onShowLetterNamesChange = {},
-                        isArpeggiated = false,
-                        onArpeggiatedChange = {},
-                        arpeggioStepMs = 160f,
-                        onArpeggioStepMsChange = {},
                         onBack = { showingQuiz = true }
                     )
                 }

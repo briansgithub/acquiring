@@ -395,11 +395,7 @@ private fun ChordPill(
 fun ChordsTab(
     section: ExtractedSection,
     showLetterNames: Boolean,
-    onShowLetterNamesChange: (Boolean) -> Unit,
-    isArpeggiated: Boolean,
-    onArpeggiatedChange: (Boolean) -> Unit,
-    arpeggioStepMs: Float,
-    onArpeggioStepMsChange: (Float) -> Unit
+    onShowLetterNamesChange: (Boolean) -> Unit
 ) {
     val key = section.getParsedKey()
     val scope = rememberCoroutineScope()
@@ -410,9 +406,19 @@ fun ChordsTab(
         val intervals = MusicTheory.SCALE_INTERVALS[key.scale] ?: MusicTheory.SCALE_INTERVALS["major"]!!
         MusicTheory.generateScaleLabels(key.tonic, intervals)
     }
+    var selectedChord by remember { mutableStateOf<JsonObject?>(null) }
+    var rootOnlyTransitions by remember { mutableStateOf(false) }
+    val transitions = remember(section, rootOnlyTransitions) {
+        ChordTransitionRanking.transitions(section, rootOnlyTransitions)
+    }
+    val selectedTones = remember(selectedChord, key) {
+        selectedChord?.let { ChordInterpreter.getChordToneLabels(it, key) }.orEmpty()
+    }
+    val selectedNotes = remember(selectedChord, key) {
+        selectedChord?.let { ChordInterpreter.getChordNotes(it, key) }.orEmpty()
+    }
 
     Column(modifier = Modifier.padding(16.dp)) {
-        // Current Scale Header
         Text(
             text = "Scale: ${scaleNotes.joinToString(", ")}",
             style = MaterialTheme.typography.titleMedium,
@@ -426,75 +432,78 @@ fun ChordsTab(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text("Key: ${key.tonic} ${key.scale}", style = MaterialTheme.typography.titleMedium)
-            
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Letters", style = MaterialTheme.typography.bodySmall)
-                    Switch(
-                        checked = showLetterNames,
-                        onCheckedChange = onShowLetterNamesChange,
-                        modifier = Modifier.scale(0.7f)
-                    )
-                }
-
-                Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                    Text("Arpeggiate", style = MaterialTheme.typography.bodySmall)
-                    Switch(
-                        checked = isArpeggiated,
-                        onCheckedChange = onArpeggiatedChange,
-                        modifier = Modifier.scale(0.7f)
-                    )
-                }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Letters", style = MaterialTheme.typography.bodySmall)
+                Switch(
+                    checked = showLetterNames,
+                    onCheckedChange = onShowLetterNamesChange,
+                    modifier = Modifier.scale(0.7f)
+                )
             }
         }
-        
-        if (isArpeggiated) {
+
+        if (selectedTones.isNotEmpty()) {
+            Text(
+                text = "Chord tones",
+                style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
+            )
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(
-                    text = "Speed: ${arpeggioStepMs.toInt()} ms",
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.width(90.dp)
-                )
-                Slider(
-                    value = arpeggioStepMs,
-                    onValueChange = onArpeggioStepMsChange,
-                    valueRange = 30f..1000f,
-                    modifier = Modifier.weight(1f)
-                )
+                selectedTones.forEachIndexed { index, label ->
+                    val midi = selectedNotes.getOrNull(index)
+                    Surface(
+                        onClick = {
+                            if (midi != null) {
+                                scope.launch {
+                                    AudioEngine.playChord(listOf(midi), arpeggiate = false)
+                                }
+                            }
+                        },
+                        modifier = Modifier
+                            .height(56.dp)
+                            .width(56.dp)
+                            .semantics { contentDescription = "Preview chord tone $label" },
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            ScaleDegreeText(label = label, fontSize = 22.sp, modifier = Modifier.fillMaxSize())
+                        }
+                    }
+                }
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         LazyVerticalGrid(
             columns = GridCells.Adaptive(100.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.weight(1f, fill = false)
         ) {
             items(displayChords) { chord ->
                 val symbol = ChordInterpreter.getRomanSymbol(chord, key)
                 val romanDisplay = RomanNumeralDisplay.fromChord(symbol, chord["borrowed"])
                 val letterName = ChordInterpreter.getLetterName(chord, key)
+                val selected = selectedChord == chord
 
                 Card(
                     onClick = {
+                        selectedChord = chord
                         val notes = ChordInterpreter.getChordNotes(chord, key)
                         if (notes.isNotEmpty()) {
                             scope.launch {
-                                AudioEngine.playChord(notes, arpeggiate = isArpeggiated, stepMs = arpeggioStepMs.toInt())
+                                AudioEngine.playChord(notes, arpeggiate = false)
                             }
                         }
                     },
-                    modifier = Modifier.height(80.dp)
+                    modifier = Modifier
+                        .height(80.dp)
+                        .then(if (selected) Modifier.border(2.dp, MaterialTheme.colorScheme.primary) else Modifier)
                 ) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -514,6 +523,29 @@ fun ChordsTab(
                         }
                     }
                 }
+            }
+        }
+
+        if (transitions.isNotEmpty()) {
+            Text(
+                text = "Transitions",
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Root only", style = MaterialTheme.typography.bodySmall)
+                Switch(
+                    checked = rootOnlyTransitions,
+                    onCheckedChange = { rootOnlyTransitions = it },
+                    modifier = Modifier.scale(0.7f)
+                )
+            }
+            transitions.take(8).forEach { transition ->
+                Text(
+                    text = "${transition.id} ×${transition.count}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(vertical = 2.dp)
+                )
             }
         }
     }

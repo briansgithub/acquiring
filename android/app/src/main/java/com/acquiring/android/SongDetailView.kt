@@ -117,10 +117,6 @@ fun SongDetailView(
     onSectionChange: (String) -> Unit,
     showLetterNames: Boolean,
     onShowLetterNamesChange: (Boolean) -> Unit,
-    isArpeggiated: Boolean,
-    onArpeggiatedChange: (Boolean) -> Unit,
-    arpeggioStepMs: Float,
-    onArpeggioStepMsChange: (Float) -> Unit,
     onBack: () -> Unit
 ) {
     val sectionsInSongOrder = remember(sections) { sections.sectionsInSongOrder() }
@@ -216,11 +212,7 @@ fun SongDetailView(
                 else -> ChordsTab(
                     section = selectedSection,
                     showLetterNames = showLetterNames,
-                    onShowLetterNamesChange = onShowLetterNamesChange,
-                    isArpeggiated = isArpeggiated,
-                    onArpeggiatedChange = onArpeggiatedChange,
-                    arpeggioStepMs = arpeggioStepMs,
-                    onArpeggioStepMsChange = onArpeggioStepMsChange
+                    onShowLetterNamesChange = onShowLetterNamesChange
                 )
             }
         }
