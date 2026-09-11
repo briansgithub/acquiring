@@ -127,6 +127,7 @@ class MainActivity : ComponentActivity() {
         QuizPlaybackController.initialize(this)
         AppInstrumentSession.initialize(this)
         TimelineFrameRateStore.initialize(this)
+        AudioDiagnostics.record("app.audioInitialized")
 
         db = Room.databaseBuilder(
             applicationContext,
@@ -636,6 +637,8 @@ internal fun MainScreen(
                         TimelineFrameRateStore.select(context, it)
                         timelineFrameRate = it
                     },
+                    onShareAudioDiagnostics = { AudioDiagnostics.share(context) },
+                    onResetAudioEngine = { AudioDiagnostics.resetEngine() },
                     onBack = { isShowingSettings = false }
                 )
             } else if (selectedSongSections == null) {
