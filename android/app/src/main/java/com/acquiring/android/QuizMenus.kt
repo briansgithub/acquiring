@@ -144,6 +144,7 @@ private fun Modifier.dropdownScrollbar(
 private val QUIZ_TRANSPOSE_ITEM_HEIGHT = 32.dp
 internal const val QUIZ_INSTRUMENT_BUTTON_TEST_TAG = "QuizInstrumentButton"
 internal const val QUIZ_TRANSPOSE_BUTTON_TEST_TAG = "QuizTransposeButton"
+internal val QUIZ_TRANSPOSE_RANGE = -12..12
 
 @Composable
 internal fun QuizInstrumentMenu(
@@ -252,7 +253,7 @@ internal fun QuizTransposeMenu(
             onDismissRequest = { expanded = false },
             centerScrollOnExpand = true
         ) {
-            (-12..12).forEach { option ->
+            QUIZ_TRANSPOSE_RANGE.forEach { option ->
                 DropdownMenuItem(
                     text = {
                         Text(
@@ -262,6 +263,7 @@ internal fun QuizTransposeMenu(
                         )
                     },
                     onClick = {
+                        // 0 is the written key; tapping it always resets transpose.
                         onTransposeSelected(option)
                         expanded = false
                     },
