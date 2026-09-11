@@ -226,15 +226,9 @@ fun QuizDestination(
                     .padding(horizontal = 16.dp)
             ) {
                 Row(
-                    modifier = Modifier.align(Alignment.CenterStart),
+                    modifier = Modifier.align(Alignment.Center),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "Lock in Major",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Start
-                    )
                     Checkbox(
                         checked = useRelativeIonianContext,
                         onCheckedChange = { useRelativeIonianContext = it },
@@ -242,25 +236,23 @@ fun QuizDestination(
                             .scale(0.85f)
                             .semantics { contentDescription = "Lock in Major" }
                     )
-                }
-
-                quizKeyDisplay?.let { keyDisplay ->
-                    Text(
-                        text = keyDisplay.label,
-                        textAlign = TextAlign.Center,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = keyDisplay.color,
-                        maxLines = 1,
-                        modifier = if (keyDisplay.isLockedToMajor) {
-                            Modifier
-                                .align(Alignment.Center)
-                                .border(1.dp, Color.Red, RoundedCornerShape(4.dp))
-                                .padding(horizontal = 8.dp, vertical = 2.dp)
-                        } else {
-                            Modifier.align(Alignment.Center)
-                        }
-                    )
+                    quizKeyDisplay?.let { keyDisplay ->
+                        Text(
+                            text = keyDisplay.label,
+                            textAlign = TextAlign.Center,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = keyDisplay.color,
+                            maxLines = 1,
+                            modifier = if (keyDisplay.isLockedToMajor) {
+                                Modifier
+                                    .border(1.dp, Color.Red, RoundedCornerShape(4.dp))
+                                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                            } else {
+                                Modifier
+                            }
+                        )
+                    }
                 }
             }
         }
