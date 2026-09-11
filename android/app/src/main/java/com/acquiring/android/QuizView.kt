@@ -1519,6 +1519,16 @@ fun QuizTab(
                                     contentColor = MaterialTheme.colorScheme.onPrimary
                                 ) {
                                     Box(modifier = Modifier.fillMaxSize().padding(8.dp), contentAlignment = Alignment.Center) {
+                                        if (
+                                            resolvedPersistentPitchTarget?.position == PersistentPitchCardPosition.SimpleRoot &&
+                                            persistentPitchGaugeResult != null
+                                        ) {
+                                            PitchGauge(
+                                                pitchResult = persistentPitchGaugeResult,
+                                                targetLabel = resolvedPersistentPitchTarget.label,
+                                                modifier = Modifier.matchParentSize()
+                                            )
+                                        }
                                         Text(
                                             text = rootInterval?.shorthand ?: "—",
                                             textAlign = TextAlign.Center,
