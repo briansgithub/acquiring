@@ -34,6 +34,7 @@ object AudioEngine {
         REED_ORGAN("Reed Organ"),
         STRINGS("Strings"),
         CLARINET("Synth Clarinet"),
+        FLUTE("Synth Flute"),
         VIBRAPHONE("Vibraphone"),
         WARM_ORGAN("Warm Organ"),
         SAWTOOTH("Sawtooth"),

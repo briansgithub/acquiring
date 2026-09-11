@@ -23,6 +23,7 @@ internal class SynthVoice(
         AudioEngine.Waveform.WARM_ORGAN -> 1.22
         AudioEngine.Waveform.CHURCH_ORGAN -> 1.57
         AudioEngine.Waveform.CLARINET -> 1.13
+        AudioEngine.Waveform.FLUTE -> 1.09
         AudioEngine.Waveform.REED_ORGAN -> 1.26
         AudioEngine.Waveform.MARIMBA -> 1.31
         AudioEngine.Waveform.VIBRAPHONE -> 0.65
@@ -109,6 +110,14 @@ internal class SynthVoice(
             AudioEngine.Waveform.CLARINET -> {
                 val radians = 2.0 * PI * phase
                 0.74 * sin(radians) + 0.19 * sin(radians * 3.0) + 0.07 * sin(radians * 5.0)
+            }
+
+            AudioEngine.Waveform.FLUTE -> {
+                val vibratoPhase = phase + 0.0025 * sin(2.0 * PI * modPhase)
+                val radians = 2.0 * PI * vibratoPhase
+                val output = 0.91 * sin(radians) + 0.07 * sin(radians * 2.0) + 0.02 * sin(radians * 4.0)
+                modPhase = wrapUnitPhase(modPhase + 5.2 / sampleRate)
+                output
             }
 
             AudioEngine.Waveform.REED_ORGAN -> {
