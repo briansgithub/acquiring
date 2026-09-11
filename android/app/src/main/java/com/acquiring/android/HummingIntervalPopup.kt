@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -61,6 +62,9 @@ private val SINGING_CARD_HEIGHT = 104.dp
 private const val ACTIVE_CARD_PULSE_MS = 650
 internal const val SINGING_TARGET_ROW_TEST_TAG = "singing-target-row"
 internal const val SINGING_INTERVAL_RESULT_TEST_TAG = "singing-interval-result"
+internal const val SINGING_DOCK_TEST_TAG = "singing-dock"
+internal const val SINGING_STOP_TEST_TAG = "singing-stop"
+internal const val SINGING_OCTAVE_SHIFTER_TEST_TAG = "singing-octave-shifter"
 
 private sealed interface RequestedMicrophoneAction {
     data class Listen(val slotId: Int) : RequestedMicrophoneAction
@@ -83,7 +87,8 @@ internal fun HummingIntervalPopup(
     sectionSessionKey: String? = null,
     targetRequest: SingingTargetRequest? = null,
     globalTranspose: Int = 0,
-    comfortablePitchMidi: Double? = null,
+    octaveOffset: Int = 0,
+    onOctaveOffsetChange: (Int) -> Unit = {},
     pitchSource: PitchSource = LocalContext.current.applicationContext.let { appContext ->
         remember(appContext) { MicrophonePitchTracker(appContext) }
     },
@@ -177,8 +182,8 @@ internal fun HummingIntervalPopup(
     // Resolved once for the whole request: a filled pair is an interval and
     // takes a single shared shift, so its size and direction stay exact even
     // when that leaves one endpoint away from the anchor.
-    val resolvedTargetMidis = remember(activeTarget, globalTranspose, comfortablePitchMidi) {
-        activeTarget?.let { resolveSingingTargetRequest(it, globalTranspose, comfortablePitchMidi) }
+    val resolvedTargetMidis = remember(activeTarget, globalTranspose, octaveOffset) {
+        activeTarget?.let { resolveSingingTargetRequest(it, globalTranspose, octaveOffset) }
             ?: Pair(null, null)
     }
 
@@ -187,8 +192,7 @@ internal fun HummingIntervalPopup(
 
     fun isSlotTessituraAdjusted(slotId: Int): Boolean {
         val target = activeTarget?.let { targetForSlot(it, slotId) } ?: return false
-        val resolved = resolvedTargetForSlot(slotId) ?: return false
-        return resolved != target.sourceMidi + globalTranspose
+        return target != null && octaveOffset != 0
     }
 
     fun stopMicrophoneAction() {
@@ -349,7 +353,7 @@ internal fun HummingIntervalPopup(
     // Manual transpose and tessitura are independent layers. If either changes
     // during a target session, retarget the microphone without replacing the
     // request or mutating a captured user pitch.
-    LaunchedEffect(globalTranspose, comfortablePitchMidi) {
+    LaunchedEffect(globalTranspose, octaveOffset) {
         val slotId = activeListenSlot ?: return@LaunchedEffect
         val targetMidi = resolvedTargetForSlot(slotId) ?: return@LaunchedEffect
         pitchTracker.retarget(targetMidi)
@@ -511,6 +515,7 @@ internal fun HummingIntervalPopup(
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .testTag(SINGING_DOCK_TEST_TAG)
             .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.95f))
             .clickable {
@@ -555,12 +560,9 @@ internal fun HummingIntervalPopup(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp),
-                    horizontalArrangement = Arrangement.End,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // The tessitura control that used to sit here now lives in the quiz
-                    // header, above the Transpose picker; this tool only reads the anchor
-                    // it produces via `comfortablePitchMidi`.
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text("Flip-Flop", style = MaterialTheme.typography.labelMedium)
                         Spacer(modifier = Modifier.width(8.dp))
@@ -575,6 +577,50 @@ internal fun HummingIntervalPopup(
                                 }
                             }
                         )
+                    }
+                    TextButton(
+                        onClick = { stopMicrophoneAction() },
+                        modifier = Modifier.testTag(SINGING_STOP_TEST_TAG)
+                    ) {
+                        Text("Stop")
+                    }
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag(SINGING_OCTAVE_SHIFTER_TEST_TAG)
+                        .padding(horizontal = 4.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    (OCTAVE_OFFSET_MIN..OCTAVE_OFFSET_MAX).forEach { offset ->
+                        val selected = offset == octaveOffset
+                        val label = if (offset > 0) "+$offset" else "$offset"
+                        TextButton(
+                            onClick = { onOctaveOffsetChange(offset) },
+                            modifier = Modifier.semantics {
+                                contentDescription = if (offset == 0) {
+                                    "Written octave"
+                                } else {
+                                    "Singing octave offset $label"
+                                }
+                                stateDescription = if (selected) "Selected" else "Not selected"
+                            }
+                        ) {
+                            Text(
+                                text = label,
+                                style = if (selected) {
+                                    MaterialTheme.typography.labelLarge
+                                } else {
+                                    MaterialTheme.typography.labelMedium
+                                },
+                                color = if (selected) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurface
+                                }
+                            )
+                        }
                     }
                 }
 
@@ -675,10 +721,10 @@ internal fun HummingIntervalPopup(
                         .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp))
                         .testTag(SINGING_INTERVAL_RESULT_TEST_TAG)
                         .clickable(enabled = capturedSlot1 != null && capturedSlot2 != null) {
-                            val idealTargetMidis = idealIntervalPlaybackMidis(
+                            val idealTargetMidis =                             idealIntervalPlaybackMidis(
                                 activeTarget,
                                 globalTranspose,
-                                comfortablePitchMidi
+                                octaveOffset
                             )
                             if (idealTargetMidis != null) {
                                 val (firstMidi, secondMidi) = idealTargetMidis
@@ -776,12 +822,12 @@ private fun midiToFrequency(midi: Double): Double =
 internal fun idealIntervalPlaybackMidis(
     target: SingingTargetRequest?,
     globalTranspose: Int,
-    comfortablePitchMidi: Double?
+    octaveOffset: Int
 ): Pair<Int, Int>? {
     if (target?.first == null || target.second == null) return null
     // Resolved as a pair so the previewed interval is the one being taught, then
     // de-transposed because AudioEngine applies the manual transpose itself.
-    val (first, second) = resolveSingingTargetRequest(target, globalTranspose, comfortablePitchMidi)
+    val (first, second) = resolveSingingTargetRequest(target, globalTranspose, octaveOffset)
     if (first == null || second == null) return null
     return (first - globalTranspose) to (second - globalTranspose)
 }

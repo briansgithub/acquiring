@@ -549,23 +549,21 @@ class PersistentQuizPitchPracticeTest {
     }
 
     @Test
-    fun effectiveTargetIncludesManualTransposeAndTessituraAnchor() {
+    fun effectiveTargetIncludesManualTransposeAndOctaveOffset() {
         val resolved = ResolvedPersistentPitchTarget(
             sourceMidi = 60,
             label = "1\u0302",
             position = PersistentPitchCardPosition.SimpleRoot
         )
 
-        // Source C4 plus a transpose of 5 sounds as F4 (65); anchored at C5 the
-        // nearest F is F5 (77).
         assertEquals(
             77,
-            resolved.effectiveTargetMidi(globalTranspose = 5, comfortablePitchMidi = 72.0)
+            resolved.effectiveTargetMidi(globalTranspose = 5, octaveOffset = 1)
         )
     }
 
     @Test
-    fun effectiveTargetIsUnchangedWithoutATessitura() {
+    fun effectiveTargetIsUnchangedAtTheWrittenOctave() {
         val resolved = ResolvedPersistentPitchTarget(
             sourceMidi = 60,
             label = "1\u0302",
@@ -574,28 +572,7 @@ class PersistentQuizPitchPracticeTest {
 
         assertEquals(
             65,
-            resolved.effectiveTargetMidi(globalTranspose = 5, comfortablePitchMidi = null)
-        )
-    }
-
-    @Test
-    fun effectiveTargetFollowsTheSequenceDirectionWhenContinuityIsKnown() {
-        val resolved = ResolvedPersistentPitchTarget(
-            sourceMidi = 72,
-            label = "1\u0302",
-            position = PersistentPitchCardPosition.MelodyCurrent
-        )
-
-        // Ascending from B4, so the run stays on C5 rather than dropping to the
-        // C4 nearest the anchor.
-        assertEquals(
-            72,
-            resolved.effectiveTargetMidi(
-                globalTranspose = 0,
-                comfortablePitchMidi = 60.0,
-                lastSourceMidi = 71,
-                lastTargetMidi = 71
-            )
+            resolved.effectiveTargetMidi(globalTranspose = 5, octaveOffset = 0)
         )
     }
 

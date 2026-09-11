@@ -246,7 +246,6 @@ fun QuizTab(
     onWaveformChange: (AudioEngine.Waveform) -> Unit,
     sectionPicker: @Composable () -> Unit,
     transposePicker: @Composable () -> Unit,
-    tessituraControl: @Composable () -> Unit,
     onKeyDisplayChange: (QuizKeyDisplay?) -> Unit,
     globalTranspose: Int,
     tempoPercent: Float,
@@ -257,41 +256,24 @@ fun QuizTab(
     quizPlayButtonYFraction: Float,
     onQuizPlayButtonPositionChange: (Float, Float) -> Unit,
     onSingingTargetsRequested: (SingingTargetRequest) -> Unit,
-    comfortablePitchMidi: Double?,
-    lastSourceMidi: Int?,
-    lastTargetMidi: Int?,
-    onUpdateContinuity: (Int, Int) -> Unit,
+    octaveOffset: Int,
     sessionKey: String,
     persistentPitchSource: PitchSource
 ) {
     val exclusivePersistentPitchSource = persistentPitchSource as? ExclusivePitchSource
         ?: error("QuizTab requires an exclusive persistent pitch source")
     val baseBpm = section.getBpm().toFloat().coerceIn(40f, 240f)
-    val isTessituraAdjusted = comfortablePitchMidi != null
+    val isTessituraAdjusted = octaveOffset != 0
 
-    // AudioEngine applies the manual transpose itself, so a preview's register
-    // is chosen against the pitch that will actually sound and the transpose is
-    // then taken back off the result.
-    fun tessituraPreviewMidi(audioNote: Int): Int {
-        if (comfortablePitchMidi == null) return audioNote
-        return TessituraResolver.resolveTarget(
-            audioNote + globalTranspose,
-            comfortablePitchMidi
-        ) - globalTranspose
-    }
+    // AudioEngine applies the manual transpose itself, so only the singing
+    // octave shift is added to preview MIDI. Song playback is never shifted.
+    fun tessituraPreviewMidi(audioNote: Int): Int =
+        audioNote + singingOctaveSemitones(octaveOffset)
 
-    // A root-motion preview is two notes heard as one interval, so both take the
-    // single shared shift that keeps its size and direction exact.
-    fun tessituraIntervalShiftSemitones(previousAudioNote: Int, currentAudioNote: Int): Int {
-        if (comfortablePitchMidi == null) return 0
-        val transposedPrevious = previousAudioNote + globalTranspose
-        val (resolvedPrevious, _) = TessituraResolver.resolveInterval(
-            transposedPrevious,
-            currentAudioNote + globalTranspose,
-            comfortablePitchMidi
-        )
-        return resolvedPrevious - transposedPrevious
-    }
+    // A root-motion preview is two notes heard as one interval, so both take
+    // the same singing-octave shift.
+    fun tessituraIntervalShiftSemitones(previousAudioNote: Int, currentAudioNote: Int): Int =
+        singingOctaveSemitones(octaveOffset)
     val arpeggiateCycles = QUIZ_ARPEGGIO_OPTIONS[arpeggioOptionIndex].cyclesPerBeat
     val bpm = (baseBpm * tempoPercent / 100f).toDouble()
 
@@ -912,9 +894,7 @@ fun QuizTab(
                 persistentPitchResult,
                 target.effectiveTargetMidi(
                     globalTranspose,
-                    comfortablePitchMidi,
-                    lastSourceMidi,
-                    lastTargetMidi
+                    octaveOffset
                 )
             )
         }
@@ -929,16 +909,8 @@ fun QuizTab(
             return
         }
         val initialTarget = target ?: return
-        val effectiveTargetMidi = if (comfortablePitchMidi == null) {
-            initialTarget.sourceMidi + globalTranspose
-        } else {
-            TessituraResolver.resolveTarget(
-                initialTarget.sourceMidi + globalTranspose,
-                comfortablePitchMidi,
-                lastSourceMidi,
-                lastTargetMidi
-            )
-        }
+        val effectiveTargetMidi =
+            initialTarget.sourceMidi + globalTranspose + singingOctaveSemitones(octaveOffset)
         val hasPermission = androidx.core.content.ContextCompat.checkSelfPermission(
             context,
             android.Manifest.permission.RECORD_AUDIO
@@ -956,17 +928,13 @@ fun QuizTab(
     LaunchedEffect(
         resolvedPersistentPitchTarget,
         globalTranspose,
-        comfortablePitchMidi,
-        lastSourceMidi,
-        lastTargetMidi
+        octaveOffset
     ) {
         val target = resolvedPersistentPitchTarget ?: return@LaunchedEffect
         persistentPitchController.updateTarget(
             target.effectiveTargetMidi(
                 globalTranspose,
-                comfortablePitchMidi,
-                lastSourceMidi,
-                lastTargetMidi
+                octaveOffset
             )
         )
     }
@@ -1056,20 +1024,6 @@ fun QuizTab(
                 DisposableEffect(Unit) {
                     onDispose { latestOnKeyDisplayChange(null) }
                 }
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    // Tessitura stays near the pitch tools. Transport choices are in
-                    // the bottom tool row with Play, Reset, and Section.
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        tessituraControl()
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(4.dp))
-
                 val primaryColor = MaterialTheme.colorScheme.primary; val secondaryColor = MaterialTheme.colorScheme.secondary
                 val romanNumeralPainter = remember { RomanNumeralPainter() }; val pixelsPerBeatPx = with(density) { pixelsPerBeat.dp.toPx() }
                 val timelineContentDescription = remember(
@@ -1117,9 +1071,7 @@ fun QuizTab(
                 val activeMelodyRunTargetMidi = resolvedPersistentPitchTarget
                     ?.effectiveTargetMidi(
                         globalTranspose,
-                        comfortablePitchMidi,
-                        lastSourceMidi,
-                        lastTargetMidi
+                        octaveOffset
                     )
 
                 DisposableEffect(
@@ -1151,9 +1103,8 @@ fun QuizTab(
                             // Where the melody just went is what the next note has to
                             // continue from, whether or not the attempt scored: the
                             // contour belongs to the exercise, not to the singer.
-                            if (runSourceMidi != null && runTargetMidi != null) {
-                                onUpdateContinuity(runSourceMidi, runTargetMidi)
-                            }
+                            // Octave offset is per song; melody contour no longer
+                            // drives a tessitura resolver.
                         }
                     }
                 }

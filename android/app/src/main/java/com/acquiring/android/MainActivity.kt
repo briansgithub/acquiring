@@ -139,7 +139,8 @@ class MainActivity : ComponentActivity() {
         userDb = Room.databaseBuilder(
             applicationContext,
             UserDataDatabase::class.java, UserDataDatabase.DB_NAME
-        ).addMigrations(UserDataDatabase.MIGRATION_1_2).build()
+        ).addMigrations(UserDataDatabase.MIGRATION_1_2, UserDataDatabase.MIGRATION_2_3).build()
+        tessituraSessionViewModel.attachDao(userDb.songOctaveOffsetDao())
 
         val neutralContainer = Color(0xFF3A3A3A)
         val neutralOnContainer = Color(0xFFE6E6E6)
@@ -251,9 +252,7 @@ internal fun MainScreen(
     var quizPlayButtonYFraction by rememberSaveable { mutableStateOf(Float.NaN) }
     var singingTargetRequest by remember { mutableStateOf<SingingTargetRequest?>(null) }
     var singingTargetRequestId by remember { mutableStateOf(0) }
-    val comfortablePitchMidi = tessituraSessionViewModel.comfortablePitchMidi
-    val lastSourceMidi = tessituraSessionViewModel.lastSourceMidi
-    val lastTargetMidi = tessituraSessionViewModel.lastTargetMidi
+    val octaveOffset = tessituraSessionViewModel.octaveOffset
     
     var titleOffset by remember { mutableStateOf(0) }
     var artistOffset by remember { mutableStateOf(0) }
@@ -328,9 +327,6 @@ internal fun MainScreen(
     val singingToolPitchSource = remember(microphonePitchCoordinator) {
         microphonePitchCoordinator.sourceFor(MicrophonePitchOwner.SINGING_TOOL)
     }
-    val tessituraCalibrationPitchSource = remember(microphonePitchCoordinator) {
-        microphonePitchCoordinator.sourceFor(MicrophonePitchOwner.TESSITURA_CALIBRATION)
-    }
     DisposableEffect(microphonePitchCoordinator) {
         onDispose { microphonePitchCoordinator.release() }
     }
@@ -350,8 +346,12 @@ internal fun MainScreen(
     }
     val json = remember { Json { ignoreUnknownKeys = true } }
     val singingSessionKey = selectedSong?.slug?.let { slug -> "$slug:${selectedSectionId.orEmpty()}" }
-    LaunchedEffect(singingSessionKey) {
-        singingSessionKey?.let(tessituraSessionViewModel::enterSession)
+    LaunchedEffect(singingSessionKey, selectedSong?.slug) {
+        val slug = selectedSong?.slug
+        val key = singingSessionKey
+        if (slug != null && key != null) {
+            tessituraSessionViewModel.enterSession(slug, key)
+        }
         singingTargetRequest = null
     }
     LaunchedEffect(selectedSong?.slug) {
@@ -619,7 +619,7 @@ internal fun MainScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
-                .padding(bottom = 32.dp) // Room for collapsed popup handle
+                .padding(bottom = 48.dp) // Room for collapsed singing dock
         ) {
             if (isShowingSettings) {
                 AppSettingsScreen(
@@ -873,19 +873,7 @@ internal fun MainScreen(
                         singingTargetRequestId++
                         singingTargetRequest = request.copy(requestId = singingTargetRequestId)
                     },
-                    comfortablePitchMidi = comfortablePitchMidi,
-                    lastSourceMidi = lastSourceMidi,
-                    lastTargetMidi = lastTargetMidi,
-                    onUpdateContinuity = tessituraSessionViewModel::updateContinuity,
-                    tessituraControl = {
-                        TessituraControl(
-                            comfortablePitchMidi = comfortablePitchMidi,
-                            canCalibrate = singingSessionKey != null,
-                            onCalibrationCaptured = tessituraSessionViewModel::updateComfortablePitch,
-                            onClearAdjustment = tessituraSessionViewModel::clearAdjustment,
-                            pitchSource = tessituraCalibrationPitchSource
-                        )
-                    },
+                    octaveOffset = octaveOffset,
                     persistentPitchSource = persistentQuizPitchSource,
                     isFavorite = isSelectedSongFavorite,
                     onToggleFavorite = toggleSelectedSongFavorite,
@@ -931,7 +919,8 @@ internal fun MainScreen(
             sectionSessionKey = singingSessionKey,
             targetRequest = singingTargetRequest,
             globalTranspose = globalTranspose,
-            comfortablePitchMidi = comfortablePitchMidi,
+            octaveOffset = octaveOffset,
+            onOctaveOffsetChange = tessituraSessionViewModel::updateOctaveOffset,
             pitchSource = singingToolPitchSource
         )
     }

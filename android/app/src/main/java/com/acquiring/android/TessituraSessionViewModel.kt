@@ -4,69 +4,60 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
 /**
- * Owns the tessitura anchor for the current song section, plus the melodic
- * continuity the resolver needs to keep a sequence moving in one direction.
+ * Owns the per-song singing octave offset for the current practice session.
  *
- * A ViewModel keeps the anchor through Activity recreation, while a new
- * Activity after the app is quit receives a fresh instance. Song and section
- * navigation explicitly enter or clear sessions below.
+ * A ViewModel keeps the offset through Activity recreation. Persistence lives
+ * in [UserDataDatabase] so a catalog replace cannot wipe it.
  */
 internal class TessituraSessionViewModel : ViewModel() {
     var sessionKey: String? = null
         private set
 
-    /** The pitch the user hummed, or null when no tessitura is set. */
-    var comfortablePitchMidi by mutableStateOf<Double?>(null)
+    var songSlug: String? = null
         private set
 
-    /** Source register of the previous target in the current sequence. */
-    var lastSourceMidi by mutableStateOf<Int?>(null)
+    var octaveOffset by mutableStateOf(0)
         private set
 
-    /** Register that previous target was actually placed in. */
-    var lastTargetMidi by mutableStateOf<Int?>(null)
-        private set
+    private var dao: SongOctaveOffsetDao? = null
 
-    fun enterSession(key: String) {
-        if (sessionKey == key) return
+    fun attachDao(dao: SongOctaveOffsetDao) {
+        this.dao = dao
+    }
+
+    fun enterSession(songSlug: String, key: String) {
+        val sameSession = sessionKey == key && this.songSlug == songSlug
+        val previousSlug = this.songSlug
+        this.songSlug = songSlug
         sessionKey = key
-        // A different section is a different melody, so the contour so far says
-        // nothing about what comes next. The anchor is a property of the singer
-        // rather than the song, so it survives.
-        resetContinuity()
+        if (sameSession) return
+        val store = dao
+        if (store == null) {
+            if (previousSlug != songSlug) octaveOffset = 0
+            return
+        }
+        viewModelScope.launch {
+            octaveOffset = clampSingingOctaveOffset(store.getOffset(songSlug) ?: 0)
+        }
     }
 
-    fun updateComfortablePitch(midi: Double) {
-        // Applied unconditionally: song and section navigation already manage
-        // the session, so gating on a session key here would only risk silently
-        // discarding a calibration the user just made.
-        comfortablePitchMidi = midi
-        // Registers chosen against the old anchor are not a valid starting
-        // point for the new one.
-        resetContinuity()
-    }
-
-    fun updateContinuity(source: Int, target: Int) {
-        lastSourceMidi = source
-        lastTargetMidi = target
-    }
-
-    fun resetContinuity() {
-        lastSourceMidi = null
-        lastTargetMidi = null
-    }
-
-    /** The Clear button: drops the anchor without disturbing quiz progress. */
-    fun clearAdjustment() {
-        comfortablePitchMidi = null
-        resetContinuity()
+    fun updateOctaveOffset(offset: Int) {
+        val clamped = clampSingingOctaveOffset(offset)
+        octaveOffset = clamped
+        val slug = songSlug ?: return
+        val store = dao ?: return
+        viewModelScope.launch {
+            store.upsert(SongOctaveOffset(slug = slug, offset = clamped))
+        }
     }
 
     fun clearSession() {
         sessionKey = null
-        comfortablePitchMidi = null
-        resetContinuity()
+        songSlug = null
+        octaveOffset = 0
     }
 }

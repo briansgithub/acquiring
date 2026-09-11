@@ -40,16 +40,15 @@ class SingingIntervalPlaybackTest {
             requestId = 1
         )
 
-        // Anchored at C5, the rising fifth moves up as a unit to C5 -> G5.
         assertEquals(
             72 to 79,
-            idealIntervalPlaybackMidis(target, globalTranspose = 0, comfortablePitchMidi = 72.0)
+            idealIntervalPlaybackMidis(target, globalTranspose = 0, octaveOffset = 1)
         )
         assertNull(
             idealIntervalPlaybackMidis(
                 target.copy(second = null),
                 globalTranspose = 0,
-                comfortablePitchMidi = 72.0
+                octaveOffset = 1
             )
         )
     }
@@ -62,12 +61,9 @@ class SingingIntervalPlaybackTest {
             requestId = 1
         )
 
-        // The register is chosen against D4 -> A4, the pitches that will sound
-        // with the transpose applied, and the transpose is then taken back off
-        // so AudioEngine does not add it twice.
         assertEquals(
             72 to 79,
-            idealIntervalPlaybackMidis(target, globalTranspose = 2, comfortablePitchMidi = 72.0)
+            idealIntervalPlaybackMidis(target, globalTranspose = 2, octaveOffset = 1)
         )
     }
 
@@ -81,7 +77,7 @@ class SingingIntervalPlaybackTest {
 
         assertEquals(
             60 to 67,
-            idealIntervalPlaybackMidis(target, globalTranspose = 4, comfortablePitchMidi = null)
+            idealIntervalPlaybackMidis(target, globalTranspose = 4, octaveOffset = 0)
         )
     }
 
