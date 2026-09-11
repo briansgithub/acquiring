@@ -159,12 +159,24 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
+            var showIntroduction by remember {
+                mutableStateOf(!IntroductionPrefs.hasCompleted(this@MainActivity))
+            }
             MaterialTheme(colorScheme = darkColorScheme) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen(db, userDb, tessituraSessionViewModel)
+                    if (showIntroduction) {
+                        IntroductionView(
+                            onContinue = {
+                                IntroductionPrefs.markCompleted(this@MainActivity)
+                                showIntroduction = false
+                            }
+                        )
+                    } else {
+                        MainScreen(db, userDb, tessituraSessionViewModel)
+                    }
                 }
             }
         }
