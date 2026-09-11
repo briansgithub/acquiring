@@ -255,11 +255,11 @@ fun PlaylistsSection(
                                         ) {
                                             Column(modifier = Modifier.weight(1f)) {
                                                 Text(
-                                                    text = song.title ?: "Unknown Title",
+                                                    text = song.displayTitle,
                                                     style = MaterialTheme.typography.bodyLarge
                                                 )
                                                 Text(
-                                                    text = song.artist ?: "Unknown Artist",
+                                                    text = song.displayArtist,
                                                     style = MaterialTheme.typography.bodyMedium
                                                 )
                                             }
@@ -278,7 +278,7 @@ fun PlaylistsSection(
                                                 Icon(
                                                     imageVector = Icons.Filled.Star,
                                                     contentDescription = "Remove " +
-                                                        (song.title ?: song.slug) +
+                                                        song.displayTitle +
                                                         " from ${summary.name}",
                                                     tint = MaterialTheme.colorScheme.primary,
                                                     modifier = Modifier.size(20.dp)

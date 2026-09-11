@@ -202,8 +202,8 @@ fun LibraryView(
                         DropdownMenuItem(
                             text = {
                                 Column {
-                                    Text(text = song.title ?: "Unknown Title", style = MaterialTheme.typography.bodyLarge)
-                                    Text(text = song.artist ?: "Unknown Artist", style = MaterialTheme.typography.bodySmall)
+                                    Text(text = song.displayTitle, style = MaterialTheme.typography.bodyLarge)
+                                    Text(text = song.displayArtist, style = MaterialTheme.typography.bodySmall)
                                 }
                             },
                             onClick = { onSuggestionClick(song) }
@@ -289,7 +289,7 @@ fun LibraryView(
 
                     artistSuggestions.forEach { artistName ->
                         DropdownMenuItem(
-                            text = { Text(text = artistName, style = MaterialTheme.typography.bodyLarge) },
+                            text = { Text(text = CatalogDisplayName.artist(artistName), style = MaterialTheme.typography.bodyLarge) },
                             onClick = { onArtistClick(artistName) }
                         )
                     }
@@ -321,8 +321,8 @@ fun LibraryView(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
                 ) {
                     Column(modifier = Modifier.padding(8.dp)) {
-                        Text(text = song.title ?: "Unknown Title", style = MaterialTheme.typography.bodyLarge)
-                        Text(text = song.artist ?: "Unknown Artist", style = MaterialTheme.typography.bodyMedium)
+                        Text(text = song.displayTitle, style = MaterialTheme.typography.bodyLarge)
+                        Text(text = song.displayArtist, style = MaterialTheme.typography.bodyMedium)
                     }
                 }
             }

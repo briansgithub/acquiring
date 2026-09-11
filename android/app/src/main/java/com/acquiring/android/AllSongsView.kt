@@ -514,11 +514,11 @@ fun AllSongsView(
                         ) {
                             Column(modifier = Modifier.padding(10.dp)) {
                                 Text(
-                                    text = song.title ?: "Unknown Title",
+                                    text = song.displayTitle,
                                     style = MaterialTheme.typography.bodyLarge
                                 )
                                 Text(
-                                    text = song.artist ?: "Unknown Artist",
+                                    text = song.displayArtist,
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }

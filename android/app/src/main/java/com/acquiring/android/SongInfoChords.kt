@@ -172,13 +172,13 @@ fun InfoTab(
     ) {
         item {
             Text(
-                text = song.title ?: "Unknown Title",
+                text = song.displayTitle,
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
-            song.artist?.takeIf { it.isNotBlank() }?.let {
+            if (!song.artist.isNullOrBlank()) {
                 Text(
-                    text = it,
+                    text = song.displayArtist,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 2.dp)
