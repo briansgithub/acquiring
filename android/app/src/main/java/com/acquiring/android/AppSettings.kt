@@ -37,7 +37,6 @@ private const val UPDATE_DISTRIBUTION_URL =
 
 internal enum class SettingsPlaceholderSection(val title: String, val body: String) {
     HELP("Help", "Help articles will appear here."),
-    UPDATES("Updates", "Update status will appear here."),
     TIMELINE_FPS("Timeline", "Frame rate options will appear here."),
     DIAGNOSTICS("Audio diagnostics", "Diagnostics export will appear here.");
 }
@@ -75,6 +74,8 @@ internal fun AppSettingsScreen(
     catalogStatus: String,
     catalogFreshness: String,
     onUpdateCatalog: () -> Unit,
+    playUpdateStatus: PlayUpdateStatus,
+    onOpenPlayUpdate: () -> Unit,
     onBack: () -> Unit
 ) {
     Column(
@@ -164,6 +165,23 @@ internal fun AppSettingsScreen(
             modifier = Modifier.semantics { contentDescription = "Update catalog" }
         ) {
             Text("Update catalog")
+        }
+
+        Divider(modifier = Modifier.padding(vertical = 12.dp))
+        SettingsSectionHeading(
+            if (playUpdateStatus == PlayUpdateStatus.UPDATE_AVAILABLE) "Updates •" else "Updates"
+        )
+        Text(
+            text = playUpdateStatus.label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+        )
+        TextButton(
+            onClick = onOpenPlayUpdate,
+            modifier = Modifier.semantics { contentDescription = "Open Play Store for updates" }
+        ) {
+            Text("Open Play")
         }
 
         SettingsPlaceholderSection.entries.forEach { section ->
