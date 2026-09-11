@@ -575,7 +575,7 @@ internal class QuizPlaybackEngine(
             // Never let completion of an older pause/seek overwrite that position.
             if (activeTransportRevision < transportRevision.get()) return
             val now = System.nanoTime()
-            if (!force && now - lastStateUpdateNanos < STATE_UPDATE_NANOS) return
+            if (!force && now - lastStateUpdateNanos < TimelineFrameRateStore.minStateUpdateNanos) return
             lastStateUpdateNanos = now
             mutableState.value = QuizPlaybackState(
                 phase = phase,
@@ -827,7 +827,6 @@ internal class QuizPlaybackEngine(
         private const val BUFFER_GROWTH_MS = 40
         private const val MAX_BUFFER_MS = 200
         private const val MAX_CLOCK_SEGMENTS = 512
-        private const val STATE_UPDATE_NANOS = 16_666_667L
         private const val RELEASE_JOIN_MS = 1_000L
 
         private fun createAndroidSink(capacityFrames: Int, sampleRate: Int): QuizAudioSink {

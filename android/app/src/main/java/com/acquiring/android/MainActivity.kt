@@ -126,6 +126,7 @@ class MainActivity : ComponentActivity() {
         AppAudioOutput.initialize(this)
         QuizPlaybackController.initialize(this)
         AppInstrumentSession.initialize(this)
+        TimelineFrameRateStore.initialize(this)
 
         db = Room.databaseBuilder(
             applicationContext,
@@ -228,6 +229,9 @@ internal fun MainScreen(
     var selectedSectionId by remember { mutableStateOf<String?>(null) }
     var isShowingAllSongs by rememberSaveable { mutableStateOf(false) }
     var isShowingSettings by rememberSaveable { mutableStateOf(false) }
+    var timelineFrameRate by remember {
+        mutableStateOf(TimelineFrameRateStore.preference)
+    }
     var isShowingQuiz by remember { mutableStateOf(false) }
     var songParentPage by remember { mutableStateOf(SongParentPage.LIBRARY) }
     var showLetterNames by remember { mutableStateOf(false) }
@@ -626,6 +630,11 @@ internal fun MainScreen(
                     playUpdateStatus = playUpdateStatus,
                     onOpenPlayUpdate = {
                         openUpdateDistribution(context)
+                    },
+                    timelineFrameRate = timelineFrameRate,
+                    onTimelineFrameRateChange = {
+                        TimelineFrameRateStore.select(context, it)
+                        timelineFrameRate = it
                     },
                     onBack = { isShowingSettings = false }
                 )
