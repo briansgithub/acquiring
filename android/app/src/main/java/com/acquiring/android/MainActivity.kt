@@ -353,6 +353,7 @@ internal fun MainScreen(
     // flips this optimistically and writes through, the way every other control
     // on this screen behaves.
     var isSelectedSongFavorite by remember { mutableStateOf(false) }
+    var showFavoritedConfirmation by remember { mutableStateOf(false) }
     LaunchedEffect(playlistDao, selectedSong?.slug) {
         val slug = selectedSong?.slug
         isSelectedSongFavorite = if (slug == null) {
@@ -390,11 +391,17 @@ internal fun MainScreen(
                     } else {
                         playlistDao.removeEntry(PlaylistIds.FAVORITES, slug)
                     }
+                    if (shouldShowFavoritedConfirmation(shouldAdd, writeSucceeded = true)) {
+                        showFavoritedConfirmation = true
+                        delay(FAVORITED_CONFIRMATION_MS)
+                        showFavoritedConfirmation = false
+                    }
                 } catch (cancellation: CancellationException) {
                     throw cancellation
                 } catch (_: Exception) {
                     // Put the star back rather than claiming a write that failed.
                     isSelectedSongFavorite = !shouldAdd
+                    showFavoritedConfirmation = false
                 }
             }
         }
@@ -873,6 +880,22 @@ internal fun MainScreen(
                 )
             }
 
+        }
+
+        if (showFavoritedConfirmation) {
+            Surface(
+                color = MaterialTheme.colorScheme.primaryContainer,
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .testTag(FAVORITED_CONFIRMATION_TEST_TAG)
+            ) {
+                Text(
+                    text = "Favorited",
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
         }
 
         HummingIntervalPopup(
