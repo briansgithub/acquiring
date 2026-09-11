@@ -18,6 +18,10 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -36,7 +40,6 @@ private const val UPDATE_DISTRIBUTION_URL =
     "https://play.google.com/store/apps/details?id=com.acquiring.android"
 
 internal enum class SettingsPlaceholderSection(val title: String, val body: String) {
-    HELP("Help", "Help articles will appear here."),
     TIMELINE_FPS("Timeline", "Frame rate options will appear here."),
     DIAGNOSTICS("Audio diagnostics", "Diagnostics export will appear here.");
 }
@@ -78,6 +81,16 @@ internal fun AppSettingsScreen(
     onOpenPlayUpdate: () -> Unit,
     onBack: () -> Unit
 ) {
+    var openHelpTopicId by rememberSaveable { mutableStateOf<String?>(null) }
+    val openHelpTopic = openHelpTopicId?.let(HelpCatalog::topic)
+    if (openHelpTopic != null) {
+        HelpArticleScreen(
+            topic = openHelpTopic,
+            onBack = { openHelpTopicId = null }
+        )
+        return
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -135,6 +148,9 @@ internal fun AppSettingsScreen(
                     }
                 }
             }
+
+        Divider(modifier = Modifier.padding(vertical = 12.dp))
+        HelpIndex(onOpenTopic = { openHelpTopicId = it.id })
 
         Divider(modifier = Modifier.padding(vertical = 12.dp))
         SettingsSectionHeading("Privacy")
@@ -206,7 +222,7 @@ internal fun AppSettingsScreen(
 }
 
 @Composable
-private fun SettingsSectionHeading(title: String) {
+internal fun SettingsSectionHeading(title: String) {
     Text(
         text = title,
         style = MaterialTheme.typography.labelSmall,

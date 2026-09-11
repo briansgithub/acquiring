@@ -9,7 +9,7 @@ class SettingsSectionsTest {
     fun placeholderSectionsReserveHelpCatalogUpdatesFpsAndDiagnostics() {
         val titles = SettingsPlaceholderSection.entries.map { it.title }
         assertEquals(
-            listOf("Help", "Timeline", "Audio diagnostics"),
+            listOf("Timeline", "Audio diagnostics"),
             titles
         )
         SettingsPlaceholderSection.entries.forEach { section ->
