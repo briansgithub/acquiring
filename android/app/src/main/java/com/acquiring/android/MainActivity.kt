@@ -212,7 +212,7 @@ internal fun MainScreen(
     var selectedSectionId by remember { mutableStateOf<String?>(null) }
     var isShowingAllSongs by rememberSaveable { mutableStateOf(false) }
     var isShowingSettings by rememberSaveable { mutableStateOf(false) }
-    var currentTab by remember { mutableStateOf(2) }
+    var isShowingQuiz by remember { mutableStateOf(false) }
     var songParentPage by remember { mutableStateOf(SongParentPage.LIBRARY) }
     var showLetterNames by remember { mutableStateOf(false) }
     var isArpeggiated by remember { mutableStateOf(false) }
@@ -393,17 +393,15 @@ internal fun MainScreen(
         if (isShowingSettings) {
             isShowingSettings = false
         } else if (selectedArtistSongs != null && selectedSongSections == null) {
-            // Close the artist detail page.
             selectedArtistName = null
             selectedArtistSongs = null
-        } else if (selectedSongSections != null && currentTab != 2) {
-            // Song information is a detour from the quiz.
-            currentTab = 2
+        } else if (selectedSongSections != null && !isShowingQuiz) {
+            isShowingQuiz = true
         } else if (selectedSongSections != null) {
-            // Return to the page that opened the song.
             tessituraSessionViewModel.clearSession()
             selectedSongSections = null
             selectedSong = null
+            isShowingQuiz = false
             if (songParentPage == SongParentPage.LIBRARY) {
                 selectedArtistName = null
                 selectedArtistSongs = null
@@ -501,7 +499,7 @@ internal fun MainScreen(
                     if (selectedSong?.slug != song.slug) return@launch
                     selectedSongSections = sections
                     selectedSectionId = sections.sectionsInSongOrder().firstOrNull()?.key ?: sections.keys.firstOrNull()
-                    currentTab = 2 // Open Quiz; SongDetailView starts in Simple mode
+                    isShowingQuiz = true
                 } catch (cancellation: CancellationException) {
                     throw cancellation
                 } catch (e: Exception) {
@@ -527,7 +525,7 @@ internal fun MainScreen(
                             selectedSong = harvestedSong
                             selectedSongSections = sections
                             selectedSectionId = sections.sectionsInSongOrder().firstOrNull()?.key ?: sections.keys.firstOrNull()
-                            currentTab = 2 // Open Quiz; SongDetailView starts in Simple mode
+                            isShowingQuiz = true
                             harvestStatus = "Loaded chords for ${song.title ?: song.slug}!"
                         } catch (cancellation: CancellationException) {
                             throw cancellation
@@ -733,6 +731,7 @@ internal fun MainScreen(
                     onArtistClick = { artistName ->
                         tessituraSessionViewModel.clearSession()
                         HistoryManager.addArtist(context, artistName)
+                        songParentPage = SongParentPage.ARTIST
                         scope.launch {
                             val results = activeDb.songDao().getBrowseSongsByArtist(artistName)
                             selectedArtistName = canonicalArtistName(artistName)
@@ -770,24 +769,14 @@ internal fun MainScreen(
                     onSongClick = openBrowseSong
                 )
                 }
-            } else {
-                // Song Detail View with Tabs
-                SongDetailView(
+            } else if (isShowingQuiz) {
+                QuizDestination(
                     song = selectedSong!!,
-                    complexityRating = selectedSongComplexityRating,
                     sections = selectedSongSections!!,
                     selectedSectionId = selectedSectionId,
                     onSectionChange = { selectedSectionId = it },
-                    currentTab = currentTab,
-                    onTabChange = { currentTab = it },
-                    showLetterNames = showLetterNames,
-                    onShowLetterNamesChange = { showLetterNames = it },
-                    isArpeggiated = isArpeggiated,
-                    onArpeggiatedChange = { isArpeggiated = it },
-                    arpeggioStepMs = arpeggioStepMs,
-                    onArpeggioStepMsChange = { arpeggioStepMs = it },
                     currentWaveform = currentWaveform,
-                    onWaveformChange = { 
+                    onWaveformChange = {
                         AppInstrumentSession.selectForSession(it)
                     },
                     globalTranspose = globalTranspose,
@@ -808,14 +797,17 @@ internal fun MainScreen(
                     onArtistClick = { artistName ->
                         tessituraSessionViewModel.clearSession()
                         HistoryManager.addArtist(context, artistName)
+                        songParentPage = SongParentPage.ARTIST
                         scope.launch {
                             val results = activeDb.songDao().getBrowseSongsByArtist(artistName)
                             selectedArtistName = canonicalArtistName(artistName)
                             selectedArtistSongs = results
                             selectedSongSections = null
                             selectedSong = null
+                            isShowingQuiz = false
                         }
                     },
+                    onShowSongInfo = { isShowingQuiz = false },
                     onSingingTargetsRequested = { request ->
                         singingTargetRequestId++
                         singingTargetRequest = request.copy(requestId = singingTargetRequestId)
@@ -836,6 +828,21 @@ internal fun MainScreen(
                     persistentPitchSource = persistentQuizPitchSource,
                     isFavorite = isSelectedSongFavorite,
                     onToggleFavorite = toggleSelectedSongFavorite,
+                    onBack = returnToParent
+                )
+            } else {
+                SongDetailView(
+                    song = selectedSong!!,
+                    complexityRating = selectedSongComplexityRating,
+                    sections = selectedSongSections!!,
+                    selectedSectionId = selectedSectionId,
+                    onSectionChange = { selectedSectionId = it },
+                    showLetterNames = showLetterNames,
+                    onShowLetterNamesChange = { showLetterNames = it },
+                    isArpeggiated = isArpeggiated,
+                    onArpeggiatedChange = { isArpeggiated = it },
+                    arpeggioStepMs = arpeggioStepMs,
+                    onArpeggioStepMsChange = { arpeggioStepMs = it },
                     onBack = returnToParent
                 )
             }

@@ -116,9 +116,11 @@ fun ArtistSongsView(
         ) {
             TextButton(onClick = onBack) { Text("< Back") }
             Text(
-                text = "Artist: $artistName",
+                text = "Artist: ${canonicalArtistName(artistName)}",
                 style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(start = 8.dp)
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .semantics { contentDescription = canonicalArtistName(artistName) }
             )
         }
         
@@ -130,7 +132,10 @@ fun ArtistSongsView(
                 ) {
                     Column(modifier = Modifier.padding(8.dp)) {
                         Text(text = song.title ?: "Unknown Title", style = MaterialTheme.typography.bodyLarge)
-                        Text(text = song.artist ?: "Unknown Artist", style = MaterialTheme.typography.bodyMedium)
+                        Text(
+                            text = song.artist?.let(::canonicalArtistName) ?: "Unknown Artist",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
                 }
             }
