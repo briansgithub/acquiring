@@ -130,7 +130,7 @@ private fun QuizRowLabel(text: String, modifier: Modifier = Modifier) {
     }
 }
 
-private fun ringModeColor(scale: String): Color = when (scale) {
+internal fun ringModeColor(scale: String): Color = when (scale) {
     "major", "ionian" -> Color(0xFFFF0000)
     "dorian" -> Color(0xFFFFB014)
     "phrygian", "phrygianDominant" -> Color(0xFFEFE600)
@@ -1208,7 +1208,7 @@ fun QuizTab(
                                 val isActive = currentBeat >= note.beat &&
                                     currentBeat < note.beat + note.duration
                                 drawRect(
-                                    color = if (isActive) primaryColor else secondaryColor.copy(alpha = 0.6f),
+                                    color = if (isActive) primaryColor else activeModeColor.copy(alpha = 0.28f),
                                     topLeft = Offset(x, y),
                                     size = Size(w, noteHeight)
                                 )
@@ -1278,9 +1278,9 @@ fun QuizTab(
                                 if (screenX + w < 0f || screenX > size.width) return@forEach
                                 val isActive = currentBeat >= chord.beat &&
                                     currentBeat < chord.beat + chord.duration
-                                drawRect(color = secondaryColor.copy(alpha = 0.2f), topLeft = Offset(x, mLaneHeightPx), size = Size(w, cLaneHeightPx))
+                                drawRect(color = activeModeColor.copy(alpha = 0.16f), topLeft = Offset(x, mLaneHeightPx), size = Size(w, cLaneHeightPx))
                                 if (isActive) drawRect(color = primaryColor.copy(alpha = 0.4f), topLeft = Offset(x, mLaneHeightPx), size = Size(w, cLaneHeightPx))
-                                drawRect(color = if (isActive) primaryColor else Color.LightGray, topLeft = Offset(x, mLaneHeightPx), size = Size(w, cLaneHeightPx), style = androidx.compose.ui.graphics.drawscope.Stroke(width = 2.dp.toPx()))
+                                drawRect(color = if (isActive) primaryColor else activeModeColor.copy(alpha = 0.55f), topLeft = Offset(x, mLaneHeightPx), size = Size(w, cLaneHeightPx), style = androidx.compose.ui.graphics.drawscope.Stroke(width = 2.dp.toPx()))
                                 chord.display?.let { display ->
                                     val innerWidth = w - 14.dp.toPx()
                                     val innerHeight = cLaneHeightPx - 8.dp.toPx()
