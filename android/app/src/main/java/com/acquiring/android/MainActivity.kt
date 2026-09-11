@@ -239,6 +239,7 @@ internal fun MainScreen(
     var isTitlePaging by remember { mutableStateOf(false) }
     var isArtistPaging by remember { mutableStateOf(false) }
     var browseOpenJob by remember { mutableStateOf<Job?>(null) }
+    var catalogAutoInstallStarted by remember { mutableStateOf(false) }
     
     val scope = rememberCoroutineScope()
     val context = androidx.compose.ui.platform.LocalContext.current
@@ -252,6 +253,7 @@ internal fun MainScreen(
             ) { catalogStatus = it }
 
             if (result.isSuccess) {
+                CatalogAutoInstall.markRefreshed(context)
                 // Re-open the replacement catalog after its atomic install.
                 activeDb = Room.databaseBuilder(
                     context.applicationContext,
@@ -283,6 +285,13 @@ internal fun MainScreen(
                 }
                 catalogStatus = "Error: ${result.exceptionOrNull()?.message}"
             }
+        }
+    }
+    LaunchedEffect(activeDb) {
+        val songCount = runCatching { activeDb.songDao().getSongCount() }.getOrDefault(0)
+        if (CatalogAutoInstall.shouldStart(songCount, catalogAutoInstallStarted)) {
+            catalogAutoInstallStarted = true
+            downloadCatalog()
         }
     }
     val microphonePitchCoordinator = remember(context.applicationContext) {
@@ -584,6 +593,9 @@ internal fun MainScreen(
                 AppSettingsScreen(
                     defaultInstrument = defaultInstrument,
                     onDefaultInstrumentChange = AppInstrumentSession::selectAsDefault,
+                    catalogStatus = catalogStatus,
+                    catalogFreshness = CatalogAutoInstall.lastRefreshLabel(context),
+                    onUpdateCatalog = downloadCatalog,
                     onBack = { isShowingSettings = false }
                 )
             } else if (selectedSongSections == null) {

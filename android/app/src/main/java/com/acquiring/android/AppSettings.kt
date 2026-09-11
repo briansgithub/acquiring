@@ -37,7 +37,6 @@ private const val UPDATE_DISTRIBUTION_URL =
 
 internal enum class SettingsPlaceholderSection(val title: String, val body: String) {
     HELP("Help", "Help articles will appear here."),
-    CATALOG("Catalog", "Catalog status will appear here."),
     UPDATES("Updates", "Update status will appear here."),
     TIMELINE_FPS("Timeline", "Frame rate options will appear here."),
     DIAGNOSTICS("Audio diagnostics", "Diagnostics export will appear here.");
@@ -73,6 +72,9 @@ private fun openUpdateDistributionInBrowser(context: Context): String? {
 internal fun AppSettingsScreen(
     defaultInstrument: AudioEngine.Waveform,
     onDefaultInstrumentChange: (AudioEngine.Waveform) -> Unit,
+    catalogStatus: String,
+    catalogFreshness: String,
+    onUpdateCatalog: () -> Unit,
     onBack: () -> Unit
 ) {
     Column(
@@ -136,6 +138,33 @@ internal fun AppSettingsScreen(
         Divider(modifier = Modifier.padding(vertical = 12.dp))
         SettingsSectionHeading("Privacy")
         PrivacyPolicyLink()
+
+        Divider(modifier = Modifier.padding(vertical = 12.dp))
+        SettingsSectionHeading("Catalog")
+        Text(
+            text = catalogFreshness,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+        )
+        if (catalogStatus.isNotEmpty()) {
+            Text(
+                text = catalogStatus,
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (catalogStatus.startsWith("Error:")) {
+                    MaterialTheme.colorScheme.error
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            )
+        }
+        TextButton(
+            onClick = onUpdateCatalog,
+            modifier = Modifier.semantics { contentDescription = "Update catalog" }
+        ) {
+            Text("Update catalog")
+        }
 
         SettingsPlaceholderSection.entries.forEach { section ->
             Divider(modifier = Modifier.padding(vertical = 12.dp))
