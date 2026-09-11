@@ -198,6 +198,7 @@ internal object QuizPlaybackController {
 
     fun reset() {
         synchronized(lock) { resumeAfterTransientFocusLoss = false }
+        AudioDiagnostics.record("quiz.reset")
         engine?.reset()
         abandonFocus()
     }

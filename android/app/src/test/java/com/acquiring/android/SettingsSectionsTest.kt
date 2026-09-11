@@ -6,14 +6,16 @@ import org.junit.Test
 
 class SettingsSectionsTest {
     @Test
-    fun placeholderSectionsReserveHelpCatalogUpdatesFpsAndDiagnostics() {
-        val titles = SettingsPlaceholderSection.entries.map { it.title }
+    fun settingsKeepsHelpDisplayAndDiagnostics() {
         assertEquals(
-            listOf("Audio diagnostics"),
-            titles
+            listOf("Instructions", "Scale degrees", "Intervals", "Roman numerals", "Tessitura"),
+            HelpCatalog.topics.map { it.title }
         )
-        SettingsPlaceholderSection.entries.forEach { section ->
-            assertTrue(section.body.isNotBlank())
-        }
+        assertEquals(
+            listOf("60 fps", "Maximum"),
+            TimelineFrameRatePreference.entries.map { it.title }
+        )
+        assertTrue(AudioDiagnostics.ALLOWED_OPERATIONS.contains("diagnostics.export"))
+        assertTrue(AudioDiagnostics.ALLOWED_OPERATIONS.contains("diagnostics.reset"))
     }
 }

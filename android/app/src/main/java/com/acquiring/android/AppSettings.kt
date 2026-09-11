@@ -39,10 +39,6 @@ internal const val SETTINGS_BACK_TEST_TAG = "SettingsBack"
 private const val UPDATE_DISTRIBUTION_URL =
     "https://play.google.com/store/apps/details?id=com.acquiring.android"
 
-internal enum class SettingsPlaceholderSection(val title: String, val body: String) {
-    DIAGNOSTICS("Audio diagnostics", "Diagnostics export will appear here.");
-}
-
 internal fun openUpdateDistribution(context: Context): String? {
     val playStoreIntent = Intent(Intent.ACTION_VIEW, Uri.parse(UPDATE_DISTRIBUTION_URL))
         .setPackage("com.android.vending")
@@ -80,6 +76,8 @@ internal fun AppSettingsScreen(
     onOpenPlayUpdate: () -> Unit,
     timelineFrameRate: TimelineFrameRatePreference,
     onTimelineFrameRateChange: (TimelineFrameRatePreference) -> Unit,
+    onShareAudioDiagnostics: () -> Unit,
+    onResetAudioEngine: () -> Unit,
     onBack: () -> Unit
 ) {
     var openHelpTopicId by rememberSaveable { mutableStateOf<String?>(null) }
@@ -230,15 +228,25 @@ internal fun AppSettingsScreen(
             }
         }
 
-        SettingsPlaceholderSection.entries.forEach { section ->
-            Divider(modifier = Modifier.padding(vertical = 12.dp))
-            SettingsSectionHeading(section.title)
-            Text(
-                text = section.body,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-            )
+        Divider(modifier = Modifier.padding(vertical = 12.dp))
+        SettingsSectionHeading("Audio diagnostics")
+        Text(
+            text = "Reports stay on this phone until you share them. No song IDs or audio samples are included.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+        )
+        TextButton(
+            onClick = onShareAudioDiagnostics,
+            modifier = Modifier.semantics { contentDescription = "Share audio diagnostics" }
+        ) {
+            Text("Share audio diagnostics")
+        }
+        TextButton(
+            onClick = onResetAudioEngine,
+            modifier = Modifier.semantics { contentDescription = "Reset audio engine" }
+        ) {
+            Text("Reset audio engine")
         }
 
         Divider(modifier = Modifier.padding(vertical = 12.dp))
