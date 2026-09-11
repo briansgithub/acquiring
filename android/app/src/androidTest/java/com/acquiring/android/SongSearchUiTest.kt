@@ -51,12 +51,12 @@ class SongSearchUiTest {
 
     @Test
     fun partialArtistSearchShowsResultsAndOpensQuiz() {
-        searchAndOpenSong("Search by Artist", " sMaSh ", "Search Artist", 2)
+        searchAndOpenSong("Search Library", " sMaSh ", "Search", 2, artists = true)
     }
 
     @Test
     fun titleSearchShowsResultsAndOpensQuiz() {
-        searchAndOpenSong("Search by Title", " ALL STAR ", "Search Title", 1)
+        searchAndOpenSong("Search Library", " ALL STAR ", "Search", 1)
     }
 
     @Test
@@ -90,7 +90,7 @@ class SongSearchUiTest {
         composeRule.setContent {
             MaterialTheme { MainScreen(db, userDb, session) }
         }
-        val field = composeRule.onNode(hasSetTextAction() and hasText("Search by Title"))
+        val field = composeRule.onNode(hasSetTextAction() and hasText("Search Library"))
         field.performClick().performTextInput("All")
         waitForText("All Star")
         composeRule.onNodeWithText("All Star").performClick()
@@ -122,10 +122,19 @@ class SongSearchUiTest {
     }
 
 
-    private fun searchAndOpenSong(label: String, query: String, button: String, count: Int) {
+    private fun searchAndOpenSong(
+        label: String,
+        query: String,
+        button: String,
+        count: Int,
+        artists: Boolean = false
+    ) {
         val session = TessituraSessionViewModel()
         composeRule.setContent {
             MaterialTheme { MainScreen(db, userDb, session) }
+        }
+        if (artists) {
+            composeRule.onNodeWithTag("LibrarySearchScopeArtists").performClick()
         }
         val field = composeRule.onNode(hasSetTextAction() and hasText(label))
         field.performClick().performTextInput(query)
