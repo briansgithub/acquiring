@@ -4,7 +4,9 @@ import AcquiringCore
 import CryptoKit
 import Foundation
 import Observation
+import QuartzCore
 import SwiftData
+import UIKit
 
 struct UITestCatalogFixture: Decodable {
     struct Source: Decodable {
@@ -241,6 +243,11 @@ enum TimelineFrameRatePreference: String, CaseIterable, Identifiable {
     static let defaultsKey = "timelineFrameRate"
     var id: Self { self }
 
+    static var stored: TimelineFrameRatePreference {
+        TimelineFrameRatePreference(rawValue: UserDefaults.standard.string(forKey: defaultsKey) ?? "")
+            ?? .standard
+    }
+
     var title: String {
         switch self {
         case .standard: "60 fps"
@@ -254,6 +261,19 @@ enum TimelineFrameRatePreference: String, CaseIterable, Identifiable {
         case .standard: return min(60, supportedMaximum)
         case .maximum: return supportedMaximum
         }
+    }
+}
+
+extension TimelineFrameRatePreference {
+    func displayFrameRateRange(
+        displayMaximum: Int = UIScreen.main.maximumFramesPerSecond
+    ) -> CAFrameRateRange {
+        let preferred = framesPerSecond(displayMaximum: displayMaximum)
+        return CAFrameRateRange(
+            minimum: Float(min(preferred, 30)),
+            maximum: Float(preferred),
+            preferred: Float(preferred)
+        )
     }
 }
 

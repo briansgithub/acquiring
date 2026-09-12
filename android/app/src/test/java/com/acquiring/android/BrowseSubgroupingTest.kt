@@ -98,6 +98,57 @@ class BrowseSubgroupingTest {
     }
 
     @Test
+    fun complexityOnesDigitSplitsARatedGroupInScoreOrder() {
+        val songs = (0..9).flatMap { digit ->
+            (0 until 5).map { index ->
+                SongBrowseRow(
+                    slug = "s-$digit-$index",
+                    artist = "Artist",
+                    title = "Zebra $digit-$index",
+                    complexityRating = 10.0 + digit + index * 0.01
+                )
+            }
+        }
+        val subgroups = BrowseSubgrouping.subgroups(songs, BrowseSubgroupStyle.COMPLEXITY_ONES)
+        assertEquals((0..9).map { it.toString() }, subgroups.map { it.key })
+        assertEquals((0..9).map { it.toString() }, subgroups.map { it.label })
+        assertEquals(List(10) { 5 }, subgroups.map { it.songs.size })
+        assertEquals(songs.map { it.slug }, subgroups.flatMap { it.songs }.map { it.slug })
+    }
+
+    @Test
+    fun complexityOnesDigitLeavesAShortOrSingleDigitGroupFlat() {
+        val short = (0 until 20).map { index ->
+            SongBrowseRow("s-$index", "Artist", "Song $index", complexityRating = 10.0 + (index % 10))
+        }
+        val singleDigit = List(50) { index ->
+            SongBrowseRow("s-$index", "Artist", "Song $index", complexityRating = 12.0)
+        }
+        assertEquals(
+            emptyList<BrowseSubgroup>(),
+            BrowseSubgrouping.subgroups(short, BrowseSubgroupStyle.COMPLEXITY_ONES)
+        )
+        assertEquals(
+            emptyList<BrowseSubgroup>(),
+            BrowseSubgrouping.subgroups(singleDigit, BrowseSubgroupStyle.COMPLEXITY_ONES)
+        )
+    }
+
+    @Test
+    fun complexityOnesDigitKeepsOneHundredWithNine() {
+        val nineties = List(39) { index ->
+            SongBrowseRow("n-$index", "Artist", "Song $index", complexityRating = 90.0)
+        }
+        val hundred = SongBrowseRow("hundred", "Artist", "Zed", complexityRating = 100.0)
+        val subgroups = BrowseSubgrouping.subgroups(
+            nineties + hundred,
+            BrowseSubgroupStyle.COMPLEXITY_ONES
+        )
+        assertEquals(listOf("0", "9"), subgroups.map { it.key })
+        assertEquals(listOf("hundred"), subgroups.last().songs.map { it.slug })
+    }
+
+    @Test
     fun condensingSamplesEvenlyKeepingTheFirstAndLastRun() {
         val runs = makeSubgroups(40)
         val sampled = BrowseSubgrouping.condensed(runs, 5)

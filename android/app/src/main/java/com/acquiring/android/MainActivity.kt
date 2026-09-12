@@ -127,6 +127,7 @@ class MainActivity : ComponentActivity() {
         QuizPlaybackController.initialize(this)
         AppInstrumentSession.initialize(this)
         TimelineFrameRateStore.initialize(this)
+        TimelineFrameRateStore.applyToWindow(window)
         AudioDiagnostics.record("app.audioInitialized")
 
         db = Room.databaseBuilder(
@@ -187,6 +188,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        TimelineFrameRateStore.applyToWindow(window)
     }
 
     override fun onPause() {

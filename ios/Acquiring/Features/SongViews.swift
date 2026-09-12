@@ -1555,8 +1555,10 @@ struct QuizView: View {
         HStack(alignment: .center, spacing: 6) {
             tempoKnob(sectionID: sectionID)
                 .frame(width: 96)
-            arpeggioKnob(sectionID: sectionID)
-                .frame(width: 96)
+            if mode == .full {
+                arpeggioKnob(sectionID: sectionID)
+                    .frame(width: 96)
+            }
             mixKnob(sectionID: sectionID)
                 .frame(width: 96)
         }
@@ -3029,7 +3031,8 @@ private struct QuizTimelinePairView: View {
             section: section,
             sectionID: sectionID,
             usesRelativeIonianContext: usesRelativeIonianContext,
-            initialBeat: currentBeat
+            initialBeat: currentBeat,
+            frameRatePreference: TimelineFrameRatePreference.stored
         ))
     }
 
@@ -3107,6 +3110,7 @@ private struct QuizTimelinePairView: View {
                     sectionID: sectionID,
                     usesRelativeIonianContext: usesRelativeIonianContext
                 )
+                displayModel.setFrameRatePreference(frameRatePreference)
             }
     }
 
@@ -3152,6 +3156,9 @@ private struct QuizTimelinePairView: View {
         .onChange(of: frameRateRawValue) { _, _ in
             displayModel.setFrameRatePreference(frameRatePreference)
         }
+        .background {
+            TimelineFrameRateHost(preference: frameRatePreference)
+        }
     }
 
     private var frameRatePreference: TimelineFrameRatePreference {
@@ -3168,6 +3175,34 @@ private struct QuizTimelinePairView: View {
             isPlaying: isPlaying,
             forceSnap: forceSnap
         )
+    }
+}
+
+/// Pins the quiz surface to the Settings frame-rate range. Lock in Major
+/// rebuilds the lane views; without this host those new layers can run at the
+/// display maximum even when the display-link request is 60 fps.
+private struct TimelineFrameRateHost: UIViewRepresentable {
+    let preference: TimelineFrameRatePreference
+
+    func makeUIView(context: Context) -> HostView {
+        HostView()
+    }
+
+    func updateUIView(_ view: HostView, context: Context) {
+        view.apply(preference)
+    }
+
+    final class HostView: UIView {
+        func apply(_ preference: TimelineFrameRatePreference) {
+            let range = preference.displayFrameRateRange()
+            preferredFrameRateRange = range
+            window?.rootViewController?.view.preferredFrameRateRange = range
+        }
+
+        override func didMoveToWindow() {
+            super.didMoveToWindow()
+            preferredFrameRateRange = TimelineFrameRatePreference.stored.displayFrameRateRange()
+        }
     }
 }
 
@@ -3197,10 +3232,12 @@ private final class QuizTimelineDisplayModel: ObservableObject {
         section: ExtractedSection,
         sectionID: String,
         usesRelativeIonianContext: Bool,
-        initialBeat: Double
+        initialBeat: Double,
+        frameRatePreference: TimelineFrameRatePreference = .standard
     ) {
         presentationSectionID = sectionID
         presentationUsesRelativeIonianContext = usesRelativeIonianContext
+        self.frameRatePreference = frameRatePreference
         melodyPresentation = MelodyTimelinePresentation(
             section: section,
             usesRelativeIonianContext: usesRelativeIonianContext
@@ -3245,6 +3282,7 @@ private final class QuizTimelineDisplayModel: ObservableObject {
                 usesRelativeIonianContext: usesRelativeIonianContext
             )
         }
+        configureFrameRate()
     }
 
     func updateSource(
@@ -3324,11 +3362,14 @@ private final class QuizTimelineDisplayModel: ObservableObject {
     private func updateDisplayLinkState() {
         let shouldRun = isPlaying && beatsPerSecond > 0 && isVisible && sceneIsActive && !reduceMotion
         if shouldRun {
-            guard displayLink == nil else { return }
-            let link = CADisplayLink(target: displayLinkTarget, selector: #selector(QuizTimelineDisplayLinkTarget.tick(_:)))
-            displayLink = link
+            if displayLink == nil {
+                let link = CADisplayLink(target: displayLinkTarget, selector: #selector(QuizTimelineDisplayLinkTarget.tick(_:)))
+                displayLink = link
+                link.add(to: .main, forMode: .common)
+            }
+            // Lock-in-Major rebuilds the lane views. Re-apply the range every time
+            // the link should run; iOS can drop it when the hosted views change.
             configureFrameRate()
-            link.add(to: .main, forMode: .common)
         } else {
             displayLink?.invalidate()
             displayLink = nil
@@ -3338,14 +3379,7 @@ private final class QuizTimelineDisplayModel: ObservableObject {
 
     private func configureFrameRate() {
         guard let displayLink else { return }
-        let preferred = frameRatePreference.framesPerSecond(
-            displayMaximum: UIScreen.main.maximumFramesPerSecond
-        )
-        displayLink.preferredFrameRateRange = CAFrameRateRange(
-            minimum: Float(min(preferred, 30)),
-            maximum: Float(preferred),
-            preferred: Float(preferred)
-        )
+        displayLink.preferredFrameRateRange = frameRatePreference.displayFrameRateRange()
     }
 }
 

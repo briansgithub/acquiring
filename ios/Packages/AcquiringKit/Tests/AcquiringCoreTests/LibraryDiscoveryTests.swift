@@ -156,6 +156,18 @@ final class LibraryDiscoveryTests: XCTestCase {
         XCTAssertEqual(BrowseGrouping.complexityBucket(for: 99.999), 9)
     }
 
+    func testComplexityOnesDigitUsesTheIntegerUnitsPlace() {
+        XCTAssertEqual(BrowseGrouping.complexityOnesDigit(for: 0), 0)
+        XCTAssertEqual(BrowseGrouping.complexityOnesDigit(for: 10.9), 0)
+        XCTAssertEqual(BrowseGrouping.complexityOnesDigit(for: 11), 1)
+        XCTAssertEqual(BrowseGrouping.complexityOnesDigit(for: 9.999), 9)
+        XCTAssertEqual(BrowseGrouping.complexityOnesDigit(for: 19.999), 9)
+        XCTAssertEqual(BrowseGrouping.complexityOnesDigit(for: 100), 9)
+        XCTAssertNil(BrowseGrouping.complexityOnesDigit(for: nil))
+        XCTAssertNil(BrowseGrouping.complexityOnesDigit(for: -0.1))
+        XCTAssertNil(BrowseGrouping.complexityOnesDigit(for: 100.1))
+    }
+
     func testComplexityBucketPutsAnExactHundredInTheFinalBucket() {
         XCTAssertEqual(
             BrowseGrouping.complexityBucket(for: 100),

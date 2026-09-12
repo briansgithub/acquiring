@@ -132,6 +132,15 @@ object AllSongsGrouping {
         return if (rating == 100.0) 9 else (rating / 10.0).toInt()
     }
 
+    /**
+     * Ones place of the integer score. An exact 100 stays with 9 so it remains
+     * last inside the 90–100 heading.
+     */
+    fun complexityOnesDigit(rating: Double?): Int? {
+        if (rating == null || !rating.isFinite() || rating < 0.0 || rating > 100.0) return null
+        return if (rating == 100.0) 9 else rating.toInt() % 10
+    }
+
     fun canonicalMode(rawScale: String?): DiatonicMode? {
         val normalized = rawScale
             ?.trim()

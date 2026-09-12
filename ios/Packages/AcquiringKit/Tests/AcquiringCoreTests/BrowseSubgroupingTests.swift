@@ -1,9 +1,8 @@
 import XCTest
 @testable import AcquiringCore
 
-/// Covers the title-prefix runs that break a several-thousand-song All Songs
-/// heading into scannable waypoints. There is no Android counterpart; these are
-/// the boundaries the iOS list depends on.
+/// Covers the title-prefix and complexity-ones runs that break a large All
+/// Songs heading into scannable waypoints.
 final class BrowseSubgroupingTests: XCTestCase {
     func testShortGroupsAreLeftFlat() {
         let songs = makeSongs(titles: (0..<(BrowseSubgrouping.minimumSongCount - 1)).map { "Song \($0)" })
@@ -109,6 +108,68 @@ final class BrowseSubgroupingTests: XCTestCase {
 
         XCTAssertEqual(targets.map(\.id), [first.id, other.id])
         XCTAssertEqual(BrowseSubgrouping.jumpTargets(for: []), [])
+    }
+
+    func testComplexityOnesDigitSplitsARatedGroupInScoreOrder() {
+        let songs = (0...9).flatMap { digit in
+            (0..<5).map { index in
+                CatalogSong(
+                    id: "s-\(digit)-\(index)",
+                    artist: "Artist",
+                    title: "Zebra \(digit)-\(index)",
+                    complexityRating: 10 + Double(digit) + Double(index) * 0.01
+                )
+            }
+        }
+        let subgroups = BrowseSubgrouping.subgroups(for: songs, style: .complexityOnes)
+        XCTAssertEqual(subgroups.map(\.key), (0...9).map(String.init))
+        XCTAssertEqual(subgroups.map(\.label), (0...9).map(String.init))
+        XCTAssertEqual(subgroups.map(\.songs.count), Array(repeating: 5, count: 10))
+        XCTAssertEqual(subgroups.flatMap(\.songs).map(\.id), songs.map(\.id))
+    }
+
+    func testComplexityOnesDigitLeavesAShortOrSingleDigitGroupFlat() {
+        let short = (0..<20).map { index in
+            CatalogSong(
+                id: "s-\(index)",
+                artist: "Artist",
+                title: "Song \(index)",
+                complexityRating: 10 + Double(index % 10)
+            )
+        }
+        let singleDigit = (0..<50).map { index in
+            CatalogSong(
+                id: "s-\(index)",
+                artist: "Artist",
+                title: "Song \(index)",
+                complexityRating: 12
+            )
+        }
+        XCTAssertEqual(BrowseSubgrouping.subgroups(for: short, style: .complexityOnes), [])
+        XCTAssertEqual(BrowseSubgrouping.subgroups(for: singleDigit, style: .complexityOnes), [])
+    }
+
+    func testComplexityOnesDigitKeepsOneHundredWithNine() {
+        let nineties = (0..<39).map { index in
+            CatalogSong(
+                id: "n-\(index)",
+                artist: "Artist",
+                title: "Song \(index)",
+                complexityRating: 90
+            )
+        }
+        let hundred = CatalogSong(
+            id: "hundred",
+            artist: "Artist",
+            title: "Zed",
+            complexityRating: 100
+        )
+        let subgroups = BrowseSubgrouping.subgroups(
+            for: nineties + [hundred],
+            style: .complexityOnes
+        )
+        XCTAssertEqual(subgroups.map(\.key), ["0", "9"])
+        XCTAssertEqual(subgroups.last?.songs.map(\.id), ["hundred"])
     }
 
     func testCondensingKeepsEveryRunWhenTheyAllFit() {

@@ -121,6 +121,10 @@ class AllSongsDaoTest {
             dao.getSongsInComplexityGroup(1).map(SongBrowseRow::title)
         )
         assertEquals(
+            listOf(12.0, 12.0),
+            dao.getSongsInComplexityGroup(1).map(SongBrowseRow::complexityRating)
+        )
+        assertEquals(
             listOf("alpha", "zulu"),
             dao.getSongsInMode("ionian").map(SongBrowseRow::title)
         )
@@ -146,6 +150,19 @@ class AllSongsDaoTest {
             ),
             dao.getBrowseMetadataStatus()
         )
+    }
+
+    @Test
+    fun complexityGroupSortsByIncreasingRatingThenTitle() = runBlocking {
+        addSong("high-title", "Alpha", "Artist", 19.0, byteArrayOf(1))
+        addSong("low-title", "zulu", "Artist", 11.0, byteArrayOf(2))
+        addSong("mid-later", "zulu", "Artist Z", 15.0, byteArrayOf(3))
+        addSong("mid-earlier", "Alpha", "Artist A", 15.0, byteArrayOf(4))
+
+        val rows = dao.getSongsInComplexityGroup(1)
+        assertEquals(listOf("zulu", "Alpha", "zulu", "Alpha"), rows.map(SongBrowseRow::title))
+        assertEquals(listOf("low-title", "mid-earlier", "mid-later", "high-title"), rows.map(SongBrowseRow::slug))
+        assertEquals(listOf(11.0, 15.0, 15.0, 19.0), rows.map(SongBrowseRow::complexityRating))
     }
 
     @Test

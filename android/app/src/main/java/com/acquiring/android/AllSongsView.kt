@@ -1,13 +1,11 @@
 package com.acquiring.android
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -400,8 +398,18 @@ fun AllSongsView(
             }
         }
 
-        val subgroups = remember(runtimeState.visibleSongs) {
-            BrowseSubgrouping.subgroups(runtimeState.visibleSongs)
+        val subgroupStyle = remember(sortMode, expandedGroupKey) {
+            if (sortMode == AllSongsSortMode.COMPLEXITY &&
+                expandedGroupKey != null &&
+                expandedGroupKey != AllSongsGrouping.UNRATED_KEY
+            ) {
+                BrowseSubgroupStyle.COMPLEXITY_ONES
+            } else {
+                BrowseSubgroupStyle.TITLE_PREFIX
+            }
+        }
+        val subgroups = remember(runtimeState.visibleSongs, subgroupStyle) {
+            BrowseSubgrouping.subgroups(runtimeState.visibleSongs, subgroupStyle)
         }
         val jumpTargets = remember(subgroups) {
             BrowseSubgrouping.condensed(BrowseSubgrouping.jumpTargets(subgroups), 14)
@@ -539,7 +547,16 @@ fun AllSongsView(
                         ) { song ->
                             Card(
                                 onClick = { onSongClick(song) },
-                                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp, horizontal = 8.dp)
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp, horizontal = 8.dp)
+                                    .then(
+                                        if (jumpTargets.isNotEmpty()) {
+                                            Modifier.padding(end = BrowseScrubberDefaults.TouchWidth)
+                                        } else {
+                                            Modifier
+                                        }
+                                    )
                             ) {
                                 Column(modifier = Modifier.padding(10.dp)) {
                                     Text(
@@ -565,35 +582,23 @@ fun AllSongsView(
             }
             }
             if (jumpTargets.isNotEmpty()) {
-                Column(
+                BrowseScrubber(
+                    targets = jumpTargets,
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
-                        .fillMaxHeight()
-                        .padding(end = 4.dp),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    jumpTargets.forEach { target ->
-                        Text(
-                            text = target.label,
-                            style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier
-                                .clickable {
-                                    scope.launch {
-                                        val before = groups.indexOfFirst { it.key == expandedGroupKey }
-                                            .coerceAtLeast(0)
-                                        val index = BrowseSubgrouping.indexOfSubgroup(
-                                            before,
-                                            subgroups,
-                                            target.id
-                                        )
-                                        if (index != null) {
-                                            runtimeState.listState.animateScrollToItem(index)
-                                        }
-                                    }
-                                }
-                                .padding(vertical = 2.dp, horizontal = 4.dp)
-                                .testTag("AllSongsScrubber-${target.key}")
+                        .padding(end = 4.dp)
+                ) { target ->
+                    scope.launch {
+                        val before = groups.indexOfFirst { it.key == expandedGroupKey }
+                            .coerceAtLeast(0)
+                        val index = BrowseSubgrouping.indexOfSubgroup(
+                            before,
+                            subgroups,
+                            target.id
                         )
+                        if (index != null) {
+                            runtimeState.listState.scrollToItem(index)
+                        }
                     }
                 }
             }

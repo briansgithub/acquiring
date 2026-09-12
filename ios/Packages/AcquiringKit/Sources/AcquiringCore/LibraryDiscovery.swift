@@ -127,6 +127,13 @@ public enum BrowseGrouping {
         return rating == 100 ? 9 : Int(rating / 10)
     }
 
+    /// Ones place of the integer score. An exact 100 stays with 9 so it remains
+    /// last inside the 90–100 heading.
+    public static func complexityOnesDigit(for rating: Double?) -> Int? {
+        guard let rating, rating.isFinite, rating >= 0, rating <= 100 else { return nil }
+        return rating == 100 ? 9 : Int(rating.rounded(.towardZero)) % 10
+    }
+
     // MARK: Modes
 
     /// Resolves a raw scale name to a diatonic mode, tolerating case and the

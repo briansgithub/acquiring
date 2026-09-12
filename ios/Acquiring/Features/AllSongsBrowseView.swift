@@ -87,10 +87,10 @@ struct AllSongsBrowseView: View {
         .accessibilityIdentifier("allSongs.index")
     }
 
-    /// A heading like "S" or a mode can hold thousands of songs, so the open
-    /// group gets a fast-scroll track over its title-prefix runs. It rides the
-    /// list rather than the header, staying under the thumb however deep the
-    /// reader has scrolled.
+    /// A heading like "S", a mode, or a complexity band can hold thousands of
+    /// songs, so the open group gets a fast-scroll track over its runs. It
+    /// rides the list rather than the header, staying under the thumb however
+    /// deep the reader has scrolled.
     @ViewBuilder
     private func scrubber(browse: Bindable<AllSongsBrowseStore>, proxy: ScrollViewProxy) -> some View {
         let targets = BrowseSubgrouping.jumpTargets(for: browse.wrappedValue.songSubgroups)

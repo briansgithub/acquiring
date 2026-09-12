@@ -20,7 +20,7 @@ final class AllSongsBrowseStore {
     private(set) var metadataState: FeatureState<BrowseMetadataStatus> = .idle
     private(set) var countsState: FeatureState<[String: Int]> = .idle
     private(set) var songsState: FeatureState<[CatalogSong]> = .idle
-    /// Title-prefix runs for the open group, so a heading holding thousands of
+    /// In-group runs for the open heading, so a band holding thousands of
     /// songs can be scanned and jumped through instead of only dragged.
     private(set) var songSubgroups: [BrowseSubgroup] = []
 
@@ -223,7 +223,12 @@ final class AllSongsBrowseStore {
                       self.appliedFilter == filter
                 else { return }
                 self.songsState = songs.isEmpty ? .empty : .content(songs)
-                self.songSubgroups = BrowseSubgrouping.subgroups(for: songs)
+                self.songSubgroups = BrowseSubgrouping.subgroups(
+                    for: songs,
+                    style: mode == .complexity && key != BrowseGrouping.unratedKey
+                        ? .complexityOnes
+                        : .titlePrefix
+                )
                 self.loadedMode = mode
                 self.loadedGroupKey = key
                 self.loadedFilter = filter
