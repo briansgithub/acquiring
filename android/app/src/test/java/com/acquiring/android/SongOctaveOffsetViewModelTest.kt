@@ -4,10 +4,10 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 
-class TessituraSessionViewModelTest {
+class SongOctaveOffsetViewModelTest {
     @Test
     fun reenteringSameSessionKeepsTheOffset() {
-        val state = TessituraSessionViewModel()
+        val state = SongOctaveOffsetViewModel()
         state.enterSession("song-a", "song-a:verse")
         state.updateOctaveOffset(-1)
 
@@ -19,7 +19,7 @@ class TessituraSessionViewModelTest {
 
     @Test
     fun offsetIsClampedToTheAgreedRange() {
-        val state = TessituraSessionViewModel()
+        val state = SongOctaveOffsetViewModel()
         state.enterSession("song-a", "song-a:verse")
         state.updateOctaveOffset(-8)
         assertEquals(OCTAVE_OFFSET_MIN, state.octaveOffset)
@@ -30,8 +30,32 @@ class TessituraSessionViewModelTest {
     }
 
     @Test
+    fun changingSectionKeepsTheOffset() {
+        val state = SongOctaveOffsetViewModel()
+        state.enterSession("song-a", "song-a:verse")
+        state.updateOctaveOffset(-1)
+
+        state.enterSession("song-a", "song-a:chorus")
+
+        assertEquals(-1, state.octaveOffset)
+        assertEquals("song-a:chorus", state.sessionKey)
+    }
+
+    @Test
+    fun enteringANewSongZerosTheInMemoryOffset() {
+        val state = SongOctaveOffsetViewModel()
+        state.enterSession("song-a", "song-a:verse")
+        state.updateOctaveOffset(2)
+
+        state.enterSession("song-b", "song-b:verse")
+
+        assertEquals(0, state.octaveOffset)
+        assertEquals("song-b", state.songSlug)
+    }
+
+    @Test
     fun leavingTheSongClearsTheSession() {
-        val state = TessituraSessionViewModel()
+        val state = SongOctaveOffsetViewModel()
         state.enterSession("song-a", "song-a:verse")
         state.updateOctaveOffset(2)
 

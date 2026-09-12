@@ -156,21 +156,30 @@ internal fun QuizInstrumentMenu(
     val selectedLabel = selectedInstrument.displayName
 
     Box(modifier) {
-        FilledTonalIconButton(
+        Surface(
             onClick = { expanded = true },
             modifier = Modifier
-                .size(56.dp)
+                .size(QUIZ_TRANSPORT_CONTROL)
                 .testTag(QUIZ_INSTRUMENT_BUTTON_TEST_TAG)
                 .semantics {
                     contentDescription = "Instrument"
                     stateDescription = selectedLabel
-                }
+                    role = Role.Button
+                },
+            shape = RoundedCornerShape(QUIZ_TRANSPORT_CORNER),
+            color = Color.Transparent,
+            border = quizTransportOutline()
         ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_piano),
-                contentDescription = null,
-                modifier = Modifier.size(28.dp)
-            )
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.size(QUIZ_TRANSPORT_CONTROL)
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_piano),
+                    contentDescription = null,
+                    modifier = Modifier.size(22.dp)
+                )
+            }
         }
         DropdownMenu(
             expanded = expanded,
@@ -221,12 +230,12 @@ internal fun QuizTransposeMenu(
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
-        modifier = modifier.width(108.dp)
+        modifier = modifier.width(QUIZ_TRANSPORT_SELECTOR)
     ) {
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp)
+                .height(QUIZ_TRANSPORT_CONTROL)
                 .menuAnchor()
                 .testTag(QUIZ_TRANSPOSE_BUTTON_TEST_TAG)
                 .semantics {
@@ -234,10 +243,9 @@ internal fun QuizTransposeMenu(
                     stateDescription = transposeText
                     role = Role.Button
                 },
-            shape = RoundedCornerShape(28.dp),
-            color = MaterialTheme.colorScheme.secondaryContainer,
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            tonalElevation = 1.dp
+            shape = RoundedCornerShape(QUIZ_TRANSPORT_CORNER),
+            color = Color.Transparent,
+            border = quizTransportOutline()
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -245,7 +253,11 @@ internal fun QuizTransposeMenu(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text("Transpose", style = MaterialTheme.typography.labelSmall, maxLines = 1)
-                Text(transposeText, fontWeight = FontWeight.Bold)
+                Text(
+                    transposeText,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
         }
         ExposedDropdownMenuWithScrollbar(

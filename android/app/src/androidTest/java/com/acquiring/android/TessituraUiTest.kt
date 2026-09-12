@@ -1,13 +1,11 @@
 package com.acquiring.android
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.semantics.SemanticsProperties
-import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -45,34 +43,14 @@ class TessituraUiTest {
     )
 
     @Test
-    fun targetSlotsRenderVectorScaleDegreesAndAdjustedHints() {
+    fun targetSlotsRenderVectorScaleDegrees() {
         setHummingContent(octaveOffset = -1)
 
         composeTestRule.onNodeWithContentDescription("Scale degree flat 3").assertExists()
         composeTestRule.onNodeWithContentDescription("Scale degree sharp 4").assertExists()
-        composeTestRule.onAllNodes(
-            SemanticsMatcher.expectValue(
-                SemanticsProperties.StateDescription,
-                "Tessitura adjusted"
-            ),
-            useUnmergedTree = true
-        ).assertCountEquals(2)
         composeTestRule.onNodeWithText("Pitch 1").assertDoesNotExist()
         composeTestRule.onNodeWithText("Pitch 2").assertDoesNotExist()
         composeTestRule.onNodeWithTag(SINGING_INTERVAL_RESULT_TEST_TAG).assertIsNotEnabled()
-    }
-
-    @Test
-    fun writtenOctaveDoesNotMarkTheSlotsAdjusted() {
-        setHummingContent(octaveOffset = 0)
-
-        composeTestRule.onAllNodes(
-            SemanticsMatcher.expectValue(
-                SemanticsProperties.StateDescription,
-                "Original target octave"
-            ),
-            useUnmergedTree = true
-        ).assertCountEquals(2)
     }
 
     @Test
@@ -117,21 +95,21 @@ class TessituraUiTest {
     }
 
     @Test
-    fun dockOffersStopAndOctaveShifterWithoutStartingTheMic() {
+    fun dockOffersSignedOctaveOffsetWithoutAPermanentStop() {
         setHummingContent(autoListen = false)
-        composeTestRule.onNodeWithTag(SINGING_STOP_TEST_TAG).assertExists()
+        composeTestRule.onNodeWithTag(SINGING_STOP_TEST_TAG).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(SINGING_PERSISTENT_STOP_TEST_TAG).assertDoesNotExist()
         composeTestRule.onNodeWithTag(SINGING_OCTAVE_SHIFTER_TEST_TAG, useUnmergedTree = true)
             .assertExists()
-        composeTestRule.onNodeWithContentDescription("Written octave").assertExists()
-        composeTestRule.onNodeWithContentDescription("Singing octave offset -2").assertExists()
-        composeTestRule.onNodeWithContentDescription("Singing octave offset +3").assertExists()
-        composeTestRule
-            .onNodeWithContentDescription("Raise tessitura shift by one octave")
-            .assertDoesNotExist()
+        composeTestRule.onNodeWithContentDescription("Octave offset").assertExists()
+        composeTestRule.onNodeWithText("0", useUnmergedTree = true).assertExists()
+        composeTestRule.onNodeWithContentDescription("Lower singing octave").assertExists()
+        composeTestRule.onNodeWithContentDescription("Raise singing octave").assertExists()
+        composeTestRule.onAllNodesWithContentDescription("Record").assertCountEquals(0)
     }
 
     @Test
-    fun changingOffsetKeepsLoadedTargetsAndMarksThemAdjusted() {
+    fun changingOffsetKeepsLoadedTargetsAndShowsASignedLabel() {
         val offset = mutableStateOf(0)
         val pitchSource = FakePitchSource()
         composeTestRule.setContent {
@@ -147,8 +125,9 @@ class TessituraUiTest {
             }
         }
 
-        composeTestRule.onNodeWithContentDescription("Singing octave offset -1").performClick()
+        composeTestRule.onNodeWithContentDescription("Lower singing octave").performClick()
         composeTestRule.runOnIdle { assertEquals(-1, offset.value) }
+        composeTestRule.onNodeWithText("-1", useUnmergedTree = true).assertExists()
         composeTestRule.onNodeWithContentDescription("Scale degree flat 3").assertExists()
     }
 
@@ -178,24 +157,18 @@ class TessituraUiTest {
     }
 
     @Test
-    fun doubleTapHintExposesUnadjustedState() {
-        composeTestRule.setContent {
-            Box { DoubleTapHint(isTessituraAdjusted = false) }
-        }
-
-        composeTestRule.onNode(
-            SemanticsMatcher.expectValue(
-                SemanticsProperties.StateDescription,
-                "Original target octave"
-            )
-        ).assertExists()
+    fun collapsedDockShowsPersistentStopOnlyWhileMonitoring() {
+        setHummingContent(request = null, persistentMonitoring = true)
+        composeTestRule.onNodeWithTag(SINGING_PERSISTENT_STOP_TEST_TAG).assertExists()
+        composeTestRule.onNodeWithTag(SINGING_STOP_TEST_TAG).assertDoesNotExist()
     }
 
     private fun setHummingContent(
         octaveOffset: Int = 0,
         request: SingingTargetRequest? = targetRequest,
         pitchSource: FakePitchSource = FakePitchSource(),
-        autoListen: Boolean = false
+        autoListen: Boolean = false,
+        persistentMonitoring: Boolean = false
     ) {
         composeTestRule.setContent {
             MaterialTheme {
@@ -204,7 +177,8 @@ class TessituraUiTest {
                     octaveOffset = octaveOffset,
                     pitchSource = pitchSource,
                     autoListenOnTargetLoad = autoListen,
-                    recordAudioPermissionOverride = true
+                    recordAudioPermissionOverride = true,
+                    isPersistentMonitoring = persistentMonitoring
                 )
             }
         }

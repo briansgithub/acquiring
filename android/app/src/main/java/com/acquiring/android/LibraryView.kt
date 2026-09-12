@@ -34,6 +34,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
@@ -70,6 +72,7 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.style.TextAlign
 
@@ -147,6 +150,19 @@ fun LibraryView(
     val focusManager = LocalFocusManager.current
     val showChrome = libraryChromeVisible(searchFocused)
     val activeQuery = if (searchScope == LibrarySearchScope.SONGS) searchQuery else searchArtistQuery
+    val executeSearch = {
+        if (searchScope == LibrarySearchScope.SONGS) {
+            if (searchOnHooktheory) {
+                uriHandler.openUri(
+                    "https://www.hooktheory.com/theorytab/search?q=${Uri.encode(searchQuery)}"
+                )
+            } else {
+                onSearchTitle()
+            }
+        } else {
+            onSearchArtist()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -157,17 +173,10 @@ fun LibraryView(
     ) {
         if (showChrome) {
             Spacer(modifier = Modifier.weight(0.3f))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Search Library",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(1f)
-                )
-                PrivacyPolicyLink()
-            }
+            Text(
+                text = "Search Library",
+                style = MaterialTheme.typography.titleMedium
+            )
         }
         
         // Search by Title/Slug
@@ -184,14 +193,18 @@ fun LibraryView(
         ) {
             OutlinedTextField(
                 value = activeQuery,
-                onValueChange = {
+                onValueChange = { raw ->
+                    val next = raw.replace("\n", "")
                     if (searchScope == LibrarySearchScope.SONGS) {
-                        onSearchQueryChange(it)
+                        onSearchQueryChange(next)
                     } else {
-                        onSearchArtistQueryChange(it)
+                        onSearchArtistQueryChange(next)
                     }
                 },
                 label = { Text("Search Library") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(onSearch = { executeSearch() }),
                 modifier = Modifier
                     .fillMaxWidth()
                     .menuAnchor()
@@ -295,19 +308,7 @@ fun LibraryView(
         }
 
         Button(
-            onClick = {
-                if (searchScope == LibrarySearchScope.SONGS) {
-                    if (searchOnHooktheory) {
-                        uriHandler.openUri(
-                            "https://www.hooktheory.com/theorytab/search?q=${Uri.encode(searchQuery)}"
-                        )
-                    } else {
-                        onSearchTitle()
-                    }
-                } else {
-                    onSearchArtist()
-                }
-            },
+            onClick = executeSearch,
             enabled = searchScope == LibrarySearchScope.ARTISTS || !searchOnHooktheory || searchQuery.isNotBlank(),
             modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
         ) {

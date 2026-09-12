@@ -1,57 +1,28 @@
 package com.acquiring.android
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.Checkbox
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 internal const val QUIZ_SCREEN_TEST_TAG = "QuizScreen"
 
@@ -77,7 +48,11 @@ fun QuizDestination(
     persistentPitchSource: PitchSource,
     isFavorite: Boolean,
     onToggleFavorite: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    singingDockExpanded: Boolean = false,
+    stopPersistentSignal: Int = 0,
+    onPersistentMonitoringChange: (Boolean) -> Unit = {},
+    onRequestCollapseDock: () -> Unit = {}
 ) {
     val sectionsInSongOrder = remember(sections) { sections.sectionsInSongOrder() }
     val selectedSectionKey = selectedSectionId
@@ -87,14 +62,19 @@ fun QuizDestination(
     val selectedSection = sections[selectedSectionKey]
         ?: sectionsInSongOrder.firstOrNull()?.value
         ?: sections.values.first()
-    var isSectionExpanded by remember { mutableStateOf(false) }
     var isSimpleMode by remember { mutableStateOf(false) }
     var useRelativeIonianContext by remember { mutableStateOf(false) }
     var quizKeyDisplay by remember { mutableStateOf<QuizKeyDisplay?>(null) }
     var showTitleSheet by remember { mutableStateOf(false) }
     var showQuizHelp by remember { mutableStateOf(false) }
+    var isPlaying by remember { mutableStateOf(false) }
+    var playEnabled by remember { mutableStateOf(false) }
+    var isPersistentMonitoring by remember { mutableStateOf(false) }
+    val playAction = remember { arrayOf({}) }
+    val resetAction = remember { arrayOf({}) }
+    val persistentToggle = remember { arrayOf({}) }
+    val persistentStop = remember { arrayOf({}) }
     val quizArtistLabel = song.artist?.takeIf { it.isNotBlank() }?.let { song.displayArtist }
-    val quizArtistQuery = song.artist?.takeIf { it.isNotBlank() }?.let(::canonicalArtistName)
     val quizTitleText = buildString {
         append(song.displayTitle)
         if (quizArtistLabel != null) {
@@ -102,49 +82,15 @@ fun QuizDestination(
             append(quizArtistLabel)
         }
     }
-
-    val transposePickerComposable: @Composable () -> Unit = {
-        QuizTransposeMenu(globalTranspose, onTransposeChange)
+    LaunchedEffect(isPersistentMonitoring) {
+        onPersistentMonitoringChange(isPersistentMonitoring)
+        if (isPersistentMonitoring) onRequestCollapseDock()
     }
-
-    val sectionPickerComposable: @Composable () -> Unit = {
-        if (sectionsInSongOrder.size > 1) {
-            ExposedDropdownMenuBox(
-                expanded = isSectionExpanded,
-                onExpandedChange = { isSectionExpanded = !isSectionExpanded },
-                modifier = Modifier.width(180.dp)
-            ) {
-                OutlinedTextField(
-                    value = selectedSection.safeSectionName,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Section") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isSectionExpanded) },
-                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(64.dp)
-                        .menuAnchor()
-                        .testTag(QUIZ_SECTION_BUTTON_TEST_TAG)
-                )
-
-                ExposedDropdownMenuWithScrollbar(
-                    expanded = isSectionExpanded,
-                    onDismissRequest = { isSectionExpanded = false }
-                ) {
-                    sectionsInSongOrder.forEach { (id, section) ->
-                        DropdownMenuItem(
-                            text = { Text(section.safeSectionName) },
-                            onClick = {
-                                onSectionChange(id)
-                                isSectionExpanded = false
-                            },
-                            modifier = Modifier.testTag("QuizSection-$id")
-                        )
-                    }
-                }
-            }
-        }
+    var handledStopSignal by remember { mutableStateOf(stopPersistentSignal) }
+    LaunchedEffect(stopPersistentSignal) {
+        if (stopPersistentSignal == handledStopSignal) return@LaunchedEffect
+        handledStopSignal = stopPersistentSignal
+        persistentStop[0]()
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -153,121 +99,17 @@ fun QuizDestination(
             .fillMaxSize()
             .testTag(QUIZ_SCREEN_TEST_TAG)
     ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
-                    .padding(horizontal = 8.dp)
-            ) {
-                TextButton(
-                    onClick = onBack,
-                    contentPadding = PaddingValues(horizontal = 8.dp),
-                    modifier = Modifier.align(Alignment.CenterStart).height(48.dp)
-                ) { Text("< Back") }
-
-                Row(
-                    modifier = Modifier.align(Alignment.Center).padding(horizontal = 96.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    if (!isSimpleMode) {
-                        Text(
-                            text = quizTitleText,
-                            style = MaterialTheme.typography.bodySmall,
-                            maxLines = 1,
-                            modifier = Modifier
-                                .clickable { showTitleSheet = true }
-                                .semantics { contentDescription = "Quiz title" }
-                        )
-                    }
-                }
-
-                Row(modifier = Modifier.align(Alignment.CenterEnd)) {
-                    IconButton(
-                        onClick = { showQuizHelp = true },
-                        modifier = Modifier.size(48.dp).semantics { contentDescription = "Quiz help" }
-                    ) {
-                        Text("?", style = MaterialTheme.typography.titleMedium)
-                    }
-                    IconButton(
-                        onClick = onShowSongInfo,
-                        modifier = Modifier.size(48.dp).testTag(QUIZ_INFO_BUTTON_TEST_TAG)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Info,
-                            contentDescription = "Song information",
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                    IconButton(
-                        onClick = onToggleFavorite,
-                        modifier = Modifier
-                            .size(48.dp)
-                            .testTag(QUIZ_FAVORITE_STAR_TEST_TAG)
-                            .semantics {
-                                contentDescription = if (isFavorite) {
-                                    "Remove from ${PlaylistIds.FAVORITES_NAME}"
-                                } else {
-                                    "Add to ${PlaylistIds.FAVORITES_NAME}"
-                                }
-                                stateDescription = if (isFavorite) "Favorited" else "Not favorited"
-                                role = Role.Button
-                            }
-                    ) {
-                        Icon(
-                            imageVector = if (isFavorite) {
-                                Icons.Filled.Star
-                            } else {
-                                ImageVector.vectorResource(R.drawable.ic_star_outline)
-                            },
-                            contentDescription = null,
-                            tint = if (isFavorite) {
-                                MaterialTheme.colorScheme.primary
-                            } else {
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                            },
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(40.dp)
-                    .padding(horizontal = 16.dp)
-            ) {
-                Row(
-                    modifier = Modifier.align(Alignment.Center),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Checkbox(
-                        checked = useRelativeIonianContext,
-                        onCheckedChange = { useRelativeIonianContext = it },
-                        modifier = Modifier
-                            .scale(0.85f)
-                            .semantics { contentDescription = "Lock in Major" }
-                    )
-                    quizKeyDisplay?.let { keyDisplay ->
-                        Text(
-                            text = keyDisplay.label,
-                            textAlign = TextAlign.Center,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = keyDisplay.color,
-                            maxLines = 1,
-                            modifier = if (keyDisplay.isLockedToMajor) {
-                                Modifier
-                                    .border(1.dp, Color.Red, RoundedCornerShape(4.dp))
-                                    .padding(horizontal = 8.dp, vertical = 2.dp)
-                            } else {
-                                Modifier
-                            }
-                        )
-                    }
-                }
-            }
-        }
+        QuizScreenHeader(
+            titleText = quizTitleText.takeUnless { isSimpleMode },
+            onBack = onBack,
+            onTitleClick = { showTitleSheet = true },
+            useRelativeIonianContext = useRelativeIonianContext,
+            onLockInMajorChange = { useRelativeIonianContext = it },
+            keyDisplay = quizKeyDisplay,
+            isMonitoring = isPersistentMonitoring,
+            onToggleMonitoring = { persistentToggle[0]() },
+            onShowHelp = { showQuizHelp = true }
+        )
 
         QuizTab(
             section = selectedSection,
@@ -276,8 +118,6 @@ fun QuizDestination(
             useRelativeIonianContext = useRelativeIonianContext,
             currentWaveform = currentWaveform,
             onWaveformChange = onWaveformChange,
-            sectionPicker = sectionPickerComposable,
-            transposePicker = transposePickerComposable,
             onKeyDisplayChange = { quizKeyDisplay = it },
             globalTranspose = globalTranspose,
             tempoPercent = quizTempoPercent,
@@ -287,7 +127,41 @@ fun QuizDestination(
             onSingingTargetsRequested = onSingingTargetsRequested,
             octaveOffset = octaveOffset,
             sessionKey = "${song.slug}:${selectedSectionKey.orEmpty()}",
-            persistentPitchSource = persistentPitchSource
+            persistentPitchSource = persistentPitchSource,
+            modifier = Modifier.weight(1f),
+            onTransportActions = { playing, enabled, play, reset ->
+                playAction[0] = play
+                resetAction[0] = reset
+                if (isPlaying != playing) isPlaying = playing
+                if (playEnabled != enabled) playEnabled = enabled
+            },
+            onPersistentPracticeActions = { active, toggle, stop ->
+                persistentToggle[0] = toggle
+                persistentStop[0] = stop
+                if (isPersistentMonitoring != active) isPersistentMonitoring = active
+            }
+        )
+
+        QuizTransportBar(
+            showSecondaryRow = !singingDockExpanded,
+            isFavorite = isFavorite,
+            onToggleFavorite = onToggleFavorite,
+            currentWaveform = currentWaveform,
+            onWaveformChange = onWaveformChange,
+            transpose = globalTranspose,
+            onTransposeChange = onTransposeChange,
+            onReset = { resetAction[0]() },
+            resetEnabled = true,
+            isPlaying = isPlaying,
+            playEnabled = playEnabled,
+            onPlay = { playAction[0]() },
+            onShowSongInfo = onShowSongInfo,
+            isSimpleMode = isSimpleMode,
+            onSimpleModeChange = { isSimpleMode = it },
+            sectionOptions = sectionsInSongOrder.map { it.key to it.value.safeSectionName },
+            selectedSectionId = selectedSectionKey.orEmpty(),
+            selectedSectionLabel = selectedSection.safeSectionName,
+            onSectionChange = onSectionChange
         )
     }
         if (showQuizHelp) {
@@ -301,11 +175,11 @@ fun QuizDestination(
                 Column(modifier = Modifier.padding(24.dp)) {
                     Text("Quiz help", style = MaterialTheme.typography.titleLarge)
                     Text(
-                        "Tap a card to hear it. Double-tap to sing it back. Hold for live pitch practice.",
+                        "Tap a card to hear it. Double-tap to sing it back. Use the microphone button for live pitch practice.",
                         modifier = Modifier.padding(top = 12.dp)
                     )
                     Text(
-                        "The singing dock’s octave shifter moves targets only. Expand the dock from its handle without starting the microphone.",
+                        "The singing dock’s octave offset moves targets only. Expand the dock from its handle without starting the microphone.",
                         modifier = Modifier.padding(top = 8.dp)
                     )
                     Text(

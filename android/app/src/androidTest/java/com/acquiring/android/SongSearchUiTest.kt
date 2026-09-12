@@ -8,6 +8,7 @@ import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -64,7 +65,7 @@ class SongSearchUiTest {
         runBlocking {
             db.songDao().upsertBrowseEntry(SongBrowseEntry("all-star", "smash-mouth", "All Star", "A", 12.0, 1))
         }
-        val session = TessituraSessionViewModel()
+        val session = SongOctaveOffsetViewModel()
         composeRule.setContent {
             MaterialTheme { MainScreen(db, userDb, session) }
         }
@@ -77,7 +78,7 @@ class SongSearchUiTest {
         val songRow = hasText("All Star") and hasClickAction() and !hasSetTextAction()
         composeRule.waitUntil(5_000) { composeRule.onAllNodes(songRow).fetchSemanticsNodes().isNotEmpty() }
         composeRule.onNode(songRow).performClick()
-        waitForText("Play")
+        waitForPlay()
         pressBack()
         composeRule.onNodeWithTag("AllSongsFilter").assertIsDisplayed()
         composeRule.onNodeWithContentDescription("Collapse A").assertIsDisplayed()
@@ -86,7 +87,7 @@ class SongSearchUiTest {
 
     @Test
     fun informationIsADetourAndQuizBackReturnsToSearchOrArtist() {
-        val session = TessituraSessionViewModel()
+        val session = SongOctaveOffsetViewModel()
         composeRule.setContent {
             MaterialTheme { MainScreen(db, userDb, session) }
         }
@@ -94,13 +95,13 @@ class SongSearchUiTest {
         field.performClick().performTextInput("All")
         waitForText("All Star")
         composeRule.onNodeWithText("All Star").performClick()
-        waitForText("Play")
+        waitForPlay()
         androidx.test.espresso.Espresso.closeSoftKeyboard()
         repeat(2) { visit ->
             composeRule.onNodeWithTag(QUIZ_INFO_BUTTON_TEST_TAG).performClick()
             waitForText("OVERVIEW")
             if (visit == 0) pressBack() else composeRule.onNodeWithText("< Back").performClick()
-            waitForText("Play")
+            waitForPlay()
             composeRule.onNodeWithTag(QUIZ_INFO_BUTTON_TEST_TAG).assertIsDisplayed()
         }
         pressBack()
@@ -110,11 +111,11 @@ class SongSearchUiTest {
         field.performClick()
         waitForText("All Star")
         composeRule.onNodeWithText("All Star").performClick()
-        waitForText("Play")
+        waitForPlay()
         composeRule.onNodeWithText("Smash Mouth").performClick()
         waitForText("All Star")
         composeRule.onNodeWithText("All Star").performClick()
-        waitForText("Play")
+        waitForPlay()
         composeRule.onNodeWithText("< Back").performClick()
         waitForText("All Star")
         composeRule.onNodeWithText("Smash Mouth").assertIsDisplayed()
@@ -129,10 +130,11 @@ class SongSearchUiTest {
         count: Int,
         artists: Boolean = false
     ) {
-        val session = TessituraSessionViewModel()
+        val session = SongOctaveOffsetViewModel()
         composeRule.setContent {
             MaterialTheme { MainScreen(db, userDb, session) }
         }
+        composeRule.onNodeWithText("Privacy policy").assertDoesNotExist()
         if (artists) {
             composeRule.onNodeWithTag("LibrarySearchScopeArtists").performClick()
         }
@@ -146,7 +148,13 @@ class SongSearchUiTest {
         waitForText("Arpeggiate")
         composeRule.onNodeWithText("Arpeggiate").assertIsDisplayed()
         composeRule.onNodeWithText("All Star").assertIsDisplayed()
-        composeRule.onNodeWithText("Play").assertIsDisplayed()
+        composeRule.onNodeWithContentDescription("Play").assertIsDisplayed()
+    }
+
+    private fun waitForPlay() {
+        composeRule.waitUntil(5_000) {
+            composeRule.onAllNodesWithContentDescription("Play").fetchSemanticsNodes().isNotEmpty()
+        }
     }
 
     private fun waitForText(text: String) {

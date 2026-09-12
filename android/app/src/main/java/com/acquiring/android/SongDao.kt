@@ -148,6 +148,14 @@ interface SongDao {
 
     @Query(
         """
+        SELECT slug, artist, title, NULL AS complexityRating
+        FROM songs
+        WHERE """ + LOADABLE_SQL
+    )
+    suspend fun getSearchIndexRows(): List<SongBrowseRow>
+
+    @Query(
+        """
         SELECT
             (SELECT COUNT(*) FROM song_browse_entries) AS browseCount,
             (SELECT COUNT(*)

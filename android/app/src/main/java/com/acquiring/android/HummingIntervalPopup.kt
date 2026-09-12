@@ -64,6 +64,7 @@ internal const val SINGING_TARGET_ROW_TEST_TAG = "singing-target-row"
 internal const val SINGING_INTERVAL_RESULT_TEST_TAG = "singing-interval-result"
 internal const val SINGING_DOCK_TEST_TAG = "singing-dock"
 internal const val SINGING_STOP_TEST_TAG = "singing-stop"
+internal const val SINGING_PERSISTENT_STOP_TEST_TAG = "vocal.practice.persistent.stop"
 internal const val SINGING_OCTAVE_SHIFTER_TEST_TAG = "singing-octave-shifter"
 
 private sealed interface RequestedMicrophoneAction {
@@ -93,9 +94,18 @@ internal fun HummingIntervalPopup(
         remember(appContext) { MicrophonePitchTracker(appContext) }
     },
     autoListenOnTargetLoad: Boolean = true,
-    recordAudioPermissionOverride: Boolean? = null
+    recordAudioPermissionOverride: Boolean? = null,
+    onExpandedChange: (Boolean) -> Unit = {},
+    isPersistentMonitoring: Boolean = false,
+    onStopPersistent: () -> Unit = {},
+    departureTick: Int = 0,
+    collapseTick: Int = 0
 ) {
     var isExpanded by remember { mutableStateOf(false) }
+    fun setExpanded(value: Boolean) {
+        isExpanded = value
+        onExpandedChange(value)
+    }
     var clearAfterCollapse by remember { mutableStateOf(false) }
     var slot1 by remember { mutableStateOf<PitchData?>(null) }
     var slot2 by remember { mutableStateOf<PitchData?>(null) }
@@ -159,7 +169,7 @@ internal fun HummingIntervalPopup(
                     // always shows the tool collapsed and empty, exactly as a cold
                     // launch does. Nothing is on screen to animate here, so the
                     // targets are dropped immediately instead of via clearAfterCollapse.
-                    isExpanded = false
+                    setExpanded(false)
                     clearAfterCollapse = false
                     activeTarget = null
                     slot1 = null
@@ -190,11 +200,6 @@ internal fun HummingIntervalPopup(
     fun resolvedTargetForSlot(slotId: Int): Int? =
         if (slotId == 1) resolvedTargetMidis.first else resolvedTargetMidis.second
 
-    fun isSlotTessituraAdjusted(slotId: Int): Boolean {
-        val target = activeTarget?.let { targetForSlot(it, slotId) } ?: return false
-        return target != null && octaveOffset != 0
-    }
-
     fun stopMicrophoneAction() {
         microphoneAction = ActiveMicrophoneAction.Idle
         recordingSlot = null
@@ -224,6 +229,26 @@ internal fun HummingIntervalPopup(
         slot1 = null
         slot2 = null
         clearAfterCollapse = false
+    }
+
+    fun collapseForDeparture() {
+        stopMicrophoneAction()
+        setExpanded(false)
+        clearAfterCollapse = false
+        activeTarget = null
+        slot1 = null
+        slot2 = null
+    }
+
+    LaunchedEffect(departureTick) {
+        if (departureTick > 0) collapseForDeparture()
+    }
+
+    LaunchedEffect(collapseTick) {
+        if (collapseTick <= 0 || !isExpanded) return@LaunchedEffect
+        stopMicrophoneAction()
+        clearAfterCollapse = true
+        setExpanded(false)
     }
 
     fun activateMicrophoneAction(requested: RequestedMicrophoneAction) {
@@ -303,7 +328,7 @@ internal fun HummingIntervalPopup(
             return@LaunchedEffect
         }
         activeTarget = request
-        isExpanded = true
+        setExpanded(true)
         slot1 = null
         slot2 = null
 
@@ -511,6 +536,12 @@ internal fun HummingIntervalPopup(
 
     val displayedSlot1 = displayedSlotData(1, slot1)
     val displayedSlot2 = displayedSlotData(2, slot2)
+    val isManualPracticeActive = when (microphoneAction) {
+        is ActiveMicrophoneAction.Listening,
+        is ActiveMicrophoneAction.Recording,
+        ActiveMicrophoneAction.FlipFlop -> true
+        else -> false
+    }
 
     Column(
         modifier = modifier
@@ -521,7 +552,7 @@ internal fun HummingIntervalPopup(
             .clickable {
                 if (!isExpanded) {
                     clearAfterCollapse = false
-                    isExpanded = true
+                    setExpanded(true)
                 }
             }
             .padding(horizontal = 8.dp, vertical = 2.dp)
@@ -530,7 +561,7 @@ internal fun HummingIntervalPopup(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(24.dp),
+                .height(if (!isExpanded && isPersistentMonitoring) 44.dp else 24.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -538,7 +569,7 @@ internal fun HummingIntervalPopup(
                 IconButton(
                     onClick = {
                         clearAfterCollapse = true
-                        isExpanded = false
+                        setExpanded(false)
                     },
                     modifier = Modifier.size(24.dp)
                 ) {
@@ -546,7 +577,21 @@ internal fun HummingIntervalPopup(
                 }
             } else {
                 Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Expand Humming Tool")
-                Text("Interval Singing Tool", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(start = 8.dp))
+                Text(
+                    "Interval Singing Tool",
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.padding(start = 8.dp).weight(1f, fill = false)
+                )
+                if (isPersistentMonitoring) {
+                    TextButton(
+                        onClick = onStopPersistent,
+                        modifier = Modifier
+                            .testTag(SINGING_PERSISTENT_STOP_TEST_TAG)
+                            .semantics { contentDescription = "Stop persistent pitch practice" }
+                    ) {
+                        Text("Stop")
+                    }
+                }
             }
         }
 
@@ -578,48 +623,18 @@ internal fun HummingIntervalPopup(
                             }
                         )
                     }
-                    TextButton(
-                        onClick = { stopMicrophoneAction() },
-                        modifier = Modifier.testTag(SINGING_STOP_TEST_TAG)
-                    ) {
-                        Text("Stop")
-                    }
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag(SINGING_OCTAVE_SHIFTER_TEST_TAG)
-                        .padding(horizontal = 4.dp, vertical = 4.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    (OCTAVE_OFFSET_MIN..OCTAVE_OFFSET_MAX).forEach { offset ->
-                        val selected = offset == octaveOffset
-                        val label = if (offset > 0) "+$offset" else "$offset"
+                    SingingOctaveSelector(
+                        octaveOffset = octaveOffset,
+                        onOctaveOffsetChange = onOctaveOffsetChange
+                    )
+                    if (isManualPracticeActive) {
                         TextButton(
-                            onClick = { onOctaveOffsetChange(offset) },
-                            modifier = Modifier.semantics {
-                                contentDescription = if (offset == 0) {
-                                    "Written octave"
-                                } else {
-                                    "Singing octave offset $label"
-                                }
-                                stateDescription = if (selected) "Selected" else "Not selected"
-                            }
+                            onClick = { stopMicrophoneAction() },
+                            modifier = Modifier
+                                .testTag(SINGING_STOP_TEST_TAG)
+                                .semantics { contentDescription = "Stop microphone" }
                         ) {
-                            Text(
-                                text = label,
-                                style = if (selected) {
-                                    MaterialTheme.typography.labelLarge
-                                } else {
-                                    MaterialTheme.typography.labelMedium
-                                },
-                                color = if (selected) {
-                                    MaterialTheme.colorScheme.primary
-                                } else {
-                                    MaterialTheme.colorScheme.onSurface
-                                }
-                            )
+                            Text("Stop")
                         }
                     }
                 }
@@ -639,7 +654,6 @@ internal fun HummingIntervalPopup(
                     isRecording = recordingSlot == 1,
                     isListening = activeListenSlot == 1,
                     isInteractionEnabled = !flipFlopEnabled,
-                    isTessituraAdjusted = isSlotTessituraAdjusted(1),
                     recordingTimeRemaining = if (recordingSlot == 1) recordingTimeRemaining else if (activeListenSlot == 1) listenTimeRemaining else 0,
                     onSingleClick = {
                         recordedPitchPlaybackFrequency(slot1)?.let { frequencyHz ->
@@ -675,7 +689,6 @@ internal fun HummingIntervalPopup(
                     isRecording = recordingSlot == 2,
                     isListening = activeListenSlot == 2,
                     isInteractionEnabled = !flipFlopEnabled,
-                    isTessituraAdjusted = isSlotTessituraAdjusted(2),
                     recordingTimeRemaining = if (recordingSlot == 2) recordingTimeRemaining else if (activeListenSlot == 2) listenTimeRemaining else 0,
                     onSingleClick = {
                         recordedPitchPlaybackFrequency(slot2)?.let { frequencyHz ->
@@ -721,55 +734,27 @@ internal fun HummingIntervalPopup(
                         .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp))
                         .testTag(SINGING_INTERVAL_RESULT_TEST_TAG)
                         .clickable(enabled = capturedSlot1 != null && capturedSlot2 != null) {
-                            val idealTargetMidis =                             idealIntervalPlaybackMidis(
-                                activeTarget,
-                                globalTranspose,
-                                octaveOffset
-                            )
-                            if (idealTargetMidis != null) {
-                                val (firstMidi, secondMidi) = idealTargetMidis
+                            val firstHz = recordedPitchPlaybackFrequency(capturedSlot1)
+                            val secondHz = recordedPitchPlaybackFrequency(capturedSlot2)
+                            if (firstHz != null && secondHz != null) {
                                 scope.launch {
-                                    AudioEngine.playChord(
-                                        listOf(firstMidi),
+                                    AudioEngine.playExactFrequencies(
+                                        listOf(firstHz),
                                         durationMs = 1000,
                                         channel = AudioEngine.PlaybackChannel.PREVIEW
                                     )
                                     delay(1000)
-                                    AudioEngine.playChord(
-                                        listOf(secondMidi),
+                                    AudioEngine.playExactFrequencies(
+                                        listOf(secondHz),
                                         durationMs = 1000,
                                         channel = AudioEngine.PlaybackChannel.PREVIEW
                                     )
                                     delay(1000)
-                                    AudioEngine.playChord(
-                                        listOf(firstMidi, secondMidi),
+                                    AudioEngine.playExactFrequencies(
+                                        listOf(firstHz, secondHz),
                                         durationMs = 1000,
                                         channel = AudioEngine.PlaybackChannel.PREVIEW
                                     )
-                                }
-                            } else {
-                                val s1 = capturedSlot1
-                                val s2 = capturedSlot2
-                                if (s1 != null && s2 != null) {
-                                    scope.launch {
-                                        AudioEngine.playExactFrequencies(
-                                            listOf(midiToFrequency(s1.rawMidi)),
-                                            durationMs = 1000,
-                                            channel = AudioEngine.PlaybackChannel.PREVIEW
-                                        )
-                                        delay(1000)
-                                        AudioEngine.playExactFrequencies(
-                                            listOf(midiToFrequency(s2.rawMidi)),
-                                            durationMs = 1000,
-                                            channel = AudioEngine.PlaybackChannel.PREVIEW
-                                        )
-                                        delay(1000)
-                                        AudioEngine.playExactFrequencies(
-                                            listOf(midiToFrequency(s1.rawMidi), midiToFrequency(s2.rawMidi)),
-                                            durationMs = 1000,
-                                            channel = AudioEngine.PlaybackChannel.PREVIEW
-                                        )
-                                    }
                                 }
                             }
                         }
@@ -839,7 +824,6 @@ internal fun RowScope.HummingSlotView(
     isRecording: Boolean,
     isListening: Boolean = false,
     isInteractionEnabled: Boolean,
-    isTessituraAdjusted: Boolean = false,
     recordingTimeRemaining: Int,
     onSingleClick: () -> Unit,
     onDoubleClick: () -> Unit
@@ -885,20 +869,20 @@ internal fun RowScope.HummingSlotView(
                 .padding(horizontal = 6.dp, vertical = 4.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(20.dp),
-                contentAlignment = Alignment.Center
+            Row(
+                modifier = Modifier.fillMaxWidth().height(24.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                if (label.isNotEmpty()) {
-                    ScaleDegreeText(
-                        label = label,
-                        fontSize = 16.sp,
-                        minFontSize = 10.sp,
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(), contentAlignment = Alignment.Center) {
+                    if (label.isNotEmpty()) {
+                        ScaleDegreeText(
+                            label = label,
+                            fontSize = 16.sp,
+                            minFontSize = 10.sp,
+                            modifier = Modifier.fillMaxSize(),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
 
@@ -943,12 +927,6 @@ internal fun RowScope.HummingSlotView(
                     )
                 }
             }
-        }
-        if (isInteractionEnabled && !isRecording) {
-            DoubleTapHint(
-                modifier = Modifier.padding(6.dp),
-                isTessituraAdjusted = isTessituraAdjusted
-            )
         }
     }
 }

@@ -139,7 +139,7 @@ internal fun formatMelodyTimelinePitchScore(score: MelodyTimelinePitchScore): St
         score.signedCentsError >= MELODY_SCORE_DIRECTION_DEADBAND_CENTS -> "+"
         else -> ""
     }
-    return "$directionPrefix${score.errorPercentage}%"
+    return "$directionPrefix${score.centsErrorMagnitude.roundToInt()}¢"
 }
 
 /**
@@ -468,6 +468,8 @@ internal enum class PersistentPitchPhase {
     LISTENING
 }
 
+private const val PERSISTENT_LATCH_PLACEHOLDER_MIDI = 60
+
 internal class PersistentQuizPitchController(
     private val pitchSource: ExclusivePitchSource
 ) {
@@ -482,17 +484,18 @@ internal class PersistentQuizPitchController(
 
     fun activate(
         newSelection: PersistentPitchSelection,
-        targetMidi: Int,
+        targetMidi: Int? = null,
         hasRecordPermission: Boolean
     ): Boolean {
         cancel()
         errorMessage = null
         selection = newSelection
-        initialTargetMidi = targetMidi
+        val midi = targetMidi ?: PERSISTENT_LATCH_PLACEHOLDER_MIDI
+        initialTargetMidi = midi
         pitchSource.claim(trackingModeForPersistentPitchSelection(newSelection))
 
         return if (hasRecordPermission) {
-            pitchSource.start(targetMidi)
+            pitchSource.start(midi)
             phase = PersistentPitchPhase.LISTENING
             false
         } else {

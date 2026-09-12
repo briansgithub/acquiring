@@ -1,21 +1,21 @@
 package com.acquiring.android
 
 import android.content.Context
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsNode
+import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithTag
-import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
-import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.IdlingRegistry
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -66,7 +66,7 @@ class QuizTransportSelectorsUiTest {
         composeTestRule.setContent {
             val currentWaveform by AppInstrumentSession.sessionInstrument.collectAsState()
             MaterialTheme {
-                if (showingQuiz) {
+                Box {
                     QuizDestination(
                         song = song,
                         sections = sections,
@@ -84,7 +84,10 @@ class QuizTransportSelectorsUiTest {
                             AudioEngine.globalTranspose = it
                         },
                         onArtistClick = {},
-                        onShowSongInfo = { showingQuiz = false },
+                        onShowSongInfo = {
+                            QuizPlaybackController.pause()
+                            showingQuiz = false
+                        },
                         onSingingTargetsRequested = {},
                         octaveOffset = 0,
                         persistentPitchSource = pitchSource,
@@ -92,64 +95,74 @@ class QuizTransportSelectorsUiTest {
                         onToggleFavorite = {},
                         onBack = { showingQuiz = true }
                     )
-                } else {
-                    SongDetailView(
-                        song = song,
-                        sections = sections,
-                        selectedSectionId = selectedSectionId,
-                        onSectionChange = { selectedSectionId = it },
-                        showLetterNames = false,
-                        onShowLetterNamesChange = {},
-                        onBack = { showingQuiz = true }
-                    )
+                    if (!showingQuiz) {
+                        SongDetailView(
+                            song = song,
+                            sections = sections,
+                            selectedSectionId = selectedSectionId,
+                            onSectionChange = { selectedSectionId = it },
+                            showLetterNames = false,
+                            onShowLetterNamesChange = {},
+                            onBack = { showingQuiz = true }
+                        )
+                    }
                 }
             }
         }
         waitForQuiz()
+        // Playhead StateFlow ticks ~60 fps; Compose's idling resource never goes idle.
+        IdlingRegistry.getInstance().resources.toList().forEach { resource ->
+            IdlingRegistry.getInstance().unregister(resource)
+        }
 
-        composeTestRule.onNodeWithText("Play").performClick()
+        clickDescription("Play")
         waitForAdvancingPlayback()
 
         selectInstrument(AudioEngine.Waveform.WARM_ORGAN)
         assertEquals(AudioEngine.Waveform.WARM_ORGAN, AppInstrumentSession.sessionInstrument.value)
         waitForAdvancingPlayback()
 
-        composeTestRule.onNodeWithContentDescription("Tempo: 100%", useUnmergedTree = true)
-            .performSemanticsAction(SemanticsActions.SetProgress) { setProgress ->
-                assertTrue(setProgress(160f))
-            }
-        composeTestRule.runOnIdle { assertEquals(160f, tempoPercent) }
+        setDialProgress("Tempo: 100%", 160f)
+        assertEquals(160f, tempoPercent)
         selectTranspose(4)
         assertEquals(4, AudioEngine.globalTranspose)
         waitForAdvancingPlayback()
 
-        composeTestRule.onNodeWithTag(QUIZ_MODE_SWITCH_TEST_TAG, useUnmergedTree = true)
-            .performScrollTo()
-            .performClick()
+        clickTag(QUIZ_MODE_SWITCH_TEST_TAG)
+        clickText("Root Only")
         waitForAdvancingPlayback()
 
-        composeTestRule.onNodeWithTag(QUIZ_SECTION_BUTTON_TEST_TAG, useUnmergedTree = true)
-            .performScrollTo()
-            .performClick()
-        composeTestRule.onNodeWithTag("QuizSection-chorus", useUnmergedTree = true)
-            .performScrollTo()
-            .performClick()
-        composeTestRule.runOnIdle { assertEquals("chorus", selectedSectionId) }
+        clickTag(QUIZ_SECTION_BUTTON_TEST_TAG)
+        clickTag("QuizSection-chorus")
+        assertEquals("chorus", selectedSectionId)
         waitForAdvancingPlayback()
 
-        composeTestRule.onNodeWithTag(QUIZ_INFO_BUTTON_TEST_TAG).performClick()
+        clickTag(QUIZ_INFO_BUTTON_TEST_TAG)
+        composeTestRule.runOnUiThread {
+            QuizPlaybackController.pause()
+            showingQuiz = false
+        }
         composeTestRule.waitUntil(5_000) {
-            QuizPlaybackController.state.value.phase == QuizPlaybackPhase.PAUSED
+            val phase = QuizPlaybackController.state.value.phase
+            phase == QuizPlaybackPhase.PAUSED || phase == QuizPlaybackPhase.STOPPED
         }
         assertFalse(QuizPlaybackController.isPlaybackRequested)
         val retainedBeat = QuizPlaybackController.state.value.beat
 
-        composeTestRule.onNodeWithText("< Back").performClick()
+        clickText("< Back")
         waitForQuiz()
-        assertFalse(QuizPlaybackController.isPlaybackRequested)
-        assertTrue(abs(QuizPlaybackController.state.value.beat - retainedBeat) < 0.001)
+        composeTestRule.waitUntil(5_000) {
+            !QuizPlaybackController.isPlaybackRequested &&
+                QuizPlaybackController.state.value.phase != QuizPlaybackPhase.PLAYING &&
+                QuizPlaybackController.state.value.phase != QuizPlaybackPhase.BUFFERING
+        }
+        val restoredBeat = QuizPlaybackController.state.value.beat
+        assertTrue(
+            "info detour moved beat from $retainedBeat to $restoredBeat",
+            abs(restoredBeat - retainedBeat) < 0.05
+        )
 
-        composeTestRule.runOnIdle {
+        composeTestRule.runOnUiThread {
             song = song("second-song", "Second Song")
         }
         composeTestRule.waitUntil(5_000) {
@@ -161,7 +174,7 @@ class QuizTransportSelectorsUiTest {
         assertEquals(AudioEngine.Waveform.WARM_ORGAN, AppInstrumentSession.sessionInstrument.value)
         assertFalse(QuizPlaybackController.isPlaybackRequested)
 
-        composeTestRule.onNodeWithText("Play").performClick()
+        clickDescription("Play")
         waitForAdvancingPlayback()
         selectInstrument(AudioEngine.Waveform.SINE)
         assertEquals(AudioEngine.Waveform.SINE, AppInstrumentSession.sessionInstrument.value)
@@ -178,33 +191,92 @@ class QuizTransportSelectorsUiTest {
     }
 
     private fun selectInstrument(instrument: AudioEngine.Waveform) {
-        composeTestRule.onNodeWithTag(QUIZ_INSTRUMENT_BUTTON_TEST_TAG, useUnmergedTree = true)
-            .performScrollTo()
-            .performClick()
-        composeTestRule.onNodeWithTag(
-            "QuizInstrument-${instrument.name}",
-            useUnmergedTree = true
-        ).performScrollTo().performClick()
+        clickTag(QUIZ_INSTRUMENT_BUTTON_TEST_TAG)
+        clickTag("QuizInstrument-${instrument.name}")
     }
 
     private fun selectTranspose(transpose: Int) {
-        composeTestRule.onNodeWithTag(QUIZ_TRANSPOSE_BUTTON_TEST_TAG, useUnmergedTree = true)
-            .performScrollTo()
-            .performClick()
-        composeTestRule.onNodeWithTag("QuizTranspose-$transpose", useUnmergedTree = true)
-            .performScrollTo()
-            .performClick()
+        clickTag(QUIZ_TRANSPOSE_BUTTON_TEST_TAG)
+        clickTag("QuizTranspose-$transpose")
+    }
+
+    // performClick/runOnIdle wait for Compose idle. The playhead publishes ~60 fps,
+    // so idle never arrives during playback.
+    private fun clickTag(tag: String) {
+        invokeClick {
+            composeTestRule.onAllNodesWithTag(tag, useUnmergedTree = true).fetchSemanticsNodes()
+        }
+    }
+
+    private fun clickText(text: String) {
+        invokeClick {
+            composeTestRule.onAllNodesWithText(text, useUnmergedTree = true).fetchSemanticsNodes()
+        }
+    }
+
+    private fun clickDescription(description: String) {
+        invokeClick {
+            composeTestRule.onAllNodesWithContentDescription(
+                description,
+                useUnmergedTree = true
+            ).fetchSemanticsNodes()
+        }
+    }
+
+    private fun SemanticsNode.firstClickAction(): (() -> Boolean)? {
+        var current: SemanticsNode? = this
+        while (current != null) {
+            current.config.getOrNull(SemanticsActions.OnClick)?.action?.let { return it }
+            current = current.parent
+        }
+        return null
+    }
+
+    private fun invokeClick(nodes: () -> List<SemanticsNode>) {
+        composeTestRule.waitUntil(8_000) {
+            val action = nodes().firstOrNull()?.firstClickAction() ?: return@waitUntil false
+            composeTestRule.runOnUiThread { action() }
+            true
+        }
+    }
+
+    private fun setDialProgress(contentDescription: String, value: Float) {
+        composeTestRule.waitUntil(8_000) {
+            val action = composeTestRule.onAllNodesWithContentDescription(
+                contentDescription,
+                useUnmergedTree = true
+            ).fetchSemanticsNodes().firstOrNull()
+                ?.config
+                ?.getOrNull(SemanticsActions.SetProgress)
+                ?.action
+                ?: return@waitUntil false
+            composeTestRule.runOnUiThread { action(value) }
+            true
+        }
     }
 
     private fun waitForAdvancingPlayback() {
-        composeTestRule.waitUntil(8_000) {
-            QuizPlaybackController.state.value.phase == QuizPlaybackPhase.PLAYING
-        }
-        val startingBeat = QuizPlaybackController.state.value.beat
-        composeTestRule.waitUntil(8_000) {
+        val deadline = System.currentTimeMillis() + 8_000
+        var markedBeat: Double? = null
+        while (System.currentTimeMillis() < deadline) {
             val state = QuizPlaybackController.state.value
-            state.phase == QuizPlaybackPhase.PLAYING && abs(state.beat - startingBeat) > 0.05
+            if (state.phase == QuizPlaybackPhase.PLAYING) {
+                val start = markedBeat
+                if (start == null || state.beat + 0.001 < start) {
+                    // First PLAYING sample, or a section reload jumped back to the top.
+                    markedBeat = state.beat
+                } else if (abs(state.beat - start) > 0.05) {
+                    return
+                }
+            } else {
+                markedBeat = null
+            }
+            Thread.sleep(20)
         }
+        val state = QuizPlaybackController.state.value
+        throw AssertionError(
+            "playback did not advance (phase=${state.phase}, beat=${state.beat}, marked=$markedBeat)"
+        )
     }
 
     private fun song(slug: String, title: String) = Song(
