@@ -139,7 +139,6 @@ fun LibraryView(
     allSongs: List<SongBrowseRow>,
     onSongClick: (SongBrowseRow) -> Unit
 ) {
-    var isHarvestExpanded by remember { mutableStateOf(false) }
     var searchScope by rememberSaveable { mutableStateOf(LibrarySearchScope.SONGS) }
     var searchFocused by remember { mutableStateOf(false) }
     var hooktheoryFocused by remember { mutableStateOf(false) }
@@ -291,46 +290,13 @@ fun LibraryView(
         if (showChrome) {
         Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-        LibraryHooktheorySearch(onFocusChanged = { hooktheoryFocused = it })
-
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Surface(
-                onClick = { isHarvestExpanded = !isHarvestExpanded },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier.padding(vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Download from Hooktheory URL",
-                        style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Icon(
-                        imageVector = if (isHarvestExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                        contentDescription = if (isHarvestExpanded) "Collapse" else "Expand"
-                    )
-                }
-            }
-
-            if (isHarvestExpanded) {
-                Column(modifier = Modifier.padding(bottom = 8.dp)) {
-                    OutlinedTextField(
-                        value = urlToHarvest,
-                        onValueChange = onUrlChange,
-                        label = { Text("Hooktheory URL") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Button(onClick = onHarvest, modifier = Modifier.padding(top = 8.dp)) {
-                        Text("Download")
-                    }
-                    if (harvestStatus.isNotEmpty()) {
-                        Text(text = harvestStatus, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 4.dp))
-                    }
-                }
-            }
-        }
+        LibraryHooktheorySection(
+            urlToHarvest = urlToHarvest,
+            onUrlChange = onUrlChange,
+            harvestStatus = harvestStatus,
+            onHarvest = onHarvest,
+            onFocusChanged = { hooktheoryFocused = it }
+        )
 
         Surface(
             onClick = onAllSongs,

@@ -64,7 +64,7 @@ fun PlaylistsSection(
     onSongClick: (SongBrowseRow) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var isSectionExpanded by rememberSaveable { mutableStateOf(false) }
+    var isSectionExpanded by rememberSaveable { mutableStateOf(true) }
     var expandedPlaylistId by rememberSaveable { mutableStateOf<String?>(null) }
     var summaries by remember { mutableStateOf<List<PlaylistSummary>>(emptyList()) }
     var songs by remember { mutableStateOf<List<SongBrowseRow>>(emptyList()) }
