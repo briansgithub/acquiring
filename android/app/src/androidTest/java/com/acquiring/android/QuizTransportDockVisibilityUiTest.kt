@@ -142,7 +142,7 @@ class QuizTransportDockVisibilityUiTest {
         composeTestRule.onNodeWithTag(QUIZ_MODE_SWITCH_TEST_TAG, useUnmergedTree = true).performClick()
         composeTestRule.onNodeWithText("Full Chords").assertExists()
         composeTestRule.onNodeWithText("Root Only").performClick()
-        composeTestRule.onNodeWithText("Previous Root").assertExists()
+        composeTestRule.onNodeWithText("Previous Root").assertDoesNotExist()
         composeTestRule.onNodeWithText("Current Root").assertExists()
     }
 
