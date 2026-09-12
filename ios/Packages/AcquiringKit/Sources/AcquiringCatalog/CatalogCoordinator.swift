@@ -297,7 +297,7 @@ public actor CatalogCoordinator: CatalogRepository {
             arguments = [key, filter, filter, filter, filter]
         case let .complexity(bucket):
             if let bucket {
-                sql = "SELECT entries.slug, entries.artist, entries.title, songs.url, songs.status, entries.complexityRating FROM song_browse_entries entries JOIN songs ON songs.slug = entries.slug WHERE entries.complexityBucket = ? AND \(filterSQL) " + Self.browseOrderSQL
+                sql = "SELECT entries.slug, entries.artist, entries.title, songs.url, songs.status, entries.complexityRating FROM song_browse_entries entries JOIN songs ON songs.slug = entries.slug WHERE entries.complexityBucket = ? AND \(filterSQL) " + Self.browseComplexityOrderSQL
                 arguments = [bucket, filter, filter, filter, filter]
             } else {
                 sql = "SELECT entries.slug, entries.artist, entries.title, songs.url, songs.status, entries.complexityRating FROM song_browse_entries entries JOIN songs ON songs.slug = entries.slug WHERE entries.complexityBucket IS NULL AND \(filterSQL) " + Self.browseOrderSQL
@@ -587,6 +587,12 @@ public actor CatalogCoordinator: CatalogRepository {
 
     private static let browseOrderSQL = """
         ORDER BY CASE WHEN entries.title IS NULL OR TRIM(entries.title) = '' THEN 1 ELSE 0 END,
+                 entries.title COLLATE NOCASE, entries.artist COLLATE NOCASE, entries.slug COLLATE NOCASE
+        """
+
+    private static let browseComplexityOrderSQL = """
+        ORDER BY entries.complexityRating ASC,
+                 CASE WHEN entries.title IS NULL OR TRIM(entries.title) = '' THEN 1 ELSE 0 END,
                  entries.title COLLATE NOCASE, entries.artist COLLATE NOCASE, entries.slug COLLATE NOCASE
         """
 }

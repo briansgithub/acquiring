@@ -67,6 +67,19 @@ class AllSongsGroupingTest {
     }
 
     @Test
+    fun complexityOnesDigitUsesTheIntegerUnitsPlace() {
+        assertEquals(0, AllSongsGrouping.complexityOnesDigit(0.0))
+        assertEquals(0, AllSongsGrouping.complexityOnesDigit(10.9))
+        assertEquals(1, AllSongsGrouping.complexityOnesDigit(11.0))
+        assertEquals(9, AllSongsGrouping.complexityOnesDigit(9.999))
+        assertEquals(9, AllSongsGrouping.complexityOnesDigit(19.999))
+        assertEquals(9, AllSongsGrouping.complexityOnesDigit(100.0))
+        assertNull(AllSongsGrouping.complexityOnesDigit(null))
+        assertNull(AllSongsGrouping.complexityOnesDigit(-0.1))
+        assertNull(AllSongsGrouping.complexityOnesDigit(100.1))
+    }
+
+    @Test
     fun modeHeadingsUseRequestedNamesAndAliases() {
         assertEquals(
             listOf(

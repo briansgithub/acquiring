@@ -1597,23 +1597,25 @@ fun QuizTab(
                                 onTap = { onTempoPercentChange(100f) },
                                 modifier = Modifier.weight(1f).testTag(QUIZ_TEMPO_DIAL_TEST_TAG)
                             )
-                            QuizDial(
-                                label = "Arpeggiate",
-                                valueLabel = "cycles per beat",
-                                value = arpeggioOptionIndex.toFloat(),
-                                onValueChange = {
-                                    onArpeggioOptionIndexChange(
-                                        it.roundToInt().coerceIn(QUIZ_ARPEGGIO_OPTIONS.indices)
-                                    )
-                                },
-                                valueRange = 0f..QUIZ_ARPEGGIO_OPTIONS.lastIndex.toFloat(),
-                                steps = QUIZ_ARPEGGIO_OPTIONS.lastIndex,
-                                ringLabels = QUIZ_ARPEGGIO_OPTIONS.map { it.label },
-                                onTap = {
-                                    onArpeggioOptionIndexChange(DEFAULT_QUIZ_ARPEGGIO_OPTION_INDEX)
-                                },
-                                modifier = Modifier.weight(1f)
-                            )
+                            if (!isSimpleMode) {
+                                QuizDial(
+                                    label = "Arpeggiate",
+                                    valueLabel = "cycles per beat",
+                                    value = arpeggioOptionIndex.toFloat(),
+                                    onValueChange = {
+                                        onArpeggioOptionIndexChange(
+                                            it.roundToInt().coerceIn(QUIZ_ARPEGGIO_OPTIONS.indices)
+                                        )
+                                    },
+                                    valueRange = 0f..QUIZ_ARPEGGIO_OPTIONS.lastIndex.toFloat(),
+                                    steps = QUIZ_ARPEGGIO_OPTIONS.lastIndex,
+                                    ringLabels = QUIZ_ARPEGGIO_OPTIONS.map { it.label },
+                                    onTap = {
+                                        onArpeggioOptionIndexChange(DEFAULT_QUIZ_ARPEGGIO_OPTION_INDEX)
+                                    },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
                             val melodyPercent = (melodyChordBalance * 100f).roundToInt()
                             val chordPercent = 100 - melodyPercent
                             QuizDial(

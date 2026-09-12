@@ -1,11 +1,10 @@
-/// Splits one expanded All Songs group into title-prefix runs.
+/// Splits one expanded All Songs group into scannable runs.
 ///
 /// A single heading can hold thousands of songs — every "S" title, or every
-/// song in a mode — which is more than a person can reasonably drag through.
-/// Browse queries already order a group by title, so consecutive songs share a
-/// prefix, and cutting the run at each new prefix gives the list both in-place
-/// waypoints and jump targets. This has no Android counterpart; Android renders
-/// the flat group.
+/// song in a 10-point complexity band — which is more than a person can
+/// reasonably drag through. Alphabetical and mode groups still cut on title
+/// prefixes. Rated complexity groups cut on the ones digit after the query
+/// has already ordered the songs by score.
 
 /// One contiguous run of songs inside an expanded group.
 public struct BrowseSubgroup: Identifiable, Equatable, Sendable {
@@ -26,6 +25,11 @@ public struct BrowseSubgroup: Identifiable, Equatable, Sendable {
     }
 }
 
+public enum BrowseSubgroupStyle: Sendable {
+    case titlePrefix
+    case complexityOnes
+}
+
 public enum BrowseSubgrouping {
     /// Below this a group is a few flicks from top to bottom, and splitting it
     /// would add headings that earn nothing.
@@ -35,32 +39,20 @@ public enum BrowseSubgrouping {
     public static let maximumPrefixLength = 3
 
     /// Runs in the order the songs arrive, or none when the group is short
-    /// enough to scroll directly, or when every title falls in one run.
-    public static func subgroups(for songs: [CatalogSong]) -> [BrowseSubgroup] {
+    /// enough to scroll directly, or when every song falls in one run.
+    public static func subgroups(
+        for songs: [CatalogSong],
+        style: BrowseSubgroupStyle = .titlePrefix
+    ) -> [BrowseSubgroup] {
         guard songs.count >= minimumSongCount else { return [] }
-
-        let sortKeys = songs.map { normalized($0.title) }
-        let length = min(sharedPrefixLength(of: sortKeys) + 1, maximumPrefixLength)
-
-        var runs: [BrowseSubgroup] = []
-        var openKey: String?
-        var openSongs: [CatalogSong] = []
-        for (song, sortKey) in zip(songs, sortKeys) {
-            let key = bucketKey(sortKey, length: length)
-            if key != openKey {
-                if let openKey, !openSongs.isEmpty {
-                    runs.append(BrowseSubgroup(key: openKey, label: label(for: openKey), songs: openSongs))
-                }
-                openKey = key
-                openSongs = []
-            }
-            openSongs.append(song)
+        let keys: [String]
+        switch style {
+        case .titlePrefix:
+            keys = titlePrefixKeys(for: songs)
+        case .complexityOnes:
+            keys = songs.map { onesKey($0.complexityRating) }
         }
-        if let openKey, !openSongs.isEmpty {
-            runs.append(BrowseSubgroup(key: openKey, label: label(for: openKey), songs: openSongs))
-        }
-
-        return runs.count > 1 ? runs : []
+        return runs(songs: songs, keys: keys)
     }
 
     /// The first run for each key, so a repeated key contributes one jump
@@ -82,7 +74,38 @@ public enum BrowseSubgrouping {
         return (0..<limit).map { subgroups[Int((Double($0) * span / steps).rounded())] }
     }
 
-    // MARK: Prefixes
+    // MARK: Keys
+
+    private static func titlePrefixKeys(for songs: [CatalogSong]) -> [String] {
+        let sortKeys = songs.map { normalized($0.title) }
+        let length = min(sharedPrefixLength(of: sortKeys) + 1, maximumPrefixLength)
+        return sortKeys.map { bucketKey($0, length: length) }
+    }
+
+    private static func onesKey(_ rating: Double?) -> String {
+        guard let digit = BrowseGrouping.complexityOnesDigit(for: rating) else { return "#" }
+        return String(digit)
+    }
+
+    private static func runs(songs: [CatalogSong], keys: [String]) -> [BrowseSubgroup] {
+        var runs: [BrowseSubgroup] = []
+        var openKey: String?
+        var openSongs: [CatalogSong] = []
+        for (song, key) in zip(songs, keys) {
+            if key != openKey {
+                if let openKey, !openSongs.isEmpty {
+                    runs.append(BrowseSubgroup(key: openKey, label: label(for: openKey), songs: openSongs))
+                }
+                openKey = key
+                openSongs = []
+            }
+            openSongs.append(song)
+        }
+        if let openKey, !openSongs.isEmpty {
+            runs.append(BrowseSubgroup(key: openKey, label: label(for: openKey), songs: openSongs))
+        }
+        return runs.count > 1 ? runs : []
+    }
 
     /// Untitled songs sort last as one run under the symbol heading.
     private static func bucketKey(_ sortKey: String, length: Int) -> String {

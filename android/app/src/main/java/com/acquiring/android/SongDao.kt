@@ -233,6 +233,7 @@ interface SongDao {
         FROM song_browse_entries
         WHERE complexityBucket = :bucket AND """ + BROWSE_FILTER_SQL + """
         ORDER BY
+            complexityRating ASC,
             CASE WHEN title IS NULL OR TRIM(title) = '' THEN 1 ELSE 0 END,
             title COLLATE NOCASE,
             artist COLLATE NOCASE,

@@ -1,7 +1,10 @@
 package com.acquiring.android
 
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.os.Build
+import android.view.Window
 import android.view.WindowManager
 import kotlin.math.max
 import kotlin.math.min
@@ -40,9 +43,14 @@ internal object TimelineFrameRateStore {
     var preference: TimelineFrameRatePreference = TimelineFrameRatePreference.STANDARD
         private set
 
+    @Volatile
+    var displayMaximumHz: Int = 60
+        private set
+
     fun initialize(context: Context) {
         val displayMaximum = displayRefreshHz(context)
         apply(read(context), displayMaximum)
+        applyToWindow(context)
     }
 
     fun select(context: Context, next: TimelineFrameRatePreference) {
@@ -52,6 +60,7 @@ internal object TimelineFrameRateStore {
             .putString(TimelineFrameRatePreference.DEFAULTS_KEY, next.storageValue)
             .apply()
         apply(next, displayRefreshHz(context))
+        applyToWindow(context)
     }
 
     fun read(context: Context): TimelineFrameRatePreference {
@@ -63,7 +72,28 @@ internal object TimelineFrameRateStore {
 
     internal fun apply(next: TimelineFrameRatePreference, displayMaximum: Int) {
         preference = next
-        minStateUpdateNanos = next.stateUpdateNanos(displayMaximum)
+        displayMaximumHz = max(displayMaximum, 1)
+        minStateUpdateNanos = next.stateUpdateNanos(displayMaximumHz)
+    }
+
+    fun applyToWindow(context: Context) {
+        windowOf(context)?.let(::applyToWindow)
+    }
+
+    fun applyToWindow(window: Window) {
+        val fps = preference.framesPerSecond(displayMaximumHz).toFloat()
+        val params = window.attributes
+        params.preferredRefreshRate = fps
+        window.attributes = params
+    }
+
+    private fun windowOf(context: Context): Window? {
+        var current: Context? = context
+        while (current is ContextWrapper) {
+            if (current is Activity) return current.window
+            current = current.baseContext
+        }
+        return null
     }
 
     private fun displayRefreshHz(context: Context): Int {

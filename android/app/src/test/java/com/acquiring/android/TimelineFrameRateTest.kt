@@ -15,6 +15,18 @@ class TimelineFrameRateTest {
     }
 
     @Test
+    fun applyKeepsTheRequestedRateAcrossReapplication() {
+        TimelineFrameRateStore.apply(TimelineFrameRatePreference.STANDARD, 120)
+        assertEquals(16_666_666L, TimelineFrameRateStore.minStateUpdateNanos)
+        assertEquals(120, TimelineFrameRateStore.displayMaximumHz)
+        TimelineFrameRateStore.apply(TimelineFrameRatePreference.STANDARD, 120)
+        assertEquals(16_666_666L, TimelineFrameRateStore.minStateUpdateNanos)
+        TimelineFrameRateStore.apply(TimelineFrameRatePreference.MAXIMUM, 120)
+        assertEquals(8_333_333L, TimelineFrameRateStore.minStateUpdateNanos)
+        TimelineFrameRateStore.apply(TimelineFrameRatePreference.STANDARD, 120)
+    }
+
+    @Test
     fun unknownStorageFallsBackToSixty() {
         assertEquals(TimelineFrameRatePreference.STANDARD, TimelineFrameRatePreference.fromStorage(null))
         assertEquals(TimelineFrameRatePreference.MAXIMUM, TimelineFrameRatePreference.fromStorage("maximum"))

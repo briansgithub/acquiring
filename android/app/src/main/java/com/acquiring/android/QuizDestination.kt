@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -65,6 +66,10 @@ fun QuizDestination(
     var isSimpleMode by remember { mutableStateOf(false) }
     var useRelativeIonianContext by remember { mutableStateOf(false) }
     var quizKeyDisplay by remember { mutableStateOf<QuizKeyDisplay?>(null) }
+    val context = LocalContext.current
+    LaunchedEffect(useRelativeIonianContext) {
+        TimelineFrameRateStore.applyToWindow(context)
+    }
     var showTitleSheet by remember { mutableStateOf(false) }
     var showQuizHelp by remember { mutableStateOf(false) }
     var isPlaying by remember { mutableStateOf(false) }

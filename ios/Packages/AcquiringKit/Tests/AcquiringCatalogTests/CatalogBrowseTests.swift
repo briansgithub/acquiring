@@ -61,6 +61,21 @@ final class CatalogBrowseTests: XCTestCase {
         )
     }
 
+    func testComplexityGroupSortsByIncreasingRatingThenTitle() async throws {
+        let fixture = try await makeFixture([
+            .init(slug: "high-title", title: "Alpha", artist: "Artist", complexity: 19),
+            .init(slug: "low-title", title: "zulu", artist: "Artist", complexity: 11),
+            .init(slug: "mid-later", title: "zulu", artist: "Artist Z", complexity: 15),
+            .init(slug: "mid-earlier", title: "Alpha", artist: "Artist A", complexity: 15)
+        ])
+        defer { fixture.cleanup() }
+
+        let rows = try await fixture.coordinator.browseSongs(group: .complexity(1), filter: "")
+        XCTAssertEqual(rows.map(\.title), ["zulu", "Alpha", "zulu", "Alpha"])
+        XCTAssertEqual(rows.map(\.id), ["low-title", "mid-earlier", "mid-later", "high-title"])
+        XCTAssertEqual(rows.map(\.complexityRating), [11, 15, 15, 19])
+    }
+
     func testNumeralAndSymbolGroupsSupportNormalizedSubstringFiltering() async throws {
         let fixture = try await makeFixture([
             .init(slug: "seven", title: "7 Nation Army", artist: "The White-Stripes", complexity: 12, modes: ["ionian"]),

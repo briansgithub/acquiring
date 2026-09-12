@@ -10,32 +10,25 @@ data class BrowseSubgroup(
     val id: String get() = songs.firstOrNull()?.slug ?: key
 }
 
+enum class BrowseSubgroupStyle {
+    TITLE_PREFIX,
+    COMPLEXITY_ONES
+}
+
 object BrowseSubgrouping {
     const val MINIMUM_SONG_COUNT = 40
     const val MAXIMUM_PREFIX_LENGTH = 3
 
-    fun subgroups(songs: List<SongBrowseRow>): List<BrowseSubgroup> {
+    fun subgroups(
+        songs: List<SongBrowseRow>,
+        style: BrowseSubgroupStyle = BrowseSubgroupStyle.TITLE_PREFIX
+    ): List<BrowseSubgroup> {
         if (songs.size < MINIMUM_SONG_COUNT) return emptyList()
-        val sortKeys = songs.map { normalized(it.title) }
-        val length = minOf(sharedPrefixLength(sortKeys) + 1, MAXIMUM_PREFIX_LENGTH)
-        val runs = mutableListOf<BrowseSubgroup>()
-        var openKey: String? = null
-        var openSongs = mutableListOf<SongBrowseRow>()
-        for ((song, sortKey) in songs.zip(sortKeys)) {
-            val key = bucketKey(sortKey, length)
-            if (key != openKey) {
-                if (openKey != null && openSongs.isNotEmpty()) {
-                    runs += BrowseSubgroup(openKey, labelFor(openKey), openSongs.toList())
-                }
-                openKey = key
-                openSongs = mutableListOf()
-            }
-            openSongs += song
+        val keys = when (style) {
+            BrowseSubgroupStyle.TITLE_PREFIX -> titlePrefixKeys(songs)
+            BrowseSubgroupStyle.COMPLEXITY_ONES -> songs.map { onesKey(it.complexityRating) }
         }
-        if (openKey != null && openSongs.isNotEmpty()) {
-            runs += BrowseSubgroup(openKey, labelFor(openKey), openSongs.toList())
-        }
-        return if (runs.size > 1) runs else emptyList()
+        return runs(songs, keys)
     }
 
     fun jumpTargets(subgroups: List<BrowseSubgroup>): List<BrowseSubgroup> {
@@ -65,6 +58,35 @@ object BrowseSubgrouping {
         return (0 until limit).map { index ->
             subgroups[((index.toDouble() * span / steps).roundToInt())]
         }
+    }
+
+    private fun titlePrefixKeys(songs: List<SongBrowseRow>): List<String> {
+        val sortKeys = songs.map { normalized(it.title) }
+        val length = minOf(sharedPrefixLength(sortKeys) + 1, MAXIMUM_PREFIX_LENGTH)
+        return sortKeys.map { bucketKey(it, length) }
+    }
+
+    private fun onesKey(rating: Double?): String =
+        AllSongsGrouping.complexityOnesDigit(rating)?.toString() ?: "#"
+
+    private fun runs(songs: List<SongBrowseRow>, keys: List<String>): List<BrowseSubgroup> {
+        val runs = mutableListOf<BrowseSubgroup>()
+        var openKey: String? = null
+        var openSongs = mutableListOf<SongBrowseRow>()
+        for ((song, key) in songs.zip(keys)) {
+            if (key != openKey) {
+                if (openKey != null && openSongs.isNotEmpty()) {
+                    runs += BrowseSubgroup(openKey, labelFor(openKey), openSongs.toList())
+                }
+                openKey = key
+                openSongs = mutableListOf()
+            }
+            openSongs += song
+        }
+        if (openKey != null && openSongs.isNotEmpty()) {
+            runs += BrowseSubgroup(openKey, labelFor(openKey), openSongs.toList())
+        }
+        return if (runs.size > 1) runs else emptyList()
     }
 
     private fun bucketKey(sortKey: String, length: Int): String {
