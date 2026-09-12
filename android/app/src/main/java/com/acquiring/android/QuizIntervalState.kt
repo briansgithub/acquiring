@@ -33,7 +33,17 @@ internal enum class MelodyPitchCardRole {
 
 internal enum class MelodyPitchCardVerticalPosition {
     TOP,
+    CENTER,
     BOTTOM
+}
+
+/** Unison / first note: current stays in its column, midway between the pair slots. */
+internal fun melodyCurrentCardVerticalPosition(
+    displayMode: MelodyPitchCardDisplayMode
+): MelodyPitchCardVerticalPosition = when (displayMode) {
+    MelodyPitchCardDisplayMode.SINGLE -> MelodyPitchCardVerticalPosition.CENTER
+    MelodyPitchCardDisplayMode.HIDDEN,
+    MelodyPitchCardDisplayMode.INTERVAL -> MelodyPitchCardVerticalPosition.TOP
 }
 
 internal enum class MelodyPitchCardDisplayMode {

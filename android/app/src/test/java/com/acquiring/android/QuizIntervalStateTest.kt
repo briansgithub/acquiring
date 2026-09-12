@@ -4,7 +4,9 @@ import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class QuizIntervalStateTest {
@@ -162,6 +164,13 @@ class QuizIntervalStateTest {
         assertEquals(
             MelodyPitchCardDisplayMode.HIDDEN,
             melodyPitchCardDisplayMode(currentPitch = null, intervalState = null)
+        )
+        assertFalse(showsMelodyPreviousCard(MelodyPitchCardDisplayMode.HIDDEN, emptyList()))
+        assertFalse(showsMelodyPreviousCard(MelodyPitchCardDisplayMode.SINGLE, emptyList()))
+        assertTrue(showsMelodyPreviousCard(MelodyPitchCardDisplayMode.INTERVAL, buildMelodyPitchCards(changing)))
+        assertEquals(
+            MelodyPitchCardVerticalPosition.CENTER,
+            melodyCurrentCardVerticalPosition(MelodyPitchCardDisplayMode.SINGLE)
         )
     }
 

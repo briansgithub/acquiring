@@ -41,3 +41,17 @@ internal fun QuizExampleCard(
         )
     }
 }
+
+/** Holds row/slot geometry with no card chrome and no touch target. */
+@Composable
+internal fun QuizEmptyCardSlot(
+    modifier: Modifier = Modifier,
+    fixedHeight: Dp = 44.dp
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(fixedHeight)
+            .clearAndSetSemantics { }
+    )
+}

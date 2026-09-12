@@ -168,8 +168,6 @@ internal val QUIZ_ARPEGGIO_OPTIONS = listOf(
     QuizArpeggioOption("4", 4.0)
 )
 internal const val DEFAULT_QUIZ_ARPEGGIO_OPTION_INDEX = 3
-internal const val ROOT_ONLY_PREVIOUS_WEIGHT = 0.55f
-internal const val ROOT_ONLY_FEATURED_WEIGHT = 1f
 
 internal fun steppedQuizBeat(
     current: Double,
@@ -990,7 +988,7 @@ fun QuizTab(
                 val melodyTimelinePitchEstimate = melodyTimelinePitchEstimate(
                     selection = persistentPitchController.selection,
                     resolvedTarget = resolvedPersistentPitchTarget,
-                    pitchResult = persistentPitchGaugeResult
+                    pitchResult = persistentPitchGaugeResult ?: persistentPitchResult
                 )
                 val activeMelodyPitchRun = remember(timelineMelodyPitchRuns, currentBeat) {
                     melodyTimelinePitchRunAtBeat(timelineMelodyPitchRuns, currentBeat)
@@ -1306,23 +1304,28 @@ fun QuizTab(
                             )
 
                             val pitchEstimate = melodyTimelinePitchEstimate
-                            val voicedPitchEstimate = pitchEstimate?.takeIf { !it.isHeld }
                             val activeMelodyVisual = melodyTimelinePitchVisual
                             val isMelodyMonitoring =
                                 persistentPitchController.selection == PersistentPitchSelection.Melody &&
                                     persistentPitchController.phase == PersistentPitchPhase.LISTENING &&
                                     ownsPersistentMicrophone
-                            if (isMelodyMonitoring && activeMelodyVisual != null) {
-                                val feedbackColor = if (voicedPitchEstimate != null) {
-                                    pitchFeedbackColor(voicedPitchEstimate.centsError)
+                            if (isMelodyMonitoring) {
+                                val displayCents = melodyTimelineDisplayCents(pitchEstimate)
+                                val feedbackColor = if (pitchEstimate != null) {
+                                    pitchFeedbackColor(displayCents)
                                 } else {
                                     Color.White
                                 }
                                 val haloRadius = 6.dp.toPx()
                                 val markerRadius = 2.5f.dp.toPx()
-                                val targetMarkerY = melodyBaseY -
-                                    (activeMelodyVisual.staffDegree * noteHeight) + noteHeight / 2f
-                                val measuredPitchStaffOffset = if (voicedPitchEstimate != null) {
+                                val targetMarkerY = if (activeMelodyVisual != null) {
+                                    melodyBaseY -
+                                        (activeMelodyVisual.staffDegree * noteHeight) +
+                                        noteHeight / 2f
+                                } else {
+                                    melodyBaseY
+                                }
+                                val measuredPitchStaffOffset = if (pitchEstimate != null) {
                                     pitchErrorToTimelineStaffSteps(
                                         animatedMelodyTimelineCents.toDouble()
                                     ).toFloat() * noteHeight
@@ -1346,39 +1349,41 @@ fun QuizTab(
                                     center = Offset(centerX, markerY)
                                 )
 
-                                sampledMelodyTimelineCents
-                                    ?.takeIf { voicedPitchEstimate != null }
-                                    ?.let { sampledCentsError ->
-                                    val percentageLabel = formatPitchCentsError(sampledCentsError)
-                                    val percentageColor = pitchFeedbackColor(sampledCentsError)
-                                    melodyPitchLabelPaint.apply {
-                                        color = percentageColor.toArgb()
-                                        textSize = 11.sp.toPx()
-                                    }
-                                    val fontMetrics = melodyPitchLabelPaint.fontMetrics
-                                    val horizontalPadding = 5.dp.toPx()
-                                    val verticalPadding = 2.dp.toPx()
-                                    val labelWidth = melodyPitchLabelPaint.measureText(percentageLabel) +
-                                        horizontalPadding * 2f
-                                    val labelHeight = fontMetrics.descent - fontMetrics.ascent +
-                                        verticalPadding * 2f
-                                    val labelRight = centerX - 8.dp.toPx()
-                                    val labelLeft = labelRight - labelWidth
-                                    val labelTop = markerY - labelHeight / 2f
-
-                                    drawRoundRect(
-                                        color = Color.Black.copy(alpha = 0.76f),
-                                        topLeft = Offset(labelLeft, labelTop),
-                                        size = Size(labelWidth, labelHeight),
-                                        cornerRadius = CornerRadius(labelHeight / 2f, labelHeight / 2f)
-                                    )
-                                    drawContext.canvas.nativeCanvas.drawText(
-                                        percentageLabel,
-                                        labelRight - horizontalPadding,
-                                        markerY - (fontMetrics.ascent + fontMetrics.descent) / 2f,
-                                        melodyPitchLabelPaint
-                                    )
+                                val sampledCentsError = sampledMelodyTimelineCents
+                                    ?: displayCents
+                                val percentageLabel = formatPitchCentsError(sampledCentsError)
+                                val percentageColor = if (pitchEstimate != null) {
+                                    pitchFeedbackColor(sampledCentsError)
+                                } else {
+                                    Color.White
                                 }
+                                melodyPitchLabelPaint.apply {
+                                    color = percentageColor.toArgb()
+                                    textSize = 11.sp.toPx()
+                                }
+                                val fontMetrics = melodyPitchLabelPaint.fontMetrics
+                                val horizontalPadding = 5.dp.toPx()
+                                val verticalPadding = 2.dp.toPx()
+                                val labelWidth = melodyPitchLabelPaint.measureText(percentageLabel) +
+                                    horizontalPadding * 2f
+                                val labelHeight = fontMetrics.descent - fontMetrics.ascent +
+                                    verticalPadding * 2f
+                                val labelRight = centerX - 8.dp.toPx()
+                                val labelLeft = labelRight - labelWidth
+                                val labelTop = markerY - labelHeight / 2f
+
+                                drawRoundRect(
+                                    color = Color.Black.copy(alpha = 0.76f),
+                                    topLeft = Offset(labelLeft, labelTop),
+                                    size = Size(labelWidth, labelHeight),
+                                    cornerRadius = CornerRadius(labelHeight / 2f, labelHeight / 2f)
+                                )
+                                drawContext.canvas.nativeCanvas.drawText(
+                                    percentageLabel,
+                                    labelRight - horizontalPadding,
+                                    markerY - (fontMetrics.ascent + fontMetrics.descent) / 2f,
+                                    melodyPitchLabelPaint
+                                )
                             }
                         }
                     }
@@ -1397,184 +1402,59 @@ fun QuizTab(
                         contentAlignment = if (isSimpleMode) Alignment.Center else Alignment.TopCenter
                     ) {
                         if (isSimpleMode) {
-                            val activeSimpleChord = currentChord?.takeUnless { chord -> (chord["isRest"] as? JsonPrimitive)?.booleanOrNull == true || (chord["rest"] as? JsonPrimitive)?.booleanOrNull == true }
                             val currentIntervalPitch = chordRootIntervalState?.currentIntervalPitch
                             val previousIntervalPitch = chordRootIntervalState?.previousIntervalPitch
-                            val rootAudioNote = currentRootPreviewAudioNote
-                            val rootDegreeLabel = currentRootDegreeLabel
-                            val rootInterval = chordRootIntervalState?.interval
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth().heightIn(max = 250.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                val previousRootLabel = if (useRelativeIonianContext && previousIntervalPitch != null) {
-                                    ionianContextDegreeLabel(previousIntervalPitch, ionianContextKey)
-                                } else {
-                                    chordRootIntervalState?.previousDegreeLabel.orEmpty()
-                                }
-                                val previousRootAudio = previousIntervalPitch?.toAudioNoteNumber() ?: 0
-                                Surface(
-                                    modifier = Modifier.weight(ROOT_ONLY_PREVIOUS_WEIGHT).fillMaxHeight()
-                                        .semantics { contentDescription = "Play previous root scale degree." }
-                                        .clickable(enabled = previousRootAudio > 0) {
-                                            playCardPreview(listOf(tessituraPreviewMidi(previousRootAudio)))
-                                        },
-                                    shape = RoundedCornerShape(24.dp),
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                                ) {
-                                    Column(
-                                        modifier = Modifier.fillMaxSize().padding(6.dp),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.Center
-                                    ) {
-                                        Text(
-                                            "Previous Root",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            maxLines = 1,
-                                            softWrap = false,
-                                            textAlign = TextAlign.Center,
-                                            modifier = Modifier.fillMaxWidth()
-                                        )
-                                        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                                            if (previousRootLabel.isNotEmpty()) {
-                                                ScaleDegreeText(
-                                                    label = previousRootLabel,
-                                                    fontSize = 48.sp,
-                                                    modifier = Modifier.fillMaxWidth(),
-                                                    minFontSize = 18.sp
-                                                )
-                                            } else {
-                                                Text("—", fontSize = 32.sp)
-                                            }
-                                        }
-                                    }
-                                }
-                                val rootIntervalEnabled = previousIntervalPitch != null && currentIntervalPitch != null && rootInterval != null
-                                Surface(
-                                    modifier = Modifier.weight(ROOT_ONLY_FEATURED_WEIGHT).fillMaxHeight()
-                                        .semantics { contentDescription = "Play current root scale degree. Double tap to sing it back." }
-                                        .combinedClickable(
-                                            enabled = rootAudioNote > 0,
-                                            onClick = {
-                                                playCardPreview(listOf(tessituraPreviewMidi(rootAudioNote)))
-                                            },
-                                            onDoubleClick = {
-                                                if (rootAudioNote > 0) {
-                                                    requestSingingTargets(
-                                                        SingingTargetRequest(
-                                                            first = SingingTargetNote(rootAudioNote, rootDegreeLabel),
-                                                            second = null,
-                                                            requestId = 0
-                                                        )
-                                                    )
-                                                }
-                                            }
-                                        ),
-                                    shape = RoundedCornerShape(32.dp),
-                                    color = MaterialTheme.colorScheme.primary,
-                                    contentColor = MaterialTheme.colorScheme.onPrimary
-                                ) {
-                                    Box(modifier = Modifier.fillMaxSize().padding(8.dp), contentAlignment = Alignment.Center) {
-                                        if (
-                                            resolvedPersistentPitchTarget?.position == PersistentPitchCardPosition.SimpleRoot &&
-                                            persistentPitchGaugeResult != null
-                                        ) {
-                                            PitchGauge(
-                                                pitchResult = persistentPitchGaugeResult,
-                                                targetLabel = resolvedPersistentPitchTarget.label,
-                                                modifier = Modifier.matchParentSize()
-                                            )
-                                        }
-                                        Column(
-                                            modifier = Modifier.fillMaxSize(),
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-                                            verticalArrangement = Arrangement.Center
-                                        ) {
-                                            Text(
-                                                "Current Root",
-                                                style = MaterialTheme.typography.labelSmall,
-                                                maxLines = 1,
-                                                textAlign = TextAlign.Center,
-                                                modifier = Modifier.fillMaxWidth()
-                                            )
-                                            Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                                                if (activeSimpleChord != null) {
-                                                    if (rootDegreeLabel.isNotEmpty()) {
-                                                        ScaleDegreeText(label = rootDegreeLabel, fontSize = 100.sp, modifier = Modifier.fillMaxWidth(), minFontSize = 36.sp)
-                                                    } else {
-                                                        val symbol = if (useRelativeIonianContext) ChordInterpreter.getRelativeIonianRomanSymbol(activeSimpleChord, activeKey, ionianContextKey) else ChordInterpreter.getRomanSymbol(activeSimpleChord, activeKey)
-                                                        val romanDisplay = RomanNumeralDisplay.fromChord(symbol, activeSimpleChord["borrowed"])
-                                                        RomanNumeralText(display = romanDisplay, fontSize = 64.sp, modifier = Modifier.fillMaxWidth())
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                Surface(
-                                    modifier = Modifier.weight(ROOT_ONLY_FEATURED_WEIGHT).fillMaxHeight()
-                                        .semantics {
-                                            contentDescription = rootInterval?.let {
-                                                "Play root interval ${it.spokenName}. Double tap to sing it back."
-                                            } ?: "Root interval unavailable"
-                                        }
-                                        .combinedClickable(
-                                            enabled = rootIntervalEnabled,
-                                            onClick = {
-                                                if (previousIntervalPitch != null && currentIntervalPitch != null) {
-                                                    playIntervalPreview(previousIntervalPitch, currentIntervalPitch)
-                                                }
-                                            },
-                                            onDoubleClick = {
-                                                val state = chordRootIntervalState
-                                                if (state != null && previousIntervalPitch != null && currentIntervalPitch != null) {
-                                                    val previousLabel = if (useRelativeIonianContext) {
-                                                        ionianContextDegreeLabel(previousIntervalPitch, ionianContextKey)
-                                                    } else {
-                                                        state.previousDegreeLabel.orEmpty()
-                                                    }
-                                                    val currentLabel = if (useRelativeIonianContext) {
-                                                        ionianContextDegreeLabel(currentIntervalPitch, ionianContextKey)
-                                                    } else {
-                                                        state.currentDegreeLabel
-                                                    }
-                                                    requestSingingTargets(
-                                                        SingingTargetRequest(
-                                                            first = SingingTargetNote(intervalPreviewNote(previousIntervalPitch), previousLabel),
-                                                            second = SingingTargetNote(intervalPreviewNote(currentIntervalPitch), currentLabel),
-                                                            requestId = 0
-                                                        )
-                                                    )
-                                                }
-                                            }
-                                        ),
-                                    shape = RoundedCornerShape(32.dp),
-                                    color = MaterialTheme.colorScheme.primary,
-                                    contentColor = MaterialTheme.colorScheme.onPrimary
-                                ) {
-                                    Box(modifier = Modifier.fillMaxSize().padding(8.dp), contentAlignment = Alignment.Center) {
-                                        if (
-                                            resolvedPersistentPitchTarget?.position == PersistentPitchCardPosition.SimpleRoot &&
-                                            persistentPitchGaugeResult != null
-                                        ) {
-                                            PitchGauge(
-                                                pitchResult = persistentPitchGaugeResult,
-                                                targetLabel = resolvedPersistentPitchTarget.label,
-                                                modifier = Modifier.matchParentSize()
-                                            )
-                                        }
-                                        Text(
-                                            text = rootInterval?.shorthand ?: "—",
-                                            textAlign = TextAlign.Center,
-                                            fontSize = 54.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            maxLines = 1
-                                        )
-                                    }
-                                }
+                            val previousRootLabel = if (useRelativeIonianContext && previousIntervalPitch != null) {
+                                ionianContextDegreeLabel(previousIntervalPitch, ionianContextKey)
+                            } else {
+                                chordRootIntervalState?.previousDegreeLabel.orEmpty()
                             }
+                            QuizRootOnlyRow(
+                                previousPitch = previousIntervalPitch,
+                                currentPitch = currentIntervalPitch,
+                                previousLabel = previousRootLabel,
+                                currentLabel = currentRootDegreeLabel,
+                                interval = chordRootIntervalState?.interval,
+                                onPreviewPitch = { pitch ->
+                                    playCardPreview(listOf(tessituraPreviewMidi(pitch.toAudioNoteNumber())))
+                                },
+                                onPreviewInterval = ::playIntervalPreview,
+                                onSingCurrent = {
+                                    if (currentRootPreviewAudioNote > 0) {
+                                        requestSingingTargets(
+                                            SingingTargetRequest(
+                                                first = SingingTargetNote(
+                                                    currentRootPreviewAudioNote,
+                                                    currentRootDegreeLabel
+                                                ),
+                                                second = null,
+                                                requestId = 0
+                                            )
+                                        )
+                                    }
+                                },
+                                onSingInterval = {
+                                    if (previousIntervalPitch != null && currentIntervalPitch != null) {
+                                        requestSingingTargets(
+                                            SingingTargetRequest(
+                                                first = SingingTargetNote(
+                                                    intervalPreviewNote(previousIntervalPitch),
+                                                    previousRootLabel
+                                                ),
+                                                second = SingingTargetNote(
+                                                    intervalPreviewNote(currentIntervalPitch),
+                                                    currentRootDegreeLabel
+                                                ),
+                                                requestId = 0
+                                            )
+                                        )
+                                    }
+                                },
+                                showPitchGauge = resolvedPersistentPitchTarget?.position ==
+                                    PersistentPitchCardPosition.SimpleRoot,
+                                pitchGaugeResult = persistentPitchGaugeResult,
+                                pitchGaugeLabel = resolvedPersistentPitchTarget?.label.orEmpty()
+                            )
                         } else {
                             Column(
                                 modifier = Modifier

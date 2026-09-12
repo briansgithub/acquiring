@@ -270,9 +270,18 @@ internal fun melodyTimelinePitchEstimate(
     pitchResult: MicrophonePitchTracker.PitchResult?
 ): MicrophonePitchTracker.PitchResult.Estimate? {
     if (selection != PersistentPitchSelection.Melody) return null
-    if (resolvedTarget?.position != PersistentPitchCardPosition.MelodyCurrent) return null
+    if (resolvedTarget != null &&
+        resolvedTarget.position != PersistentPitchCardPosition.MelodyCurrent
+    ) {
+        return null
+    }
     return pitchResult as? MicrophonePitchTracker.PitchResult.Estimate
 }
+
+/** Cents printed beside the playhead while persistent melody monitoring is on. */
+internal fun melodyTimelineDisplayCents(
+    estimate: MicrophonePitchTracker.PitchResult.Estimate?
+): Double = estimate?.centsError ?: 0.0
 
 /**
  * The cents error a measurement may be taken from, or null when nothing live is arriving.

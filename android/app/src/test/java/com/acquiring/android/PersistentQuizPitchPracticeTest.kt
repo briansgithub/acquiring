@@ -84,7 +84,7 @@ class PersistentQuizPitchPracticeTest {
     }
 
     @Test
-    fun melodyTimelineFeedbackRequiresAnActiveMelodyTargetAndEstimate() {
+    fun melodyTimelineFeedbackUsesMelodyEstimatesEvenWithoutACurrentNote() {
         val target = ResolvedPersistentPitchTarget(
             sourceMidi = 72,
             label = "1\u0302",
@@ -100,7 +100,12 @@ class PersistentQuizPitchPracticeTest {
             estimate,
             melodyTimelinePitchEstimate(PersistentPitchSelection.Melody, target, estimate)
         )
-        assertNull(melodyTimelinePitchEstimate(PersistentPitchSelection.Melody, null, estimate))
+        assertEquals(
+            estimate,
+            melodyTimelinePitchEstimate(PersistentPitchSelection.Melody, null, estimate)
+        )
+        assertEquals(20.0, melodyTimelineDisplayCents(estimate), 0.0)
+        assertEquals(0.0, melodyTimelineDisplayCents(null), 0.0)
         assertNull(
             melodyTimelinePitchEstimate(PersistentPitchSelection.SimpleRoot, target, estimate)
         )

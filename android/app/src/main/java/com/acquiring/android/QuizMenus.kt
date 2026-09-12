@@ -174,10 +174,10 @@ internal fun QuizInstrumentMenu(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.size(QUIZ_TRANSPORT_CONTROL)
             ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_piano),
-                    contentDescription = null,
-                    modifier = Modifier.size(22.dp)
+                Text(
+                    text = "🎹",
+                    fontSize = 20.sp,
+                    lineHeight = 20.sp
                 )
             }
         }
