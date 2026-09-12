@@ -5,6 +5,7 @@ import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -121,6 +122,8 @@ internal fun QuizDial(
                 .then(
                     if (onTap != null) {
                         Modifier.clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
                             onClickLabel = "Reset $label",
                             role = Role.Button,
                             onClick = onTap
