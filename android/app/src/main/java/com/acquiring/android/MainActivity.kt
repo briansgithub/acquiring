@@ -351,8 +351,12 @@ internal fun MainScreen(
     // is insert-if-absent, so the usual case is one query and no writes.
     LaunchedEffect(activeDb, userDb) {
         runCatching { HarvestLedger.replay(activeDb, userDb) }
-        val rows = runCatching { activeDb.songDao().getSearchIndexRows() }.getOrDefault(emptyList())
-        catalogSearchIndex.replaceAll(rows)
+        val rows = withContext(Dispatchers.IO) {
+            runCatching { activeDb.songDao().getSearchIndexRows() }.getOrDefault(emptyList())
+        }
+        withContext(Dispatchers.Default) {
+            catalogSearchIndex.replaceAll(rows)
+        }
         searchIndexEpoch++
     }
     val json = remember { Json { ignoreUnknownKeys = true } }
@@ -483,15 +487,16 @@ internal fun MainScreen(
 
     LaunchedEffect(activeDb, searchQuery, selectedSong, selectedArtistSongs, hasSearchTitleFocus, searchIndexEpoch) {
         if (searchQuery.isNotEmpty() && hasSearchTitleFocus) {
-            if (!catalogSearchIndex.isLoaded) delay(300)
             titleOffset = 0
-            suggestions = if (catalogSearchIndex.isLoaded) {
-                catalogSearchIndex.songSuggestions(searchQuery, limit = 20, offset = 0)
+            if (catalogSearchIndex.isLoaded) {
+                suggestions = withContext(Dispatchers.Default) {
+                    catalogSearchIndex.songSuggestions(searchQuery, limit = 20, offset = 0)
+                }
+                isExpanded = true
+                isShowingRecent = false
             } else {
-                activeDb.songDao().getSearchSuggestions(searchQuery, limit = 20, offset = 0)
+                isExpanded = suggestions.isNotEmpty()
             }
-            isExpanded = true // Always expand when typing to show suggestions or "No results"
-            isShowingRecent = false
         } else if (!hasSearchTitleFocus) {
             // Field hasn't been touched yet — stay collapsed, no auto-shown recents.
             suggestions = emptyList()
@@ -516,15 +521,14 @@ internal fun MainScreen(
 
     LaunchedEffect(activeDb, searchArtistQuery, selectedSong, selectedArtistSongs, hasSearchArtistFocus, searchIndexEpoch) {
         if (searchArtistQuery.isNotEmpty() && hasSearchArtistFocus) {
-            isShowingRecentArtists = false
-            if (!catalogSearchIndex.isLoaded) delay(300)
             artistOffset = 0
-            artistSuggestions = if (catalogSearchIndex.isLoaded) {
-                catalogSearchIndex.artistSuggestions(searchArtistQuery, limit = 20, offset = 0)
-            } else {
-                activeDb.songDao().getArtistSuggestions(searchArtistQuery, limit = 20, offset = 0)
+            if (catalogSearchIndex.isLoaded) {
+                isShowingRecentArtists = false
+                artistSuggestions = withContext(Dispatchers.Default) {
+                    catalogSearchIndex.artistSuggestions(searchArtistQuery, limit = 20, offset = 0)
+                }
+                isArtistExpanded = true
             }
-            isArtistExpanded = true
         } else if (!hasSearchArtistFocus) {
             artistSuggestions = emptyList()
             isShowingRecentArtists = false
@@ -738,6 +742,18 @@ internal fun MainScreen(
                         if (it.isNotEmpty()) isArtistExpanded = false
                     },
                     onSearchTitleFocusChanged = { focused -> hasSearchTitleFocus = focused },
+                    onExitSearch = {
+                        searchQuery = ""
+                        searchArtistQuery = ""
+                        suggestions = emptyList()
+                        artistSuggestions = emptyList()
+                        isExpanded = false
+                        isArtistExpanded = false
+                        isShowingRecent = false
+                        isShowingRecentArtists = false
+                        allSongs = emptyList()
+                        searchResult = null
+                    },
                     isExpanded = isExpanded,
                     onExpandedChange = { expanded ->
                         isExpanded = expanded

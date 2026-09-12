@@ -30,13 +30,14 @@ internal class CatalogSearchIndex {
     private var entries: List<Entry> = emptyList()
 
     fun replaceAll(rows: List<SongBrowseRow>) {
-        entries = rows.map(::Entry)
+        entries = rows.sortedWith(SONG_ORDER).map(::Entry)
         isLoaded = true
     }
 
     fun upsert(row: SongBrowseRow) {
         val next = Entry(row)
-        entries = entries.filterNot { it.row.slug == row.slug } + next
+        entries = (entries.filterNot { it.row.slug == row.slug } + next)
+            .sortedWith(Comparator { left, right -> SONG_ORDER.compare(left.row, right.row) })
         isLoaded = true
     }
 
@@ -46,7 +47,6 @@ internal class CatalogSearchIndex {
         return entries.asSequence()
             .filter { it.matchesAny(key) }
             .map { it.row }
-            .sortedWith(SONG_ORDER)
             .drop(offset)
             .take(limit)
             .toList()
@@ -71,7 +71,6 @@ internal class CatalogSearchIndex {
         return entries.asSequence()
             .filter { it.matchesTitle(key) }
             .map { it.row }
-            .sortedWith(SONG_ORDER)
             .toList()
     }
 
@@ -81,7 +80,6 @@ internal class CatalogSearchIndex {
         return entries.asSequence()
             .filter { it.matchesArtist(key) }
             .map { it.row }
-            .sortedWith(SONG_ORDER)
             .toList()
     }
 

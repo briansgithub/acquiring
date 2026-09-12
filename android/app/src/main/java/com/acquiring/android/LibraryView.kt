@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.ActivityNotFoundException
 import android.graphics.Paint
 import android.graphics.Typeface
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -61,7 +60,6 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
@@ -118,6 +116,7 @@ fun LibraryView(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onSearchTitleFocusChanged: (Boolean) -> Unit,
+    onExitSearch: () -> Unit,
     isExpanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     suggestions: List<SongBrowseRow>,
@@ -143,25 +142,20 @@ fun LibraryView(
     var isHarvestExpanded by remember { mutableStateOf(false) }
     var searchScope by rememberSaveable { mutableStateOf(LibrarySearchScope.SONGS) }
     var searchFocused by remember { mutableStateOf(false) }
-    // Sends the title search out to Hooktheory's own catalog in the browser instead of
-    // querying the downloaded database.
-    var searchOnHooktheory by rememberSaveable { mutableStateOf(false) }
-    val uriHandler = LocalUriHandler.current
+    var hooktheoryFocused by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     val showChrome = libraryChromeVisible(searchFocused)
     val activeQuery = if (searchScope == LibrarySearchScope.SONGS) searchQuery else searchArtistQuery
     val executeSearch = {
         if (searchScope == LibrarySearchScope.SONGS) {
-            if (searchOnHooktheory) {
-                uriHandler.openUri(
-                    "https://www.hooktheory.com/theorytab/search?q=${Uri.encode(searchQuery)}"
-                )
-            } else {
-                onSearchTitle()
-            }
+            onSearchTitle()
         } else {
             onSearchArtist()
         }
+    }
+    BackHandler(enabled = searchFocused || hooktheoryFocused) {
+        focusManager.clearFocus(force = true)
+        if (searchFocused) onExitSearch()
     }
 
     Column(
@@ -172,121 +166,77 @@ fun LibraryView(
             }
     ) {
         if (showChrome) {
-            Spacer(modifier = Modifier.weight(0.3f))
+            PlaylistsSection(
+                playlistDao = playlistDao,
+                songDao = activeDb.songDao(),
+                onSongClick = onSongClick
+            )
             Text(
                 text = "Search Library",
                 style = MaterialTheme.typography.titleMedium
             )
         }
         
-        // Search by Title/Slug
-        ExposedDropdownMenuBox(
-            expanded = if (searchScope == LibrarySearchScope.SONGS) isExpanded else isArtistExpanded,
-            onExpandedChange = {
+        OutlinedTextField(
+            value = activeQuery,
+            onValueChange = { raw ->
+                val next = raw.replace("\n", "")
                 if (searchScope == LibrarySearchScope.SONGS) {
-                    onExpandedChange(!isExpanded)
+                    onSearchQueryChange(next)
                 } else {
-                    onArtistExpandedChange(!isArtistExpanded)
+                    onSearchArtistQueryChange(next)
                 }
             },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            OutlinedTextField(
-                value = activeQuery,
-                onValueChange = { raw ->
-                    val next = raw.replace("\n", "")
+            label = { Text("Search Library") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions(onSearch = { executeSearch() }),
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag(LIBRARY_TITLE_SEARCH_TEST_TAG)
+                .onFocusChanged { focused ->
+                    searchFocused = focused.isFocused
                     if (searchScope == LibrarySearchScope.SONGS) {
-                        onSearchQueryChange(next)
+                        onSearchTitleFocusChanged(focused.isFocused)
                     } else {
-                        onSearchArtistQueryChange(next)
+                        onSearchArtistFocusChanged(focused.isFocused)
                     }
                 },
-                label = { Text("Search Library") },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions(onSearch = { executeSearch() }),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .menuAnchor()
-                    .testTag(LIBRARY_TITLE_SEARCH_TEST_TAG)
-                    .onFocusChanged { focused ->
-                        searchFocused = focused.isFocused
+            trailingIcon = {
+                IconButton(
+                    onClick = {
                         if (searchScope == LibrarySearchScope.SONGS) {
-                            onSearchTitleFocusChanged(focused.isFocused)
+                            onExpandedChange(!isExpanded)
                         } else {
-                            onSearchArtistFocusChanged(focused.isFocused)
+                            onArtistExpandedChange(!isArtistExpanded)
                         }
-                    },
-                trailingIcon = {
+                    }
+                ) {
                     ExposedDropdownMenuDefaults.TrailingIcon(
                         expanded = if (searchScope == LibrarySearchScope.SONGS) isExpanded else isArtistExpanded
                     )
-                },
-                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+                }
+            },
+            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+        )
+        if (searchScope == LibrarySearchScope.SONGS) {
+            LibrarySongSuggestionPanel(
+                isExpanded = isExpanded,
+                isShowingRecent = isShowingRecent,
+                searchQuery = searchQuery,
+                suggestions = suggestions,
+                onSuggestionClick = onSuggestionClick,
+                onLoadMore = onLoadMoreTitle
             )
-
-            if (searchScope == LibrarySearchScope.SONGS && isExpanded) {
-                ExposedDropdownMenuWithScrollbar(
-                    expanded = isExpanded,
-                    onDismissRequest = { onExpandedChange(false) },
-                    onLoadMore = onLoadMoreTitle,
-                    modifier = Modifier.heightIn(max = 400.dp)
-                ) {
-                    if (isShowingRecent) {
-                        DropdownMenuItem(
-                            text = { Text("Recent Selections", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary) },
-                            onClick = {},
-                            enabled = false
-                        )
-                    } else if (suggestions.isEmpty() && searchQuery.isNotEmpty()) {
-                        DropdownMenuItem(
-                            text = { Text("No results found for '$searchQuery'", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.secondary) },
-                            onClick = {},
-                            enabled = false
-                        )
-                    }
-
-                    suggestions.forEach { song ->
-                        DropdownMenuItem(
-                            text = {
-                                Column {
-                                    Text(text = song.displayTitle, style = MaterialTheme.typography.bodyLarge)
-                                    Text(text = song.displayArtist, style = MaterialTheme.typography.bodySmall)
-                                }
-                            },
-                            onClick = { onSuggestionClick(song) }
-                        )
-                    }
-                }
-            } else if (searchScope == LibrarySearchScope.ARTISTS && isArtistExpanded) {
-                ExposedDropdownMenuWithScrollbar(
-                    expanded = isArtistExpanded,
-                    onDismissRequest = { onArtistExpandedChange(false) },
-                    onLoadMore = onLoadMoreArtist,
-                    modifier = Modifier.heightIn(max = 400.dp)
-                ) {
-                    if (isShowingRecentArtists) {
-                        DropdownMenuItem(
-                            text = { Text("Recent Artists", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary) },
-                            onClick = {},
-                            enabled = false
-                        )
-                    } else if (artistSuggestions.isEmpty() && searchArtistQuery.isNotEmpty()) {
-                        DropdownMenuItem(
-                            text = { Text("No artists matching '$searchArtistQuery'", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.secondary) },
-                            onClick = {},
-                            enabled = false
-                        )
-                    }
-
-                    artistSuggestions.forEach { artistName ->
-                        DropdownMenuItem(
-                            text = { Text(text = CatalogDisplayName.artist(artistName), style = MaterialTheme.typography.bodyLarge) },
-                            onClick = { onArtistClick(artistName) }
-                        )
-                    }
-                }
-            }
+        } else {
+            LibraryArtistSuggestionPanel(
+                isExpanded = isArtistExpanded,
+                isShowingRecentArtists = isShowingRecentArtists,
+                searchArtistQuery = searchArtistQuery,
+                artistSuggestions = artistSuggestions,
+                onArtistClick = onArtistClick,
+                onLoadMore = onLoadMoreArtist
+            )
         }
 
         Row(
@@ -309,7 +259,6 @@ fun LibraryView(
 
         Button(
             onClick = executeSearch,
-            enabled = searchScope == LibrarySearchScope.ARTISTS || !searchOnHooktheory || searchQuery.isNotBlank(),
             modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
         ) {
             Text("Search")
@@ -342,35 +291,7 @@ fun LibraryView(
         if (showChrome) {
         Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { searchOnHooktheory = !searchOnHooktheory }
-                .semantics { contentDescription = "Search Hooktheory.com instead of the downloaded catalog" }
-        ) {
-            Checkbox(
-                checked = searchOnHooktheory,
-                onCheckedChange = { searchOnHooktheory = it }
-            )
-            Text(
-                text = "Search Hooktheory.com ↗",
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-
-        Button(
-            onClick = onAllSongs,
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
-        ) {
-            Text("All Songs")
-        }
-
-        PlaylistsSection(
-            playlistDao = playlistDao,
-            songDao = activeDb.songDao(),
-            onSongClick = onSongClick
-        )
+        LibraryHooktheorySearch(onFocusChanged = { hooktheoryFocused = it })
 
         Column(modifier = Modifier.fillMaxWidth()) {
             Surface(
@@ -382,7 +303,7 @@ fun LibraryView(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Harvest Individual Song",
+                        text = "Download from Hooktheory URL",
                         style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier.weight(1f)
                     )
@@ -402,12 +323,33 @@ fun LibraryView(
                         modifier = Modifier.fillMaxWidth()
                     )
                     Button(onClick = onHarvest, modifier = Modifier.padding(top = 8.dp)) {
-                        Text("Harvest & Save")
+                        Text("Download")
                     }
                     if (harvestStatus.isNotEmpty()) {
                         Text(text = harvestStatus, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 4.dp))
                     }
                 }
+            }
+        }
+
+        Surface(
+            onClick = onAllSongs,
+            modifier = Modifier
+                .fillMaxWidth()
+                .semantics(mergeDescendants = true) {
+                    contentDescription = "All Songs"
+                    role = Role.Button
+                }
+        ) {
+            Row(
+                modifier = Modifier.padding(vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "All Songs",
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.weight(1f)
+                )
             }
         }
         }
