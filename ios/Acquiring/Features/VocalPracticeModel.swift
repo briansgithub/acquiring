@@ -2,6 +2,7 @@ import AcquiringAudio
 import AcquiringCore
 import Foundation
 import Observation
+import UIKit
 
 struct VocalPitchSample: Equatable, Sendable {
     let rawMIDI: Double
@@ -11,13 +12,6 @@ struct VocalPitchSample: Equatable, Sendable {
     var frequencyHz: Double { MusicTheory.frequency(midi: rawMIDI) }
     var pitchLabel: String { pitch.displayName }
     var centsLabel: String { PersistentPitchFeedback.formatCentsError(centsFromReference) }
-}
-
-enum TessituraCalibrationState: Equatable, Sendable {
-    case idle
-    case requestingPermission
-    case capturing(remainingMilliseconds: Int, hasSignal: Bool)
-    case failed(String)
 }
 
 enum VocalPersistentPhase: Equatable, Sendable {
@@ -50,8 +44,7 @@ final class VocalPracticeModel {
     private(set) var manualHasSignal = false
     private(set) var isFlipFlopEnabled = false
     private(set) var targetRequest: SingingTargetRequest?
-    private(set) var calibrationState: TessituraCalibrationState = .idle
-    private(set) var comfortablePitchMIDI: Double?
+    private(set) var octaveOffset = 0
     private(set) var persistentSelection: PersistentPitchSelection?
     private(set) var persistentPhase: VocalPersistentPhase = .idle
     private(set) var liveCentsError: Double?
@@ -61,7 +54,6 @@ final class VocalPracticeModel {
     private(set) var melodyRunScores: [Int: MelodyRunScoreOutcome] = [:]
     private(set) var errorMessage: String?
 
-    @ObservationIgnored private var tessituraSession = TessituraSession()
     @ObservationIgnored private var songID: String?
     @ObservationIgnored private var sectionID: String?
     private var transpose = 0
@@ -90,17 +82,42 @@ final class VocalPracticeModel {
     @ObservationIgnored private var microphoneStreamError: String?
     @ObservationIgnored private var scoringSession = MelodyRunScoringSession()
     @ObservationIgnored private var scoringRun: MelodyTimelinePitchRun?
-    @ObservationIgnored private var scoringRunSourceMIDI: Int?
-    @ObservationIgnored private var scoringRunTargetMIDI: Int?
     @ObservationIgnored private var lastScoredReadingSequence: UInt64 = 0
     @ObservationIgnored private var isScrubbing = false
     /// How long the current attempt has had no voiced frame. Only meaningful while paused,
     /// where a run boundary can no longer separate one attempt from the next.
     @ObservationIgnored private var silentMillisecondsInRun = 0
     @ObservationIgnored private var livePercentageSampler = LivePitchErrorSampler()
+    @ObservationIgnored private var lifecycleTasks: [Task<Void, Never>] = []
 
     init(audio: AppAudioSystem) {
         self.audio = audio
+        observeApplicationLifecycle()
+    }
+
+    /// Persistent monitoring holds the microphone with no on-screen control but the collapsed
+    /// dock's Stop button, so it must never outlive the app being put away.
+    ///
+    /// `handleSceneBackgrounded` already covers this when the scene phase reaches the view that
+    /// calls it. Observing the notifications here makes the stop the model's own, so it holds
+    /// whatever is mounted at the time, and picks up termination, which no scene phase reports.
+    private func observeApplicationLifecycle() {
+        lifecycleTasks = [
+            Task { @MainActor [weak self] in
+                for await _ in NotificationCenter.default.notifications(
+                    named: UIApplication.didEnterBackgroundNotification
+                ) {
+                    self?.stopPersistentPractice()
+                }
+            },
+            Task { @MainActor [weak self] in
+                for await _ in NotificationCenter.default.notifications(
+                    named: UIApplication.willTerminateNotification
+                ) {
+                    self?.cancelActivity()
+                }
+            }
+        ]
     }
 
     var isManualPracticeActive: Bool { manualOperation != nil }
@@ -113,12 +130,10 @@ final class VocalPracticeModel {
         return IntervalAnalysis.measured(fromMIDI: slot1.rawMIDI, toMIDI: slot2.rawMIDI)
     }
 
-    var comfortablePitchLabel: String? {
-        comfortablePitchMIDI.map { SpelledPitch.fromMIDI(Int($0.rounded())).displayName }
-    }
-
-    var canCalibrateComfortablePitch: Bool {
-        songID != nil && sectionID != nil
+    /// Always signed, zero included: the control states an offset, and a bare "0" beside a
+    /// minus and a plus would read as a count of something.
+    var octaveOffsetLabel: String {
+        octaveOffset > 0 ? "+\(octaveOffset)" : "\(octaveOffset)"
     }
 
     var persistentTarget: ResolvedPersistentPitchTarget? {
@@ -131,12 +146,7 @@ final class VocalPracticeModel {
     }
 
     var persistentTargetMIDI: Int? {
-        persistentTarget?.effectiveTargetMIDI(
-            transpose: transpose,
-            comfortablePitchMIDI: comfortablePitchMIDI,
-            lastSourceMIDI: tessituraSession.lastSourceMIDI,
-            lastTargetMIDI: tessituraSession.lastTargetMIDI
-        )
+        persistentTarget?.effectiveTargetMIDI(transpose: transpose, octaveOffset: octaveOffset)
     }
 
     /// Which card, if any, should be wearing the live pitch gauge right now.
@@ -183,24 +193,11 @@ final class VocalPracticeModel {
         sampledLiveCentsError.map(PersistentPitchFeedback.band)
     }
 
-    /// The measured pitch on the readout's cadence rather than the detector's.
-    ///
-    /// Reconstructed from the sampled cents error and the note it was measured against - the
-    /// exact inverse of how `liveCentsError` was formed - so the printed pitch and the printed
-    /// percentage can never describe different instants. Sampling it separately would let them.
-    var sampledMeasuredMIDI: Double? {
-        guard let sampledLiveCentsError, let targetMIDI = persistentTargetMIDI else { return nil }
-        return Double(targetMIDI) + sampledLiveCentsError / 100
-    }
-
-    /// The percentage printed beside the timeline marker, or nil when nothing voiced is
-    /// arriving or the reading is a semitone or more out - past that the number saturates
-    /// and stops separating "slightly flat" from "singing a different note".
-    var sampledLivePercentageText: String? {
-        guard let sampledLiveCentsError,
-              PersistentPitchFeedback.showsLiveErrorPercentage(centsError: sampledLiveCentsError)
-        else { return nil }
-        return PersistentPitchFeedback.formatLiveErrorPercentage(centsError: sampledLiveCentsError)
+    /// The cents figure printed beside the timeline marker and in the card gauge's corner,
+    /// on the readout's readable cadence rather than the detector's. Unlike the percentage it
+    /// replaced, this never saturates, so there is no reading far enough out to withhold it.
+    var sampledLiveCentsText: String? {
+        sampledLiveCentsError.map(PersistentPitchFeedback.formatCentsError)
     }
 
     var manualStatusText: String? {
@@ -219,7 +216,13 @@ final class VocalPracticeModel {
         melodyRunScores[runID]
     }
 
+    /// Opening the tool ends persistent practice. The two are alternative uses of the one
+    /// microphone and of the singer's attention, and persistent feedback is worn by the card
+    /// and the timeline - both of which the open dock covers or crowds. Keeping the invariant
+    /// absolute (open tool implies no monitoring) is also what lets the collapsed dock offer
+    /// a bare Stop button with nothing to explain.
     func expand() {
+        stopPersistentPractice()
         if collapseClearTask != nil {
             cancelPendingCollapseClear()
             clearManualPracticeContent()
@@ -230,6 +233,7 @@ final class VocalPracticeModel {
     /// Help reveals the controls without discarding a practice session, including
     /// when it is opened during the dock's delayed collapse cleanup.
     func expandForHelp() {
+        stopPersistentPractice()
         cancelPendingCollapseClear()
         isExpanded = true
     }
@@ -293,11 +297,7 @@ final class VocalPracticeModel {
     func playPair() {
         guard let slot1, let slot2 else { return }
         let resolvedTargets = targetRequest.map {
-            SingingTargets.resolve(
-                request: $0,
-                transpose: transpose,
-                comfortablePitchMIDI: comfortablePitchMIDI
-            )
+            SingingTargets.resolve(request: $0, transpose: transpose, octaveOffset: octaveOffset)
         }
         let frequencies: (Double, Double)
         if let first = resolvedTargets?.first, let second = resolvedTargets?.second {
@@ -385,96 +385,24 @@ final class VocalPracticeModel {
         targetRequest = nil
     }
 
-    func startCalibration() {
-        guard canCalibrateComfortablePitch else { return }
-        cancelActivity()
-        errorMessage = nil
-        calibrationState = .requestingPermission
-        operationGeneration &+= 1
-        let generation = operationGeneration
-        microphoneTask = Task { @MainActor [weak self] in
-            guard let self else { return }
-            do {
-                await self.audio.pause()
-                try Task.checkCancellation()
-                let lease = try await self.audio.acquireMicrophone(owner: .tessitura, profile: .standard)
-                guard self.isCurrent(generation) else {
-                    self.audio.releaseMicrophone(lease)
-                    return
-                }
-                self.activeLease = lease
-                self.prepareReadingState()
-                self.calibrationState = .capturing(remainingMilliseconds: 3_000, hasSignal: false)
-                let reader = self.consume(lease: lease, generation: generation)
-                defer {
-                    reader.cancel()
-                    self.releaseIfOwned(lease)
-                }
-
-                var capture = ComfortablePitchCapture()
-                var lastTick = self.clock.now
-                while self.isCurrent(generation), !capture.progress.isComplete, !self.microphoneStreamEnded {
-                    try Task.checkCancellation()
-                    try await Task.sleep(for: .milliseconds(16))
-                    let now = self.clock.now
-                    let elapsed = self.milliseconds(lastTick.duration(to: now))
-                    lastTick = now
-                    let reading = self.currentReading(maximumAge: .milliseconds(48))
-                    let progress = capture.observe(elapsedMilliseconds: elapsed, midi: reading?.midi)
-                    self.calibrationState = .capturing(
-                        remainingMilliseconds: progress.remainingMilliseconds,
-                        hasSignal: progress.hasSignal
-                    )
-                }
-
-                guard self.isCurrent(generation) else { return }
-                if let average = capture.averageMIDI {
-                    self.tessituraSession.updateComfortablePitch(average)
-                    self.comfortablePitchMIDI = average
-                    self.calibrationState = .idle
-                    self.refreshPersistentTarget(resetScoreForCurrentRun: true)
-                } else if let microphoneStreamError = self.microphoneStreamError {
-                    self.calibrationState = .failed(microphoneStreamError)
-                } else {
-                    self.calibrationState = .idle
-                }
-            } catch is CancellationError {
-                return
-            } catch {
-                guard self.isCurrent(generation) else { return }
-                self.calibrationState = .failed(error.localizedDescription)
-                self.errorMessage = error.localizedDescription
-            }
-        }
-    }
-
-    func retryCalibration() {
-        startCalibration()
-    }
-
-    func cancelCalibration() {
-        guard calibrationState != .idle else { return }
-        cancelMicrophoneActivity(resetPersistentSelection: false)
-        calibrationState = .idle
-    }
-
-    func adjustComfortablePitch(semitones: Int) {
-        guard semitones != 0, let comfortablePitchMIDI else { return }
-        let adjusted = comfortablePitchMIDI + Double(semitones)
-        tessituraSession.updateComfortablePitch(adjusted)
-        self.comfortablePitchMIDI = adjusted
+    /// The singer's octave adjustment, in octaves, scoped to the song being practised.
+    ///
+    /// Song-scoped on purpose: the register a melody sits in is a property of that song, so
+    /// carrying an offset into the next one would silently move its targets. Entering a
+    /// different song returns it to zero.
+    func setOctaveOffset(_ offset: Int) {
+        let clamped = SingingOctaveOffset.clamped(offset)
+        guard clamped != octaveOffset else { return }
+        octaveOffset = clamped
         refreshPersistentTarget(resetScoreForCurrentRun: true)
     }
 
-    func adjustComfortablePitch(octaves: Int) {
-        adjustComfortablePitch(semitones: octaves * 12)
+    func adjustOctaveOffset(by delta: Int) {
+        setOctaveOffset(octaveOffset + delta)
     }
 
-    func clearTessituraAdjustment() {
-        tessituraSession.clearAdjustment()
-        comfortablePitchMIDI = nil
-        refreshPersistentTarget(resetScoreForCurrentRun: true)
-    }
+    var canDecrementOctaveOffset: Bool { octaveOffset > SingingOctaveOffset.range.lowerBound }
+    var canIncrementOctaveOffset: Bool { octaveOffset < SingingOctaveOffset.range.upperBound }
 
     func togglePersistent(_ selection: PersistentPitchSelection) {
         if persistentSelection == selection {
@@ -484,16 +412,18 @@ final class VocalPracticeModel {
         }
     }
 
+    /// Starts monitoring whether or not a target resolves this instant.
+    ///
+    /// The header's microphone button is a standing mode, not an action on one card: pressed
+    /// during a rest, or before the first melody note has sounded, it must still latch and
+    /// pick the target up when the music reaches one. `refreshPersistentTarget` already
+    /// tolerates the target coming and going underneath a running session, which is the same
+    /// state this starts in.
     func startPersistentPractice(_ selection: PersistentPitchSelection) {
-        let resolved = PersistentPitchTargets.resolve(
-            selection: selection,
-            simpleRoot: rootTarget,
-            chordTones: chordToneTargets,
-            melody: melodyTarget
-        )
-        guard resolved != nil else { return }
-
         cancelActivity()
+        // Collapsing is what surfaces the dock's Stop button, which exists only in the
+        // collapsed header - the mirror of `expand()` ending monitoring from the other side.
+        if isExpanded { minimize() }
         errorMessage = nil
         persistentSelection = selection
         persistentPhase = .listening
@@ -635,15 +565,15 @@ final class VocalPracticeModel {
         }
         if self.songID != songID {
             if self.songID != nil {
-                tessituraSession.clearSession()
-                comfortablePitchMIDI = nil
+                // The octave a melody sits in belongs to its song, so the offset does not
+                // travel to the next one. Section changes inside a song keep it.
+                octaveOffset = 0
                 melodyRunScores.removeAll()
             }
             self.songID = songID
         }
         if self.sectionID != sectionID {
             self.sectionID = sectionID
-            tessituraSession.enter("\(songID)|\(sectionID)")
             discardActiveScore()
             melodyRunScores.removeAll()
         }
@@ -655,12 +585,11 @@ final class VocalPracticeModel {
         resetLivePercentageSampling()
     }
 
-    /// Stops microphone and preview activity while retaining the song's tessitura anchor,
+    /// Stops microphone and preview activity while retaining the song's octave offset,
     /// captured slots, and completed melody scores.
     func cancelActivity() {
         cancelPreview()
         cancelMicrophoneActivity(resetPersistentSelection: true)
-        calibrationState = .idle
         clearManualActivityState()
     }
 
@@ -686,8 +615,7 @@ final class VocalPracticeModel {
         slot2 = nil
         melodyRunScores.removeAll()
         discardActiveScore()
-        tessituraSession.clearSession()
-        comfortablePitchMIDI = nil
+        octaveOffset = 0
         songID = nil
         sectionID = nil
         rootTarget = nil
@@ -711,7 +639,6 @@ final class VocalPracticeModel {
     func clearError() {
         errorMessage = nil
         if case .failed = persistentPhase { persistentPhase = .idle }
-        if case .failed = calibrationState { calibrationState = .idle }
     }
 
     private var secondsRemainingText: String {
@@ -727,7 +654,7 @@ final class VocalPracticeModel {
         let resolved = SingingTargets.resolve(
             request: targetRequest,
             transpose: transpose,
-            comfortablePitchMIDI: comfortablePitchMIDI
+            octaveOffset: octaveOffset
         )
         return slot == 1 ? resolved.first : resolved.second
     }
@@ -919,11 +846,14 @@ final class VocalPracticeModel {
         }
     }
 
+    /// Replays exactly what was measured: no quiz transpose, so the pitch the singer
+    /// hears is the pitch that was recorded. The instrument is not named here - the audio
+    /// boundary plays every preview on the currently selected one.
     private func exactPreview(frequencies: [Double], duration: Duration) -> PreviewRequest {
         PreviewRequest(
             frequenciesHz: frequencies,
             duration: duration,
-            usesMusicalConfiguration: false
+            appliesQuizTranspose: false
         )
     }
 
@@ -1111,11 +1041,8 @@ final class VocalPracticeModel {
 
         guard desiredRun?.id != scoringRun?.id else { return }
         finishActiveScore()
-        guard let desiredRun, let targetMIDI = persistentTargetMIDI,
-              let sourceMIDI = persistentTarget?.sourceMIDI else { return }
+        guard let desiredRun, let targetMIDI = persistentTargetMIDI else { return }
         scoringRun = desiredRun
-        scoringRunSourceMIDI = sourceMIDI + transpose
-        scoringRunTargetMIDI = targetMIDI
         scoringSession.begin(runID: desiredRun.id, targetMIDI: targetMIDI)
         melodyRunScores.removeValue(forKey: desiredRun.id)
         lastScoredReadingSequence = latestReadingSequence
@@ -1123,13 +1050,10 @@ final class VocalPracticeModel {
     }
 
     private func restartActiveScore() {
-        guard let scoringRun, let targetMIDI = persistentTargetMIDI,
-              let sourceMIDI = persistentTarget?.sourceMIDI else {
+        guard let scoringRun, let targetMIDI = persistentTargetMIDI else {
             discardActiveScore()
             return
         }
-        scoringRunSourceMIDI = sourceMIDI + transpose
-        scoringRunTargetMIDI = targetMIDI
         scoringSession.begin(runID: scoringRun.id, targetMIDI: targetMIDI)
         melodyRunScores.removeValue(forKey: scoringRun.id)
         lastScoredReadingSequence = latestReadingSequence
@@ -1141,19 +1065,12 @@ final class VocalPracticeModel {
         if let outcome = scoringSession.finish(runID: scoringRun.id) {
             melodyRunScores[scoringRun.id] = outcome
         }
-        if let source = scoringRunSourceMIDI, let target = scoringRunTargetMIDI {
-            tessituraSession.updateContinuity(source: source, target: target)
-        }
         self.scoringRun = nil
-        scoringRunSourceMIDI = nil
-        scoringRunTargetMIDI = nil
     }
 
     private func discardActiveScore() {
         scoringSession.clear()
         scoringRun = nil
-        scoringRunSourceMIDI = nil
-        scoringRunTargetMIDI = nil
     }
 
     private func seconds(_ duration: Duration) -> Double {

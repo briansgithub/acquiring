@@ -33,20 +33,8 @@ public struct ResolvedPersistentPitchTarget: Equatable, Sendable {
         self.position = position
     }
 
-    public func effectiveTargetMIDI(
-        transpose: Int,
-        comfortablePitchMIDI: Double?,
-        lastSourceMIDI: Int? = nil,
-        lastTargetMIDI: Int? = nil
-    ) -> Int {
-        let transposedSource = sourceMIDI + transpose
-        guard let comfortablePitchMIDI else { return transposedSource }
-        return TessituraResolver.resolveTarget(
-            sourceMIDI: transposedSource,
-            anchorMIDI: comfortablePitchMIDI,
-            lastSource: lastSourceMIDI,
-            lastTarget: lastTargetMIDI
-        )
+    public func effectiveTargetMIDI(transpose: Int, octaveOffset: Int) -> Int {
+        sourceMIDI + transpose + SingingOctaveOffset.semitones(octaveOffset)
     }
 }
 

@@ -6,7 +6,7 @@ import SwiftUI
 /// A horizontal bar rides up for sharp and down for flat against a faint centre line that is
 /// the target pitch, so "am I on the note" is answered by one glance at how far the bar sits
 /// from the middle, without reading a number. The colour carries the accuracy band and the
-/// corner pill carries the signed percentage.
+/// corner pill carries the signed cents error.
 ///
 /// The gauge reads the practice model from the environment rather than taking the cents error
 /// as a parameter. That is load-bearing: `liveCentsError` changes every 16 ms, and `@Observable`
@@ -61,7 +61,7 @@ struct QuizPitchGauge: View {
             .frame(width: proxy.size.width, height: proxy.size.height)
             .overlay(alignment: .top) { pinChevron(.up, centsError: centsError) }
             .overlay(alignment: .bottom) { pinChevron(.down, centsError: centsError) }
-            .overlay(alignment: .bottomTrailing) { percentageReadout(hasSignal: centsError != nil) }
+            .overlay(alignment: .bottomTrailing) { centsReadout(hasSignal: centsError != nil) }
             .overlay(alignment: .bottom) { placeholder(hasSignal: centsError != nil) }
         }
         .allowsHitTesting(false)
@@ -88,13 +88,12 @@ struct QuizPitchGauge: View {
     }
 
     @ViewBuilder
-    private func percentageReadout(hasSignal: Bool) -> some View {
+    private func centsReadout(hasSignal: Bool) -> some View {
         // Sampled rather than live: the bar tracks every frame, but a number restating itself
-        // sixty times a second cannot be read. `sampledLivePercentageText` also withholds the
-        // figure once it pins at 100%, where it stops separating "slightly flat" from
-        // "singing a different note entirely".
+        // sixty times a second cannot be read. The same string the timeline marker prints, so
+        // the two readouts can never disagree about the pitch the singer just sang.
         if hasSignal,
-           let text = vocalPractice?.sampledLivePercentageText,
+           let text = vocalPractice?.sampledLiveCentsText,
            let band = vocalPractice?.sampledFeedbackBand {
             LivePitchErrorReadout(text: text, color: .pitchFeedback(band))
                 .padding(4)

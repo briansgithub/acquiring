@@ -7,8 +7,6 @@ struct IntervalSingingTool: View {
     @Bindable var model: VocalPracticeModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.quizHelpState) private var quizHelp
-    @State private var showsPersistentDetails = false
-    @State private var restoresPersistentDetailsAfterHelp = false
 
     var body: some View {
         VStack(spacing: 6) {
@@ -32,26 +30,8 @@ struct IntervalSingingTool: View {
                             .accessibilityLabel("Stop microphone")
                             .accessibilityIdentifier("vocal.practice.stop")
                     }
-                    Menu {
-                        Button("Set") { model.startCalibration() }
-                            .disabled(!model.canCalibrateComfortablePitch)
-                            .accessibilityLabel("Calibrate comfortable pitch")
-                            .accessibilityHint(
-                                model.canCalibrateComfortablePitch ? "" : "Open a song to calibrate"
-                            )
-                        Button("Clear") { model.clearTessituraAdjustment() }
-                            .disabled(model.comfortablePitchMIDI == nil)
-                            .accessibilityHint("Clears comfortable pitch; keeps recordings")
-                    } label: {
-                        Image(systemName: "tuningfork")
-                            .font(.caption.weight(.semibold))
-                            .frame(minWidth: 44, minHeight: 44)
-                            .contentShape(Rectangle())
-                    }
-                    .accessibilityLabel("Tessitura")
-                    .accessibilityValue(model.comfortablePitchLabel ?? "Comfortable pitch not set")
-                    .accessibilityIdentifier("vocal.practice.tessitura")
-                    .quizHelpTarget(.vocalTessitura)
+                    octaveOffsetStepper
+                        .quizHelpTarget(.vocalOctaveOffset)
                 } else {
                     Image(systemName: "waveform")
                     VStack(alignment: .leading, spacing: 1) {
@@ -62,6 +42,19 @@ struct IntervalSingingTool: View {
                         }
                     }
                     Spacer(minLength: 0)
+                    // The one piece of persistent practice this dock carries. The reading
+                    // itself belongs to the card gauge and the timeline marker; all the
+                    // singer needs from down here is a way out that does not require
+                    // finding the card they held. Collapsed only - expanding stops
+                    // monitoring, so there is no expanded state to show it in.
+                    if model.persistentSelection != nil {
+                        Button("Stop", role: .cancel) { model.stopPersistentPractice() }
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
+                            .frame(minHeight: 44)
+                            .accessibilityLabel("Stop persistent pitch practice")
+                            .accessibilityIdentifier("vocal.practice.persistent.stop")
+                    }
                 }
                 Button {
                     model.isExpanded ? model.minimize() : model.expand()
@@ -79,31 +72,26 @@ struct IntervalSingingTool: View {
             }
             .frame(minHeight: 44)
 
+            // Persistent pitch practice shows no reading here - long-pressing a card wears
+            // its feedback on that card's gauge and in the melody timeline, the way Android
+            // does it. The collapsed header's Stop button is the whole of its presence.
             if model.isExpanded {
-                if showsPersistentDetails, model.persistentSelection != nil {
-                    ScrollView {
-                        PersistentPracticeStatus(model: model)
-                    }
-                    .frame(height: 100)
-                } else {
-                    // The error used to take the interval card's place, which put a
-                    // CoreAudio string into a third of the dock's width and removed
-                    // the one card describing the two notes just sung. It reads
-                    // below the row instead, where a sentence fits.
-                    HStack(spacing: 6) {
-                        pitchCard(slot: 1)
-                            .quizHelpTarget(.vocalPitchCards)
-                        pitchCard(slot: 2)
-                            .quizHelpTarget(.vocalPitchCards)
-                        intervalCard
-                    }
-                    if let error = model.errorMessage {
-                        PracticeErrorMessage(message: error, clear: model.clearError)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
+                // The error used to take the interval card's place, which put a
+                // CoreAudio string into a third of the dock's width and removed
+                // the one card describing the two notes just sung. It reads
+                // below the row instead, where a sentence fits.
+                HStack(spacing: 6) {
+                    pitchCard(slot: 1)
+                        .quizHelpTarget(.vocalPitchCards)
+                    pitchCard(slot: 2)
+                        .quizHelpTarget(.vocalPitchCards)
+                    intervalCard
+                }
+                if let error = model.errorMessage {
+                    PracticeErrorMessage(message: error, clear: model.clearError)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
-            if model.persistentSelection != nil, !model.isExpanded || !showsPersistentDetails { persistentFeedback }
             if !model.isExpanded, model.errorMessage != nil {
                 Text("Practice error — expand for details")
                     .font(.caption).foregroundStyle(.red)
@@ -117,22 +105,63 @@ struct IntervalSingingTool: View {
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("vocal.practice.dock")
         .onChange(of: quizHelp?.isPresented) { _, presented in
-            guard let quizHelp else { return }
-            if presented == true {
-                restoresPersistentDetailsAfterHelp = showsPersistentDetails
-                showsPersistentDetails = false
-                model.expandForHelp()
-                updateHelpModes(quizHelp)
-            } else if restoresPersistentDetailsAfterHelp {
-                showsPersistentDetails = true
-                restoresPersistentDetailsAfterHelp = false
-            }
+            guard let quizHelp, presented == true else { return }
+            model.expandForHelp()
+            updateHelpModes(quizHelp)
         }
         .onChange(of: model.isFlipFlopEnabled) { _, _ in updateHelpModes() }
         .onChange(of: model.recordingSlot) { _, _ in updateHelpModes() }
         .onChange(of: model.listeningSlot) { _, _ in updateHelpModes() }
         .onChange(of: model.slot1) { _, _ in updateHelpModes() }
         .onChange(of: model.slot2) { _, _ in updateHelpModes() }
+    }
+
+    /// Moves every singing target by whole octaves. Drawn as one pill in the chevron's own
+    /// styling so the header keeps two controls rather than gaining three: the buttons carry
+    /// no chrome of their own and the number sits between them.
+    private var octaveOffsetStepper: some View {
+        HStack(spacing: 0) {
+            octaveOffsetButton(
+                systemImage: "minus",
+                label: "Lower singing targets an octave",
+                isEnabled: model.canDecrementOctaveOffset,
+                delta: -1
+            )
+            Text(model.octaveOffsetLabel)
+                .font(.caption.monospacedDigit().weight(.semibold))
+                .frame(width: 24)
+                .accessibilityHidden(true)
+            octaveOffsetButton(
+                systemImage: "plus",
+                label: "Raise singing targets an octave",
+                isEnabled: model.canIncrementOctaveOffset,
+                delta: 1
+            )
+        }
+        .background(.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 8))
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Octave offset")
+        .accessibilityValue("\(model.octaveOffsetLabel) octaves")
+        .accessibilityIdentifier("vocal.practice.octaveOffset")
+    }
+
+    private func octaveOffsetButton(
+        systemImage: String,
+        label: String,
+        isEnabled: Bool,
+        delta: Int
+    ) -> some View {
+        Button { model.adjustOctaveOffset(by: delta) } label: {
+            Image(systemName: systemImage)
+                .font(.system(size: 12, weight: .semibold))
+                .frame(width: 28, height: 44)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(!isEnabled)
+        .opacity(isEnabled ? 1 : 0.35)
+        .accessibilityLabel(label)
+        .accessibilityIdentifier(delta < 0 ? "vocal.practice.octaveOffset.down" : "vocal.practice.octaveOffset.up")
     }
 
     private var minimizedSummary: String? {
@@ -157,8 +186,6 @@ struct IntervalSingingTool: View {
             isRecording: isRecording,
             remainingMilliseconds: model.captureRemainingMilliseconds,
             isEnabled: !model.isFlipFlopEnabled && !isRecording,
-            showsPitchHint: !model.isFlipFlopEnabled && !isRecording,
-            isTessituraEnabled: model.comfortablePitchMIDI != nil,
             anchorMIDI: anchorMIDI(slot: slot),
             play: { model.playSlot(slot) },
             record: { model.toggleRecording(slot: slot) }
@@ -170,7 +197,7 @@ struct IntervalSingingTool: View {
     /// the other slot's note when there is one, otherwise the singer's calibrated comfortable
     /// pitch, otherwise middle C. Only ever a resting place - the first voiced frame replaces it.
     private func anchorMIDI(slot: Int) -> Double {
-        (slot == 1 ? model.slot2 : model.slot1)?.rawMIDI ?? model.comfortablePitchMIDI ?? 60
+        (slot == 1 ? model.slot2 : model.slot1)?.rawMIDI ?? 60
     }
 
     private var intervalCard: some View {
@@ -216,51 +243,6 @@ struct IntervalSingingTool: View {
             : (model.recordingSlot != nil || model.listeningSlot != nil ? .capturing : .standard)
         state.intervalMode = model.slot1 != nil && model.slot2 != nil ? .captured : .uncaptured
     }
-
-    private var persistentFeedback: some View {
-        HStack(spacing: 8) {
-            VStack(alignment: .leading, spacing: 1) {
-                Text(livePitchText)
-                    .font(.footnote.monospacedDigit().weight(.semibold))
-                    .lineLimit(1)
-                if let cents = model.sampledLiveCentsError {
-                    Text("\(cents, format: .number.precision(.fractionLength(0)))¢")
-                        .font(.caption.monospacedDigit())
-                        .foregroundStyle(Color.pitchFeedback(centsError: cents))
-                }
-            }
-            .accessibilityElement(children: .combine)
-            .accessibilityLabel(liveFeedbackAccessibilityLabel)
-
-            Button("Stop", role: .cancel) {
-                model.stopPersistentPractice()
-            }
-            .buttonStyle(.bordered)
-            .controlSize(.small)
-            .frame(minHeight: 44)
-            .accessibilityLabel("Stop persistent pitch practice")
-        }
-    }
-
-    private var statusText: String {
-        if model.recordingSlot != nil { return "Recording" }
-        if model.listeningSlot != nil { return "Listening" }
-        if model.isExpanded { return "Practice open" }
-        return "Ready"
-    }
-
-    private var livePitchText: String {
-        guard let midi = model.sampledMeasuredMIDI else { return "Listening…" }
-        return "Live \(midi.formatted(.number.precision(.fractionLength(1))))"
-    }
-
-    private var liveFeedbackAccessibilityLabel: String {
-        guard let cents = model.sampledLiveCentsError else {
-            return "Persistent pitch practice, listening for a voiced pitch"
-        }
-        return "Persistent pitch practice, \(livePitchText), \(cents.formatted(.number.precision(.fractionLength(0)))) cents from target"
-    }
-
 }
 
 private struct DockPitchCard: View {
@@ -271,8 +253,6 @@ private struct DockPitchCard: View {
     let isRecording: Bool
     let remainingMilliseconds: Int
     let isEnabled: Bool
-    let showsPitchHint: Bool
-    let isTessituraEnabled: Bool
     /// Where the tape parks while a recording card is still waiting for its first voiced
     /// frame. The gauge is on screen from the moment recording starts, so there has to be a
     /// pitch under it before the singer has sung one.
@@ -295,7 +275,6 @@ private struct DockPitchCard: View {
                 if isActive { Image(systemName: "mic.fill").foregroundStyle(.tint) }
             }
             .font(.caption).foregroundStyle(.secondary)
-            .padding(.trailing, showsPitchHint ? 16 : 0)
             if let sample {
                 DockPitchTape(midi: sample.rawMIDI, color: isReference ? .secondary : Color.pitchFeedback(centsError: sample.centsFromReference))
                     .animation(reduceMotion ? nil : .linear(duration: 0.1), value: sample.rawMIDI)
@@ -349,18 +328,13 @@ private struct DockPitchCard: View {
                 .allowsHitTesting(false)
             }
         }
-        .overlay(alignment: .topTrailing) {
-            if showsPitchHint {
-                PitchHintDot(isAdjusted: isTessituraEnabled).padding(5)
-            }
-        }
         .contentShape(RoundedRectangle(cornerRadius: 8))
         .gesture(TapGesture(count: 2).onEnded { if isEnabled { record() } }
             .exclusively(before: TapGesture(count: 1).onEnded { if isEnabled { play() } }))
         .accessibilityElement(children: .ignore)
         .accessibilityAddTraits(.isButton)
         .accessibilityLabel(title)
-        .accessibilityValue("\(sample?.pitchLabel ?? (isActive ? "Waiting for a voiced pitch" : "No pitch")), \(isReference ? "Reference" : sample.map { errorText($0.centsFromReference) } ?? ""), \(status), \(isTessituraEnabled ? "Tessitura enabled" : "Original target octave")")
+        .accessibilityValue("\(sample?.pitchLabel ?? (isActive ? "Waiting for a voiced pitch" : "No pitch")), \(isReference ? "Reference" : sample.map { errorText($0.centsFromReference) } ?? ""), \(status)")
         .accessibilityHint(
             isEnabled
                 ? "Single tap replays. Double tap records or stops listening."
@@ -446,155 +420,6 @@ private struct DockPitchTape: View, @preconcurrency Animatable {
     }
 }
 
-private struct PersistentPracticeStatus: View {
-    @Bindable var model: VocalPracticeModel
-
-    var body: some View {
-        let scores = scoreBadges
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Label("Persistent practice", systemImage: "scope")
-                    .font(.subheadline.weight(.semibold))
-                Spacer()
-                Button("Stop", role: .cancel) { model.stopPersistentPractice() }
-                    .buttonStyle(.bordered)
-                    .accessibilityLabel("Stop persistent pitch practice")
-            }
-
-            Text("Selection: \(selectionLabel)")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-
-            if let target = model.persistentTarget {
-                Label("Target \(target.label)", systemImage: "scope")
-                .font(.subheadline)
-            }
-
-            HStack(alignment: .firstTextBaseline, spacing: 12) {
-                Text(livePitchText)
-                    .font(.headline.monospacedDigit())
-                if let cents = model.sampledLiveCentsError {
-                    Text("\(cents, format: .number.precision(.fractionLength(0)))¢")
-                        .font(.subheadline.monospacedDigit())
-                        .foregroundStyle(Color.pitchFeedback(centsError: cents))
-                }
-                if let percentage = model.sampledLivePercentageText {
-                    Text(percentage)
-                        .font(.caption.monospacedDigit())
-                        .foregroundStyle(.secondary)
-                }
-            }
-
-            LivePitchMarker(staffSteps: model.liveMarkerStaffSteps)
-                .accessibilityLabel(liveMarkerAccessibilityLabel)
-
-            Text(feedbackLabel)
-                .font(.caption.weight(.semibold))
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(feedbackColor, in: Capsule())
-                .accessibilityLabel("Pitch feedback, \(feedbackLabel)")
-
-            if !scores.isEmpty {
-                FlowLayout(spacing: 6) {
-                    ForEach(scores) { score in
-                        Text("Run \(score.id + 1): \(scoreLabel(score.outcome))")
-                            .font(.caption2.weight(.semibold))
-                            .padding(.horizontal, 7)
-                            .padding(.vertical, 4)
-                            .background(.quaternary, in: Capsule())
-                    }
-                }
-                .accessibilityElement(children: .combine)
-                .accessibilityLabel("Melody scoring badges")
-            }
-
-            if case let .failed(message) = model.persistentPhase {
-                PracticeErrorMessage(message: message, clear: model.clearError)
-            }
-        }
-        .padding(12)
-        .background(.background.opacity(0.55), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-    }
-
-    private var livePitchText: String {
-        guard let midi = model.sampledMeasuredMIDI else { return "Listening…" }
-        return "Live \(midi.formatted(.number.precision(.fractionLength(1)))) MIDI"
-    }
-
-    private var selectionLabel: String {
-        switch model.persistentSelection {
-        case .simpleRoot: "Root"
-        case let .chordTone(requestedIndex): "Chord tone \(requestedIndex + 1)"
-        case .melody: "Melody"
-        case nil: "Idle"
-        }
-    }
-
-    private var scoreBadges: [ScoreBadge] {
-        model.melodyRunScores
-            .map { ScoreBadge(id: $0.key, outcome: $0.value) }
-            .sorted { $0.id < $1.id }
-    }
-
-    private var feedbackLabel: String {
-        switch model.sampledFeedbackBand {
-        case .accurate: "Accurate"
-        case .close: "Close"
-        case .far: "Off target"
-        case nil: "No pitch"
-        }
-    }
-
-    private var feedbackColor: Color {
-        guard let band = model.sampledFeedbackBand else { return .gray }
-        return .pitchFeedback(band)
-    }
-
-    private func scoreLabel(_ outcome: MelodyRunScoreOutcome) -> String {
-        switch outcome {
-        case let .scored(_, score): score.formatted
-        case .unscored: "Unscored"
-        }
-    }
-
-    private var liveMarkerAccessibilityLabel: String {
-        guard let steps = model.liveMarkerStaffSteps else {
-            return "Live pitch marker is waiting for a voiced pitch"
-        }
-        return "Live pitch marker, \(steps.formatted(.number.precision(.fractionLength(1)))) staff steps from target"
-    }
-
-    private struct ScoreBadge: Identifiable {
-        let id: Int
-        let outcome: MelodyRunScoreOutcome
-    }
-}
-
-private struct LivePitchMarker: View {
-    let staffSteps: Double?
-
-    var body: some View {
-        GeometryReader { proxy in
-            let clamped = min(max(staffSteps ?? 0, -8), 8)
-            let x = proxy.size.width * (CGFloat(clamped + 8) / 16)
-            ZStack(alignment: .leading) {
-                ForEach(0..<5, id: \.self) { index in
-                    Rectangle()
-                        .fill(.secondary.opacity(0.35))
-                        .frame(height: 1)
-                        .offset(y: CGFloat(index) * 5)
-                }
-                Circle()
-                    .fill(.tint)
-                    .frame(width: 12, height: 12)
-                    .offset(x: max(0, min(proxy.size.width - 12, x - 6)), y: 4)
-            }
-        }
-        .frame(height: 24)
-    }
-}
-
 private struct PracticeErrorMessage: View {
     let message: String
     let clear: () -> Void
@@ -618,145 +443,5 @@ private struct PracticeErrorMessage: View {
         .padding(10)
         .background(.red.opacity(0.13), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
         .accessibilityElement(children: .contain)
-    }
-}
-
-/// Attach this once at the active Song Detail or Quiz boundary. It centralizes
-/// manual, guided, and calibration flows so card gestures never create competing
-/// sheet presenters. Manual practice is opt-in because Song Detail retains its
-/// existing guided-only behavior.
-/// A single presenter on the navigation root; sing-back itself always stays inline.
-struct TessituraCalibrationPresentation: ViewModifier {
-    @Bindable var model: VocalPracticeModel
-
-    func body(content: Content) -> some View {
-        content.sheet(isPresented: Binding(
-            get: {
-                if case .idle = model.calibrationState { return false }
-                return true
-            },
-            set: { if !$0 { model.cancelCalibration() } }
-        )) {
-            CalibrationSheet(model: model)
-                .interactiveDismissDisabled()
-                .presentationDetents([.medium])
-        }
-    }
-}
-
-extension View {
-    func tessituraCalibrationPresentation(model: VocalPracticeModel) -> some View {
-        modifier(TessituraCalibrationPresentation(model: model))
-    }
-}
-private struct CalibrationSheet: View {
-    @Bindable var model: VocalPracticeModel
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "waveform")
-                .font(.largeTitle)
-                .foregroundStyle(.tint)
-            Text(title)
-                .font(.title3.weight(.bold))
-            Text(detail)
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
-            if case let .capturing(remainingMilliseconds, hasSignal) = model.calibrationState {
-                ProgressView(value: progress(remainingMilliseconds))
-                    .accessibilityLabel("Calibration progress")
-                    .accessibilityValue("\(Int(progress(remainingMilliseconds) * 100)) percent")
-                Text(hasSignal ? "Voice detected" : "Waiting for a voiced pitch")
-                    .font(.footnote)
-                    .foregroundStyle(hasSignal ? .green : .secondary)
-            }
-            HStack {
-                if case .failed = model.calibrationState {
-                    Button("Retry") { model.retryCalibration() }
-                        .buttonStyle(.borderedProminent)
-                }
-                Button("Cancel", role: .cancel) { model.cancelCalibration() }
-                    .buttonStyle(.bordered)
-            }
-        }
-        .padding(24)
-        .frame(maxWidth: 460)
-        .accessibilityElement(children: .contain)
-    }
-
-    private var title: String {
-        switch model.calibrationState {
-        case .idle: "Comfortable pitch"
-        case .requestingPermission: "Microphone permission"
-        case .capturing: "Hum one comfortable pitch"
-        case .failed: "Calibration needs another try"
-        }
-    }
-
-    private var detail: String {
-        switch model.calibrationState {
-        case .idle: ""
-        case .requestingPermission: "Waiting for microphone permission."
-        case .capturing: "Keep a voiced note steady for three seconds. Brief silence pauses the timer."
-        case let .failed(message): message
-        }
-    }
-
-    private func progress(_ remainingMilliseconds: Int) -> Double {
-        min(max(1 - Double(remainingMilliseconds) / 3_000, 0), 1)
-    }
-}
-
-/// A compact wrapping layout for scoring badges without committing the practice
-/// panel to a particular phone width or iPad orientation.
-private struct FlowLayout: Layout {
-    var spacing: CGFloat
-
-    init(spacing: CGFloat) {
-        self.spacing = spacing
-    }
-
-    func sizeThatFits(
-        proposal: ProposedViewSize,
-        subviews: Subviews,
-        cache: inout ()
-    ) -> CGSize {
-        let width = proposal.width ?? .greatestFiniteMagnitude
-        var x: CGFloat = 0
-        var y: CGFloat = 0
-        var lineHeight: CGFloat = 0
-        for subview in subviews {
-            let size = subview.sizeThatFits(.unspecified)
-            if x > 0, x + size.width > width {
-                x = 0
-                y += lineHeight + spacing
-                lineHeight = 0
-            }
-            x += size.width + (x == 0 ? 0 : spacing)
-            lineHeight = max(lineHeight, size.height)
-        }
-        return CGSize(width: proposal.width ?? x, height: y + lineHeight)
-    }
-
-    func placeSubviews(
-        in bounds: CGRect,
-        proposal: ProposedViewSize,
-        subviews: Subviews,
-        cache: inout ()
-    ) {
-        var x = bounds.minX
-        var y = bounds.minY
-        var lineHeight: CGFloat = 0
-        for subview in subviews {
-            let size = subview.sizeThatFits(.unspecified)
-            if x > bounds.minX, x + size.width > bounds.maxX {
-                x = bounds.minX
-                y += lineHeight + spacing
-                lineHeight = 0
-            }
-            subview.place(at: CGPoint(x: x, y: y), proposal: ProposedViewSize(size))
-            x += size.width + spacing
-            lineHeight = max(lineHeight, size.height)
-        }
     }
 }

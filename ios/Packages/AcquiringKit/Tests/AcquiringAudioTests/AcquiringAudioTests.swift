@@ -18,11 +18,11 @@ final class AcquiringAudioTests: XCTestCase {
         XCTAssertEqual(invalid.melodyChordBalance, 0.5)
         XCTAssertEqual(invalid.transposeSemitones, -12)
 
-        XCTAssertTrue(PreviewRequest(frequenciesHz: [440]).usesMusicalConfiguration)
+        XCTAssertTrue(PreviewRequest(frequenciesHz: [440]).appliesQuizTranspose)
         XCTAssertFalse(PreviewRequest(
             frequenciesHz: [440],
-            usesMusicalConfiguration: false
-        ).usesMusicalConfiguration)
+            appliesQuizTranspose: false
+        ).appliesQuizTranspose)
     }
 
     func testArpeggioOptionsAndTimelineNativeTempoExposeStableBoundaryValues() {

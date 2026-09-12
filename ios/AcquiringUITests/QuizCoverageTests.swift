@@ -315,25 +315,25 @@ final class QuizCoverageTests: XCTestCase {
         let app = launchReadyQuiz()
         let mode = app.descendants(matching: .any)["quiz.mode"]
         XCTAssertTrue(mode.waitForExistence(timeout: 10))
-        XCTAssertEqual(mode.value as? String, "Full")
+        XCTAssertEqual(mode.value as? String, "Full Chords")
         XCTAssertTrue(app.descendants(matching: .any)["quiz.cards"].waitForExistence(timeout: 5))
 
         mode.tap()
-        let roots = app.buttons["Root-only"]
+        let roots = app.buttons["Root Only"]
         XCTAssertTrue(roots.waitForExistence(timeout: 5))
         roots.tap()
-        XCTAssertTrue(waitForValue(mode, "Root-only", timeout: 5))
+        XCTAssertTrue(waitForValue(mode, "Root Only", timeout: 5))
         XCTAssertTrue(app.descendants(matching: .any)["quiz.rootCards"].waitForExistence(timeout: 5))
         XCTAssertTrue(
             app.descendants(matching: .any)["quiz.rootSeek"].waitForExistence(timeout: 5),
-            "Root-only mode exposes the accessible seek slider"
+            "Root Only mode exposes the accessible seek slider"
         )
 
         mode.tap()
-        let full = app.buttons["Full"]
+        let full = app.buttons["Full Chords"]
         XCTAssertTrue(full.waitForExistence(timeout: 5))
         full.tap()
-        XCTAssertTrue(waitForValue(mode, "Full", timeout: 5))
+        XCTAssertTrue(waitForValue(mode, "Full Chords", timeout: 5))
         XCTAssertTrue(app.descendants(matching: .any)["quiz.cards"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.alerts["Audio"].exists)
     }
@@ -344,13 +344,13 @@ final class QuizCoverageTests: XCTestCase {
         let dock = app.buttons["vocal.practice.expand"]
         let overlay = app.descendants(matching: .any)["help.overlay"].firstMatch
 
-        for modeName in ["Full", "Root-only"] {
-            if modeName == "Root-only" {
+        for modeName in ["Full Chords", "Root Only"] {
+            if modeName == "Root Only" {
                 dock.tap()
                 XCTAssertTrue(waitForValue(dock, "Collapsed", timeout: 5))
                 let mode = app.descendants(matching: .any)["quiz.mode"].firstMatch
                 mode.tap()
-                app.buttons["Root-only"].tap()
+                app.buttons["Root Only"].tap()
                 XCTAssertTrue(waitForValue(mode, modeName, timeout: 5))
             }
 
@@ -358,10 +358,10 @@ final class QuizCoverageTests: XCTestCase {
             help.tap()
             XCTAssertTrue(overlay.waitForExistence(timeout: 5))
             for id in ["help.quizNoteIntervalChordTone", "help.quizRelativeKey",
-                       "help.vocalTessitura", "help.vocalPitchCards", "help.vocalInterval"] {
+                       "help.vocalOctaveOffset", "help.vocalPitchCards", "help.vocalInterval"] {
                 XCTAssertTrue(app.descendants(matching: .any)[id].firstMatch.waitForExistence(timeout: 5), id)
             }
-            XCTAssertEqual(app.descendants(matching: .any)["help.quizChord"].firstMatch.exists, modeName == "Full")
+            XCTAssertEqual(app.descendants(matching: .any)["help.quizChord"].firstMatch.exists, modeName == "Full Chords")
             // VoiceOver isolation/focus is deferred in ios-quiz-help-handoff.md.
             // The checks below cover touch interception and state preservation.
             app.buttons["help.dismiss"].tap()

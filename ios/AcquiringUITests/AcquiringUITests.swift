@@ -29,7 +29,7 @@ final class AcquiringUITests: XCTestCase {
         openQuiz(app, searchText: "500 Miles", songButton: Fixture.fiveHundredMiles, navigationTitle: Fixture.fiveHundredMilesQuizTitle)
         let modePicker = app.descendants(matching: .any)["quiz.mode"]
         modePicker.tap()
-        app.buttons["Root-only"].tap()
+        app.buttons["Root Only"].tap()
         let sectionPicker = app.descendants(matching: .any)["quiz.section"]
         let selectedSection = sectionPicker.value as? String
         let play = app.buttons["quiz.play"]
@@ -45,7 +45,7 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertEqual(title.label, Fixture.fiveHundredMilesQuizTitle)
 
         XCTAssertTrue(heading.waitForExistence(timeout: 5))
-        XCTAssertEqual(modePicker.value as? String, "Root-only")
+        XCTAssertEqual(modePicker.value as? String, "Root Only")
         XCTAssertEqual(sectionPicker.value as? String, selectedSection)
         XCTAssertEqual(play.label, "Pause", "Reading the song name must not pause playback")
         play.tap()
@@ -171,13 +171,11 @@ final class AcquiringUITests: XCTestCase {
         let orderedHeadings = [
             "Objective:",
             "Tapping on Notes/Intervals/Chords",
-            "Tessitura"
+            "Octave offset"
         ]
         for title in orderedHeadings {
             scrollToHittable(app.staticTexts[title], in: app)
         }
-        XCTAssertTrue(app.staticTexts["White dot: original octave"].exists)
-        XCTAssertTrue(app.staticTexts["Gray dot: more comfortable octave"].exists)
         XCTAssertTrue(continueButton.isHittable)
         continueButton.tap()
         XCTAssertTrue(app.textFields["library.search.field"].waitForExistence(timeout: 5))
@@ -190,7 +188,7 @@ final class AcquiringUITests: XCTestCase {
         app.buttons["settings.help"].tap()
         XCTAssertTrue(app.navigationBars["Help"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["introduction.continue"].exists)
-        for topic in ["scaleDegrees", "intervals", "romanNumerals", "tessitura"] {
+        for topic in ["scaleDegrees", "intervals", "romanNumerals"] {
             let link = app.buttons["help.topic.\(topic)"]
             scrollToHittable(link, in: app)
             link.tap()
@@ -484,13 +482,13 @@ final class AcquiringUITests: XCTestCase {
         let mode = app.descendants(matching: .any)["quiz.mode"]
         XCTAssertTrue(mode.waitForExistence(timeout: 5))
         XCTAssertEqual(mode.frame.midY, app.buttons["quiz.reset"].frame.midY, accuracy: 2,
-                       "Full/Root-only belongs in the transport row")
+                       "Full Chords/Root Only belongs in the transport row")
         mode.tap()
-        let roots = app.buttons["Root-only"]
+        let roots = app.buttons["Root Only"]
         XCTAssertTrue(roots.waitForExistence(timeout: 5))
         roots.tap()
         let modeApplied = expectation(
-            for: NSPredicate(format: "value == %@", "Root-only"),
+            for: NSPredicate(format: "value == %@", "Root Only"),
             evaluatedWith: mode
         )
         wait(for: [modeApplied], timeout: 5)
@@ -652,10 +650,11 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertEqual(current.frame.height, 44, accuracy: 1)
         XCTAssertEqual(interval.frame.height, 88, accuracy: 1)
         XCTAssertLessThan(app.staticTexts["Melody"].frame.maxX, previous.frame.minX)
-        // Two equal-width groups: the note pair and the interval/single-note slot.
+        // Two equal-width groups: the note pair and the interval slot beside it.
         XCTAssertEqual(previous.frame.width, current.frame.width, accuracy: 1)
         XCTAssertEqual(interval.frame.width, current.frame.maxX - previous.frame.minX, accuracy: 1)
         let intervalSlot = interval.frame
+        let pairCurrentSlot = current.frame
 
         previous.tap()
         current.tap()
@@ -674,16 +673,25 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertEqual(app.state, .runningForeground)
         XCTAssertFalse(app.alerts["Audio"].exists)
 
-        // The first pitched note has no preceding interval and uses the same slot.
+        // The first pitched note has no preceding interval. It keeps its own column in the
+        // pair rather than moving into the interval slot, and centres between the high and
+        // low positions it takes once a predecessor arrives. The interval card is still
+        // drawn there, but empty and decorative, so it is not in the accessibility tree.
         app.buttons["quiz.reset"].tap()
         seekForwardOnMelodyTimeline(in: app, until: {
             current.exists && !previous.exists && !interval.exists
         })
         XCTAssertTrue(current.exists && !interval.exists, "A single-note melody state must be reachable")
         if current.exists && !interval.exists {
-            XCTAssertEqual(current.frame.minX, intervalSlot.minX, accuracy: 1)
-            XCTAssertEqual(current.frame.width, intervalSlot.width, accuracy: 1)
-            XCTAssertEqual(current.frame.height, intervalSlot.height, accuracy: 1)
+            XCTAssertEqual(current.frame.minX, pairCurrentSlot.minX, accuracy: 1)
+            XCTAssertEqual(current.frame.width, pairCurrentSlot.width, accuracy: 1)
+            XCTAssertEqual(current.frame.height, 44, accuracy: 1)
+            XCTAssertEqual(
+                current.frame.midY,
+                intervalSlot.midY,
+                accuracy: 1,
+                "A lone melody note centres in the 88pt row"
+            )
         }
     }
 
@@ -709,7 +717,7 @@ final class AcquiringUITests: XCTestCase {
         XCTAssertTrue(sectionPicker.waitForExistence(timeout: 5))
         let modePicker = app.descendants(matching: .any)["quiz.mode"]
         XCTAssertTrue(modePicker.waitForExistence(timeout: 5))
-        XCTAssertEqual(modePicker.value as? String, "Full")
+        XCTAssertEqual(modePicker.value as? String, "Full Chords")
 
         sectionPicker.tap()
         let chorus = app.buttons["Chorus"]
@@ -733,7 +741,7 @@ final class AcquiringUITests: XCTestCase {
         attachScreenshot(of: app, named: "phase-3-quiz-full-chorus")
 
         modePicker.tap()
-        let rootsOption = app.buttons["Root-only"]
+        let rootsOption = app.buttons["Root Only"]
         XCTAssertTrue(rootsOption.waitForExistence(timeout: 5))
         rootsOption.tap()
         XCTAssertTrue(

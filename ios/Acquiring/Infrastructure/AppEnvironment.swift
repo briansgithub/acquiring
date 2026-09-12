@@ -217,8 +217,8 @@ enum QuizDisplayMode: String, CaseIterable, Hashable, Identifiable {
 
     var title: String {
         switch self {
-        case .full: "Full"
-        case .rootOnly: "Root-only"
+        case .full: "Full Chords"
+        case .rootOnly: "Root Only"
         }
     }
 }
