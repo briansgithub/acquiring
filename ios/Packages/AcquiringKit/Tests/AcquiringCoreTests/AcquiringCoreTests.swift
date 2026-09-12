@@ -18,12 +18,6 @@ final class AcquiringCoreTests: XCTestCase {
         XCTAssertGreaterThan(estimate.confidence, 0.9)
     }
 
-    func testTessituraMovesAnIntervalAsAUnit() {
-        let result = TessituraResolver.resolveInterval(first: 48, second: 67, anchorMIDI: 60)
-        XCTAssertEqual(result.1 - result.0, 19)
-        XCTAssertEqual(result.0, 48)
-    }
-
     func testSectionOrderingUsesExplicitIndexesAndDeduplicatesTypes() {
         let sections = [
             "chorus-old": ExtractedSection(sectionName: "Chorus", sectionIndex: 3),
@@ -49,19 +43,6 @@ final class AcquiringCoreTests: XCTestCase {
         XCTAssertEqual(PlaybackTiming.endBeat(metadata: 40, audibleEnds: [5, 9]), 9)
         XCTAssertEqual(PlaybackTiming.loopingPosition(tickEndBeat: 9.25, endBeat: 9), .init(beat: 1.25, looped: true))
         XCTAssertEqual(PlaybackTiming.remainingMilliseconds(eventEndBeat: 2, currentBeat: 1.5, bpm: 120), 250)
-    }
-
-    func testComfortablePitchCapturePausesThenRestartsAfterDropout() {
-        var capture = ComfortablePitchCapture(captureMilliseconds: 300, sampleWindowMilliseconds: 200, dropoutGraceMilliseconds: 100)
-        XCTAssertFalse(capture.observe(elapsedMilliseconds: 100, midi: 60).isComplete)
-        _ = capture.observe(elapsedMilliseconds: 50, midi: nil)
-        XCTAssertTrue(capture.progress.hasSignal)
-        _ = capture.observe(elapsedMilliseconds: 100, midi: nil)
-        XCTAssertFalse(capture.progress.hasSignal)
-        _ = capture.observe(elapsedMilliseconds: 100, midi: 62)
-        _ = capture.observe(elapsedMilliseconds: 100, midi: 62)
-        XCTAssertTrue(capture.observe(elapsedMilliseconds: 100, midi: 62).isComplete)
-        XCTAssertEqual(capture.averageMIDI, 62)
     }
 
     func testSectionDecodesArrayAndNamedMelodyPayloads() {

@@ -59,26 +59,24 @@ final class PersistentPitchPracticeTests: XCTestCase {
         ))
     }
 
-    func testEffectiveTargetIncludesTransposeTessituraAndContinuity() throws {
+    func testEffectiveTargetIncludesTransposeAndOctaveOffset() throws {
         let root = ResolvedPersistentPitchTarget(
             sourceMIDI: 60,
             label: "1\u{0302}",
             position: .simpleRoot
         )
-        XCTAssertEqual(root.effectiveTargetMIDI(transpose: 5, comfortablePitchMIDI: 72), 77)
-        XCTAssertEqual(root.effectiveTargetMIDI(transpose: 5, comfortablePitchMIDI: nil), 65)
+        XCTAssertEqual(root.effectiveTargetMIDI(transpose: 5, octaveOffset: 0), 65)
+        XCTAssertEqual(root.effectiveTargetMIDI(transpose: 5, octaveOffset: 1), 77)
+        XCTAssertEqual(root.effectiveTargetMIDI(transpose: 0, octaveOffset: -2), 36)
 
         let melody = ResolvedPersistentPitchTarget(
             sourceMIDI: 72,
             label: "1\u{0302}",
             position: .melodyCurrent
         )
-        XCTAssertEqual(melody.effectiveTargetMIDI(
-            transpose: 0,
-            comfortablePitchMIDI: 60,
-            lastSourceMIDI: 71,
-            lastTargetMIDI: 71
-        ), 72)
+        XCTAssertEqual(melody.effectiveTargetMIDI(transpose: 0, octaveOffset: 0), 72)
+        // Out-of-range offsets clamp rather than running the target off the keyboard.
+        XCTAssertEqual(melody.effectiveTargetMIDI(transpose: 0, octaveOffset: 7), 108)
     }
 
     func testContiguousMatchingMelodyNotesBecomeOneScoringRun() throws {

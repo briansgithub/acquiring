@@ -435,7 +435,12 @@ Recording/DSP parity was checked against final Android `MicrophonePitchTracker.k
 | Capture timing | Manual 3 s wall time, latest valid pitch; tessitura 3 voiced s, final 2 s mean, 1 s dropout grace |
 
 iOS requests `.measurement`, 16 kHz and hop-sized I/O, averages resolved channels,
-resamples with AVAudioConverter, and scales to PCM16. Android uses AudioRecord's
+resamples with AVAudioConverter, and scales to PCM16. `.measurement` is now asked for
+only by the interval tool and tessitura calibration, which pause the song and own the
+device alone. Persistent monitoring uses `.default`: the mode belongs to the whole
+session rather than to its input, so measurement mode also strips processing from the
+song playing underneath monitoring, and default mode gives that capture the echo
+cancellation it needs to track the singer rather than the backing track. Android uses AudioRecord's
 UNPROCESSED → VOICE_RECOGNITION → MIC fallback. These are platform-specific input
 paths, not a guarantee of identical physical preprocessing or latency. Tap frame
 requests scale to the resolved hardware rate; Apple may coalesce callbacks. Fast
@@ -757,6 +762,117 @@ Incremental build passed (no full/UI suites run):
 Log: `/tmp/acquiring-palatino.6Ak8Qd/build.log`. Human review: open 500 Miles and
 check the Palatino numeral/degree cards; confirm Aa is absent. No release/commit.
 
+### Tessitura removed for a singer-set octave offset — 2026-09-08
+
+Implemented by the current agent (Opus 5), without delegation. User asked for tessitura
+and its white/gray dots to be removed outright, the Help description stripped, and the
+tuning fork replaced by an integer with minus/plus buttons applying a plain octave offset
+constrained to -2…+3, scoped per song and shown with an explicit zero.
+
+- `TessituraResolver`, `TessituraSession` and `ComfortablePitchCapture` are deleted, with
+  the comfortable-pitch anchor, the register/window/tritone/contour placement rules and the
+  source-to-target continuity that fed them. Two model fields existed only to feed that
+  continuity and were write-only once it went.
+- The three-second calibration, its sheet and every permission/countdown/retry state are
+  gone, and with them the `.tessitura` microphone owner - so `.measurement` is now the
+  interval tool's mode alone.
+- `PitchHintDot` and every use are removed: quiz cards, the dock's pitch cards and
+  `QuizExampleCard`. With no anchor there is no register for a dot to report, so cards no
+  longer announce one to VoiceOver either.
+- `SingingOctaveOffset` (range -2…3, `clamped`, `semitones`) replaces it. Singing targets
+  and the persistent target are now `source + transpose + 12 x offset`, flat and
+  unconditional, so both notes of an interval move together. The control is a compact pill
+  in the singing tool header in the expand chevron's own styling. Song-scoped: a section
+  change keeps the offset, a new song returns it to zero.
+- The Help article and topic link, the Introduction section and its dot legend, the in-quiz
+  tooltip (now `.vocalOctaveOffset`) and the Info.plist microphone purpose string are all
+  rewritten or removed. The Introduction's stale "press and hold" line is corrected to the
+  header microphone button at the same time.
+
+Package suite passed: 234 tests, 0 failures, including new coverage that an interval moves
+as a unit at every offset in range, that out-of-range values clamp, and that transpose and
+offset compose without the offset reaching playback input. App and UI test targets build;
+those suites were not run. F048 is recorded **Dropped** and F049 **Replaced** in the parity
+inventory rather than left describing a feature iOS no longer has.
+
+### Session mode by capture owner, category recovery, global preview instrument — 2026-09-08
+
+Implemented by the current agent (Opus 5), without delegation. User reported that the
+interval singing tool ignored the selected instrument and that song playback broke
+while mic-button monitoring was active, and attached an exported audio diagnostic.
+
+- `PreviewRequest` carried one flag gating both the quiz transpose and the instrument.
+  The singing tool cleared it to replay measured frequencies at their recorded pitch and
+  lost the instrument with it, playing the `.clarinet` default forever. The flag is now
+  `appliesQuizTranspose` and governs the transpose alone; the audio boundary applies the
+  selected instrument to every preview. Selection already lived in memory for the app's
+  lifetime and resets to the saved default on relaunch, which is the requested lifetime.
+- The session ran in `.measurement` for any `.playAndRecord`. The mode is session-wide,
+  so it stripped processing from the song playing underneath monitoring. It is now chosen
+  by `MicrophoneOwner`: `.measurement` for `.singingTool` and `.tessitura`, `.default` for
+  `.persistentPractice`.
+- The exported diagnostic showed `session.setCategory.failed` with `561017449` ('!pri',
+  insufficient priority) on the release path, and again on every later preview: iOS
+  refuses to leave a recording category while running I/O still holds an input node, and
+  the refusal stands for the life of the process. `configureSession` now retires the
+  graph before leaving `.playAndRecord`, the same cure the file already applied before an
+  engine start. This was the "no sound until the app restarts" failure.
+
+Build passed on the iPhone 17 simulator, with install and relaunch. The package audio
+tests were updated for the renamed flag but not run; no full suite, screenshots,
+physical-device checks or TestFlight upload. The `.measurement` note in group E's DSP
+table is updated to match - monitoring's input is now processed, which is a deliberate
+trade against unusable playback and is the first place to look if pitch tracking during
+a song reads worse than before.
+
+### Quiz pitch monitoring entry point, melody row and readouts — 2026-09-08
+
+Implemented by the current agent (Opus 5), without delegation. User requested the
+header microphone entry point, the melody row rework, timeline-only feedback and
+the selector/card wording.
+
+- Persistent pitch monitoring is entered from a microphone button beside Help in
+  `QuizHeader` (`quiz.monitorPitch`, `music.mic`), monitoring the melody in Full and
+  the current root in Root-only. Card long press is removed, and with it the
+  gesture chain, the named VoiceOver practice action, and the only route to
+  chord-tone practice - `PersistentPitchTargets` still resolves and clamps
+  `.chordTone` and its tests still run, but no control names a tone. Starting no
+  longer requires a target to resolve that instant, so the button latches through
+  a rest and picks the target up when one arrives.
+- Monitoring and the interval singing tool are mutually exclusive in both
+  directions: starting monitoring collapses the tool so its Stop button is
+  reachable, and expanding the tool - including for Help - stops monitoring. The
+  tool carries no reading of its own. The model observes `didEnterBackground` and
+  `willTerminate` itself rather than relying on a scene-phase hop through the view
+  tree, so monitoring cannot outlive the app being put away.
+- The melody row is one fixed two-column shape in every state: a 44pt note pair on
+  the left, an 88pt interval card on the right, both drawn through rests, unisons
+  and first notes. A repeated note or a first note with no predecessor keeps the
+  pair's current column and centres between the high and low contour positions
+  rather than borrowing the interval card. That card is reserved for interval
+  strings; with none it is the picture-only card, not a disabled button, so its
+  tint and opacity never change as the melody gains and loses a predecessor.
+- Full-mode pitch feedback is the timeline marker alone - no melody, interval or
+  chord-tone card draws a gauge - and the marker is drawn whenever monitoring is
+  listening, parking on the target line in neutral white with no voiced frame. Its
+  pill and the card gauge both print signed cents rather than a percentage, which
+  retires the semitone cutoff that withheld the saturating figure. Root-only keeps
+  its on-card gauge because it has no timeline to carry a reading.
+- Wording and fit: the mode selector reads "Full"/"Root" collapsed and "Full
+  Chords"/"Root Only" in the menu, on a width constant of its own (84pt) so the
+  transpose selector and transport-row sizing are untouched; Root-only cards are
+  captioned "Previous Root" and "Current Root", the narrow previous card scaling
+  its caption rather than wrapping.
+
+Build passed on the iPhone 17 simulator, with install and relaunch after each step.
+Rules 10, 16 and 18 of the card contract below, F035/F046/F047 in the parity
+inventory, and the F036/F041/F046/F047 rows plus H02/H17 in the testing prompts are
+updated to match; the divergences from Android are recorded as deliberate. The UI
+tests asserting the renamed selector strings and the single-note melody geometry
+moved with the behavior, but were not run - no full suite, screenshots,
+physical-device checks or TestFlight upload. `android-app-analysis.md` and the
+dated autonomous test report are deliberately untouched.
+
 ### Roboto melody intervals, empty rest slots, and row captions — 2026-09-05
 
 Implemented by the current agent (runtime model identity unavailable), without
@@ -1068,15 +1184,15 @@ it is not a claim that every combination was runtime-tested.
 | 7 | Map cards consistently: root interval → previous/current slots 1/2; current root degree → slot 1; current/lone melody → slot 1; previous melody alone → slot 1; melody interval → previous/current slots 1/2; each chord tone → that tone in slot 1. The full Roman-numeral chord has no dot and only previews. | Existing mappings preserved at `QuizCards.swift:95`, `:185`, `:330`, `:392`, `:435`; full-chord extra practice actions removed at `:249`. Chord/root distinction smoke passed. |
 | 8 | The dot itself has no tap target; the parent card owns interaction. | Already matching: `PitchHintDot.allowsHitTesting(false)`. |
 | 9 | Single tap explicitly previews a note, chord, or interval. Intervals preview previous, current, then together; a replacement cancels the older preview. | Already matching: `QuizCards.swift:403`, `:450` and the existing shared preview arbiter. Sound/order unverified in this batch. |
-| 10 | Single tap, double tap and long press are exclusive so sing-back/persistent practice does not also emit an unwanted preview. | Already matching shared card gesture handling: `QuizCards.swift:801`, `:866`. Full-chord/root gesture smoke passed. |
+| 10 | Single tap and double tap are exclusive so sing-back does not also emit an unwanted preview. | Matching in shared card gesture handling (`QuizCardActions`). Cards no longer carry a long press at all, so the third arm of the arbitration is gone with it. Full-chord/root gesture smoke passed. |
 | 11 | Double-tap handoff stops persistent practice, pauses Quiz, replaces the target request, clears old captures and expands the tool. | Preserved shared model integration at `VocalPracticeModel.swift:280`; single-root handoff smoke passed. |
 | 12 | Automatically listen to the first assigned slot after about 800 ms, then use a 3 s window. Superseding requests, collapse and lifecycle changes cancel pending work. | Implemented Android timing without the former automatic target-preview sequence. Context/collapse smoke passed; exact timing/replacement races unverified. |
 | 13 | Request microphone access only when an input action begins, using the shared exclusive owner and permission recovery. A dot is not a permission indicator. | Existing native iOS adaptation retained. Expansion/no-prompt and simulator capture startup smoke passed; denied permission recovery unverified. |
 | 14 | Pass source pitches and displayed scale-degree labels, preserving accidentals, relative-Ionian labels, and chord-root-relative labels. Interval targets carry both endpoint labels. | Interval labels added at `QuizCards.swift:114`, `:200`, `:435`; existing single-note labels preserved. |
 | 15 | Apply transpose once, shift tessitura by whole octaves, and move interval endpoints together using the existing comfortable-range resolver. Captured frequencies remain unchanged. | Existing `AcquiringCore/SingingTargets.swift` reused; active-listening retarget updated. Deterministic pitch/replay assertions unverified. |
-| 16 | Long press toggles persistent selection: both simple-root cards select the current root; melody cards, including a previous-note card, select the current melody; each chord-tone card selects its displayed tone index. | Already matching: `QuizCards.swift:344`, `:405`, `:452`. Full Roman-chord long-press practice removed. |
+| 16 | Persistent selection is toggled per card by long press: simple-root cards select the current root, melody cards the current melody, each chord-tone card its displayed tone index. | **Deliberate iOS divergence.** Card long press is removed. A microphone button beside Help in `QuizHeader` is the sole entry point, selecting the melody in Full and the current root in Root-only; switching mode stops monitoring. Chord-tone practice is consequently unreachable on iOS - `PersistentPitchTargets` still resolves and clamps `.chordTone`, and its tests still run, but no control names a tone. Re-reaching it needs a tone picker on the button. |
 | 17 | Dock dots use actual resolved-target versus source-plus-transpose movement. A dock dot can stay white while its originating quiz dot is gray. Hide a slot's dot during its recording and hide both during Flip-Flop; target-listening cards remain interactive. | Preserved resolver check `VocalPracticeModel.swift:618`; recording gating updated in `VocalPracticeViews.swift`. **smoke passed** for Flip-Flop card disabling; dot appearance needs human review. |
-| 18 | Keep the dot hidden from VoiceOver; describe register state and expose named Sing Back/Persistent actions on the parent card. Disabled recording cards omit custom actions and direct users to Stop. | Existing Quiz parent actions retained; dock disabled semantics and inaccurate Flip-Flop-only hint corrected. Human VoiceOver review pending. |
+| 18 | Keep the dot hidden from VoiceOver; describe register state and expose named Sing Back/Persistent actions on the parent card. Disabled recording cards omit custom actions and direct users to Stop. | Sing Back is retained as a named card action. The card's Persistent action is gone with the long press it stood in for: monitoring is now the header's own focusable button (`quiz.monitorPitch`, labelled "Pitch monitoring" with an On/Off value), which VoiceOver reaches directly rather than through a custom action. Dock disabled semantics and the inaccurate Flip-Flop-only hint corrected. Human VoiceOver review pending. |
 
 #### Checks, demonstrated failures, and pass disposition
 

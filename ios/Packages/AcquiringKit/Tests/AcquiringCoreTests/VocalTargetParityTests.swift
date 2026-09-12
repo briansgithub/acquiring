@@ -4,82 +4,82 @@ import XCTest
 final class VocalTargetParityTests: XCTestCase {
     func testManualTransposeIsAppliedExactlyOnce() {
         let target = SingingTargetNote(sourceMIDI: 60, scaleDegreeLabel: "1\u{0302}")
-        XCTAssertEqual(target.effectiveTargetMIDI(transpose: 1, comfortablePitchMIDI: 73), 73)
-        XCTAssertEqual(target.playbackMIDIInput(transpose: 1, comfortablePitchMIDI: 73), 72)
-        XCTAssertEqual(target.effectiveTargetMIDI(transpose: 2, comfortablePitchMIDI: nil), 62)
-        XCTAssertEqual(target.playbackMIDIInput(transpose: 2, comfortablePitchMIDI: nil), 60)
+        XCTAssertEqual(target.effectiveTargetMIDI(transpose: 1, octaveOffset: 0), 61)
+        XCTAssertEqual(target.playbackMIDIInput(transpose: 1, octaveOffset: 0), 60)
+        XCTAssertEqual(target.effectiveTargetMIDI(transpose: 2, octaveOffset: 0), 62)
+        XCTAssertEqual(target.playbackMIDIInput(transpose: 2, octaveOffset: 0), 60)
     }
 
-    func testContinuityAndIntervalRequestsPreserveContour() {
-        let target = SingingTargetNote(sourceMIDI: 72, scaleDegreeLabel: "1\u{0302}")
-        XCTAssertEqual(target.effectiveTargetMIDI(
-            transpose: 0,
-            comfortablePitchMIDI: 60,
-            lastSourceMIDI: 71,
-            lastTargetMIDI: 71
-        ), 72)
+    func testOctaveOffsetShiftsWholeOctavesAndClampsToItsRange() {
+        let target = SingingTargetNote(sourceMIDI: 60, scaleDegreeLabel: "1\u{0302}")
+        XCTAssertEqual(target.effectiveTargetMIDI(transpose: 0, octaveOffset: 1), 72)
+        XCTAssertEqual(target.effectiveTargetMIDI(transpose: 0, octaveOffset: -2), 36)
+        XCTAssertEqual(target.effectiveTargetMIDI(transpose: 0, octaveOffset: 3), 96)
+        // Transpose and offset compose, and the offset leaves the playback input alone.
+        XCTAssertEqual(target.effectiveTargetMIDI(transpose: 2, octaveOffset: -1), 50)
+        XCTAssertEqual(target.playbackMIDIInput(transpose: 2, octaveOffset: -1), 48)
 
+        XCTAssertEqual(SingingOctaveOffset.clamped(-9), -2)
+        XCTAssertEqual(SingingOctaveOffset.clamped(9), 3)
+        XCTAssertEqual(SingingOctaveOffset.semitones(-4), -24)
+        XCTAssertEqual(target.effectiveTargetMIDI(transpose: 0, octaveOffset: 99), 96)
+    }
+
+    func testAnIntervalMovesAsAUnitWhateverTheOffset() {
         let request = SingingTargetRequest(
             first: SingingTargetNote(sourceMIDI: 67, scaleDegreeLabel: "5\u{0302}"),
             second: SingingTargetNote(sourceMIDI: 72, scaleDegreeLabel: "1\u{0302}"),
             requestID: 1
         )
-        let result = SingingTargets.resolve(request: request, transpose: 0, comfortablePitchMIDI: 60)
-        XCTAssertEqual(result.first, 55)
-        XCTAssertEqual(result.second, 60)
+        // The whole point of a flat offset: the interval on the card is the interval sung.
+        for offset in SingingOctaveOffset.range {
+            let result = SingingTargets.resolve(request: request, transpose: 0, octaveOffset: offset)
+            XCTAssertEqual(result.first, 67 + offset * 12)
+            XCTAssertEqual(result.second, 72 + offset * 12)
+            XCTAssertEqual(result.second! - result.first!, 5)
+        }
     }
 
-    func testSingleAndUntessituratedRequestsMatchAndroid() {
+    func testSingleSidedRequestsCarryOnlyTheirOwnNote() {
         let single = SingingTargetRequest(
             first: SingingTargetNote(sourceMIDI: 84, scaleDegreeLabel: "1\u{0302}"),
             second: nil,
             requestID: 1
         )
-        let placed = SingingTargets.resolve(request: single, transpose: 0, comfortablePitchMIDI: 60)
-        XCTAssertEqual(placed.first, 60)
-        XCTAssertNil(placed.second)
+        let lowered = SingingTargets.resolve(request: single, transpose: 0, octaveOffset: -2)
+        XCTAssertEqual(lowered.first, 60)
+        XCTAssertNil(lowered.second)
 
         let pair = SingingTargetRequest(
             first: SingingTargetNote(sourceMIDI: 60, scaleDegreeLabel: "1\u{0302}"),
             second: SingingTargetNote(sourceMIDI: 67, scaleDegreeLabel: "5\u{0302}"),
             requestID: 2
         )
-        let unplaced = SingingTargets.resolve(request: pair, transpose: 3, comfortablePitchMIDI: nil)
-        XCTAssertEqual(unplaced.first, 63)
-        XCTAssertEqual(unplaced.second, 70)
+        let unshifted = SingingTargets.resolve(request: pair, transpose: 3, octaveOffset: 0)
+        XCTAssertEqual(unshifted.first, 63)
+        XCTAssertEqual(unshifted.second, 70)
     }
 
-    func testIdealIntervalPreviewUsesAssignedTargetsAndLeavesTransposeForAudio() {
+    func testIdealIntervalPreviewCarriesTheOffsetAndLeavesTransposeForAudio() {
         let request = SingingTargetRequest(
             first: SingingTargetNote(sourceMIDI: 60, scaleDegreeLabel: "1\u{0302}"),
             second: SingingTargetNote(sourceMIDI: 67, scaleDegreeLabel: "5\u{0302}"),
             requestID: 1
         )
-        let anchored = SingingTargets.idealIntervalPlaybackMIDIs(
-            request: request,
-            transpose: 0,
-            comfortablePitchMIDI: 72
-        )
-        XCTAssertEqual(anchored?.first, 72)
-        XCTAssertEqual(anchored?.second, 79)
-        let transposed = SingingTargets.idealIntervalPlaybackMIDIs(
-            request: request,
-            transpose: 2,
-            comfortablePitchMIDI: 72
-        )
+        let raised = SingingTargets.idealIntervalPlaybackMIDIs(request: request, transpose: 0, octaveOffset: 1)
+        XCTAssertEqual(raised?.first, 72)
+        XCTAssertEqual(raised?.second, 79)
+        // Transpose is the audio boundary's to apply, so it comes back out here.
+        let transposed = SingingTargets.idealIntervalPlaybackMIDIs(request: request, transpose: 2, octaveOffset: 1)
         XCTAssertEqual(transposed?.first, 72)
         XCTAssertEqual(transposed?.second, 79)
-        let sourceRegister = SingingTargets.idealIntervalPlaybackMIDIs(
-            request: request,
-            transpose: 4,
-            comfortablePitchMIDI: nil
-        )
+        let sourceRegister = SingingTargets.idealIntervalPlaybackMIDIs(request: request, transpose: 4, octaveOffset: 0)
         XCTAssertEqual(sourceRegister?.first, 60)
         XCTAssertEqual(sourceRegister?.second, 67)
         XCTAssertNil(SingingTargets.idealIntervalPlaybackMIDIs(
             request: SingingTargetRequest(first: request.first, second: nil, requestID: 2),
             transpose: 0,
-            comfortablePitchMIDI: 72
+            octaveOffset: 1
         ))
     }
 

@@ -33,13 +33,11 @@ struct QuizCardsView: View {
     let rootOnly: Bool
     let usesRelativeIonianContext: Bool
     let isPreviewEnabled: Bool
-    let isTessituraEnabled: Bool
     /// Removes visual section labels and uses the fixed-height card rows needed by the single-screen quiz.
     let compact: Bool
     let onPreview: ([Int], Duration) -> Void
     let onIntervalPreview: ([Int]) -> Void
     let onSingBack: ((SingingTargetRequest) -> Void)?
-    let onPersistentPractice: ((PersistentPitchSelection) -> Void)?
     let onPracticeContext: ((QuizPracticeTargets) -> Void)?
 
     @State private var presentation: QuizCardsPresentation
@@ -56,11 +54,9 @@ struct QuizCardsView: View {
         usesRelativeIonianContext: Bool,
         isPreviewEnabled: Bool,
         compact: Bool = false,
-        isTessituraEnabled: Bool = false,
         onPreview: @escaping ([Int], Duration) -> Void,
         onIntervalPreview: @escaping ([Int]) -> Void,
         onSingBack: ((SingingTargetRequest) -> Void)? = nil,
-        onPersistentPractice: ((PersistentPitchSelection) -> Void)? = nil,
         onPracticeContext: ((QuizPracticeTargets) -> Void)? = nil
     ) {
         self.section = section
@@ -69,11 +65,9 @@ struct QuizCardsView: View {
         self.usesRelativeIonianContext = usesRelativeIonianContext
         self.isPreviewEnabled = isPreviewEnabled
         self.compact = compact
-        self.isTessituraEnabled = isTessituraEnabled
         self.onPreview = onPreview
         self.onIntervalPreview = onIntervalPreview
         self.onSingBack = onSingBack
-        self.onPersistentPractice = onPersistentPractice
         self.onPracticeContext = onPracticeContext
         _presentation = State(initialValue: QuizCardsPresentation(section: section))
     }
@@ -106,10 +100,9 @@ struct QuizCardsView: View {
         RelativeIonianContext.key(for: section.key(at: PlaybackTiming.firstBeat))
     }
 
-    /// Mirrors Android: the gauge rides the card whose pitch is actually being measured. The
-    /// paired 44pt melody cards and both root/melody interval partners never wear it, so the
-    /// singer's feedback stays in one place on screen as the melody moves in and out of
-    /// having a predecessor.
+    /// Root-only is the one interface that still wears the on-card gauge, because it has no
+    /// melody timeline to carry the reading. In Full the marker on the timeline is the whole
+    /// of the feedback, so no melody, interval or chord-tone card draws a gauge.
     private func showsPitchGauge(_ position: PersistentPitchCardPosition) -> Bool {
         vocalPractice?.gaugePosition == position
     }
@@ -137,7 +130,7 @@ struct QuizCardsView: View {
                 let featuredWidth = (availableWidth - previousWidth) / 2
                 HStack(alignment: .bottom, spacing: RootCardLayout.columnGap) {
                     rootOnlyRootCard(
-                        title: "Previous",
+                        title: "Previous Root",
                         accessibilityTitle: "Previous root",
                         pitch: previous,
                         degree: previousLabel,
@@ -146,7 +139,7 @@ struct QuizCardsView: View {
                     )
                     .frame(width: previousWidth)
                     rootOnlyRootCard(
-                        title: "Current root",
+                        title: "Current Root",
                         accessibilityTitle: "Current root",
                         pitch: current,
                         degree: currentLabel,
@@ -197,9 +190,7 @@ struct QuizCardsView: View {
                 enabled: isPreviewEnabled && !degree.isEmpty,
                 action: { onPreview([previewMIDI(for: pitch)], .milliseconds(450)) },
                 doubleTapAction: singBackAction([previewMIDI(for: pitch)], labels: [degree]),
-                longPressAction: persistentAction(.simpleRoot),
                 doubleTapActionName: "Sing Back",
-                isTessituraEnabled: isTessituraEnabled,
                 showsPitchGauge: showsPitchGauge,
                 fixedHeight: fixedHeight
             ) {
@@ -207,6 +198,8 @@ struct QuizCardsView: View {
                     Text(title)
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.white.opacity(0.78))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
                     FittedScaleDegree(
                         degree,
                         maximumFontSize: maximumDegreeFontSize,
@@ -223,96 +216,122 @@ struct QuizCardsView: View {
         }
     }
 
-    @ViewBuilder
+    /// The melody row is always the same two columns: the note pair on the left, the melody
+    /// interval on the right. Both columns are fixtures - present through rests, unisons and
+    /// first notes alike - so the row never reflows and the eye always finds the interval in
+    /// one place. Only the strings inside the cards come and go.
     private func melodyCards(active: MelodyNote?, state: MelodyIntervalState?) -> some View {
         QuizCardSection("Melody", compact: compact) {
-            if let active,
-               !active.isRest,
-               active.duration > 0,
-               let current = melodyPitch(for: active) {
-
-                let currentLabel = degreeLabel(
-                    for: current,
-                    sourceKey: section.key(at: PlaybackTiming.normalize(beat: active.beat))
-                )
-            switch QuizIntervals.melodyPitchCardDisplayMode(currentPitch: current, intervalState: state) {
-            case .hidden:
-                QuizEmptyCardSlot(
-                    fixedHeight: MelodyCardLayout.singleOrIntervalHeight
-                )
-            case .single:
-                GeometryReader { row in
-                    let halfWidth = max(0, (row.size.width - 8) / 2)
-                    pitchCard(
-                        title: "Current melody note",
-                        pitch: current,
-                        degree: currentLabel,
-                        identifier: "quiz.melody.current",
-                        fixedHeight: MelodyCardLayout.singleOrIntervalHeight,
-                        showsPitchGauge: showsPitchGauge(.melodyCurrent)
-                    )
-                    .frame(width: halfWidth)
-                    .offset(x: halfWidth + 8)
+            GeometryReader { row in
+                let halfWidth = max(0, (row.size.width - 8) / 2)
+                HStack(alignment: .center, spacing: 8) {
+                    melodyPairColumn(active: active, state: state)
+                        .frame(width: halfWidth)
+                    melodyIntervalColumn(active: active, state: state)
+                        .frame(width: halfWidth)
                 }
-                .frame(height: MelodyCardLayout.singleOrIntervalHeight)
-            case .interval:
+            }
+            .frame(height: MelodyCardLayout.singleOrIntervalHeight)
+        }
+    }
+
+    /// The sounding melody note and its degree label, or nil through rests and gaps. Resolved
+    /// in one place so the pair and the interval card can never disagree about what is playing.
+    private func soundingMelody(_ active: MelodyNote?) -> (pitch: SpelledPitch, label: String)? {
+        guard let active, !active.isRest, active.duration > 0, let pitch = melodyPitch(for: active) else {
+            return nil
+        }
+        return (
+            pitch,
+            degreeLabel(for: pitch, sourceKey: section.key(at: PlaybackTiming.normalize(beat: active.beat)))
+        )
+    }
+
+    private func melodyIntervalLabels(_ state: MelodyIntervalState, currentLabel: String) -> [String] {
+        [
+            usesRelativeIonianContext
+                ? RelativeIonianContext.degreeLabel(for: state.previous, contextKey: ionianContextKey)
+                : state.previousDegreeLabel,
+            currentLabel
+        ]
+    }
+
+    /// Previous note on the left, current note on the right, each 44pt inside the 88pt row.
+    /// With an interval the two sit high and low to draw its direction; without one - a
+    /// repeated note, or a first note with no predecessor - the current note stays in its own
+    /// column and centres between those two positions, so gaining a predecessor slides the
+    /// card rather than throwing it across the row.
+    @ViewBuilder
+    private func melodyPairColumn(active: MelodyNote?, state: MelodyIntervalState?) -> some View {
+        HStack(spacing: 8) {
+            if let sounding = soundingMelody(active) {
                 let cards = state.map {
                     QuizIntervals.melodyPitchCards(
                         for: $0,
                         previousLabel: usesRelativeIonianContext
                             ? RelativeIonianContext.degreeLabel(for: $0.previous, contextKey: ionianContextKey)
                             : $0.previousDegreeLabel,
-                        currentLabel: currentLabel
+                        currentLabel: sounding.label
                     )
                 } ?? []
-                GeometryReader { row in
-                    let halfWidth = max(0, (row.size.width - 8) / 2)
-                    HStack(alignment: .center, spacing: 8) {
-                        HStack(spacing: 8) {
-                            if let previous = cards.first(where: { $0.role == .previous }) {
-                                positionedPitchCard(previous, title: "Previous melody note", identifier: "quiz.melody.previous")
-                            } else {
-                                QuizEmptyCardSlot(
-                                    fixedHeight: MelodyCardLayout.pairHeight
-                                )
-                                .frame(height: MelodyCardLayout.singleOrIntervalHeight, alignment: .bottom)
-                            }
-                            if let currentCard = cards.first(where: { $0.role == .current }) {
-                                positionedPitchCard(currentCard, title: "Current melody note", identifier: "quiz.melody.current")
-                            } else {
-                                QuizEmptyCardSlot(
-                                    fixedHeight: MelodyCardLayout.pairHeight
-                                )
-                                .frame(height: MelodyCardLayout.singleOrIntervalHeight, alignment: .top)
-                            }
-                        }
-                        .frame(width: halfWidth)
-                        intervalCard(
-                            title: "Melody interval",
-                            previous: state?.previous,
-                            current: state?.current,
-                            interval: state?.interval,
-                            identifier: "quiz.melody.interval",
-                            labels: [
-                                state.map {
-                                    usesRelativeIonianContext
-                                        ? RelativeIonianContext.degreeLabel(for: $0.previous, contextKey: ionianContextKey)
-                                        : $0.previousDegreeLabel
-                                } ?? "",
-                                currentLabel
-                            ],
-                            fixedHeight: MelodyCardLayout.singleOrIntervalHeight,
-                            showsPitchGauge: showsPitchGauge(.melodyCurrent)
-                        )
-                        .frame(width: halfWidth)
-                    }
+                if QuizIntervals.melodyPitchCardDisplayMode(
+                    currentPitch: sounding.pitch,
+                    intervalState: state
+                ) == .interval, let previous = cards.first(where: { $0.role == .previous }),
+                   let currentCard = cards.first(where: { $0.role == .current }) {
+                    positionedPitchCard(previous, title: "Previous melody note", identifier: "quiz.melody.previous")
+                    positionedPitchCard(currentCard, title: "Current melody note", identifier: "quiz.melody.current")
+                } else {
+                    melodyPairPlaceholder
+                    pitchCard(
+                        title: "Current melody note",
+                        pitch: sounding.pitch,
+                        degree: sounding.label,
+                        identifier: "quiz.melody.current",
+                        fixedHeight: MelodyCardLayout.pairHeight
+                    )
+                    .frame(height: MelodyCardLayout.singleOrIntervalHeight, alignment: .center)
                 }
-                .frame(height: MelodyCardLayout.singleOrIntervalHeight)
-            }
             } else {
-                QuizEmptyCardSlot(
-                    fixedHeight: MelodyCardLayout.singleOrIntervalHeight
-                )
+                melodyPairPlaceholder
+                melodyPairPlaceholder
+            }
+        }
+    }
+
+    private var melodyPairPlaceholder: some View {
+        QuizEmptyCardSlot(fixedHeight: MelodyCardLayout.pairHeight)
+            .frame(height: MelodyCardLayout.singleOrIntervalHeight)
+    }
+
+    /// The interval card. Always drawn, and always the same card: identical tint, size and
+    /// opacity whether a note, a rest or nothing at all is playing. The only thing that comes
+    /// and goes is the interval string, so the card reads as the one place an interval lives
+    /// rather than as something appearing and disappearing. It never wears the pitch gauge -
+    /// that rides the current note's own card, which is the pitch being measured.
+    @ViewBuilder
+    private func melodyIntervalColumn(active: MelodyNote?, state: MelodyIntervalState?) -> some View {
+        if let sounding = soundingMelody(active),
+           let state,
+           QuizIntervals.melodyPitchCardDisplayMode(
+               currentPitch: sounding.pitch,
+               intervalState: state
+           ) == .interval {
+            intervalCard(
+                title: "Melody interval",
+                previous: state.previous,
+                current: state.current,
+                interval: state.interval,
+                identifier: "quiz.melody.interval",
+                labels: melodyIntervalLabels(state, currentLabel: sounding.label),
+                fixedHeight: MelodyCardLayout.singleOrIntervalHeight
+            )
+        } else {
+            // Deliberately the picture-only card rather than a disabled `QuizCardButton`:
+            // disabling dims to 45%, which would make the card change shade as the melody
+            // moves in and out of having an interval.
+            QuizExampleCard(fixedHeight: MelodyCardLayout.singleOrIntervalHeight) {
+                Color.clear
             }
         }
     }
@@ -336,7 +355,6 @@ struct QuizCardsView: View {
                 identifier: "quiz.chord.preview",
                 enabled: isPreviewEnabled && !voicing.isEmpty,
                 action: { onPreview(voicing, active.nativeDuration(bpm: section.bpm)) },
-                showsSingBackHint: false,
                 fixedHeight: compact ? 44 : nil
             ) {
                 FittedRomanNumeral(
@@ -395,10 +413,7 @@ struct QuizCardsView: View {
             enabled: isPreviewEnabled,
             action: { onPreview([preview], .milliseconds(450)) },
             doubleTapAction: singBackAction([preview], labels: [label]),
-            longPressAction: persistentAction(.chordTone(requestedIndex: index)),
             doubleTapActionName: "Sing Back",
-            isTessituraEnabled: isTessituraEnabled,
-            showsPitchGauge: showsPitchGauge(.chordTone(displayedIndex: index)),
             fixedHeight: compact ? 44 : nil
         ) {
             FittedScaleDegree(label, maximumFontSize: 28, minimumFontSize: 11, color: .white)
@@ -413,8 +428,7 @@ struct QuizCardsView: View {
         pitch: SpelledPitch,
         degree: String,
         identifier: String,
-        fixedHeight: CGFloat? = nil,
-        showsPitchGauge: Bool = false
+        fixedHeight: CGFloat? = nil
     ) -> some View {
         QuizCardButton(
             title: "Play \(title) \(pitch.displayName), scale degree \(degree)",
@@ -422,10 +436,7 @@ struct QuizCardsView: View {
             enabled: isPreviewEnabled && !degree.isEmpty,
             action: { onPreview([previewMIDI(for: pitch)], .milliseconds(450)) },
             doubleTapAction: singBackAction([previewMIDI(for: pitch)], labels: [degree]),
-            longPressAction: persistentAction(.melody),
             doubleTapActionName: "Sing Back",
-            isTessituraEnabled: isTessituraEnabled,
-            showsPitchGauge: showsPitchGauge,
             fixedHeight: fixedHeight
         ) {
             FittedScaleDegree(degree, maximumFontSize: 32, minimumFontSize: 11, color: .white)
@@ -461,8 +472,7 @@ struct QuizCardsView: View {
         interval: NamedInterval?,
         identifier: String,
         labels: [String],
-        fixedHeight: CGFloat? = nil,
-        showsPitchGauge: Bool = false
+        fixedHeight: CGFloat? = nil
     ) -> some View {
         if let previous, let current, let interval {
             QuizCardButton(
@@ -471,11 +481,8 @@ struct QuizCardsView: View {
                 enabled: isPreviewEnabled,
                 action: { onIntervalPreview(intervalPreviewPair(previous: previous, current: current)) },
                 doubleTapAction: singBackAction(intervalPreviewPair(previous: previous, current: current), labels: labels),
-                longPressAction: persistentAction(identifier.hasPrefix("quiz.root") ? .simpleRoot : .melody),
                 previewActionName: "Preview sequence and together",
                 doubleTapActionName: "Sing Back Interval",
-                isTessituraEnabled: isTessituraEnabled,
-                showsPitchGauge: showsPitchGauge,
                 fixedHeight: fixedHeight
             ) {
                 // The shorthand already carries the direction arrow; the note letters
@@ -539,11 +546,6 @@ struct QuizCardsView: View {
                 requestID: singingRequestID
             ))
         }
-    }
-
-    private func persistentAction(_ selection: PersistentPitchSelection) -> (() -> Void)? {
-        guard let onPersistentPractice else { return nil }
-        return { onPersistentPractice(selection) }
     }
 
     private func practiceTargets(
@@ -696,12 +698,8 @@ private struct QuizCardButton<Content: View>: View {
     let enabled: Bool
     let action: () -> Void
     let doubleTapAction: (() -> Void)?
-    let longPressAction: (() -> Void)?
     let previewActionName: String
     let doubleTapActionName: String
-    let longPressActionName: String
-    let isTessituraEnabled: Bool
-    let showsSingBackHint: Bool
     /// Whether this is the card currently under persistent practice.
     let showsPitchGauge: Bool
     let fixedHeight: CGFloat?
@@ -714,12 +712,8 @@ private struct QuizCardButton<Content: View>: View {
         enabled: Bool,
         action: @escaping () -> Void,
         doubleTapAction: (() -> Void)? = nil,
-        longPressAction: (() -> Void)? = nil,
         previewActionName: String = "Preview",
         doubleTapActionName: String = "Practice",
-        longPressActionName: String = "Persistent pitch practice",
-        isTessituraEnabled: Bool = false,
-        showsSingBackHint: Bool = true,
         showsPitchGauge: Bool = false,
         fixedHeight: CGFloat? = nil,
         @ViewBuilder content: @escaping () -> Content
@@ -729,31 +723,19 @@ private struct QuizCardButton<Content: View>: View {
         self.enabled = enabled
         self.action = action
         self.doubleTapAction = doubleTapAction
-        self.longPressAction = longPressAction
         self.previewActionName = previewActionName
         self.doubleTapActionName = doubleTapActionName
-        self.longPressActionName = longPressActionName
-        self.isTessituraEnabled = isTessituraEnabled
-        self.showsSingBackHint = showsSingBackHint
         self.showsPitchGauge = showsPitchGauge
         self.fixedHeight = fixedHeight
         self.content = content
     }
 
-    private var hasSingBackHint: Bool {
-        enabled && showsSingBackHint && doubleTapAction != nil
-    }
-
-    /// Only the one card wearing the gauge reads the sampled percentage, so the 4 Hz
+    /// Only the one card wearing the gauge reads the sampled reading, so the 4 Hz
     /// invalidation that costs is confined to it.
     private var accessibilityValueText: String {
-        let register = hasSingBackHint
-            ? (isTessituraEnabled ? "Tessitura enabled" : "Original target octave")
-            : ""
-        guard showsPitchGauge else { return register }
-        let pitch = vocalPractice?.sampledLivePercentageText
+        guard showsPitchGauge else { return "" }
+        return vocalPractice?.sampledLiveCentsText
             .map { "pitch \($0) from target" } ?? "waiting for a voiced pitch"
-        return register.isEmpty ? pitch : "\(register), \(pitch)"
     }
 
     var body: some View {
@@ -762,10 +744,8 @@ private struct QuizCardButton<Content: View>: View {
             isEnabled: enabled,
             onTap: action,
             onDoubleTap: doubleTapAction,
-            onLongPress: longPressAction,
             previewActionName: previewActionName,
-            doubleTapActionName: doubleTapActionName,
-            longPressActionName: longPressActionName
+            doubleTapActionName: doubleTapActionName
         ) {
             content()
                 .padding(.horizontal, 8)
@@ -782,16 +762,9 @@ private struct QuizCardButton<Content: View>: View {
                 .overlay { if showsPitchGauge { QuizPitchGauge() } }
                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         }
-        .overlay(alignment: .topTrailing) {
-            if hasSingBackHint {
-                PitchHintDot(isAdjusted: isTessituraEnabled)
-                    .padding(fixedHeight.map { $0 <= 24 } == true ? 1 : fixedHeight.map { $0 <= 44 } == true ? 3 : 5)
-            }
-        }
         .accessibilityValue(accessibilityValueText)
         .accessibilityHint(enabled
             ? (doubleTapAction != nil ? "Tap to preview. Double tap to sing back." : "Tap to preview.")
-                + (longPressAction != nil ? " Long press to toggle persistent pitch practice." : "")
             : "Preview unavailable")
         .opacity(enabled ? 1 : 0.45)
         .accessibilityIdentifier(identifier)
@@ -830,8 +803,6 @@ struct ChordToneCardLayout<Card: View>: View {
 /// met one, which is why the chrome here is a copy of that card's and not a look-alike.
 struct QuizExampleCard<Content: View>: View {
     var fixedHeight: CGFloat = 44
-    var showsPitchHint: Bool = true
-    var isTessituraAdjusted: Bool = false
     @ViewBuilder let content: () -> Content
 
     var body: some View {
@@ -842,87 +813,26 @@ struct QuizExampleCard<Content: View>: View {
             .frame(maxWidth: .infinity)
             .frame(height: fixedHeight)
             .background(.tint, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-            .overlay(alignment: .topTrailing) {
-                if showsPitchHint {
-                    PitchHintDot(isAdjusted: isTessituraAdjusted)
-                        .padding(fixedHeight <= 44 ? 3 : 5)
-                }
-            }
             .allowsHitTesting(false)
             // Decorative: every call site describes the row it sits in.
             .accessibilityHidden(true)
     }
 }
 
-/// Shared decorative singing affordance. Color describes register handling, not microphone activity.
-struct PitchHintDot: View {
-    let isAdjusted: Bool
-
-    var body: some View {
-        let color = isAdjusted ? Color(red: 158.0 / 255, green: 158.0 / 255, blue: 158.0 / 255) : .white
-        RadialGradient(
-            stops: [
-                .init(color: color, location: 0),
-                .init(color: color.opacity(0.95), location: 0.10),
-                .init(color: color.opacity(0.80), location: 0.22),
-                .init(color: color.opacity(0.58), location: 0.36),
-                .init(color: color.opacity(0.36), location: 0.52),
-                .init(color: color.opacity(0.18), location: 0.68),
-                .init(color: color.opacity(0.07), location: 0.84),
-                .init(color: color.opacity(0), location: 1)
-            ],
-            center: .center, startRadius: 0, endRadius: 8
-        )
-        .frame(width: 16, height: 16)
-        .allowsHitTesting(false)
-        .accessibilityHidden(true)
-    }
-}
-
-/// A single arbitration point for future card-practice gestures. With no optional
-/// handlers it intentionally remains a native Button; adding a handler swaps to
-/// one exclusive recognizer chain so a Button action cannot click through.
+/// A single arbitration point for card gestures. Without a double-tap handler it
+/// intentionally remains a native Button; adding one swaps to an exclusive recognizer
+/// chain so a Button action cannot click through the sing-back tap.
 private struct QuizCardActions<Content: View>: View {
     let accessibilityLabel: String
     let isEnabled: Bool
     let onTap: () -> Void
     let onDoubleTap: (() -> Void)?
-    let onLongPress: (() -> Void)?
     let previewActionName: String
     let doubleTapActionName: String
-    let longPressActionName: String
     @ViewBuilder let content: () -> Content
 
     var body: some View {
-        if let onLongPress {
-            if let onDoubleTap {
-                gestureControl
-                    .gesture(longPressThenDoubleTapGesture(onLongPress, onDoubleTap: onDoubleTap))
-                    .quizCardAccessibility(
-                        label: accessibilityLabel,
-                        isEnabled: isEnabled,
-                        onTap: onTap,
-                        onDoubleTap: onDoubleTap,
-                        onLongPress: onLongPress,
-                        previewActionName: previewActionName,
-                        doubleTapActionName: doubleTapActionName,
-                        longPressActionName: longPressActionName
-                    )
-            } else {
-                gestureControl
-                    .gesture(longPressThenSingleTapGesture(onLongPress))
-                    .quizCardAccessibility(
-                        label: accessibilityLabel,
-                        isEnabled: isEnabled,
-                        onTap: onTap,
-                        onDoubleTap: nil,
-                        onLongPress: onLongPress,
-                        previewActionName: previewActionName,
-                        doubleTapActionName: doubleTapActionName,
-                        longPressActionName: longPressActionName
-                    )
-            }
-        } else if let onDoubleTap {
+        if let onDoubleTap {
             gestureControl
                 .gesture(doubleTapGesture(onDoubleTap))
                 .quizCardAccessibility(
@@ -930,10 +840,8 @@ private struct QuizCardActions<Content: View>: View {
                     isEnabled: isEnabled,
                     onTap: onTap,
                     onDoubleTap: onDoubleTap,
-                    onLongPress: nil,
                     previewActionName: previewActionName,
-                    doubleTapActionName: doubleTapActionName,
-                    longPressActionName: longPressActionName
+                    doubleTapActionName: doubleTapActionName
                 )
         } else {
             Button(action: perform(onTap)) { content() }
@@ -944,10 +852,8 @@ private struct QuizCardActions<Content: View>: View {
                     isEnabled: isEnabled,
                     onTap: onTap,
                     onDoubleTap: nil,
-                    onLongPress: nil,
                     previewActionName: previewActionName,
-                    doubleTapActionName: doubleTapActionName,
-                    longPressActionName: longPressActionName
+                    doubleTapActionName: doubleTapActionName
                 )
         }
     }
@@ -964,21 +870,6 @@ private struct QuizCardActions<Content: View>: View {
             .exclusively(before: TapGesture().onEnded { _ in perform(onTap)() })
     }
 
-    private func longPressThenDoubleTapGesture(
-        _ action: @escaping () -> Void,
-        onDoubleTap: @escaping () -> Void
-    ) -> some Gesture {
-        LongPressGesture(minimumDuration: 0.5)
-            .onEnded { _ in perform(action)() }
-            .exclusively(before: doubleTapGesture(onDoubleTap))
-    }
-
-    private func longPressThenSingleTapGesture(_ action: @escaping () -> Void) -> some Gesture {
-        LongPressGesture(minimumDuration: 0.5)
-            .onEnded { _ in perform(action)() }
-            .exclusively(before: TapGesture().onEnded { _ in perform(onTap)() })
-    }
-
     private func perform(_ action: @escaping () -> Void) -> () -> Void {
         { if isEnabled { action() } }
     }
@@ -991,21 +882,12 @@ private extension View {
         isEnabled: Bool,
         onTap: @escaping () -> Void,
         onDoubleTap: (() -> Void)?,
-        onLongPress: (() -> Void)?,
         previewActionName: String,
-        doubleTapActionName: String,
-        longPressActionName: String
+        doubleTapActionName: String
     ) -> some View {
-        if let onDoubleTap, let onLongPress {
+        if let onDoubleTap {
             self.quizCardAccessibilityBase(label: label, isEnabled: isEnabled, onTap: onTap, previewActionName: previewActionName)
                 .accessibilityAction(named: doubleTapActionName) { if isEnabled { onDoubleTap() } }
-                .accessibilityAction(named: longPressActionName) { if isEnabled { onLongPress() } }
-        } else if let onDoubleTap {
-            self.quizCardAccessibilityBase(label: label, isEnabled: isEnabled, onTap: onTap, previewActionName: previewActionName)
-                .accessibilityAction(named: doubleTapActionName) { if isEnabled { onDoubleTap() } }
-        } else if let onLongPress {
-            self.quizCardAccessibilityBase(label: label, isEnabled: isEnabled, onTap: onTap, previewActionName: previewActionName)
-                .accessibilityAction(named: longPressActionName) { if isEnabled { onLongPress() } }
         } else {
             self.quizCardAccessibilityBase(label: label, isEnabled: isEnabled, onTap: onTap, previewActionName: previewActionName)
         }
