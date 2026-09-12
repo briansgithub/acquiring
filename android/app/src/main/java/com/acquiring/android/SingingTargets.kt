@@ -6,6 +6,11 @@ internal const val OCTAVE_OFFSET_MAX = 3
 internal fun clampSingingOctaveOffset(offset: Int): Int =
     offset.coerceIn(OCTAVE_OFFSET_MIN, OCTAVE_OFFSET_MAX)
 
+internal fun singingOctaveOffsetLabel(offset: Int): String {
+    val clamped = clampSingingOctaveOffset(offset)
+    return if (clamped > 0) "+$clamped" else "$clamped"
+}
+
 internal fun singingOctaveSemitones(octaveOffset: Int): Int =
     clampSingingOctaveOffset(octaveOffset) * 12
 

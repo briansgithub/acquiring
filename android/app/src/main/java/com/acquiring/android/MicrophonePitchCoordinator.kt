@@ -6,8 +6,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 internal enum class MicrophonePitchOwner {
     QUIZ_PERSISTENT,
-    SINGING_TOOL,
-    TESSITURA_CALIBRATION
+    SINGING_TOOL
 }
 
 /**

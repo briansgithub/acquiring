@@ -402,11 +402,9 @@ fun PitchGauge(
             // so the card and the timeline can never disagree about how far off the singer is.
             val sampledCentsError = rememberSampledPitchErrorCents(pitchResult.centsError)
 
-            sampledCentsError
-                ?.takeIf(::showsLivePitchErrorPercentage)
-                ?.let { centsError ->
+            sampledCentsError?.let { centsError ->
                     Text(
-                        text = formatPitchErrorPercentage(centsError),
+                        text = formatPitchCentsError(centsError),
                         color = pitchFeedbackColor(centsError),
                         fontSize = 12.sp,
                         modifier = Modifier

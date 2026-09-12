@@ -7,6 +7,15 @@ import org.junit.Test
 class SingingTargetsTest {
 
     @Test
+    fun octaveOffsetLabelIsSigned() {
+        assertEquals("-1", singingOctaveOffsetLabel(-1))
+        assertEquals("0", singingOctaveOffsetLabel(0))
+        assertEquals("+1", singingOctaveOffsetLabel(1))
+        assertEquals("+3", singingOctaveOffsetLabel(9))
+        assertEquals("-2", singingOctaveOffsetLabel(-8))
+    }
+
+    @Test
     fun microphoneAndPlaybackApplyManualTransposeExactlyOnce() {
         val target = SingingTargetNote(sourceMidi = 60, scaleDegreeLabel = "1̂")
 

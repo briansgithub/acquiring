@@ -114,7 +114,7 @@ private const val ALL_SONGS_STATE_KEY = "all-songs"
 class MainActivity : ComponentActivity() {
     private lateinit var db: AppDatabase
     private lateinit var userDb: UserDataDatabase
-    private val tessituraSessionViewModel by viewModels<TessituraSessionViewModel>()
+    private val songOctaveOffsetViewModel by viewModels<SongOctaveOffsetViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -140,7 +140,7 @@ class MainActivity : ComponentActivity() {
             applicationContext,
             UserDataDatabase::class.java, UserDataDatabase.DB_NAME
         ).addMigrations(UserDataDatabase.MIGRATION_1_2, UserDataDatabase.MIGRATION_2_3).build()
-        tessituraSessionViewModel.attachDao(userDb.songOctaveOffsetDao())
+        songOctaveOffsetViewModel.attachDao(userDb.songOctaveOffsetDao())
 
         val neutralContainer = Color(0xFF3A3A3A)
         val neutralOnContainer = Color(0xFFE6E6E6)
@@ -182,7 +182,7 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     } else {
-                        MainScreen(db, userDb, tessituraSessionViewModel)
+                        MainScreen(db, userDb, songOctaveOffsetViewModel)
                     }
                 }
             }
@@ -201,7 +201,7 @@ class MainActivity : ComponentActivity() {
 internal fun MainScreen(
     db: AppDatabase,
     userDb: UserDataDatabase,
-    tessituraSessionViewModel: TessituraSessionViewModel
+    songOctaveOffsetViewModel: SongOctaveOffsetViewModel
 ) {
     var activeDb by remember { mutableStateOf(db) }
     val searchFocusManager = LocalFocusManager.current
@@ -248,7 +248,13 @@ internal fun MainScreen(
     var globalTranspose by remember { mutableStateOf(AudioEngine.globalTranspose) }
     var singingTargetRequest by remember { mutableStateOf<SingingTargetRequest?>(null) }
     var singingTargetRequestId by remember { mutableStateOf(0) }
-    val octaveOffset = tessituraSessionViewModel.octaveOffset
+    var singingDockExpanded by remember { mutableStateOf(false) }
+    var singingDepartureTick by remember { mutableStateOf(0) }
+    var singingCollapseTick by remember { mutableStateOf(0) }
+    var stopPersistentTick by remember { mutableStateOf(0) }
+    var isPersistentMonitoring by remember { mutableStateOf(false) }
+    var quizWasShown by remember { mutableStateOf(false) }
+    val octaveOffset = songOctaveOffsetViewModel.octaveOffset
     
     var titleOffset by remember { mutableStateOf(0) }
     var artistOffset by remember { mutableStateOf(0) }
@@ -335,18 +341,35 @@ internal fun MainScreen(
     val allSongsRuntimeState = rememberAllSongsRuntimeState()
 
     val harvestService = remember(activeDb, userDb) { HarvestService(activeDb, userDb) }
+    val catalogSearchIndex = remember { CatalogSearchIndex() }
+    var searchIndexEpoch by remember { mutableStateOf(0) }
+    fun rememberIndexedSong(song: Song) {
+        catalogSearchIndex.upsert(SongBrowseRow(song.slug, song.artist, song.title))
+        searchIndexEpoch++
+    }
     // Repairs an install that died between the swap and its own replay. Replay
     // is insert-if-absent, so the usual case is one query and no writes.
     LaunchedEffect(activeDb, userDb) {
         runCatching { HarvestLedger.replay(activeDb, userDb) }
+        val rows = runCatching { activeDb.songDao().getSearchIndexRows() }.getOrDefault(emptyList())
+        catalogSearchIndex.replaceAll(rows)
+        searchIndexEpoch++
     }
     val json = remember { Json { ignoreUnknownKeys = true } }
     val singingSessionKey = selectedSong?.slug?.let { slug -> "$slug:${selectedSectionId.orEmpty()}" }
+    LaunchedEffect(isShowingQuiz) {
+        if (isShowingQuiz) {
+            quizWasShown = true
+        } else if (quizWasShown) {
+            singingDepartureTick++
+            stopPersistentTick++
+        }
+    }
     LaunchedEffect(singingSessionKey, selectedSong?.slug) {
         val slug = selectedSong?.slug
         val key = singingSessionKey
         if (slug != null && key != null) {
-            tessituraSessionViewModel.enterSession(slug, key)
+            songOctaveOffsetViewModel.enterSession(slug, key)
         }
         singingTargetRequest = null
     }
@@ -435,7 +458,7 @@ internal fun MainScreen(
         } else if (selectedSongSections != null && !isShowingQuiz) {
             isShowingQuiz = true
         } else if (selectedSongSections != null) {
-            tessituraSessionViewModel.clearSession()
+            songOctaveOffsetViewModel.clearSession()
             selectedSongSections = null
             selectedSong = null
             isShowingQuiz = false
@@ -458,11 +481,15 @@ internal fun MainScreen(
         returnToParent()
     }
 
-    LaunchedEffect(activeDb, searchQuery, selectedSong, selectedArtistSongs, hasSearchTitleFocus) {
+    LaunchedEffect(activeDb, searchQuery, selectedSong, selectedArtistSongs, hasSearchTitleFocus, searchIndexEpoch) {
         if (searchQuery.isNotEmpty() && hasSearchTitleFocus) {
-            delay(300) // Debounce
+            if (!catalogSearchIndex.isLoaded) delay(300)
             titleOffset = 0
-            suggestions = activeDb.songDao().getSearchSuggestions(searchQuery, limit = 20, offset = 0)
+            suggestions = if (catalogSearchIndex.isLoaded) {
+                catalogSearchIndex.songSuggestions(searchQuery, limit = 20, offset = 0)
+            } else {
+                activeDb.songDao().getSearchSuggestions(searchQuery, limit = 20, offset = 0)
+            }
             isExpanded = true // Always expand when typing to show suggestions or "No results"
             isShowingRecent = false
         } else if (!hasSearchTitleFocus) {
@@ -487,12 +514,16 @@ internal fun MainScreen(
         }
     }
 
-    LaunchedEffect(activeDb, searchArtistQuery, selectedSong, selectedArtistSongs, hasSearchArtistFocus) {
+    LaunchedEffect(activeDb, searchArtistQuery, selectedSong, selectedArtistSongs, hasSearchArtistFocus, searchIndexEpoch) {
         if (searchArtistQuery.isNotEmpty() && hasSearchArtistFocus) {
             isShowingRecentArtists = false
-            delay(300) // Debounce
+            if (!catalogSearchIndex.isLoaded) delay(300)
             artistOffset = 0
-            artistSuggestions = activeDb.songDao().getArtistSuggestions(searchArtistQuery, limit = 20, offset = 0)
+            artistSuggestions = if (catalogSearchIndex.isLoaded) {
+                catalogSearchIndex.artistSuggestions(searchArtistQuery, limit = 20, offset = 0)
+            } else {
+                activeDb.songDao().getArtistSuggestions(searchArtistQuery, limit = 20, offset = 0)
+            }
             isArtistExpanded = true
         } else if (!hasSearchArtistFocus) {
             artistSuggestions = emptyList()
@@ -517,7 +548,7 @@ internal fun MainScreen(
     val openSong: (Song) -> Unit = { song ->
         // Opening a song is a new load even if it happens to be the song that
         // was open previously, so its tessitura session starts unadjusted.
-        tessituraSessionViewModel.clearSession()
+        songOctaveOffsetViewModel.clearSession()
         HistoryManager.addSong(context, song.slug)
         HistoryManager.addArtist(context, song.artist)
         isExpanded = false
@@ -553,6 +584,7 @@ internal fun MainScreen(
                 val result = harvestService.harvest(song.url) { harvestStatus = it }
                 val harvestedSong = result.getOrNull()
                 if (harvestedSong != null) {
+                    rememberIndexedSong(harvestedSong)
                     val blob = harvestedSong.dataBlob
                     if (blob != null) {
                         try {
@@ -611,11 +643,13 @@ internal fun MainScreen(
                 .focusRequester(initialFocusRequester)
                 .focusTarget()
         )
-        Column(
+        Column(modifier = Modifier.fillMaxSize()) {
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-                .padding(bottom = 48.dp) // Room for collapsed singing dock
+                .weight(1f)
+                .then(
+                    if (isShowingQuiz) Modifier else Modifier.padding(16.dp)
+                )
         ) {
             if (isShowingSettings) {
                 AppSettingsScreen(
@@ -694,6 +728,7 @@ internal fun MainScreen(
                         scope.launch {
                             harvestStatus = "Starting..."
                             val result = harvestService.harvest(urlToHarvest) { harvestStatus = it }
+                            result.onSuccess(::rememberIndexedSong)
                             result.onFailure { harvestStatus = "Error: ${it.message}" }
                         }
                     },
@@ -721,7 +756,11 @@ internal fun MainScreen(
                             isExpanded = false
                         } else {
                             scope.launch {
-                                val results = activeDb.songDao().searchBrowseSongsByTitle(query)
+                                val results = if (catalogSearchIndex.isLoaded) {
+                                    catalogSearchIndex.songsByTitle(query)
+                                } else {
+                                    activeDb.songDao().searchBrowseSongsByTitle(query)
+                                }
                                 allSongs = results
                                 searchResult = if (results.isNotEmpty()) "Found ${results.size} matches" else "No titles matching '$query'"
                                 isExpanded = false
@@ -735,11 +774,19 @@ internal fun MainScreen(
                             scope.launch {
                                 try {
                                     val nextOffset = titleOffset + 20
-                                    val nextSuggestions = activeDb.songDao().getSearchSuggestions(
-                                        requestedQuery,
-                                        limit = 20,
-                                        offset = nextOffset
-                                    )
+                                    val nextSuggestions = if (catalogSearchIndex.isLoaded) {
+                                        catalogSearchIndex.songSuggestions(
+                                            requestedQuery,
+                                            limit = 20,
+                                            offset = nextOffset
+                                        )
+                                    } else {
+                                        activeDb.songDao().getSearchSuggestions(
+                                            requestedQuery,
+                                            limit = 20,
+                                            offset = nextOffset
+                                        )
+                                    }
                                     if (searchQuery == requestedQuery && nextSuggestions.isNotEmpty()) {
                                         suggestions = suggestions + nextSuggestions
                                         titleOffset = nextOffset
@@ -757,11 +804,19 @@ internal fun MainScreen(
                             scope.launch {
                                 try {
                                     val nextOffset = artistOffset + 20
-                                    val nextSuggestions = activeDb.songDao().getArtistSuggestions(
-                                        requestedQuery,
-                                        limit = 20,
-                                        offset = nextOffset
-                                    )
+                                    val nextSuggestions = if (catalogSearchIndex.isLoaded) {
+                                        catalogSearchIndex.artistSuggestions(
+                                            requestedQuery,
+                                            limit = 20,
+                                            offset = nextOffset
+                                        )
+                                    } else {
+                                        activeDb.songDao().getArtistSuggestions(
+                                            requestedQuery,
+                                            limit = 20,
+                                            offset = nextOffset
+                                        )
+                                    }
                                     if (searchArtistQuery == requestedQuery && nextSuggestions.isNotEmpty()) {
                                         artistSuggestions = artistSuggestions + nextSuggestions
                                         artistOffset = nextOffset
@@ -786,7 +841,7 @@ internal fun MainScreen(
                     artistSuggestions = artistSuggestions,
                     isShowingRecentArtists = isShowingRecentArtists,
                     onArtistClick = { artistName ->
-                        tessituraSessionViewModel.clearSession()
+                        songOctaveOffsetViewModel.clearSession()
                         HistoryManager.addArtist(context, artistName)
                         songParentPage = SongParentPage.ARTIST
                         scope.launch {
@@ -806,7 +861,11 @@ internal fun MainScreen(
                             searchResult = "Enter an artist to search"
                         } else {
                             scope.launch {
-                                val results = activeDb.songDao().searchBrowseSongsByArtist(query)
+                                val results = if (catalogSearchIndex.isLoaded) {
+                                    catalogSearchIndex.songsByArtist(query)
+                                } else {
+                                    activeDb.songDao().searchBrowseSongsByArtist(query)
+                                }
                                 allSongs = results
                                 searchResult = if (results.isNotEmpty()) "Found ${results.size} matches" else "No artists matching '$query'"
                             }
@@ -846,7 +905,7 @@ internal fun MainScreen(
                         AudioEngine.globalTranspose = it
                     },
                     onArtistClick = { artistName ->
-                        tessituraSessionViewModel.clearSession()
+                        songOctaveOffsetViewModel.clearSession()
                         HistoryManager.addArtist(context, artistName)
                         songParentPage = SongParentPage.ARTIST
                         scope.launch {
@@ -867,7 +926,13 @@ internal fun MainScreen(
                     persistentPitchSource = persistentQuizPitchSource,
                     isFavorite = isSelectedSongFavorite,
                     onToggleFavorite = toggleSelectedSongFavorite,
-                    onBack = returnToParent
+                    singingDockExpanded = singingDockExpanded,
+                    onBack = returnToParent,
+                    stopPersistentSignal = stopPersistentTick,
+                    onPersistentMonitoringChange = { active ->
+                        isPersistentMonitoring = active
+                    },
+                    onRequestCollapseDock = { singingCollapseTick++ }
                 )
             } else {
                 SongDetailView(
@@ -882,6 +947,24 @@ internal fun MainScreen(
                 )
             }
 
+        }
+
+        HummingIntervalPopup(
+            sectionSessionKey = singingSessionKey,
+            targetRequest = singingTargetRequest,
+            globalTranspose = globalTranspose,
+            octaveOffset = octaveOffset,
+            onOctaveOffsetChange = songOctaveOffsetViewModel::updateOctaveOffset,
+            pitchSource = singingToolPitchSource,
+            onExpandedChange = { expanded ->
+                if (expanded) stopPersistentTick++
+                singingDockExpanded = expanded
+            },
+            isPersistentMonitoring = isPersistentMonitoring,
+            onStopPersistent = { stopPersistentTick++ },
+            departureTick = singingDepartureTick,
+            collapseTick = singingCollapseTick
+        )
         }
 
         if (showFavoritedConfirmation) {
@@ -899,15 +982,5 @@ internal fun MainScreen(
                 )
             }
         }
-
-        HummingIntervalPopup(
-            modifier = Modifier.align(Alignment.BottomCenter),
-            sectionSessionKey = singingSessionKey,
-            targetRequest = singingTargetRequest,
-            globalTranspose = globalTranspose,
-            octaveOffset = octaveOffset,
-            onOctaveOffsetChange = tessituraSessionViewModel::updateOctaveOffset,
-            pitchSource = singingToolPitchSource
-        )
     }
 }

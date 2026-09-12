@@ -158,11 +158,11 @@ class PersistentQuizPitchPracticeTest {
         assertEquals(20.0, sharp?.signedCentsError ?: Double.NaN, 0.0)
         assertEquals(20.0, sharp?.centsErrorMagnitude ?: Double.NaN, 0.0)
         assertEquals(12, sharp?.sampleCount)
-        assertEquals("+20%", sharp?.let(::formatMelodyTimelinePitchScore))
+        assertEquals("+20¢", sharp?.let(::formatMelodyTimelinePitchScore))
 
         val flat = scoreOf(runId = 5, samples = List(12) { -30.0 })
         assertEquals(30, flat?.errorPercentage)
-        assertEquals("-30%", flat?.let(::formatMelodyTimelinePitchScore))
+        assertEquals("-30¢", flat?.let(::formatMelodyTimelinePitchScore))
     }
 
     @Test
@@ -172,7 +172,7 @@ class PersistentQuizPitchPracticeTest {
         val score = scoreOf(runId = 9, samples = List(30) { 12.0 } + (-600.0))
 
         assertEquals(12, score?.errorPercentage)
-        assertEquals("+12%", score?.let(::formatMelodyTimelinePitchScore))
+        assertEquals("+12¢", score?.let(::formatMelodyTimelinePitchScore))
         assertEquals(Color(0xFF4CAF50), pitchFeedbackColor(score!!.centsErrorMagnitude))
         assertEquals(31, score.sampleCount)
     }
@@ -194,11 +194,11 @@ class PersistentQuizPitchPracticeTest {
     @Test
     fun magnitudeIsClampedOnceAtTheDisplayBoundary() {
         val outlier = scoreOf(runId = 6, samples = List(10) { -20.0 } + (-3000.0))
-        assertEquals("-20%", outlier?.let(::formatMelodyTimelinePitchScore))
+        assertEquals("-20¢", outlier?.let(::formatMelodyTimelinePitchScore))
 
         val genuinelyFar = scoreOf(runId = 7, samples = List(10) { -300.0 })
         assertEquals(100, genuinelyFar?.errorPercentage)
-        assertEquals("-100%", genuinelyFar?.let(::formatMelodyTimelinePitchScore))
+        assertEquals("-300¢", genuinelyFar?.let(::formatMelodyTimelinePitchScore))
         assertEquals(Color(0xFFF44336), pitchFeedbackColor(genuinelyFar!!.centsErrorMagnitude))
     }
 
@@ -444,9 +444,9 @@ class PersistentQuizPitchPracticeTest {
         assertEquals(13, pitchErrorPercentage(-12.6))
         assertEquals(100, pitchErrorPercentage(100.0))
         assertEquals(100, pitchErrorPercentage(-245.0))
-        assertEquals("0%", formatPitchErrorPercentage(0.0))
-        assertEquals("+48%", formatPitchErrorPercentage(47.6))
-        assertEquals("-48%", formatPitchErrorPercentage(-47.6))
+        assertEquals("0¢", formatPitchCentsError(0.0))
+        assertEquals("+48¢", formatPitchCentsError(47.6))
+        assertEquals("-48¢", formatPitchCentsError(-47.6))
     }
 
     @Test
@@ -461,7 +461,7 @@ class PersistentQuizPitchPracticeTest {
 
         // Banked run scores are a separate path and still report a pinned value.
         val pinned = scoreOf(runId = 11, samples = List(10) { -300.0 })
-        assertEquals("-100%", pinned?.let(::formatMelodyTimelinePitchScore))
+        assertEquals("-300¢", pinned?.let(::formatMelodyTimelinePitchScore))
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -532,6 +532,24 @@ class PersistentQuizPitchPracticeTest {
         controller.onPermissionResult(granted = true)
         assertEquals(listOf(72), source.startedTargets)
         assertEquals(PersistentPitchPhase.LISTENING, controller.phase)
+    }
+
+    @Test
+    fun activateLatchesWithoutAResolvedTarget() {
+        val source = FakeExclusivePitchSource()
+        val controller = PersistentQuizPitchController(source)
+
+        assertFalse(
+            controller.activate(
+                newSelection = PersistentPitchSelection.Melody,
+                targetMidi = null,
+                hasRecordPermission = true
+            )
+        )
+
+        assertEquals(PersistentPitchSelection.Melody, controller.selection)
+        assertEquals(PersistentPitchPhase.LISTENING, controller.phase)
+        assertEquals(listOf(60), source.startedTargets)
     }
 
     @Test

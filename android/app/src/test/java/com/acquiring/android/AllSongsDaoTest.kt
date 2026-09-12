@@ -55,6 +55,7 @@ class AllSongsDaoTest {
         val artistSearchRows = dao.searchBrowseSongsByArtist("artist")
         val artistRows = dao.getBrowseSongsByArtist("Artist Z")
         val suggestionRows = dao.getSearchSuggestions("alp")
+        val indexRows = dao.getSearchIndexRows()
         val recentRows = dao.getBrowseSongsBySlugs(listOf("alpha"))
 
         assertEquals(listOf("alpha"), browseRows.map(SongBrowseRow::slug))
@@ -62,6 +63,7 @@ class AllSongsDaoTest {
         assertEquals(listOf("alpha"), artistSearchRows.map(SongBrowseRow::slug))
         assertEquals(listOf("alpha"), artistRows.map(SongBrowseRow::slug))
         assertEquals(listOf("alpha"), suggestionRows.map(SongBrowseRow::slug))
+        assertEquals(listOf("alpha"), indexRows.map(SongBrowseRow::slug))
         assertEquals(listOf("alpha"), recentRows.map(SongBrowseRow::slug))
         val lightweightSelects = observedQueries.filter { sql ->
             sql.trimStart().startsWith("SELECT", ignoreCase = true) &&

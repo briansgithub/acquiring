@@ -8,12 +8,10 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
 /**
- * Owns the per-song singing octave offset for the current practice session.
- *
- * A ViewModel keeps the offset through Activity recreation. Persistence lives
- * in [UserDataDatabase] so a catalog replace cannot wipe it.
+ * Song-scoped singing octave offset. Section changes keep the offset; a new
+ * song resets in-memory state to 0 (Room may still restore that song's saved value).
  */
-internal class TessituraSessionViewModel : ViewModel() {
+internal class SongOctaveOffsetViewModel : ViewModel() {
     var sessionKey: String? = null
         private set
 

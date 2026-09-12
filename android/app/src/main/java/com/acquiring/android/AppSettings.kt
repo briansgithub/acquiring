@@ -152,10 +152,6 @@ internal fun AppSettingsScreen(
         HelpIndex(onOpenTopic = { openHelpTopicId = it.id })
 
         Divider(modifier = Modifier.padding(vertical = 12.dp))
-        SettingsSectionHeading("Privacy")
-        PrivacyPolicyLink()
-
-        Divider(modifier = Modifier.padding(vertical = 12.dp))
         SettingsSectionHeading("Catalog")
         Text(
             text = catalogFreshness,
@@ -256,6 +252,10 @@ internal fun AppSettingsScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
         )
+
+        Divider(modifier = Modifier.padding(vertical = 12.dp))
+        SettingsSectionHeading("Privacy")
+        PrivacyPolicyLink()
     }
 }
 
