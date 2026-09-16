@@ -44,7 +44,7 @@ internal fun showsRootOnlyInterval(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun QuizRootOnlyRow(
+internal fun PlaybackRootOnlyRow(
     previousPitch: SpelledPitch?,
     currentPitch: SpelledPitch?,
     previousLabel: String,
@@ -79,7 +79,7 @@ internal fun QuizRootOnlyRow(
                 onClick = { onPreviewPitch(previousPitch) }
             )
         } else {
-            QuizEmptyCardSlot(
+            PlaybackEmptyCardSlot(
                 modifier = Modifier.weight(ROOT_ONLY_PREVIOUS_WEIGHT),
                 fixedHeight = ROOT_ONLY_PREVIOUS_HEIGHT
             )
@@ -101,7 +101,7 @@ internal fun QuizRootOnlyRow(
                 pitchGaugeLabel = pitchGaugeLabel
             )
         } else {
-            QuizEmptyCardSlot(
+            PlaybackEmptyCardSlot(
                 modifier = Modifier.weight(ROOT_ONLY_FEATURED_WEIGHT),
                 fixedHeight = ROOT_ONLY_FEATURED_HEIGHT
             )
@@ -120,7 +120,7 @@ internal fun QuizRootOnlyRow(
                 onDoubleClick = onSingInterval
             )
         } else {
-            QuizEmptyCardSlot(
+            PlaybackEmptyCardSlot(
                 modifier = Modifier.weight(ROOT_ONLY_FEATURED_WEIGHT),
                 fixedHeight = ROOT_ONLY_FEATURED_HEIGHT
             )

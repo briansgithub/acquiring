@@ -6,8 +6,8 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Sample-level audit of the two paths that sound in the Quiz tab: the streaming
- * [QuizPcmRenderer] that plays the song section, and the static buffers
+ * Sample-level audit of the two paths that sound in the Playback tab: the streaming
+ * [PlaybackPcmRenderer] that plays the song section, and the static buffers
  * [AudioEngine.renderStaticSamples] builds for a tapped scale-degree / chord /
  * chord-tone / interval card.
  *
@@ -21,13 +21,13 @@ import org.junit.Test
  * no inherent full-scale edge, so any large jump is the envelope's fault, not the
  * waveform's. SAWTOOTH — the app default — is used for the headroom tests.
  */
-class QuizAudioGlitchTest {
+class PlaybackAudioGlitchTest {
 
     private companion object {
         const val FULL_SCALE = 32_767.0
         const val SAMPLE_RATE = 44_100
 
-        /** A tapped card is 450ms, the quiz preview duration. */
+        /** A tapped card is 450ms, the playback preview duration. */
         const val CARD_TAP_MS = 450
 
         fun peak(samples: ShortArray): Int = samples.maxOf { kotlin.math.abs(it.toInt()) }
@@ -67,11 +67,11 @@ class QuizAudioGlitchTest {
 
         /** Renders [frames] of a song section through the real streaming renderer. */
         fun renderStream(
-            timeline: QuizTimeline,
-            config: QuizPlaybackConfig,
+            timeline: PlaybackTimeline,
+            config: PlaybackConfig,
             frames: Int
         ): ShortArray {
-            val renderer = QuizPcmRenderer(timeline, config)
+            val renderer = PlaybackPcmRenderer(timeline, config)
             val out = ShortArray(frames)
             val block = ShortArray(256)
             var written = 0
@@ -85,33 +85,33 @@ class QuizAudioGlitchTest {
         }
 
         /** A four-bar section: a sustained melody line over held chords. */
-        fun sectionTimeline(chordNotes: IntArray = intArrayOf(48, 52, 55)): QuizTimeline {
-            val events = mutableListOf<QuizTimelineEvent>()
+        fun sectionTimeline(chordNotes: IntArray = intArrayOf(48, 52, 55)): PlaybackTimeline {
+            val events = mutableListOf<PlaybackTimelineEvent>()
             var id = 1L
             var beat = 1.0
             repeat(8) {
-                events += QuizTimelineEvent(
+                events += PlaybackTimelineEvent(
                     id = id++,
                     startBeat = beat,
                     endBeat = beat + 1.0,
-                    layer = QuizAudioLayer.MELODY,
+                    layer = PlaybackAudioLayer.MELODY,
                     fullMidiNotes = intArrayOf(72)
                 )
                 beat += 1.0
             }
             beat = 1.0
             repeat(2) {
-                events += QuizTimelineEvent(
+                events += PlaybackTimelineEvent(
                     id = id++,
                     startBeat = beat,
                     endBeat = beat + 4.0,
-                    layer = QuizAudioLayer.CHORD,
+                    layer = PlaybackAudioLayer.CHORD,
                     fullMidiNotes = chordNotes,
                     rootMidiNote = chordNotes.first()
                 )
                 beat += 4.0
             }
-            return QuizTimeline(
+            return PlaybackTimeline(
                 endBeat = 9.0,
                 events = events.sortedWith(compareBy({ it.startBeat }, { it.id }))
             )
@@ -122,11 +122,11 @@ class QuizAudioGlitchTest {
             melodyGain: Float = 0.5f,
             chordGain: Float = 0.5f,
             arpeggiateCycles: Double = 0.0
-        ) = QuizPlaybackConfig(
+        ) = PlaybackConfig(
             bpm = 120.0,
             transpose = 0,
             waveform = waveform,
-            chordMode = QuizChordMode.FULL,
+            chordMode = PlaybackChordMode.FULL,
             melodyGain = melodyGain,
             chordGain = chordGain,
             arpeggiateCycles = arpeggiateCycles
@@ -187,7 +187,7 @@ class QuizAudioGlitchTest {
 
     @Test
     fun cardTap_soundsABlockChordWhateverTheArpeggioKnobSays() {
-        // The arpeggio knob feeds QuizPlaybackConfig, which only the streaming section
+        // The arpeggio knob feeds PlaybackConfig, which only the streaming section
         // reads; AudioEngine has no cycles-per-beat parameter left for a card to pick
         // up. What remains is the default on playChord, which the cards rely on, so
         // pin it: a tapped card sounds every note together, and the arpeggiated render
@@ -264,7 +264,7 @@ class QuizAudioGlitchTest {
     @Test
     fun songSection_loopSeamIsContinuous() {
         val timeline = sectionTimeline()
-        val renderer = QuizPcmRenderer(timeline, config(waveform = AudioEngine.Waveform.SINE))
+        val renderer = PlaybackPcmRenderer(timeline, config(waveform = AudioEngine.Waveform.SINE))
         // Walk right up to the loop point, then across it.
         val beatsPerFrame = renderer.currentBeatsPerFrame
         val framesToLoop = ((timeline.endBeat - timeline.startBeat) / beatsPerFrame).toInt()
@@ -398,7 +398,7 @@ class QuizAudioGlitchTest {
     @Test
     fun songSection_arpeggiatesItsChordsDuringPlayback() {
         // The arpeggio knob steers the transport, and this is the path it steers:
-        // QuizPcmRenderer walks one chord tone at a time, fading each slot in and out.
+        // PlaybackPcmRenderer walks one chord tone at a time, fading each slot in and out.
         // So at a slot boundary the chord layer should be near silent, while the same
         // instant in a block chord is just an arbitrary point of a sustained tone.
         val timeline = sectionTimeline(intArrayOf(48, 52, 55))
@@ -481,7 +481,7 @@ class QuizAudioGlitchTest {
     @Test
     fun cardTapSynthesis_fitsInsideTheStreamingBufferBudget() {
         // Each tap renders its whole buffer on Dispatchers.Default before any sound
-        // starts. QuizPlaybackEngine primes only 80ms and then refills 256 frames
+        // starts. PlaybackEngine primes only 80ms and then refills 256 frames
         // (5.8ms) at a time, so a slow tap render competing for CPU shows up as an
         // underrun in the song, not just as latency on the tap.
         val worst = AudioEngine.Waveform.entries.maxOf { waveform ->

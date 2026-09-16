@@ -44,50 +44,50 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-internal val QUIZ_TRANSPORT_CONTROL = 44.dp
-internal val QUIZ_TRANSPORT_SELECTOR = 72.dp
-internal val QUIZ_TRANSPORT_PLAY = 88.dp
-internal val QUIZ_TRANSPORT_GAP = 8.dp
-internal val QUIZ_TRANSPORT_WIDTH = 324.dp
-internal val QUIZ_TRANSPORT_CORNER = 8.dp
+internal val PLAYBACK_TRANSPORT_CONTROL = 44.dp
+internal val PLAYBACK_TRANSPORT_SELECTOR = 72.dp
+internal val PLAYBACK_TRANSPORT_PLAY = 88.dp
+internal val PLAYBACK_TRANSPORT_GAP = 8.dp
+internal val PLAYBACK_TRANSPORT_WIDTH = 324.dp
+internal val PLAYBACK_TRANSPORT_CORNER = 8.dp
 
 @Composable
-internal fun quizTransportOutline(): BorderStroke =
+internal fun playbackTransportOutline(): BorderStroke =
     BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f))
 
 @Composable
-internal fun QuizTransportIconButton(
+internal fun PlaybackTransportIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     prominent: Boolean = false,
-    width: Dp = QUIZ_TRANSPORT_CONTROL,
+    width: Dp = PLAYBACK_TRANSPORT_CONTROL,
     content: @Composable () -> Unit
 ) {
     Surface(
         onClick = onClick,
         enabled = enabled,
-        modifier = modifier.size(width = width, height = QUIZ_TRANSPORT_CONTROL),
-        shape = RoundedCornerShape(QUIZ_TRANSPORT_CORNER),
+        modifier = modifier.size(width = width, height = PLAYBACK_TRANSPORT_CONTROL),
+        shape = RoundedCornerShape(PLAYBACK_TRANSPORT_CORNER),
         color = if (prominent) MaterialTheme.colorScheme.primary else Color.Transparent,
         contentColor = if (prominent) {
             MaterialTheme.colorScheme.onPrimary
         } else {
             MaterialTheme.colorScheme.onSurface
         },
-        border = if (prominent) null else quizTransportOutline()
+        border = if (prominent) null else playbackTransportOutline()
     ) {
-        Box(contentAlignment = Alignment.Center, modifier = Modifier.size(width, QUIZ_TRANSPORT_CONTROL)) {
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.size(width, PLAYBACK_TRANSPORT_CONTROL)) {
             content()
         }
     }
 }
 
 @Composable
-internal fun QuizOutlinedSelector(
+internal fun PlaybackOutlinedSelector(
     label: String,
     modifier: Modifier = Modifier,
-    width: Dp? = QUIZ_TRANSPORT_SELECTOR,
+    width: Dp? = PLAYBACK_TRANSPORT_SELECTOR,
     caption: String? = null,
     usesSubheadline: Boolean = false,
     expanded: Boolean,
@@ -102,21 +102,21 @@ internal fun QuizOutlinedSelector(
             onClick = { onExpandedChange(!expanded) },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(QUIZ_TRANSPORT_CONTROL)
+                .height(PLAYBACK_TRANSPORT_CONTROL)
                 .testTag(testTag)
                 .semantics {
                     contentDescription = caption ?: label
                     this.stateDescription = stateDescription
                     role = Role.Button
                 },
-            shape = RoundedCornerShape(QUIZ_TRANSPORT_CORNER),
+            shape = RoundedCornerShape(PLAYBACK_TRANSPORT_CORNER),
             color = Color.Transparent,
-            border = quizTransportOutline()
+            border = playbackTransportOutline()
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(QUIZ_TRANSPORT_CONTROL)
+                    .height(PLAYBACK_TRANSPORT_CONTROL)
                     .padding(horizontal = 6.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
@@ -147,7 +147,7 @@ internal fun QuizOutlinedSelector(
 }
 
 @Composable
-internal fun QuizTransportBar(
+internal fun PlaybackTransportBar(
     showSecondaryRow: Boolean,
     isFavorite: Boolean,
     onToggleFavorite: () -> Unit,
@@ -173,17 +173,17 @@ internal fun QuizTransportBar(
         modifier = modifier
             .fillMaxWidth()
             .padding(start = 12.dp, end = 12.dp, bottom = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(QUIZ_TRANSPORT_GAP)
+        verticalArrangement = Arrangement.spacedBy(PLAYBACK_TRANSPORT_GAP)
     ) {
         Row(
-            modifier = Modifier.width(QUIZ_TRANSPORT_WIDTH),
-            horizontalArrangement = Arrangement.spacedBy(QUIZ_TRANSPORT_GAP),
+            modifier = Modifier.width(PLAYBACK_TRANSPORT_WIDTH),
+            horizontalArrangement = Arrangement.spacedBy(PLAYBACK_TRANSPORT_GAP),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            QuizTransportIconButton(
+            PlaybackTransportIconButton(
                 onClick = onToggleFavorite,
                 modifier = Modifier
-                    .testTag(QUIZ_FAVORITE_STAR_TEST_TAG)
+                    .testTag(PLAYBACK_FAVORITE_STAR_TEST_TAG)
                     .semantics {
                         contentDescription = if (isFavorite) {
                             "Remove from ${PlaylistIds.FAVORITES_NAME}"
@@ -209,26 +209,26 @@ internal fun QuizTransportBar(
                     modifier = Modifier.size(18.dp)
                 )
             }
-            QuizInstrumentMenu(
+            PlaybackInstrumentMenu(
                 selectedInstrument = currentWaveform,
                 onInstrumentSelected = onWaveformChange
             )
-            QuizTransposeMenu(
+            PlaybackTransposeMenu(
                 transpose = transpose,
                 onTransposeSelected = onTransposeChange
             )
-            QuizTransportIconButton(
+            PlaybackTransportIconButton(
                 onClick = onReset,
                 enabled = resetEnabled,
                 modifier = Modifier.semantics { contentDescription = "Reset" }
             ) {
                 Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
             }
-            QuizTransportIconButton(
+            PlaybackTransportIconButton(
                 onClick = onPlay,
                 enabled = playEnabled,
                 prominent = true,
-                width = QUIZ_TRANSPORT_PLAY,
+                width = PLAYBACK_TRANSPORT_PLAY,
                 modifier = Modifier.semantics {
                     contentDescription = if (isPlaying) "Pause" else "Play"
                 }
@@ -246,14 +246,14 @@ internal fun QuizTransportBar(
         }
         if (showSecondaryRow) {
             Row(
-                modifier = Modifier.width(QUIZ_TRANSPORT_WIDTH),
-                horizontalArrangement = Arrangement.spacedBy(QUIZ_TRANSPORT_GAP),
+                modifier = Modifier.width(PLAYBACK_TRANSPORT_WIDTH),
+                horizontalArrangement = Arrangement.spacedBy(PLAYBACK_TRANSPORT_GAP),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                QuizTransportIconButton(
+                PlaybackTransportIconButton(
                     onClick = onShowSongInfo,
                     modifier = Modifier
-                        .testTag(QUIZ_INFO_BUTTON_TEST_TAG)
+                        .testTag(PLAYBACK_INFO_BUTTON_TEST_TAG)
                         .semantics { contentDescription = "Song information" }
                 ) {
                     Icon(
@@ -262,12 +262,12 @@ internal fun QuizTransportBar(
                         modifier = Modifier.size(18.dp)
                     )
                 }
-                QuizModeSelector(
+                PlaybackModeSelector(
                     isSimpleMode = isSimpleMode,
                     onSimpleModeChange = onSimpleModeChange
                 )
                 if (sectionOptions.size > 1) {
-                    QuizSectionSelector(
+                    PlaybackSectionSelector(
                         options = sectionOptions,
                         selectedSectionId = selectedSectionId,
                         selectedSectionLabel = selectedSectionLabel,
@@ -281,18 +281,18 @@ internal fun QuizTransportBar(
 }
 
 @Composable
-private fun QuizModeSelector(
+private fun PlaybackModeSelector(
     isSimpleMode: Boolean,
     onSimpleModeChange: (Boolean) -> Unit
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     val label = if (isSimpleMode) "Root" else "Full"
-    QuizOutlinedSelector(
+    PlaybackOutlinedSelector(
         label = label,
         caption = null,
         expanded = expanded,
         onExpandedChange = { expanded = it },
-        testTag = QUIZ_MODE_SWITCH_TEST_TAG,
+        testTag = PLAYBACK_MODE_SWITCH_TEST_TAG,
         stateDescription = if (isSimpleMode) "Root Only" else "Full Chords"
     ) {
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
@@ -315,7 +315,7 @@ private fun QuizModeSelector(
 }
 
 @Composable
-private fun QuizSectionSelector(
+private fun PlaybackSectionSelector(
     options: List<Pair<String, String>>,
     selectedSectionId: String,
     selectedSectionLabel: String,
@@ -324,13 +324,13 @@ private fun QuizSectionSelector(
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     Box(modifier) {
-        QuizOutlinedSelector(
+        PlaybackOutlinedSelector(
             label = selectedSectionLabel,
             width = null,
             usesSubheadline = true,
             expanded = expanded,
             onExpandedChange = { expanded = it },
-            testTag = QUIZ_SECTION_BUTTON_TEST_TAG,
+            testTag = PLAYBACK_SECTION_BUTTON_TEST_TAG,
             stateDescription = selectedSectionLabel,
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -342,7 +342,7 @@ private fun QuizSectionSelector(
                             onSectionChange(id)
                             expanded = false
                         },
-                        modifier = Modifier.testTag("QuizSection-$id")
+                        modifier = Modifier.testTag("PlaybackSection-$id")
                     )
                 }
             }

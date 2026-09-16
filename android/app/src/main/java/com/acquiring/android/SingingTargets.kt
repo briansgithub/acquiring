@@ -22,7 +22,7 @@ data class SingingTargetNote(
     val scaleDegreeLabel: String
 )
 
-/** One- or two-note request emitted by a target-capable quiz object. */
+/** One- or two-note request emitted by a target-capable playback object. */
 data class SingingTargetRequest(
     val first: SingingTargetNote?,
     val second: SingingTargetNote?,

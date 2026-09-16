@@ -16,7 +16,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import kotlin.math.abs
 
-class PersistentQuizPitchPracticeTest {
+class PersistentPlaybackPitchPracticeTest {
 
     @Test
     fun chordToneSelectionKeepsRequestedIndexWhileDisplayClampsPerChord() {
@@ -523,7 +523,7 @@ class PersistentQuizPitchPracticeTest {
     @Test
     fun permissionDelayedMelodyActivationRetainsFastTrackingMode() {
         val source = FakeExclusivePitchSource()
-        val controller = PersistentQuizPitchController(source)
+        val controller = PersistentPlaybackPitchController(source)
 
         assertTrue(
             controller.activate(
@@ -542,7 +542,7 @@ class PersistentQuizPitchPracticeTest {
     @Test
     fun activateLatchesWithoutAResolvedTarget() {
         val source = FakeExclusivePitchSource()
-        val controller = PersistentQuizPitchController(source)
+        val controller = PersistentPlaybackPitchController(source)
 
         assertFalse(
             controller.activate(
@@ -560,7 +560,7 @@ class PersistentQuizPitchPracticeTest {
     @Test
     fun activePracticeRetargetsWithoutReclaimingOrRestartingTheSource() {
         val source = FakeExclusivePitchSource()
-        val controller = PersistentQuizPitchController(source)
+        val controller = PersistentPlaybackPitchController(source)
         controller.activate(PersistentPitchSelection.Melody, 72, hasRecordPermission = true)
 
         controller.updateTarget(74)
@@ -603,9 +603,9 @@ class PersistentQuizPitchPracticeTest {
     fun permissionAndOwnershipTransitionsDoNotLetStaleOwnerReclaimMicrophone() {
         val delegate = FakePitchSource()
         val coordinator = MicrophonePitchCoordinator(delegate)
-        val persistentSource = coordinator.sourceFor(MicrophonePitchOwner.QUIZ_PERSISTENT)
+        val persistentSource = coordinator.sourceFor(MicrophonePitchOwner.PLAYBACK_PERSISTENT)
         val singingSource = coordinator.sourceFor(MicrophonePitchOwner.SINGING_TOOL)
-        val controller = PersistentQuizPitchController(persistentSource)
+        val controller = PersistentPlaybackPitchController(persistentSource)
 
         assertTrue(
             controller.activate(
@@ -663,7 +663,7 @@ class PersistentQuizPitchPracticeTest {
         return null
     }
 
-    private fun target(midi: Int) = QuizPitchCardTarget(midi, midi.toString())
+    private fun target(midi: Int) = PlaybackPitchCardTarget(midi, midi.toString())
 
     private fun melodyVisual(
         beat: Double,

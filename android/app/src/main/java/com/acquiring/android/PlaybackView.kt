@@ -103,21 +103,21 @@ import kotlin.math.roundToInt
 
 private const val ROOT_INTERVAL_PREVIEW_DURATION_MS = 450
 
-private val QUIZ_ROW_LABEL_WIDTH = 44.dp
+private val PLAYBACK_ROW_LABEL_WIDTH = 44.dp
 
-// The full-quiz card stack. Every row keeps its height whether or not it currently has
+// The full-playback card stack. Every row keeps its height whether or not it currently has
 // cards, so the stack never shifts under the reader.
-private val QUIZ_CARD_STACK_TOP_INSET = 8.dp
-private val QUIZ_CARD_ROW_SPACING = 8.dp
-private val QUIZ_MELODY_ROW_HEIGHT = QUIZ_MELODY_INTERVAL_CARD_HEIGHT
-private val QUIZ_CHORD_ROW_HEIGHT = 60.dp
-private val QUIZ_CHORD_TONE_ROW_HEIGHT = 54.dp
-/** Row caption in the quiz's left gutter. Pass a blank label to hold the space only. */
+private val PLAYBACK_CARD_STACK_TOP_INSET = 8.dp
+private val PLAYBACK_CARD_ROW_SPACING = 8.dp
+private val PLAYBACK_MELODY_ROW_HEIGHT = PLAYBACK_MELODY_INTERVAL_CARD_HEIGHT
+private val PLAYBACK_CHORD_ROW_HEIGHT = 60.dp
+private val PLAYBACK_CHORD_TONE_ROW_HEIGHT = 54.dp
+/** Row caption in the playback's left gutter. Pass a blank label to hold the space only. */
 @Composable
-private fun QuizRowLabel(text: String, modifier: Modifier = Modifier) {
+private fun PlaybackRowLabel(text: String, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
-            .width(QUIZ_ROW_LABEL_WIDTH)
+            .width(PLAYBACK_ROW_LABEL_WIDTH)
             .fillMaxHeight(),
         contentAlignment = Alignment.CenterStart
     ) {
@@ -141,7 +141,7 @@ internal fun ringModeColor(scale: String): Color = when (scale) {
     else -> Color(0xFFE6E1E5)
 }
 
-internal fun quizLaneTint(scale: String): Color =
+internal fun playbackLaneTint(scale: String): Color =
     mixTowardWhite(ringModeColor(scale), 0.3f)
 
 internal fun mixTowardWhite(color: Color, mix: Float): Color {
@@ -149,27 +149,27 @@ internal fun mixTowardWhite(color: Color, mix: Float): Color {
     return Color(red = ch(color.red), green = ch(color.green), blue = ch(color.blue))
 }
 
-private data class QuizTimelineChordVisual(
+private data class PlaybackTimelineChordVisual(
     val beat: Double,
     val duration: Double,
     val display: RomanNumeralDisplay?
 )
 
-internal data class QuizArpeggioOption(val label: String, val cyclesPerBeat: Double)
+internal data class PlaybackArpeggioOption(val label: String, val cyclesPerBeat: Double)
 
-internal val QUIZ_ARPEGGIO_OPTIONS = listOf(
-    QuizArpeggioOption("1/4", 0.25),
-    QuizArpeggioOption("1/3", 1.0 / 3.0),
-    QuizArpeggioOption("1/2", 0.5),
-    QuizArpeggioOption("off", 0.0),
-    QuizArpeggioOption("1", 1.0),
-    QuizArpeggioOption("2", 2.0),
-    QuizArpeggioOption("3", 3.0),
-    QuizArpeggioOption("4", 4.0)
+internal val PLAYBACK_ARPEGGIO_OPTIONS = listOf(
+    PlaybackArpeggioOption("1/4", 0.25),
+    PlaybackArpeggioOption("1/3", 1.0 / 3.0),
+    PlaybackArpeggioOption("1/2", 0.5),
+    PlaybackArpeggioOption("off", 0.0),
+    PlaybackArpeggioOption("1", 1.0),
+    PlaybackArpeggioOption("2", 2.0),
+    PlaybackArpeggioOption("3", 3.0),
+    PlaybackArpeggioOption("4", 4.0)
 )
-internal const val DEFAULT_QUIZ_ARPEGGIO_OPTION_INDEX = 3
+internal const val DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX = 3
 
-internal fun steppedQuizBeat(
+internal fun steppedPlaybackBeat(
     current: Double,
     delta: Double,
     start: Double,
@@ -178,14 +178,14 @@ internal fun steppedQuizBeat(
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
-fun QuizTab(
+fun PlaybackTab(
     section: ExtractedSection,
     isSimpleMode: Boolean,
     onSimpleModeChange: (Boolean) -> Unit,
     useRelativeIonianContext: Boolean,
     currentWaveform: AudioEngine.Waveform,
     onWaveformChange: (AudioEngine.Waveform) -> Unit,
-    onKeyDisplayChange: (QuizKeyDisplay?) -> Unit,
+    onKeyDisplayChange: (PlaybackKeyDisplay?) -> Unit,
     globalTranspose: Int,
     tempoPercent: Float,
     onTempoPercentChange: (Float) -> Unit,
@@ -200,7 +200,7 @@ fun QuizTab(
     onPersistentPracticeActions: (Boolean, () -> Unit, () -> Unit) -> Unit = { _, _, _ -> }
 ) {
     val exclusivePersistentPitchSource = persistentPitchSource as? ExclusivePitchSource
-        ?: error("QuizTab requires an exclusive persistent pitch source")
+        ?: error("PlaybackTab requires an exclusive persistent pitch source")
     val baseBpm = section.getBpm().toFloat().coerceIn(40f, 240f)
 
     // AudioEngine applies the manual transpose itself, so only the singing
@@ -212,7 +212,7 @@ fun QuizTab(
     // the same singing-octave shift.
     fun tessituraIntervalShiftSemitones(previousAudioNote: Int, currentAudioNote: Int): Int =
         singingOctaveSemitones(octaveOffset)
-    val arpeggiateCycles = QUIZ_ARPEGGIO_OPTIONS[arpeggioOptionIndex].cyclesPerBeat
+    val arpeggiateCycles = PLAYBACK_ARPEGGIO_OPTIONS[arpeggioOptionIndex].cyclesPerBeat
     val bpm = (baseBpm * tempoPercent / 100f).toDouble()
 
     val notesJson = when (val rawNotes = section.notes) {
@@ -239,7 +239,7 @@ fun QuizTab(
     }
     val sectionKeys = remember(section) { section.getKeys() }
     val activeEventIndex = remember(section, melody) {
-        QuizActiveEventIndex(section, melody)
+        PlaybackActiveEventIndex(section, melody)
     }
 
     var melodyChordBalance by remember { mutableStateOf(0.5f) }
@@ -270,24 +270,24 @@ fun QuizTab(
         resolvePlaybackEndBeat(metadataEndBeat, audibleEventEndBeats)
     }
     val timeline = remember(section, melody, endBeat) {
-        buildQuizTimeline(section, melody, endBeat)
+        buildPlaybackTimeline(section, melody, endBeat)
     }
-    val playbackConfig = QuizPlaybackConfig(
+    val playbackConfig = PlaybackConfig(
         bpm = bpm,
         transpose = globalTranspose,
         waveform = currentWaveform,
-        chordMode = if (isSimpleMode) QuizChordMode.ROOT_ONLY else QuizChordMode.FULL,
+        chordMode = if (isSimpleMode) PlaybackChordMode.ROOT_ONLY else PlaybackChordMode.FULL,
         melodyGain = melodyVolume,
         chordGain = chordVolume,
         arpeggiateCycles = arpeggiateCycles
     )
     // Configuring here keeps the engine built before the timeline effect loads it.
     LaunchedEffect(playbackConfig) {
-        QuizPlaybackController.configure(playbackConfig)
+        PlaybackController.configure(playbackConfig)
     }
-    val playbackState by QuizPlaybackController.state.collectAsState()
-    val isPlaying = playbackState.phase == QuizPlaybackPhase.BUFFERING ||
-        playbackState.phase == QuizPlaybackPhase.PLAYING
+    val playbackState by PlaybackController.state.collectAsState()
+    val isPlaying = playbackState.phase == PlaybackPhase.BUFFERING ||
+        playbackState.phase == PlaybackPhase.PLAYING
     val currentBeat = if (isScrubbing) {
         scrubBeat
     } else {
@@ -318,14 +318,14 @@ fun QuizTab(
         if (isScrubbing) {
             scrubBeat = boundedBeat
         } else {
-            QuizPlaybackController.seek(boundedBeat, resume = latestIsPlaying)
+            PlaybackController.seek(boundedBeat, resume = latestIsPlaying)
         }
     }
 
     fun beginScrubbing() {
         cancelInertia()
         if (isScrubbing) return
-        wasPlayingBeforeScrub = QuizPlaybackController.pauseForScrub()
+        wasPlayingBeforeScrub = PlaybackController.pauseForScrub()
         scrubBeat = playbackBeat()
         isScrubbing = true
         intervalPreviewJob?.cancel()
@@ -343,12 +343,12 @@ fun QuizTab(
         val shouldResume = wasPlayingBeforeScrub && latestBpm > 0.0
         isScrubbing = false
         wasPlayingBeforeScrub = false
-        QuizPlaybackController.seek(targetBeat, resume = shouldResume)
+        PlaybackController.seek(targetBeat, resume = shouldResume)
     }
 
-    val quizPlaybackOwner = remember { Any() }
-    val quizLifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
-    val latestPauseVisibleQuiz by rememberUpdatedState {
+    val playbackOwner = remember { Any() }
+    val playbackLifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
+    val latestPauseVisiblePlayback by rememberUpdatedState {
         cancelInertia()
         intervalPreviewJob?.cancel()
         intervalPreviewJob = null
@@ -361,29 +361,29 @@ fun QuizTab(
         } else {
             null
         }
-        QuizPlaybackController.detachQuiz(quizPlaybackOwner, retainedScrubBeat)
+        PlaybackController.detachPlayback(playbackOwner, retainedScrubBeat)
     }
 
-    DisposableEffect(quizLifecycleOwner, quizPlaybackOwner) {
-        if (quizLifecycleOwner.lifecycle.currentState.isAtLeast(
+    DisposableEffect(playbackLifecycleOwner, playbackOwner) {
+        if (playbackLifecycleOwner.lifecycle.currentState.isAtLeast(
                 androidx.lifecycle.Lifecycle.State.RESUMED
             )
         ) {
-            QuizPlaybackController.attachQuiz(quizPlaybackOwner)
+            PlaybackController.attachPlayback(playbackOwner)
         }
         val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
             when (event) {
                 androidx.lifecycle.Lifecycle.Event.ON_RESUME ->
-                    QuizPlaybackController.attachQuiz(quizPlaybackOwner)
+                    PlaybackController.attachPlayback(playbackOwner)
                 androidx.lifecycle.Lifecycle.Event.ON_PAUSE,
-                androidx.lifecycle.Lifecycle.Event.ON_STOP -> latestPauseVisibleQuiz()
+                androidx.lifecycle.Lifecycle.Event.ON_STOP -> latestPauseVisiblePlayback()
                 else -> Unit
             }
         }
-        quizLifecycleOwner.lifecycle.addObserver(observer)
+        playbackLifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
-            quizLifecycleOwner.lifecycle.removeObserver(observer)
-            latestPauseVisibleQuiz()
+            playbackLifecycleOwner.lifecycle.removeObserver(observer)
+            latestPauseVisiblePlayback()
         }
     }
 
@@ -393,7 +393,7 @@ fun QuizTab(
         intervalPreviewJob?.cancel()
         AudioEngine.stopPreviewPlayback()
         val beatsToSkip = seconds * (bpm / 60.0)
-        QuizPlaybackController.seek(playbackBeat() - beatsToSkip, resume = isPlaying)
+        PlaybackController.seek(playbackBeat() - beatsToSkip, resume = isPlaying)
     }
 
     LaunchedEffect(timeline, sessionKey) {
@@ -406,11 +406,11 @@ fun QuizTab(
         // trails the command queue, so a section swap right after a play/pause tap would
         // otherwise carry the state the user just left behind. A scrub that is holding
         // playback counts as playing; it is a pause the user never asked for.
-        val continuePlaying = QuizPlaybackController.isPlaybackRequested || wasPlayingBeforeScrub
+        val continuePlaying = PlaybackController.isPlaybackRequested || wasPlayingBeforeScrub
         isScrubbing = false
         wasPlayingBeforeScrub = false
         scrubBeat = timeline.startBeat
-        QuizPlaybackController.load(
+        PlaybackController.load(
             identity = sessionKey,
             newTimeline = timeline,
             continuePlaying = continuePlaying
@@ -503,7 +503,7 @@ fun QuizTab(
                 }
                 RomanNumeralDisplay.fromChord(symbol, chord["borrowed"])
             }
-            QuizTimelineChordVisual(beat, duration, display)
+            PlaybackTimelineChordVisual(beat, duration, display)
         }
     }
     val activeKey = remember(sectionKeys, currentBeat) {
@@ -568,7 +568,7 @@ fun QuizTab(
             } else {
                 note
             }
-            QuizPitchCardTarget(
+            PlaybackPitchCardTarget(
                 sourceMidi = previewNote,
                 label = interpretation.toneLabels[index]
             )
@@ -707,7 +707,7 @@ fun QuizTab(
 
     val simpleRootPitchTarget = remember(currentRootPreviewAudioNote, currentRootDegreeLabel) {
         currentRootPreviewAudioNote.takeIf { it > 0 }?.let {
-            QuizPitchCardTarget(it, currentRootDegreeLabel)
+            PlaybackPitchCardTarget(it, currentRootDegreeLabel)
         }
     }
     val melodyPersistentPitchTarget = remember(
@@ -717,7 +717,7 @@ fun QuizTab(
         ionianContextKey
     ) {
         currentMelodyPitch?.let { pitch ->
-            QuizPitchCardTarget(
+            PlaybackPitchCardTarget(
                 sourceMidi = if (useRelativeIonianContext) {
                     ionianContextPreviewAudioNote(pitch, ionianContextKey)
                         ?: pitch.toAudioNoteNumber()
@@ -730,7 +730,7 @@ fun QuizTab(
     }
 
     val persistentPitchController = remember(sessionKey, exclusivePersistentPitchSource) {
-        PersistentQuizPitchController(exclusivePersistentPitchSource)
+        PersistentPlaybackPitchController(exclusivePersistentPitchSource)
     }
     // Declared out here rather than beside the timeline because the Reset control at the
     // bottom of the tab has to clear them too.
@@ -882,7 +882,7 @@ fun QuizTab(
         // The singing tool needs a quiet room. Opening it from a note card holds the
         // transport where it is so the microphone hears the user rather than the
         // backing parts; the play button is right there when they want it again.
-        if (QuizPlaybackController.isPlaybackRequested) QuizPlaybackController.pause()
+        if (PlaybackController.isPlaybackRequested) PlaybackController.pause()
         onSingingTargetsRequested(request)
     }
 
@@ -900,7 +900,7 @@ fun QuizTab(
         if (!isScrubbing && bpm > 0.0) {
             intervalPreviewJob?.cancel()
             AudioEngine.stopPreviewPlayback()
-            if (isPlaying) QuizPlaybackController.pause() else QuizPlaybackController.play()
+            if (isPlaying) PlaybackController.pause() else PlaybackController.play()
         }
     }
     val resetPlayback = {
@@ -910,7 +910,7 @@ fun QuizTab(
         isScrubbing = false
         wasPlayingBeforeScrub = false
         scrubBeat = 1.0
-        QuizPlaybackController.reset()
+        PlaybackController.reset()
         melodyRunScoreAccumulator.clear()
         fixedMelodyPitchScores = emptyMap()
     }
@@ -940,12 +940,12 @@ fun QuizTab(
                     activeKey.scale.replace(Regex("([a-z])([A-Z])"), "$1 $2").replaceFirstChar { it.titlecase() }
                 }
                 val activeModeColor = ringModeColor(activeKey.scale)
-                val laneTint = quizLaneTint(
+                val laneTint = playbackLaneTint(
                     if (useRelativeIonianContext) "major" else activeKey.scale
                 )
                 // The key/scale readout itself is drawn by the song header above the
-                // quiz, so publish it from here instead of rendering it inline.
-                val keyDisplay = QuizKeyDisplay(
+                // playback, so publish it from here instead of rendering it inline.
+                val keyDisplay = PlaybackKeyDisplay(
                     label = if (isSimpleMode) displayScale
                         else if (useRelativeIonianContext) "${ionianContextKey.tonic} $displayScale"
                         else "${activeKey.tonic} $displayScale",
@@ -1409,7 +1409,7 @@ fun QuizTab(
                             } else {
                                 chordRootIntervalState?.previousDegreeLabel.orEmpty()
                             }
-                            QuizRootOnlyRow(
+                            PlaybackRootOnlyRow(
                                 previousPitch = previousIntervalPitch,
                                 currentPitch = currentIntervalPitch,
                                 previousLabel = previousRootLabel,
@@ -1459,16 +1459,16 @@ fun QuizTab(
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(top = QUIZ_CARD_STACK_TOP_INSET),
+                                    .padding(top = PLAYBACK_CARD_STACK_TOP_INSET),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Top
                             ) {
                                 Row(
-                                    modifier = Modifier.fillMaxWidth().height(QUIZ_MELODY_ROW_HEIGHT),
+                                    modifier = Modifier.fillMaxWidth().height(PLAYBACK_MELODY_ROW_HEIGHT),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    QuizRowLabel("Melody")
-                                    QuizMelodyRow(
+                                    PlaybackRowLabel("Melody")
+                                    PlaybackMelodyRow(
                                         currentPitch = currentMelodyPitch,
                                         currentLabel = melodyCurrentTargetLabel,
                                         intervalState = melodyIntervalState,
@@ -1524,9 +1524,9 @@ fun QuizTab(
                                 val degreeSpacing = when { notes.size >= 7 -> 2.dp; notes.size >= 5 -> 4.dp; else -> 6.dp }
                                 val degreeFontSize = when { notes.size >= 7 -> 24.sp; notes.size >= 5 -> 26.sp; else -> 28.sp }
 
-                                Spacer(Modifier.height(QUIZ_CARD_ROW_SPACING))
-                                Row(modifier = Modifier.fillMaxWidth().height(QUIZ_CHORD_ROW_HEIGHT), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                                    QuizRowLabel("Chord")
+                                Spacer(Modifier.height(PLAYBACK_CARD_ROW_SPACING))
+                                Row(modifier = Modifier.fillMaxWidth().height(PLAYBACK_CHORD_ROW_HEIGHT), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                                    PlaybackRowLabel("Chord")
                                     if (romanDisplay != null) {
                                         Button(onClick = { chordDurationMs?.let { playCardPreview(previewNotes, durationMs = it) } }, enabled = chordDurationMs != null, modifier = Modifier.weight(1f).fillMaxHeight(), shape = RoundedCornerShape(16.dp), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)) {
                                             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { RomanNumeralText(display = romanDisplay, fontSize = 32.sp, modifier = Modifier.fillMaxWidth(), minFontSize = 12.sp) }
@@ -1535,9 +1535,9 @@ fun QuizTab(
                                         Spacer(modifier = Modifier.weight(1f))
                                     }
                                 }
-                                Spacer(Modifier.height(QUIZ_CARD_ROW_SPACING))
-                                Row(modifier = Modifier.fillMaxWidth().height(QUIZ_CHORD_TONE_ROW_HEIGHT), horizontalArrangement = Arrangement.spacedBy(degreeSpacing), verticalAlignment = Alignment.CenterVertically) {
-                                            QuizRowLabel("Chord Tones")
+                                Spacer(Modifier.height(PLAYBACK_CARD_ROW_SPACING))
+                                Row(modifier = Modifier.fillMaxWidth().height(PLAYBACK_CHORD_TONE_ROW_HEIGHT), horizontalArrangement = Arrangement.spacedBy(degreeSpacing), verticalAlignment = Alignment.CenterVertically) {
+                                            PlaybackRowLabel("Chord Tones")
                                             // Degrees are measured from the chord root, so without one
                                             // there is nothing to label: hold the row empty instead.
                                             val toneCards = if (rootMidi > 0) notes else emptyList()
@@ -1587,7 +1587,7 @@ fun QuizTab(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.Top
                     ) {
-                            QuizDial(
+                            PlaybackDial(
                                 label = "Tempo",
                                 valueLabel = "${tempoPercent.roundToInt()}%",
                                 value = tempoPercent,
@@ -1595,30 +1595,30 @@ fun QuizTab(
                                 valueRange = 0f..200f,
                                 steps = 200,
                                 onTap = { onTempoPercentChange(100f) },
-                                modifier = Modifier.weight(1f).testTag(QUIZ_TEMPO_DIAL_TEST_TAG)
+                                modifier = Modifier.weight(1f).testTag(PLAYBACK_TEMPO_DIAL_TEST_TAG)
                             )
                             if (!isSimpleMode) {
-                                QuizDial(
+                                PlaybackDial(
                                     label = "Arpeggiate",
                                     valueLabel = "cycles per beat",
                                     value = arpeggioOptionIndex.toFloat(),
                                     onValueChange = {
                                         onArpeggioOptionIndexChange(
-                                            it.roundToInt().coerceIn(QUIZ_ARPEGGIO_OPTIONS.indices)
+                                            it.roundToInt().coerceIn(PLAYBACK_ARPEGGIO_OPTIONS.indices)
                                         )
                                     },
-                                    valueRange = 0f..QUIZ_ARPEGGIO_OPTIONS.lastIndex.toFloat(),
-                                    steps = QUIZ_ARPEGGIO_OPTIONS.lastIndex,
-                                    ringLabels = QUIZ_ARPEGGIO_OPTIONS.map { it.label },
+                                    valueRange = 0f..PLAYBACK_ARPEGGIO_OPTIONS.lastIndex.toFloat(),
+                                    steps = PLAYBACK_ARPEGGIO_OPTIONS.lastIndex,
+                                    ringLabels = PLAYBACK_ARPEGGIO_OPTIONS.map { it.label },
                                     onTap = {
-                                        onArpeggioOptionIndexChange(DEFAULT_QUIZ_ARPEGGIO_OPTION_INDEX)
+                                        onArpeggioOptionIndexChange(DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX)
                                     },
                                     modifier = Modifier.weight(1f)
                                 )
                             }
                             val melodyPercent = (melodyChordBalance * 100f).roundToInt()
                             val chordPercent = 100 - melodyPercent
-                            QuizDial(
+                            PlaybackDial(
                                 label = "Melody / Chord Mix",
                                 valueLabel = "$melodyPercent% / $chordPercent%",
                                 value = melodyChordBalance,

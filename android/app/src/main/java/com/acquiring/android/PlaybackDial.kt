@@ -39,8 +39,8 @@ import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-internal const val QUIZ_DIAL_START_ANGLE = 135f
-internal const val QUIZ_DIAL_SWEEP_ANGLE = 270f
+internal const val PLAYBACK_DIAL_START_ANGLE = 135f
+internal const val PLAYBACK_DIAL_SWEEP_ANGLE = 270f
 
 internal fun dialFractionForPosition(position: Offset, center: Offset): Float {
     var angle = Math.toDegrees(
@@ -50,16 +50,16 @@ internal fun dialFractionForPosition(position: Offset, center: Offset): Float {
         )
     ).toFloat()
     if (angle < 0f) angle += 360f
-    val relative = (angle - QUIZ_DIAL_START_ANGLE + 360f) % 360f
+    val relative = (angle - PLAYBACK_DIAL_START_ANGLE + 360f) % 360f
     return when {
-        relative <= QUIZ_DIAL_SWEEP_ANGLE -> relative / QUIZ_DIAL_SWEEP_ANGLE
+        relative <= PLAYBACK_DIAL_SWEEP_ANGLE -> relative / PLAYBACK_DIAL_SWEEP_ANGLE
         relative < 315f -> 1f
         else -> 0f
     }
 }
 
 @Composable
-internal fun QuizDial(
+internal fun PlaybackDial(
     label: String,
     valueLabel: String,
     value: Float,
@@ -169,8 +169,8 @@ internal fun QuizDial(
                 drawCircle(knobHighlight.copy(alpha = 0.35f), radius = dialRadius * 0.76f)
                 drawArc(
                     color = track,
-                    startAngle = QUIZ_DIAL_START_ANGLE,
-                    sweepAngle = QUIZ_DIAL_SWEEP_ANGLE,
+                    startAngle = PLAYBACK_DIAL_START_ANGLE,
+                    sweepAngle = PLAYBACK_DIAL_SWEEP_ANGLE,
                     useCenter = false,
                     topLeft = arcTopLeft,
                     size = arcSize,
@@ -178,8 +178,8 @@ internal fun QuizDial(
                 )
                 drawArc(
                     color = primary,
-                    startAngle = QUIZ_DIAL_START_ANGLE,
-                    sweepAngle = QUIZ_DIAL_SWEEP_ANGLE * fraction,
+                    startAngle = PLAYBACK_DIAL_START_ANGLE,
+                    sweepAngle = PLAYBACK_DIAL_SWEEP_ANGLE * fraction,
                     useCenter = false,
                     topLeft = arcTopLeft,
                     size = arcSize,
@@ -187,7 +187,7 @@ internal fun QuizDial(
                 )
 
                 val angle = Math.toRadians(
-                    (QUIZ_DIAL_START_ANGLE + QUIZ_DIAL_SWEEP_ANGLE * fraction).toDouble()
+                    (PLAYBACK_DIAL_START_ANGLE + PLAYBACK_DIAL_SWEEP_ANGLE * fraction).toDouble()
                 )
                 val indicatorRadius = dialRadius * 0.70f
                 drawCircle(
@@ -203,7 +203,7 @@ internal fun QuizDial(
                     ringLabels.forEachIndexed { index, text ->
                         val labelFraction = index.toFloat() / (ringLabels.size - 1)
                         val labelAngle = Math.toRadians(
-                            (QUIZ_DIAL_START_ANGLE + QUIZ_DIAL_SWEEP_ANGLE * labelFraction).toDouble()
+                            (PLAYBACK_DIAL_START_ANGLE + PLAYBACK_DIAL_SWEEP_ANGLE * labelFraction).toDouble()
                         )
                         val selected = index == (fraction * (ringLabels.size - 1)).roundToInt()
                         val radius = 45.dp.toPx()

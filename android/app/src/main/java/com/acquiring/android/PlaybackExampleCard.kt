@@ -17,9 +17,9 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-/** Decorative quiz-card chrome for Introduction/Help. Same tint and 14.dp corners — no gestures. */
+/** Decorative playback-card chrome for Introduction/Help. Same tint and 14.dp corners — no gestures. */
 @Composable
-internal fun QuizExampleCard(
+internal fun PlaybackExampleCard(
     modifier: Modifier = Modifier,
     fixedHeight: Dp = 44.dp,
     content: @Composable BoxScope.() -> Unit
@@ -44,7 +44,7 @@ internal fun QuizExampleCard(
 
 /** Holds row/slot geometry with no card chrome and no touch target. */
 @Composable
-internal fun QuizEmptyCardSlot(
+internal fun PlaybackEmptyCardSlot(
     modifier: Modifier = Modifier,
     fixedHeight: Dp = 44.dp
 ) {

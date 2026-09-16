@@ -21,7 +21,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class QuizTransportDockVisibilityUiTest {
+class PlaybackTransportDockVisibilityUiTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
@@ -30,13 +30,13 @@ class QuizTransportDockVisibilityUiTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         AppAudioOutput.initialize(context)
         AppInstrumentSession.initialize(context)
-        QuizPlaybackController.initialize(context)
-        QuizPlaybackController.reset()
+        PlaybackController.initialize(context)
+        PlaybackController.reset()
     }
 
     @After
     fun tearDown() {
-        QuizPlaybackController.pause()
+        PlaybackController.pause()
         AudioEngine.stopAllPlayback()
     }
 
@@ -58,7 +58,7 @@ class QuizTransportDockVisibilityUiTest {
         composeTestRule.setContent {
             val currentWaveform by AppInstrumentSession.sessionInstrument.collectAsState()
             MaterialTheme {
-                QuizDestination(
+                PlaybackDestination(
                     song = song,
                     sections = sections,
                     selectedSectionId = "verse",
@@ -66,10 +66,10 @@ class QuizTransportDockVisibilityUiTest {
                     currentWaveform = currentWaveform,
                     onWaveformChange = {},
                     globalTranspose = 0,
-                    quizTempoPercent = 100f,
-                    onQuizTempoPercentChange = {},
-                    quizArpeggioOptionIndex = DEFAULT_QUIZ_ARPEGGIO_OPTION_INDEX,
-                    onQuizArpeggioOptionIndexChange = {},
+                    playbackTempoPercent = 100f,
+                    onPlaybackTempoPercentChange = {},
+                    playbackArpeggioOptionIndex = DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX,
+                    onPlaybackArpeggioOptionIndexChange = {},
                     onTransposeChange = {},
                     onArtistClick = {},
                     onShowSongInfo = {},
@@ -85,17 +85,17 @@ class QuizTransportDockVisibilityUiTest {
         }
 
         composeTestRule.onNodeWithContentDescription("Play").assertIsDisplayed()
-        composeTestRule.onNodeWithTag(QUIZ_INFO_BUTTON_TEST_TAG).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(QUIZ_MODE_SWITCH_TEST_TAG).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(QUIZ_SECTION_BUTTON_TEST_TAG).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(PLAYBACK_INFO_BUTTON_TEST_TAG).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(PLAYBACK_MODE_SWITCH_TEST_TAG).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(PLAYBACK_SECTION_BUTTON_TEST_TAG).assertIsDisplayed()
 
         composeTestRule.runOnIdle { dockExpanded = true }
         composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithContentDescription("Play").assertIsDisplayed()
-        composeTestRule.onNodeWithTag(QUIZ_INFO_BUTTON_TEST_TAG).assertDoesNotExist()
-        composeTestRule.onNodeWithTag(QUIZ_MODE_SWITCH_TEST_TAG).assertDoesNotExist()
-        composeTestRule.onNodeWithTag(QUIZ_SECTION_BUTTON_TEST_TAG).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(PLAYBACK_INFO_BUTTON_TEST_TAG).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(PLAYBACK_MODE_SWITCH_TEST_TAG).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(PLAYBACK_SECTION_BUTTON_TEST_TAG).assertDoesNotExist()
     }
 
     @Test
@@ -112,7 +112,7 @@ class QuizTransportDockVisibilityUiTest {
         composeTestRule.setContent {
             val currentWaveform by AppInstrumentSession.sessionInstrument.collectAsState()
             MaterialTheme {
-                QuizDestination(
+                PlaybackDestination(
                     song = song,
                     sections = sections,
                     selectedSectionId = "verse",
@@ -120,10 +120,10 @@ class QuizTransportDockVisibilityUiTest {
                     currentWaveform = currentWaveform,
                     onWaveformChange = {},
                     globalTranspose = 0,
-                    quizTempoPercent = 100f,
-                    onQuizTempoPercentChange = {},
-                    quizArpeggioOptionIndex = DEFAULT_QUIZ_ARPEGGIO_OPTION_INDEX,
-                    onQuizArpeggioOptionIndexChange = {},
+                    playbackTempoPercent = 100f,
+                    onPlaybackTempoPercentChange = {},
+                    playbackArpeggioOptionIndex = DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX,
+                    onPlaybackArpeggioOptionIndexChange = {},
                     onTransposeChange = {},
                     onArtistClick = {},
                     onShowSongInfo = {},
@@ -137,9 +137,9 @@ class QuizTransportDockVisibilityUiTest {
             }
         }
 
-        composeTestRule.onNodeWithTag(QUIZ_MONITOR_PITCH_TEST_TAG).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(PLAYBACK_MONITOR_PITCH_TEST_TAG).assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription("Pitch monitoring").assertExists()
-        composeTestRule.onNodeWithTag(QUIZ_MODE_SWITCH_TEST_TAG, useUnmergedTree = true).performClick()
+        composeTestRule.onNodeWithTag(PLAYBACK_MODE_SWITCH_TEST_TAG, useUnmergedTree = true).performClick()
         composeTestRule.onNodeWithText("Full Chords").assertExists()
         composeTestRule.onNodeWithText("Root Only").performClick()
         composeTestRule.onNodeWithText("Previous Root").assertDoesNotExist()

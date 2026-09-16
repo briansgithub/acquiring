@@ -124,11 +124,11 @@ private fun List<MelodyNote>.timedNotes(): List<TimedMelodyNote> =
     }.sortedWith(compareBy<TimedMelodyNote> { it.onset }.thenBy { it.sourceIndex })
 
 /**
- * Section-local index reused by the Quiz UI while the playback beat advances.
+ * Section-local index reused by the Playback UI while the playback beat advances.
  * Building and sorting these lists on every rendered frame is needlessly costly
  * for melody-heavy songs and can contend with the audio renderer.
  */
-internal class QuizActiveEventIndex(
+internal class PlaybackActiveEventIndex(
     section: ExtractedSection,
     melody: List<MelodyNote>
 ) {
@@ -185,10 +185,10 @@ internal class QuizActiveEventIndex(
 }
 
 internal fun activeChordAtBeat(section: ExtractedSection, currentBeat: Double): JsonObject? =
-    QuizActiveEventIndex(section, emptyList()).chordAtBeat(currentBeat)
+    PlaybackActiveEventIndex(section, emptyList()).chordAtBeat(currentBeat)
 
 internal fun activeMelodyNoteAtBeat(melody: List<MelodyNote>, currentBeat: Double): MelodyNote? =
-    QuizActiveEventIndex(ExtractedSection(), melody).melodyNoteAtBeat(currentBeat)
+    PlaybackActiveEventIndex(ExtractedSection(), melody).melodyNoteAtBeat(currentBeat)
 
 internal fun resolveChordRootIntervalState(
     section: ExtractedSection,
