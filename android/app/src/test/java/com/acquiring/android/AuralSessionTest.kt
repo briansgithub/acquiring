@@ -60,6 +60,33 @@ class AuralSessionTest {
         assertFalse(restored.view().heard)
     }
 
+    @Test fun selectedProgressionPersistsAndHelpFadesWithoutIndependentCredit() {
+        val store = MemoryStore()
+        val lesson = session(store)
+        repeat(6) { n ->
+            lesson.practice("predominant-cadence", "recall", variantId = "departure")
+            val exercise = lesson.view().exercise!!
+            assertEquals(listOf("I", "ii", "V", "I"), exercise.fullDegrees)
+            assertEquals(if (n < 2) 2 else if (n < 4) 1 else 0, exercise.support)
+            assertTrue(lesson.view().supported)
+            lesson.played(); lesson.submit(exercise.answer.degrees)
+        }
+        val restored = session(store).view()
+        assertEquals("departure", restored.exercise!!.provenance.target.variantId)
+        assertEquals(lesson.view().exercise!!.events, restored.exercise.events)
+        assertEquals(0, restored.progress.cells.values.sumOf { it.independentAttempts })
+        assertEquals(6, restored.progress.cells.values.sumOf { it.practiceCorrect })
+    }
+
+    @Test fun microphonePreferenceDoesNotChangeExplicitSingingPractice() {
+        val lesson = session()
+        lesson.practice("dominant-return", "reproduce", "bass", "departure")
+        val exercise = lesson.view().exercise
+        lesson.setMicrophonePreference(false)
+        assertFalse(lesson.view().microphoneEnabled)
+        assertEquals(exercise, lesson.view().exercise)
+    }
+
     @Test fun invalidPendingGeneratorDoesNotEraseValidProgress() {
         val store = MemoryStore()
         val lesson = session(store); lesson.next(); lesson.played(); lesson.submit(emptyList())

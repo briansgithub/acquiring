@@ -661,7 +661,7 @@ internal fun MainScreen(
             modifier = Modifier
                 .weight(1f)
                 .then(
-                    if (isShowingPlayback) Modifier else Modifier.padding(16.dp)
+                    if (isShowingPlayback || isShowingAuralQuiz) Modifier else Modifier.padding(16.dp)
                 )
         ) {
             if (isShowingAuralQuiz) {

@@ -1,8 +1,16 @@
 # Android Aural Quiz
 
-Status: implemented for human testing. Open **Library → Aural Quiz · learn by ear**. No song or catalog download is required. **Explore with support** reaches any family and phase for targeted practice and human review. **Next exercise** returns to the adaptive path. The existing full-chord/root-only song page is now called **Playback**.
+Status: implemented for human testing. Open **Library → Aural Quiz · learn by ear**. No song or catalog download is required. Browse **family → progression → phase tab** for targeted practice. **Next** keeps the chosen progression and phase with a new realization. **Adaptive** follows the curriculum scheduler; **Continue** resumes the pending exercise. The existing full-chord/root-only song page is now called **Playback**.
 
 This is the first part of the project. Song-database selection, popularity weighting, occurrence indexes, native iOS parity, and the web curriculum UI are deliberately excluded pending human feedback.
+
+## Curriculum navigation
+
+The landing page groups progressions into six family cards. Each family opens its ordered progression diagrams. Selecting a progression opens seven tabs: **Listen, Compare, Identify, Recall, Complete, Audiate, Sing**. Every phase is reachable for supported exploration; prerequisite gates still apply to Adaptive. Changing tabs cancels playback/capture and resets the response without grading. Back moves through the hierarchy. Continue restores the pending progression/phase; interruptions and resumed exercises remain practice.
+
+Chord tiles show order visually, a large play/replay/stop button controls listening, and short prompts replace the former instruction paragraphs. Hints, family progress details, microphone preferences, and learning explanations live behind small controls or the info button. The seven family dots correspond to the seven phases: outlined = new, filled = practicing, check = mastered. They report **family × skill** evidence, not separate mastery of each individual progression. Status has accessibility labels as well as color.
+
+Selecting a named progression reveals its identity by design, so **all selected-progression exercises remain practice even after guidance fades**. This is enforced both in the session and pure evidence engine. Adaptive hides the family/progression breadcrumb and solution before an unsupported answer; its independent and transfer checks remain separate. Explicit progression selection is an optional generator target field, validated within the family and retained in saved provenance and attempt history. The original random draw is preserved for backward-compatible generation of existing seed-only examples.
 
 ## Learning design
 
@@ -25,7 +33,7 @@ Realizations vary across major keys, inversions, register, spread voicings, temp
 
 ## Evidence and adaptive review
 
-- Full or partial guidance, hints, replays, retries, resumed questions, interrupted playback, and familiar realizations are practice. The engine additionally enforces eligibility; the screen cannot award independent evidence merely by displaying an “independent” badge.
+- Named-progression selection, full or partial guidance, hints, replays, retries, resumed questions, interrupted playback, and familiar realizations are practice. The engine additionally enforces eligibility; the screen cannot award independent evidence merely by displaying an “independent” badge.
 - Exposure is persisted before playback. Familiarity uses sounding content, not the random seed or phase. Intentional same-example retries remain supported.
 - Mastery requires six independent successes, at least six recent independent observations, at least 80% accuracy in the last eight, successes in three keys, and two transfer successes. Thresholds are initial product choices requiring human calibration.
 - Independent success spaces review from one day up to 30 days. A mistake schedules a short review (about 58 minutes). Assisted success never erases that failure, resets its streak, or pushes its review out. Recent accuracy permits recovery after early mistakes.
@@ -46,12 +54,12 @@ The curriculum screen does not mount the existing song chord displays or pitch g
 
 - `AuralCurriculum.kt`: data-driven family definitions, pure deterministic generation, prerequisites, scheduler, evidence updates and normalization.
 - `AuralSession.kt`: single attempt owner; playback-before-response guard, duplicate-submission guard, assistance, resumption and persistence failures.
-- `AuralQuizScreen.kt`: native Compose flow, permissions, lifecycle cancellation, learning map and supported exploration.
+- `AuralQuizScreen.kt` / `AuralQuizComponents.kt`: hierarchical Compose navigation, phase tabs, chord diagrams, help/progress dialog, permissions and lifecycle cancellation.
 - `AuralAudio.kt` / `AuralPitchAssessment.kt`: output lifecycle, timed silence, confidence assessment and cancellable capture.
 
 Progress is versioned JSON in separate `aural_curriculum_v1` SharedPreferences; catalog replacement cannot remove it. The UI rename preserves this storage key. Existing Playback practice statistics are not imported because their assistance history is unknown. Writes report failure while allowing in-memory practice. Corrupt/incompatible progress starts fresh; an invalid unfinished example is discarded while valid progress is preserved. Returning to an unfinished example conservatively marks it supported.
 
-Current examples persist their full provenance: seed, generator version, target family/phase/support/transfer/subtype, variant, key, tempo, instrument, inversions, register, voicing spread and context. Recent attempts retain seed and target identifiers for reconstruction by the pinned generator. History is bounded at 120 attempts and 512 exposure fingerprints. Very old forgotten realizations can eventually count as fresh; there is no cloud sync or cross-device familiarity tracking. Seed reproducibility is version-specific and is not promised across future Kotlin/generator changes.
+Current examples persist their full provenance: seed, generator version, target family/phase/support/transfer/subtype/optional selected variant, realized variant, key, tempo, instrument, inversions, register, voicing spread and context. Recent attempts retain seed and target identifiers for reconstruction by the pinned generator. History is bounded at 120 attempts and 512 exposure fingerprints. Very old forgotten realizations can eventually count as fresh; there is no cloud sync or cross-device familiarity tracking. Seed reproducibility is version-specific and is not promised across future Kotlin/generator changes.
 
 The next project should preserve the boundary **learning target → example provider → realization/prompt**. No song queries or popularity measures belong in this scheduler. A future provider can supply an eligible occurrence plus provenance while retaining these phase/evidence/audio contracts.
 
@@ -98,11 +106,36 @@ android\gradlew.bat -p android testDebugUnitTest --tests 'com.acquiring.android.
 
 Installed with `adb -s 3C081JEHN14930 install -r android/app/build/outputs/apk/debug/app-debug.apk` and launched with `adb -s 3C081JEHN14930 shell am start -S -W -n com.acquiring.android/.MainActivity`. Both succeeded on the attached Pixel 7a. Instrumentation tests were compiled, not executed on the device. Saved app data was retained.
 
+### Hierarchical UI validation
+
+The redesigned hierarchy passed **62 tests** (58 curriculum/audio/pitch/session/Compose tests plus four navigation regressions). The debug app and instrumentation APK both built:
+
+```powershell
+android\gradlew.bat -p android testDebugUnitTest --tests com.acquiring.android.Aural* --tests com.acquiring.android.PracticeNavigationTest assembleDebug assembleDebugAndroidTest --console=plain
+```
+
+After the final presentation cleanup, the affected **22 session/Compose tests** passed and both APKs rebuilt:
+
+```powershell
+android\gradlew.bat -p android testDebugUnitTest --tests com.acquiring.android.AuralQuizUiTest --tests com.acquiring.android.AuralSessionTest assembleDebug assembleDebugAndroidTest --console=plain
+```
+
+Coverage includes all 15 progression variants across seven phases and three support levels, selected-variant provenance reconstruction, gradual help removal without independent credit, phase navigation, next-example continuity, accessibility answer concealment, cancellation on tab changes, and resumption. Two new `AuralQuizDeviceTest` instrumentation tests exercise actual playback completion and cancellation with in-memory progress, leaving saved learner data untouched.
+
+**Device status for this redesign:** ADB reported no connected device. The new instrumentation tests are compiled but have not run, and the redesigned APK has not yet been installed on the Pixel 7a. The earlier device installation above predates this redesign. Reconnect the Pixel to complete these checks:
+
+```powershell
+adb -s 3C081JEHN14930 install -r android/app/build/outputs/apk/debug/app-debug.apk
+adb -s 3C081JEHN14930 install -r android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+adb -s 3C081JEHN14930 shell am instrument -w -e class com.acquiring.android.AuralQuizDeviceTest com.acquiring.android.test/androidx.test.runner.AndroidJUnitRunner
+adb -s 3C081JEHN14930 shell am start -S -W -n com.acquiring.android/.MainActivity
+```
+
 ## Human validation checklist
 
-1. Start in Library. Follow several guided examples, use a hint and replay, answer incorrectly then retry. Confirm practice and independent counters behave as labeled; revisit after restarting the app.
-2. Use **Explore with support** to compare dominant/plagal/deceptive returns and V/V. Judge whether the harmonic function, chord spelling, voicing, register, timbre and key reference sound correct and balanced. Check that reduced guidance feels gradual.
-3. Try recall, a middle missing chord, and a silent ending. Verify the model is clear, silent slots keep time, no answer appears before grading, and the task asks for remembered harmony rather than an arbitrary “right” composition. Inspect TalkBack announcements and smaller-screen scrolling.
+1. Start in Library → Aural Quiz. Browse family → progression → phase; confirm tabs and Next retain the progression, and Back returns one level. Follow several Adaptive examples, use a hint and replay, answer incorrectly then retry. Confirm practice and independent counters behave as labeled; revisit after restarting the app.
+2. Open a family, choose a progression, and switch its phase tabs to compare dominant/plagal/deceptive returns and V/V. Judge whether the harmonic function, chord spelling, voicing, register, timbre and key reference sound correct and balanced. Check that reduced guidance feels gradual.
+3. Try recall, a middle missing chord, and a silent ending. Verify the model is clear, silent slots keep time, no answer appears before grading, and the task asks for remembered harmony rather than an arbitrary “right” composition. Check both named practice and hidden-target Adaptive. Inspect TalkBack announcements, phase-tab discovery, large text and smaller-screen scrolling.
 4. Try root, inverted bass, scale degree and root-sequence singing in a comfortable octave. Test silence, noise, breath, vibrato and uncertain detection. Confirm no live answer guide and no musical penalty for technical failures. Calibrate the 45-cent, confidence and stability thresholds with singers of different ranges.
 5. Interrupt playback/capture by leaving the screen, backgrounding, changing audio focus and unplugging headphones. Confirm sound and microphone stop, no stale answer is graded, and playback cannot silently earn independent credit.
 
