@@ -94,7 +94,7 @@ internal class AuralSession(
     fun view(): AuralLessonView {
         val ex = saved.current
         return AuralLessonView(ex, saved.progress, heard, answered, guidanceVisible,
-            ex == null || ex.support > 0 || ex.previouslyExposed || assistance.isNotEmpty() || plays > 1 || attempts > 1,
+            ex == null || ex.support > 0 || ex.provenance.target.variantId != null || ex.previouslyExposed || assistance.isNotEmpty() || plays > 1 || attempts > 1,
             saved.microphoneEnabled, feedback, storageWarning)
     }
 
@@ -113,9 +113,10 @@ internal class AuralSession(
         start(target, seed, serial)
     }
 
-    fun practice(familyId: String, skillId: String, microphoneKind: String? = null) {
+    fun practice(familyId: String, skillId: String, microphoneKind: String? = null, variantId: String? = null) {
         val serial = if (saved.serial == Long.MAX_VALUE) 1 else saved.serial + 1
-        start(AuralTarget(familyId, skillId, support = 2, microphoneKind = microphoneKind), seedFor(serial), serial)
+        val support = if (variantId == null) 2 else AuralCurriculum.cell(saved.progress, familyId, skillId).support
+        start(AuralTarget(familyId, skillId, support = support, microphoneKind = microphoneKind, variantId = variantId), seedFor(serial), serial)
     }
 
     private fun start(target: AuralTarget, seed: Long, serial: Long) {
@@ -131,7 +132,7 @@ internal class AuralSession(
         if (saved.current == null || answered) return
         if (plays > 0) assistance = assistance + "replay"
         plays += 1; heard = true
-        feedback = "Keep the sound in mind, then respond."
+        feedback = ""
     }
 
     fun hint() {
@@ -164,10 +165,10 @@ internal class AuralSession(
             assistance = assistance, plays = plays, attempt = attempts, now = clock()))
         answered = true; guidanceVisible = true
         feedback = when {
-            exercise.responseType == "guided" -> "Listening practice recorded."
-            correct -> "That matches the model."
-            else -> "This response did not match the model."
-        } + if (independent) " Independent evidence recorded." else " Supported practice recorded."
+            exercise.responseType == "guided" -> "Listening complete."
+            correct -> "Correct."
+            else -> "Not quite. Hear the model again."
+        } + if (independent) " Check saved." else " Practice saved."
         save()
     }
 
@@ -179,8 +180,12 @@ internal class AuralSession(
     }
 
     fun enableMicrophone(enabled: Boolean) {
+        setMicrophonePreference(enabled)
+        if (!enabled && saved.current?.responseType == "microphone") next()
+    }
+
+    fun setMicrophonePreference(enabled: Boolean) {
         saved = saved.copy(microphoneEnabled = enabled)
         save()
-        if (!enabled && saved.current?.responseType == "microphone") next()
     }
 }

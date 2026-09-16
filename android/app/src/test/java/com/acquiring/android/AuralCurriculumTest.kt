@@ -265,11 +265,50 @@ class AuralCurriculumTest {
     }
 
     @Test fun invalidTargetsFailRatherThanSilentlyGeneratingWrongMusic() {
+        assertThrows(IllegalArgumentException::class.java) { AuralCurriculum.generate(AuralTarget("dominant-return", "guided", variantId = "prepared"), 1) }
         assertThrows(IllegalArgumentException::class.java) { AuralCurriculum.generate(AuralTarget("missing", "guided"), 1) }
         assertThrows(IllegalArgumentException::class.java) { AuralCurriculum.generate(AuralTarget("dominant-return", "missing"), 1) }
         assertThrows(IllegalArgumentException::class.java) { AuralCurriculum.generate(AuralTarget("dominant-return", "guided", 8), 1) }
         val original = AuralProgress()
         AuralCurriculum.record(original, generated(), false)
         assertEquals(AuralProgress(), original)
+    }
+
+    @Test fun explicitVariantsSurviveEveryPhaseAndSupportLevelAndReconstructFromHistory() {
+        for (family in AuralCurriculum.families) for (variant in family.variants) {
+            for (skill in AuralCurriculum.skills) for (support in 0..2) {
+                val target = AuralTarget(family.id, skill.id, support, variantId = variant.id)
+                val ex = AuralCurriculum.generate(target, 432L)
+                assertEquals(variant.degrees, ex.fullDegrees)
+                assertEquals(variant.degrees, ex.events.map { it.degree })
+                assertEquals(ex, AuralCurriculum.generate(ex.provenance.target, ex.seed))
+                val record = AuralCurriculum.record(AuralProgress(), ex, true).recent.last()
+                assertFalse(record.independent)
+                assertEquals(ex, AuralCurriculum.generate(AuralTarget(record.familyId, record.skillId, record.support,
+                    record.transfer, microphoneKind = record.microphoneKind, variantId = record.requestedVariantId), record.seed))
+            }
+        }
+    }
+
+    @Test fun variantSelectionCannotEarnMasteryEvenWhenGuidanceHasFaded() {
+        var progress = AuralProgress()
+        repeat(20) { n ->
+            val ex = AuralCurriculum.generate(AuralTarget("dominant-return", "identify", 0, true, variantId = "departure"), n.toLong())
+            progress = AuralCurriculum.record(progress, ex, true)
+        }
+        val cell = AuralCurriculum.cell(progress, "dominant-return", "identify")
+        assertEquals(20, cell.practice)
+        assertEquals(0, cell.independentAttempts)
+        assertEquals(0, cell.transferCorrect)
+        assertFalse(cell.mastered)
+        assertFalse(AuralCurriculum.familyUnlocked(progress, "plagal-return"))
+    }
+
+    @Test fun explicitVariantsHaveDistinctAttemptIdentitiesForTheSameSeed() {
+        val target = AuralTarget("dominant-return", "compare", variantId = "direct")
+        val direct = AuralCurriculum.generate(target, 45L)
+        val departure = AuralCurriculum.generate(target.copy(variantId = "departure"), 45L)
+        assertNotEquals(direct.id, departure.id)
+        assertNotEquals(direct.fingerprint, departure.fingerprint)
     }
 }

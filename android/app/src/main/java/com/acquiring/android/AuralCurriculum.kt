@@ -13,7 +13,7 @@ import kotlin.random.Random
 @Serializable data class AuralOption(val id: String, val label: String, val degrees: List<String>)
 @Serializable data class AuralAnswer(val degrees: List<String>, val optionId: String? = null, val targetMidis: List<Int> = emptyList())
 @Serializable data class AuralMicrophoneTask(val kind: String, val label: String, val eventIndices: List<Int>, val targetMidis: List<Int>, val scaleDegree: Int? = null)
-@Serializable data class AuralTarget(val familyId: String, val skillId: String, val support: Int = 2, val transfer: Boolean = false, val reason: String = "", val microphoneKind: String? = null)
+@Serializable data class AuralTarget(val familyId: String, val skillId: String, val support: Int = 2, val transfer: Boolean = false, val reason: String = "", val microphoneKind: String? = null, val variantId: String? = null)
 @Serializable data class AuralProvenance(val generatorVersion: String, val seed: Long, val target: AuralTarget, val variantId: String, val keyTonic: String, val tempo: Int, val instrument: String, val inversions: List<Int>, val register: Int, val spreads: List<Boolean>, val contextDegrees: List<String>)
 @Serializable data class AuralExercise(
     val id: String, val familyId: String, val variantId: String, val skillId: String,
@@ -39,6 +39,7 @@ import kotlin.random.Random
     val generatorVersion: String, val fingerprint: String, val key: String, val variantId: String,
     val support: Int, val transfer: Boolean, val assistance: List<String>, val plays: Int, val attempt: Int,
     val microphoneKind: String? = null,
+    val requestedVariantId: String? = null,
 )
 @Serializable data class AuralProgress(
     val version: Int = 1, val cells: Map<String, AuralCell> = emptyMap(), val attempts: Int = 0,
@@ -168,7 +169,10 @@ object AuralCurriculum {
         val rng = Random(seed)
         val support = target.support
         val transfer = support == 0 && target.transfer
-        val selected = (if (support == 2) family.variants.take(1) else family.variants).random(rng)
+        // Consume the original random draw so existing seed-only examples remain reproducible.
+        val randomVariant = (if (support == 2) family.variants.take(1) else family.variants).random(rng)
+        val selected = if (target.variantId == null) randomVariant else
+            requireNotNull(family.variants.find { it.id == target.variantId }) { "Unknown progression in this family" }
         val key = KeyInfo((if (support == 2) keys.take(3) else if (support == 1) keys.take(6) else keys).random(rng), "major")
         val tempo = (if (support == 2) listOf(66, 72) else if (support == 1) listOf(66, 72, 80) else if (transfer) listOf(60, 84, 96) else listOf(66, 72, 80, 88)).random(rng)
         val instrument = (if (support == 2) listOf("sine") else if (support == 1) listOf("sine", "triangle") else listOf("sine", "triangle", "soft")).random(rng)
@@ -202,7 +206,8 @@ object AuralCurriculum {
         val answer = AuralAnswer(answerDegrees, options.find { it.degrees == selected.degrees }?.id, microphoneTask?.targetMidis.orEmpty())
         // Musical content rather than the seed determines familiarity, including across skill phases.
         val fingerprint = "realization-" + listOf(family.id, selected.id, key.tonic, tempo, instrument, events.map { it.notes }, context.map { it.notes }).joinToString("|").hashCode().toUInt().toString(16)
-        val id = "aural-" + "$GENERATOR_VERSION:${family.id}:$skill:$support:$transfer:${microphoneTask?.kind}:$seed".hashCode().toUInt().toString(16)
+        val selectionIdentity = target.variantId?.let { ":selected-$it" }.orEmpty()
+        val id = "aural-" + "$GENERATOR_VERSION:${family.id}:$skill:$support:$transfer:${microphoneTask?.kind}:$seed$selectionIdentity".hashCode().toUInt().toString(16)
         val prompt = when (skill) {
             "guided" -> "Listen for the changing feeling of tension and arrival."
             "compare" -> "Which relationship matches what you heard?"
@@ -233,7 +238,7 @@ object AuralCurriculum {
         val exposed = if (exercise.exposureRegistered) exercise.previouslyExposed else p.exposures.any { it.fingerprint == exercise.fingerprint }
         val microphoneKind = exercise.microphoneTask?.kind
         val microphoneReady = exercise.skillId != "reproduce" || microphoneKind != null && (old.microphonePractice[microphoneKind] ?: 0) > 0
-        val independent = !technicalUncertainty && exercise.skillId != "guided" && exercise.support == 0 && assistance.isEmpty() && plays == 1 && attempt == 1 && !exposed && !alreadyGraded && microphoneReady
+        val independent = !technicalUncertainty && exercise.provenance.target.variantId == null && exercise.skillId != "guided" && exercise.support == 0 && assistance.isEmpty() && plays == 1 && attempt == 1 && !exposed && !alreadyGraded && microphoneReady
         val updated = when {
             technicalUncertainty -> old
             independent -> {
@@ -255,7 +260,7 @@ object AuralCurriculum {
         val exposures = if (!exercise.exposureRegistered && p.exposures.none { it.fingerprint == exercise.fingerprint }) (p.exposures + AuralExposure(exercise.fingerprint, exercise.id, now)).takeLast(MAX_EXPOSURES) else p.exposures
         // Preserve the generator's input, including null (seed-selected subtype).
         // Substituting the chosen kind would consume the random stream differently on replay.
-        val record = AuralAttemptRecord(exercise.id, exercise.familyId, exercise.skillId, correct, independent, technicalUncertainty, now, exercise.seed, exercise.generatorVersion, exercise.fingerprint, exercise.keyTonic, exercise.variantId, exercise.support, exercise.transfer, assistance, plays, attempt, exercise.provenance.target.microphoneKind)
+        val record = AuralAttemptRecord(exercise.id, exercise.familyId, exercise.skillId, correct, independent, technicalUncertainty, now, exercise.seed, exercise.generatorVersion, exercise.fingerprint, exercise.keyTonic, exercise.variantId, exercise.support, exercise.transfer, assistance, plays, attempt, exercise.provenance.target.microphoneKind, exercise.provenance.target.variantId)
         return p.copy(cells = if (technicalUncertainty) p.cells else p.cells + ("${exercise.familyId}:${exercise.skillId}" to updated), attempts = p.attempts + if (technicalUncertainty) 0 else 1, recent = (p.recent + record).takeLast(MAX_RECENT), exposures = exposures)
     }
 }
