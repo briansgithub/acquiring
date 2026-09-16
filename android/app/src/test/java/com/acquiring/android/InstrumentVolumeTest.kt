@@ -108,20 +108,20 @@ class InstrumentVolumeTest {
         arpeggiated: Boolean = false,
         notes: IntArray = chordNotes
     ): ShortArray {
-        val timeline = QuizTimeline(
+        val timeline = PlaybackTimeline(
             endBeat = 5.0,
             events = listOf(
-                QuizTimelineEvent(1L, 1.0, 5.0, QuizAudioLayer.CHORD, notes, notes.first()),
-                QuizTimelineEvent(2L, 1.0, 5.0, QuizAudioLayer.MELODY, intArrayOf(72))
+                PlaybackTimelineEvent(1L, 1.0, 5.0, PlaybackAudioLayer.CHORD, notes, notes.first()),
+                PlaybackTimelineEvent(2L, 1.0, 5.0, PlaybackAudioLayer.MELODY, intArrayOf(72))
             )
         )
-        val renderer = QuizPcmRenderer(
+        val renderer = PlaybackPcmRenderer(
             timeline,
-            QuizPlaybackConfig(
+            PlaybackConfig(
                 bpm = 120.0,
                 transpose = 0,
                 waveform = waveform,
-                chordMode = QuizChordMode.FULL,
+                chordMode = PlaybackChordMode.FULL,
                 melodyGain = melodyGain,
                 chordGain = chordGain,
                 arpeggiateCycles = if (arpeggiated) 1.0 else 0.0

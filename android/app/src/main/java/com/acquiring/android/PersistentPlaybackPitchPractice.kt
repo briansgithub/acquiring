@@ -39,7 +39,7 @@ internal sealed interface PersistentPitchSelection {
     data object Melody : PersistentPitchSelection
 }
 
-internal data class QuizPitchCardTarget(
+internal data class PlaybackPitchCardTarget(
     val sourceMidi: Int,
     val label: String
 )
@@ -221,9 +221,9 @@ internal data class ResolvedPersistentPitchTarget(
 
 internal fun resolvePersistentPitchTarget(
     selection: PersistentPitchSelection?,
-    simpleRoot: QuizPitchCardTarget?,
-    chordTones: List<QuizPitchCardTarget>,
-    melody: QuizPitchCardTarget?
+    simpleRoot: PlaybackPitchCardTarget?,
+    chordTones: List<PlaybackPitchCardTarget>,
+    melody: PlaybackPitchCardTarget?
 ): ResolvedPersistentPitchTarget? = when (selection) {
     PersistentPitchSelection.SimpleRoot -> simpleRoot?.let {
         ResolvedPersistentPitchTarget(it.sourceMidi, it.label, PersistentPitchCardPosition.SimpleRoot)
@@ -479,7 +479,7 @@ internal enum class PersistentPitchPhase {
 
 private const val PERSISTENT_LATCH_PLACEHOLDER_MIDI = 60
 
-internal class PersistentQuizPitchController(
+internal class PersistentPlaybackPitchController(
     private val pitchSource: ExclusivePitchSource
 ) {
     var selection by mutableStateOf<PersistentPitchSelection?>(null)

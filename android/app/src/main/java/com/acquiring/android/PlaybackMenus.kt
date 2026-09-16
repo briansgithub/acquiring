@@ -141,13 +141,13 @@ private fun Modifier.dropdownScrollbar(
 }
 
 /** Row height for the transpose menu's single-number entries. */
-private val QUIZ_TRANSPOSE_ITEM_HEIGHT = 32.dp
-internal const val QUIZ_INSTRUMENT_BUTTON_TEST_TAG = "QuizInstrumentButton"
-internal const val QUIZ_TRANSPOSE_BUTTON_TEST_TAG = "QuizTransposeButton"
-internal val QUIZ_TRANSPOSE_RANGE = -12..12
+private val PLAYBACK_TRANSPOSE_ITEM_HEIGHT = 32.dp
+internal const val PLAYBACK_INSTRUMENT_BUTTON_TEST_TAG = "PlaybackInstrumentButton"
+internal const val PLAYBACK_TRANSPOSE_BUTTON_TEST_TAG = "PlaybackTransposeButton"
+internal val PLAYBACK_TRANSPOSE_RANGE = -12..12
 
 @Composable
-internal fun QuizInstrumentMenu(
+internal fun PlaybackInstrumentMenu(
     selectedInstrument: AudioEngine.Waveform,
     onInstrumentSelected: (AudioEngine.Waveform) -> Unit,
     modifier: Modifier = Modifier
@@ -159,20 +159,20 @@ internal fun QuizInstrumentMenu(
         Surface(
             onClick = { expanded = true },
             modifier = Modifier
-                .size(QUIZ_TRANSPORT_CONTROL)
-                .testTag(QUIZ_INSTRUMENT_BUTTON_TEST_TAG)
+                .size(PLAYBACK_TRANSPORT_CONTROL)
+                .testTag(PLAYBACK_INSTRUMENT_BUTTON_TEST_TAG)
                 .semantics {
                     contentDescription = "Instrument"
                     stateDescription = selectedLabel
                     role = Role.Button
                 },
-            shape = RoundedCornerShape(QUIZ_TRANSPORT_CORNER),
+            shape = RoundedCornerShape(PLAYBACK_TRANSPORT_CORNER),
             color = Color.Transparent,
-            border = quizTransportOutline()
+            border = playbackTransportOutline()
         ) {
             Box(
                 contentAlignment = Alignment.Center,
-                modifier = Modifier.size(QUIZ_TRANSPORT_CONTROL)
+                modifier = Modifier.size(PLAYBACK_TRANSPORT_CONTROL)
             ) {
                 Text(
                     text = "🎹",
@@ -209,7 +209,7 @@ internal fun QuizInstrumentMenu(
                                 onInstrumentSelected(instrument)
                                 expanded = false
                             },
-                            modifier = Modifier.testTag("QuizInstrument-${instrument.name}")
+                            modifier = Modifier.testTag("PlaybackInstrument-${instrument.name}")
                         )
                     }
                 }
@@ -219,7 +219,7 @@ internal fun QuizInstrumentMenu(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun QuizTransposeMenu(
+internal fun PlaybackTransposeMenu(
     transpose: Int,
     onTransposeSelected: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -230,22 +230,22 @@ internal fun QuizTransposeMenu(
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
-        modifier = modifier.width(QUIZ_TRANSPORT_SELECTOR)
+        modifier = modifier.width(PLAYBACK_TRANSPORT_SELECTOR)
     ) {
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(QUIZ_TRANSPORT_CONTROL)
+                .height(PLAYBACK_TRANSPORT_CONTROL)
                 .menuAnchor()
-                .testTag(QUIZ_TRANSPOSE_BUTTON_TEST_TAG)
+                .testTag(PLAYBACK_TRANSPOSE_BUTTON_TEST_TAG)
                 .semantics {
                     contentDescription = "Transpose"
                     stateDescription = transposeText
                     role = Role.Button
                 },
-            shape = RoundedCornerShape(QUIZ_TRANSPORT_CORNER),
+            shape = RoundedCornerShape(PLAYBACK_TRANSPORT_CORNER),
             color = Color.Transparent,
-            border = quizTransportOutline()
+            border = playbackTransportOutline()
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -265,7 +265,7 @@ internal fun QuizTransposeMenu(
             onDismissRequest = { expanded = false },
             centerScrollOnExpand = true
         ) {
-            QUIZ_TRANSPOSE_RANGE.forEach { option ->
+            PLAYBACK_TRANSPOSE_RANGE.forEach { option ->
                 DropdownMenuItem(
                     text = {
                         Text(
@@ -280,8 +280,8 @@ internal fun QuizTransposeMenu(
                         expanded = false
                     },
                     modifier = Modifier
-                        .height(QUIZ_TRANSPOSE_ITEM_HEIGHT)
-                        .testTag("QuizTranspose-$option"),
+                        .height(PLAYBACK_TRANSPOSE_ITEM_HEIGHT)
+                        .testTag("PlaybackTranspose-$option"),
                     contentPadding = PaddingValues(horizontal = 8.dp)
                 )
             }

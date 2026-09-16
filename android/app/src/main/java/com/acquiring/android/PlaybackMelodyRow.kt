@@ -26,8 +26,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-internal val QUIZ_MELODY_PAIR_CARD_HEIGHT = 44.dp
-internal val QUIZ_MELODY_INTERVAL_CARD_HEIGHT = 88.dp
+internal val PLAYBACK_MELODY_PAIR_CARD_HEIGHT = 44.dp
+internal val PLAYBACK_MELODY_INTERVAL_CARD_HEIGHT = 88.dp
 
 internal fun showsMelodyPreviousCard(
     displayMode: MelodyPitchCardDisplayMode,
@@ -37,7 +37,7 @@ internal fun showsMelodyPreviousCard(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun QuizMelodyRow(
+internal fun PlaybackMelodyRow(
     currentPitch: SpelledPitch?,
     currentLabel: String,
     intervalState: MelodyIntervalState?,
@@ -52,15 +52,15 @@ internal fun QuizMelodyRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(QUIZ_MELODY_INTERVAL_CARD_HEIGHT),
+            .height(PLAYBACK_MELODY_INTERVAL_CARD_HEIGHT),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         when (displayMode) {
             MelodyPitchCardDisplayMode.HIDDEN -> {
-                QuizEmptyCardSlot(
+                PlaybackEmptyCardSlot(
                     modifier = Modifier.weight(1f),
-                    fixedHeight = QUIZ_MELODY_INTERVAL_CARD_HEIGHT
+                    fixedHeight = PLAYBACK_MELODY_INTERVAL_CARD_HEIGHT
                 )
             }
             MelodyPitchCardDisplayMode.SINGLE -> {
@@ -82,7 +82,7 @@ internal fun QuizMelodyRow(
                             MelodyDegreeCard(
                                 label = currentLabel,
                                 description = "Play current melody note $currentLabel. Double tap to sing it back.",
-                                height = QUIZ_MELODY_PAIR_CARD_HEIGHT,
+                                height = PLAYBACK_MELODY_PAIR_CARD_HEIGHT,
                                 onClick = { onPlayPitch(currentPitch) },
                                 onDoubleClick = { onSingPitch(currentPitch, currentLabel) }
                             )
@@ -96,9 +96,9 @@ internal fun QuizMelodyRow(
                         )
                     }
                 }
-                QuizEmptyCardSlot(
+                PlaybackEmptyCardSlot(
                     modifier = Modifier.weight(1f),
-                    fixedHeight = QUIZ_MELODY_INTERVAL_CARD_HEIGHT
+                    fixedHeight = PLAYBACK_MELODY_INTERVAL_CARD_HEIGHT
                 )
             }
             MelodyPitchCardDisplayMode.INTERVAL -> {
@@ -149,9 +149,9 @@ internal fun QuizMelodyRow(
                         }
                     }
                 } else {
-                    QuizEmptyCardSlot(
+                    PlaybackEmptyCardSlot(
                         modifier = Modifier.weight(1f),
-                        fixedHeight = QUIZ_MELODY_INTERVAL_CARD_HEIGHT
+                        fixedHeight = PLAYBACK_MELODY_INTERVAL_CARD_HEIGHT
                     )
                 }
             }
@@ -184,12 +184,12 @@ private fun RowScope.MelodyPairSlot(
             MelodyDegreeCard(
                 label = card.scaleDegreeLabel,
                 description = "Play $title melody note ${card.scaleDegreeLabel}. Double tap to sing it back.",
-                height = QUIZ_MELODY_PAIR_CARD_HEIGHT,
+                height = PLAYBACK_MELODY_PAIR_CARD_HEIGHT,
                 onClick = { onPlayPitch(card.pitch) },
                 onDoubleClick = { onSingPitch(card.pitch, card.scaleDegreeLabel) }
             )
         } else {
-            QuizEmptyCardSlot(fixedHeight = QUIZ_MELODY_PAIR_CARD_HEIGHT)
+            PlaybackEmptyCardSlot(fixedHeight = PLAYBACK_MELODY_PAIR_CARD_HEIGHT)
         }
     }
 }
@@ -220,7 +220,7 @@ private fun MelodyDegreeCard(
         ) {
             ScaleDegreeText(
                 label = label,
-                fontSize = if (height >= QUIZ_MELODY_INTERVAL_CARD_HEIGHT) 32.sp else 22.sp,
+                fontSize = if (height >= PLAYBACK_MELODY_INTERVAL_CARD_HEIGHT) 32.sp else 22.sp,
                 minFontSize = 11.sp,
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.onPrimary

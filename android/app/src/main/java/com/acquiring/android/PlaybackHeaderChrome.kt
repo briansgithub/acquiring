@@ -33,18 +33,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-internal const val QUIZ_MONITOR_PITCH_TEST_TAG = "quiz.monitorPitch"
-internal const val QUIZ_HELP_BUTTON_TEST_TAG = "quiz.help"
-internal const val QUIZ_LOCK_IN_MAJOR_TEST_TAG = "quiz.lockInMajor"
+internal const val PLAYBACK_MONITOR_PITCH_TEST_TAG = "playback.monitorPitch"
+internal const val PLAYBACK_HELP_BUTTON_TEST_TAG = "playback.help"
+internal const val PLAYBACK_LOCK_IN_MAJOR_TEST_TAG = "playback.lockInMajor"
 
 @Composable
-internal fun QuizScreenHeader(
+internal fun PlaybackScreenHeader(
     titleText: String?,
     onBack: () -> Unit,
     onTitleClick: () -> Unit,
     useRelativeIonianContext: Boolean,
     onLockInMajorChange: (Boolean) -> Unit,
-    keyDisplay: QuizKeyDisplay?,
+    keyDisplay: PlaybackKeyDisplay?,
     isMonitoring: Boolean,
     onToggleMonitoring: () -> Unit,
     onShowHelp: () -> Unit
@@ -62,18 +62,16 @@ internal fun QuizScreenHeader(
                 modifier = Modifier.align(Alignment.CenterStart).height(48.dp)
             ) { Text("< Back") }
 
-            if (titleText != null) {
                 Text(
-                    text = titleText,
+                    text = titleText?.let { "Playback · $it" } ?: "Playback",
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = 1,
                     modifier = Modifier
                         .align(Alignment.Center)
                         .padding(horizontal = 56.dp)
-                        .clickable { onTitleClick() }
-                        .semantics { contentDescription = "Quiz title" }
+                        .clickable(enabled = titleText != null) { onTitleClick() }
+                        .semantics { contentDescription = if (titleText != null) "Playback title" else "Playback" }
                 )
-            }
         }
         Box(
             modifier = Modifier
@@ -91,7 +89,7 @@ internal fun QuizScreenHeader(
                     onClick = { onLockInMajorChange(!useRelativeIonianContext) },
                     modifier = Modifier
                         .size(44.dp)
-                        .testTag(QUIZ_LOCK_IN_MAJOR_TEST_TAG)
+                        .testTag(PLAYBACK_LOCK_IN_MAJOR_TEST_TAG)
                         .semantics {
                             contentDescription = "Lock in Major"
                             stateDescription = if (useRelativeIonianContext) "On" else "Off"
@@ -140,7 +138,7 @@ internal fun QuizScreenHeader(
                     onClick = onToggleMonitoring,
                     modifier = Modifier
                         .size(44.dp)
-                        .testTag(QUIZ_MONITOR_PITCH_TEST_TAG)
+                        .testTag(PLAYBACK_MONITOR_PITCH_TEST_TAG)
                         .semantics {
                             contentDescription = "Pitch monitoring"
                             stateDescription = if (isMonitoring) "On" else "Off"
@@ -169,8 +167,8 @@ internal fun QuizScreenHeader(
                     onClick = onShowHelp,
                     modifier = Modifier
                         .size(44.dp)
-                        .testTag(QUIZ_HELP_BUTTON_TEST_TAG)
-                        .semantics { contentDescription = "Quiz help" }
+                        .testTag(PLAYBACK_HELP_BUTTON_TEST_TAG)
+                        .semantics { contentDescription = "Playback help" }
                 ) {
                     Text("?", style = MaterialTheme.typography.titleMedium)
                 }

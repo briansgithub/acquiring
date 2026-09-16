@@ -29,7 +29,7 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.math.abs
 
-class QuizTransportSelectorsUiTest {
+class PlaybackTransportSelectorsUiTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
@@ -39,35 +39,35 @@ class QuizTransportSelectorsUiTest {
         AppAudioOutput.initialize(context)
         AppInstrumentSession.initialize(context)
         AppInstrumentSession.selectForSession(AudioEngine.Waveform.CLARINET)
-        QuizPlaybackController.initialize(context)
-        QuizPlaybackController.reset()
+        PlaybackController.initialize(context)
+        PlaybackController.reset()
     }
 
     @After
     fun tearDown() {
-        QuizPlaybackController.pause()
+        PlaybackController.pause()
         AudioEngine.stopAllPlayback()
     }
 
     @Test
-    fun productionQuizSelectorsCommitRepeatedlyDuringNormalAndFastPlayback() {
+    fun productionPlaybackSelectorsCommitRepeatedlyDuringNormalAndFastPlayback() {
         val sections = linkedMapOf(
             "verse" to section("Verse", 1),
             "chorus" to section("Chorus", 4)
         )
         var song by mutableStateOf(song("first-song", "First Song"))
         var selectedSectionId by mutableStateOf("verse")
-        var showingQuiz by mutableStateOf(true)
+        var showingPlayback by mutableStateOf(true)
         var transpose by mutableStateOf(0)
         var tempoPercent by mutableStateOf(100f)
-        var arpeggioOptionIndex by mutableStateOf(DEFAULT_QUIZ_ARPEGGIO_OPTION_INDEX)
+        var arpeggioOptionIndex by mutableStateOf(DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX)
         val pitchSource = FakeExclusivePitchSource()
 
         composeTestRule.setContent {
             val currentWaveform by AppInstrumentSession.sessionInstrument.collectAsState()
             MaterialTheme {
                 Box {
-                    QuizDestination(
+                    PlaybackDestination(
                         song = song,
                         sections = sections,
                         selectedSectionId = selectedSectionId,
@@ -75,27 +75,27 @@ class QuizTransportSelectorsUiTest {
                         currentWaveform = currentWaveform,
                         onWaveformChange = AppInstrumentSession::selectForSession,
                         globalTranspose = transpose,
-                        quizTempoPercent = tempoPercent,
-                        onQuizTempoPercentChange = { tempoPercent = it },
-                        quizArpeggioOptionIndex = arpeggioOptionIndex,
-                        onQuizArpeggioOptionIndexChange = { arpeggioOptionIndex = it },
+                        playbackTempoPercent = tempoPercent,
+                        onPlaybackTempoPercentChange = { tempoPercent = it },
+                        playbackArpeggioOptionIndex = arpeggioOptionIndex,
+                        onPlaybackArpeggioOptionIndexChange = { arpeggioOptionIndex = it },
                         onTransposeChange = {
                             transpose = it
                             AudioEngine.globalTranspose = it
                         },
                         onArtistClick = {},
                         onShowSongInfo = {
-                            QuizPlaybackController.pause()
-                            showingQuiz = false
+                            PlaybackController.pause()
+                            showingPlayback = false
                         },
                         onSingingTargetsRequested = {},
                         octaveOffset = 0,
                         persistentPitchSource = pitchSource,
                         isFavorite = false,
                         onToggleFavorite = {},
-                        onBack = { showingQuiz = true }
+                        onBack = { showingPlayback = true }
                     )
-                    if (!showingQuiz) {
+                    if (!showingPlayback) {
                         SongDetailView(
                             song = song,
                             sections = sections,
@@ -103,13 +103,13 @@ class QuizTransportSelectorsUiTest {
                             onSectionChange = { selectedSectionId = it },
                             showLetterNames = false,
                             onShowLetterNamesChange = {},
-                            onBack = { showingQuiz = true }
+                            onBack = { showingPlayback = true }
                         )
                     }
                 }
             }
         }
-        waitForQuiz()
+        waitForPlayback()
         // Playhead StateFlow ticks ~60 fps; Compose's idling resource never goes idle.
         IdlingRegistry.getInstance().resources.toList().forEach { resource ->
             IdlingRegistry.getInstance().unregister(resource)
@@ -128,35 +128,35 @@ class QuizTransportSelectorsUiTest {
         assertEquals(4, AudioEngine.globalTranspose)
         waitForAdvancingPlayback()
 
-        clickTag(QUIZ_MODE_SWITCH_TEST_TAG)
+        clickTag(PLAYBACK_MODE_SWITCH_TEST_TAG)
         clickText("Root Only")
         waitForAdvancingPlayback()
 
-        clickTag(QUIZ_SECTION_BUTTON_TEST_TAG)
-        clickTag("QuizSection-chorus")
+        clickTag(PLAYBACK_SECTION_BUTTON_TEST_TAG)
+        clickTag("PlaybackSection-chorus")
         assertEquals("chorus", selectedSectionId)
         waitForAdvancingPlayback()
 
-        clickTag(QUIZ_INFO_BUTTON_TEST_TAG)
+        clickTag(PLAYBACK_INFO_BUTTON_TEST_TAG)
         composeTestRule.runOnUiThread {
-            QuizPlaybackController.pause()
-            showingQuiz = false
+            PlaybackController.pause()
+            showingPlayback = false
         }
         composeTestRule.waitUntil(5_000) {
-            val phase = QuizPlaybackController.state.value.phase
-            phase == QuizPlaybackPhase.PAUSED || phase == QuizPlaybackPhase.STOPPED
+            val phase = PlaybackController.state.value.phase
+            phase == PlaybackPhase.PAUSED || phase == PlaybackPhase.STOPPED
         }
-        assertFalse(QuizPlaybackController.isPlaybackRequested)
-        val retainedBeat = QuizPlaybackController.state.value.beat
+        assertFalse(PlaybackController.isPlaybackRequested)
+        val retainedBeat = PlaybackController.state.value.beat
 
         clickText("< Back")
-        waitForQuiz()
+        waitForPlayback()
         composeTestRule.waitUntil(5_000) {
-            !QuizPlaybackController.isPlaybackRequested &&
-                QuizPlaybackController.state.value.phase != QuizPlaybackPhase.PLAYING &&
-                QuizPlaybackController.state.value.phase != QuizPlaybackPhase.BUFFERING
+            !PlaybackController.isPlaybackRequested &&
+                PlaybackController.state.value.phase != PlaybackPhase.PLAYING &&
+                PlaybackController.state.value.phase != PlaybackPhase.BUFFERING
         }
-        val restoredBeat = QuizPlaybackController.state.value.beat
+        val restoredBeat = PlaybackController.state.value.beat
         assertTrue(
             "info detour moved beat from $retainedBeat to $restoredBeat",
             abs(restoredBeat - retainedBeat) < 0.05
@@ -166,13 +166,13 @@ class QuizTransportSelectorsUiTest {
             song = song("second-song", "Second Song")
         }
         composeTestRule.waitUntil(5_000) {
-            val state = QuizPlaybackController.state.value
-            state.phase != QuizPlaybackPhase.PLAYING &&
-                state.phase != QuizPlaybackPhase.BUFFERING &&
+            val state = PlaybackController.state.value
+            state.phase != PlaybackPhase.PLAYING &&
+                state.phase != PlaybackPhase.BUFFERING &&
                 abs(state.beat - 1.0) < 0.001
         }
         assertEquals(AudioEngine.Waveform.WARM_ORGAN, AppInstrumentSession.sessionInstrument.value)
-        assertFalse(QuizPlaybackController.isPlaybackRequested)
+        assertFalse(PlaybackController.isPlaybackRequested)
 
         clickDescription("Play")
         waitForAdvancingPlayback()
@@ -181,23 +181,23 @@ class QuizTransportSelectorsUiTest {
         waitForAdvancingPlayback()
     }
 
-    private fun waitForQuiz() {
+    private fun waitForPlayback() {
         composeTestRule.waitUntil(5_000) {
             composeTestRule.onAllNodesWithTag(
-                QUIZ_INSTRUMENT_BUTTON_TEST_TAG,
+                PLAYBACK_INSTRUMENT_BUTTON_TEST_TAG,
                 useUnmergedTree = true
             ).fetchSemanticsNodes().isNotEmpty()
         }
     }
 
     private fun selectInstrument(instrument: AudioEngine.Waveform) {
-        clickTag(QUIZ_INSTRUMENT_BUTTON_TEST_TAG)
-        clickTag("QuizInstrument-${instrument.name}")
+        clickTag(PLAYBACK_INSTRUMENT_BUTTON_TEST_TAG)
+        clickTag("PlaybackInstrument-${instrument.name}")
     }
 
     private fun selectTranspose(transpose: Int) {
-        clickTag(QUIZ_TRANSPOSE_BUTTON_TEST_TAG)
-        clickTag("QuizTranspose-$transpose")
+        clickTag(PLAYBACK_TRANSPOSE_BUTTON_TEST_TAG)
+        clickTag("PlaybackTranspose-$transpose")
     }
 
     // performClick/runOnIdle wait for Compose idle. The playhead publishes ~60 fps,
@@ -259,8 +259,8 @@ class QuizTransportSelectorsUiTest {
         val deadline = System.currentTimeMillis() + 8_000
         var markedBeat: Double? = null
         while (System.currentTimeMillis() < deadline) {
-            val state = QuizPlaybackController.state.value
-            if (state.phase == QuizPlaybackPhase.PLAYING) {
+            val state = PlaybackController.state.value
+            if (state.phase == PlaybackPhase.PLAYING) {
                 val start = markedBeat
                 if (start == null || state.beat + 0.001 < start) {
                     // First PLAYING sample, or a section reload jumped back to the top.
@@ -273,7 +273,7 @@ class QuizTransportSelectorsUiTest {
             }
             Thread.sleep(20)
         }
-        val state = QuizPlaybackController.state.value
+        val state = PlaybackController.state.value
         throw AssertionError(
             "playback did not advance (phase=${state.phase}, beat=${state.beat}, marked=$markedBeat)"
         )

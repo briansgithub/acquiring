@@ -25,11 +25,11 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 
-internal const val QUIZ_SCREEN_TEST_TAG = "QuizScreen"
+internal const val PLAYBACK_SCREEN_TEST_TAG = "PlaybackScreen"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QuizDestination(
+fun PlaybackDestination(
     song: Song,
     sections: Map<String, ExtractedSection>,
     selectedSectionId: String?,
@@ -37,10 +37,10 @@ fun QuizDestination(
     currentWaveform: AudioEngine.Waveform,
     onWaveformChange: (AudioEngine.Waveform) -> Unit,
     globalTranspose: Int,
-    quizTempoPercent: Float,
-    onQuizTempoPercentChange: (Float) -> Unit,
-    quizArpeggioOptionIndex: Int,
-    onQuizArpeggioOptionIndexChange: (Int) -> Unit,
+    playbackTempoPercent: Float,
+    onPlaybackTempoPercentChange: (Float) -> Unit,
+    playbackArpeggioOptionIndex: Int,
+    onPlaybackArpeggioOptionIndexChange: (Int) -> Unit,
     onTransposeChange: (Int) -> Unit,
     onArtistClick: (String) -> Unit,
     onShowSongInfo: () -> Unit,
@@ -65,13 +65,13 @@ fun QuizDestination(
         ?: sections.values.first()
     var isSimpleMode by remember { mutableStateOf(false) }
     var useRelativeIonianContext by remember { mutableStateOf(false) }
-    var quizKeyDisplay by remember { mutableStateOf<QuizKeyDisplay?>(null) }
+    var playbackKeyDisplay by remember { mutableStateOf<PlaybackKeyDisplay?>(null) }
     val context = LocalContext.current
     LaunchedEffect(useRelativeIonianContext) {
         TimelineFrameRateStore.applyToWindow(context)
     }
     var showTitleSheet by remember { mutableStateOf(false) }
-    var showQuizHelp by remember { mutableStateOf(false) }
+    var showPlaybackHelp by remember { mutableStateOf(false) }
     var isPlaying by remember { mutableStateOf(false) }
     var playEnabled by remember { mutableStateOf(false) }
     var isPersistentMonitoring by remember { mutableStateOf(false) }
@@ -79,12 +79,12 @@ fun QuizDestination(
     val resetAction = remember { arrayOf({}) }
     val persistentToggle = remember { arrayOf({}) }
     val persistentStop = remember { arrayOf({}) }
-    val quizArtistLabel = song.artist?.takeIf { it.isNotBlank() }?.let { song.displayArtist }
-    val quizTitleText = buildString {
+    val playbackArtistLabel = song.artist?.takeIf { it.isNotBlank() }?.let { song.displayArtist }
+    val playbackTitleText = buildString {
         append(song.displayTitle)
-        if (quizArtistLabel != null) {
+        if (playbackArtistLabel != null) {
             append(" by ")
-            append(quizArtistLabel)
+            append(playbackArtistLabel)
         }
     }
     LaunchedEffect(isPersistentMonitoring) {
@@ -102,33 +102,33 @@ fun QuizDestination(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .testTag(QUIZ_SCREEN_TEST_TAG)
+            .testTag(PLAYBACK_SCREEN_TEST_TAG)
     ) {
-        QuizScreenHeader(
-            titleText = quizTitleText.takeUnless { isSimpleMode },
+        PlaybackScreenHeader(
+            titleText = playbackTitleText.takeUnless { isSimpleMode },
             onBack = onBack,
             onTitleClick = { showTitleSheet = true },
             useRelativeIonianContext = useRelativeIonianContext,
             onLockInMajorChange = { useRelativeIonianContext = it },
-            keyDisplay = quizKeyDisplay,
+            keyDisplay = playbackKeyDisplay,
             isMonitoring = isPersistentMonitoring,
             onToggleMonitoring = { persistentToggle[0]() },
-            onShowHelp = { showQuizHelp = true }
+            onShowHelp = { showPlaybackHelp = true }
         )
 
-        QuizTab(
+        PlaybackTab(
             section = selectedSection,
             isSimpleMode = isSimpleMode,
             onSimpleModeChange = { isSimpleMode = it },
             useRelativeIonianContext = useRelativeIonianContext,
             currentWaveform = currentWaveform,
             onWaveformChange = onWaveformChange,
-            onKeyDisplayChange = { quizKeyDisplay = it },
+            onKeyDisplayChange = { playbackKeyDisplay = it },
             globalTranspose = globalTranspose,
-            tempoPercent = quizTempoPercent,
-            onTempoPercentChange = onQuizTempoPercentChange,
-            arpeggioOptionIndex = quizArpeggioOptionIndex,
-            onArpeggioOptionIndexChange = onQuizArpeggioOptionIndexChange,
+            tempoPercent = playbackTempoPercent,
+            onTempoPercentChange = onPlaybackTempoPercentChange,
+            arpeggioOptionIndex = playbackArpeggioOptionIndex,
+            onArpeggioOptionIndexChange = onPlaybackArpeggioOptionIndexChange,
             onSingingTargetsRequested = onSingingTargetsRequested,
             octaveOffset = octaveOffset,
             sessionKey = "${song.slug}:${selectedSectionKey.orEmpty()}",
@@ -147,7 +147,7 @@ fun QuizDestination(
             }
         )
 
-        QuizTransportBar(
+        PlaybackTransportBar(
             showSecondaryRow = !singingDockExpanded,
             isFavorite = isFavorite,
             onToggleFavorite = onToggleFavorite,
@@ -169,16 +169,16 @@ fun QuizDestination(
             onSectionChange = onSectionChange
         )
     }
-        if (showQuizHelp) {
+        if (showPlaybackHelp) {
             Surface(
                 color = MaterialTheme.colorScheme.scrim.copy(alpha = 0.72f),
                 modifier = Modifier
                     .fillMaxSize()
-                    .clickable { showQuizHelp = false }
-                    .semantics { contentDescription = "Quiz help overlay" }
+                    .clickable { showPlaybackHelp = false }
+                    .semantics { contentDescription = "Playback help overlay" }
             ) {
                 Column(modifier = Modifier.padding(24.dp)) {
-                    Text("Quiz help", style = MaterialTheme.typography.titleLarge)
+                    Text("Playback help", style = MaterialTheme.typography.titleLarge)
                     Text(
                         "Tap a card to hear it. Double-tap to sing it back. Use the microphone button for live pitch practice.",
                         modifier = Modifier.padding(top = 12.dp)
@@ -198,7 +198,7 @@ fun QuizDestination(
             ModalBottomSheet(onDismissRequest = { showTitleSheet = false }) {
                 SelectionContainer {
                     Text(
-                        text = quizTitleText,
+                        text = playbackTitleText,
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier
                             .fillMaxWidth()

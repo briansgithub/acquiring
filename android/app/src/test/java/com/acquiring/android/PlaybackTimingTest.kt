@@ -6,7 +6,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class QuizPlaybackTimingTest {
+class PlaybackTimingTest {
 
     @Test
     fun playbackEnd_usesEverythingYouKnowIsWrongIntroContentInsteadOfSilentMetadataTail() {

@@ -101,11 +101,11 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 
 
-internal const val QUIZ_FAVORITE_STAR_TEST_TAG = "QuizFavoriteStar"
-internal const val QUIZ_INFO_BUTTON_TEST_TAG = "QuizInfoButton"
-internal const val QUIZ_SECTION_BUTTON_TEST_TAG = "QuizSectionButton"
-internal const val QUIZ_MODE_SWITCH_TEST_TAG = "QuizModeSwitch"
-internal const val QUIZ_TEMPO_DIAL_TEST_TAG = "QuizTempoDial"
+internal const val PLAYBACK_FAVORITE_STAR_TEST_TAG = "PlaybackFavoriteStar"
+internal const val PLAYBACK_INFO_BUTTON_TEST_TAG = "PlaybackInfoButton"
+internal const val PLAYBACK_SECTION_BUTTON_TEST_TAG = "PlaybackSectionButton"
+internal const val PLAYBACK_MODE_SWITCH_TEST_TAG = "PlaybackModeSwitch"
+internal const val PLAYBACK_TEMPO_DIAL_TEST_TAG = "PlaybackTempoDial"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -149,7 +149,7 @@ fun SongDetailView(
                         .fillMaxWidth()
                         .height(64.dp)
                         .menuAnchor()
-                        .testTag(QUIZ_SECTION_BUTTON_TEST_TAG)
+                        .testTag(PLAYBACK_SECTION_BUTTON_TEST_TAG)
                 )
 
                 ExposedDropdownMenuWithScrollbar(
@@ -163,7 +163,7 @@ fun SongDetailView(
                                 onSectionChange(id)
                                 isSectionExpanded = false
                             },
-                            modifier = Modifier.testTag("QuizSection-$id")
+                            modifier = Modifier.testTag("PlaybackSection-$id")
                         )
                     }
                 }
@@ -229,8 +229,8 @@ fun SongDetailView(
     }
 }
 
-/** The quiz's live key/scale readout, hoisted so the song header can render it. */
-data class QuizKeyDisplay(
+/** The playback's live key/scale readout, hoisted so the song header can render it. */
+data class PlaybackKeyDisplay(
     val label: String,
     val color: Color,
     val isLockedToMajor: Boolean

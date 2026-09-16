@@ -36,7 +36,7 @@ class SongSearchUiTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         AppAudioOutput.initialize(context)
         AppInstrumentSession.initialize(context)
-        QuizPlaybackController.initialize(context)
+        PlaybackController.initialize(context)
         db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
         userDb = Room.inMemoryDatabaseBuilder(context, UserDataDatabase::class.java).build()
         val sections = """{"verse":{"sectionName":"Verse","chords":[{"root":1,"beat":1,"duration":4}],"metadata":{"keys":[{"tonic":"C","scale":"major"}]}}}""".toByteArray()
@@ -51,17 +51,17 @@ class SongSearchUiTest {
     }
 
     @Test
-    fun partialArtistSearchShowsResultsAndOpensQuiz() {
+    fun partialArtistSearchShowsResultsAndOpensPlayback() {
         searchAndOpenSong("Search Library", " sMaSh ", "Search", 2, artists = true)
     }
 
     @Test
-    fun titleSearchShowsResultsAndOpensQuiz() {
+    fun titleSearchShowsResultsAndOpensPlayback() {
         searchAndOpenSong("Search Library", " ALL STAR ", "Search", 1)
     }
 
     @Test
-    fun quizBackPreservesAllSongsFilterAndGroup() {
+    fun playbackBackPreservesAllSongsFilterAndGroup() {
         runBlocking {
             db.songDao().upsertBrowseEntry(SongBrowseEntry("all-star", "smash-mouth", "All Star", "A", 12.0, 1))
         }
@@ -86,7 +86,7 @@ class SongSearchUiTest {
     }
 
     @Test
-    fun informationIsADetourAndQuizBackReturnsToSearchOrArtist() {
+    fun informationIsADetourAndPlaybackBackReturnsToSearchOrArtist() {
         val session = SongOctaveOffsetViewModel()
         composeRule.setContent {
             MaterialTheme { MainScreen(db, userDb, session) }
@@ -98,15 +98,15 @@ class SongSearchUiTest {
         waitForPlay()
         androidx.test.espresso.Espresso.closeSoftKeyboard()
         repeat(2) { visit ->
-            composeRule.onNodeWithTag(QUIZ_INFO_BUTTON_TEST_TAG).performClick()
+            composeRule.onNodeWithTag(PLAYBACK_INFO_BUTTON_TEST_TAG).performClick()
             waitForText("OVERVIEW")
             if (visit == 0) pressBack() else composeRule.onNodeWithText("< Back").performClick()
             waitForPlay()
-            composeRule.onNodeWithTag(QUIZ_INFO_BUTTON_TEST_TAG).assertIsDisplayed()
+            composeRule.onNodeWithTag(PLAYBACK_INFO_BUTTON_TEST_TAG).assertIsDisplayed()
         }
         pressBack()
         field.assertIsDisplayed()
-        composeRule.onNodeWithTag(QUIZ_INFO_BUTTON_TEST_TAG).assertDoesNotExist()
+        composeRule.onNodeWithTag(PLAYBACK_INFO_BUTTON_TEST_TAG).assertDoesNotExist()
 
         field.performClick()
         waitForText("All Star")
@@ -119,7 +119,7 @@ class SongSearchUiTest {
         composeRule.onNodeWithText("< Back").performClick()
         waitForText("All Star")
         composeRule.onNodeWithText("Smash Mouth").assertIsDisplayed()
-        composeRule.onNodeWithTag(QUIZ_INFO_BUTTON_TEST_TAG).assertDoesNotExist()
+        composeRule.onNodeWithTag(PLAYBACK_INFO_BUTTON_TEST_TAG).assertDoesNotExist()
     }
 
 

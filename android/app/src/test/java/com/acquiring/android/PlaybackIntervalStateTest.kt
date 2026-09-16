@@ -9,7 +9,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class QuizIntervalStateTest {
+class PlaybackIntervalStateTest {
     private fun chord(root: Int, beat: Double, duration: Double = 1.0, rest: Boolean = false) =
         buildJsonObject {
             put("root", root)
@@ -295,7 +295,7 @@ class QuizIntervalStateTest {
             MelodyNote(sd = "3", beat = 2.0, duration = 1.0),
             MelodyNote(sd = "1", beat = 1.0, duration = 3.0)
         )
-        val index = QuizActiveEventIndex(section, melody)
+        val index = PlaybackActiveEventIndex(section, melody)
 
         assertEquals(
             5,

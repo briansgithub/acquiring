@@ -5,7 +5,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
 
-class QuizLaneColorTest {
+class PlaybackLaneColorTest {
     @Test
     fun timelineLanesFollowSourceModeColor() {
         assertEquals(Color(0xFFFF0000), ringModeColor("major"))
@@ -15,11 +15,11 @@ class QuizLaneColorTest {
 
     @Test
     fun melodyLaneTintWashesReadoutTowardWhite() {
-        val majorLane = quizLaneTint("major")
+        val majorLane = playbackLaneTint("major")
         assertEquals(1f, majorLane.red, CHANNEL_DELTA)
         assertEquals(0.3f, majorLane.green, CHANNEL_DELTA)
         assertEquals(0.3f, majorLane.blue, CHANNEL_DELTA)
-        assertNotEquals(ringModeColor("minor"), quizLaneTint("minor"))
+        assertNotEquals(ringModeColor("minor"), playbackLaneTint("minor"))
         val inactive = majorLane.copy(alpha = 0.6f)
         assertEquals(1f, inactive.red, CHANNEL_DELTA)
         assertEquals(0.3f, inactive.green, CHANNEL_DELTA)

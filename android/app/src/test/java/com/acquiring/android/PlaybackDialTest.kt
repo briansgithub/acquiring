@@ -4,7 +4,7 @@ import androidx.compose.ui.geometry.Offset
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class QuizDialTest {
+class PlaybackDialTest {
     private val center = Offset(50f, 50f)
 
     @Test

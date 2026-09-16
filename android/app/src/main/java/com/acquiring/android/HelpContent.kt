@@ -36,7 +36,7 @@ internal object HelpCatalog {
         HelpTopic(
             id = HELP_TOPIC_INSTRUCTIONS,
             title = "Instructions",
-            detail = "How to use quiz cards and singing practice"
+            detail = "How to use playback cards and singing practice"
         ),
         HelpTopic(
             id = HELP_TOPIC_SCALE_DEGREES,

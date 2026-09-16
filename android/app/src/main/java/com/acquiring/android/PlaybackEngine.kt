@@ -21,34 +21,34 @@ import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-internal enum class QuizAudioLayer { MELODY, CHORD }
+internal enum class PlaybackAudioLayer { MELODY, CHORD }
 
-internal enum class QuizChordMode { FULL, ROOT_ONLY }
+internal enum class PlaybackChordMode { FULL, ROOT_ONLY }
 
-internal data class QuizTimelineEvent(
+internal data class PlaybackTimelineEvent(
     val id: Long,
     val startBeat: Double,
     val endBeat: Double,
-    val layer: QuizAudioLayer,
+    val layer: PlaybackAudioLayer,
     val fullMidiNotes: IntArray,
     val rootMidiNote: Int? = null
 )
 
-internal data class QuizTimeline(
+internal data class PlaybackTimeline(
     val startBeat: Double = 1.0,
     val endBeat: Double,
-    val events: List<QuizTimelineEvent>
+    val events: List<PlaybackTimelineEvent>
 ) {
     init {
         require(endBeat > startBeat)
     }
 }
 
-internal data class QuizPlaybackConfig(
+internal data class PlaybackConfig(
     val bpm: Double,
     val transpose: Int,
     val waveform: AudioEngine.Waveform,
-    val chordMode: QuizChordMode,
+    val chordMode: PlaybackChordMode,
     val melodyGain: Float,
     val chordGain: Float,
     val arpeggiateCycles: Double = 0.0
@@ -74,31 +74,31 @@ internal fun arpeggioSlotProgress(
     return exactSlot - floor(exactSlot)
 }
 
-internal enum class QuizPlaybackPhase { STOPPED, BUFFERING, PLAYING, PAUSED, ERROR }
+internal enum class PlaybackPhase { STOPPED, BUFFERING, PLAYING, PAUSED, ERROR }
 
-internal data class QuizPlaybackState(
-    val phase: QuizPlaybackPhase = QuizPlaybackPhase.STOPPED,
+internal data class PlaybackState(
+    val phase: PlaybackPhase = PlaybackPhase.STOPPED,
     val beat: Double = 1.0,
     val underrunCount: Int = 0,
     val error: String? = null
 )
 
-internal data class RenderedQuizBlock(
+internal data class RenderedPlaybackBlock(
     val startBeat: Double,
     val beatsPerFrame: Double,
-    val startedEvents: List<RenderedQuizEvent>
+    val startedEvents: List<RenderedPlaybackEvent>
 )
 
-internal data class RenderedQuizEvent(val id: Long, val frameOffset: Int)
+internal data class RenderedPlaybackEvent(val id: Long, val frameOffset: Int)
 
-/** Pure, bounded-memory block renderer used by [QuizPlaybackEngine] and unit tests. */
-internal class QuizPcmRenderer(
-    private var timeline: QuizTimeline,
-    initialConfig: QuizPlaybackConfig,
+/** Pure, bounded-memory block renderer used by [PlaybackEngine] and unit tests. */
+internal class PlaybackPcmRenderer(
+    private var timeline: PlaybackTimeline,
+    initialConfig: PlaybackConfig,
     private val sampleRate: Int = AppAudioOutput.sampleRate
 ) {
     private data class ActiveEvent(
-        val event: QuizTimelineEvent,
+        val event: PlaybackTimelineEvent,
         val oscillators: List<SynthVoice>,
         var ageFrames: Long = 0,
         var transitionGain: Double = 1.0,
@@ -118,7 +118,7 @@ internal class QuizPcmRenderer(
     val currentBeat: Double get() = beat
     val currentBeatsPerFrame: Double get() = config.bpm / (60.0 * sampleRate)
 
-    fun replaceTimeline(newTimeline: QuizTimeline, startBeat: Double = newTimeline.startBeat) {
+    fun replaceTimeline(newTimeline: PlaybackTimeline, startBeat: Double = newTimeline.startBeat) {
         timeline = newTimeline
         seek(startBeat)
     }
@@ -131,7 +131,7 @@ internal class QuizPcmRenderer(
             .let { if (it < 0) timeline.events.size else it }
     }
 
-    fun updateConfig(newConfig: QuizPlaybackConfig) {
+    fun updateConfig(newConfig: PlaybackConfig) {
         val sanitized = newConfig.sanitized()
         val waveformOrPitchChanged = sanitized.waveform != config.waveform ||
             sanitized.transpose != config.transpose
@@ -141,9 +141,9 @@ internal class QuizPcmRenderer(
 
         if (waveformOrPitchChanged || chordModeChanged || arpeggioChanged) {
             val affectedLayers = if (waveformOrPitchChanged) {
-                QuizAudioLayer.entries.toSet()
+                PlaybackAudioLayer.entries.toSet()
             } else {
-                setOf(QuizAudioLayer.CHORD)
+                setOf(PlaybackAudioLayer.CHORD)
             }
             activeEvents.filter { !it.fadingOut && it.event.layer in affectedLayers }
                 .forEach { current ->
@@ -164,11 +164,11 @@ internal class QuizPcmRenderer(
         }
     }
 
-    fun renderInto(buffer: ShortArray, frameCount: Int = buffer.size): RenderedQuizBlock {
+    fun renderInto(buffer: ShortArray, frameCount: Int = buffer.size): RenderedPlaybackBlock {
         val blockStartBeat = beat
-        val startedEvents = mutableListOf<RenderedQuizEvent>()
+        val startedEvents = mutableListOf<RenderedPlaybackEvent>()
         val beatsPerFrame = renderSamples(buffer, frameCount, startedEvents)
-        return RenderedQuizBlock(blockStartBeat, beatsPerFrame, startedEvents)
+        return RenderedPlaybackBlock(blockStartBeat, beatsPerFrame, startedEvents)
     }
 
     /** Allocation-free render path used by the real-time audio worker. */
@@ -179,7 +179,7 @@ internal class QuizPcmRenderer(
     private fun renderSamples(
         buffer: ShortArray,
         frameCount: Int,
-        startedEvents: MutableList<RenderedQuizEvent>?
+        startedEvents: MutableList<RenderedPlaybackEvent>?
     ): Double {
         require(frameCount in 0..buffer.size)
         val beatsPerFrame = currentBeatsPerFrame
@@ -209,12 +209,12 @@ internal class QuizPcmRenderer(
                 val release = (remainingFrames / RELEASE_FRAMES).coerceIn(0.0, 1.0)
                 val envelope = minOf(attack, release)
                 val elapsedSeconds = active.ageFrames / sampleRate.toDouble()
-                val layerGain = if (active.event.layer == QuizAudioLayer.MELODY) {
+                val layerGain = if (active.event.layer == PlaybackAudioLayer.MELODY) {
                     currentMelodyGain
                 } else {
                     currentChordGain
                 }
-                val isArpeggiatedChord = active.event.layer == QuizAudioLayer.CHORD &&
+                val isArpeggiatedChord = active.event.layer == PlaybackAudioLayer.CHORD &&
                     config.arpeggiateCycles > 0.0 && active.oscillators.size > 1
                 val oscillatorSum = if (isArpeggiatedChord) {
                     val elapsedBeats = (beat - active.event.startBeat).coerceAtLeast(0.0)
@@ -288,7 +288,7 @@ internal class QuizPcmRenderer(
 
     private fun activateDueEvents(
         frameOffset: Int,
-        startedEvents: MutableList<RenderedQuizEvent>?
+        startedEvents: MutableList<RenderedPlaybackEvent>?
     ) {
         while (nextEventIndex < timeline.events.size) {
             val event = timeline.events[nextEventIndex]
@@ -297,7 +297,7 @@ internal class QuizPcmRenderer(
             if (beat < event.endBeat) {
                 createActiveEvent(event, fadeIn = false)?.let { active ->
                     activeEvents.add(active)
-                    startedEvents?.add(RenderedQuizEvent(event.id, frameOffset))
+                    startedEvents?.add(RenderedPlaybackEvent(event.id, frameOffset))
                 }
             }
         }
@@ -309,9 +309,9 @@ internal class QuizPcmRenderer(
             .forEach { event -> createActiveEvent(event, fadeIn)?.let(activeEvents::add) }
     }
 
-    private fun createActiveEvent(event: QuizTimelineEvent, fadeIn: Boolean): ActiveEvent? {
+    private fun createActiveEvent(event: PlaybackTimelineEvent, fadeIn: Boolean): ActiveEvent? {
         val midiNotes = if (
-            event.layer == QuizAudioLayer.CHORD && config.chordMode == QuizChordMode.ROOT_ONLY
+            event.layer == PlaybackAudioLayer.CHORD && config.chordMode == PlaybackChordMode.ROOT_ONLY
         ) {
             event.rootMidiNote?.let { intArrayOf(it) } ?: intArrayOf()
         } else {
@@ -335,7 +335,7 @@ internal class QuizPcmRenderer(
         )
     }
 
-    private fun QuizPlaybackConfig.sanitized(): QuizPlaybackConfig = copy(
+    private fun PlaybackConfig.sanitized(): PlaybackConfig = copy(
         bpm = bpm.coerceAtLeast(0.0),
         melodyGain = melodyGain.coerceIn(0f, 1f),
         chordGain = chordGain.coerceIn(0f, 1f),
@@ -351,7 +351,7 @@ internal class QuizPcmRenderer(
     }
 }
 
-internal interface QuizAudioSink {
+internal interface PlaybackAudioSink {
     val playbackHeadFrames: Long
     val underrunCount: Int
     fun setBufferSizeInFrames(frames: Int): Int
@@ -362,7 +362,7 @@ internal interface QuizAudioSink {
     fun release()
 }
 
-private class AndroidQuizAudioSink(private val track: AudioTrack) : QuizAudioSink {
+private class AndroidPlaybackAudioSink(private val track: AudioTrack) : PlaybackAudioSink {
     override val playbackHeadFrames: Long
         get() = track.playbackHeadPosition.toLong() and 0xffff_ffffL
     override val underrunCount: Int get() = track.underrunCount
@@ -375,16 +375,16 @@ private class AndroidQuizAudioSink(private val track: AudioTrack) : QuizAudioSin
     override fun release() = track.release()
 }
 
-internal class QuizPlaybackEngine(
-    initialConfig: QuizPlaybackConfig,
+internal class PlaybackEngine(
+    initialConfig: PlaybackConfig,
     private val sampleRate: Int = AppAudioOutput.sampleRate,
-    private val sinkFactory: (capacityFrames: Int) -> QuizAudioSink = { capacityFrames ->
+    private val sinkFactory: (capacityFrames: Int) -> PlaybackAudioSink = { capacityFrames ->
         createAndroidSink(capacityFrames, sampleRate)
     }
 ) {
     private sealed interface Command {
         data class Load(
-            val timeline: QuizTimeline,
+            val timeline: PlaybackTimeline,
             val continuePlaying: Boolean,
             val revision: Long
         ) : Command
@@ -407,7 +407,7 @@ internal class QuizPlaybackEngine(
     private class AudioWriteException(val code: Int) : Exception("AudioTrack write failed: $code")
 
     private val latestConfig = AtomicReference(initialConfig)
-    private val latestTimeline = AtomicReference<QuizTimeline?>(null)
+    private val latestTimeline = AtomicReference<PlaybackTimeline?>(null)
     private val configSignalQueued = AtomicBoolean(false)
     // Updated on the calling thread before transport commands are queued. UI gestures
     // must not infer intent from StateFlow, whose phase necessarily trails the command
@@ -416,10 +416,10 @@ internal class QuizPlaybackEngine(
     private val transportRevision = AtomicLong(0L)
     private val commands = LinkedBlockingQueue<Command>()
     private val released = AtomicBoolean(false)
-    private val mutableState = MutableStateFlow(QuizPlaybackState())
-    val state: StateFlow<QuizPlaybackState> = mutableState.asStateFlow()
+    private val mutableState = MutableStateFlow(PlaybackState())
+    val state: StateFlow<PlaybackState> = mutableState.asStateFlow()
 
-    private val worker = thread(start = true, name = "QuizAudio") {
+    private val worker = thread(start = true, name = "PlaybackAudio") {
         Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO)
         runWorker()
     }
@@ -432,7 +432,7 @@ internal class QuizPlaybackEngine(
      */
     val isPlaybackRequested: Boolean get() = playbackRequested.get()
 
-    fun load(timeline: QuizTimeline, continuePlaying: Boolean) {
+    fun load(timeline: PlaybackTimeline, continuePlaying: Boolean) {
         val revision = transportRevision.incrementAndGet()
         latestTimeline.set(timeline)
         playbackRequested.set(continuePlaying)
@@ -491,7 +491,7 @@ internal class QuizPlaybackEngine(
         offer(Command.Reset(revision))
     }
 
-    fun updateConfig(config: QuizPlaybackConfig) {
+    fun updateConfig(config: PlaybackConfig) {
         latestConfig.set(config)
         if (configSignalQueued.compareAndSet(false, true)) offer(Command.ConfigChanged)
     }
@@ -515,9 +515,9 @@ internal class QuizPlaybackEngine(
 
     @Suppress("LongMethod")
     private fun runWorker() {
-        var timeline: QuizTimeline? = null
-        var renderer: QuizPcmRenderer? = null
-        var sink: QuizAudioSink? = null
+        var timeline: PlaybackTimeline? = null
+        var renderer: PlaybackPcmRenderer? = null
+        var sink: PlaybackAudioSink? = null
         var playRequested = false
         var sinkStarted = false
         var running = true
@@ -570,14 +570,14 @@ internal class QuizPlaybackEngine(
             return segment.loopStart + ((segment.startBeat - segment.loopStart + advanced) % loopLength)
         }
 
-        fun publish(phase: QuizPlaybackPhase, error: String? = null, force: Boolean = false) {
+        fun publish(phase: PlaybackPhase, error: String? = null, force: Boolean = false) {
             // A newer UI transport command may already have published its target beat.
             // Never let completion of an older pause/seek overwrite that position.
             if (activeTransportRevision < transportRevision.get()) return
             val now = System.nanoTime()
             if (!force && now - lastStateUpdateNanos < TimelineFrameRateStore.minStateUpdateNanos) return
             lastStateUpdateNanos = now
-            mutableState.value = QuizPlaybackState(
+            mutableState.value = PlaybackState(
                 phase = phase,
                 beat = audibleBeat(),
                 underrunCount = sink?.underrunCount ?: lastUnderrunCount,
@@ -630,7 +630,7 @@ internal class QuizPlaybackEngine(
             }
         }
 
-        fun renderAndWrite(activeRenderer: QuizPcmRenderer, count: Int) {
+        fun renderAndWrite(activeRenderer: PlaybackPcmRenderer, count: Int) {
             val blockStartBeat = activeRenderer.currentBeat
             val beatsPerFrame = activeRenderer.currentBeatsPerFrame
             val previousSegment = clockSegments.peekLast()
@@ -651,8 +651,8 @@ internal class QuizPlaybackEngine(
             while (clockSegments.size > MAX_CLOCK_SEGMENTS) clockSegments.removeFirst()
         }
 
-        fun prime(activeRenderer: QuizPcmRenderer): Boolean {
-            publish(QuizPlaybackPhase.BUFFERING, force = true)
+        fun prime(activeRenderer: PlaybackPcmRenderer): Boolean {
+            publish(PlaybackPhase.BUFFERING, force = true)
             val primeStartBeat = activeRenderer.currentBeat
             var primed = 0
             while (primed < targetBufferFrames) {
@@ -671,7 +671,7 @@ internal class QuizPlaybackEngine(
             }
             sink?.play()
             sinkStarted = true
-            publish(QuizPlaybackPhase.PLAYING, force = true)
+            publish(PlaybackPhase.PLAYING, force = true)
             return true
         }
 
@@ -688,14 +688,14 @@ internal class QuizPlaybackEngine(
                 is Command.Load -> {
                     pauseAndReanchor()
                     timeline = command.timeline
-                    renderer = QuizPcmRenderer(command.timeline, latestConfig.get(), sampleRate)
+                    renderer = PlaybackPcmRenderer(command.timeline, latestConfig.get(), sampleRate)
                     playRequested = command.continuePlaying
                     deadObjectRecoveries = 0
                     publish(
                         if (playRequested && latestConfig.get().bpm > 0.0) {
-                            QuizPlaybackPhase.BUFFERING
+                            PlaybackPhase.BUFFERING
                         } else {
-                            QuizPlaybackPhase.STOPPED
+                            PlaybackPhase.STOPPED
                         },
                         force = true
                     )
@@ -704,8 +704,8 @@ internal class QuizPlaybackEngine(
                 is Command.Play -> {
                     playRequested = true
                     publish(
-                        if (latestConfig.get().bpm > 0.0) QuizPlaybackPhase.BUFFERING
-                        else QuizPlaybackPhase.PAUSED,
+                        if (latestConfig.get().bpm > 0.0) PlaybackPhase.BUFFERING
+                        else PlaybackPhase.PAUSED,
                         force = true
                     )
                 }
@@ -713,7 +713,7 @@ internal class QuizPlaybackEngine(
                 is Command.Pause -> {
                     playRequested = false
                     pauseAndReanchor()
-                    publish(QuizPlaybackPhase.PAUSED, force = true)
+                    publish(PlaybackPhase.PAUSED, force = true)
                 }
 
                 is Command.Seek -> {
@@ -722,9 +722,9 @@ internal class QuizPlaybackEngine(
                     playRequested = command.resume
                     publish(
                         if (playRequested && latestConfig.get().bpm > 0.0) {
-                            QuizPlaybackPhase.BUFFERING
+                            PlaybackPhase.BUFFERING
                         } else {
-                            QuizPlaybackPhase.PAUSED
+                            PlaybackPhase.PAUSED
                         },
                         force = true
                     )
@@ -734,7 +734,7 @@ internal class QuizPlaybackEngine(
                     playRequested = false
                     pauseAndReanchor()
                     renderer?.seek(timeline?.startBeat ?: 1.0)
-                    publish(QuizPlaybackPhase.STOPPED, force = true)
+                    publish(PlaybackPhase.STOPPED, force = true)
                 }
 
                 Command.ConfigChanged -> {
@@ -743,7 +743,7 @@ internal class QuizPlaybackEngine(
                     if (updated.bpm <= 0.0 && sinkStarted) pauseAndReanchor()
                     renderer?.updateConfig(updated)
                     if (playRequested && updated.bpm <= 0.0) {
-                        publish(QuizPlaybackPhase.PAUSED, force = true)
+                        publish(PlaybackPhase.PAUSED, force = true)
                     }
                 }
 
@@ -784,10 +784,10 @@ internal class QuizPlaybackEngine(
                             targetBufferFrames + framesForMs(BUFFER_GROWTH_MS)
                         )
                         sink?.setBufferSizeInFrames(targetBufferFrames)
-                        Log.w(TAG, "Quiz audio underrun; growing buffer to $targetBufferFrames frames")
+                        Log.w(TAG, "Playback audio underrun; growing buffer to $targetBufferFrames frames")
                     }
                     lastUnderrunCount = underruns
-                    publish(QuizPlaybackPhase.PLAYING)
+                    publish(PlaybackPhase.PLAYING)
                 } catch (writeError: AudioWriteException) {
                     val canRecover = writeError.code == AudioTrack.ERROR_DEAD_OBJECT && deadObjectRecoveries < 1
                     val restartBeat = audibleBeat()
@@ -795,21 +795,21 @@ internal class QuizPlaybackEngine(
                     activeRenderer.seek(restartBeat)
                     if (canRecover) {
                         deadObjectRecoveries++
-                        Log.w(TAG, "Recreating dead quiz AudioTrack at beat $restartBeat")
+                        Log.w(TAG, "Recreating dead playback AudioTrack at beat $restartBeat")
                     } else {
                         playRequested = false
                         playbackRequested.set(false)
-                        val message = "Quiz audio write failed (${writeError.code})"
+                        val message = "Playback audio write failed (${writeError.code})"
                         Log.e(TAG, message)
-                        publish(QuizPlaybackPhase.ERROR, message, force = true)
+                        publish(PlaybackPhase.ERROR, message, force = true)
                     }
                 } catch (error: Exception) {
                     playRequested = false
                     playbackRequested.set(false)
                     closeSink()
-                    val message = error.message ?: "Quiz audio initialization failed"
+                    val message = error.message ?: "Playback audio initialization failed"
                     Log.e(TAG, message, error)
-                    publish(QuizPlaybackPhase.ERROR, message, force = true)
+                    publish(PlaybackPhase.ERROR, message, force = true)
                 }
             }
         } finally {
@@ -821,7 +821,7 @@ internal class QuizPlaybackEngine(
         (sampleRate.toLong() * milliseconds / 1_000L).toInt().coerceAtLeast(BLOCK_FRAMES)
 
     companion object {
-        private const val TAG = "QuizPlaybackEngine"
+        private const val TAG = "PlaybackEngine"
         private const val BLOCK_FRAMES = 256
         private const val INITIAL_BUFFER_MS = 80
         private const val BUFFER_GROWTH_MS = 40
@@ -829,7 +829,7 @@ internal class QuizPlaybackEngine(
         private const val MAX_CLOCK_SEGMENTS = 512
         private const val RELEASE_JOIN_MS = 1_000L
 
-        private fun createAndroidSink(capacityFrames: Int, sampleRate: Int): QuizAudioSink {
+        private fun createAndroidSink(capacityFrames: Int, sampleRate: Int): PlaybackAudioSink {
             val minBytes = AudioTrack.getMinBufferSize(
                 sampleRate,
                 AudioFormat.CHANNEL_OUT_MONO,
@@ -856,17 +856,17 @@ internal class QuizPlaybackEngine(
                 .setBufferSizeInBytes(capacityBytes)
                 .setTransferMode(AudioTrack.MODE_STREAM)
                 .build()
-            check(track.state == AudioTrack.STATE_INITIALIZED) { "Quiz AudioTrack failed to initialize" }
-            return AndroidQuizAudioSink(track)
+            check(track.state == AudioTrack.STATE_INITIALIZED) { "Playback AudioTrack failed to initialize" }
+            return AndroidPlaybackAudioSink(track)
         }
     }
 }
 
-internal fun buildQuizTimeline(
+internal fun buildPlaybackTimeline(
     section: ExtractedSection,
     melody: List<MelodyNote>,
     endBeat: Double
-): QuizTimeline {
+): PlaybackTimeline {
     var nextId = 1L
     val events = buildList {
         melody.forEach { note ->
@@ -876,11 +876,11 @@ internal fun buildQuizTimeline(
                 val midi = MusicTheory.getMidiNote(note.sd, note.octave, key)
                 if (midi > 0) {
                     add(
-                        QuizTimelineEvent(
+                        PlaybackTimelineEvent(
                             id = nextId++,
                             startBeat = note.beat.coerceAtLeast(1.0),
                             endBeat = noteEnd.coerceAtMost(endBeat),
-                            layer = QuizAudioLayer.MELODY,
+                            layer = PlaybackAudioLayer.MELODY,
                             fullMidiNotes = intArrayOf(midi)
                         )
                     )
@@ -903,11 +903,11 @@ internal fun buildQuizTimeline(
                     ?.toAudioNoteNumber()
                 if (fullNotes.isNotEmpty() || root != null) {
                     add(
-                        QuizTimelineEvent(
+                        PlaybackTimelineEvent(
                             id = nextId++,
                             startBeat = beat.coerceAtLeast(1.0),
                             endBeat = chordEnd.coerceAtMost(endBeat),
-                            layer = QuizAudioLayer.CHORD,
+                            layer = PlaybackAudioLayer.CHORD,
                             fullMidiNotes = fullNotes,
                             rootMidiNote = root
                         )
@@ -916,7 +916,7 @@ internal fun buildQuizTimeline(
             }
         }
     }.filter { it.endBeat > it.startBeat }
-        .sortedWith(compareBy<QuizTimelineEvent> { it.startBeat }.thenBy { it.id })
+        .sortedWith(compareBy<PlaybackTimelineEvent> { it.startBeat }.thenBy { it.id })
 
-    return QuizTimeline(endBeat = endBeat, events = events)
+    return PlaybackTimeline(endBeat = endBeat, events = events)
 }

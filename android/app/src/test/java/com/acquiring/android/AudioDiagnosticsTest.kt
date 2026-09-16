@@ -15,7 +15,7 @@ class AudioDiagnosticsTest {
     @Test
     fun recordsOnlyAllowListedOperationsAndStateKeys() {
         AudioDiagnostics.record(
-            "quiz.playRequest",
+            "playback.playRequest",
             state = mapOf(
                 "phase" to "PLAYING",
                 "songId" to "all-star",
@@ -25,7 +25,7 @@ class AudioDiagnosticsTest {
         AudioDiagnostics.record("not.an.allowed.operation", state = mapOf("phase" to "PLAYING"))
         val events = AudioDiagnostics.snapshot()
         assertEquals(1, events.size)
-        assertEquals("quiz.playRequest", events.single().operation)
+        assertEquals("playback.playRequest", events.single().operation)
         assertEquals(mapOf("phase" to "PLAYING"), events.single().state)
         assertFalse(AudioDiagnostics.exportText().contains("all-star"))
         assertFalse(AudioDiagnostics.exportText().contains("smash-mouth"))
@@ -34,7 +34,7 @@ class AudioDiagnosticsTest {
     @Test
     fun trimsToEventLimit() {
         repeat(AudioDiagnostics.EVENT_LIMIT + 5) { index ->
-            AudioDiagnostics.record("quiz.reset", state = mapOf("phase" to index.toString()))
+            AudioDiagnostics.record("playback.reset", state = mapOf("phase" to index.toString()))
         }
         val events = AudioDiagnostics.snapshot()
         assertEquals(AudioDiagnostics.EVENT_LIMIT, events.size)
@@ -43,10 +43,10 @@ class AudioDiagnosticsTest {
 
     @Test
     fun exportIsPlainTextWithoutAudioSamples() {
-        AudioDiagnostics.record("quiz.reset", state = mapOf("phase" to "STOPPED"))
+        AudioDiagnostics.record("playback.reset", state = mapOf("phase" to "STOPPED"))
         val text = AudioDiagnostics.exportText()
         assertTrue(text.contains("schemaVersion"))
-        assertTrue(text.contains("quiz.reset"))
+        assertTrue(text.contains("playback.reset"))
         assertFalse(text.contains("pcm"))
         assertFalse(text.contains("sample"))
     }

@@ -17,15 +17,15 @@ import java.util.concurrent.atomic.AtomicLong
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
-class QuizPlaybackEngineTest {
+class PlaybackEngineTest {
 
     @Test
     fun arpeggioOptions_areOrderedWithOffAndOneStraddlingTheTop() {
         assertEquals(
             listOf("1/4", "1/3", "1/2", "off", "1", "2", "3", "4"),
-            QUIZ_ARPEGGIO_OPTIONS.map { it.label }
+            PLAYBACK_ARPEGGIO_OPTIONS.map { it.label }
         )
-        assertEquals("off", QUIZ_ARPEGGIO_OPTIONS[DEFAULT_QUIZ_ARPEGGIO_OPTION_INDEX].label)
+        assertEquals("off", PLAYBACK_ARPEGGIO_OPTIONS[DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX].label)
     }
 
     @Test
@@ -63,9 +63,9 @@ class QuizPlaybackEngineTest {
 
     @Test
     fun renderer_appliesArpeggioChangeWithoutMovingOrSilencingTheCurrentBeat() {
-        val chord = event(1, 1.0, 4.0, QuizAudioLayer.CHORD, 48, 52, 55)
-        val renderer = QuizPcmRenderer(
-            QuizTimeline(endBeat = 5.0, events = listOf(chord)),
+        val chord = event(1, 1.0, 4.0, PlaybackAudioLayer.CHORD, 48, 52, 55)
+        val renderer = PlaybackPcmRenderer(
+            PlaybackTimeline(endBeat = 5.0, events = listOf(chord)),
             config(),
             sampleRate = 1_000
         )
@@ -82,9 +82,9 @@ class QuizPlaybackEngineTest {
 
     private fun config(
         bpm: Double = 60.0,
-        chordMode: QuizChordMode = QuizChordMode.FULL,
+        chordMode: PlaybackChordMode = PlaybackChordMode.FULL,
         transpose: Int = 0
-    ) = QuizPlaybackConfig(
+    ) = PlaybackConfig(
         bpm = bpm,
         transpose = transpose,
         waveform = AudioEngine.Waveform.SAWTOOTH,
@@ -95,15 +95,15 @@ class QuizPlaybackEngineTest {
 
     @Test
     fun renderer_emitsDenseAndSimultaneousOnsetsAtTheirOutputFrame() {
-        val timeline = QuizTimeline(
+        val timeline = PlaybackTimeline(
             endBeat = 2.0,
             events = listOf(
-                event(1, 1.10, 1.20, QuizAudioLayer.MELODY, 60),
-                event(2, 1.10, 1.50, QuizAudioLayer.CHORD, 48, 52, 55),
-                event(3, 1.25, 1.30, QuizAudioLayer.MELODY, 62)
+                event(1, 1.10, 1.20, PlaybackAudioLayer.MELODY, 60),
+                event(2, 1.10, 1.50, PlaybackAudioLayer.CHORD, 48, 52, 55),
+                event(3, 1.25, 1.30, PlaybackAudioLayer.MELODY, 62)
             )
         )
-        val renderer = QuizPcmRenderer(timeline, config(), sampleRate = 1_000)
+        val renderer = PlaybackPcmRenderer(timeline, config(), sampleRate = 1_000)
 
         val rendered = renderer.renderInto(ShortArray(400))
 
@@ -115,11 +115,11 @@ class QuizPlaybackEngineTest {
 
     @Test
     fun renderer_wrapsWithoutDroppingOrDuplicatingLoopHead() {
-        val timeline = QuizTimeline(
+        val timeline = PlaybackTimeline(
             endBeat = 1.5,
-            events = listOf(event(7, 1.0, 1.1, QuizAudioLayer.MELODY, 60))
+            events = listOf(event(7, 1.0, 1.1, PlaybackAudioLayer.MELODY, 60))
         )
-        val renderer = QuizPcmRenderer(timeline, config(), sampleRate = 1_000)
+        val renderer = PlaybackPcmRenderer(timeline, config(), sampleRate = 1_000)
 
         val rendered = renderer.renderInto(ShortArray(1_100))
 
@@ -129,11 +129,11 @@ class QuizPlaybackEngineTest {
 
     @Test
     fun renderer_seekToEndRemainsAtEndUntilRenderingResumes() {
-        val timeline = QuizTimeline(
+        val timeline = PlaybackTimeline(
             endBeat = 4.0,
-            events = listOf(event(1, 1.0, 3.0, QuizAudioLayer.MELODY, 60))
+            events = listOf(event(1, 1.0, 3.0, PlaybackAudioLayer.MELODY, 60))
         )
-        val renderer = QuizPcmRenderer(timeline, config(), sampleRate = 1_000)
+        val renderer = PlaybackPcmRenderer(timeline, config(), sampleRate = 1_000)
 
         renderer.seek(timeline.endBeat)
 
@@ -142,11 +142,11 @@ class QuizPlaybackEngineTest {
 
     @Test
     fun renderer_appliesTempoChangeWithoutMovingTheCurrentBeat() {
-        val timeline = QuizTimeline(
+        val timeline = PlaybackTimeline(
             endBeat = 5.0,
-            events = listOf(event(1, 1.0, 4.0, QuizAudioLayer.MELODY, 60))
+            events = listOf(event(1, 1.0, 4.0, PlaybackAudioLayer.MELODY, 60))
         )
-        val renderer = QuizPcmRenderer(timeline, config(bpm = 60.0), sampleRate = 1_000)
+        val renderer = PlaybackPcmRenderer(timeline, config(bpm = 60.0), sampleRate = 1_000)
 
         renderer.renderInto(ShortArray(500))
         assertEquals(1.5, renderer.currentBeat, 1e-9)
@@ -158,22 +158,22 @@ class QuizPlaybackEngineTest {
 
     @Test
     fun renderer_crossfadesPitchAndChordModeWithoutAZeroLengthGap() {
-        val chord = QuizTimelineEvent(
+        val chord = PlaybackTimelineEvent(
             id = 1,
             startBeat = 1.0,
             endBeat = 4.0,
-            layer = QuizAudioLayer.CHORD,
+            layer = PlaybackAudioLayer.CHORD,
             fullMidiNotes = intArrayOf(60, 64, 67),
             rootMidiNote = 48
         )
-        val renderer = QuizPcmRenderer(
-            QuizTimeline(endBeat = 5.0, events = listOf(chord)),
+        val renderer = PlaybackPcmRenderer(
+            PlaybackTimeline(endBeat = 5.0, events = listOf(chord)),
             config(),
             sampleRate = 1_000
         )
         renderer.renderInto(ShortArray(100))
         val beatBeforeChange = renderer.currentBeat
-        renderer.updateConfig(config(chordMode = QuizChordMode.ROOT_ONLY, transpose = 12))
+        renderer.updateConfig(config(chordMode = PlaybackChordMode.ROOT_ONLY, transpose = 12))
         val transition = ShortArray(100)
 
         renderer.renderInto(transition)
@@ -184,11 +184,11 @@ class QuizPlaybackEngineTest {
 
     @Test
     fun renderer_handlesMultiMinuteEventsWithBoundedBlocks() {
-        val timeline = QuizTimeline(
+        val timeline = PlaybackTimeline(
             endBeat = 302.0,
-            events = listOf(event(1, 1.0, 301.0, QuizAudioLayer.CHORD, 48, 52, 55))
+            events = listOf(event(1, 1.0, 301.0, PlaybackAudioLayer.CHORD, 48, 52, 55))
         )
-        val renderer = QuizPcmRenderer(timeline, config(), sampleRate = 1_000)
+        val renderer = PlaybackPcmRenderer(timeline, config(), sampleRate = 1_000)
         val block = ShortArray(256)
 
         repeat(40) { renderer.renderInto(block) }
@@ -199,15 +199,15 @@ class QuizPlaybackEngineTest {
 
     @Test
     fun renderer_realtimePathMatchesTheDiagnosticRenderPath() {
-        val timeline = QuizTimeline(
+        val timeline = PlaybackTimeline(
             endBeat = 3.0,
             events = listOf(
-                event(1, 1.0, 2.0, QuizAudioLayer.MELODY, 60),
-                event(2, 1.0, 2.5, QuizAudioLayer.CHORD, 48, 52, 55)
+                event(1, 1.0, 2.0, PlaybackAudioLayer.MELODY, 60),
+                event(2, 1.0, 2.5, PlaybackAudioLayer.CHORD, 48, 52, 55)
             )
         )
-        val diagnosticRenderer = QuizPcmRenderer(timeline, config(), sampleRate = 1_000)
-        val realtimeRenderer = QuizPcmRenderer(timeline, config(), sampleRate = 1_000)
+        val diagnosticRenderer = PlaybackPcmRenderer(timeline, config(), sampleRate = 1_000)
+        val realtimeRenderer = PlaybackPcmRenderer(timeline, config(), sampleRate = 1_000)
         val diagnosticBuffer = ShortArray(512)
         val realtimeBuffer = ShortArray(512)
 
@@ -221,11 +221,11 @@ class QuizPlaybackEngineTest {
     @Test
     fun engine_reportsPlayedFramesInsteadOfThePrimedRenderPosition() {
         val sink = FakeSink(blockAfterPlay = true)
-        val engine = QuizPlaybackEngine(config(), sampleRate = 1_000) { sink }
+        val engine = PlaybackEngine(config(), sampleRate = 1_000) { sink }
         try {
             engine.load(simpleTimeline(), continuePlaying = false)
             engine.play()
-            awaitPhase(engine, QuizPlaybackPhase.PLAYING)
+            awaitPhase(engine, PlaybackPhase.PLAYING)
 
             assertEquals(1.0, engine.state.value.beat, 1e-9)
             assertTrue(sink.writtenFrames.get() >= 256L)
@@ -238,14 +238,14 @@ class QuizPlaybackEngineTest {
     @Test
     fun engine_completesPartialWritesAndStopsWritingAfterPause() {
         val sink = FakeSink(maxWriteFrames = 37, writeDelayMs = 1)
-        val engine = QuizPlaybackEngine(config(), sampleRate = 1_000) { sink }
+        val engine = PlaybackEngine(config(), sampleRate = 1_000) { sink }
         try {
             engine.load(simpleTimeline(), continuePlaying = true)
-            awaitPhase(engine, QuizPlaybackPhase.PLAYING)
+            awaitPhase(engine, PlaybackPhase.PLAYING)
             assertTrue(sink.writeCalls.get() > 1)
 
             engine.pause()
-            awaitPhase(engine, QuizPlaybackPhase.PAUSED)
+            awaitPhase(engine, PlaybackPhase.PAUSED)
             val stoppedAt = sink.writtenFrames.get()
             Thread.sleep(30)
 
@@ -258,13 +258,13 @@ class QuizPlaybackEngineTest {
     @Test
     fun engine_pauseDuringPrimingNeverStartsTheSink() {
         val sink = FakeSink(blockFirstWrite = true)
-        val engine = QuizPlaybackEngine(config(), sampleRate = 1_000) { sink }
+        val engine = PlaybackEngine(config(), sampleRate = 1_000) { sink }
         try {
             engine.load(simpleTimeline(), continuePlaying = true)
             assertTrue(sink.firstWriteEntered.await(3, TimeUnit.SECONDS))
             engine.pause()
             sink.unblockWrites()
-            awaitPhase(engine, QuizPlaybackPhase.PAUSED)
+            awaitPhase(engine, PlaybackPhase.PAUSED)
 
             assertEquals(0, sink.playCalls.get())
         } finally {
@@ -276,7 +276,7 @@ class QuizPlaybackEngineTest {
     @Test
     fun engine_lifecyclePauseCancelsQueuedResumeAndRetainsTheScrubBeat() {
         val sink = FakeSink(blockFirstWrite = true)
-        val engine = QuizPlaybackEngine(config(), sampleRate = 1_000) { sink }
+        val engine = PlaybackEngine(config(), sampleRate = 1_000) { sink }
         try {
             engine.load(simpleTimeline(), continuePlaying = true)
             assertTrue(sink.firstWriteEntered.await(3, TimeUnit.SECONDS))
@@ -286,7 +286,7 @@ class QuizPlaybackEngineTest {
             sink.unblockWrites()
 
             awaitCondition {
-                engine.state.value.phase == QuizPlaybackPhase.PAUSED &&
+                engine.state.value.phase == PlaybackPhase.PAUSED &&
                     engine.state.value.beat == 2.25
             }
             assertFalse(engine.isPlaybackRequested)
@@ -300,7 +300,7 @@ class QuizPlaybackEngineTest {
     @Test
     fun engine_scrubResumeIntentReflectsCommandsImmediately() {
         val sink = FakeSink(blockAfterPlay = true)
-        val engine = QuizPlaybackEngine(config(), sampleRate = 1_000) { sink }
+        val engine = PlaybackEngine(config(), sampleRate = 1_000) { sink }
         try {
             engine.load(simpleTimeline(), continuePlaying = false)
 
@@ -318,7 +318,7 @@ class QuizPlaybackEngineTest {
     @Test
     fun engine_reloadCarriesTheRequestedTransportEvenWhileThePhaseTrails() {
         val sink = FakeSink(blockAfterPlay = true)
-        val engine = QuizPlaybackEngine(config(), sampleRate = 1_000) { sink }
+        val engine = PlaybackEngine(config(), sampleRate = 1_000) { sink }
         try {
             engine.load(simpleTimeline(), continuePlaying = false)
             assertFalse(engine.isPlaybackRequested)
@@ -343,15 +343,15 @@ class QuizPlaybackEngineTest {
     @Test
     fun engine_pausedScrubToEndPublishesAndKeepsTheEndBeat() {
         val sink = FakeSink()
-        val engine = QuizPlaybackEngine(config(), sampleRate = 1_000) { sink }
+        val engine = PlaybackEngine(config(), sampleRate = 1_000) { sink }
         try {
             engine.load(simpleTimeline(), continuePlaying = false)
-            awaitPhase(engine, QuizPlaybackPhase.STOPPED)
+            awaitPhase(engine, PlaybackPhase.STOPPED)
             engine.seek(4.0, resume = false)
 
             assertEquals(4.0, engine.state.value.beat, 0.0)
             awaitCondition {
-                engine.state.value.phase == QuizPlaybackPhase.PAUSED &&
+                engine.state.value.phase == PlaybackPhase.PAUSED &&
                     engine.state.value.beat == 4.0
             }
         } finally {
@@ -364,32 +364,32 @@ class QuizPlaybackEngineTest {
         val created = AtomicInteger(0)
         val first = FakeSink(failWithDeadObject = true)
         val second = FakeSink(writeDelayMs = 1)
-        val engine = QuizPlaybackEngine(config(), sampleRate = 1_000) {
+        val engine = PlaybackEngine(config(), sampleRate = 1_000) {
             if (created.getAndIncrement() == 0) first else second
         }
         try {
             engine.load(simpleTimeline(), continuePlaying = true)
             awaitCondition { created.get() >= 2 }
-            awaitPhase(engine, QuizPlaybackPhase.PLAYING)
+            awaitPhase(engine, PlaybackPhase.PLAYING)
 
-            assertFalse(engine.state.value.phase == QuizPlaybackPhase.ERROR)
+            assertFalse(engine.state.value.phase == PlaybackPhase.ERROR)
         } finally {
             engine.release()
         }
     }
 
-    private fun simpleTimeline() = QuizTimeline(
+    private fun simpleTimeline() = PlaybackTimeline(
         endBeat = 4.0,
-        events = listOf(event(1, 1.0, 3.0, QuizAudioLayer.MELODY, 60))
+        events = listOf(event(1, 1.0, 3.0, PlaybackAudioLayer.MELODY, 60))
     )
 
     private fun event(
         id: Long,
         start: Double,
         end: Double,
-        layer: QuizAudioLayer,
+        layer: PlaybackAudioLayer,
         vararg notes: Int
-    ) = QuizTimelineEvent(
+    ) = PlaybackTimelineEvent(
         id = id,
         startBeat = start,
         endBeat = end,
@@ -397,7 +397,7 @@ class QuizPlaybackEngineTest {
         fullMidiNotes = notes
     )
 
-    private fun awaitPhase(engine: QuizPlaybackEngine, phase: QuizPlaybackPhase) {
+    private fun awaitPhase(engine: PlaybackEngine, phase: PlaybackPhase) {
         awaitCondition { engine.state.value.phase == phase }
     }
 
@@ -413,7 +413,7 @@ class QuizPlaybackEngineTest {
         private val blockAfterPlay: Boolean = false,
         private val blockFirstWrite: Boolean = false,
         failWithDeadObject: Boolean = false
-    ) : QuizAudioSink {
+    ) : PlaybackAudioSink {
         val writtenFrames = AtomicLong(0)
         val writeCalls = AtomicInteger(0)
         val playCalls = AtomicInteger(0)

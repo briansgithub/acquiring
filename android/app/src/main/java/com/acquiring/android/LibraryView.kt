@@ -137,7 +137,8 @@ fun LibraryView(
     onAllSongs: () -> Unit,
     searchResult: String?,
     allSongs: List<SongBrowseRow>,
-    onSongClick: (SongBrowseRow) -> Unit
+    onSongClick: (SongBrowseRow) -> Unit,
+    onOpenAuralQuiz: () -> Unit = {}
 ) {
     var searchScope by rememberSaveable { mutableStateOf(LibrarySearchScope.SONGS) }
     var searchFocused by remember { mutableStateOf(false) }
@@ -164,6 +165,9 @@ fun LibraryView(
                 detectTapGestures { focusManager.clearFocus(force = true) }
             }
     ) {
+        TextButton(onClick = onOpenAuralQuiz, modifier = Modifier.testTag("OpenAuralQuiz")) {
+            Text("Aural Quiz · learn by ear")
+        }
         if (showChrome) {
             PlaylistsSection(
                 playlistDao = playlistDao,
