@@ -647,6 +647,28 @@ internal fun MainScreen(
         }
     }
 
+    val settingsContent: @Composable (() -> Unit) -> Unit = { closeSettings ->
+        AppSettingsScreen(
+            defaultInstrument = defaultInstrument,
+            onDefaultInstrumentChange = AppInstrumentSession::selectAsDefault,
+            catalogStatus = catalogStatus,
+            catalogFreshness = CatalogAutoInstall.lastRefreshLabel(context),
+            onUpdateCatalog = downloadCatalog,
+            playUpdateStatus = playUpdateStatus,
+            onOpenPlayUpdate = {
+                openUpdateDistribution(context)
+            },
+            timelineFrameRate = timelineFrameRate,
+            onTimelineFrameRateChange = {
+                TimelineFrameRateStore.select(context, it)
+                timelineFrameRate = it
+            },
+            onShareAudioDiagnostics = { AudioDiagnostics.share(context) },
+            onResetAudioEngine = { AudioDiagnostics.resetEngine() },
+            onBack = closeSettings
+        )
+    }
+
     Box(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
         // Invisible target that owns the default initial focus on launch, so the
         // search field starts genuinely unselected instead of grabbing focus itself.
@@ -665,27 +687,10 @@ internal fun MainScreen(
                 )
         ) {
             if (isShowingAuralQuiz) {
-                AuralQuizScreen(onBack = { isShowingAuralQuiz = false })
+                AuralQuizScreen(onBack = { isShowingAuralQuiz = false },
+                    defaultInstrument = defaultInstrument, settingsContent = settingsContent)
             } else if (isShowingSettings) {
-                AppSettingsScreen(
-                    defaultInstrument = defaultInstrument,
-                    onDefaultInstrumentChange = AppInstrumentSession::selectAsDefault,
-                    catalogStatus = catalogStatus,
-                    catalogFreshness = CatalogAutoInstall.lastRefreshLabel(context),
-                    onUpdateCatalog = downloadCatalog,
-                    playUpdateStatus = playUpdateStatus,
-                    onOpenPlayUpdate = {
-                        openUpdateDistribution(context)
-                    },
-                    timelineFrameRate = timelineFrameRate,
-                    onTimelineFrameRateChange = {
-                        TimelineFrameRateStore.select(context, it)
-                        timelineFrameRate = it
-                    },
-                    onShareAudioDiagnostics = { AudioDiagnostics.share(context) },
-                    onResetAudioEngine = { AudioDiagnostics.resetEngine() },
-                    onBack = { isShowingSettings = false }
-                )
+                settingsContent { isShowingSettings = false }
             } else if (selectedSongSections == null) {
                 if (selectedArtistSongs != null) {
                     ArtistSongsView(
@@ -716,23 +721,6 @@ internal fun MainScreen(
                         )
                     }
                 } else {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        TextButton(
-                            onClick = { isShowingSettings = true },
-                            modifier = Modifier.semantics { contentDescription = "Open settings" }
-                        ) {
-                            Text(
-                                if (playUpdateStatus == PlayUpdateStatus.UPDATE_AVAILABLE) {
-                                    "Settings •"
-                                } else {
-                                    "Settings"
-                                }
-                            )
-                        }
-                    }
                     LibraryView(
                     activeDb = activeDb,
                     playlistDao = playlistDao,
@@ -910,6 +898,7 @@ internal fun MainScreen(
                     searchResult = searchResult,
                     allSongs = allSongs,
                     onSongClick = openBrowseSong,
+                    onOpenSettings = { isShowingSettings = true },
                     onOpenAuralQuiz = {
                         PlaybackController.pause()
                         AudioEngine.stopAllPlayback()
@@ -919,6 +908,7 @@ internal fun MainScreen(
                         singingCollapseTick++
                         isShowingAuralQuiz = true
                     },
+                    settingsUpdateAvailable = playUpdateStatus == PlayUpdateStatus.UPDATE_AVAILABLE
                 )
                 }
             } else if (isShowingPlayback) {

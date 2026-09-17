@@ -53,6 +53,7 @@ internal class AuralSession(
     private var guidanceVisible = false
     private var feedback = ""
     private var storageWarning = ""
+    private var preferredInstrument: String? = null
 
     init {
         try {
@@ -119,13 +120,33 @@ internal class AuralSession(
         start(AuralTarget(familyId, skillId, support = support, microphoneKind = microphoneKind, variantId = variantId), seedFor(serial), serial)
     }
 
+    fun practiceMode(familyId: String, variantId: String, modeId: String, microphoneKind: String? = null) {
+        val skill = AuralPracticeModes.selectSkill(saved.progress, familyId, variantId, modeId)
+        val kind = if (skill == "reproduce") microphoneKind ?: AuralPracticeModes.selectMicrophoneKind(saved.progress, familyId) else null
+        practice(familyId, skill, kind, variantId)
+    }
+
     private fun start(target: AuralTarget, seed: Long, serial: Long) {
-        val (progress, exercise) = AuralCurriculum.beginExercise(saved.progress, AuralCurriculum.generate(target, seed), clock())
+        val (progress, exercise) = AuralCurriculum.beginExercise(saved.progress, AuralCurriculum.generate(target.copy(instrumentOverride = preferredInstrument, octaveShift = 1), seed), clock())
         saved = saved.copy(serial = serial, progress = progress, current = exercise)
         assistance = emptyList(); plays = 0; attempts = 0; heard = false; answered = false
         guidanceVisible = exercise.support == 2
         feedback = ""
         save() // Exposure survives abandoning the question or restarting the application.
+    }
+
+    /** Keep the musical question, but persist the sound actually requested in Settings. */
+    fun setInstrument(instrument: AudioEngine.Waveform) {
+        preferredInstrument = instrument.name
+        val old = saved.current ?: return
+        if (answered || old.instrument == instrument.name && old.provenance.target.octaveShift == 1) return
+        val replacement = AuralCurriculum.generate(old.provenance.target.copy(instrumentOverride = instrument.name, octaveShift = 1), old.seed)
+        val (progress, exercise) = AuralCurriculum.beginExercise(saved.progress, replacement, clock())
+        if (heard || plays > 0) assistance = assistance + "instrument-change"
+        saved = saved.copy(progress = progress, current = exercise)
+        heard = false
+        feedback = ""
+        save()
     }
 
     fun played() {

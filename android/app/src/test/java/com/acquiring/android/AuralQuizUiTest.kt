@@ -1,6 +1,9 @@
 package com.acquiring.android
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import kotlinx.serialization.encodeToString
@@ -20,6 +23,61 @@ class AuralQuizUiTest {
     private class Store(var raw: String? = null) : AuralPersistence {
         override fun read() = raw
         override fun write(value: String): Boolean { raw = value; return true }
+    }
+
+    @Test fun threeTabsReplaceSevenAndIntroductionLeadsStraightIntoRecognition() {
+        val session = AuralSession(Store(), seedFor = { it })
+        compose.setContent { MaterialTheme { AuralQuizScreen({}, session) {} } }
+        compose.onNodeWithTag("AuralFamily-dominant-return").performClick()
+        compose.onNodeWithTag("AuralProgression-direct").performClick()
+        compose.onAllNodes(isSelectable()).assertCountEquals(3)
+        compose.onNodeWithText("Recognize").assertExists()
+        compose.onNodeWithText("Recall").assertExists()
+        compose.onNodeWithText("Sing").assertExists()
+        compose.onNodeWithTag("AuralPhase-guided").assertDoesNotExist()
+        compose.onNodeWithTag("AuralListen").performScrollTo().performClick()
+        compose.onNodeWithTag("AuralSubmit").performScrollTo().performClick()
+        compose.onNodeWithTag("AuralMode-recognize").assertIsSelected()
+        assertEquals("compare", session.view().exercise!!.skillId)
+        assertFalse(session.view().heard)
+        compose.onNodeWithTag("AuralListen").performScrollTo().performClick()
+        val choice = session.view().exercise!!.answer.optionId!!
+        compose.onNodeWithTag("AuralChoice-$choice").performScrollTo().performClick()
+        compose.onNodeWithTag("AuralSubmit").performScrollTo().performClick()
+        assertEquals(1, AuralCurriculum.cell(session.view().progress, "dominant-return", "compare").practiceCorrect)
+    }
+
+    @Test fun sharedSettingsStopsAudioReturnsToSamePhaseAndUsesNewDefault() {
+        val session = AuralSession(Store(), seedFor = { it })
+        var instrument by mutableStateOf(AudioEngine.Waveform.CLARINET)
+        val played = mutableListOf<String>()
+        var cancelled = false
+        compose.setContent { MaterialTheme {
+            AuralQuizScreen({}, session, defaultInstrument = instrument, settingsContent = { close ->
+                AppSettingsScreen(instrument, { instrument = it }, "", "", {}, PlayUpdateStatus.entries.first(), {},
+                    TimelineFrameRatePreference.STANDARD, {}, {}, {}, close)
+            }) { exercise ->
+                played += exercise.instrument
+                if (played.size == 1) try { awaitCancellation() } finally { cancelled = true }
+            }
+        } }
+        compose.onNodeWithTag("AuralFamily-dominant-return").performClick()
+        compose.onNodeWithTag("AuralProgression-departure").performClick()
+        compose.onNodeWithTag("AuralMode-recall").performClick()
+        compose.onNodeWithTag("AuralListen").performScrollTo().performClick()
+        compose.onNodeWithTag("AuralSettings").performClick()
+        compose.onNodeWithTag(SETTINGS_SCREEN_TEST_TAG).assertExists()
+        compose.onNodeWithTag("AuralQuiz").assertDoesNotExist()
+        compose.onNodeWithContentDescription("Default instrument: Marimba").performScrollTo().performClick()
+        compose.onNodeWithTag(SETTINGS_BACK_TEST_TAG).performScrollTo().performClick()
+        compose.onNodeWithTag("AuralProgressionTitle").assertTextEquals("I → V → I")
+        compose.onNodeWithTag("AuralMode-recall").assertIsSelected()
+        compose.onNodeWithTag("AuralListen").performScrollTo().performClick()
+        compose.waitForIdle()
+        assertEquals(listOf("CLARINET", "MARIMBA"), played)
+        assertTrue(cancelled)
+        assertTrue(session.view().heard)
+        assertEquals(0, session.view().progress.attempts)
     }
 
     @Test fun guidedLearnerCanListenAnswerAndMoveToFreshExample() {
@@ -73,9 +131,9 @@ class AuralQuizUiTest {
         compose.onNodeWithTag("AuralFamily-predominant-cadence").performScrollTo().performClick()
         compose.onNodeWithTag("AuralProgression-departure").performScrollTo().performClick()
         compose.onNodeWithTag("AuralProgressionTitle").assertTextEquals("I → ii → V → I")
-        compose.onNodeWithTag("AuralPhase-guided").assertIsSelected()
-        compose.onNodeWithTag("AuralPhase-recall").performScrollTo().performClick()
-        compose.onNodeWithTag("AuralPhase-recall").assertIsSelected()
+        compose.onNodeWithTag("AuralMode-recognize").assertIsSelected()
+        compose.onNodeWithTag("AuralMode-recall").performClick()
+        compose.onNodeWithTag("AuralMode-recall").assertIsSelected()
         assertEquals("recall", session.view().exercise!!.skillId)
         compose.onNodeWithTag("AuralListen").performScrollTo().performClick()
         compose.waitForIdle()
@@ -105,10 +163,10 @@ class AuralQuizUiTest {
         compose.onNodeWithTag("AuralProgression-departure").performClick()
         compose.onNodeWithTag("AuralListen").performScrollTo().performClick()
         compose.waitForIdle()
-        for (skill in AuralCurriculum.skills.drop(1)) {
-            compose.onNodeWithTag("AuralPhase-${skill.id}").performScrollTo().performClick()
-            compose.onNodeWithTag("AuralPhase-${skill.id}").assertIsSelected()
-            assertEquals(skill.id, session.view().exercise!!.skillId)
+        for (mode in AuralPracticeModes.modes.drop(1)) {
+            compose.onNodeWithTag("AuralMode-${mode.id}").performClick()
+            compose.onNodeWithTag("AuralMode-${mode.id}").assertIsSelected()
+            assertEquals(mode.id, AuralPracticeModes.forSkill(session.view().exercise!!.skillId).id)
             assertEquals("departure", session.view().exercise!!.variantId)
             assertFalse(session.view().heard)
         }
@@ -117,12 +175,12 @@ class AuralQuizUiTest {
     }
 
     @Test fun advancedSelectedPracticeStillShowsPracticeAndNoAutomaticSolution() {
-        val progress = AuralProgress(cells = mapOf("dominant-return:recall" to AuralCell(practice = 4, practiceCorrect = 4)))
+        val progress = AuralProgress(cells = listOf("recall", "complete", "audiate").associate { "dominant-return:$it" to AuralCell(practice = 4, practiceCorrect = 4) })
         val session = AuralSession(Store(Json.encodeToString(AuralSavedSession(progress = progress))), seedFor = { it })
         compose.setContent { MaterialTheme { AuralQuizScreen({}, session) {} } }
         compose.onNodeWithTag("AuralFamily-dominant-return").performClick()
         compose.onNodeWithTag("AuralProgression-direct").performClick()
-        compose.onNodeWithTag("AuralPhase-recall").performScrollTo().performClick()
+        compose.onNodeWithTag("AuralMode-recall").performClick()
         compose.onNodeWithTag("AuralEvidence").assertTextEquals("Practice")
         compose.onNodeWithTag("AuralGuidance").assertDoesNotExist()
         assertEquals(0, session.view().exercise!!.support)

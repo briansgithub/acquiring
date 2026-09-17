@@ -63,14 +63,15 @@ internal fun AuralChordStrip(degrees: List<String?>, modifier: Modifier = Modifi
 @Composable
 internal fun AuralFamilyProgress(familyId: String, progress: AuralProgress) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 4.dp)) {
-        AuralCurriculum.skills.forEach { skill ->
-            val cell = AuralCurriculum.cell(progress, familyId, skill.id)
-            val started = cell.practice + cell.independentAttempts > 0
-            val status = if (cell.mastered) "mastered" else if (started) "practicing" else "new"
+        AuralPracticeModes.modes.forEach { mode ->
+            val mastered = AuralPracticeModes.mastered(progress, familyId, mode)
+            val skills = mode.skills + if (mode.id == "recognize") listOf("guided") else emptyList()
+            val started = skills.any { AuralCurriculum.cell(progress, familyId, it).let { c -> c.practice + c.independentAttempts > 0 } }
+            val status = if (mastered) "mastered" else if (started) "practicing" else "new"
             Surface(shape = CircleShape, border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                color = if (cell.mastered) MaterialTheme.colorScheme.primary else if (started) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface,
-                modifier = Modifier.size(18.dp).semantics { contentDescription = "${auralPhaseLabel(skill.id)}: $status" }) {
-                if (cell.mastered) Icon(Icons.Default.Check, contentDescription = null, Modifier.padding(2.dp), tint = MaterialTheme.colorScheme.onPrimary)
+                color = if (mastered) MaterialTheme.colorScheme.primary else if (started) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface,
+                modifier = Modifier.size(18.dp).semantics { contentDescription = "${mode.label}: $status" }) {
+                if (mastered) Icon(Icons.Default.Check, contentDescription = null, Modifier.padding(2.dp), tint = MaterialTheme.colorScheme.onPrimary)
             }
         }
     }
@@ -107,12 +108,13 @@ internal fun AuralProgressionCard(variant: AuralVariant, onClick: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun AuralPhaseTabs(skillId: String, onSelect: (String) -> Unit) {
-    ScrollableTabRow(selectedTabIndex = AuralCurriculum.skills.indexOfFirst { it.id == skillId }.coerceAtLeast(0), edgePadding = 0.dp) {
-        AuralCurriculum.skills.forEachIndexed { index, skill ->
-            Tab(selected = skill.id == skillId, onClick = { if (skill.id != skillId) onSelect(skill.id) },
-                modifier = Modifier.testTag("AuralPhase-${skill.id}"),
-                text = { Text("${index + 1}  ${auralPhaseLabel(skill.id)}") })
+internal fun AuralModeTabs(skillId: String, onSelect: (String) -> Unit) {
+    val selected = AuralPracticeModes.forSkill(skillId)
+    TabRow(selectedTabIndex = AuralPracticeModes.modes.indexOf(selected)) {
+        AuralPracticeModes.modes.forEach { mode ->
+            Tab(selected = mode == selected, onClick = { if (mode != selected) onSelect(mode.id) },
+                modifier = Modifier.testTag("AuralMode-${mode.id}"),
+                text = { Text(mode.label) })
         }
     }
 }
@@ -125,13 +127,14 @@ internal fun AuralInfoDialog(view: AuralLessonView, familyId: String?, onDismiss
             Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Text("Choose a progression to practice. Adaptive chooses what to review and hides the target for independent checks.")
                 Text("Hints, replays and named progressions count as practice. Help fades as you improve; fresh checks build mastery.")
-                Text("Listen for the key reference, a pause, then the exercise. In Complete and Audiate, a full model comes before the version with a silent chord.")
+                Text("Recognize: choose what you heard. Recall: rebuild it or fill a silent chord. Sing: reproduce the requested pitches. Activities and help adapt within each tab.")
+                Text("Listen for the key reference, a pause, then the exercise. For silent-chord tasks, hear the full model first. Guide gives you another listen with help.")
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("Microphone in Adaptive", Modifier.weight(1f))
                     Switch(checked = view.microphoneEnabled, onCheckedChange = onMicrophone)
                 }
                 Text("Sing in any comfortable octave. Unclear pitch is ungraded. Audio stays on this device.")
-                Text("○ New   ● Practicing   ✓ Mastered\nProgress is shared across a family’s progressions.")
+                Text("○ New   ● Practicing   ✓ Mastered\nThree dots: Recognize, Recall, Sing. Each includes separate skills; progress is shared across a family’s progressions.")
                 familyId?.let { id ->
                     Text(AuralCurriculum.families.first { it.id == id }.label, style = MaterialTheme.typography.titleSmall)
                     AuralCurriculum.skills.forEach { skill ->
