@@ -238,6 +238,10 @@ internal fun MainScreen(
     var isShowingAllSongs by rememberSaveable { mutableStateOf(false) }
     var isShowingSettings by rememberSaveable { mutableStateOf(false) }
     var isShowingAuralQuiz by rememberSaveable { mutableStateOf(false) }
+    // When Playback was opened from an Aural Quiz example, Back returns to the
+    // existing quiz state rather than the Library. The passage also marks the
+    // exact source range inside the ordinary Playback screen.
+    var auralPlaybackPassage by remember { mutableStateOf<AuralSourcePassage?>(null) }
     var timelineFrameRate by remember {
         mutableStateOf(TimelineFrameRateStore.preference)
     }
@@ -461,7 +465,21 @@ internal fun MainScreen(
     val returnToParent = {
         browseOpenJob?.cancel()
         browseOpenJob = null
-        if (isShowingAuralQuiz) {
+        if (auralPlaybackPassage != null && selectedSongSections != null) {
+            PlaybackController.pause()
+            AudioEngine.stopAllPlayback()
+            persistentPlaybackPitchSource.stop()
+            singingToolPitchSource.stop()
+            singingDepartureTick++
+            singingCollapseTick++
+            songOctaveOffsetViewModel.clearSession()
+            selectedSongSections = null
+            selectedSong = null
+            selectedSectionId = null
+            isShowingPlayback = false
+            auralPlaybackPassage = null
+            isShowingAuralQuiz = true
+        } else if (isShowingAuralQuiz) {
             isShowingAuralQuiz = false
         } else if (isShowingSettings) {
             isShowingSettings = false
@@ -647,6 +665,27 @@ internal fun MainScreen(
         }
     }
 
+    /** Uses the normal song blob and normal Playback state, never the compact quiz cache. */
+    val openAuralSourcePlayback: suspend (AuralSourcePassage, Boolean) -> Boolean = openAuralSourcePlayback@ { passage, _ ->
+        val song = withContext(Dispatchers.IO) { activeDb.songDao().getSongBySlug(passage.songId) }
+            ?: return@openAuralSourcePlayback false
+        val blob = song.dataBlob ?: return@openAuralSourcePlayback false
+        val sections = try { decodeSongSections(blob) } catch (cancelled: CancellationException) { throw cancelled } catch (_: Exception) { return@openAuralSourcePlayback false }
+        val sectionId = sections[passage.sectionId]?.let { passage.sectionId }
+            ?: sections.entries.firstOrNull { (_, section) -> section.safeSectionName == passage.sectionName }?.key
+            ?: return@openAuralSourcePlayback false
+        songOctaveOffsetViewModel.clearSession()
+        HistoryManager.addSong(context, song.slug)
+        HistoryManager.addArtist(context, song.artist)
+        selectedSong = song
+        selectedSongSections = sections
+        selectedSectionId = sectionId
+        auralPlaybackPassage = passage
+        isShowingPlayback = true
+        isShowingAuralQuiz = false
+        true
+    }
+
     val settingsContent: @Composable (() -> Unit) -> Unit = { closeSettings ->
         AppSettingsScreen(
             defaultInstrument = defaultInstrument,
@@ -689,7 +728,8 @@ internal fun MainScreen(
             if (isShowingAuralQuiz) {
                 AuralQuizScreen(onBack = { isShowingAuralQuiz = false },
                     defaultInstrument = defaultInstrument, settingsContent = settingsContent,
-                    loadFavoriteSongs = { playlistDao.getSlugsIn(PlaylistIds.FAVORITES).toSet() })
+                    loadFavoriteSongs = { playlistDao.getSlugsIn(PlaylistIds.FAVORITES).toSet() },
+                    openFullPlayback = openAuralSourcePlayback)
             } else if (isShowingSettings) {
                 settingsContent { isShowingSettings = false }
             } else if (selectedSongSections == null) {
@@ -959,7 +999,10 @@ internal fun MainScreen(
                     onPersistentMonitoringChange = { active ->
                         isPersistentMonitoring = active
                     },
-                    onRequestCollapseDock = { singingCollapseTick++ }
+                    onRequestCollapseDock = { singingCollapseTick++ },
+                    initialPassage = auralPlaybackPassage
+                        ?.takeIf { passage -> selectedSectionId == passage.sectionId || selectedSongSections!![selectedSectionId]?.safeSectionName == passage.sectionName }
+                        ?.let { it.startBeat to it.endBeat }
                 )
             } else {
                 SongDetailView(
