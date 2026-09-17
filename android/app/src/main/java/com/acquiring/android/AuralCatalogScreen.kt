@@ -8,6 +8,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.ui.Alignment
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -75,13 +79,13 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
             } catch (_: Exception) { error="Could not load subsequences." }
         }
     }
-    data class Display(val row: AuralCatalogRow,val depth: Int,val key: String)
+    data class Display(val row: AuralCatalogRow,val depth: Int,val key: String,val number: String)
     val displayed = buildList {
-        fun append(row: AuralCatalogRow,depth: Int,path: String) {
-            add(Display(row,depth,path))
-            if(!settings.flatList && row.target.id in expanded) children[row.target.id]?.forEach { append(it,depth+1,"$path/${it.target.id}") }
+        fun append(row: AuralCatalogRow,depth: Int,path: String,number: String) {
+            add(Display(row,depth,path,number))
+            if(!settings.flatList && row.target.id in expanded) children[row.target.id]?.forEachIndexed { index,child -> append(child,depth+1,"$path/${child.target.id}","$number.${index+1}") }
         }
-        rows.forEach { append(it,0,it.target.id) }
+        rows.forEachIndexed { index,row -> append(row,0,row.target.id,"${index+1}") }
     }
     Column(modifier.fillMaxSize().testTag("AuralCatalog")) {
         Row(Modifier.padding(horizontal=12.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
@@ -101,8 +105,15 @@ internal fun AuralCatalogScreen(catalog: AuralCatalog, settings: AuralExampleSet
         LazyColumn(state=if(settings.flatList) flatScroll else treeScroll,modifier=Modifier.weight(1f)) {
             items(displayed,key={ it.key }) { entry ->
                 val row=entry.row
-                Row(Modifier.fillMaxWidth().padding(start=(12+minOf(entry.depth,8)*12).dp,end=8.dp,top=4.dp,bottom=4.dp)) {
-                    if(!settings.flatList && row.length>2) TextButton(onClick={ toggle(row) },modifier=Modifier.width(40.dp)) { Text(if(row.target.id in expanded) "⌄" else "›") }
+                Row(Modifier.fillMaxWidth().padding(start=(8+minOf(entry.depth,4)*8).dp,end=8.dp,top=4.dp,bottom=4.dp),verticalAlignment=Alignment.CenterVertically) {
+                    Column(Modifier.widthIn(min=48.dp,max=88.dp).padding(end=8.dp),horizontalAlignment=Alignment.CenterHorizontally) {
+                        Text(entry.number,style=MaterialTheme.typography.labelLarge,modifier=Modifier.testTag("AuralOutline-${entry.number}"))
+                        if(!settings.flatList && row.length>2) FilledTonalIconButton(onClick={ toggle(row) },modifier=Modifier.size(48.dp).testTag("AuralExpand-${entry.number}")) {
+                            val open=row.target.id in expanded
+                            Icon(if(open) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowRight,
+                                contentDescription=if(open) "Collapse ${entry.number}" else "Expand ${entry.number}",modifier=Modifier.size(32.dp))
+                        }
+                    }
                     Column(Modifier.weight(1f).clickable { onPractice(row.target) }.padding(vertical=12.dp).testTag("AuralPattern-${row.target.id}")) {
                         Text(row.target.labels.joinToString(" → "),style=MaterialTheme.typography.titleMedium,maxLines=3)
                         Text("${row.length} chords · ${row.occurrences} occurrences · ${row.songs} songs",style=MaterialTheme.typography.bodySmall)

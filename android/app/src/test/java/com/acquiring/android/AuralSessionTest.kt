@@ -6,6 +6,20 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class AuralSessionTest {
+    @Test fun songsPlaybackRestoresItsOwnSourceAndRecordsExploration() {
+        val store=MemoryStore(); val lesson=session(store)
+        lesson.practice("dominant-return","recall",variantId="departure")
+        val ex=lesson.view().exercise!!
+        val passage=AuralSourcePassage("occurrence","pattern","other-song","Other song","Artist","verse","Verse","revision",0,1,"harmony",
+            ex.familyId,ex.variantId,"C","major",80,ex.events,ex.context,ex.fullDegrees)
+        lesson.exploringPlayback(listOf("I"),passage,fromSongs=true)
+        val restored=session(store)
+        assertEquals(passage,restored.playbackReturn!!.sourcePassage)
+        assertTrue(restored.playbackReturn!!.fromSongs)
+        assertEquals(listOf("other-song"),restored.recentSongs)
+        assertEquals(ex.id,restored.view().exercise!!.id)
+        assertTrue(restored.view().supported)
+    }
     @Test fun playbackRoundTripRestoresDraftAndAttemptAfterProcessRecreation() {
         val store=MemoryStore(); val lesson=session(store)
         lesson.practice("dominant-return","recall",variantId="departure")

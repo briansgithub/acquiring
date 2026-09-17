@@ -110,6 +110,7 @@ internal fun AuralQuizScreen(
     var catalog by remember { mutableStateOf<AuralCatalog?>(null) }
     var catalogError by remember { mutableStateOf<String?>(null) }
     var playbackSource by remember { mutableStateOf<AuralPlaybackSource?>(null) }
+    var songsTab by rememberSaveable { mutableStateOf(session.playbackReturn?.fromSongs==true) }
     var reviewPool by remember { mutableStateOf(emptyList<AuralCatalogRow>()) }
     val catalogState = rememberSaveableStateHolder()
     LaunchedEffect(Unit) {
@@ -121,7 +122,10 @@ internal fun AuralQuizScreen(
     LaunchedEffect(answer) { session.rememberDraft(answer) }
     LaunchedEffect(catalog) {
         if(catalog!=null && session.playbackReturn?.open==true) {
-            try { playbackSource=withContext(Dispatchers.IO) { catalog!!.playback(session.view().exercise!!.provenance.corpus!!.passage) } }
+            try { playbackSource=withContext(Dispatchers.IO) {
+                val returning=session.playbackReturn!!
+                catalog!!.playback(returning.sourcePassage ?: session.view().exercise!!.provenance.corpus!!.passage,wholeSong=returning.fromSongs)
+            } }
             catch (_: Exception) { session.technical("Source could not reopen. Your quiz is restored."); view=session.view() }
         }
     }
@@ -140,7 +144,7 @@ internal fun AuralQuizScreen(
         val currentCatalog = catalog ?: return
         cancel(); busy=true
         activityJob = scope.launch {
-            try { session.practicePattern(pattern,currentCatalog,mode,practiceMicrophoneKind.takeUnless { it=="auto" },assessment); route="lesson"; resetResponse(); refresh() }
+            try { session.practicePattern(pattern,currentCatalog,mode,practiceMicrophoneKind.takeUnless { it=="auto" },assessment); songsTab=false; route="lesson"; resetResponse(); refresh() }
             catch (cancelled: CancellationException) { throw cancelled }
             catch (_: Exception) { session.technical("This passage could not be prepared. Choose another sequence."); refresh() }
             finally { busy=false }
@@ -180,6 +184,22 @@ internal fun AuralQuizScreen(
             }
             "progressions" -> route = "families"
             else -> onBack()
+        }
+    }
+    fun openSong(song:AuralPatternSong) {
+        val currentCatalog=catalog ?: return
+        val pattern=view.exercise?.provenance?.target?.pattern ?: return
+        cancel(); busy=true
+        activityJob=scope.launch {
+            try {
+                val (passage,source)=withContext(Dispatchers.IO) {
+                    val passage=currentCatalog.passage(pattern,exampleSettings,AuralSelectionContext(),0,pattern.id,song.id)
+                    passage to currentCatalog.playback(passage,wholeSong=true)
+                }
+                session.exploringPlayback(answer,passage,fromSongs=true); playbackSource=source; refresh()
+            } catch(cancelled:CancellationException) { throw cancelled }
+            catch(_:Exception) { session.technical("This song could not open. Your quiz is still here."); refresh() }
+            finally { busy=false }
         }
     }
     BackHandler { if (showSettings) showSettings = false else if (showExampleSettings) showExampleSettings = false else back() }
@@ -278,7 +298,7 @@ internal fun AuralQuizScreen(
     val namedPractice = exercise?.provenance?.target?.variantId != null
     val inLesson = route == "lesson" && exercise != null
     if (playbackSource != null) {
-        AuralSourcePlayback(playbackSource!!, defaultInstrument, onBack={ playbackSource=null; session.returnFromPlayback() })
+        AuralSourcePlayback(playbackSource!!, defaultInstrument, returnLabel=if(songsTab) "Return to songs" else "Return to quiz",onBack={ playbackSource=null; session.returnFromPlayback() })
     } else if (showExampleSettings) {
         AuralExampleSettingsPanel(exampleSettings, session.popularityAvailable || catalog?.popularity?.isNotEmpty()==true,
             onChange = { session.setExampleSettings(it); exampleSettings = it; refresh() }, onBack = { showExampleSettings = false },popularityDescription=catalog?.popularityDescription)
@@ -303,9 +323,18 @@ internal fun AuralQuizScreen(
             Text(if(exercise?.provenance?.target?.pattern != null) "Song progression" else selected.label, style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(horizontal = 16.dp))
             Text(if(exercise!!.provenance.target.pattern != null && !view.guidanceVisible) "${exercise.events.size} chords" else exercise.fullDegrees.joinToString(" → "), style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).testTag("AuralProgressionTitle"))
-            AuralModeTabs(exercise.skillId) { mode -> practice(exercise.familyId, exercise.variantId, mode) }
+            AuralModeTabs(exercise.skillId,songsSelected=songsTab && exercise.provenance.target.pattern!=null,
+                onSongs=if(exercise.provenance.target.pattern!=null) ({ cancel(markInterrupted=true); songsTab=true }) else null) { mode ->
+                songsTab=false
+                if(mode!=AuralPracticeModes.forSkill(exercise.skillId).id) practice(exercise.familyId, exercise.variantId, mode)
+            }
         }
-        if(route == "families" && catalog != null) {
+        if(inLesson && songsTab && exercise!!.provenance.target.pattern!=null) {
+            catalogState.SaveableStateProvider("songs-${exercise.familyId}") {
+                AuralPatternSongs(catalog,exercise.provenance.target.pattern!!,busy,::openSong,Modifier.weight(1f))
+            }
+            if(view.feedback.isNotBlank()) Text(view.feedback,Modifier.padding(horizontal=16.dp),style=MaterialTheme.typography.bodySmall)
+        } else if(route == "families" && catalog != null) {
             catalogState.SaveableStateProvider("catalog") {
                 AuralCatalogScreen(catalog!!,exampleSettings,session,{ patternPractice(it,"recognize") },::adaptive,
                     if(exercise != null) ({ route="lesson" }) else null,Modifier.weight(1f),onReview={ rows -> reviewPool=rows; session.reviewPattern(rows)?.let { patternPractice(it.first,it.second,true) } })
