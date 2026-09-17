@@ -24,11 +24,14 @@ export function validateProviderImport(input) {
     if (!['confirmed', 'ambiguous', 'unmatched'].includes(match?.status)) throw new TypeError('invalid match status');
     unit(match.confidence, 'match.confidence');
     for (const key of ['reviewed', 'artistMatched', 'titleMatched', 'versionMatched']) if (typeof match[key] !== 'boolean') throw new TypeError(`match.${key} must be boolean`);
-    if (!['studio', 'live', 'remix', 'cover', 'unknown'].includes(observation.versionKind)) throw new TypeError('invalid recording versionKind');
+    if (!['studio', 'live', 'remix', 'cover', 'unknown', 'canonical'].includes(observation.versionKind)) throw new TypeError('invalid recording versionKind');
     if (match.status === 'confirmed') {
       string(observation.providerTrackId, 'providerTrackId');
       if (!match.artistMatched || !match.titleMatched || !match.versionMatched || observation.versionKind === 'unknown') throw new TypeError('confirmed matches require artist, title, and recording-version agreement');
-      if (!match.reviewed && match.method !== 'exact_identifier') throw new TypeError('unreviewed confirmed matches require an exact recording identifier');
+      const canonicalMetadata = input.provider === 'listenbrainz' && observation.versionKind === 'canonical' && match.method === 'canonical_metadata' &&
+        observation.identityEvidence?.source === 'MusicBrainz canonical CC0' && observation.identityEvidence?.candidateCount === 1 &&
+        observation.identityEvidence?.explicitVersionConflict === false && typeof observation.identityEvidence?.dumpVersion === 'string';
+      if (!match.reviewed && match.method !== 'exact_identifier' && !canonicalMetadata) throw new TypeError('unreviewed confirmed matches require an exact recording identifier or explicit canonical metadata evidence');
       const owner = recordingOwners.get(observation.providerTrackId);
       if (owner && owner !== observation.songId) throw new TypeError('a confirmed recording cannot identify multiple canonical songs');
       recordingOwners.set(observation.providerTrackId, observation.songId);
@@ -40,6 +43,7 @@ export function validateProviderImport(input) {
       for (const key of ['metric', 'unit', 'territory', 'timeWindow']) string(measurement[key], key);
       if (!Object.hasOwn(CATEGORY_WEIGHT, measurement.category)) throw new TypeError('measurement category must be enduring or recent');
       if (!Number.isFinite(measurement.value) || measurement.value < 0) throw new TypeError('measurement value must be finite and nonnegative');
+      if (measurement.weight != null && (!Number.isFinite(measurement.weight) || measurement.weight <= 0)) throw new TypeError('measurement weight must be positive');
       date(measurement.observedAt, 'measurement.observedAt');
       if (Date.parse(measurement.observedAt) > Date.parse(input.collectedAt)) throw new TypeError('measurement cannot postdate collection');
       const key = metricKey(measurement);
@@ -112,7 +116,7 @@ export function buildPopularitySnapshot(input, { songIds, asOf = input.collected
     const entries = [...perSong.values()]; const ranks = percentileRanks(entries);
     metricReference.push({ key: JSON.parse(key), count: entries.length, method: 'midrank-percentile-v1' });
     for (const entry of entries.sort((a, b) => compare(a.songId, b.songId))) {
-      components.get(entry.songId)[entry.measurement.category].push({ score: ranks.get(entry.songId), confidence: entry.confidence });
+      components.get(entry.songId)[entry.measurement.category].push({ score: ranks.get(entry.songId), confidence: entry.confidence, weight: entry.measurement.weight ?? 1 });
       if (input.rights.allowRawStorage) rawMeasurements.push({ songId: entry.songId, providerTrackId: entry.providerTrackId, ...entry.measurement });
     }
   }
@@ -122,8 +126,9 @@ export function buildPopularitySnapshot(input, { songIds, asOf = input.collected
     for (const category of Object.keys(CATEGORY_WEIGHT)) {
       const data = components.get(songId)[category];
       if (!data.length) { aggregate[category] = null; continue; }
-      const score = data.reduce((sum, item) => sum + item.score, 0) / data.length;
-      const matchConfidence = data.reduce((sum, item) => sum + item.confidence, 0) / data.length;
+      const weight = data.reduce((sum,item) => sum + item.weight,0);
+      const score = data.reduce((sum, item) => sum + item.score * item.weight, 0) / weight;
+      const matchConfidence = data.reduce((sum, item) => sum + item.confidence * item.weight, 0) / weight;
       aggregate[category] = { score, confidence: matchConfidence, metrics: data.length };
       numerator += score * CATEGORY_WEIGHT[category]; availableWeight += CATEGORY_WEIGHT[category]; confidence += matchConfidence * CATEGORY_WEIGHT[category];
     }

@@ -61,7 +61,7 @@ function assertOutputPaths(outputFiles, inputFiles) {
   }
 }
 
-function compactArtifact(snapshot) {
+export function compactArtifact(snapshot) {
   const weights = exportPopularityWeights(snapshot);
   const body = {
     version: POPULARITY_VERSION, snapshotId: weights.snapshotId, songs: weights.songs,

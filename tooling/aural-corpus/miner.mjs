@@ -134,7 +134,7 @@ function patternId(index, position, length, view) {
   return `p_${namespace}_${length}_${fingerprint}`;
 }
 
-function descriptor(index, interval, length) {
+export function descriptor(index, interval, length) {
   const sourcePosition = index.suffixArray[interval.start];
   const run = index.runs[index.runAt[sourcePosition]];
   const result = {
@@ -242,7 +242,7 @@ export function* occurrences(index, pattern) {
 }
 
 /** Resolve arbitrary implicit lengths without expanding every substring. */
-export function getPattern(index, { view, tokens }) {
+export function getPattern(index, { view, tokens, minSongs = index.minSongs }) {
   if (!Array.isArray(tokens) || tokens.length < 2) return null;
   const compareSuffix = rank => {
     const pos = index.suffixArray[rank]; const run = index.runs[index.runAt[pos]];
@@ -263,6 +263,22 @@ export function getPattern(index, { view, tokens }) {
   if (end < start) return null;
   const songs = new Set();
   for (let rank = start; rank <= end; rank++) songs.add(index.runs[index.runAt[index.suffixArray[rank]]].songId);
-  if (songs.size < index.minSongs) return null;
+  if (songs.size < minSongs) return null;
   return descriptor(index, { start, end, songCount: songs.size }, tokens.length);
+}
+
+/** Disjoint suffix-tree edges cover EVERY observed substring of length >= 2.
+ * Internal edges include within-song repetitions; leaf edges include unique material.
+ * Educational support thresholds must never be applied to this catalog.
+ */
+export function catalogRanges(index) {
+  const ranges = suffixIntervals(index.lcp);
+  annotateSongs(ranges, index.suffixArray, index.runAt, index.runs);
+  for (let rank = 0; rank < index.suffixArray.length; rank++) {
+    const pos = index.suffixArray[rank];
+    const maxLength = index.runs[index.runAt[pos]].tokens.length - index.offsetAt[pos];
+    const minLength = Math.max(2, 1 + Math.max(index.lcp[rank], index.lcp[rank + 1] || 0));
+    if (minLength <= maxLength) ranges.push({ start: rank, end: rank, minLength, maxLength, songCount: 1 });
+  }
+  return ranges;
 }
