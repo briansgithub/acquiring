@@ -19,7 +19,9 @@ internal data class AuralCatalogRow(val target: AuralPatternTarget, val songs: I
     val degree: String, val roman: String, val notes: List<Int>, val rootMidi: Int, val bassMidi: Int, val varyingBass: Boolean = false)
 internal data class AuralCatalogRun(val id: Int, val stableId: String, val view: String, val song: String, val section: String, val revision: String,
     val tokens: List<String>, val positions: List<AuralCatalogPosition>, val key: KeyInfo)
-internal data class AuralPlaybackSource(val song: Song, val section: ExtractedSection, val sectionId: String, val startBeat: Double, val endBeat: Double)
+internal data class AuralPlaybackSource(val song: Song, val section: ExtractedSection, val sectionId: String, val startBeat: Double, val endBeat: Double,
+    val sections: Map<String,ExtractedSection> = emptyMap())
+internal data class AuralPatternSong(val id:String,val title:String,val artist:String)
 internal fun auralPatternId(tokens: List<String>, view: String): String {
     val multipliers = intArrayOf(16777619, 2246822519L.toInt(), 3266489917L.toInt(), 668265263)
     val hashes = IntArray(4)
@@ -169,7 +171,18 @@ internal class AuralCatalog(private val file: File) : AutoCloseable {
     fun children(target: AuralPatternTarget, settings: AuralExampleSettings, recent: List<String>, favorites: Set<String>): List<AuralCatalogRow> =
         if (target.tokens.size <= 2) emptyList() else listOf(target.tokens.dropLast(1), target.tokens.drop(1)).mapNotNull { lookup(it,target.view) }
             .distinctBy { it.id }.map { stats(it,settings,recent,favorites) }.sortedWith(rowOrder)
-    fun passage(target: AuralPatternTarget, settings: AuralExampleSettings, context: AuralSelectionContext, seed: Long, familyId: String): AuralSourcePassage {
+    /** One entry per supporting song, regardless of repeated loops or sections. */
+    fun songs(target:AuralPatternTarget):List<AuralPatternSong> {
+        require(target.snapshotId==snapshotId && lookup(target.tokens,target.view)==target)
+        val result=mutableListOf<AuralPatternSong>()
+        db.rawQuery("""SELECT DISTINCT song.id,song.title,song.artist FROM catalog_suffix s
+            JOIN catalog_run r ON r.id=s.run_id JOIN catalog_song song ON song.id=r.song_id
+            WHERE s.rank BETWEEN ? AND ? ORDER BY song.title COLLATE NOCASE,song.artist COLLATE NOCASE,song.id""",
+            arrayOf(target.start.toString(),target.end.toString())).use { c -> while(c.moveToNext()) result+=AuralPatternSong(c.getString(0),c.getString(1),c.getString(2)) }
+        return result.sortedWith(compareBy<AuralPatternSong> { it.title.lowercase(java.util.Locale.ROOT) }
+            .thenBy { it.artist.lowercase(java.util.Locale.ROOT) }.thenBy { it.id })
+    }
+    fun passage(target: AuralPatternTarget, settings: AuralExampleSettings, context: AuralSelectionContext, seed: Long, familyId: String, songId:String?=null): AuralSourcePassage {
         val resolved = requireNotNull(lookup(target.tokens,target.view))
         require(target.snapshotId == snapshotId && resolved == target) { "Pattern reference does not match this catalog" }
         val refs = mutableListOf<AuralOccurrenceRef>(); val locations = mutableMapOf<String, Pair<Int,Int>>()
@@ -177,6 +190,7 @@ internal class AuralCatalog(private val file: File) : AutoCloseable {
             JOIN catalog_suffix e ON e.run_id=s.run_id AND e.offset=s.offset+? WHERE s.rank BETWEEN ? AND ?""",
             arrayOf((target.tokens.size-1).toString(),target.start.toString(),target.end.toString())).use { c -> while(c.moveToNext()) {
             val r=c.getInt(0);val offset=c.getInt(1)
+            if(songId!=null && songByRun[r]!=songId) continue
             val source = "${songByRun[r]}|${sectionByRun[r]}|${c.getInt(2)}|${c.getInt(3)}"
             val id = auralDigest("${target.id}|$source")
             refs += AuralOccurrenceRef(id,songByRun[r],sectionByRun[r],source); locations[id] = r to offset
@@ -192,14 +206,18 @@ internal class AuralCatalog(private val file: File) : AutoCloseable {
             positions.first().startIndex,positions.last().endIndex,run.view,familyId,target.id,run.key.tonic,run.key.scale,80,events,listOf(reference),target.labels,
             positions.first().startBeat,positions.last().endBeat)
     }
-    fun playback(passage: AuralSourcePassage): AuralPlaybackSource {
+    fun playback(passage: AuralSourcePassage, wholeSong:Boolean=false): AuralPlaybackSource {
         val section = db.rawQuery("SELECT source,revision FROM catalog_section WHERE id=? AND song_id=?", arrayOf(passage.sectionId,passage.songId)).use {
             check(it.moveToFirst()); require(it.getString(1) == passage.sourceRevision); json.decodeFromString<ExtractedSection>(unpack(it.getBlob(0)))
         }
         val first=requireNotNull(section.chords.getOrNull(passage.startIndex));val last=requireNotNull(section.chords.getOrNull(passage.endIndex))
         val start=first.getValue("beat").jsonPrimitive.double;val end=last.getValue("beat").jsonPrimitive.double+last.getValue("duration").jsonPrimitive.double
         require(start.isFinite() && end.isFinite() && end>start)
-        return AuralPlaybackSource(Song(slug=passage.songId,title=passage.title,artist=passage.artist,url=""),section,passage.sectionId,start,end)
+        val sections=linkedMapOf(passage.sectionId to section)
+        if(wholeSong) db.rawQuery("SELECT id,source FROM catalog_section WHERE song_id=? ORDER BY name COLLATE NOCASE,id",arrayOf(passage.songId)).use {
+            while(it.moveToNext()) if(it.getString(0)!=passage.sectionId) sections[it.getString(0)]=json.decodeFromString<ExtractedSection>(unpack(it.getBlob(1)))
+        }
+        return AuralPlaybackSource(Song(slug=passage.songId,title=passage.title,artist=passage.artist,url=""),section,passage.sectionId,start,end,sections)
     }
     fun evidence(target: AuralPatternTarget): String {
         val file=File(file.parentFile,"aural-evidence.db")

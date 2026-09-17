@@ -21,7 +21,8 @@ internal data class AuralSavedSession(
     val playbackReturn: AuralPlaybackReturn? = null,
 )
 @Serializable internal data class AuralPlaybackReturn(val exerciseId: String,val draft: List<String>,val heard: Boolean,val answered: Boolean,
-    val guidanceVisible: Boolean,val plays: Int,val attempts: Int,val assistance: List<String>,val feedback: String,val open: Boolean = true)
+    val guidanceVisible: Boolean,val plays: Int,val attempts: Int,val assistance: List<String>,val feedback: String,val open: Boolean = true,
+    val sourcePassage:AuralSourcePassage?=null,val fromSongs:Boolean=false)
 
 internal interface AuralPersistence {
     fun read(): String?
@@ -204,10 +205,11 @@ internal class AuralSession(
         assistance = if(assessment) emptyList() else listOf("selected-pattern"); plays=0; attempts=0; heard=false; answered=false; guidanceVisible=exercise.support == 2; feedback=""
         save()
     }
-    fun exploringPlayback(draft: List<String> = emptyList()) {
+    fun exploringPlayback(draft: List<String> = emptyList(), passage:AuralSourcePassage?=null, fromSongs:Boolean=false) {
         val current=saved.current ?: return
         assistance = assistance + "source-playback"; listeningStarted()
-        saved=saved.copy(playbackReturn=AuralPlaybackReturn(current.id,draft,heard,answered,guidanceVisible,plays,attempts,assistance,feedback)); save()
+        passage?.let { opened -> saved=saved.copy(sourceExposures=saved.sourceExposures.filter { it.sourceId!=opened.sourceId } + AuralSourceExposure(opened.sourceId,opened.songId,clock())) }
+        saved=saved.copy(playbackReturn=AuralPlaybackReturn(current.id,draft,heard,answered,guidanceVisible,plays,attempts,assistance,feedback,sourcePassage=passage,fromSongs=fromSongs)); save()
     }
     fun assistedChunk() { assistance = assistance + "chunked-listening"; save() }
     fun reviewPattern(rows: List<AuralCatalogRow>): Pair<AuralPatternTarget,String>? {

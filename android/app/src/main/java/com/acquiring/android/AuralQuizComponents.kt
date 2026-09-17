@@ -109,14 +109,15 @@ internal fun AuralProgressionCard(variant: AuralVariant, onClick: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun AuralModeTabs(skillId: String, onSelect: (String) -> Unit) {
+internal fun AuralModeTabs(skillId: String, songsSelected:Boolean=false, onSongs:(()->Unit)?=null, onSelect: (String) -> Unit) {
     val selected = AuralPracticeModes.forSkill(skillId)
-    TabRow(selectedTabIndex = AuralPracticeModes.modes.indexOf(selected)) {
+    TabRow(selectedTabIndex = if(songsSelected) AuralPracticeModes.modes.size else AuralPracticeModes.modes.indexOf(selected)) {
         AuralPracticeModes.modes.forEach { mode ->
-            Tab(selected = mode == selected, onClick = { if (mode != selected) onSelect(mode.id) },
+            Tab(selected = !songsSelected && mode == selected, onClick = { if (songsSelected || mode != selected) onSelect(mode.id) },
                 modifier = Modifier.testTag("AuralMode-${mode.id}"),
                 text = { Text(mode.label) })
         }
+        if(onSongs!=null) Tab(selected=songsSelected,onClick=onSongs,modifier=Modifier.testTag("AuralMode-songs"),text={Text("Songs")})
     }
 }
 
