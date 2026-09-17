@@ -2,12 +2,82 @@ import AcquiringCatalog
 import AcquiringAudio
 import AcquiringCore
 import Foundation
+import QuartzCore
 import SwiftData
 import XCTest
 import UIKit
 @testable import Acquiring
 
 final class AcquiringTests: XCTestCase {
+    @MainActor
+    func testTimelineFrameRateSurvivesLockChangesAndPlaybackLifecycle() throws {
+        let section = ExtractedSection(
+            sectionName: "Frame rate",
+            notes: .array([
+                .object(["sd": .string("1"), "beat": .number(1), "duration": .number(4)])
+            ]),
+            metadata: ["keys": .array([
+                .object(["tonic": .string("A"), "scale": .string("minor"), "beat": .number(1)])
+            ])]
+        )
+        let model = QuizTimelineDisplayModel(
+            section: section, sectionID: "verse", usesRelativeIonianContext: false,
+            initialBeat: 1, frameRatePreference: .standard
+        )
+        defer { model.setLifecycle(isVisible: false, sceneIsActive: false, reduceMotion: false) }
+
+        func source(playing: Bool) {
+            model.updateSource(
+                beat: 2, timestamp: CACurrentMediaTime(), endBeat: 9,
+                beatsPerSecond: 2, isPlaying: playing, forceSnap: true
+            )
+        }
+        func assertRate(_ preference: TimelineFrameRatePreference) throws {
+            let link = try XCTUnwrap(model.displayLink)
+            let expected = preference.displayFrameRateRange()
+            XCTAssertEqual(link.preferredFrameRateRange.minimum, expected.minimum)
+            XCTAssertEqual(link.preferredFrameRateRange.maximum, expected.maximum)
+            XCTAssertEqual(link.preferredFrameRateRange.preferred, expected.preferred)
+        }
+
+        source(playing: true)
+        model.setLifecycle(isVisible: true, sceneIsActive: true, reduceMotion: false)
+        for preference in [TimelineFrameRatePreference.standard, .maximum, .standard] {
+            model.setFrameRatePreference(preference)
+            try assertRate(preference)
+            let originalLink = try XCTUnwrap(model.displayLink)
+            for locked in [true, false, true, false, true] {
+                model.updatePresentations(
+                    section: section, sectionID: "verse", usesRelativeIonianContext: locked
+                )
+                try assertRate(preference)
+                XCTAssertTrue(model.displayLink === originalLink, "Lock changes must retain the display clock")
+                XCTAssertEqual(model.displayedBeat, 2, "Lock changes must not move the playhead")
+            }
+            model.updatePresentations(section: section, sectionID: "chorus", usesRelativeIonianContext: true)
+            try assertRate(preference)
+
+            source(playing: false)
+            XCTAssertNil(model.displayLink)
+            source(playing: true)
+            try assertRate(preference)
+            XCTAssertFalse(model.displayLink === originalLink)
+
+            for lifecycle in [(false, true, false), (true, false, false), (true, true, true)] {
+                model.setLifecycle(isVisible: lifecycle.0, sceneIsActive: lifecycle.1, reduceMotion: lifecycle.2)
+                XCTAssertNil(model.displayLink)
+                model.setLifecycle(isVisible: true, sceneIsActive: true, reduceMotion: false)
+                try assertRate(preference)
+            }
+        }
+
+        // A setting changed while Quiz is absent must configure the recreated link.
+        model.setLifecycle(isVisible: false, sceneIsActive: true, reduceMotion: false)
+        model.setFrameRatePreference(.maximum)
+        model.setLifecycle(isVisible: true, sceneIsActive: true, reduceMotion: false)
+        try assertRate(.maximum)
+    }
+
     @MainActor
     func testOpeningHelpDuringCollapsePreservesSingBackTargets() async throws {
         let model = VocalPracticeModel(audio: AppAudioSystem())

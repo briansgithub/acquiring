@@ -2147,3 +2147,29 @@ practice-session variants. VoiceOver is low priority and must not be resumed
 without a new request. See [the branch handoff](ios-quiz-help-handoff.md) for exact
 commands, results, and remaining review items. No screenshots, full-app suite,
 physical-device testing, or release was performed.
+
+### Timeline frame rate with Lock in Major — 2026-09-13
+
+`[review]` Implemented in both apps; runtime model unknown, one implementation
+agent. iOS now applies the saved rate before registering a new display link and
+before reactivating Quiz, retaining it across presentation/lock and lifecycle
+changes. Removed unsupported UIView frame-rate assignments. Android refreshes
+the saved preference, playback update interval and window request together on
+Quiz entry, lock/section changes and resume. Maximum uses supported modes at the
+current resolution, including when the active rate is already capped at 60 Hz.
+Audio timing, manual dragging/inertia and preference storage are unchanged.
+
+Checks run from `android/` on Windows:
+
+- `python scripts/compact_check.py --name timeline-frame-rate --keep-success-log -- gradlew.bat testDebugUnitTest --tests com.acquiring.android.TimelineFrameRateTest --tests com.acquiring.android.TimelineFrameRateWindowTest assembleDebug --console=plain` — passed: five unit cases (including window tests on API 28 and 35) and Debug build.
+- `python scripts/compact_check.py --name timeline-frame-rate-ui --keep-success-log -- gradlew.bat connectedDebugAndroidTest '-Pandroid.testInstrumentationRunnerArguments.class=com.acquiring.android.QuizTransportSelectorsUiTest#timelineFrameRateSurvivesLockChangesDuringPlayback' --console=plain` — passed: one test on Pixel 7a / Android 14. Checks actual lock toggles during playback with both settings, restores a stale window request, and checks pause/resume, section switching and reopening Quiz. These assertions inspect requested rates/update intervals, not measured physical display cadence.
+
+iOS regression `AcquiringTests/testTimelineFrameRateSurvivesLockChangesAndPlaybackLifecycle`
+asserts the actual CADisplayLink range through lock toggles, setting changes,
+section changes, pause/resume, visibility, background and Reduce Motion changes.
+It is not run: this Windows environment has no Xcode or iOS simulator. Next on
+the Mac: run this focused test with `xcodebuild -quiet test -project ios/Acquiring.xcodeproj -scheme Acquiring -destination 'platform=iOS Simulator,name=iPhone 17' -only-testing:AcquiringTests/AcquiringTests/testTimelineFrameRateSurvivesLockChangesAndPlaybackLifecycle CODE_SIGNING_ALLOWED=NO`,
+then complete the normal incremental build/install/launch on the warm iPhone 17.
+Review: choose 60 fps, play `500 Miles`, toggle Lock in Major repeatedly, then
+repeat with Maximum and return to 60 fps. Earlier pending reviews remain pending.
+No release, full-app suite or screenshots; unrelated Android work is preserved.

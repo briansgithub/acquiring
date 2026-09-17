@@ -1,6 +1,7 @@
 package com.acquiring.android
 
 import android.content.Context
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.collectAsState
@@ -9,8 +10,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsNode
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
@@ -31,7 +33,7 @@ import kotlin.math.abs
 
 class PlaybackTransportSelectorsUiTest {
     @get:Rule
-    val composeTestRule = createComposeRule()
+    val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
     @Before
     fun setUp() {
@@ -47,6 +49,110 @@ class PlaybackTransportSelectorsUiTest {
     fun tearDown() {
         PlaybackController.pause()
         AudioEngine.stopAllPlayback()
+    }
+
+    @Test
+    fun timelineFrameRateSurvivesLockChangesDuringPlayback() {
+        val activity = composeTestRule.activity
+        val savedPreference = TimelineFrameRateStore.read(activity)
+        val sections = linkedMapOf(
+            "verse" to section("Verse", 1, "minor"),
+            "chorus" to section("Chorus", 4, "minor")
+        )
+        val testSong = song("frame-rate", "Frame Rate")
+        val pitchSource = FakeExclusivePitchSource()
+        var selectedSectionId by mutableStateOf("verse")
+        var showingPlayback by mutableStateOf(true)
+        composeTestRule.setContent {
+            MaterialTheme {
+                if (showingPlayback) {
+                    PlaybackDestination(
+                        song = testSong,
+                        sections = sections,
+                        selectedSectionId = selectedSectionId,
+                        onSectionChange = { selectedSectionId = it },
+                        currentWaveform = AudioEngine.Waveform.CLARINET,
+                        onWaveformChange = {},
+                        globalTranspose = 0,
+                        playbackTempoPercent = 100f,
+                        onPlaybackTempoPercentChange = {},
+                        playbackArpeggioOptionIndex = DEFAULT_PLAYBACK_ARPEGGIO_OPTION_INDEX,
+                        onPlaybackArpeggioOptionIndexChange = {},
+                        onTransposeChange = {},
+                        onArtistClick = {},
+                        onShowSongInfo = {},
+                        onSingingTargetsRequested = {},
+                        octaveOffset = 0,
+                        persistentPitchSource = pitchSource,
+                        isFavorite = false,
+                        onToggleFavorite = {},
+                        onBack = { showingPlayback = false }
+                    )
+                }
+            }
+        }
+        waitForPlayback()
+        val idlingResources = IdlingRegistry.getInstance().resources.toList()
+        idlingResources.forEach { IdlingRegistry.getInstance().unregister(it) }
+        try {
+            clickDescription("Play")
+            waitForAdvancingPlayback()
+            var locked = false
+            for (preference in listOf(
+                TimelineFrameRatePreference.STANDARD,
+                TimelineFrameRatePreference.MAXIMUM,
+                TimelineFrameRatePreference.STANDARD
+            )) {
+                composeTestRule.runOnUiThread { TimelineFrameRateStore.select(activity, preference) }
+                val fps = preference.framesPerSecond(TimelineFrameRateStore.displayMaximumHz)
+                repeat(3) {
+                    // Verify the production lock effect restores a stale surface request.
+                    composeTestRule.runOnUiThread {
+                        activity.window.attributes = activity.window.attributes.apply {
+                            preferredRefreshRate = 30f
+                        }
+                    }
+                    clickTag(PLAYBACK_LOCK_IN_MAJOR_TEST_TAG)
+                    locked = !locked
+                    composeTestRule.waitUntil(5_000) {
+                        val node = composeTestRule.onAllNodesWithTag(
+                            PLAYBACK_LOCK_IN_MAJOR_TEST_TAG, useUnmergedTree = true
+                        ).fetchSemanticsNodes().firstOrNull()
+                        node?.config?.getOrNull(SemanticsProperties.StateDescription) ==
+                            (if (locked) "On" else "Off") &&
+                            activity.window.attributes.preferredRefreshRate == fps.toFloat()
+                    }
+                    assertEquals(1_000_000_000L / fps, TimelineFrameRateStore.minStateUpdateNanos)
+                    assertEquals(preference, TimelineFrameRateStore.read(activity))
+                    waitForAdvancingPlayback()
+                }
+            }
+            clickDescription("Pause")
+            clickDescription("Play")
+            waitForAdvancingPlayback()
+            clickTag(PLAYBACK_SECTION_BUTTON_TEST_TAG)
+            clickTag("PlaybackSection-chorus")
+            waitForAdvancingPlayback()
+            assertEquals(60f, activity.window.attributes.preferredRefreshRate, 0f)
+
+            composeTestRule.runOnUiThread {
+                PlaybackController.pause()
+                showingPlayback = false
+            }
+            composeTestRule.waitUntil(5_000) {
+                composeTestRule.onAllNodesWithTag(PLAYBACK_SCREEN_TEST_TAG).fetchSemanticsNodes().isEmpty()
+            }
+            composeTestRule.runOnUiThread { showingPlayback = true }
+            waitForPlayback()
+            assertEquals(60f, activity.window.attributes.preferredRefreshRate, 0f)
+            assertEquals(16_666_666L, TimelineFrameRateStore.minStateUpdateNanos)
+        } finally {
+            composeTestRule.runOnUiThread {
+                PlaybackController.pause()
+                TimelineFrameRateStore.select(activity, savedPreference)
+            }
+            idlingResources.forEach { IdlingRegistry.getInstance().register(it) }
+        }
     }
 
     @Test
@@ -288,7 +394,7 @@ class PlaybackTransportSelectorsUiTest {
         dataBlob = byteArrayOf()
     )
 
-    private fun section(name: String, root: Int): ExtractedSection = Json.decodeFromString(
+    private fun section(name: String, root: Int, scale: String = "major"): ExtractedSection = Json.decodeFromString(
         """
         {
           "sectionName": "$name",
@@ -297,7 +403,7 @@ class PlaybackTransportSelectorsUiTest {
           "notes": [{"sd": "1", "beat": 1, "duration": 16, "octave": 0}],
           "metadata": {
             "endBeat": 17,
-            "keys": [{"tonic": "C", "scale": "major", "beat": 1}],
+            "keys": [{"tonic": "C", "scale": "$scale", "beat": 1}],
             "tempos": [{"bpm": 120}]
           }
         }
