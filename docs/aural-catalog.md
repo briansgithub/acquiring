@@ -4,6 +4,8 @@ Updated 2026-09-17. Implementation route: offline Node/SQLite, Python streaming 
 
 ## Access and behavior
 
+Roman-numeral strings use Playback's existing `playbackLaneTint` mode palette in catalog rows, progression titles/cards, choices, and recall controls. Mode comes from normalized tokens or the source section, not uppercase/lowercase chord quality. Major uses red, Dorian orange, Phrygian yellow, Lydian green, Mixolydian blue, minor purple, and Locrian pink, with the same tint adjustment as Playback. Unknown mode and unrevealed answer slots remain neutral. Color-only update validation: both APK builds passed (`aural-mode-colors`, 15.3 seconds); the two existing hidden-answer/support-fading checks passed (`aural-color-guidance`, 5.8 seconds). Device installation/checks could not run because ADB reported no attached devices; the color update awaits installation when the Pixel is reconnected.
+
 Open **Aural Quiz** from the home screen. After the offline catalog loads, search Roman labels or filter by chord count. Tap a progression to practice its whole sequence in **Recognize**, **Recall**, or **Sing**. The guided course remains available; **Review** chooses weaker/due targets from the currently loaded catalog results. Named progression practice is supported practice because selecting the progression already reveals its identity.
 
 Catalog rows have outline numbers: roots `1`, `2`, etc.; children `1.1`, `1.2`; deeper descendants `1.1.1`, etc. These indicate position in the current ranking, not permanent sequence identity. Expanding a branch leaves sibling root numbers unchanged. Shared sequences have an outline number for each tree path. Flat mode uses consecutive ranks. Expand/collapse controls use a filled 48 dp touch target and 32 dp arrow.

@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -46,7 +47,7 @@ internal fun auralBriefPrompt(exercise: AuralExercise): String = when (exercise.
 
 /** Neutral slots carry timing/order, never hidden answer labels or answer-specific colors. */
 @Composable
-internal fun AuralChordStrip(degrees: List<String?>, modifier: Modifier = Modifier) {
+internal fun AuralChordStrip(degrees: List<String?>, modifier: Modifier = Modifier, mode:String?="major") {
     Row(if(degrees.size > 6) modifier.horizontalScroll(rememberScrollState()) else modifier, horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
         degrees.forEachIndexed { index, degree ->
             if (index > 0) Text("→", color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -54,7 +55,8 @@ internal fun AuralChordStrip(degrees: List<String?>, modifier: Modifier = Modifi
                 color = if (degree == null) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.secondaryContainer,
                 modifier = if(degrees.size > 6) Modifier.width(72.dp) else Modifier.weight(1f)) {
                 Box(Modifier.heightIn(min = 52.dp).padding(horizontal = 4.dp, vertical = 12.dp), contentAlignment = Alignment.Center) {
-                    Text(degree ?: "?", style = MaterialTheme.typography.titleMedium)
+                    Text(degree ?: "?", style = MaterialTheme.typography.titleMedium,
+                        color=if(degree==null) Color.Unspecified else auralRomanColor(mode))
                 }
             }
         }
