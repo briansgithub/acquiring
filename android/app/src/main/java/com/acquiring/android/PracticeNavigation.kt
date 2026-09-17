@@ -5,7 +5,7 @@ internal enum class PracticeDestination {
     SETTINGS,
     ARTIST,
     ALL_SONGS,
-    QUIZ,
+    PLAYBACK,
     SONG_DETAIL
 }
 
@@ -20,8 +20,8 @@ internal fun practiceBack(
     songOrigin: SongOrigin
 ): PracticeDestination = when (current) {
     PracticeDestination.SETTINGS -> PracticeDestination.LIBRARY
-    PracticeDestination.SONG_DETAIL -> PracticeDestination.QUIZ
-    PracticeDestination.QUIZ -> when (songOrigin) {
+    PracticeDestination.SONG_DETAIL -> PracticeDestination.PLAYBACK
+    PracticeDestination.PLAYBACK -> when (songOrigin) {
         SongOrigin.ARTIST -> PracticeDestination.ARTIST
         SongOrigin.ALL_SONGS -> PracticeDestination.ALL_SONGS
         SongOrigin.LIBRARY -> PracticeDestination.LIBRARY

@@ -175,7 +175,7 @@ private fun IntroductionExampleCards() {
             },
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        QuizExampleCard(modifier = Modifier.weight(1f), fixedHeight = 56.dp) {
+        PlaybackExampleCard(modifier = Modifier.weight(1f), fixedHeight = 56.dp) {
             ScaleDegreeText(
                 label = "3",
                 fontSize = 28.sp,
@@ -186,7 +186,7 @@ private fun IntroductionExampleCards() {
                     .height(34.dp)
             )
         }
-        QuizExampleCard(modifier = Modifier.weight(1f), fixedHeight = 56.dp) {
+        PlaybackExampleCard(modifier = Modifier.weight(1f), fixedHeight = 56.dp) {
             Text(
                 text = shorthand,
                 color = Color.White,

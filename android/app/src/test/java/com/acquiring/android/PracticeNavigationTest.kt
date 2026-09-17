@@ -5,34 +5,34 @@ import org.junit.Test
 
 class PracticeNavigationTest {
     @Test
-    fun songDetailBackReturnsToQuiz() {
+    fun songDetailBackReturnsToPlayback() {
         assertEquals(
-            PracticeDestination.QUIZ,
+            PracticeDestination.PLAYBACK,
             practiceBack(PracticeDestination.SONG_DETAIL, SongOrigin.LIBRARY)
         )
     }
 
     @Test
-    fun quizBackReturnsToOriginList() {
+    fun playbackBackReturnsToOriginList() {
         assertEquals(
             PracticeDestination.LIBRARY,
-            practiceBack(PracticeDestination.QUIZ, SongOrigin.LIBRARY)
+            practiceBack(PracticeDestination.PLAYBACK, SongOrigin.LIBRARY)
         )
         assertEquals(
             PracticeDestination.ARTIST,
-            practiceBack(PracticeDestination.QUIZ, SongOrigin.ARTIST)
+            practiceBack(PracticeDestination.PLAYBACK, SongOrigin.ARTIST)
         )
         assertEquals(
             PracticeDestination.ALL_SONGS,
-            practiceBack(PracticeDestination.QUIZ, SongOrigin.ALL_SONGS)
+            practiceBack(PracticeDestination.PLAYBACK, SongOrigin.ALL_SONGS)
         )
     }
 
     @Test
-    fun quizBackPrefersLiveArtistListOverLibraryOrigin() {
+    fun playbackBackPrefersLiveArtistListOverLibraryOrigin() {
         assertEquals(
             PracticeDestination.ARTIST,
-            practiceBack(PracticeDestination.QUIZ, SongOrigin.ARTIST)
+            practiceBack(PracticeDestination.PLAYBACK, SongOrigin.ARTIST)
         )
     }
 

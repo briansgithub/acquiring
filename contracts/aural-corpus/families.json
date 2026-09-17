@@ -1,0 +1,12 @@
+{
+  "version": "aural-families-1",
+  "policy": "Exact major-mode unmodified triads, including V/V. Inversions preserved. No inferred new families.",
+  "families": [
+    {"id":"dominant-return","variants":{"direct":["V","I"],"departure":["I","V","I"]}},
+    {"id":"plagal-return","variants":{"direct":["IV","I"],"departure":["I","IV","I"]}},
+    {"id":"predominant-cadence","variants":{"supertonic":["ii","V","I"],"subdominant":["IV","V","I"],"departure":["I","ii","V","I"]}},
+    {"id":"deceptive-return","variants":{"direct":["V","vi"],"prepared":["ii","V","vi"],"departure":["I","V","vi"]}},
+    {"id":"relative-motion","variants":{"direct":["I","vi"],"return":["I","vi","IV","I"],"cadence":["vi","ii","V","I"]}},
+    {"id":"secondary-dominant","variants":{"direct":["V/V","V","I"],"departure":["I","V/V","V","I"]}}
+  ]
+}
